@@ -1,29 +1,79 @@
-# Visual Studio 用户与 IDE 缓存
+# Visual Studio
 .vs/
 *.suo
 *.user
-*.sdf
-*.opensdf
+*.userosscache
+*.sln.docstates
 *.VC.db
 *.VC.VC.opendb
-*.vcxproj.user
+*.opendb
 ipch/
-
-# 编译中间文件（落在工程目录旁时也忽略）
-*.obj
+*.aps
+*.ncb
+*.cache
+*.tlog
+*.lastbuildstate
+*.idb
+*.pdb
+*.ilk
 *.iobj
 *.ipdb
-*.ilk
-*.idb
-*.pch
-*.tlog
+*.exp
+*.log
 *.recipe
-*.lastbuildstate
+*.FileListAbsolute.txt
 
-# 各工程中间目录
-obj/
+# MSBuild 中间目录与输出
+[Bb]in/
+[Oo]bj/
+# 勿用 [Dd]ebug/ / [Rr]elease/：会误伤 VisionToolUi/debug/ 等源码目录
+# Debug|Release 产物已在 bin/、obj/、x64/ 下
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]uild/
+# 运行时日志目录（勿用 [Ll]og/：会误伤 VisionLog/log/ 源码）
+[Ll]ogs/
+**/runtime_logs/
 
-# 本仓库的生成输出。third_party 下的预编译库不在这些路径里，继续入库。
-/VisionPlatform/bin/
-/VisionPlatform/*/bin/
-/HsImage/**/bin/
+# 编译产物
+*.obj
+*.o
+*.exe
+*.exe.old
+*.dll
+*.lib
+*.pch
+*.res
+*.sbr
+*.tlb
+*.tlh
+*.tli
+
+# Qt / MOC 生成（均在 obj 下，此处作兜底）
+moc_*.cpp
+ui_*.h
+qrc_*.cpp
+*.qm
+
+# 本地配置与临时文件
+*.tmp
+*.temp
+*.swp
+*~
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# 用户数据（运行时生成，勿入库）
+users.json
+settings.json
+
+# HsImage 独立解决方案（HsImageLib / HsImageDemo）
+HsImage/image_widget/
+HsImage/bin/
+HsImage/obj/
+HsImage/.vs/

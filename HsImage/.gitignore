@@ -1,10 +1,10 @@
 # ROS2 / Linux 对照工程，不入库（Windows 以 HsImageLib 为准）
 /image_widget/
 
-# HsImageLib、HsImageDemo 生成与中间目录（含各工程子目录）
-bin/
-obj/
-.vs/
+# HsImageLib、HsImageDemo 生成与中间目录（相对 HsImage.sln）
+/bin/
+/obj/
+/.vs/
 
 # Visual Studio 用户本地文件
 *.user
