@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="grabber"><UniqueIdentifier>{D40A0001-0000-4000-8000-000000000001}</UniqueIdentifier></Filter>
+    <Filter Include="camera"><UniqueIdentifier>{D40A0001-0000-4000-8000-000000000002}</UniqueIdentifier></Filter>
+      <Filter Include="export">
+      <UniqueIdentifier>{A11A1001-0001-4000-8000-0000000000E5}</UniqueIdentifier>
+    </Filter>
+</ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="grabber\FileGrabber.cpp"><Filter>grabber</Filter></ClCompile>
+    <ClCompile Include="camera\CameraFileTool.cpp"><Filter>camera</Filter></ClCompile>
+    <ClCompile Include="camera\CameraDeviceTool.cpp"><Filter>camera</Filter></ClCompile>
+    <ClCompile Include="camera\RegisterGrabFile.cpp"><Filter>camera</Filter></ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="grabber\FileGrabber.h"><Filter>grabber</Filter></ClInclude>
+    <ClInclude Include="camera\CameraFileTool.h"><Filter>camera</Filter></ClInclude>
+    <ClInclude Include="camera\CameraDeviceTool.h"><Filter>camera</Filter></ClInclude>
+    <ClInclude Include="camera\RegisterGrabFile.h"><Filter>camera</Filter></ClInclude>
+    <ClInclude Include="VisionGrabExport.h">
+      <Filter>export</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

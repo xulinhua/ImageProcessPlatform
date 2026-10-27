@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="algo">
+      <UniqueIdentifier>{B4E91A10-7C22-4F18-9A01-00000000002B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="entry">
+      <UniqueIdentifier>{B4E91A10-7C22-4F18-9A01-00000000002C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="para">
+      <UniqueIdentifier>{B4E91A10-7C22-4F18-9A01-00000000002D}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="PluginEntry.cpp">
+      <Filter>entry</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\VisionAlgHal\HalFindLine.cpp">
+      <Filter>algo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\VisionAlgHal\HalAlgoHelpers.cpp">
+      <Filter>algo</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\VisionAlgHal\HalFindLine.h">
+      <Filter>algo</Filter>
+    </ClInclude>
+    <ClInclude Include="ToolParaFindLine.hpp">
+      <Filter>para</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

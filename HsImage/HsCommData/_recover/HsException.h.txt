@@ -1,0 +1,133 @@
+﻿#ifndef HSCOMMDATA_HSEXCEPTION_H
+#define HSCOMMDATA_HSEXCEPTION_H
+
+#include <HsCommData/HsCommDataExport.h>
+
+#include <HsCommData/HsError.h>
+
+#include <stdexcept>
+
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable: 4275)
+#endif
+
+namespace HsCommData {
+
+class HsTuple;
+
+/**
+ * @class HsException
+ * @brief 接口失败。对应 Halcon HException 里和数据有关的部分
+ * 含错误码、说明、算子名、附加码、附加说明和用户元组。
+ * 程序行号、过程名、调用栈属于脚本引擎，不放在这里
+ */
+class HSCOMMDATA_EXPORT HsException : public std::runtime_error {
+public:
+    /** @brief 按错误码构造。说明从错误码表取，算子名为空 */
+    explicit HsException(HsError code);
+    /**
+     * @brief 带算子名和错误码
+     * @param procName 算子或函数名。空指针当空串
+     */
+    HsException(const char* procName, HsError code);
+    /**
+     * @brief 带算子名和自定义说明。说明为空则仍用错误码表
+     * @param procName 算子或函数名。空指针当空串
+     * @param message 说明。空指针或空串则用错误码表
+     * @param code 错误码。不传则为 HS_OK
+     */
+    HsException(const char* procName, const char* message, HsError code = HS_OK);
+    /** @brief 深拷说明和用户元组 */
+    HsException(const HsException& other);
+    /** @brief 深拷说明和用户元组 */
+    HsException& operator=(const HsException& other);
+    virtual ~HsException();
+
+    /** @brief 按实际类型再抛出。派生类不会被切成基类 */
+    virtual void throwInstance() const;
+
+    /** @brief 抛出只带错误码的异常 */
+    static void Throw(HsError code);
+    /** @brief 抛出带算子名和错误码的异常 */
+    static void Throw(const char* procName, HsError code);
+    /**
+     * @brief 抛出带算子名和自定义说明的异常
+     * @param code 不传则为 HS_OK
+     */
+    static void Throw(const char* procName, const char* message, HsError code = HS_OK);
+
+    /** @brief 算子或函数名。没有则为空串。对象修改或析构后指针失效 */
+    const char* procName() const;
+    /** @brief 主说明，不含算子名和附加说明 */
+    const char* errorMessage() const;
+    /** @brief 错误码 */
+    HsError code() const;
+    /** @brief 附加错误码。没有则为 HS_OK */
+    HsError extendedCode() const;
+    /** @brief 附加说明。没有则为空串。对象修改或析构后指针失效 */
+    const char* extendedMessage() const;
+    /** @brief 用户元组。没有附加数据时为空元组 */
+    const HsTuple& userData() const;
+
+    /**
+     * @brief 补上附加码和附加说明。对应 Halcon 的扩展错误信息
+     * @param extendedCode 附加码。HS_OK 表示没有
+     * @param extendedMessage 附加说明。空指针当空串
+     */
+    void setExtended(HsError extendedCode, const char* extendedMessage);
+    /** @brief 换上用户元组。整份拷贝 */
+    void setUserData(const HsTuple& data);
+
+    /**
+     * @brief 给 std::exception 用的整句说明
+     * 有算子名时放在前面。有附加说明时接在后面
+     */
+    virtual const char* what() const;
+
+private:
+    struct Data;
+
+    /** @brief 填算子名、错误码和主说明，并重拼 what */
+    void init(const char* procName, HsError code, const char* message);
+
+    Data* m_data; ///< 说明、附加信息和用户元组。不空
+};
+
+/**
+ * @class HsTupleAccessException
+ * @brief 元组访问失败。对应 Halcon HTupleAccessException
+ */
+class HSCOMMDATA_EXPORT HsTupleAccessException : public HsException {
+public:
+    /** @brief 类型不符，说明为元组操作不合法 */
+    HsTupleAccessException();
+    /** @brief 自定义说明，错误码为 HS_ERR_TYPE。空指针当空串 */
+    explicit HsTupleAccessException(const char* message);
+    /** @brief 按错误码构造。说明从错误码表取 */
+    explicit HsTupleAccessException(HsError code);
+    /**
+     * @brief 自定义说明和错误码
+     * 说明为空则用错误码表
+     */
+    HsTupleAccessException(const char* message, HsError code);
+    virtual ~HsTupleAccessException();
+
+    /** @brief 按本类型再抛出 */
+    virtual void throwInstance() const;
+
+    /** @brief 抛出默认的元组访问异常 */
+    static void Throw();
+    /** @brief 抛出带说明的元组访问异常 */
+    static void Throw(const char* message);
+    /** @brief 抛出带错误码的元组访问异常 */
+    static void Throw(HsError code);
+};
+
+}
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
+
+#endif

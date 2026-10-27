@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3D8BFF"/>
+      <stop offset="100%" stop-color="#1A5FD4"/>
+    </linearGradient>
+  </defs>
+  <rect x="8" y="8" width="240" height="240" rx="54" ry="54" fill="url(#bg)"/>
+  <!-- solid white eye + iris -->
+  <path fill="#FFFFFF" d="M42 128c20-40 58-64 86-64s66 24 86 64c-20 40-58 64-86 64s-66-24-86-64z"/>
+  <circle cx="128" cy="128" r="36" fill="#FFFFFF"/>
+  <!-- highlight cutout (shows blue) -->
+  <circle cx="140" cy="116" r="10" fill="#2470E4"/>
+</svg>

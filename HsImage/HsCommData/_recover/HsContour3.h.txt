@@ -1,0 +1,33 @@
+﻿#ifndef HSCOMMDATA_HSCONTOUR3_H
+#define HSCOMMDATA_HSCONTOUR3_H
+
+#include <vector>
+
+#include <HsCommData/Geom3.h>
+
+namespace HsCommData {
+
+/**
+ * @class Contour3
+ * @brief 三维折线。点列为毫米坐标。整份拷贝，不共享缓冲。不是二维 HsContour
+ */
+struct HSCOMMDATA_EXPORT Contour3 {
+    std::vector<Point3> pts; ///< 顶点列，毫米
+    bool closed;             ///< true 时首尾相连
+
+    /** @brief 默认开折线 */
+    Contour3();
+    /** @brief 同类型拷贝，点列整份复制 */
+    Contour3(const Contour3& other);
+    /** @brief 同类型赋值，点列整份复制 */
+    Contour3& operator=(const Contour3& other);
+
+    /** @brief 无顶点则为空 */
+    bool isEmpty() const;
+    /** @brief 顶点包围盒。空折线返回空 Aabb3 */
+    Aabb3 bounds() const;
+};
+
+}
+
+#endif

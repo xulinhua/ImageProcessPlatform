@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="editor"><UniqueIdentifier>{B4E91A10-7C22-4F18-9A01-A0B1C2D3E414}</UniqueIdentifier></Filter>
+    <Filter Include="debug"><UniqueIdentifier>{B4E91A10-7C22-4F18-9A01-A0B1C2D3E415}</UniqueIdentifier></Filter>
+    <Filter Include="register"><UniqueIdentifier>{B4E91A10-7C22-4F18-9A01-A0B1C2D3E416}</UniqueIdentifier></Filter>
+    <Filter Include="draw"><UniqueIdentifier>{B4E91A10-7C22-4F18-9A01-A0B1C2D3E417}</UniqueIdentifier></Filter>
+      <Filter Include="export">
+      <UniqueIdentifier>{A11A1001-0001-4000-8000-0000000000E8}</UniqueIdentifier>
+    </Filter>
+</ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="editor\ToolParamUi.cpp"><Filter>editor</Filter></ClCompile>
+    <ClCompile Include="editor\ToolEditorBase.cpp"><Filter>editor</Filter></ClCompile>
+    <ClCompile Include="editor\ToolIoPanel.cpp"><Filter>editor</Filter></ClCompile>
+    <ClCompile Include="editor\ToolRstPanel.cpp"><Filter>editor</Filter></ClCompile>
+    <ClCompile Include="editor\CamPipelineEditors.cpp"><Filter>editor</Filter></ClCompile>
+    <ClCompile Include="editor\LocateDetectEditors.cpp"><Filter>editor</Filter></ClCompile>
+    <ClCompile Include="editor\MiscEditors.cpp"><Filter>editor</Filter></ClCompile>
+    <ClCompile Include="debug\ToolDebugHost.cpp"><Filter>debug</Filter></ClCompile>
+    <ClCompile Include="register\ToolEditorRegistry.cpp"><Filter>register</Filter></ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="editor\ToolParamUi.h"><Filter>editor</Filter></ClInclude>
+    <ClInclude Include="editor\ToolEditorBase.h"><Filter>editor</Filter></ClInclude>
+    <ClInclude Include="editor\ToolIoPanel.h"><Filter>editor</Filter></ClInclude>
+    <ClInclude Include="editor\ToolRstPanel.h"><Filter>editor</Filter></ClInclude>
+    <ClInclude Include="editor\ToolEditors.h"><Filter>editor</Filter></ClInclude>
+    <ClInclude Include="debug\ToolDebugHost.h"><Filter>debug</Filter></ClInclude>
+    <ClInclude Include="register\ToolEditorRegistry.h"><Filter>register</Filter></ClInclude>
+    <ClInclude Include="VisionToolUiExport.h">
+      <Filter>export</Filter>
+    </ClInclude>
+    <ClCompile Include="editor\GenericEditor.cpp">
+      <Filter>editor</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

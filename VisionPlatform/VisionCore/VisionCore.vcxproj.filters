@@ -1,0 +1,126 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="model">
+      <UniqueIdentifier>{D4140001-0000-4000-8000-000000000001}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="tool">
+      <UniqueIdentifier>{D4140001-0000-4000-8000-000000000003}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="job">
+      <UniqueIdentifier>{D4140001-0000-4000-8000-000000000004}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="station">
+      <UniqueIdentifier>{D4140001-0000-4000-8000-000000000005}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="solution">
+      <UniqueIdentifier>{D4140001-0000-4000-8000-000000000007}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common">
+      <UniqueIdentifier>{D4140001-0000-4000-8000-000000000006}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="device">
+      <UniqueIdentifier>{A11A1001-0001-4000-8000-0000000000C2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="composite">
+      <UniqueIdentifier>{A11A1001-0001-4000-8000-0000000000C3}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="solution\Solution.cpp">
+      <Filter>solution</Filter>
+    </ClCompile>
+    <ClCompile Include="station\StationEnums.cpp">
+      <Filter>station</Filter>
+    </ClCompile>
+    <ClCompile Include="job\JobEnums.cpp">
+      <Filter>job</Filter>
+    </ClCompile>
+    <ClCompile Include="model\RecipeDraft.cpp">
+      <Filter>model</Filter>
+    </ClCompile>
+    <ClCompile Include="model\DraftRegistry.cpp">
+      <Filter>model</Filter>
+    </ClCompile>
+    <ClCompile Include="model\RoiConv.cpp">
+      <Filter>model</Filter>
+    </ClCompile>
+    <ClCompile Include="model\ToolCfg.cpp">
+      <Filter>model</Filter>
+    </ClCompile>
+    <ClCompile Include="job\Job.cpp">
+      <Filter>job</Filter>
+    </ClCompile>
+    <ClCompile Include="job\JobCfg.cpp">
+      <Filter>job</Filter>
+    </ClCompile>
+    <ClCompile Include="station\Station.cpp">
+      <Filter>station</Filter>
+    </ClCompile>
+    <ClCompile Include="common\RunLogHub.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="solution\Solution.h">
+      <Filter>solution</Filter>
+    </ClInclude>
+    <ClInclude Include="solution\AppMode.h">
+      <Filter>solution</Filter>
+    </ClInclude>
+    <ClInclude Include="device\HardwareDevice.h">
+      <Filter>device</Filter>
+    </ClInclude>
+    <ClInclude Include="station\StationEnums.h">
+      <Filter>station</Filter>
+    </ClInclude>
+    <ClInclude Include="job\JobEnums.h">
+      <Filter>job</Filter>
+    </ClInclude>
+    <ClInclude Include="tool\ToolEnums.h">
+      <Filter>tool</Filter>
+    </ClInclude>
+    <ClInclude Include="job\JobCfg.h">
+      <Filter>job</Filter>
+    </ClInclude>
+    <ClInclude Include="model\RecipeDraft.h">
+      <Filter>model</Filter>
+    </ClInclude>
+    <ClInclude Include="model\DraftRegistry.h">
+      <Filter>model</Filter>
+    </ClInclude>
+    <ClInclude Include="model\RoiConv.h">
+      <Filter>model</Filter>
+    </ClInclude>
+    <ClInclude Include="job\Job.h">
+      <Filter>job</Filter>
+    </ClInclude>
+    <ClCompile Include="composite\CompositeAccess.cpp">
+      <Filter>composite</Filter>
+    </ClCompile>
+    <ClInclude Include="composite\CompositeDef.h">
+      <Filter>composite</Filter>
+    </ClInclude>
+    <ClInclude Include="station\Station.h">
+      <Filter>station</Filter>
+    </ClInclude>
+    <ClInclude Include="station\StationCfg.h">
+      <Filter>station</Filter>
+    </ClInclude>
+    <ClInclude Include="common\RunListener.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\RunLogHub.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClCompile Include="device\DeviceControl.cpp">
+      <Filter>device</Filter>
+    </ClCompile>
+    <ClInclude Include="device\DeviceControl.h">
+      <Filter>device</Filter>
+    </ClInclude>
+    <ClInclude Include="model\ToolCfg.h">
+      <Filter>tool</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

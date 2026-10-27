@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{E7A1B2C3-4D5E-4F60-8A71-9B0C1D2E3F40}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>HsCommData</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset><LanguageStandard>stdcpp17</LanguageStandard>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset><LanguageStandard>stdcpp17</LanguageStandard>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset><LanguageStandard>stdcpp17</LanguageStandard>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset><LanguageStandard>stdcpp17</LanguageStandard>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings" />
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup>
+    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)obj\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <TargetName>HsCommData</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>HSCOMMDATA_LIB;UNICODE;_UNICODE;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DisableSpecificWarnings>4251;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <MinimalRebuild>false</MinimalRebuild>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+    </ClCompile>
+    <Link>
+      <ImportLibrary>$(OutDir)$(TargetName).lib</ImportLibrary>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
+    <ClCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <Optimization>Disabled</Optimization>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
+    <ClCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="src\GeomOps.cpp" />
+    <ClCompile Include="src\Shape.cpp" />
+    <ClCompile Include="src\MeasureCalib.cpp" />
+    <ClCompile Include="src\Geom3.cpp" />
+    <ClCompile Include="src\Shape3.cpp" />
+    <ClCompile Include="src\HsCloud.cpp" />
+    <ClCompile Include="src\HsMesh.cpp" />
+    <ClCompile Include="src\HsContour3.cpp" />
+    <ClCompile Include="src\Mask.cpp" />
+    <ClCompile Include="src\HsContour.cpp" />
+    <ClCompile Include="src\HsPoly.cpp" />
+    <ClCompile Include="src\HsRegion.cpp" />
+    <ClCompile Include="src\HsImage.cpp" />
+    <ClCompile Include="src\HsObject.cpp" />
+    <ClCompile Include="src\HsObjectIo.cpp" />
+    <ClCompile Include="src\HsTuple.cpp" />
+    <ClCompile Include="src\HsMat.cpp" />
+    <ClCompile Include="src\HsTupleIo.cpp" />
+    <ClCompile Include="src\HsException.cpp" />
+    <ClCompile Include="src\Style.cpp" />
+    <ClCompile Include="src\Markers.cpp" />
+    <ClCompile Include="src\Graphic.cpp" />
+    <ClCompile Include="src\FrameOverlay.cpp" />
+    <ClCompile Include="src\HsSystem.cpp" />
+    <ClCompile Include="src\HsInterface2D.cpp" />
+    <ClCompile Include="src\HsInterface3D.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\HsCommData\HsCommData.h" />
+    <ClInclude Include="include\HsCommData\HsCommDataExport.h" />
+    <ClInclude Include="include\HsCommData\Geom.h" />
+    <ClInclude Include="include\HsCommData\GeomOps.h" />
+    <ClInclude Include="include\HsCommData\Shape.h" />
+    <ClInclude Include="include\HsCommData\MeasureCalib.h" />
+    <ClInclude Include="include\HsCommData\Geom3.h" />
+    <ClInclude Include="include\HsCommData\Shape3.h" />
+    <ClInclude Include="include\HsCommData\HsCloud.h" />
+    <ClInclude Include="include\HsCommData\HsMesh.h" />
+    <ClInclude Include="include\HsCommData\HsContour3.h" />
+    <ClInclude Include="include\HsCommData\HsContour.h" />
+    <ClInclude Include="include\HsCommData\HsPoly.h" />
+    <ClInclude Include="include\HsCommData\HsRegion.h" />
+    <ClInclude Include="include\HsCommData\Mask.h" />
+    <ClInclude Include="include\HsCommData\HsImage.h" />
+    <ClInclude Include="include\HsCommData\HsObject.h" />
+    <ClInclude Include="include\HsCommData\HsTuple.h" />
+    <ClInclude Include="include\HsCommData\HsMat.h" />
+    <ClInclude Include="include\HsCommData\HsTupleOps.h" />
+    <ClInclude Include="include\HsCommData\HsError.h" />
+    <ClInclude Include="include\HsCommData\HsException.h" />
+    <ClInclude Include="include\HsCommData\Color.h" />
+    <ClInclude Include="include\HsCommData\Style.h" />
+    <ClInclude Include="include\HsCommData\HsCross.h" />
+    <ClInclude Include="include\HsCommData\HsArrow.h" />
+    <ClInclude Include="include\HsCommData\HsText.h" />
+    <ClInclude Include="include\HsCommData\Graphic.h" />
+    <ClInclude Include="include\HsCommData\FrameOverlay.h" />
+    <ClInclude Include="include\HsCommData\HsSystem.h" />
+    <ClInclude Include="include\HsCommData\HsConst.h" />
+    <ClInclude Include="include\HsCommData\HsInterface2D.h" />
+    <ClInclude Include="include\HsCommData\HsInterface3D.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+</Project>

@@ -1,0 +1,8 @@
+# HsImage / VisionPlatform 源码为系统 ANSI（中文 Windows = GBK），与 MSVC 无 /utf-8 一致
+root = true
+
+[*.{h,hpp,c,cpp,cc,cxx}]
+charset = gbk
+
+[*.{vcxproj,filters,props,sln,json,md,xml}]
+charset = utf-8

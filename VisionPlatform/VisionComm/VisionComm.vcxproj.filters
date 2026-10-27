@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="hub">
+      <UniqueIdentifier>{D4200001-0000-4000-8000-000000000001}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="base">
+      <UniqueIdentifier>{D4200001-0000-4000-8000-000000000002}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="net">
+      <UniqueIdentifier>{D4200001-0000-4000-8000-000000000003}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="serial">
+      <UniqueIdentifier>{D4200001-0000-4000-8000-000000000004}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="tcp">
+      <UniqueIdentifier>{D4200001-0000-4000-8000-000000000005}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="udp">
+      <UniqueIdentifier>{D4200001-0000-4000-8000-000000000006}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="modbus">
+      <UniqueIdentifier>{D4200001-0000-4000-8000-000000000007}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="types">
+      <UniqueIdentifier>{D4200001-0000-4000-8000-000000000008}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="time">
+      <UniqueIdentifier>{D4200001-0000-4000-8000-000000000009}</UniqueIdentifier>
+    </Filter>
+      <Filter Include="export">
+      <UniqueIdentifier>{A11A1001-0001-4000-8000-0000000000E3}</UniqueIdentifier>
+    </Filter>
+</ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="CommMgr.cpp">
+      <Filter>hub</Filter>
+    </ClCompile>
+    <ClCompile Include="CommTypes.cpp">
+      <Filter>types</Filter>
+    </ClCompile>
+    <ClCompile Include="CommNet.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="SerialChannel.cpp">
+      <Filter>serial</Filter>
+    </ClCompile>
+    <ClCompile Include="TcpChannel.cpp">
+      <Filter>tcp</Filter>
+    </ClCompile>
+    <ClCompile Include="UdpChannel.cpp">
+      <Filter>udp</Filter>
+    </ClCompile>
+    <ClCompile Include="Modbus.cpp">
+      <Filter>modbus</Filter>
+    </ClCompile>
+    <ClCompile Include="StageTimer.cpp">
+      <Filter>time</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="CommMgr.h">
+      <Filter>hub</Filter>
+    </ClInclude>
+    <ClInclude Include="StageTimer.h">
+      <Filter>time</Filter>
+    </ClInclude>
+    <ClInclude Include="CommTypes.h">
+      <Filter>types</Filter>
+    </ClInclude>
+    <ClInclude Include="ICommChannel.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="CommNet.h">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="CommWin.h">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="SerialChannel.h">
+      <Filter>serial</Filter>
+    </ClInclude>
+    <ClInclude Include="TcpChannel.h">
+      <Filter>tcp</Filter>
+    </ClInclude>
+    <ClInclude Include="UdpChannel.h">
+      <Filter>udp</Filter>
+    </ClInclude>
+    <ClInclude Include="Modbus.h">
+      <Filter>modbus</Filter>
+    </ClInclude>
+    <ClInclude Include="VisionCommExport.h">
+      <Filter>export</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

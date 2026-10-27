@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{A7C4E91B-2D3F-4A18-9B6C-8E0F1A2B3C4D}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>HsImageCtrl</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset><LanguageStandard>stdcpp17</LanguageStandard>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset><LanguageStandard>stdcpp17</LanguageStandard>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset><LanguageStandard>stdcpp17</LanguageStandard>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset><LanguageStandard>stdcpp17</LanguageStandard>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings" />
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Condition="'$(Platform)'=='Win32'">
+    <QTDIR Condition="'$(QTDIR)'==''">C:\Qt\Qt5.9.9\5.9.9\msvc2015</QTDIR>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Platform)'=='x64'">
+    <QTDIR Condition="'$(QTDIR)'==''">C:\Qt\Qt5.9.9\5.9.9\msvc2015_64</QTDIR>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OPENCV_DIR Condition="'$(OPENCV_DIR)'==''">C:\opencv\build</OPENCV_DIR>
+    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)obj\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <TargetName>HsImageCtrl</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="Exists('$(OPENCV_DIR)\include\opencv2\core.hpp')">
+    <HAS_OPENCV>true</HAS_OPENCV>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;$(ProjectDir);$(ProjectDir)canvas;$(ProjectDir)display;$(ProjectDir)protocol;$(SolutionDir)HsCommData\include;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtWidgets;$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>HSCTRL_LIB;UNICODE;_UNICODE;WIN32;QT_CORE_LIB;QT_GUI_LIB;QT_WIDGETS_LIB;QT_DEPRECATED_WARNINGS;HSIMAGE_MOC_FROM_INTDIR;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <!-- Align with VisionPlatform: source use system ANSI (Chinese Windows=GBK), no /utf-8 -->
+      <WarningLevel>Level3</WarningLevel>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <MinimalRebuild>false</MinimalRebuild>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <DisableSpecificWarnings>4251;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(QTDIR)\lib;$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ImportLibrary>$(OutDir)HsImageCtrl.lib</ImportLibrary>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <PreBuildEvent>
+      <Command>set "MOC_I1=$(ProjectDir)include" &amp; call "$(SolutionDir)tools\run_moc.bat" "$(ProjectDir)include\HsCtrl\HsImageWindow.h" "$(SolutionDir)obj\$(ProjectName)\$(Platform)\$(Configuration)\moc_HsImageWindow.cpp" "$(QTDIR)\bin\moc.exe" -DHSCTRL_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DUNICODE -D_UNICODE -DWIN32 &amp; call "$(SolutionDir)tools\run_moc.bat" "$(ProjectDir)include\image_widget\image_draw_pad.h" "$(SolutionDir)obj\$(ProjectName)\$(Platform)\$(Configuration)\moc_image_draw_pad.cpp" "$(QTDIR)\bin\moc.exe" -DHSCTRL_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DUNICODE -D_UNICODE -DWIN32 -I"$(SolutionDir)HsCommData\include" &amp; call "$(SolutionDir)tools\run_moc.bat" "$(ProjectDir)include\image_widget\image_widget_api.hpp" "$(SolutionDir)obj\$(ProjectName)\$(Platform)\$(Configuration)\moc_image_widget_api.cpp" "$(QTDIR)\bin\moc.exe" -DHSCTRL_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DUNICODE -D_UNICODE -DWIN32 -I"$(SolutionDir)HsCommData\include"</Command>
+      <Message>MOC HsImageWindow.h</Message>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
+    <ClCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <Optimization>Disabled</Optimization>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>HsCommData.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5Widgetsd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
+    <ClCompile>
+      <PreprocessorDefinitions>NDEBUG;QT_NO_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>HsCommData.lib;Qt5Core.lib;Qt5Gui.lib;Qt5Widgets.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(HAS_OPENCV)'=='true'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(OPENCV_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>HSIMAGE_HAS_OPENCV;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(OPENCV_DIR)\x64\vc14\lib;$(OPENCV_DIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies Condition="'$(Configuration)'=='Debug'">$(OPENCV_LIB_DEBUG);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies Condition="'$(Configuration)'!='Debug'">$(OPENCV_LIB);%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="canvas\Viewport.cpp" />
+    <ClCompile Include="canvas\OverlayRender.cpp" />
+    <ClCompile Include="display\ImageLayer.cpp" />
+    <ClCompile Include="display\StackLayer.cpp" />
+    <ClCompile Include="display\DrawingLayer.cpp" />
+    <ClCompile Include="display\MeasureLayer.cpp" />
+    <ClCompile Include="display\ForegroundLayer.cpp" />
+    <ClCompile Include="display\ImageItem.cpp" />
+    <ClCompile Include="display\GraphicItem.cpp" />
+    <ClCompile Include="display\RegionDisplay.cpp" />
+    <ClCompile Include="display\FrameConvert.cpp" />
+    <ClCompile Include="display\HsImageWindowMenu.cpp" />
+    <ClCompile Include="display\HsImageWindow.cpp" />
+    <ClCompile Include="shell\image_widget_api.cpp" />
+    <ClCompile Include="shell\image_draw_pad.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\HsCtrl\HsImgCtrlExport.h" />
+    <ClInclude Include="include\HsCtrl\HsImageCtrl.h" />
+    <ClInclude Include="display\HsImageWindowMenu.h" />
+    <ClInclude Include="include\HsCtrl\HsImageWindow.h" />
+    <ClInclude Include="include\HsCtrl\HsImageWindowTypes.h" />
+    <ClInclude Include="include\image_widget\image_widget_api.hpp" />
+    <ClInclude Include="include\image_widget\image_draw_pad.h" />
+    <ClInclude Include="display\FrameConvert.h" />
+    <ClInclude Include="include\HsCtrl\canvas\Viewport.h" />
+    <ClInclude Include="include\HsCtrl\canvas\OverlayRender.h" />
+    <ClInclude Include="protocol\InvalidateScope.h" />
+    <ClInclude Include="display\RegionDisplay.h" />
+    <ClInclude Include="display\QtGeom.h" />
+    <ClInclude Include="display\ImageLayer.h" />
+    <ClInclude Include="display\StackLayer.h" />
+    <ClInclude Include="display\DrawingLayer.h" />
+    <ClInclude Include="display\MeasureLayer.h" />
+    <ClInclude Include="display\ForegroundLayer.h" />
+    <ClInclude Include="display\ImageItem.h" />
+    <ClInclude Include="display\LayerItem.h" />
+    <ClInclude Include="display\GraphicItem.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\HsCommData\HsCommData.vcxproj">
+      <Project>{E7A1B2C3-4D5E-4F60-8A71-9B0C1D2E3F40}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+</Project>

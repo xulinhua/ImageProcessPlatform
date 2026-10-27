@@ -1,0 +1,91 @@
+#include "LoginDialog.h"
+#include "QtConv.h"
+#include "Session.h"
+#include "VisionConfigMgr.h"
+#include "Theme.h"
+#include "UiText.h"
+#include <QDialogButtonBox>
+#include <QFormLayout>
+#include <QLabel>
+#include <QLineEdit>
+#include <QMessageBox>
+#include <QPushButton>
+#include <QVBoxLayout>
+
+namespace Vision {
+
+// 登录对话框：预填上次用户名，失败次数显示在错误标签
+LoginDialog::LoginDialog(Session* session, QWidget* parent)
+    : QDialog(parent)
+    , m_session(session)
+    , m_fails(0)
+{
+    setWindowTitle(T("用户登录"));
+    setModal(true);
+    resize(400, 220);
+
+    QLabel* hint = new QLabel(T("启动已自动进入管理员。注销后在此切换账户。"), this);
+    hint->setWordWrap(true);
+    hint->setObjectName(QLatin1String("hint"));
+
+    m_user = new QLineEdit(this);
+    m_pwd = new QLineEdit(this);
+    m_pwd->setEchoMode(QLineEdit::Password);
+    const std::string last = session->settings().lastLoginName;
+    m_user->setText(last.empty() ? QLatin1String("engineer") : qs(last));
+
+    m_err = new QLabel(this);
+    m_err->setWordWrap(true);
+    m_err->setStyleSheet(QLatin1String("color:#FF4D4F;"));
+
+    QFormLayout* form = new QFormLayout();
+    form->addRow(T("登录名"), m_user);
+    form->addRow(T("口令"), m_pwd);
+
+    QDialogButtonBox* box = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, this);
+    box->button(QDialogButtonBox::Ok)->setText(T("登录"));
+    box->button(QDialogButtonBox::Cancel)->setText(T("退出"));
+    setButtonRole(box->button(QDialogButtonBox::Ok), "primary");
+    connect(box, SIGNAL(accepted()), this, SLOT(onOk()));
+    connect(box, SIGNAL(rejected()), this, SLOT(reject()));
+
+    QVBoxLayout* root = new QVBoxLayout(this);
+    prependFramelessTitleBar(this, root, windowTitle());
+    QVBoxLayout* lay = framelessDialogContentLayout(this, root);
+    lay->addWidget(hint);
+    lay->addLayout(form);
+    lay->addWidget(m_err);
+    lay->addWidget(box);
+
+    if (last.empty()) {
+        m_user->setFocus();
+    } else {
+        m_pwd->setFocus();
+    }
+}
+
+// 当前输入的登录名
+QString LoginDialog::loginName() const
+{
+    return m_user->text().trimmed();
+}
+
+// 校验口令（可为空）、记住上次登录名
+void LoginDialog::onOk()
+{
+    std::string err;
+    if (!m_session->login(ss(m_user->text().trimmed()), ss(m_pwd->text()), &err)) {
+        ++m_fails;
+        m_err->setText(qs(err) + T("（已失败 ") + QString::number(m_fails) + T(" 次）"));
+        m_pwd->selectAll();
+        m_pwd->setFocus();
+        return;
+    }
+    m_session->settings().lastLoginName = ss(m_user->text().trimmed().toLower());
+    VisionConfigMgr::saveSettings(m_session->settings());
+    accept();
+}
+
+}
+
+#include "moc_LoginDialog.cpp"

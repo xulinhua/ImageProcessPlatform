@@ -1,0 +1,111 @@
+﻿src\HsTuple.cpp:111|// 一??32 位整数，??64 位，避免和浮点构造二?
+src\HsTuple.cpp:541|// ??0 ??32 位整?
+src\HsTuple.cpp:547|// ??index ??32 位整数。类型不符、越界或超出
+src\HsTuple.cpp:561|// ??0 个整??int64_t
+src\HsTuple.cpp:567|// ??index 个整数。类型不符或越界抛异??int64_t
+src\HsTuple.cpp:578|// ??0 个浮?
+src\HsTuple.cpp:584|// ??index 个浮点。类型不符或越界抛异?
+src\HsTuple.cpp:595|// ??0 个字符串
+src\HsTuple.cpp:601|// ??index 个字符串。类型不符或越界抛异??std::string
+src\HsTuple.cpp:612|// ??0 个字符串指针
+src\HsTuple.cpp:618|// ??index 个字符串指针。类型不符或越界抛异??const char*
+src\HsTuple.cpp:678|// 一格的比较??1/0/1 为小于、相等、大于??2 表示数字和字符串不能比，或出??NaN
+src\HsTuple.cpp:719|// 字典序。前缀相同则更短的更小。不可比??*bad ??true
+src\HsTuple.cpp:761|// 结果长度。任一为空??*empty。两边都不是 1 且长度不同则抛类型错?
+src\HsTuple.cpp:778|// 一边长度为 1 时固定取??0 ?
+src\HsTuple.cpp:1128|// 负下标收??[0, length())
+src\HsTuple.cpp:1188|// 把第 index 格追??out
+display\HsImageWindow.cpp:70|StateDraw,       ///< 拉皮??ROI
+display\HsImageWindow.cpp:127|static const int kInspectMaxCells = 1600;    ///< ??见格数上??
+display\HsImageWindow.cpp:132|static const qreal kZoomInFactor = 1.25;  ///< 放大，与滚轮一臀
+display\HsImageWindow.cpp:133|static const qreal kZoomOutFactor = 0.8;  ///< 缩小，与滚轮一臀
+display\HsImageWindow.cpp:206|// 格子文字色：??底深字、暗底浅??
+display\HsImageWindow.cpp:294|// 拖手柄改几何，pos 为图像坐??
+display\HsImageWindow.cpp:428|Viewport vp; ///< ??见矩??与缩??
+display\HsImageWindow.cpp:434|int activeHandle; ///< 手柄下标，kHandleBody 表示拖本??
+display\HsImageWindow.cpp:439|QVector<QPointF> polyPts; ///< 折线/多边形已??
+display\HsImageWindow.cpp:445|bool stackVisible; ///< Stack ??
+display\HsImageWindow.cpp:446|bool drawingVisible; ///< Drawing ??
+display\HsImageWindow.cpp:456|bool cursorValid; ///< 取样??否有??
+display\HsImageWindow.cpp:461|QWidget* overlayBar;           ///< ??动工具条（截屏不包含??
+display\HsImageWindow.cpp:468|ImageRefreshPolicy imageRefresh; ///< 换底图时??否渀Stack / ROI / 文字
+display\HsImageWindow.cpp:476|bool sessionDraft; ///< 模态形状已松开，尚??右键结束。仍??拖手??
+display\HsImageWindow.cpp:477|bool crosshairOn; ///< 模态形状会话里画贯穿窗口的十字??
+display\HsImageWindow.cpp:478|double brushRadius; ///< 画笔半径，图像像素，一位小??
+display\HsImageWindow.cpp:482|bool brushStroke; ///< 正在涂或??
+display\HsImageWindow.cpp:542|// 超大 scene，避??QGraphicsView ??item 包围盒自动居??，打?? part 平移??        scene.setSceneRect(QRectF(-1.0e7, -1.0e7, 2.0e7, 2.0e7));
+display\HsImageWindow.cpp:779|* @brief 按策略删 Drawing。几??ROI 一HsCommData::KindText 分开，避免勾退ROI 技T 工具文字清掉
+display\HsImageWindow.cpp:852|text = QString::fromLocal8Bit("X:%1  Y:%2\n倀灰??): %3")
+display\HsImageWindow.cpp:981|// 从场??删陀Drawing Item
+display\HsImageWindow.cpp:1056|// 命中容差（约 8 屏幕像素??图像??
+display\HsImageWindow.cpp:1063|// 当前视口??
+display\HsImageWindow.cpp:1146|// ??停时光标形??
+display\HsImageWindow.cpp:1336|// 取消橡皮筋，??选回到浏览工兀
+display\HsImageWindow.cpp:1353|// 多边形闭合为 HsCommData::HsRegion 并提??
+display\HsImageWindow.cpp:2059|// ??setImage
+display\HsImageWindow.cpp:2096|// 解码 JPEG/PNG 等压缩数??并显??
+display\HsImageWindow.cpp:2145|// ??否有底??
+display\HsImageWindow.cpp:2157|// ??currentImageSize
+display\HsImageWindow.cpp:2194|// 追加圆到 Stack（协??类型??
+display\HsImageWindow.cpp:2203|// 追加??圆刀Stack
+display\HsImageWindow.cpp:2216|// 追加??圆刀Stack（协??类型??
+display\HsImageWindow.cpp:2267|// 追加旋转矩形刀Stack（协??类型??
+display\HsImageWindow.cpp:2366|// 由条??列表构??
+display\HsImageWindow.cpp:2394|// ??clearWindow
+display\HsImageWindow.cpp:2406|// Stack ?关是否打??
+display\HsImageWindow.cpp:2412|// ??I Drawing 局ROI
+display\HsImageWindow.cpp:2536|// 底图??否可??
+display\HsImageWindow.cpp:2926|// HUD ??否可??
+display\HsImageWindow.cpp:2932|// 信息条文??
+display\HsImageWindow.cpp:2939|// 当前信息条文??
+display\HsImageWindow.cpp:2966|// ??否标记为实??
+display\HsImageWindow.cpp:2979|// Stack ?关是否打??
+display\HsImageWindow.cpp:2994|// Drawing ?关是否打??
+display\HsImageWindow.cpp:3046|// 叠加文字（虧I该坐标系下全部条??
+display\HsImageWindow.cpp:3159|// ??动工具条显??
+display\HsImageWindow.cpp:3190|// 工具按钮垂直或水平排??
+display\HsImageWindow.cpp:3213|// 在工具条??尾插入控??
+display\HsImageWindow.cpp:3251|// ??定义色：Custom ??充或棋盘格浅??
+display\HsImageWindow.cpp:3260|// 当前??定义??
+display\HsImageWindow.cpp:3301|// 视口背景：屏幕坐标纯色或棋盘??
+display\HsImageWindow.cpp:3435|// 窗口尺椿Y??蓖瑲Lpart 宽高??
+display\HsImageWindow.cpp:3469|// 滚轮以光标为锚缩??
+display\HsImageWindow.cpp:3762|// 松开：提漺ROI 或结束平??
+display\HsImageWindow.cpp:3817|// 松开??结束拖拽。右??、Enter 或「确定」才提交
+display\HsImageWindow.cpp:3871|// Esc 取消；Enter ??合折??/多边?
+display\HsImageWindow.cpp:3963|// 右键菜单：快??/ 原图 / 缩放 / 工具条停靠；折线绘制??右键用于??合，不弹菜单
+display\HsImageWindow.cpp:3987|QAction* zoomOutAct = menu.addAction(QString::fromLocal8Bit("??С"));
+display\HsImageWindow.cpp:4007|QAction* orientH = orientMenu->addAction(QString::fromLocal8Bit("??"));
+MainWindow.cpp:41|// 源码为系??ANSI/GBK：窄字面量用本地代码页转 QString（与平台 HsImageLib 一致）
+MainWindow.cpp:67|// pixmap 包装为图??
+MainWindow.cpp:103|// 圆工具图??
+MainWindow.cpp:116|// 轴对齐矩形图??
+MainWindow.cpp:184|// 多边??HsRegion 图标
+MainWindow.cpp:299|// kind 显示??
+MainWindow.cpp:329|// 组装界脹g加载演示??
+MainWindow.cpp:420|// 先释放对外控件，避免??Qt 子控件析构顺序冲??
+MainWindow.cpp:430|// 浅色壳样??
+MainWindow.cpp:458|// 左侧工具条按??
+MainWindow.cpp:1060|// 更新工具栏说明文??
+MainWindow.cpp:1083|// 把左侧画笔写到窗??
+MainWindow.cpp:1100|// ??Demo 持有??QImage 交给对外??
+MainWindow.cpp:1136|// 打开文件夹，加载第一??
+MainWindow.cpp:1154|// 文件夹上一张（循环??
+MainWindow.cpp:1165|// 文件夹下一张（循环??
+MainWindow.cpp:1176|// 解码文件为底图；换图走窗口刷新策??
+MainWindow.cpp:1276|// 写入一组示??Stack 图元（常用形状走 disp*，客户不必传 frameId??
+MainWindow.cpp:1381|// 模拟实时??Overlay
+MainWindow.cpp:1469|// 画笔线宽??
+MainWindow.cpp:1475|// 预奢H笔颜??
+MainWindow.cpp:1490|// 自定覐^笔颜??
+MainWindow.cpp:1508|// 底图层显??
+MainWindow.cpp:1514|// Stack 层显??
+MainWindow.cpp:1520|// Drawing 层显??
+MainWindow.cpp:1538|// 浮动工具条显??
+MainWindow.cpp:1561|// 工具条皮??
+MainWindow.cpp:1801|// 把文本面板同步到窗口工具状??
+MainWindow.cpp:1812|// 文本工具点下，回填坐??
+MainWindow.cpp:1829|// 把右侧文??坐标放到窗口
+MainWindow.cpp:1950|// 阈值滑条眮２⑺??Overlay
+MainWindow.cpp:1968|// 压力测试：定时反复刷阈??
+MainWindow.cpp:2106|// ?叠色自定??

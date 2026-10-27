@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="session">
+      <UniqueIdentifier>{D4050001-0000-4000-8000-000000000001}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="user">
+      <UniqueIdentifier>{D4050001-0000-4000-8000-000000000002}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="audit">
+      <UniqueIdentifier>{D4050001-0000-4000-8000-000000000003}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="permission">
+      <UniqueIdentifier>{D4050001-0000-4000-8000-000000000004}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="crypto">
+      <UniqueIdentifier>{D4050001-0000-4000-8000-000000000005}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="db">
+      <UniqueIdentifier>{D4050001-0000-4000-8000-000000000006}</UniqueIdentifier>
+    </Filter>
+      <Filter Include="export">
+      <UniqueIdentifier>{A11A1001-0001-4000-8000-0000000000E1}</UniqueIdentifier>
+    </Filter>
+</ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="session\Session.cpp">
+      <Filter>session</Filter>
+    </ClCompile>
+    <ClCompile Include="user\AuthMgr.cpp">
+      <Filter>user</Filter>
+    </ClCompile>
+    <ClCompile Include="user\AppSettings.cpp">
+      <Filter>user</Filter>
+    </ClCompile>
+    <ClCompile Include="user\PermMgr.cpp">
+      <Filter>permission</Filter>
+    </ClCompile>
+    <ClCompile Include="user\Perm.cpp">
+      <Filter>permission</Filter>
+    </ClCompile>
+    <ClCompile Include="user\Sha256.cpp">
+      <Filter>crypto</Filter>
+    </ClCompile>
+    <ClCompile Include="user\Pbkdf2.cpp">
+      <Filter>crypto</Filter>
+    </ClCompile>
+    <ClCompile Include="user\AuthDb.cpp">
+      <Filter>db</Filter>
+    </ClCompile>
+    <ClCompile Include="audit\AuditLog.cpp">
+      <Filter>audit</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="session\Session.h">
+      <Filter>session</Filter>
+    </ClInclude>
+    <ClInclude Include="user\AuthMgr.h">
+      <Filter>user</Filter>
+    </ClInclude>
+    <ClInclude Include="user\AppSettings.h">
+      <Filter>user</Filter>
+    </ClInclude>
+    <ClInclude Include="user\Perm.h">
+      <Filter>permission</Filter>
+    </ClInclude>
+    <ClInclude Include="user\PermMgr.h">
+      <Filter>permission</Filter>
+    </ClInclude>
+    <ClInclude Include="user\Sha256.h">
+      <Filter>crypto</Filter>
+    </ClInclude>
+    <ClInclude Include="user\Pbkdf2.h">
+      <Filter>crypto</Filter>
+    </ClInclude>
+    <ClInclude Include="user\AuthDb.h">
+      <Filter>db</Filter>
+    </ClInclude>
+    <ClInclude Include="audit\AuditLog.h">
+      <Filter>audit</Filter>
+    </ClInclude>
+    <ClInclude Include="VisionAuthExport.h">
+      <Filter>export</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

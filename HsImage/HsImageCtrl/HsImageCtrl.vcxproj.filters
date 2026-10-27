@@ -1,0 +1,162 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="导出">
+      <UniqueIdentifier>{A8B1C2D3-4E5F-4060-8172-9A0B1C2D3E41}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="接口">
+      <UniqueIdentifier>{C4A1E8B2-7D63-4F1A-9E20-1B6A0D5C8F11}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="窗口">
+      <UniqueIdentifier>{D5B2F9C3-8E74-4A2B-8F31-2C7B1E6D9A22}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="画布">
+      <UniqueIdentifier>{E6C30AD4-9F85-4B3C-9042-3D8C2F7E0B33}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="显示">
+      <UniqueIdentifier>{F7D41BE5-A096-4C4D-A153-4E9D308F1C44}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="显示\图元">
+      <UniqueIdentifier>{A8B1C2D3-4E5F-4060-8172-9A0B1C2D3E43}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="显示\区域">
+      <UniqueIdentifier>{A8B1C2D3-4E5F-4060-8172-9A0B1C2D3E44}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="显示\转换">
+      <UniqueIdentifier>{A8B1C2D3-4E5F-4060-8172-9A0B1C2D3E45}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="协议">
+      <UniqueIdentifier>{A8B1C2D3-4E5F-4060-8172-9A0B1C2D3E42}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="shell\image_widget_api.cpp">
+      <Filter>接口</Filter>
+    </ClCompile>
+    <ClCompile Include="shell\image_draw_pad.cpp">
+      <Filter>接口</Filter>
+    </ClCompile>
+        <ClCompile Include="display\HsImageWindowMenu.cpp">
+      <Filter>窗口</Filter>
+    </ClCompile>
+<ClCompile Include="display\HsImageWindow.cpp">
+      <Filter>窗口</Filter>
+    </ClCompile>
+    <ClCompile Include="canvas\Viewport.cpp">
+      <Filter>画布</Filter>
+    </ClCompile>
+    <ClCompile Include="canvas\OverlayRender.cpp">
+      <Filter>画布</Filter>
+    </ClCompile>
+        <ClCompile Include="display\ImageLayer.cpp">
+      <Filter>显示\图层\底图</Filter>
+    </ClCompile>
+    <ClCompile Include="display\StackLayer.cpp">
+      <Filter>显示\图层\叠层</Filter>
+    </ClCompile>
+    <ClCompile Include="display\DrawingLayer.cpp">
+      <Filter>显示\图层\绘制</Filter>
+    </ClCompile>
+    <ClCompile Include="display\MeasureLayer.cpp">
+      <Filter>显示\图层\测量</Filter>
+    </ClCompile>
+    <ClCompile Include="display\ForegroundLayer.cpp">
+      <Filter>显示\图层\前景</Filter>
+    </ClCompile>
+<ClCompile Include="display\ImageItem.cpp">
+      <Filter>显示\图元</Filter>
+    </ClCompile>
+    <ClCompile Include="display\GraphicItem.cpp">
+      <Filter>显示\图元</Filter>
+    </ClCompile>
+    <ClCompile Include="display\RegionDisplay.cpp">
+      <Filter>显示\区域</Filter>
+    </ClCompile>
+    <ClCompile Include="display\FrameConvert.cpp">
+      <Filter>显示\转换</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\HsCtrl\HsImageCtrl.h">
+      <Filter>导出</Filter>
+    </ClInclude>
+    <ClInclude Include="include\HsCtrl\HsImgCtrlExport.h">
+      <Filter>导出</Filter>
+    </ClInclude>
+    <ClInclude Include="include\image_widget\image_widget_api.hpp">
+      <Filter>接口</Filter>
+    </ClInclude>
+    <ClInclude Include="include\image_widget\image_draw_pad.h">
+      <Filter>接口</Filter>
+    </ClInclude>
+        <ClInclude Include="display\HsImageWindowMenu.h">
+      <Filter>窗口</Filter>
+    </ClInclude>
+<ClInclude Include="include\HsCtrl\HsImageWindow.h">
+      <Filter>窗口</Filter>
+    </ClInclude>
+    <ClInclude Include="include\HsCtrl\HsImageWindowTypes.h">
+      <Filter>窗口</Filter>
+    </ClInclude>
+    <ClInclude Include="include\HsCtrl\canvas\Viewport.h">
+      <Filter>画布</Filter>
+    </ClInclude>
+    <ClInclude Include="include\HsCtrl\canvas\OverlayRender.h">
+      <Filter>画布</Filter>
+    </ClInclude>
+        <ClInclude Include="display\ImageLayer.h">
+      <Filter>显示\图层\底图</Filter>
+    </ClInclude>
+    <ClInclude Include="display\StackLayer.h">
+      <Filter>显示\图层\叠层</Filter>
+    </ClInclude>
+    <ClInclude Include="display\DrawingLayer.h">
+      <Filter>显示\图层\绘制</Filter>
+    </ClInclude>
+    <ClInclude Include="display\MeasureLayer.h">
+      <Filter>显示\图层\测量</Filter>
+    </ClInclude>
+    <ClInclude Include="display\ForegroundLayer.h">
+      <Filter>显示\图层\前景</Filter>
+    </ClInclude>
+<ClInclude Include="display\ImageItem.h">
+      <Filter>显示\图元</Filter>
+    </ClInclude>
+    <ClInclude Include="display\GraphicItem.h">
+      <Filter>显示\图元</Filter>
+    </ClInclude>
+    <ClInclude Include="display\LayerItem.h">
+      <Filter>显示\图元</Filter>
+    </ClInclude>
+    <ClInclude Include="display\RegionDisplay.h">
+      <Filter>显示\区域</Filter>
+    </ClInclude>
+    <ClInclude Include="display\FrameConvert.h">
+      <Filter>显示\转换</Filter>
+    </ClInclude>
+    <ClInclude Include="display\QtGeom.h">
+      <Filter>显示\转换</Filter>
+    </ClInclude>
+    <ClInclude Include="protocol\InvalidateScope.h">
+      <Filter>协议</Filter>
+    </ClInclude>
+      <Filter Include="显示\图层">
+      <UniqueIdentifier>{B1A10001-0001-4000-8000-000000000011}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="显示\图层\底图">
+      <UniqueIdentifier>{B1A10001-0001-4000-8000-000000000012}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="显示\图层\叠层">
+      <UniqueIdentifier>{B1A10001-0001-4000-8000-000000000013}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="显示\图层\绘制">
+      <UniqueIdentifier>{B1A10001-0001-4000-8000-000000000014}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="显示\图层\测量">
+      <UniqueIdentifier>{B1A10001-0001-4000-8000-000000000015}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="显示\图层\前景">
+      <UniqueIdentifier>{B1A10001-0001-4000-8000-000000000016}</UniqueIdentifier>
+    </Filter>
+</ItemGroup>
+</Project>

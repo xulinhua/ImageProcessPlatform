@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{B4E91A10-7C22-4F18-9A01-A0B1C2D3E414}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>VisionCore</RootNamespace>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset><LanguageStandard>stdcpp17</LanguageStandard>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset><LanguageStandard>stdcpp17</LanguageStandard>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset><LanguageStandard>stdcpp17</LanguageStandard>
+    <CharacterSet>Unicode</CharacterSet>
+    <UseOfMfc>false</UseOfMfc>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset><LanguageStandard>stdcpp17</LanguageStandard>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings" />
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\vision.props" />
+  </ImportGroup>
+  <PropertyGroup>
+    <TargetName>VisionCore</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <PreprocessorDefinitions>VISIONCORE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>VisionToolBase.lib;VisionAlgToolBase.lib;VisionCommon.lib;VisionComm.lib;VisionLang.lib;VisionLog.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="solution\Solution.cpp" />
+    <ClCompile Include="station\StationEnums.cpp" />
+    <ClCompile Include="job\JobEnums.cpp" />
+    <ClCompile Include="model\RecipeDraft.cpp" />
+    <ClCompile Include="model\DraftRegistry.cpp" />
+    <ClCompile Include="model\RoiConv.cpp" />
+    <ClCompile Include="model\ToolCfg.cpp" />
+    <ClCompile Include="common\RunLogHub.cpp" />
+    <ClCompile Include="job\Job.cpp" />
+    <ClCompile Include="job\JobCfg.cpp" />
+    <ClCompile Include="composite\CompositeAccess.cpp" />
+    <ClCompile Include="station\Station.cpp" />
+    <ClCompile Include="device\DeviceControl.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="solution\Solution.h" />
+    <ClInclude Include="device\HardwareDevice.h" />
+    <ClInclude Include="solution\AppMode.h" />
+    <ClInclude Include="station\StationEnums.h" />
+    <ClInclude Include="device\DeviceControl.h" />
+    <ClInclude Include="job\JobEnums.h" />
+    <ClInclude Include="tool\ToolEnums.h" />
+    <ClInclude Include="model\ToolCfg.h" />
+    <ClInclude Include="job\JobCfg.h" />
+    <ClInclude Include="model\RecipeDraft.h" />
+    <ClInclude Include="model\DraftRegistry.h" />
+    <ClInclude Include="model\RoiConv.h" />
+    <ClInclude Include="job\Job.h" />
+    <ClInclude Include="station\Station.h" />
+    <ClInclude Include="station\StationCfg.h" />
+    <ClInclude Include="common\RunListener.h" />
+    <ClInclude Include="common\RunLogHub.h" />
+    <ClInclude Include="composite\CompositeDef.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\VisionCommon\VisionCommon.vcxproj">
+      <Project>{B4E91A10-7C22-4F18-9A01-A0B1C2D3E402}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\VisionComm\VisionComm.vcxproj">
+      <Project>{B4E91A10-7C22-4F18-9A01-A0B1C2D3E420}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\VisionLog\VisionLog.vcxproj">
+      <Project>{B4E91A10-7C22-4F18-9A01-A0B1C2D3E40B}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\VisionLang\VisionLang.vcxproj">
+      <Project>{B4E91A10-7C22-4F18-9A01-A0B1C2D3E40C}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\VisionToolBase\VisionToolBase.vcxproj">
+      <Project>{B4E91A10-7C22-4F18-9A01-A0B1C2D3E440}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+</Project>

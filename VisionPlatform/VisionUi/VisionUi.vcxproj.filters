@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <!-- 顶层：与磁盘目录对齐 -->
+    <Filter Include="main">
+      <UniqueIdentifier>{D4090001-0000-4000-8000-000000000001}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="main\shell">
+      <UniqueIdentifier>{D4090001-0000-4000-8000-000000000011}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="main\bind">
+      <UniqueIdentifier>{D4090001-0000-4000-8000-000000000012}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="main\util">
+      <UniqueIdentifier>{D4090001-0000-4000-8000-000000000013}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="workspace">
+      <UniqueIdentifier>{D4090001-0000-4000-8000-000000000002}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="workspace\pages">
+      <UniqueIdentifier>{D4090001-0000-4000-8000-000000000021}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="workspace\canvas">
+      <UniqueIdentifier>{D4090001-0000-4000-8000-000000000022}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="workspace\tools">
+      <UniqueIdentifier>{D4090001-0000-4000-8000-000000000023}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="workspace\icons">
+      <UniqueIdentifier>{D4090001-0000-4000-8000-000000000024}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="dialog">
+      <UniqueIdentifier>{D4090001-0000-4000-8000-000000000003}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="dialog\station">
+      <UniqueIdentifier>{D4090001-0000-4000-8000-000000000031}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="dialog\device">
+      <UniqueIdentifier>{D4090001-0000-4000-8000-000000000032}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="dialog\comm">
+      <UniqueIdentifier>{D4090001-0000-4000-8000-000000000033}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="dialog\job">
+      <UniqueIdentifier>{D4090001-0000-4000-8000-000000000034}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="dialog\auth">
+      <UniqueIdentifier>{D4090001-0000-4000-8000-000000000035}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="dialog\system">
+      <UniqueIdentifier>{D4090001-0000-4000-8000-000000000036}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="dialog\view">
+      <UniqueIdentifier>{D4090001-0000-4000-8000-000000000037}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="runtime">
+      <UniqueIdentifier>{D4090001-0000-4000-8000-000000000004}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <!-- main\shell：主窗 -->
+    <ClCompile Include="main\MainWindow.cpp">
+      <Filter>main\shell</Filter>
+    </ClCompile>
+    <!-- main\bind：控件权限绑定 -->
+    <ClCompile Include="main\WidgetPermBinder.cpp">
+      <Filter>main\bind</Filter>
+    </ClCompile>
+    <ClCompile Include="main\QtConv.cpp">
+      <Filter>main\bind</Filter>
+    </ClCompile>
+    <!-- main\util：主窗附属工具 -->
+    <ClCompile Include="main\VisionLogRunSink.cpp">
+      <Filter>main\util</Filter>
+    </ClCompile>
+    <!-- workspace\pages：设计 / 运行 / 复检页 -->
+    <ClCompile Include="workspace\DesignWorkspace.cpp">
+      <Filter>workspace\pages</Filter>
+    </ClCompile>
+    <ClCompile Include="workspace\RuntimeWorkspace.cpp">
+      <Filter>workspace\pages</Filter>
+    </ClCompile>
+    <ClCompile Include="workspace\RecheckWorkspace.cpp">
+      <Filter>workspace\pages</Filter>
+    </ClCompile>
+    <ClCompile Include="workspace\StationRuntimePanel.cpp">
+      <Filter>workspace\pages</Filter>
+    </ClCompile>
+    <!-- workspace\canvas：流程画布 -->
+    <ClCompile Include="workspace\JobCanvas.cpp">
+      <Filter>workspace\canvas</Filter>
+    </ClCompile>
+    <ClCompile Include="workspace\JobFlowCanvasPanel.cpp">
+      <Filter>workspace\canvas</Filter>
+    </ClCompile>
+    <!-- workspace\tools：工具库与树图标 -->
+    <ClCompile Include="workspace\ToolLibrary.cpp">
+      <Filter>workspace\tools</Filter>
+    </ClCompile>
+    <ClCompile Include="workspace\ToolTreeIcons.cpp">
+      <Filter>workspace\tools</Filter>
+    </ClCompile>
+    <!-- workspace\icons：图标资源加载 -->
+    <ClCompile Include="workspace\IconAssets.cpp">
+      <Filter>workspace\icons</Filter>
+    </ClCompile>
+    <ClCompile Include="workspace\UiIcons.cpp">
+      <Filter>workspace\icons</Filter>
+    </ClCompile>
+    <!-- dialog\station -->
+    <ClCompile Include="dialog\StationMgrDlg.cpp">
+      <Filter>dialog\station</Filter>
+    </ClCompile>
+    <ClCompile Include="dialog\StationDlg.cpp">
+      <Filter>dialog\station</Filter>
+    </ClCompile>
+    <!-- dialog\device -->
+    <ClCompile Include="dialog\DeviceMgrDlg.cpp">
+      <Filter>dialog\device</Filter>
+    </ClCompile>
+    <ClCompile Include="dialog\DeviceDlg.cpp">
+      <Filter>dialog\device</Filter>
+    </ClCompile>
+    <!-- dialog\comm -->
+    <ClCompile Include="dialog\CommMgrDlg.cpp">
+      <Filter>dialog\comm</Filter>
+    </ClCompile>
+    <!-- dialog\job：流程编辑与结果规则 -->
+    <ClCompile Include="dialog\JobDlg.cpp">
+      <Filter>dialog\job</Filter>
+    </ClCompile>
+    <ClCompile Include="dialog\JobRstRulePanel.cpp">
+      <Filter>dialog\job</Filter>
+    </ClCompile>
+    <ClCompile Include="dialog\JobRstRuleDlg.cpp">
+      <Filter>dialog\job</Filter>
+    </ClCompile>
+    <!-- dialog\auth：登录 / 用户 / 权限 -->
+    <ClCompile Include="dialog\LoginDlg.cpp">
+      <Filter>dialog\auth</Filter>
+    </ClCompile>
+    <ClCompile Include="dialog\ChangePwdDlg.cpp">
+      <Filter>dialog\auth</Filter>
+    </ClCompile>
+    <ClCompile Include="dialog\UserMgrDlg.cpp">
+      <Filter>dialog\auth</Filter>
+    </ClCompile>
+    <ClCompile Include="dialog\UserEditDlg.cpp">
+      <Filter>dialog\auth</Filter>
+    </ClCompile>
+    <ClCompile Include="dialog\PermDlg.cpp">
+      <Filter>dialog\auth</Filter>
+    </ClCompile>
+    <!-- dialog\system：设置 / 日志 / 关于 -->
+    <ClCompile Include="dialog\SettingsDlg.cpp">
+      <Filter>dialog\system</Filter>
+    </ClCompile>
+    <ClCompile Include="dialog\LogDlg.cpp">
+      <Filter>dialog\system</Filter>
+    </ClCompile>
+    <ClCompile Include="dialog\AboutDlg.cpp">
+      <Filter>dialog\system</Filter>
+    </ClCompile>
+    <ClCompile Include="dialog\VersionDlg.cpp">
+      <Filter>dialog\system</Filter>
+    </ClCompile>
+    <!-- dialog\view：运行画面配置 -->
+    <ClCompile Include="dialog\RuntimeViewDlg.cpp">
+      <Filter>dialog\view</Filter>
+    </ClCompile>
+    <!-- runtime：工站循环线程 -->
+    <ClCompile Include="runtime\StationLoop.cpp">
+      <Filter>runtime</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="main\MainWindow.h">
+      <Filter>main\shell</Filter>
+    </ClInclude>
+    <ClInclude Include="main\WidgetPermBinder.h">
+      <Filter>main\bind</Filter>
+    </ClInclude>
+    <ClInclude Include="main\VisionLogRunSink.h">
+      <Filter>main\util</Filter>
+    </ClInclude>
+    <ClInclude Include="main\QtConv.h">
+      <Filter>main\util</Filter>
+    </ClInclude>
+    <ClInclude Include="workspace\DesignWorkspace.h">
+      <Filter>workspace\pages</Filter>
+    </ClInclude>
+    <ClInclude Include="workspace\RuntimeWorkspace.h">
+      <Filter>workspace\pages</Filter>
+    </ClInclude>
+    <ClInclude Include="workspace\RecheckWorkspace.h">
+      <Filter>workspace\pages</Filter>
+    </ClInclude>
+    <ClInclude Include="workspace\StationRuntimePanel.h">
+      <Filter>workspace\pages</Filter>
+    </ClInclude>
+    <ClInclude Include="workspace\JobCanvas.h">
+      <Filter>workspace\canvas</Filter>
+    </ClInclude>
+    <ClInclude Include="workspace\JobFlowCanvasPanel.h">
+      <Filter>workspace\canvas</Filter>
+    </ClInclude>
+    <ClInclude Include="workspace\ToolLibrary.h">
+      <Filter>workspace\tools</Filter>
+    </ClInclude>
+    <ClInclude Include="workspace\ToolTreeIcons.h">
+      <Filter>workspace\tools</Filter>
+    </ClInclude>
+    <ClInclude Include="workspace\IconAssets.h">
+      <Filter>workspace\icons</Filter>
+    </ClInclude>
+    <ClInclude Include="workspace\UiIcons.h">
+      <Filter>workspace\icons</Filter>
+    </ClInclude>
+    <ClInclude Include="dialog\StationMgrDlg.h">
+      <Filter>dialog\station</Filter>
+    </ClInclude>
+    <ClInclude Include="dialog\StationDlg.h">
+      <Filter>dialog\station</Filter>
+    </ClInclude>
+    <ClInclude Include="dialog\DeviceMgrDlg.h">
+      <Filter>dialog\device</Filter>
+    </ClInclude>
+    <ClInclude Include="dialog\DeviceDlg.h">
+      <Filter>dialog\device</Filter>
+    </ClInclude>
+    <ClInclude Include="dialog\CommMgrDlg.h">
+      <Filter>dialog\comm</Filter>
+    </ClInclude>
+    <ClInclude Include="dialog\JobDlg.h">
+      <Filter>dialog\job</Filter>
+    </ClInclude>
+    <ClInclude Include="dialog\JobRstRulePanel.h">
+      <Filter>dialog\job</Filter>
+    </ClInclude>
+    <ClInclude Include="dialog\JobRstRuleDlg.h">
+      <Filter>dialog\job</Filter>
+    </ClInclude>
+    <ClInclude Include="dialog\LoginDlg.h">
+      <Filter>dialog\auth</Filter>
+    </ClInclude>
+    <ClInclude Include="dialog\ChangePwdDlg.h">
+      <Filter>dialog\auth</Filter>
+    </ClInclude>
+    <ClInclude Include="dialog\UserMgrDlg.h">
+      <Filter>dialog\auth</Filter>
+    </ClInclude>
+    <ClInclude Include="dialog\UserEditDlg.h">
+      <Filter>dialog\auth</Filter>
+    </ClInclude>
+    <ClInclude Include="dialog\PermDlg.h">
+      <Filter>dialog\auth</Filter>
+    </ClInclude>
+    <ClInclude Include="dialog\SettingsDlg.h">
+      <Filter>dialog\system</Filter>
+    </ClInclude>
+    <ClInclude Include="dialog\LogDlg.h">
+      <Filter>dialog\system</Filter>
+    </ClInclude>
+    <ClInclude Include="dialog\AboutDlg.h">
+      <Filter>dialog\system</Filter>
+    </ClInclude>
+    <ClInclude Include="dialog\VersionDlg.h">
+      <Filter>dialog\system</Filter>
+    </ClInclude>
+    <ClInclude Include="dialog\RuntimeViewDlg.h">
+      <Filter>dialog\view</Filter>
+    </ClInclude>
+    <ClInclude Include="runtime\StationLoop.h">
+      <Filter>runtime</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

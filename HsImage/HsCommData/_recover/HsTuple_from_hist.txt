@@ -1,0 +1,496 @@
+﻿#ifndef HSCOMMDATA_HSTUPLE_H
+#define HSCOMMDATA_HSTUPLE_H
+
+#include <HsCommData/Geom.h>
+
+#include <cstdint>
+#include <memory>
+#include <string>
+
+namespace HsCommData {
+
+/** @brief 元组的存储种类。混合之前只有一种数组 */
+enum TupleType {
+    TupleEmpty = 0, ///< 空
+    TupleLong,      ///< 仅 int64
+    TupleDouble,    ///< 仅 double
+    TupleString,    ///< 仅字符串
+    TupleMixed      ///< 元素类型可以不同
+};
+
+/** @brief 混合元组里一个元素的种类 */
+enum TupleElemKind {
+    ElemLong = 0, ///< 长整数
+    ElemDouble,   ///< 浮点
+    ElemString    ///< 字符串
+};
+
+/**
+ * @class TupleElem
+ * @brief 混合元组的一个元素。num 里整数和浮点共用存储，字符串另放
+ */
+struct HSCOMMDATA_EXPORT TupleElem {
+    TupleElemKind kind; ///< 本元素种类
+    union {
+        int64_t i; ///< ElemLong
+        double d;  ///< ElemDouble
+    } num;
+    std::string text; ///< ElemString 时有效
+
+    TupleElem(); ///< 整数 0
+};
+
+/**
+ * @class HsTuple
+ * @brief 控制参数元组。拷贝共享缓冲，写入时才复制
+ * 纯整数或纯浮点可拿连续指针。类型不符返回 0。可用整数、浮点或字符串直接构造和赋值，结果只含这一个
+ */
+class HSCOMMDATA_EXPORT HsTuple {
+public:
+    HsTuple(); ///< 空
+    /** @brief 同类型拷贝，只共享缓冲 */
+    HsTuple(const HsTuple& other);
+    /** @brief 同类型赋值，只共享缓冲。深拷用 clone */
+    HsTuple& operator=(const HsTuple& other);
+    HsTuple(int64_t value); ///< 一个整数
+    HsTuple(int value); ///< 一个 32 位整数，避免和浮点构造二义
+    HsTuple(double value); ///< 一个浮点
+    HsTuple(const char* value); ///< 一个字符串。空指针当空串
+    HsTuple(const std::string& value); ///< 一个字符串
+    HsTuple(const int64_t* data, int count); ///< 整数数组。count<=0 或 data 为空则空元组
+    HsTuple(const double* data, int count); ///< 浮点数组
+
+    /** @brief 换成这一个整数，不追加 */
+    HsTuple& operator=(int value);
+    /** @brief 换成这一个整数，不追加 */
+    HsTuple& operator=(int64_t value);
+    /** @brief 换成这一个浮点，不追加 */
+    HsTuple& operator=(double value);
+    /** @brief 换成这一个字符串。空指针当空串，不追加 */
+    HsTuple& operator=(const char* value);
+    /** @brief 换成这一个字符串，不追加 */
+    HsTuple& operator=(const std::string& value);
+
+    /** @brief 取出一格，结果仍是 HsTuple，只含这一个。越界抛 HsException */
+    HsTuple operator[](int index) const;
+
+    /** @brief 第 0 个 32 位整数。类型不符、越界或超出 int 抛 HsException */
+    int I() const;
+    /** @brief 第 index 个 32 位整数。类型不符、越界或超出 int 抛 HsException */
+    int I(int index) const;
+    /** @brief 第 0 个整数。类型不符或越界抛 HsException */
+    int64_t L() const;
+    /** @brief 第 index 个整数。类型不符或越界抛 HsException */
+    int64_t L(int index) const;
+    /** @brief 第 0 个浮点。类型不符或越界抛 HsException */
+    double D() const;
+    /** @brief 第 index 个浮点。类型不符或越界抛 HsException */
+    double D(int index) const;
+    /** @brief 第 0 个字符串。类型不符或越界抛 HsException */
+    std::string S() const;
+    /** @brief 第 index 个字符串。类型不符或越界抛 HsException */
+    std::string S(int index) const;
+    /**
+     * @brief 第 0 个字符串的只读指针。类型不符或越界抛 HsException
+     * 下次写入后失效
+     */
+    const char* C() const;
+    /**
+     * @brief 第 index 个字符串的只读指针。类型不符或越界抛 HsException
+     * 下次写入后失效
+     */
+    const char* C(int index) const;
+
+    /** @brief 没有元素 */
+    bool isEmpty() const;
+    /** @brief 元素个数 */
+    int length() const;
+    /** @brief 当前存储种类 */
+    TupleType type() const;
+
+    /** @brief 清空为未占用的空元组 */
+    void clear();
+    /** @brief 深拷缓冲 */
+    HsTuple clone() const;
+
+    /** @brief 追加整数。纯浮点或字符串会升成混合 */
+    void append(int64_t value);
+    /** @brief 追加浮点。纯整数或字符串会升成混合 */
+    void append(double value);
+    /** @brief 追加字符串。纯数值会升成混合 */
+    void append(const char* value);
+    /** @brief 追加字符串 */
+    void append(const std::string& value);
+    /** @brief 接上另一元组 */
+    void append(const HsTuple& other);
+
+    /** @brief 读整数。不是整数元素则失败 */
+    bool getLong(int index, int64_t* out) const;
+    /** @brief 读浮点。不是浮点元素则失败 */
+    bool getDouble(int index, double* out) const;
+    /** @brief 读字符串。不是字符串元素则失败 */
+    bool getString(int index, std::string* out) const;
+
+    /**
+     * @brief 纯整数的连续缓冲。类型不符抛 HsException。没有元素时为 0
+     * 写入元组后指针失效
+     */
+    const int64_t* longData() const;
+    /** @brief 可写整数缓冲。共享时先复制。类型不符抛 HsException */
+    int64_t* longData();
+    /** @brief 纯浮点的连续缓冲。类型不符抛 HsException。没有元素时为 0 */
+    const double* doubleData() const;
+    /** @brief 可写浮点缓冲。共享时先复制。类型不符抛 HsException */
+    double* doubleData();
+
+    /** @brief 改第 index 个为整数。越界抛 HsException。必要时升成混合 */
+    bool setLong(int index, int64_t value);
+    /** @brief 改第 index 个为浮点。越界抛 HsException */
+    bool setDouble(int index, double value);
+    /** @brief 改第 index 个为字符串。越界抛 HsException */
+    bool setString(int index, const std::string& value);
+
+    /**
+     * @brief 整组相等，对应 Halcon tuple_equal / ==
+     * 个数相同，且对应元素值相同。整数和浮点按数值比，1 与 1.0 相等。
+     * 数字和字符串不是相等，不抛异常
+     */
+    bool operator==(const HsTuple& other) const;
+    /** @brief 整组不等，对应 tuple_not_equal / != */
+    bool operator!=(const HsTuple& other) const;
+    /**
+     * @brief 字典序小于，对应 tuple_less / <
+     * 前缀相同则更短的更小。空元组小于非空。数字与字符串不能比，抛 HS_ERR_TYPE
+     */
+    bool operator<(const HsTuple& other) const;
+    /** @brief 字典序大于，对应 tuple_greater / > */
+    bool operator>(const HsTuple& other) const;
+    /** @brief 字典序小于等于，对应 tuple_less_equal / <= */
+    bool operator<=(const HsTuple& other) const;
+    /** @brief 字典序大于等于，对应 tuple_greater_equal / >= */
+    bool operator>=(const HsTuple& other) const;
+
+private:
+    struct Body;
+
+    /** @brief 保证缓冲存在 */
+    void ensure();
+    /** @brief 被共享时复制缓冲 */
+    void detach();
+    /** @brief 纯数组升成混合 */
+    static void promote(Body* body);
+    /** @brief 追加一个混合元素 */
+    static void pushMixed(Body* body, const TupleElem& elem);
+
+    std::shared_ptr<Body> m_body; ///< 元素缓冲。空指针表示空元组
+};
+
+/** @brief 左操作数 int 的 ==。先收成单元素元组，再走成员比较 */
+inline bool operator==(int a, const HsTuple& b)
+{
+    return HsTuple(a) == b;
+}
+/** @brief 左操作数 int64 的 == */
+inline bool operator==(int64_t a, const HsTuple& b)
+{
+    return HsTuple(a) == b;
+}
+/** @brief 左操作数 double 的 == */
+inline bool operator==(double a, const HsTuple& b)
+{
+    return HsTuple(a) == b;
+}
+/** @brief 左操作数 C 字符串的 ==。空指针当空串 */
+inline bool operator==(const char* a, const HsTuple& b)
+{
+    return HsTuple(a) == b;
+}
+/** @brief 左操作数 string 的 == */
+inline bool operator==(const std::string& a, const HsTuple& b)
+{
+    return HsTuple(a) == b;
+}
+/** @brief 右操作数 int 的 == */
+inline bool operator==(const HsTuple& a, int b)
+{
+    return a == HsTuple(b);
+}
+/** @brief 右操作数 int64 的 == */
+inline bool operator==(const HsTuple& a, int64_t b)
+{
+    return a == HsTuple(b);
+}
+/** @brief 右操作数 double 的 == */
+inline bool operator==(const HsTuple& a, double b)
+{
+    return a == HsTuple(b);
+}
+/** @brief 右操作数 C 字符串的 ==。空指针当空串 */
+inline bool operator==(const HsTuple& a, const char* b)
+{
+    return a == HsTuple(b);
+}
+/** @brief 右操作数 string 的 == */
+inline bool operator==(const HsTuple& a, const std::string& b)
+{
+    return a == HsTuple(b);
+}
+
+/** @brief 左操作数 int 的 != */
+inline bool operator!=(int a, const HsTuple& b)
+{
+    return HsTuple(a) != b;
+}
+/** @brief 左操作数 int64 的 != */
+inline bool operator!=(int64_t a, const HsTuple& b)
+{
+    return HsTuple(a) != b;
+}
+/** @brief 左操作数 double 的 != */
+inline bool operator!=(double a, const HsTuple& b)
+{
+    return HsTuple(a) != b;
+}
+/** @brief 左操作数 C 字符串的 !=。空指针当空串 */
+inline bool operator!=(const char* a, const HsTuple& b)
+{
+    return HsTuple(a) != b;
+}
+/** @brief 左操作数 string 的 != */
+inline bool operator!=(const std::string& a, const HsTuple& b)
+{
+    return HsTuple(a) != b;
+}
+/** @brief 右操作数 int 的 != */
+inline bool operator!=(const HsTuple& a, int b)
+{
+    return a != HsTuple(b);
+}
+/** @brief 右操作数 int64 的 != */
+inline bool operator!=(const HsTuple& a, int64_t b)
+{
+    return a != HsTuple(b);
+}
+/** @brief 右操作数 double 的 != */
+inline bool operator!=(const HsTuple& a, double b)
+{
+    return a != HsTuple(b);
+}
+/** @brief 右操作数 C 字符串的 !=。空指针当空串 */
+inline bool operator!=(const HsTuple& a, const char* b)
+{
+    return a != HsTuple(b);
+}
+/** @brief 右操作数 string 的 != */
+inline bool operator!=(const HsTuple& a, const std::string& b)
+{
+    return a != HsTuple(b);
+}
+
+/** @brief 左操作数 int 的 < */
+inline bool operator<(int a, const HsTuple& b)
+{
+    return HsTuple(a) < b;
+}
+/** @brief 左操作数 int64 的 < */
+inline bool operator<(int64_t a, const HsTuple& b)
+{
+    return HsTuple(a) < b;
+}
+/** @brief 左操作数 double 的 < */
+inline bool operator<(double a, const HsTuple& b)
+{
+    return HsTuple(a) < b;
+}
+/** @brief 左操作数 C 字符串的 <。空指针当空串 */
+inline bool operator<(const char* a, const HsTuple& b)
+{
+    return HsTuple(a) < b;
+}
+/** @brief 左操作数 string 的 < */
+inline bool operator<(const std::string& a, const HsTuple& b)
+{
+    return HsTuple(a) < b;
+}
+/** @brief 右操作数 int 的 < */
+inline bool operator<(const HsTuple& a, int b)
+{
+    return a < HsTuple(b);
+}
+/** @brief 右操作数 int64 的 < */
+inline bool operator<(const HsTuple& a, int64_t b)
+{
+    return a < HsTuple(b);
+}
+/** @brief 右操作数 double 的 < */
+inline bool operator<(const HsTuple& a, double b)
+{
+    return a < HsTuple(b);
+}
+/** @brief 右操作数 C 字符串的 <。空指针当空串 */
+inline bool operator<(const HsTuple& a, const char* b)
+{
+    return a < HsTuple(b);
+}
+/** @brief 右操作数 string 的 < */
+inline bool operator<(const HsTuple& a, const std::string& b)
+{
+    return a < HsTuple(b);
+}
+
+/** @brief 左操作数 int 的 > */
+inline bool operator>(int a, const HsTuple& b)
+{
+    return HsTuple(a) > b;
+}
+/** @brief 左操作数 int64 的 > */
+inline bool operator>(int64_t a, const HsTuple& b)
+{
+    return HsTuple(a) > b;
+}
+/** @brief 左操作数 double 的 > */
+inline bool operator>(double a, const HsTuple& b)
+{
+    return HsTuple(a) > b;
+}
+/** @brief 左操作数 C 字符串的 >。空指针当空串 */
+inline bool operator>(const char* a, const HsTuple& b)
+{
+    return HsTuple(a) > b;
+}
+/** @brief 左操作数 string 的 > */
+inline bool operator>(const std::string& a, const HsTuple& b)
+{
+    return HsTuple(a) > b;
+}
+/** @brief 右操作数 int 的 > */
+inline bool operator>(const HsTuple& a, int b)
+{
+    return a > HsTuple(b);
+}
+/** @brief 右操作数 int64 的 > */
+inline bool operator>(const HsTuple& a, int64_t b)
+{
+    return a > HsTuple(b);
+}
+/** @brief 右操作数 double 的 > */
+inline bool operator>(const HsTuple& a, double b)
+{
+    return a > HsTuple(b);
+}
+/** @brief 右操作数 C 字符串的 >。空指针当空串 */
+inline bool operator>(const HsTuple& a, const char* b)
+{
+    return a > HsTuple(b);
+}
+/** @brief 右操作数 string 的 > */
+inline bool operator>(const HsTuple& a, const std::string& b)
+{
+    return a > HsTuple(b);
+}
+
+/** @brief 左操作数 int 的 <= */
+inline bool operator<=(int a, const HsTuple& b)
+{
+    return HsTuple(a) <= b;
+}
+/** @brief 左操作数 int64 的 <= */
+inline bool operator<=(int64_t a, const HsTuple& b)
+{
+    return HsTuple(a) <= b;
+}
+/** @brief 左操作数 double 的 <= */
+inline bool operator<=(double a, const HsTuple& b)
+{
+    return HsTuple(a) <= b;
+}
+/** @brief 左操作数 C 字符串的 <=。空指针当空串 */
+inline bool operator<=(const char* a, const HsTuple& b)
+{
+    return HsTuple(a) <= b;
+}
+/** @brief 左操作数 string 的 <= */
+inline bool operator<=(const std::string& a, const HsTuple& b)
+{
+    return HsTuple(a) <= b;
+}
+/** @brief 右操作数 int 的 <= */
+inline bool operator<=(const HsTuple& a, int b)
+{
+    return a <= HsTuple(b);
+}
+/** @brief 右操作数 int64 的 <= */
+inline bool operator<=(const HsTuple& a, int64_t b)
+{
+    return a <= HsTuple(b);
+}
+/** @brief 右操作数 double 的 <= */
+inline bool operator<=(const HsTuple& a, double b)
+{
+    return a <= HsTuple(b);
+}
+/** @brief 右操作数 C 字符串的 <=。空指针当空串 */
+inline bool operator<=(const HsTuple& a, const char* b)
+{
+    return a <= HsTuple(b);
+}
+/** @brief 右操作数 string 的 <= */
+inline bool operator<=(const HsTuple& a, const std::string& b)
+{
+    return a <= HsTuple(b);
+}
+
+/** @brief 左操作数 int 的 >= */
+inline bool operator>=(int a, const HsTuple& b)
+{
+    return HsTuple(a) >= b;
+}
+/** @brief 左操作数 int64 的 >= */
+inline bool operator>=(int64_t a, const HsTuple& b)
+{
+    return HsTuple(a) >= b;
+}
+/** @brief 左操作数 double 的 >= */
+inline bool operator>=(double a, const HsTuple& b)
+{
+    return HsTuple(a) >= b;
+}
+/** @brief 左操作数 C 字符串的 >=。空指针当空串 */
+inline bool operator>=(const char* a, const HsTuple& b)
+{
+    return HsTuple(a) >= b;
+}
+/** @brief 左操作数 string 的 >= */
+inline bool operator>=(const std::string& a, const HsTuple& b)
+{
+    return HsTuple(a) >= b;
+}
+/** @brief 右操作数 int 的 >= */
+inline bool operator>=(const HsTuple& a, int b)
+{
+    return a >= HsTuple(b);
+}
+/** @brief 右操作数 int64 的 >= */
+inline bool operator>=(const HsTuple& a, int64_t b)
+{
+    return a >= HsTuple(b);
+}
+/** @brief 右操作数 double 的 >= */
+inline bool operator>=(const HsTuple& a, double b)
+{
+    return a >= HsTuple(b);
+}
+/** @brief 右操作数 C 字符串的 >=。空指针当空串 */
+inline bool operator>=(const HsTuple& a, const char* b)
+{
+    return a >= HsTuple(b);
+}
+/** @brief 右操作数 string 的 >= */
+inline bool operator>=(const HsTuple& a, const std::string& b)
+{
+    return a >= HsTuple(b);
+}
+
+}
+
+#endif

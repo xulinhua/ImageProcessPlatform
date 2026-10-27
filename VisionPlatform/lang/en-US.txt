@@ -1,0 +1,566 @@
+# 英文词条。制表符分隔。同键覆盖程序内置表。缺本文件时用内置表。
+# 译文里的换行写成 \n ，制表符写成 \t 。
+OK	OK
+NG	NG
+Then	Then
+Else	Else
+系统设置	Settings
+保存	Save
+保存失败。	Save failed.
+打开目录	Open folder
+数据目录	Data folder
+用户库	User database
+开机自动登录操作员（仅 operator 账户，直接进运行态）	Auto-login as operator (operator account only, enter Run mode)
+角色能点哪些菜单和按钮，请到「系统 → 控件权限」里按页面勾选。日志请到「系统 → 日志管控」。用户增删请到「系统 → 用户管理」。	Use System > Control permissions to choose menus and buttons per page. Logs: System > Log manager. Users: System > User manager.
+设计	Design
+运行	Run
+方案	Solution
+新建	New
+打开…	Open...
+另存为…	Save As...
+打开图像…	Open image...
+退出	Exit
+工站	Station
+工站管理…	Stations...
+设备	Device
+设备管理…	Devices...
+视图	View
+画面配置	View layout
+画面配置…	View layout...
+工站结果	Station result
+工站结果（默认）	Station result (default)
+显示产量统计	Show statistics
+显示结果历史	Show result history
+显示开始停止	Show start/stop
+图像窗口布局	Image grid
+行数	Rows
+列数	Columns
+使能	Enable
+配置…	Configure...
+窗口配置	Pane setup
+叠加工具	Overlay tools
+工站结果图形	Station graphics
+勾选要叠到该底图上的结果图形，可多选。	Check one or more tools whose graphics overlay this image.
+叠加关闭	Overlay off
+无叠加	No overlay
+1 × 1	1 × 1
+2 × 2	2 × 2
+3 × 3	3 × 3
+窗口	Pane
+底图	Image
+叠加	Overlay
+显示叠加	Show overlay
+底图选某个工具的输出图像，叠加选另一个工具的结果图形。空项表示用工站本拍汇总。配置随方案保存。	Pick a tool image and another tool overlay. Empty means the last station result. Saved with the solution.
+行与列均可设为 1 至 3（含 1×2、2×1）。每个窗口可单独使能；底图只选有输出图像的采集或预处理工具，叠加在窗口配置里可多选。空底图表示工站本拍。配置随方案保存。	Rows and columns are 1 to 3 (including 1×2 and 2×1). Each pane can be turned off. Image sources are capture or preprocess tools; overlays are multi-select in pane setup. Empty image means the last station result. Saved with the solution.
+当前用户不能改运行画面。	Current user cannot edit the run view.
+请先添加工站。	Add a station first.
+图像入	Image in
+图像出	Image out
+区域入	Region in
+区域出	Region out
+数值入	Values in
+数值出	Values out
+圆心	Center
+开始	Start
+停止	Stop
+清零	Reset
+系统	System
+用户管理…	Users...
+控件权限…	Control permissions...
+系统设置…	Settings...
+日志管控…	Log manager...
+修改口令…	Change password...
+注销	Log off
+帮助	Help
+关于	About
+主工具条	Main
+打开	Open
+运行本流程	Run this job
+常规	General
+显示	Display
+语言	Language
+路径	Paths
+主题	Theme
+浅色工业	Light industrial
+浅色大字	Light large type
+高对比浅色	Light high contrast
+界面语言	UI language
+界面语言将在重新启动程序后完全生效。	The UI language will fully apply after restart.
+主题立即生效；语言需重新启动后完全切换。	Theme applies now. Language fully switches after restart.
+日志目录	Log folder
+方案目录	Solution folder
+权限	Permission
+未登录	Not signed in
+通用视觉平台  -  	VisionPlatform - 
+用户: 	User: 
+方案: 	Solution: 
+工站: 	Station: 
+方案资源	Solution resources
+当前工具图像	Current tool image
+节点参数	Node parameters
+调试结果	Debug results
+算法参数与 ROI 编辑请点「详细调试」。	Open Debug tool for parameters and ROI editing.
+运行结果	Run result
+输出数据	Output data
+输入摘要	Input summary
+状态：	Status: 
+未运行	Not run yet
+点「运行本工具」或「运行本流程」查看结果。	Run this tool or job to see results.
+来自上次运行缓存	From last run cache
+本流程已运行	Job run completed
+当前文件：	Current file: 
+路径覆盖：	Path override: 
+开启后保持当前形状工具，可连续添加 ROI；关闭则画完回到浏览。	Keep the shape tool active to add ROIs in a row; off returns to browse after each ROI.
+勾选「绘制模式」可连续画多个 ROI；未勾选时画完一笔自动回到浏览。蓝框收起后图上仍保留坐标。	Enable Draw mode to place multiple ROIs; otherwise return to browse after each ROI. Coordinates stay on image when the blue box hides.
+勾选「绘制模式」显示绘制工具，可连续添加 ROI；切图请在采集工具中操作。	Enable Draw mode to show drawing tools and add ROIs; switch images in the acquisition tool.
+开启后显示绘制工具，可连续添加 ROI；关闭则仅浏览与查看结果。	Show drawing tools to add ROIs; when off, browse and view results only.
+新增	Add
+耗时：	Elapsed: 
+项	Item
+值	Value
+区域：	Region: 
+ROI：	ROI: 
+轮廓：	Contour: 
+（无说明）	(no message)
+日志	Log
+运行本工具	Run this tool
+开始 / 停止	Start / Stop
+操作员	Operator
+工程师	Engineer
+管理员	Administrator
+用户登录	Sign in
+登录	Sign in
+登录名	Login name
+口令	Password
+用户名或密码错误	Wrong user name or password
+找圆	Find circle
+模板定位	Template locate
+灰度拉伸	Gray stretch
+判定	Verdict
+PLC通信	PLC comm
+相机/文件源	Camera / file source
+相机	Camera
+图像文件/文件夹	Image file / folder
+来源	Source
+文件夹循环	Folder loop
+单个图像	Single image
+引用工站绑定的相机或文件源设备，产出 out.image	Grab from the bound camera or file device, output out.image
+从单个文件或目录循环读取图像，产出 out.image	Read a file or loop a folder, output out.image
+未绑定采集设备。请在工具参数里选择设备。	No capture device bound. Select one in the tool parameters.
+绑定设备不是相机或文件源。	Bound device is not a camera or file source.
+相机 SDK 未接入。请把该工具改绑文件源设备，或使用「图像文件/文件夹」。	Camera SDK is not wired. Bind a file device, or use Image file/folder.
+请选择单个图像文件	Select a single image file
+在此处添加工具	Add tool here
+断开连线	Disconnect
+复位缩放	Reset zoom
+位姿入	Pose in
+位姿出	Pose out
+流程画布	Job canvas
+滚轮缩放  中键平移  拖工具移动  拖端口连线  右键菜单	Wheel zoom  Middle-drag pan  Drag tools  Drag pins to link  Right-click menu
+滚轮缩放  中键平移  拖端口连线  右键菜单	Wheel zoom  Middle-drag pan  Drag pins to link  Right-click menu
+滚轮缩放，中键平移，拖工具可移动，从输出端口拖到输入端口连线。右键与右侧树相同。	Wheel zoom, middle-drag pan, drag tools to move, drag output pin to input pin. Right-click matches the tree.
+滚轮缩放，中键平移，从输出端口拖到输入端口连线。右键与右侧树相同。	Wheel zoom, middle-drag pan, drag output pin to input pin. Right-click matches the tree.
+滚轮缩放  拖动画布平移  灰虚线=执行顺序  彩色线=数据连线  拖端口连线  右键菜单	Wheel zoom  Drag canvas to pan  Gray dashed=exec order  Colored=data links  Drag pins to link  Right-click menu
+滚轮缩放，拖动画布平移，拖工具可移动，从输出端口拖到输入端口连线。右键与右侧树相同。	Wheel zoom, drag canvas to pan, drag tools to move, drag output pin to input pin. Right-click matches the tree.
+连线	Link
+不能连到自身	Cannot link a tool to itself
+端口方向不对	Port direction is wrong
+端口类型不一致	Port types do not match
+类型不同，不能连接：	Type mismatch, cannot connect: 
+轮廓	Contour
+ROI	ROI
+输入逻辑：	Logic in: 
+输入逻辑	Logic in
+输入连接	Input links
+算法参数	Algorithm
+无 ROI，开启绘制模式后在图上绘制	No ROI. Enable draw mode and draw on the image.
+输入	Input
+参数	Parameters
+放大	Zoom in
+缩小	Zoom out
+适应	Fit
+区域源：	Region source: 
+预处理	Preprocess
+定位	Locate
+检测	Inspect
+逻辑	Logic
+通信	Communication
+结果处理	Result process
+区域合并	Merge regions
+合并上游多个工具的缺陷区域，统计面积与数量	Merge defect regions from upstream tools; report area and count
+无上游缺陷区域	No upstream defect region
+面积或数量超限	Area or count out of range
+已合并上游缺陷区域	Upstream defect regions merged
+采集	Acquire
+并行	Parallel
+串行	Sequence
+流程	Job
+ 副本	 copy
+未命名方案	Unnamed solution
+文件源1	File source 1
+上料检测	Loading inspection
+JobA定位检测	JobA locate inspect
+根	Root
+相机1	Camera 1
+找圆1	Find circle 1
+JobB尺寸	JobB measure
+相机2	Camera 2
+找圆2	Find circle 2
+新工站	New station
+支路1	Branch 1
+支路A	Branch A
+支路B	Branch B
+并行组{0}	Parallel group {0}
+条件组{0}	If group {0}
+支路{0}	Branch {0}
+文件源{0}	File source {0}
+切换方案	Switch solution
+结果图	Result
+原图+结果	Source + result
+产量	Count
+合格	Pass
+不合格	Fail
+良率	Yield
+节拍	Cycle
+结果历史	Result history
+全部	All
+确定	OK
+取消	Cancel
+应用	Apply
+关闭	Close
+查询	Query
+删除	Delete
+保存方案	Save solution
+打开方案	Open solution
+无输入图	No input image
+找不到工具	Tool not found
+没有工站	No station
+没有流程	No job
+日志管控	Log manager
+控件权限	Control permissions
+用户管理	Users
+设备管理	Devices
+NG 时继续	Continue on NG
+选中 Then/Else 分支或并行支路后再添加工具。条件组只跑命中的一侧。	Select a Then/Else branch or parallel arm before adding tools. If-groups run only the matching side.
+结果为 OK 时走 Then	Then when result is OK
+结果为 NG 时走 Then	Then when result is NG
+Then 条件	Then when
+方案级设备列表。流程里的相机工具只引用设备，采集在此不启动。	Solution-level device list. Camera tools in jobs only reference devices; capture is not started here.
+工站配置	Station setup
+流程执行方式	Job run mode
+本工站流程	Jobs in this station
+工站内多条流程可串行或并行；单条流程内并行请用「并行组」。	Jobs in a station run in sequence or in parallel. Use a parallel group for parallelism inside one job.
+流程数量	Job count
+执行方式	Run mode
+流程配置	Job setup
+查看运行界面	View run page
+清零产量	Reset count
+运行态切换方案	Switch solution in Run
+进入设计态	Enter Design
+编辑方案 / 工站 / 流程	Edit solution / station / job
+调试运行本工具 / 流程	Debug-run this tool / job
+系统设置、控件权限	Settings and control permissions
+查看日志	View logs
+日志管理	Log management
+运行页	Run page
+设计页	Design page
+设备页	Device page
+系统页	System page
+日志页	Log page
+硬件触发	Hardware trigger
+上游完成	Upstream done
+循环	Loop
+软件触发	Software trigger
+手动测试	Manual test
+条件组 {0} → {1}	If-group {0} -> {1}
+[%s] %s  %s  %dms	[%s] %s  %s  %dms
+{0}  {1} 条流程  {2}ms	{0}  {1} job(s)  {2}ms
+工站结束 {0}  {1}	Station finished {0}  {1}
+[{0}] {1}  {2}	[{0}] {1}  {2}
+串口{0}	Serial {0}
+TCP客户端{0}	TCP client {0}
+TCP服务端{0}	TCP server {0}
+UDP{0}	UDP {0}
+MODBUS RTU{0}	MODBUS RTU {0}
+MODBUS TCP{0}	MODBUS TCP {0}
+控制卡{0}	Control card {0}
+PLC{0}	PLC {0}
+逻辑判断{0}	Logic {0}
+已扫描 {0} 张	Scanned {0} files
+未指定保存路径	Save path is empty
+无法写入文件	Cannot write file
+无法打开文件	Cannot open file
+方案文件不是 JSON 对象	Solution file is not a JSON object
+方案文件版本更高，请升级软件	Solution file version is newer; upgrade the software
+无法读取：	Cannot read: 
+没有可用图像。请在设备或相机工具里指定文件夹/文件。	No image available. Set a folder or file on the device or camera tool.
+上下文无效	Invalid context
+透传	Pass-through
+半径超限	Radius out of range
+未登记图像算法	No image algorithm registered
+无输入图，请先运行相机工具	No input image; run the camera tool first
+就绪。默认文件源指向程序目录 samples；也可在设备里改文件夹。	Ready. Default file source is the samples folder; change it in Devices.
+当前用户不能进入设计态。	Current user cannot enter Design.
+仅管理员可改系统设置。	Only administrators can edit settings.
+仅管理员可改控件权限。	Only administrators can edit control permissions.
+通用视觉平台\nVS2015 + Qt 5.9.9 + C++11\n文件源采集 + 阈值找圆（示意）+ 工站调度。\n图像控件已内嵌（HsImageWindow），尚未拆库。	VisionPlatform\nVS2015 + Qt 5.9.9 + C++11\nFile source + threshold find-circle (demo) + station scheduling.\nImage control is HsImageWindow.
+选中工具后显示参数。\nROI 画在图像上，松手写回该工具。	Parameters appear after a tool is selected.\nDraw ROI on the image; it is written back on mouse release.
+选中流程后\n在此显示节点	Select a job to\nshow its nodes
+\n类型：	\nType: 
+\n\n采集在流程内的相机工具中启动。	\n\nCapture starts in the camera tool inside the job.
+行 %1  列 %2  灰度 %3  缩放 %4%	Row %1  Col %2  Gray %3  Zoom %4%
+浏览	Browse
+浏览…	Browse...
+圆	Circle
+椭圆	Ellipse
+图像：选中工具后「运行本工具」	Image: select a tool, then Run this tool
+图像文件夹	Image folder
+图像 (*.png *.bmp *.jpg *.jpeg *.tif);;所有文件 (*.*)	Images (*.png *.bmp *.jpg *.jpeg *.tif);;All files (*.*)
+图像	Image
+区域	Region
+数值	Values
+位姿	Pose
+无法打开。	Cannot open.
+详细调试	Debug tool
+图像增强	Image enhance
+可叠加直方图均衡、强调、照度、缩放、反色	Stackable histogram, emphasize, illuminate, scale, invert
+图像平滑	Image smooth
+可叠加均值、中值、高斯、双边滤波	Stackable mean, median, gauss, bilateral
+找线	Find line
+多 ROI，每框可设查找条数、极性与选择策略	Multi-ROI; per-box count, polarity and select
+卡尺	Caliper
+测宽或找边，支持多卡尺 ROI	Width or edge; multi-ROI
+Blob	Blob
+绝对、相对、动态阈值；形态学与面积圆度筛选	Absolute, relative, dynamic threshold; morph and area/circularity
+纹理缺陷	Texture defect
+规则纹理下破损脏污：大核背景差加形态学	Residual vs large-kernel background plus morph
+NCC 或形状模板定位，输出位姿	NCC or shape template; outputs pose
+示意后端：原图透传。安装 Halcon 后替换。	Dummy backend: pass-through. Halcon replaces this.
+该定位算法需要 Halcon 后端	This locate algorithm needs the Halcon backend
+示意 Blob（绝对阈值）	Dummy blob (absolute threshold)
+未找到连通域	No connected region
+未链接 Halcon	Halcon not linked
+未知增强算子：	Unknown enhance op: 
+未知平滑算子：	Unknown smooth op: 
+图像增强完成	Enhance done
+图像平滑完成	Smooth done
+未匹配到模板	Template not found
+模板定位成功	Template located
+未找到直线	No line found
+找线完成	Find line done
+未找到圆	No circle found
+找圆完成	Find circle done
+卡尺未测到边缘	Caliper found no edge
+卡尺完成	Caliper done
+Blob 完成	Blob done
+纹理缺陷完成	Texture defect done
+用户库不存在	User database missing
+无法读取用户库	Cannot read user database
+用户库不是 JSON 对象	User database is not a JSON object
+本机设置不存在	Settings file missing
+无法读取本机设置	Cannot read settings
+本机设置不是 JSON 对象	Settings file is not a JSON object
+用户库损坏，将使用默认账户。	User database is corrupt. Default accounts will be used.
+本机设置损坏，已使用默认设置。	Settings file is corrupt. Defaults are in use.
+本机设置	Settings file
+上次方案	Last solution
+无法打开上次方案：	Cannot open last solution: 
+软件将继续打开。	The application will continue.
+空白方案	Blank solution
+另选文件	Pick another file
+忽略	Ignore
+添加步骤	Add step
+删除步骤	Remove step
+直方图均衡	Equalize histogram
+强调	Emphasize
+照度	Illuminate
+灰度缩放	Scale gray
+反色	Invert
+均值	Mean
+中值	Median
+高斯	Gauss
+双边	Bilateral
+可叠加步骤，顺序即执行顺序	Stacked steps run in list order
+宽/核	Width / kernel
+高	Height
+系数	Factor
+匹配方式	Match method
+形状	Shape
+最低分	Min score
+角度范围(度)	Angle range (deg)
+匹配个数	Matches
+记录当前位姿为示教	Teach current pose
+极性	Polarity
+全部	All
+由暗到亮	Dark to light
+由亮到暗	Light to dark
+选择	Select
+最长	Longest
+第一条	First
+最后一条	Last
+每框条数	Count per ROI
+最小长度	Min length
+低阈值	Low
+高阈值	High
+暗目标	Dark object
+测宽	Width
+找边	Edge
+模式	Mode
+绝对阈值	Absolute
+相对阈值	Relative
+动态阈值	Dynamic
+绝对下限	Abs min
+绝对上限	Abs max
+相对偏移	Relative offset
+动态偏移	Dynamic offset
+动态核	Dynamic kernel
+开运算半径	Opening radius
+闭运算半径	Closing radius
+最小面积	Min area
+最大面积(0不限)	Max area (0=off)
+最小圆度	Min circularity
+最大圆度	Max circularity
+阈值方式	Threshold mode
+背景	Background
+均值背景	Mean background
+中值背景	Median background
+灰度闭运算	Gray closing
+核宽	Kernel W
+核高	Kernel H
+残差阈值	Residual threshold
+最大数量(0不限)	Max count (0=off)
+表达式(预留)	Expression (reserved)
+主机	Host
+端口	Port
+参数	Param
+值	Value
+曝光 us	Exposure us
+增益 dB	Gain dB
+引用设备	Bound device
+路径覆盖	Path override
+输入	Input
+图像源：	Image source: 
+定位数据：	Pose: 
+定位数据：--	Pose: --
+检测区域：	ROI: 
+检测区域：--	ROI: --
+输入数值：	Values in: 
+未接入	Not linked
+本工具为采集源	This tool is the image source
+本工具不画 ROI	This tool has no ROI
+无 ROI，请在图上绘制	No ROI. Draw on the image.
+%1 个 ROI	%1 ROI(s)
+半径	Radius
+宽	Width
+高	Height
+半长	Half-length
+半宽	Half-width
+角度	Angle
+度	deg
+长度	Length
+查找	Search count
+矩形	Rectangle
+旋转矩形	Rotated rectangle
+直线	Line
+清空ROI	Clear ROI
+删末个	Delete last
+未选中工具	No tool selected
+运行本工具会先执行上游采集与定位，再跑本节点。ROI 在图像区绘制。	Run this tool executes upstream grab/locate first, then this node. Draw ROI on the image.
+图像：显示本工具输入；ROI 画在图上	Image: show this tool's input. Draw ROI on it.
+无	None
+口令可留空。用户可自行修改口令。	Password may be empty. Users can change it themselves.
+留空则无口令	Leave empty for no password
+两次新口令不一致。	New passwords do not match.
+未保存的修改	Unsaved changes
+有未保存的修改，是否保存？	You have unsaved changes. Save them?
+不保存	Don't save
+ · 未保存	 · Unsaved
+该工具有未保存的参数修改，请先在调试窗口中保存后再运行。	This tool has unsaved parameter edits. Save them in the debug window before running.
+该流程或其工具有未保存的修改，请先在流程/工站配置中保存后再运行。	This job or a tool in it has unsaved edits. Save them in job or station setup before running.
+选中流程	Selected job
+未选中流程	No job selected
+点「运行本流程」查看本流程全部工具输出。	Run this job to see outputs from all tools in the flow.
+ 工具 OK	 tools OK
+ 个工具，	 tools, 
+ 个已运行	 ran
+设计态显示本流程全部工具输出；选中单个工具可查看详情。	Design mode lists all tool outputs in this job; select one tool for details.
+：显示采集底图与各工具叠加	: capture image with all tool overlays
++ 添加 ROI	+ Add ROI
+清除全部	Clear all
+适应视图	Fit view
+ROI ID	ROI ID
+位置	Position
+尺寸	Size
+重画 ROI	Redraw ROI
+删除此 ROI	Delete this ROI
+亮 -> 暗	Light -> Dark
+暗 -> 亮	Dark -> Light
+最强	Strongest
+工具	Tool
+矩形	Rectangle
+斜矩形	Rotated rect
+线	Line
+区域	Region
+调试窗口已打开：	Debug window opened: 
+开始运行…	Running…
+已保存	Saved
+输入已断开：	Input disconnected: 
+输入已连接：	Input connected: 
+设置	Settings
+设置…	Settings...
+界面外观	Appearance
+路径与存储	Paths & storage
+运行与日志	Runtime & logs
+启动与关闭	Startup & close
+启动后默认进入	Default mode after launch
+关闭主窗口时	On main window close
+「最小化到托盘」将在后续版本提供，当前仅可选择退出程序。	Minimize to tray will ship later; only Exit is available now.
+主题档	Theme
+主界面立即切换。已打开的窗口关闭后重新打开，即为新语言。	The main window switches at once. Windows already open use the new language after they are closed and opened again.
+（尚无）	(none yet)
+数据根目录由安装约定决定，本页仅查看与打开，不支持随意改路径。	Data root is fixed by install layout. This page is view/open only.
+产量清零、运行画面布局属于方案/运行态，请在运行页或「视图 → 画面配置」中修改。本页仅提供日志相关本机入口。	Yield reset and run layout belong to the solution/runtime. Change them on the Run page or View > Layout. This page only opens local log tools.
+打开日志管控…	Open log manager...
+打开日志目录	Open log folder
+退出程序	Exit application
+最小化到托盘（后续版本）	Minimize to tray (later)
+通信管理…	Communication manager...
+复检	Recheck
+版本管理…	Version manager...
+开机自动登录操作员（仅 operator，直接进运行态）	Auto-login as operator (operator only, enter Run mode)
+图像：浏览只读显示 ROI；选形状工具后可绘制与编辑	Image: browse shows ROI read-only; pick a shape tool to draw/edit
+时间	Time
+级别	Level
+消息	Message
+方案：	Solution: 
+已扫描 	Scanned 
+ 张	 files
+已扫描 0 张	Scanned 0 files
+开始复检	Start recheck
+暂停	Pause
+继续	Resume
+图像目录	Image folder
+过滤	Filter
+仅问题	Issues only
+仅 NG	NG only
+仅失败	Fails only
+导出 CSV…	Export CSV...
+保存报告…	Save report...
+打开设计调试	Open design debug
+详情（选中结果行）	Detail (select a result row)
+文件名	File name
+耗时ms	Time ms
+摘要	Summary
+说明	Note
+OK 	OK 
+  NG 	  NG 
+  失败 	  Fail 
+上移	Move up
+下移	Move down
+自动排列	Auto arrange
+重命名	Rename
+复制	Copy
+问题	Issues
+OK 0  NG 0  失败 0	OK 0  NG 0  Fail 0
+方案：-	Solution: -
+无法创建工具数据目录	Cannot create tool data folders

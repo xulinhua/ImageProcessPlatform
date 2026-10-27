@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!--
+    OpenCV 头文件、库目录、链接依赖。仅 VisionCvCom 与 Algo.OpenCV.* 导入本表。
+    库已拷贝到 VisionPlatform\third_party\OpenCV。
+  -->
+  <PropertyGroup>
+    <OpenCVRoot>$(SolutionDir)third_party\OpenCV</OpenCVRoot>
+    <OpenCVInc>$(SolutionDir)third_party</OpenCVInc>
+    <OpenCVLib>$(OpenCVRoot)\lib\$(Platform)\$(Configuration)</OpenCVLib>
+    <OpenCVBin>$(OpenCVRoot)\bin\$(Platform)\$(Configuration)</OpenCVBin>
+    <VisionHasOpenCV>false</VisionHasOpenCV>
+    <VisionHasOpenCV Condition="Exists('$(OpenCVRoot)\include\opencv.hpp')">true</VisionHasOpenCV>
+  </PropertyGroup>
+  <PropertyGroup>
+    <IncludePath>$(OpenCVInc);$(OpenCVRoot)\include;$(SolutionDir)Plugin.VisionCvCom;$(SolutionDir)VisionAlgCv;$(IncludePath)</IncludePath>
+    <LibraryPath>$(OpenCVLib);$(LibraryPath)</LibraryPath>
+    <ExecutablePath>$(OpenCVBin);$(ExecutablePath)</ExecutablePath>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(OpenCVInc);$(OpenCVRoot)\include;$(SolutionDir)Plugin.VisionCvCom;$(SolutionDir)VisionAlgCv;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>HAVE_OPENCV;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(OpenCVLib);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+    <PostBuildEvent>
+      <Command>cmd /c if exist "$(OpenCVBin)\*.dll" (copy /Y "$(OpenCVBin)\*.dll" "$(SolutionDir)bin\$(Platform)\$(Configuration)\") &amp; exit /B 0</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+</Project>

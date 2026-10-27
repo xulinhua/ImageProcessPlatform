@@ -1,0 +1,114 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="path">
+      <UniqueIdentifier>{D4020001-0000-4000-8000-000000000001}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="id">
+      <UniqueIdentifier>{D4020001-0000-4000-8000-000000000002}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="param">
+      <UniqueIdentifier>{D4020001-0000-4000-8000-000000000003}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="text">
+      <UniqueIdentifier>{D4020001-0000-4000-8000-000000000004}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="version">
+      <UniqueIdentifier>{D4020001-0000-4000-8000-000000000005}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="thread">
+      <UniqueIdentifier>{D4020001-0000-4000-8000-000000000006}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="tool">
+      <UniqueIdentifier>{D4020001-0000-4000-8000-000000000007}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="algo">
+      <UniqueIdentifier>{D4020001-0000-4000-8000-000000000008}</UniqueIdentifier>
+    </Filter>
+      <Filter Include="export">
+      <UniqueIdentifier>{A11A1001-0001-4000-8000-0000000000E4}</UniqueIdentifier>
+    </Filter>
+</ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="common\AppPaths.cpp">
+      <Filter>path</Filter>
+    </ClCompile>
+    <ClCompile Include="common\SolutionDataPaths.cpp">
+      <Filter>path</Filter>
+    </ClCompile>
+    <ClCompile Include="common\ObjectId.cpp">
+      <Filter>id</Filter>
+    </ClCompile>
+    <ClCompile Include="common\ParamKeys.cpp">
+      <Filter>param</Filter>
+    </ClCompile>
+    <ClCompile Include="common\ParamValue.cpp">
+      <Filter>param</Filter>
+    </ClCompile>
+    <ClCompile Include="common\TextEncoding.cpp">
+      <Filter>text</Filter>
+    </ClCompile>
+    <ClCompile Include="common\VisionVersion.cpp">
+      <Filter>version</Filter>
+    </ClCompile>
+    <ClCompile Include="thread\ThreadPool.cpp">
+      <Filter>thread</Filter>
+    </ClCompile>
+    <ClCompile Include="common\ToolGeom.cpp">
+      <Filter>tool</Filter>
+    </ClCompile>
+    <ClCompile Include="common\ToolIo.cpp">
+      <Filter>tool</Filter>
+    </ClCompile>
+    <ClCompile Include="common\PortTypes.cpp">
+      <Filter>tool</Filter>
+    </ClCompile>
+    <ClCompile Include="common\AlgLibKind.cpp">
+      <Filter>algo</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="common\AppPaths.h">
+      <Filter>path</Filter>
+    </ClInclude>
+    <ClInclude Include="common\SolutionDataPaths.h">
+      <Filter>path</Filter>
+    </ClInclude>
+    <ClInclude Include="common\ObjectId.h">
+      <Filter>id</Filter>
+    </ClInclude>
+    <ClInclude Include="common\ParamKeys.h">
+      <Filter>param</Filter>
+    </ClInclude>
+    <ClInclude Include="common\ParamValue.h">
+      <Filter>param</Filter>
+    </ClInclude>
+    <ClInclude Include="common\TextEncoding.h">
+      <Filter>text</Filter>
+    </ClInclude>
+    <ClInclude Include="common\VpUtil.h">
+      <Filter>text</Filter>
+    </ClInclude>
+    <ClInclude Include="common\VisionVersion.h">
+      <Filter>version</Filter>
+    </ClInclude>
+    <ClInclude Include="thread\ThreadPool.h">
+      <Filter>thread</Filter>
+    </ClInclude>
+    <ClInclude Include="common\PortTypes.h">
+      <Filter>tool</Filter>
+    </ClInclude>
+    <ClInclude Include="common\ToolGeom.h">
+      <Filter>tool</Filter>
+    </ClInclude>
+    <ClInclude Include="common\ToolIo.h">
+      <Filter>tool</Filter>
+    </ClInclude>
+    <ClInclude Include="common\AlgLibKind.h">
+      <Filter>algo</Filter>
+    </ClInclude>
+    <ClInclude Include="VisionCommonExport.h">
+      <Filter>export</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="export">
+      <UniqueIdentifier>{B4E91A10-7C22-4F18-9A01-000000000001}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="image">
+      <UniqueIdentifier>{B4E91A10-7C22-4F18-9A01-000000000002}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="object">
+      <UniqueIdentifier>{B4E91A10-7C22-4F18-9A01-000000000003}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ops">
+      <UniqueIdentifier>{B4E91A10-7C22-4F18-9A01-000000000004}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="CvImageConvert.cpp">
+      <Filter>image</Filter>
+    </ClCompile>
+    <ClCompile Include="CvObjectConvert.cpp">
+      <Filter>object</Filter>
+    </ClCompile>
+    <ClCompile Include="CvOps.cpp">
+      <Filter>ops</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="VisionCvComExport.h">
+      <Filter>export</Filter>
+    </ClInclude>
+    <ClInclude Include="CvImageConvert.h">
+      <Filter>image</Filter>
+    </ClInclude>
+    <ClInclude Include="CvObjectConvert.h">
+      <Filter>object</Filter>
+    </ClInclude>
+    <ClInclude Include="CvOps.h">
+      <Filter>ops</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

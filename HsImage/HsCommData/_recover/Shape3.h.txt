@@ -1,0 +1,170 @@
+﻿#ifndef HSCOMMDATA_SHAPE3_H
+#define HSCOMMDATA_SHAPE3_H
+
+#include <HsCommData/Geom3.h>
+
+namespace HsCommData {
+
+/**
+ * @class Plane3
+ * @brief 无限平面。过 origin，法向应为单位向量。没有有限包围盒
+ */
+struct HSCOMMDATA_EXPORT Plane3 {
+    Point3 origin; ///< 平面上一点，毫米
+    Point3 normal; ///< 法向。约定单位向量，指向正侧
+
+    /** @brief 过原点、法向为 +Z */
+    Plane3();
+    /**
+     * @brief 指定平面上一点和法向。不在这里归一化
+     * @param origin 平面上一点
+     * @param normal 法向
+     */
+    Plane3(const Point3& origin, const Point3& normal);
+
+    /**
+     * @brief 法向长度是否接近 1
+     * @param eps 模长与 1 的允许偏差
+     */
+    bool isNormalUnit(double eps = 1e-6) const;
+    /** @brief 有符号距离。法向未归一化时结果按当前法向缩放 */
+    double signedDistance(const Point3& p) const;
+};
+
+/**
+ * @class Box3
+ * @brief 有向长方体。位姿平移是中心，局部轴由四元数给出。
+ * hx、hy、hz 是半长，不是全边。接到 HALCON 时全边长要乘 2。
+ */
+struct HSCOMMDATA_EXPORT Box3 {
+    Pose3 pose; ///< 中心位姿。平移为中心，旋转把局部轴变到世界
+    double hx;  ///< 局部 X 半长，毫米。负值表示空
+    double hy;  ///< 局部 Y 半长，毫米。负值表示空
+    double hz;  ///< 局部 Z 半长，毫米。负值表示空
+
+    /** @brief 空盒：半长均为 -1，位姿为单位元 */
+    Box3();
+    /**
+     * @brief 指定中心位姿和三个半长
+     * @param pose 中心位姿
+     * @param hx 局部 X 半长
+     * @param hy 局部 Y 半长
+     * @param hz 局部 Z 半长
+     */
+    Box3(const Pose3& pose, double hx, double hy, double hz);
+
+    /** @brief 任一半长小于 0 则为空。0 是压扁，不算空 */
+    bool isEmpty() const;
+    /** @brief 世界坐标轴对齐包围盒。空盒返回空 Aabb3 */
+    Aabb3 bounds() const;
+};
+
+/**
+ * @class Sphere3
+ * @brief 球。半径小于 0 为空，半径 0 是一个点
+ */
+struct HSCOMMDATA_EXPORT Sphere3 {
+    Point3 center; ///< 球心，毫米
+    double radius; ///< 半径，毫米。小于 0 表示空
+
+    /** @brief 空球：半径 -1 */
+    Sphere3();
+    /**
+     * @brief 指定球心和半径
+     * @param center 球心
+     * @param radius 半径
+     */
+    Sphere3(const Point3& center, double radius);
+
+    /** @brief 半径小于 0 则为空 */
+    bool isEmpty() const;
+    /** @brief 轴对齐包围盒。空球返回空 Aabb3 */
+    Aabb3 bounds() const;
+};
+
+/**
+ * @class Cylinder3
+ * @brief 圆柱。center 在轴上，axis 应为单位方向。
+ * halfHeight 小于 0 表示无限圆柱，此时没有有限包围盒。
+ */
+struct HSCOMMDATA_EXPORT Cylinder3 {
+    Point3 center;    ///< 轴上一点。有限圆柱时为柱段中心
+    Point3 axis;      ///< 轴向。约定单位向量
+    double radius;    ///< 半径，毫米。小于 0 表示空
+    double halfHeight; ///< 半高，毫米。小于 0 表示沿轴向无限延伸
+
+    /** @brief 空圆柱：半径 -1，轴向 +Z */
+    Cylinder3();
+    /**
+     * @brief 指定轴、半径和半高
+     * @param center 轴上一点
+     * @param axis 轴向
+     * @param radius 半径
+     * @param halfHeight 半高。小于 0 为无限
+     */
+    Cylinder3(const Point3& center, const Point3& axis, double radius, double halfHeight);
+
+    /** @brief 半径小于 0 则为空 */
+    bool isEmpty() const;
+    /** @brief 半高小于 0 为无限圆柱。空圆柱不算无限 */
+    bool isInfinite() const;
+    /** @brief 有限圆柱的轴对齐包围盒。空或无限时返回空 Aabb3。轴向接近 0 也返回空 */
+    Aabb3 bounds() const;
+};
+
+/**
+ * @class Line3
+ * @brief 三维线段，端点 a 到 b。不是无限直线
+ */
+struct HSCOMMDATA_EXPORT Line3 {
+    Point3 a; ///< 起点，毫米
+    Point3 b; ///< 终点，毫米
+
+    /** @brief 两端都在原点的退化线段 */
+    Line3();
+    /**
+     * @brief 指定两端
+     * @param a 起点
+     * @param b 终点
+     */
+    Line3(const Point3& a, const Point3& b);
+
+    /** @brief 两端距离。重合时为 0，仍是一条退化线段，不算空几何 */
+    double length() const;
+    /** @brief 两端的轴对齐包围盒 */
+    Aabb3 bounds() const;
+    /**
+     * @brief 线段上的点。t 为 0 在 a，为 1 在 b，不强制夹到 [0,1]
+     * @param t 参数
+     */
+    Point3 pointAt(double t) const;
+};
+
+/**
+ * @class Circle3
+ * @brief 三维圆。圆心、单位法向和半径。不是椭圆，也不是圆弧
+ */
+struct HSCOMMDATA_EXPORT Circle3 {
+    Point3 center; ///< 圆心，毫米
+    Point3 normal; ///< 所在平面法向。约定单位向量
+    double radius; ///< 半径，毫米。小于 0 表示空
+
+    /** @brief 空圆：半径 -1，法向 +Z */
+    Circle3();
+    /**
+     * @brief 指定圆心、法向和半径
+     * @param center 圆心
+     * @param normal 法向
+     * @param radius 半径
+     */
+    Circle3(const Point3& center, const Point3& normal, double radius);
+
+    /** @brief 半径小于 0 则为空 */
+    bool isEmpty() const;
+    /** @brief 轴对齐包围盒。空圆或法向接近 0 时返回空 Aabb3 */
+    Aabb3 bounds() const;
+};
+
+}
+
+#endif

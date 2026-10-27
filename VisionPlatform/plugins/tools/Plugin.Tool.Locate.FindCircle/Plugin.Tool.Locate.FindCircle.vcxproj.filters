@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="entry">
+      <UniqueIdentifier>{B4E91A10-7C22-4F18-9A01-00000000005B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="para">
+      <UniqueIdentifier>{B4E91A10-7C22-4F18-9A01-00000000005C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="tool">
+      <UniqueIdentifier>{B4E91A10-7C22-4F18-9A01-00000000005D}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="PluginEntry.cpp">
+      <Filter>entry</Filter>
+    </ClCompile>
+    <ClCompile Include="FindCircleTool.cpp">
+      <Filter>tool</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="FindCircleTool.h">
+      <Filter>tool</Filter>
+    </ClInclude>
+    <ClInclude Include="ToolParaFindCircle.hpp">
+      <Filter>para</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

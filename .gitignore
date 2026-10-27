@@ -1,0 +1,29 @@
+# Visual Studio 用户与 IDE 缓存
+.vs/
+*.suo
+*.user
+*.sdf
+*.opensdf
+*.VC.db
+*.VC.VC.opendb
+*.vcxproj.user
+ipch/
+
+# 编译中间文件（落在工程目录旁时也忽略）
+*.obj
+*.iobj
+*.ipdb
+*.ilk
+*.idb
+*.pch
+*.tlog
+*.recipe
+*.lastbuildstate
+
+# 各工程中间目录
+obj/
+
+# 本仓库的生成输出。third_party 下的预编译库不在这些路径里，继续入库。
+/VisionPlatform/bin/
+/VisionPlatform/*/bin/
+/HsImage/**/bin/
