@@ -1,0 +1,2 @@
+VisionPlatform/third_party/OpenCV/bin/Win32/Debug/hsvisbasalld.dll filter=lfs diff=lfs merge=lfs -text
+VisionPlatform/third_party/OpenCV/bin/x64/Debug/hsvisbasall64d.dll filter=lfs diff=lfs merge=lfs -text
