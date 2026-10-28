@@ -4,6 +4,7 @@
  */
 
 #include "LicenseCodec.h"
+#include "LicenseCodeUi.h"
 #include "LicenseUiTheme.h"
 #include <QApplication>
 #include <QCalendarWidget>
@@ -219,6 +220,7 @@ int main(int argc, char* argv[])
 
     QLabel* requestTitle = new QLabel(QString::fromUtf8("1  客户申请码"));
     requestTitle->setObjectName(QStringLiteral("section"));
+    QPushButton* importBtn = new QPushButton(QString::fromUtf8("导入"));
     QPushButton* look = new QPushButton(QString::fromUtf8("查看"));
     QPlainTextEdit* request = new QPlainTextEdit();
     request->setObjectName(QStringLiteral("codeBox"));
@@ -257,6 +259,8 @@ int main(int argc, char* argv[])
     QLabel* resultTitle = new QLabel(QString::fromUtf8("3  注册码"));
     resultTitle->setObjectName(QStringLiteral("section"));
     QPushButton* copyBtn = new QPushButton(QString::fromUtf8("复制"));
+    QPushButton* exportBtn = new QPushButton(QString::fromUtf8("导出"));
+    QPushButton* qrBtn = new QPushButton(QString::fromUtf8("二维码"));
     QPlainTextEdit* result = new QPlainTextEdit();
     result->setObjectName(QStringLiteral("codeBox"));
     result->setReadOnly(true);
@@ -347,6 +351,15 @@ int main(int argc, char* argv[])
         result->setPlainText(QString::fromUtf8(code.c_str()));
         status->setText(QString::fromUtf8("已签发。把注册码发给客户。"));
     });
+    QObject::connect(importBtn, &QPushButton::clicked, &window, [&window, request, status]() {
+        importLicenseCode(&window, request, status, QString::fromUtf8("申请码"));
+    });
+    QObject::connect(exportBtn, &QPushButton::clicked, &window, [&window, result, status]() {
+        exportLicenseCode(&window, licenseCodeText(result), status, QString::fromUtf8("注册码"));
+    });
+    QObject::connect(qrBtn, &QPushButton::clicked, &window, [&window, result, status]() {
+        showLicenseQr(&window, licenseCodeText(result), QString::fromUtf8("注册码"), status);
+    });
     QObject::connect(copyBtn, &QPushButton::clicked, &window, [result, status]() {
         if (result->toPlainText().isEmpty()) {
             status->setText(QString::fromUtf8("还没有注册码。"));
@@ -363,6 +376,7 @@ int main(int argc, char* argv[])
     QHBoxLayout* requestHead = new QHBoxLayout();
     requestHead->addWidget(requestTitle);
     requestHead->addStretch(1);
+    requestHead->addWidget(importBtn);
     requestHead->addWidget(look);
     QHBoxLayout* factRow = new QHBoxLayout();
     factRow->addWidget(productKey);
@@ -392,6 +406,8 @@ int main(int argc, char* argv[])
     resultHead->addWidget(resultTitle);
     resultHead->addStretch(1);
     resultHead->addWidget(copyBtn);
+    resultHead->addWidget(exportBtn);
+    resultHead->addWidget(qrBtn);
     QHBoxLayout* foot = new QHBoxLayout();
     foot->addWidget(status, 1);
     foot->addWidget(issue);

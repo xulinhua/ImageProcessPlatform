@@ -3,6 +3,7 @@
  * @brief 客户电脑上的申请和注册。打出申请码，验过注册码后写入许可证
  */
 
+#include "LicenseCodeUi.h"
 #include "LicenseUiTheme.h"
 #include "SoftLicense.h"
 #include <QApplication>
@@ -173,6 +174,8 @@ int main(int argc, char* argv[])
     QLabel* requestTitle = new QLabel(QString::fromUtf8("1  申请码"));
     requestTitle->setObjectName(QStringLiteral("section"));
     QPushButton* copyBtn = new QPushButton(QString::fromUtf8("复制"));
+    QPushButton* exportBtn = new QPushButton(QString::fromUtf8("导出"));
+    QPushButton* qrBtn = new QPushButton(QString::fromUtf8("二维码"));
     QPlainTextEdit* code = new QPlainTextEdit();
     code->setObjectName(QStringLiteral("codeBox"));
     code->setReadOnly(true);
@@ -182,6 +185,7 @@ int main(int argc, char* argv[])
 
     QLabel* regTitle = new QLabel(QString::fromUtf8("2  注册码"));
     regTitle->setObjectName(QStringLiteral("section"));
+    QPushButton* importBtn = new QPushButton(QString::fromUtf8("导入"));
     QPlainTextEdit* paste = new QPlainTextEdit();
     paste->setObjectName(QStringLiteral("codeBox"));
     paste->setPlaceholderText(QString::fromUtf8("粘贴厂家发回的注册码"));
@@ -197,6 +201,8 @@ int main(int argc, char* argv[])
         code->setPlainText(QString::fromUtf8(request.c_str()));
     } else {
         copyBtn->setEnabled(false);
+        exportBtn->setEnabled(false);
+        qrBtn->setEnabled(false);
         applyBtn->setEnabled(false);
     }
     const Vision::LicenseReason opened = hardwareOk ? license.open() : Vision::LicenseMissing;
@@ -206,6 +212,15 @@ int main(int argc, char* argv[])
     QObject::connect(copyBtn, &QPushButton::clicked, &window, [code, status]() {
         QApplication::clipboard()->setText(code->toPlainText());
         status->setText(QString::fromUtf8("已复制申请码。"));
+    });
+    QObject::connect(exportBtn, &QPushButton::clicked, &window, [&window, code, status]() {
+        exportLicenseCode(&window, licenseCodeText(code), status, QString::fromUtf8("申请码"));
+    });
+    QObject::connect(qrBtn, &QPushButton::clicked, &window, [&window, code, status]() {
+        showLicenseQr(&window, licenseCodeText(code), QString::fromUtf8("申请码"), status);
+    });
+    QObject::connect(importBtn, &QPushButton::clicked, &window, [&window, paste, status]() {
+        importLicenseCode(&window, paste, status, QString::fromUtf8("注册码"));
     });
     RegisterPace* pace = new RegisterPace(applyBtn, status, &window);
     QObject::connect(applyBtn, &QPushButton::clicked, &window,
@@ -242,6 +257,12 @@ int main(int argc, char* argv[])
     requestHead->addWidget(requestTitle);
     requestHead->addStretch(1);
     requestHead->addWidget(copyBtn);
+    requestHead->addWidget(exportBtn);
+    requestHead->addWidget(qrBtn);
+    QHBoxLayout* regHead = new QHBoxLayout();
+    regHead->addWidget(regTitle);
+    regHead->addStretch(1);
+    regHead->addWidget(importBtn);
     QHBoxLayout* foot = new QHBoxLayout();
     foot->addWidget(status, 1);
     foot->addWidget(applyBtn);
@@ -254,7 +275,7 @@ int main(int argc, char* argv[])
     layout->addLayout(requestHead);
     layout->addWidget(code, 1);
     layout->addWidget(note);
-    layout->addWidget(regTitle);
+    layout->addLayout(regHead);
     layout->addWidget(paste, 1);
     layout->addLayout(foot);
     applyLicenseWindowIcon(&window);
