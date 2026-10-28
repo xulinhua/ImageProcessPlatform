@@ -1,6 +1,6 @@
 /**
  * @file ICommChannel.h
- * @brief ICommChannelÍ·ÎÄ¼ş
+ * @brief ICommChannelå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -16,61 +16,61 @@
 
 namespace Vision {
 
-/** @brief ´«ÊäÖÖÀà */
+/** @brief ä¼ è¾“ç§ç±» */
 enum CommTransport {
-    TransportSerial = 0,    ///< ´®¿Ú
-    TransportTcpClient = 1, ///< TCP ¿Í»§¶Ë
-    TransportTcpServer = 2, ///< TCP ·şÎñ¶Ë
+    TransportSerial = 0,    ///< ä¸²å£
+    TransportTcpClient = 1, ///< TCP å®¢æˆ·ç«¯
+    TransportTcpServer = 2, ///< TCP æœåŠ¡ç«¯
     TransportUdp = 3        ///< UDP
 };
 
-/** @class CommPeer @brief Í¨µÀÉÏµÄÒ»¸ö¶Ô¶Ë¡£´®¿Ú / TCP ¿Í»§¶Ë / UDP Ö»ÓĞÒ»¸ö£¬id Îª¿Õ */
+/** @class CommPeer @brief é€šé“ä¸Šçš„ä¸€ä¸ªå¯¹ç«¯ã€‚ä¸²å£ / TCP å®¢æˆ·ç«¯ / UDP åªæœ‰ä¸€ä¸ªï¼Œid ä¸ºç©º */
 struct CommPeer {
-    std::string id;     ///< ¶Ëµã id£»µ¥Á¬½ÓÍ¨µÀÎª¿Õ
-    std::string remote; ///< ¶Ô¶ËÃèÊö£¬Èç 192.168.0.2:502
+    std::string id;     ///< ç«¯ç‚¹ idï¼›å•è¿æ¥é€šé“ä¸ºç©º
+    std::string remote; ///< å¯¹ç«¯æè¿°ï¼Œå¦‚ 192.168.0.2:502
 };
 
 typedef std::vector<unsigned char> CommBytes;
 
 /**
  * @class ICommChannel
- * @brief ´«Êä»ùÀà£ºÖ»¸ºÔğ×Ö½Ú½ø³ö£¬²»½âÊÍ Modbus
+ * @brief ä¼ è¾“åŸºç±»ï¼šåªè´Ÿè´£å­—èŠ‚è¿›å‡ºï¼Œä¸è§£é‡Š Modbus
  */
 class ICommChannel {
 public:
     virtual ~ICommChannel() {}
 
-    /** @brief ´«ÊäÖÖÀà */
+    /** @brief ä¼ è¾“ç§ç±» */
     virtual CommTransport transport() const = 0;
-    /** @brief °´²ÎÊı´ò¿ª£»Ê§°ÜĞ´Èë err */
+    /** @brief æŒ‰å‚æ•°æ‰“å¼€ï¼›å¤±è´¥å†™å…¥ err */
     virtual bool open(const ParamMap& params, std::string* err) = 0;
-    /** @brief ¹Ø±ÕÍ¨µÀ */
+    /** @brief å…³é—­é€šé“ */
     virtual void close() = 0;
-    /** @brief ÊÇ·ñÒÑ´ò¿ª */
+    /** @brief æ˜¯å¦å·²æ‰“å¼€ */
     virtual bool isOpen() const = 0;
 
-    /** @brief µ±Ç°¶Ô¶Ë¡£·şÎñ¶ËÎªÒÑ½ÓÈëµÄ¿Í»§¶Ë */
+    /** @brief å½“å‰å¯¹ç«¯ã€‚æœåŠ¡ç«¯ä¸ºå·²æ¥å…¥çš„å®¢æˆ·ç«¯ */
     virtual std::vector<CommPeer> peers() const = 0;
 
     /**
-     * @brief Ğ´×Ö½Ú
-     * @param peerId ·şÎñ¶Ë±ØÌî£»ÆäËüÍ¨µÀºöÂÔ
+     * @brief å†™å­—èŠ‚
+     * @param peerId æœåŠ¡ç«¯å¿…å¡«ï¼›å…¶å®ƒé€šé“å¿½ç•¥
      */
     virtual bool write(const std::string& peerId, const CommBytes& data, int timeoutMs, std::string* err) = 0;
     /**
-     * @brief ¶Á×Ö½Ú¡£»º³åÀïÒÑÓĞÊı¾İÔòÁ¢¿Ì·µ»Ø£¬·ñÔòµÈµ½³¬Ê±
+     * @brief è¯»å­—èŠ‚ã€‚ç¼“å†²é‡Œå·²æœ‰æ•°æ®åˆ™ç«‹åˆ»è¿”å›ï¼Œå¦åˆ™ç­‰åˆ°è¶…æ—¶
      */
     virtual CommBytes read(const std::string& peerId, int maxBytes, int timeoutMs, std::string* err) = 0;
-    /** @brief ¶ªµô½ÓÊÕ»º³å£¬±ÜÃâ¾ÉÊı¾İ´®½øÏÂÒ»´ÎÇëÇó */
+    /** @brief ä¸¢æ‰æ¥æ”¶ç¼“å†²ï¼Œé¿å…æ—§æ•°æ®ä¸²è¿›ä¸‹ä¸€æ¬¡è¯·æ±‚ */
     virtual void drain(const std::string& peerId) = 0;
     /**
-     * @brief µÈµ½ÈÎÒ»¶ËµãÊÕµ½Êı¾İ
-     * @return ¶Ëµã id£»³¬Ê±»ò±¾Í¨µÀ²»ÊÇ·şÎñ¶ËÊ±Îª¿Õ
+     * @brief ç­‰åˆ°ä»»ä¸€ç«¯ç‚¹æ”¶åˆ°æ•°æ®
+     * @return ç«¯ç‚¹ idï¼›è¶…æ—¶æˆ–æœ¬é€šé“ä¸æ˜¯æœåŠ¡ç«¯æ—¶ä¸ºç©º
      */
     virtual std::string waitIncoming(int timeoutMs) = 0;
 };
 
-/** @brief Ğ´Èë´íÎóÎÄ±¾£»err Îª¿ÕÔòºöÂÔ */
+/** @brief å†™å…¥é”™è¯¯æ–‡æœ¬ï¼›err ä¸ºç©ºåˆ™å¿½ç•¥ */
 VISION_COMM_API void setCommErr(std::string* err, const std::string& msg);
 
 }

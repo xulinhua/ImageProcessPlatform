@@ -79,7 +79,9 @@
     <ClCompile Include="SerialChannel.cpp" />
     <ClCompile Include="TcpChannel.cpp" />
     <ClCompile Include="UdpChannel.cpp" />
-    <ClCompile Include="StageTimer.cpp" />  </ItemGroup>
+    <ClCompile Include="StageTimer.cpp" />
+    <ClCompile Include="CommFrame.cpp" />
+  </ItemGroup>
   <ItemGroup>
         <ClInclude Include="VisionCommExport.h" />
 <ClInclude Include="CommMgr.h" />

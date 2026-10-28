@@ -1,6 +1,6 @@
 /**
  * @file LoginDlg.h
- * @brief LoginDlgÍ·ÎÄ¼ş
+ * @brief LoginDlgå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -23,37 +23,37 @@ class Session;
 
 /**
  * @class LoginDlg
- * @brief ÓÃ»§µÇÂ¼¡£¿ÚÁî¿ÉÎª¿Õ
+ * @brief ç”¨æˆ·ç™»å½•ã€‚å£ä»¤å¯ä¸ºç©º
  */
 class VISION_UI_API LoginDlg : public QDialog {
     Q_OBJECT
 public:
     /**
-     * @brief ¹¹ÔìµÇÂ¼¶Ô»°¿ò£¬Ô¤ÌîÉÏ´ÎµÇÂ¼Ãû
-     * @param session »á»°£¨²»ÓµÓĞ£©
+     * @brief æ„é€ ç™»å½•å¯¹è¯æ¡†ï¼Œé¢„å¡«ä¸Šæ¬¡ç™»å½•å
+     * @param session ä¼šè¯ï¼ˆä¸æ‹¥æœ‰ï¼‰
      */
     explicit LoginDlg(Session* session, QWidget* parent = 0);
     /**
-     * @brief ÌáÈ¨µÇÂ¼£¬ÕË»§Ğë¾ß±¸ËùĞèÈ¨ÏŞ
-     * @param neededPerm È¨ÏŞ¼ü
+     * @brief ææƒç™»å½•ï¼Œè´¦æˆ·é¡»å…·å¤‡æ‰€éœ€æƒé™
+     * @param neededPerm æƒé™é”®
      */
     LoginDlg(Session* session, const std::string& neededPerm, QWidget* parent = 0);
-    /** @brief ³¢ÊÔµÇÂ¼£»Ê§°ÜÀÛ¼Æ´ÎÊı²¢ÏÔÊ¾´íÎó */
+    /** @brief å°è¯•ç™»å½•ï¼›å¤±è´¥ç´¯è®¡æ¬¡æ•°å¹¶æ˜¾ç¤ºé”™è¯¯ */
     QString loginName() const;
 
 private slots:
-    /** @brief ³¢ÊÔµÇÂ¼£»Ê§°ÜÀÛ¼Æ´ÎÊı²¢ÏÔÊ¾´íÎó */
+    /** @brief å°è¯•ç™»å½•ï¼›å¤±è´¥ç´¯è®¡æ¬¡æ•°å¹¶æ˜¾ç¤ºé”™è¯¯ */
     void onOk();
 
 private:
-    /** @brief ´îµÇÂ¼±íµ¥£»ÓĞËùĞèÈ¨ÏŞÊ±¸ÄÎªÌáÈ¨ÎÄ°¸ */
+    /** @brief æ­ç™»å½•è¡¨å•ï¼›æœ‰æ‰€éœ€æƒé™æ—¶æ”¹ä¸ºææƒæ–‡æ¡ˆ */
     void buildUi();
-    Session* m_session;  ///< »á»°£¨²»ÓµÓĞ£©
-    QLineEdit* m_user;  ///< µÇÂ¼Ãû
-    QLineEdit* m_pwd;   ///< ¿ÚÁî
-    QLabel* m_err;      ///< ´íÎóÌáÊ¾
-    int m_fails;        ///< Á¬ĞøÊ§°Ü´ÎÊı
-    std::string m_neededPerm; ///< ÌáÈ¨ËùĞèÈ¨ÏŞ£¬¿Õ±íÊ¾ÆÕÍ¨µÇÂ¼
+    Session* m_session;  ///< ä¼šè¯ï¼ˆä¸æ‹¥æœ‰ï¼‰
+    QLineEdit* m_user;  ///< ç™»å½•å
+    QLineEdit* m_pwd;   ///< å£ä»¤
+    QLabel* m_err;      ///< é”™è¯¯æç¤º
+    int m_fails;        ///< è¿ç»­å¤±è´¥æ¬¡æ•°
+    std::string m_neededPerm; ///< ææƒæ‰€éœ€æƒé™ï¼Œç©ºè¡¨ç¤ºæ™®é€šç™»å½•
 };
 
 }

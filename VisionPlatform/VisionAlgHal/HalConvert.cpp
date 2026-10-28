@@ -1,6 +1,6 @@
 /**
  * @file HalConvert.cpp
- * @brief HalConvertÊµÏÖ
+ * @brief HalConvertå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -11,7 +11,7 @@
 
 namespace Vision {
 
-// °Ñ Halcon Òì³£Ğ´³É UTF-8 ËµÃ÷
+// æŠŠ Halcon å¼‚å¸¸å†™æˆ UTF-8 è¯´æ˜
 static void setHalconErr(std::string* err, const HalconCpp::HException& e)
 {
     if (!err) {
@@ -21,7 +21,7 @@ static void setHalconErr(std::string* err, const HalconCpp::HException& e)
     *err = t ? std::string(t) : std::string("Halcon error");
 }
 
-// ÏÈÕÛ³ÉÁ¬Ğø Gray8£¬ÔÙ½»¸ø Halcon ¿½±´Ò»·İ£¬±ÜÃâ½èÓÃ FrameBuffer Ö¸Õë
+// å…ˆæŠ˜æˆè¿ç»­ Gray8ï¼Œå†äº¤ç»™ Halcon æ‹·è´ä¸€ä»½ï¼Œé¿å…å€Ÿç”¨ FrameBuffer æŒ‡é’ˆ
 bool frameToHImageGray(const HsCommData::HsImage& fb, HalconCpp::HImage* out, std::string* err)
 {
     if (!out) {
@@ -55,7 +55,7 @@ bool frameToHImageGray(const HsCommData::HsImage& fb, HalconCpp::HImage* out, st
         }
     }
     try {
-        // ×ÔÓĞ»º³åĞ´Èë GenImageConst£¬±ÜÃâ GenImage1 Íâ¹ÒÖ¸ÕëÔÚ¿½±´Ç°±»ÓÅ»¯/Ê§Ğ§
+        // è‡ªæœ‰ç¼“å†²å†™å…¥ GenImageConstï¼Œé¿å… GenImage1 å¤–æŒ‚æŒ‡é’ˆåœ¨æ‹·è´å‰è¢«ä¼˜åŒ–/å¤±æ•ˆ
         HalconCpp::HImage tmp;
         tmp.GenImageConst("byte", fb.width, fb.height);
         HalconCpp::HString type;
@@ -78,7 +78,7 @@ bool frameToHImageGray(const HsCommData::HsImage& fb, HalconCpp::HImage* out, st
     }
 }
 
-// °´Í¨µÀÊıĞ´³É Gray8 »ò RGB888£»·Ç byte ÏÈ×ªÀàĞÍ
+// æŒ‰é€šé“æ•°å†™æˆ Gray8 æˆ– RGB888ï¼›é byte å…ˆè½¬ç±»å‹
 bool hImageToFrame(const HalconCpp::HImage& img, int64_t frameId, HsCommData::HsImage* out, std::string* err)
 {
     if (!out) {

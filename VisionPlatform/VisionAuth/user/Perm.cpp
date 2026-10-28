@@ -1,6 +1,6 @@
 /**
  * @file Perm.cpp
- * @brief PermÊµÏÖ
+ * @brief Permå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -10,7 +10,7 @@
 
 namespace Vision {
 
-// µÚ i ÌõÈ¨ÏŞ£»Ô½½ç·µ»Ø PermNone
+// ç¬¬ i æ¡æƒé™ï¼›è¶Šç•Œè¿”å› PermNone
 Perm permissionAt(int i)
 {
     static const Perm k[] = {
@@ -34,7 +34,7 @@ Perm permissionAt(int i)
     return k[i];
 }
 
-// µã·ÖÈ¨ÏŞ±êÊ¶£¨ÓëÎ»Ã¶¾Ù¶ÔÕÕ£©
+// ç‚¹åˆ†æƒé™æ ‡è¯†ï¼ˆä¸ä½æšä¸¾å¯¹ç…§ï¼‰
 const char* permissionId(Perm p)
 {
     switch (p) {
@@ -55,7 +55,7 @@ const char* permissionId(Perm p)
     }
 }
 
-// ±êÊ¶ ¡ú Î»£»Î´Öª·µ»Ø PermNone
+// æ ‡è¯† â†’ ä½ï¼›æœªçŸ¥è¿”å› PermNone
 Perm permissionFromId(const char* id)
 {
     if (!id || !*id) {
@@ -70,49 +70,49 @@ Perm permissionFromId(const char* id)
     return PermNone;
 }
 
-// È¨ÏŞÖĞÎÄ±êÌâ£¨ÉèÖÃ±í×ó²à£©
+// æƒé™ä¸­æ–‡æ ‡é¢˜ï¼ˆè®¾ç½®è¡¨å·¦ä¾§ï¼‰
 std::string permissionTitle(Perm p)
 {
     switch (p) {
-    case PermRuntimeView:           return Translate::tr("²é¿´ÔËĞĞ½çÃæ");
-    case PermRuntimeStartStop:      return Translate::tr("¿ªÊ¼ / Í£Ö¹");
-    case PermRuntimeResetCount:     return Translate::tr("ÇåÁã²úÁ¿");
-    case PermRuntimeSwitchSolution: return Translate::tr("ÔËĞĞÌ¬ÇĞ»»·½°¸");
-    case PermEnterDesign:           return Translate::tr("½øÈëÉè¼ÆÌ¬");
-    case PermEditSolution:          return Translate::tr("±à¼­·½°¸ / ¹¤Õ¾ / Á÷³Ì");
-    case PermEditDevice:            return Translate::tr("Éè±¸¹ÜÀí");
-    case PermEditComm:              return Translate::tr("Í¨ĞÅ¹ÜÀí");
-    case PermRunJobDebug:           return Translate::tr("µ÷ÊÔÔËĞĞ±¾¹¤¾ß / Á÷³Ì");
-    case PermManageUsers:           return Translate::tr("ÓÃ»§¹ÜÀí");
-    case PermEditAppSettings:       return Translate::tr("ÏµÍ³ÉèÖÃ¡¢¿Ø¼şÈ¨ÏŞ");
-    case PermViewLogs:              return Translate::tr("²é¿´ÈÕÖ¾");
-    case PermManageLogs:            return Translate::tr("ÈÕÖ¾¹ÜÀí");
+    case PermRuntimeView:           return Translate::tr("æŸ¥çœ‹è¿è¡Œç•Œé¢");
+    case PermRuntimeStartStop:      return Translate::tr("å¼€å§‹ / åœæ­¢");
+    case PermRuntimeResetCount:     return Translate::tr("æ¸…é›¶äº§é‡");
+    case PermRuntimeSwitchSolution: return Translate::tr("è¿è¡Œæ€åˆ‡æ¢æ–¹æ¡ˆ");
+    case PermEnterDesign:           return Translate::tr("è¿›å…¥è®¾è®¡æ€");
+    case PermEditSolution:          return Translate::tr("ç¼–è¾‘æ–¹æ¡ˆ / å·¥ç«™ / æµç¨‹");
+    case PermEditDevice:            return Translate::tr("è®¾å¤‡ç®¡ç†");
+    case PermEditComm:              return Translate::tr("é€šä¿¡ç®¡ç†");
+    case PermRunJobDebug:           return Translate::tr("è°ƒè¯•è¿è¡Œæœ¬å·¥å…· / æµç¨‹");
+    case PermManageUsers:           return Translate::tr("ç”¨æˆ·ç®¡ç†");
+    case PermEditAppSettings:       return Translate::tr("ç³»ç»Ÿè®¾ç½®ã€æ§ä»¶æƒé™");
+    case PermViewLogs:              return Translate::tr("æŸ¥çœ‹æ—¥å¿—");
+    case PermManageLogs:            return Translate::tr("æ—¥å¿—ç®¡ç†");
     default:                        return "";
     }
 }
 
-// È¨ÏŞËµÃ÷£¨ÉèÖÃ±íÌáÊ¾£©
+// æƒé™è¯´æ˜ï¼ˆè®¾ç½®è¡¨æç¤ºï¼‰
 std::string permissionHint(Perm p)
 {
     switch (p) {
-    case PermRuntimeView:           return Translate::tr("ÔËĞĞÒ³Í¼Ïñ¡¢Í³¼Æ¡¢½á¹ûÀúÊ·");
-    case PermRuntimeStartStop:      return Translate::tr("×ó²à¿ªÊ¼¡¢Í£Ö¹°´Å¥Óë²Ëµ¥");
-    case PermRuntimeResetCount:     return Translate::tr("ÇåÁã°´Å¥Óë²Ëµ¥");
-    case PermRuntimeSwitchSolution: return Translate::tr("ÔËĞĞÒ³¡¸ÇĞ»»·½°¸¡¹");
-    case PermEnterDesign:           return Translate::tr("¶¥À¸ÇĞµ½Éè¼Æ£»ÎŞÈ¨ÏŞÊ±µ¯µÇÂ¼ÌáÈ¨");
-    case PermEditSolution:          return Translate::tr("¸Ä¹¤Õ¾¡¢Á÷³Ì¡¢¹¤¾ß¡¢ROI");
-    case PermEditDevice:            return Translate::tr("Éè±¸Ì¨ÕËÓëÁ¬½Ó²ÎÊı");
-    case PermEditComm:              return Translate::tr("´®¿Ú / TCP / UDP / MODBUS Í¨µÀ");
-    case PermRunJobDebug:           return Translate::tr("Éè¼ÆÌ¬¡¸ÔËĞĞ±¾¹¤¾ß / ±¾Á÷³Ì¡¹");
-    case PermManageUsers:           return Translate::tr("Ôö¼õÓÃ»§¡¢¸Ä½ÇÉ«¡¢ÖØÖÃ¿ÚÁî");
-    case PermEditAppSettings:       return Translate::tr("¿ª»ú×Ô¶¯µÇÂ¼¡¢½ÇÉ«È¨ÏŞ±í");
-    case PermViewLogs:              return Translate::tr("´ò¿ªÈÕÖ¾¹Ü¿Ø£¬²é¿´²Ù×÷Óëµ÷ÊÔ¼ÇÂ¼");
-    case PermManageLogs:            return Translate::tr("°´ÈÕÉ¾³ı²Ù×÷ÈÕÖ¾¡¢µ÷ÊÔÈÕÖ¾ÎÄ¼ş");
+    case PermRuntimeView:           return Translate::tr("è¿è¡Œé¡µå›¾åƒã€ç»Ÿè®¡ã€ç»“æœå†å²");
+    case PermRuntimeStartStop:      return Translate::tr("å·¦ä¾§å¼€å§‹ã€åœæ­¢æŒ‰é’®ä¸èœå•");
+    case PermRuntimeResetCount:     return Translate::tr("æ¸…é›¶æŒ‰é’®ä¸èœå•");
+    case PermRuntimeSwitchSolution: return Translate::tr("è¿è¡Œé¡µã€Œåˆ‡æ¢æ–¹æ¡ˆã€");
+    case PermEnterDesign:           return Translate::tr("é¡¶æ åˆ‡åˆ°è®¾è®¡ï¼›æ— æƒé™æ—¶å¼¹ç™»å½•ææƒ");
+    case PermEditSolution:          return Translate::tr("æ”¹å·¥ç«™ã€æµç¨‹ã€å·¥å…·ã€ROI");
+    case PermEditDevice:            return Translate::tr("è®¾å¤‡å°è´¦ä¸è¿æ¥å‚æ•°");
+    case PermEditComm:              return Translate::tr("ä¸²å£ / TCP / UDP / MODBUS é€šé“");
+    case PermRunJobDebug:           return Translate::tr("è®¾è®¡æ€ã€Œè¿è¡Œæœ¬å·¥å…· / æœ¬æµç¨‹ã€");
+    case PermManageUsers:           return Translate::tr("å¢å‡ç”¨æˆ·ã€æ”¹è§’è‰²ã€é‡ç½®å£ä»¤");
+    case PermEditAppSettings:       return Translate::tr("å¼€æœºè‡ªåŠ¨ç™»å½•ã€è§’è‰²æƒé™è¡¨");
+    case PermViewLogs:              return Translate::tr("æ‰“å¼€æ—¥å¿—ç®¡æ§ï¼ŒæŸ¥çœ‹æ“ä½œä¸è°ƒè¯•è®°å½•");
+    case PermManageLogs:            return Translate::tr("æŒ‰æ—¥åˆ é™¤æ“ä½œæ—¥å¿—ã€è°ƒè¯•æ—¥å¿—æ–‡ä»¶");
     default:                        return "";
     }
 }
 
-// ½ÇÉ«³ö³§È¨ÏŞÑÚÂë
+// è§’è‰²å‡ºå‚æƒé™æ©ç 
 uint32_t defaultPerms(UserRole role)
 {
     uint32_t p = PermRuntimeView | PermRuntimeStartStop;
@@ -127,7 +127,7 @@ uint32_t defaultPerms(UserRole role)
     return p;
 }
 
-// ½ÇÉ«Ëø¶¨Î»£º²»ÄÜÔÚÉèÖÃÀï¹Øµô
+// è§’è‰²é”å®šä½ï¼šä¸èƒ½åœ¨è®¾ç½®é‡Œå…³æ‰
 uint32_t lockedPerms(UserRole role)
 {
     uint32_t p = PermRuntimeView;
@@ -137,7 +137,7 @@ uint32_t lockedPerms(UserRole role)
     return p;
 }
 
-// ½áºÏ²Ù×÷Ô±Á½Ïî¿ª¹ØºóµÄÓĞĞ§ÑÚÂë
+// ç»“åˆæ“ä½œå‘˜ä¸¤é¡¹å¼€å…³åçš„æœ‰æ•ˆæ©ç 
 uint32_t permissionsForRole(UserRole role, bool operatorReset, bool operatorSwitch)
 {
     uint32_t p = defaultPerms(role);
@@ -152,7 +152,7 @@ uint32_t permissionsForRole(UserRole role, bool operatorReset, bool operatorSwit
     return p;
 }
 
-// µÚ page ¸öÈ¨ÏŞÒ³Ãæ£»Ô½½ç·µ»Ø¿ÕÒ³
+// ç¬¬ page ä¸ªæƒé™é¡µé¢ï¼›è¶Šç•Œè¿”å›ç©ºé¡µ
 PermPageDesc permPageAt(int page)
 {
     static const Perm kRuntime[] = {
@@ -176,35 +176,35 @@ PermPageDesc permPageAt(int page)
     d.items = 0;
     d.itemCount = 0;
     if (page == 0) {
-        d.title = Translate::tr("ÔËĞĞÒ³");
-        d.hint = Translate::tr("ÔËĞĞÌ¬»­ÃæÓë°´Å¥");
+        d.title = Translate::tr("è¿è¡Œé¡µ");
+        d.hint = Translate::tr("è¿è¡Œæ€ç”»é¢ä¸æŒ‰é’®");
         d.items = kRuntime;
         d.itemCount = 4;
     } else if (page == 1) {
-        d.title = Translate::tr("Éè¼ÆÒ³");
-        d.hint = Translate::tr("Åä·½±à¼­Óëµ÷ÊÔÔËĞĞ");
+        d.title = Translate::tr("è®¾è®¡é¡µ");
+        d.hint = Translate::tr("é…æ–¹ç¼–è¾‘ä¸è°ƒè¯•è¿è¡Œ");
         d.items = kDesign;
         d.itemCount = 3;
     } else if (page == 2) {
-        d.title = Translate::tr("Éè±¸Ò³");
-        d.hint = Translate::tr("Éè±¸Ì¨ÕË");
+        d.title = Translate::tr("è®¾å¤‡é¡µ");
+        d.hint = Translate::tr("è®¾å¤‡å°è´¦");
         d.items = kDevice;
         d.itemCount = 2;
     } else if (page == 3) {
-        d.title = Translate::tr("ÏµÍ³Ò³");
-        d.hint = Translate::tr("ÓÃ»§Óë±¾»úÉèÖÃ");
+        d.title = Translate::tr("ç³»ç»Ÿé¡µ");
+        d.hint = Translate::tr("ç”¨æˆ·ä¸æœ¬æœºè®¾ç½®");
         d.items = kSystem;
         d.itemCount = 2;
     } else if (page == 4) {
-        d.title = Translate::tr("ÈÕÖ¾Ò³");
-        d.hint = Translate::tr("²Ù×÷ÈÕÖ¾Óëµ÷ÊÔÈÕÖ¾");
+        d.title = Translate::tr("æ—¥å¿—é¡µ");
+        d.hint = Translate::tr("æ“ä½œæ—¥å¿—ä¸è°ƒè¯•æ—¥å¿—");
         d.items = kLog;
         d.itemCount = 2;
     }
     return d;
 }
 
-// ¾ÉÉèÖÃÃ»ÓĞÈÕÖ¾Î»Ê±£¬¸ø¹¤³ÌÊ¦¡¢¹ÜÀíÔ±²¹ÉÏ³ö³§ÈÕÖ¾È¨ÏŞ
+// æ—§è®¾ç½®æ²¡æœ‰æ—¥å¿—ä½æ—¶ï¼Œç»™å·¥ç¨‹å¸ˆã€ç®¡ç†å‘˜è¡¥ä¸Šå‡ºå‚æ—¥å¿—æƒé™
 void migrateLogPermBits(uint32_t* op, uint32_t* eng, uint32_t* admin)
 {
     if (!op || !eng || !admin) {
@@ -217,14 +217,14 @@ void migrateLogPermBits(uint32_t* op, uint32_t* eng, uint32_t* admin)
     }
 }
 
-// ½ÇÉ«ÖĞÎÄÃû
+// è§’è‰²ä¸­æ–‡å
 std::string roleTitle(UserRole role)
 {
     switch (role) {
-    case RoleAdmin:    return Translate::tr("¹ÜÀíÔ±");
-    case RoleEngineer: return Translate::tr("¹¤³ÌÊ¦");
-    case RoleOperator: return Translate::tr("²Ù×÷Ô±");
-    default:           return Translate::tr("²Ù×÷Ô±");
+    case RoleAdmin:    return Translate::tr("ç®¡ç†å‘˜");
+    case RoleEngineer: return Translate::tr("å·¥ç¨‹å¸ˆ");
+    case RoleOperator: return Translate::tr("æ“ä½œå‘˜");
+    default:           return Translate::tr("æ“ä½œå‘˜");
     }
 }
 

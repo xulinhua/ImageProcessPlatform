@@ -1,6 +1,6 @@
 /**
  * @file RoiConv.cpp
- * @brief RoiConvÊµÏÖ
+ * @brief RoiConvå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -21,7 +21,7 @@ namespace Vision {
 
 namespace {
 
-// ÕÒÏßÀà£ºÁ½µãÂÖÀªÊÕ³ÉÖ±Ïß
+// æ‰¾çº¿ç±»ï¼šä¸¤ç‚¹è½®å»“æ”¶æˆç›´çº¿
 void coerceLineRoiIfNeeded(const std::string& toolName, HsCommData::HsObject* r)
 {
     if (!r || !r->isInitialized() || r->isEmpty()) {
@@ -43,7 +43,7 @@ void coerceLineRoiIfNeeded(const std::string& toolName, HsCommData::HsObject* r)
     *r = ln;
 }
 
-// ¿É»æÖÆ·ÖÇøµÄÌõÊıÉÏÏŞ¡£0 ±íÊ¾²»ÏŞÖÆ
+// å¯ç»˜åˆ¶åˆ†åŒºçš„æ¡æ•°ä¸Šé™ã€‚0 è¡¨ç¤ºä¸é™åˆ¶
 int drawSlotLimit(const std::string& toolName)
 {
     const ToolCaps caps = ToolCfg::capsFor(toolName);
@@ -64,7 +64,7 @@ int drawSlotLimit(const std::string& toolName)
 
 } // namespace
 
-// ¹¤¾ßÈ«²¿ÓĞĞ§ ROI
+// å·¥å…·å…¨éƒ¨æœ‰æ•ˆ ROI
 std::vector<HsCommData::Graphic> ToolCfg::drawings() const
 {
     std::vector<HsCommData::Graphic> o;
@@ -82,7 +82,7 @@ std::vector<HsCommData::Graphic> ToolCfg::drawings() const
     return o;
 }
 
-// È«²¿ ROI »æÖÆ²ã£¬²¢°´Ñ¡ÖĞĞĞµ÷½ÚÍ¸Ã÷¶È
+// å…¨éƒ¨ ROI ç»˜åˆ¶å±‚ï¼Œå¹¶æŒ‰é€‰ä¸­è¡Œè°ƒèŠ‚é€æ˜åº¦
 std::vector<HsCommData::Graphic> ToolCfg::drawingsForDisplay(int selectedIndex) const
 {
     const std::vector<HsCommData::Graphic> all = drawings();
@@ -101,7 +101,7 @@ std::vector<HsCommData::Graphic> ToolCfg::drawingsForDisplay(int selectedIndex) 
     return out;
 }
 
-// °ÑÒ»±Ê»æÖÆĞ´»Ø£»¶à ROI ×·¼Ó£¬ÆäÓàÌæ»»
+// æŠŠä¸€ç¬”ç»˜åˆ¶å†™å›ï¼›å¤š ROI è¿½åŠ ï¼Œå…¶ä½™æ›¿æ¢
 void ToolCfg::applyDrawnRoi(const HsCommData::Graphic& g)
 {
         HsCommData::HsObject drawn = drawingToRoi(g);
@@ -125,7 +125,7 @@ void ToolCfg::applyDrawnRoi(const HsCommData::Graphic& g)
     syncRois();
 }
 
-// °´ĞĞºÅ¸üĞÂÒÑÓĞ ROI
+// æŒ‰è¡Œå·æ›´æ–°å·²æœ‰ ROI
 void ToolCfg::applyDrawnRoiAt(const HsCommData::Graphic& g, int index)
 {
     if (index < 0) {
@@ -144,7 +144,7 @@ void ToolCfg::applyDrawnRoiAt(const HsCommData::Graphic& g, int index)
     syncRois();
 }
 
-// ´Ó Drawing id£¨roi.N£©½âÎöĞĞºÅ
+// ä» Drawing idï¼ˆroi.Nï¼‰è§£æè¡Œå·
 int roiIndexFromDrawingId(const std::string& id)
 {
     if (id.size() <= 4 || id.compare(0, 4, "roi.") != 0) {
@@ -162,14 +162,14 @@ int roiIndexFromDrawingId(const std::string& id)
     return static_cast<int>(v);
 }
 
-// Çå¿Õ¼ì²â¿ò
+// æ¸…ç©ºæ£€æµ‹æ¡†
 void ToolCfg::clearRois()
 {
     rois.clear();
     syncRois();
 }
 
-// É¾×îºóÒ»¸ö¼ì²â¿ò
+// åˆ æœ€åä¸€ä¸ªæ£€æµ‹æ¡†
 void ToolCfg::removeLastRoi()
 {
     if (rois.empty()) {
@@ -179,7 +179,7 @@ void ToolCfg::removeLastRoi()
     syncRois();
 }
 
-// °´ĞĞºÅÉ¾Ò»Ö»¼ì²â¿ò
+// æŒ‰è¡Œå·åˆ ä¸€åªæ£€æµ‹æ¡†
 void ToolCfg::removeRoiAt(int index)
 {
         syncRois();
@@ -190,34 +190,34 @@ void ToolCfg::removeRoiAt(int index)
     syncRois();
 }
 
-// ¼¸ºÎÖÖÀàÖĞÎÄÃû
+// å‡ ä½•ç§ç±»ä¸­æ–‡å
 std::string roiKindTitle(int kind)
 {
     if (kind == static_cast<int>(HsCommData::ObjCircle)) {
-        return Translate::tr("Ô²");
+        return Translate::tr("åœ†");
     }
     if (kind == static_cast<int>(HsCommData::ObjEllipse)) {
-        return Translate::tr("ÍÖÔ²");
+        return Translate::tr("æ¤­åœ†");
     }
     if (kind == static_cast<int>(HsCommData::ObjRect1)) {
-        return Translate::tr("¾ØĞÎ");
+        return Translate::tr("çŸ©å½¢");
     }
     if (kind == static_cast<int>(HsCommData::ObjRect2)) {
-        return Translate::tr("Ğı×ª¾ØĞÎ");
+        return Translate::tr("æ—‹è½¬çŸ©å½¢");
     }
     if (kind == static_cast<int>(HsCommData::ObjLine)) {
-        return Translate::tr("Ö±Ïß");
+        return Translate::tr("ç›´çº¿");
     }
     if (kind == static_cast<int>(HsCommData::ObjContour) || kind == static_cast<int>(HsCommData::ObjPoly)) {
-        return Translate::tr("ÂÖÀª");
+        return Translate::tr("è½®å»“");
     }
     if (kind == static_cast<int>(HsCommData::ObjRegion)) {
-        return Translate::tr("ÇøÓò");
+        return Translate::tr("åŒºåŸŸ");
     }
     return Translate::tr("ROI");
 }
 
-// °´ÖÖÀàÆ´¿É¶ÁÃ÷Ï¸
+// æŒ‰ç§ç±»æ‹¼å¯è¯»æ˜ç»†
 std::string formatRoiDetail(const HsCommData::HsObject& roi)
 {
     char buf[320];
@@ -229,45 +229,45 @@ std::string formatRoiDetail(const HsCommData::HsObject& roi)
     if (roi.kind() == HsCommData::ObjCircle) {
         const HsCommData::CircleP* c = roi.circleAt(0);
         sprintf_s(buf, "%s  X=%.1f  Y=%.1f  %s=%.1f",
-                  roiKindTitle(kind).c_str(), c->c.x, c->c.y, Translate::tr("°ë¾¶").c_str(), c->r);
+                  roiKindTitle(kind).c_str(), c->c.x, c->c.y, Translate::tr("åŠå¾„").c_str(), c->r);
     } else if (roi.kind() == HsCommData::ObjEllipse) {
         const HsCommData::EllipseP* e = roi.ellipseAt(0);
         sprintf_s(buf, "%s  X=%.1f  Y=%.1f  a=%.1f  b=%.1f  %s=%.1f%s",
                   roiKindTitle(kind).c_str(), e->c.x, e->c.y, e->ra, e->rb,
-                  Translate::tr("½Ç¶È").c_str(), HsCommData::toDegree(e->phi), Translate::tr("¶È").c_str());
+                  Translate::tr("è§’åº¦").c_str(), HsCommData::toDegree(e->phi), Translate::tr("åº¦").c_str());
     } else if (roi.kind() == HsCommData::ObjRect1) {
         const HsCommData::Rect1P* rc = roi.rect1At(0);
         sprintf_s(buf, "%s  X=%.1f  Y=%.1f  %s=%.1f  %s=%.1f",
-                  roiKindTitle(kind).c_str(), rc->r.x, rc->r.y, Translate::tr("¿í").c_str(), rc->r.w, Translate::tr("¸ß").c_str(), rc->r.h);
+                  roiKindTitle(kind).c_str(), rc->r.x, rc->r.y, Translate::tr("å®½").c_str(), rc->r.w, Translate::tr("é«˜").c_str(), rc->r.h);
     } else if (roi.kind() == HsCommData::ObjRect2) {
         const HsCommData::Rect2P* rc = roi.rect2At(0);
         sprintf_s(buf, "%s  X=%.1f  Y=%.1f  %s=%.1f  %s=%.1f  %s=%.1f%s",
-                  roiKindTitle(kind).c_str(), rc->c.x, rc->c.y, Translate::tr("°ë³¤").c_str(), rc->l1, Translate::tr("°ë¿í").c_str(), rc->l2,
-                  Translate::tr("½Ç¶È").c_str(), HsCommData::toDegree(rc->phi), Translate::tr("¶È").c_str());
+                  roiKindTitle(kind).c_str(), rc->c.x, rc->c.y, Translate::tr("åŠé•¿").c_str(), rc->l1, Translate::tr("åŠå®½").c_str(), rc->l2,
+                  Translate::tr("è§’åº¦").c_str(), HsCommData::toDegree(rc->phi), Translate::tr("åº¦").c_str());
     } else if (roi.kind() == HsCommData::ObjLine) {
         const HsCommData::LineP* ln = roi.lineAt(0);
         const double dx = ln->b.x - ln->a.x;
         const double dy = ln->b.y - ln->a.y;
         const double len = std::sqrt(dx * dx + dy * dy);
         sprintf_s(buf, "%s  (%.1f, %.1f)-(%.1f, %.1f)  %s=%.1f",
-                  roiKindTitle(kind).c_str(), ln->a.x, ln->a.y, ln->b.x, ln->b.y, Translate::tr("³¤¶È").c_str(), len);
+                  roiKindTitle(kind).c_str(), ln->a.x, ln->a.y, ln->b.x, ln->b.y, Translate::tr("é•¿åº¦").c_str(), len);
     } else if (roi.kind() == HsCommData::ObjContour) {
         const HsCommData::HsContour* c = roi.contourAt(0);
         sprintf_s(buf, "%s  %s=%u",
-                  roiKindTitle(kind).c_str(), Translate::tr("¶¥µã").c_str(),
+                  roiKindTitle(kind).c_str(), Translate::tr("é¡¶ç‚¹").c_str(),
                   static_cast<unsigned>(c ? c->ptCount() : 0));
     } else if (roi.kind() == HsCommData::ObjRegion) {
         const HsCommData::HsRegion* reg = roi.regionAt(0);
         int64_t area = reg ? static_cast<int64_t>(reg->area()) : 0;
         sprintf_s(buf, "%s  %s=%lld",
-                  roiKindTitle(kind).c_str(), Translate::tr("Ãæ»ı").c_str(), static_cast<long long>(area));
+                  roiKindTitle(kind).c_str(), Translate::tr("é¢ç§¯").c_str(), static_cast<long long>(area));
     } else {
         sprintf_s(buf, "%s", roiKindTitle(kind).c_str());
     }
     return std::string(buf);
 }
 
-// Ã÷Ï¸µşÔÚÍ¼ĞÎÏÂ·½
+// æ˜ç»†å åœ¨å›¾å½¢ä¸‹æ–¹
 void roiLabelAnchor(const HsCommData::HsObject& roi, double* x, double* y)
 {
     const HsCommData::Graphic g = roiToDrawing(roi);

@@ -1,6 +1,6 @@
 /**
  * @file JobRstRuleDlg.h
- * @brief JobRstRuleDlgÍ·ÎÄ¼ş
+ * @brief JobRstRuleDlgå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -19,24 +19,24 @@ class JobRstRulePanel;
 
 /**
  * @class JobRstRuleDlg
- * @brief Êä³ö½á¹ûÅäÖÃ¶ÀÁ¢Ò³£ºÂß¼­ÅĞ¶Ï¾ØÕóÓëÁ÷³Ì½á¹ûÈ¡×Ô
+ * @brief è¾“å‡ºç»“æœé…ç½®ç‹¬ç«‹é¡µï¼šé€»è¾‘åˆ¤æ–­çŸ©é˜µä¸æµç¨‹ç»“æœå–è‡ª
  */
 class VISION_UI_API JobRstRuleDlg : public QDialog {
     Q_OBJECT
 public:
     /**
-     * @brief ´ò¿ªÅäÖÃÒ³
-     * @param job µ±Ç°±à¼­ÖĞµÄ JobCfg draft£¨²»ÓµÓĞ£©
-     * @param editable ÊÇ·ñ¿É¸Ä
+     * @brief æ‰“å¼€é…ç½®é¡µ
+     * @param job å½“å‰ç¼–è¾‘ä¸­çš„ JobCfg draftï¼ˆä¸æ‹¥æœ‰ï¼‰
+     * @param editable æ˜¯å¦å¯æ”¹
      */
     JobRstRuleDlg(JobCfg* job, bool editable, QWidget* parent = 0);
 
-    /** @brief È·¶¨£ºĞ´»Ø JobCfg */
+    /** @brief ç¡®å®šï¼šå†™å› JobCfg */
     void accept();
 
 private:
-    JobRstRulePanel* m_panel; ///< ¾ØÕó±à¼­Çø
-    JobCfg* m_job;                  ///< °ó¶¨µÄ JobCfg draft
+    JobRstRulePanel* m_panel; ///< çŸ©é˜µç¼–è¾‘åŒº
+    JobCfg* m_job;                  ///< ç»‘å®šçš„ JobCfg draft
 };
 
 }

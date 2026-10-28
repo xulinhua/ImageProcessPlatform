@@ -1,6 +1,6 @@
 /**
  * @file MainWindow.cpp
- * @brief MainWindowÊµÏÖ
+ * @brief MainWindowå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -25,7 +25,7 @@
 
 static QString L8(const char* s)
 {
-    return QString::fromLocal8Bit(s);
+    return QString::fromUtf8(s);
 }
 
 BenchWorker::BenchWorker(QObject* parent)
@@ -36,26 +36,26 @@ BenchWorker::BenchWorker(QObject* parent)
 void BenchWorker::genGray(int width, int height)
 {
     const QImage img = makeBenchGrayImage(width, height);
-    emit imageReady(img, L8("ÒÑÉú³É»Ò¶ÈÍ¼ %1x%2").arg(img.width()).arg(img.height()));
+    emit imageReady(img, L8("å·²ç”Ÿæˆç°åº¦å›¾ %1x%2").arg(img.width()).arg(img.height()));
     emit finished();
 }
 
 void BenchWorker::genColor(int width, int height)
 {
     const QImage img = makeBenchColorImage(width, height);
-    emit imageReady(img, L8("ÒÑÉú³É²ÊÉ«Í¼ %1x%2").arg(img.width()).arg(img.height()));
+    emit imageReady(img, L8("å·²ç”Ÿæˆå½©è‰²å›¾ %1x%2").arg(img.width()).arg(img.height()));
     emit finished();
 }
 
 void BenchWorker::runGray(QImage src, int loops, bool toHalconOnly)
 {
     if (src.isNull() || src.format() != QImage::Format_Grayscale8) {
-        emit logReady(L8("ÇëÏÈÉú³É»Ò¶ÈÍ¼"));
+        emit logReady(L8("è¯·å…ˆç”Ÿæˆç°åº¦å›¾"));
         emit finished();
         return;
     }
     if (!convertBenchHasHalcon()) {
-        emit logReady(L8("Î´Á´½Ó Halcon, ÎŞ·¨×ª»»"));
+        emit logReady(L8("æœªé“¾æ¥ Halcon, æ— æ³•è½¬æ¢"));
         emit finished();
         return;
     }
@@ -70,7 +70,7 @@ void BenchWorker::runGray(QImage src, int loops, bool toHalconOnly)
     for (int i = 0; i < loops; ++i) {
         const ConvertBenchRst r = benchGrayRoundTrip(src, toHalconOnly);
         if (!r.ok) {
-            emit logReady(L8("Ê§°Ü: %1").arg(r.error));
+            emit logReady(L8("å¤±è´¥: %1").arg(r.error));
             emit finished();
             return;
         }
@@ -93,11 +93,11 @@ void BenchWorker::runGray(QImage src, int loops, bool toHalconOnly)
             all += r.stages;
         }
     }
-    all += L8("Æ½¾ù buf->H: %1 ms (%2)\n").arg(sumTo / loops, 0, 'f', 3).arg(loops);
+    all += L8("å¹³å‡ buf->H: %1 ms (%2)\n").arg(sumTo / loops, 0, 'f', 3).arg(loops);
     if (fromCount > 0) {
-        all += L8("Æ½¾ù H->buf: %1 ms (%2)\n").arg(sumFrom / fromCount, 0, 'f', 3).arg(fromCount);
+        all += L8("å¹³å‡ H->buf: %1 ms (%2)\n").arg(sumFrom / fromCount, 0, 'f', 3).arg(fromCount);
     }
-    all += L8("(½ö buffer->Halcon / Halcon->buffer ½Ó¿Ú, ²»º¬ CopyImage)\n");
+    all += L8("(ä»… buffer->Halcon / Halcon->buffer æ¥å£, ä¸å« CopyImage)\n");
     emit convertPairReady(src, lastOut);
     emit logReady(all);
     emit finished();
@@ -106,12 +106,12 @@ void BenchWorker::runGray(QImage src, int loops, bool toHalconOnly)
 void BenchWorker::runColor(QImage src, int method, int loops, bool toHalconOnly)
 {
     if (src.isNull() || src.format() == QImage::Format_Grayscale8) {
-        emit logReady(L8("ÇëÏÈÉú³É²ÊÉ«Í¼"));
+        emit logReady(L8("è¯·å…ˆç”Ÿæˆå½©è‰²å›¾"));
         emit finished();
         return;
     }
     if (!convertBenchHasHalcon()) {
-        emit logReady(L8("Î´Á´½Ó Halcon, ÎŞ·¨×ª»»"));
+        emit logReady(L8("æœªé“¾æ¥ Halcon, æ— æ³•è½¬æ¢"));
         emit finished();
         return;
     }
@@ -126,11 +126,11 @@ void BenchWorker::runColor(QImage src, int method, int loops, bool toHalconOnly)
     } else if (method == static_cast<int>(ColorMethodOpenCvMerge)) {
         m = ColorMethodOpenCvMerge;
     }
-    // ¶ªÆúÊ×ÂÖÀäÆô¶¯£¨Halcon/¶ÑÊ×´Î´¥´ï£©£¬±ÜÃâÆ½¾ù±»À­¸ß
+    // ä¸¢å¼ƒé¦–è½®å†·å¯åŠ¨ï¼ˆHalcon/å †é¦–æ¬¡è§¦è¾¾ï¼‰ï¼Œé¿å…å¹³å‡è¢«æ‹‰é«˜
     {
         const ConvertBenchRst warm = benchColorConvert(src, m, toHalconOnly);
         if (!warm.ok) {
-            emit logReady(L8("Ê§°Ü: %1").arg(warm.error));
+            emit logReady(L8("å¤±è´¥: %1").arg(warm.error));
             emit finished();
             return;
         }
@@ -143,7 +143,7 @@ void BenchWorker::runColor(QImage src, int method, int loops, bool toHalconOnly)
     for (int i = 0; i < loops; ++i) {
         const ConvertBenchRst r = benchColorConvert(src, m, toHalconOnly);
         if (!r.ok) {
-            emit logReady(L8("Ê§°Ü: %1").arg(r.error));
+            emit logReady(L8("å¤±è´¥: %1").arg(r.error));
             emit finished();
             return;
         }
@@ -166,11 +166,11 @@ void BenchWorker::runColor(QImage src, int method, int loops, bool toHalconOnly)
             all += r.stages;
         }
     }
-    all += L8("Æ½¾ù buf->H: %1 ms (%2)\n").arg(sumTo / loops, 0, 'f', 3).arg(loops);
+    all += L8("å¹³å‡ buf->H: %1 ms (%2)\n").arg(sumTo / loops, 0, 'f', 3).arg(loops);
     if (fromCount > 0) {
-        all += L8("Æ½¾ù H->buf: %1 ms (%2)\n").arg(sumFrom / fromCount, 0, 'f', 3).arg(fromCount);
+        all += L8("å¹³å‡ H->buf: %1 ms (%2)\n").arg(sumFrom / fromCount, 0, 'f', 3).arg(fromCount);
     }
-    all += L8("(½ö buffer->Halcon / Halcon->buffer ½Ó¿Ú, ²»º¬ CopyImage)\n");
+    all += L8("(ä»… buffer->Halcon / Halcon->buffer æ¥å£, ä¸å« CopyImage)\n");
     emit convertPairReady(src, lastOut);
     emit logReady(all);
     emit finished();
@@ -213,7 +213,7 @@ MainWindow::MainWindow(QWidget* parent)
     QWidget* rowBefore = new QWidget(viewers);
     QVBoxLayout* layBefore = new QVBoxLayout(rowBefore);
     layBefore->setContentsMargins(0, 0, 0, 0);
-    QLabel* labBefore = new QLabel(L8("×ª»»Ç°"), rowBefore);
+    QLabel* labBefore = new QLabel(L8("è½¬æ¢å‰"), rowBefore);
     m_apiBefore = new image_widget::ImageWidgetApi(rowBefore);
     layBefore->addWidget(labBefore);
     layBefore->addWidget(m_apiBefore->widget(), 1);
@@ -221,7 +221,7 @@ MainWindow::MainWindow(QWidget* parent)
     QWidget* rowAfter = new QWidget(viewers);
     QVBoxLayout* layAfter = new QVBoxLayout(rowAfter);
     layAfter->setContentsMargins(0, 0, 0, 0);
-    QLabel* labAfter = new QLabel(L8("×ª»»ºó"), rowAfter);
+    QLabel* labAfter = new QLabel(L8("è½¬æ¢å"), rowAfter);
     m_apiAfter = new image_widget::ImageWidgetApi(rowAfter);
     layAfter->addWidget(labAfter);
     layAfter->addWidget(m_apiAfter->widget(), 1);
@@ -240,11 +240,11 @@ MainWindow::MainWindow(QWidget* parent)
     m_info = new QLabel(side);
     m_info->setWordWrap(true);
     m_info->setText(L8("Halcon: %1\nOpenCV: %2")
-                        .arg(convertBenchHasHalcon() ? L8("ÒÑÁ´½Ó") : L8("Î´Á´½Ó"))
-                        .arg(convertBenchHasOpenCv() ? L8("ÒÑÁ´½Ó") : L8("Î´Á´½Ó(Interleave ×ß QImage)")));
+                        .arg(convertBenchHasHalcon() ? L8("å·²é“¾æ¥") : L8("æœªé“¾æ¥"))
+                        .arg(convertBenchHasOpenCv() ? L8("å·²é“¾æ¥") : L8("æœªé“¾æ¥(Interleave èµ° QImage)")));
     sideLay->addWidget(m_info);
 
-    QGroupBox* genBox = new QGroupBox(L8("Éú³É²âÊÔÍ¼(Ô¼ 500 ÍòÏñËØ)"), side);
+    QGroupBox* genBox = new QGroupBox(L8("ç”Ÿæˆæµ‹è¯•å›¾(çº¦ 500 ä¸‡åƒç´ )"), side);
     QFormLayout* genForm = new QFormLayout(genBox);
     m_width = new QSpinBox(genBox);
     m_width->setRange(64, 8192);
@@ -252,41 +252,41 @@ MainWindow::MainWindow(QWidget* parent)
     m_height = new QSpinBox(genBox);
     m_height->setRange(64, 8192);
     m_height->setValue(2048);
-    genForm->addRow(L8("¿í"), m_width);
-    genForm->addRow(L8("¸ß"), m_height);
-    m_btnGray = new QPushButton(L8("Éú³É»Ò¶ÈÍ¼"), genBox);
-    m_btnColor = new QPushButton(L8("Éú³É²ÊÉ«Í¼"), genBox);
+    genForm->addRow(L8("å®½"), m_width);
+    genForm->addRow(L8("é«˜"), m_height);
+    m_btnGray = new QPushButton(L8("ç”Ÿæˆç°åº¦å›¾"), genBox);
+    m_btnColor = new QPushButton(L8("ç”Ÿæˆå½©è‰²å›¾"), genBox);
     genForm->addRow(m_btnGray);
     genForm->addRow(m_btnColor);
     sideLay->addWidget(genBox);
 
-    QGroupBox* runBox = new QGroupBox(L8("×ª»»¼ÆÊ±"), side);
+    QGroupBox* runBox = new QGroupBox(L8("è½¬æ¢è®¡æ—¶"), side);
     QVBoxLayout* runLay = new QVBoxLayout(runBox);
     m_loops = new QSpinBox(runBox);
     m_loops->setRange(1, 50);
     m_loops->setValue(3);
     {
         QHBoxLayout* row = new QHBoxLayout();
-        row->addWidget(new QLabel(L8("Ñ­»·´ÎÊı"), runBox));
+        row->addWidget(new QLabel(L8("å¾ªç¯æ¬¡æ•°"), runBox));
         row->addWidget(m_loops);
         runLay->addLayout(row);
     }
     m_colorMethod = new QComboBox(runBox);
-    m_colorMethod->addItem(L8("1. ForÑ­»· / Pointer3"), static_cast<int>(ColorMethodForLoop));
+    m_colorMethod->addItem(L8("1. Forå¾ªç¯ / Pointer3"), static_cast<int>(ColorMethodForLoop));
     m_colorMethod->addItem(L8("2. InterleaveChannels+memcpy"), static_cast<int>(ColorMethodInterleave));
     m_colorMethod->addItem(L8("3. GenImage3/Decompose3"), static_cast<int>(ColorMethodGenImage3));
     m_colorMethod->addItem(L8("4. OpenCV split/merge"), static_cast<int>(ColorMethodOpenCvMerge));
-    runLay->addWidget(new QLabel(L8("²ÊÉ«·½Ê½"), runBox));
+    runLay->addWidget(new QLabel(L8("å½©è‰²æ–¹å¼"), runBox));
     runLay->addWidget(m_colorMethod);
 
-    m_dirRound = new QRadioButton(L8("Íù·µ »º³å->H->»º³å"), runBox);
-    m_dirToH = new QRadioButton(L8("½ö ->Halcon"), runBox);
+    m_dirRound = new QRadioButton(L8("å¾€è¿” ç¼“å†²->H->ç¼“å†²"), runBox);
+    m_dirToH = new QRadioButton(L8("ä»… ->Halcon"), runBox);
     m_dirRound->setChecked(true);
     runLay->addWidget(m_dirRound);
     runLay->addWidget(m_dirToH);
 
-    m_btnGrayRun = new QPushButton(L8("²â»Ò¶È×ª»»"), runBox);
-    m_btnColorRun = new QPushButton(L8("²â²ÊÉ«×ª»»"), runBox);
+    m_btnGrayRun = new QPushButton(L8("æµ‹ç°åº¦è½¬æ¢"), runBox);
+    m_btnColorRun = new QPushButton(L8("æµ‹å½©è‰²è½¬æ¢"), runBox);
     runLay->addWidget(m_btnGrayRun);
     runLay->addWidget(m_btnColorRun);
     sideLay->addWidget(runBox);
@@ -296,7 +296,7 @@ MainWindow::MainWindow(QWidget* parent)
     m_log->setMaximumBlockCount(500);
     sideLay->addWidget(m_log, 1);
 
-    QPushButton* btnClear = new QPushButton(L8("Çå¿ÕÈÕÖ¾"), side);
+    QPushButton* btnClear = new QPushButton(L8("æ¸…ç©ºæ—¥å¿—"), side);
     sideLay->addWidget(btnClear);
     root->addWidget(side);
 
@@ -316,8 +316,8 @@ MainWindow::MainWindow(QWidget* parent)
     connect(m_btnColorRun, SIGNAL(clicked()), this, SLOT(onRunColorRoundTrip()));
     connect(btnClear, SIGNAL(clicked()), this, SLOT(onClearLog()));
 
-    tabs->addTab(central, L8("Í¼Ïñ×ª»»"));
-    tabs->addTab(new ObjectPage(tabs), L8("½á¹¹ÓëËø"));
+    tabs->addTab(central, L8("å›¾åƒè½¬æ¢"));
+    tabs->addTab(new ObjectPage(tabs), L8("ç»“æ„ä¸é”"));
     tabs->setCurrentIndex(1);
     onGenColor();
 }
@@ -367,7 +367,7 @@ void MainWindow::setViewerImage(image_widget::ImageWidgetApi* api, const QImage&
     }
     api->setImage(img);
     const qint64 pix = static_cast<qint64>(img.width()) * static_cast<qint64>(img.height());
-    api->setImageInfoText(L8("%1  %2x%3  %4 ÍòÏñËØ  %5")
+    api->setImageInfoText(L8("%1  %2x%3  %4 ä¸‡åƒç´   %5")
                               .arg(tag)
                               .arg(img.width())
                               .arg(img.height())
@@ -377,12 +377,12 @@ void MainWindow::setViewerImage(image_widget::ImageWidgetApi* api, const QImage&
 
 void MainWindow::showBeforeImage()
 {
-    setViewerImage(m_apiBefore, m_before, L8("×ª»»Ç°"));
+    setViewerImage(m_apiBefore, m_before, L8("è½¬æ¢å‰"));
 }
 
 void MainWindow::showAfterImage()
 {
-    setViewerImage(m_apiAfter, m_after, L8("×ª»»ºó"));
+    setViewerImage(m_apiAfter, m_after, L8("è½¬æ¢å"));
 }
 
 void MainWindow::appendLog(const QString& line)
@@ -394,7 +394,7 @@ void MainWindow::onGenGray()
 {
     if (m_busy) return;
     setBusy(true);
-    appendLog(L8("ÕıÔÚÉú³É»Ò¶ÈÍ¼..."));
+    appendLog(L8("æ­£åœ¨ç”Ÿæˆç°åº¦å›¾..."));
     QMetaObject::invokeMethod(m_worker, "genGray", Qt::QueuedConnection,
                               Q_ARG(int, m_width->value()), Q_ARG(int, m_height->value()));
 }
@@ -403,7 +403,7 @@ void MainWindow::onGenColor()
 {
     if (m_busy) return;
     setBusy(true);
-    appendLog(L8("ÕıÔÚÉú³É²ÊÉ«Í¼..."));
+    appendLog(L8("æ­£åœ¨ç”Ÿæˆå½©è‰²å›¾..."));
     QMetaObject::invokeMethod(m_worker, "genColor", Qt::QueuedConnection,
                               Q_ARG(int, m_width->value()), Q_ARG(int, m_height->value()));
 }
@@ -412,7 +412,7 @@ void MainWindow::onRunGray()
 {
     if (m_busy) return;
     setBusy(true);
-    appendLog(L8("ÕıÔÚ²â»Ò¶È×ª»»..."));
+    appendLog(L8("æ­£åœ¨æµ‹ç°åº¦è½¬æ¢..."));
     QMetaObject::invokeMethod(m_worker, "runGray", Qt::QueuedConnection, Q_ARG(QImage, m_before),
                               Q_ARG(int, m_loops->value()), Q_ARG(bool, m_dirToH->isChecked()));
 }
@@ -421,7 +421,7 @@ void MainWindow::onRunColorRoundTrip()
 {
     if (m_busy) return;
     setBusy(true);
-    appendLog(L8("ÕıÔÚ²â²ÊÉ«×ª»»..."));
+    appendLog(L8("æ­£åœ¨æµ‹å½©è‰²è½¬æ¢..."));
     QMetaObject::invokeMethod(m_worker, "runColor", Qt::QueuedConnection, Q_ARG(QImage, m_before),
                               Q_ARG(int, static_cast<int>(currentColorMethod())),
                               Q_ARG(int, m_loops->value()), Q_ARG(bool, m_dirToH->isChecked()));
@@ -448,7 +448,7 @@ void MainWindow::onConvertPairReady(const QImage& before, const QImage& after)
     showBeforeImage();
     showAfterImage();
     if (after.isNull()) {
-        appendLog(L8("½ö->H ÎŞ H->buf Í¼, ×ª»»ºó¿Õ"));
+        appendLog(L8("ä»…->H æ—  H->buf å›¾, è½¬æ¢åç©º"));
     }
 }
 

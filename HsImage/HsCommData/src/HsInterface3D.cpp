@@ -1,6 +1,6 @@
 /**
  * @file HsInterface3D.cpp
- * @brief HsInterface3DÊµÏÖ
+ * @brief HsInterface3Då®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -16,7 +16,7 @@ namespace HsCommData {
 
 namespace {
 
-// ÈÆ X µÄĞı×ª¾ØÕó
+// ç»• X çš„æ—‹è½¬çŸ©é˜µ
 void rotX(double a, double* r)
 {
     const double c = std::cos(a);
@@ -26,7 +26,7 @@ void rotX(double a, double* r)
     r[6] = 0.0; r[7] = s;   r[8] = c;
 }
 
-// ÈÆ Y µÄĞı×ª¾ØÕó
+// ç»• Y çš„æ—‹è½¬çŸ©é˜µ
 void rotY(double a, double* r)
 {
     const double c = std::cos(a);
@@ -36,7 +36,7 @@ void rotY(double a, double* r)
     r[6] = -s;  r[7] = 0.0; r[8] = c;
 }
 
-// ÈÆ Z µÄĞı×ª¾ØÕó
+// ç»• Z çš„æ—‹è½¬çŸ©é˜µ
 void rotZ(double a, double* r)
 {
     const double c = std::cos(a);
@@ -46,7 +46,7 @@ void rotZ(double a, double* r)
     r[6] = 0.0; r[7] = 0.0; r[8] = 1.0;
 }
 
-// 3x3 ¾ØÕóÏà³Ë£¬out = A * B
+// 3x3 çŸ©é˜µç›¸ä¹˜ï¼Œout = A * B
 void mul3(const double* a, const double* b, double* out)
 {
     double t[9];
@@ -62,7 +62,7 @@ void mul3(const double* a, const double* b, double* out)
     }
 }
 
-// °´Ë³ĞòºÏ³ÉÅ·À­¾ØÕó¡£abg Óë Zyx ÏàÍ¬£¬gba Óë Xyz ÏàÍ¬
+// æŒ‰é¡ºåºåˆæˆæ¬§æ‹‰çŸ©é˜µã€‚abg ä¸ Zyx ç›¸åŒï¼Œgba ä¸ Xyz ç›¸åŒ
 void eulerMatrix(HsSystem::EulerOrder order, double rx, double ry, double rz, double* r)
 {
     double x[9];
@@ -81,7 +81,7 @@ void eulerMatrix(HsSystem::EulerOrder order, double rx, double ry, double rz, do
     }
 }
 
-// Ğı×ª¾ØÕó×ª Hamilton ËÄÔªÊı£¬Óë Pose3::rotate Ò»ÖÂ
+// æ—‹è½¬çŸ©é˜µè½¬ Hamilton å››å…ƒæ•°ï¼Œä¸ Pose3::rotate ä¸€è‡´
 void quatFromMatrix(const double* r, double* qx, double* qy, double* qz, double* qw)
 {
     const double tr = r[0] + r[4] + r[8];
@@ -112,7 +112,7 @@ void quatFromMatrix(const double* r, double* qx, double* qy, double* qz, double*
     }
 }
 
-// ÓÉ R = Rz*Ry*Rx ·´½âÈÆ X¡¢Y¡¢Z¡£ÍòÏò½ÚËøÊ± rz ÖÃ 0
+// ç”± R = Rz*Ry*Rx åè§£ç»• Xã€Yã€Zã€‚ä¸‡å‘èŠ‚é”æ—¶ rz ç½® 0
 void anglesZyx(const double* r, double* rx, double* ry, double* rz)
 {
     const double sy = -r[6];
@@ -127,7 +127,7 @@ void anglesZyx(const double* r, double* rx, double* ry, double* rz)
     }
 }
 
-// ÓÉ R = Rx*Ry*Rz ·´½â¡£ÍòÏò½ÚËøÊ± rz ÖÃ 0
+// ç”± R = Rx*Ry*Rz åè§£ã€‚ä¸‡å‘èŠ‚é”æ—¶ rz ç½® 0
 void anglesXyz(const double* r, double* rx, double* ry, double* rz)
 {
     const double sy = r[2];
@@ -142,7 +142,7 @@ void anglesXyz(const double* r, double* rx, double* ry, double* rz)
     }
 }
 
-// Íâ²¿Öá»»µ½ÄÚ²¿¡£Y ÏòÉÏÔ­Ñù·µ»Ø
+// å¤–éƒ¨è½´æ¢åˆ°å†…éƒ¨ã€‚Y å‘ä¸ŠåŸæ ·è¿”å›
 Point3d axesToInternal(HsSystem::AxisFrame frame, const Point3d& e)
 {
     if (frame == HsSystem::FrameZUp) {
@@ -154,7 +154,7 @@ Point3d axesToInternal(HsSystem::AxisFrame frame, const Point3d& e)
     return e;
 }
 
-// ÄÚ²¿Öá»»»ØÍâ²¿¡£Y ÏòÉÏÔ­Ñù·µ»Ø
+// å†…éƒ¨è½´æ¢å›å¤–éƒ¨ã€‚Y å‘ä¸ŠåŸæ ·è¿”å›
 Point3d axesFromInternal(HsSystem::AxisFrame frame, const Point3d& p)
 {
     if (frame == HsSystem::FrameZUp) {
@@ -166,7 +166,7 @@ Point3d axesFromInternal(HsSystem::AxisFrame frame, const Point3d& p)
     return p;
 }
 
-// Íâ²¿Å·À­½Ç»»µ½ÄÚ²¿»¡¶È¡¢ÄæÊ±Õë
+// å¤–éƒ¨æ¬§æ‹‰è§’æ¢åˆ°å†…éƒ¨å¼§åº¦ã€é€†æ—¶é’ˆ
 double eulerToInternal(const HsSystem& system, double external)
 {
     double a = external;
@@ -179,7 +179,7 @@ double eulerToInternal(const HsSystem& system, double external)
     return a;
 }
 
-// ÄÚ²¿»¡¶È»»»ØÍâ²¿µ¥Î»ºÍÕı·½Ïò
+// å†…éƒ¨å¼§åº¦æ¢å›å¤–éƒ¨å•ä½å’Œæ­£æ–¹å‘
 double eulerFromInternal(const HsSystem& system, double internalRad)
 {
     double a = internalRad;
@@ -194,7 +194,7 @@ double eulerFromInternal(const HsSystem& system, double internalRad)
 
 }
 
-// Íâ²¿µã»»³ÉÄÚ²¿µã
+// å¤–éƒ¨ç‚¹æ¢æˆå†…éƒ¨ç‚¹
 Point3d toPoint3(const Point3d& external)
 {
     const HsSystem& system = HsSystem::instance();
@@ -207,7 +207,7 @@ Point3d toPoint3(const Point3d& external)
     return Point3d(p.x * s, p.y * s, p.z * s);
 }
 
-// ÄÚ²¿µã»»³ÉÍâ²¿µã
+// å†…éƒ¨ç‚¹æ¢æˆå¤–éƒ¨ç‚¹
 Point3d fromPoint3(const Point3d& internal)
 {
     const HsSystem& system = HsSystem::instance();
@@ -219,7 +219,7 @@ Point3d fromPoint3(const Point3d& internal)
     return e;
 }
 
-// Íâ²¿Æ½ÒÆºÍÅ·À­½Ç»»³ÉÄÚ²¿Î»×Ë
+// å¤–éƒ¨å¹³ç§»å’Œæ¬§æ‹‰è§’æ¢æˆå†…éƒ¨ä½å§¿
 Pose3 toPose(double tx, double ty, double tz, double a, double b, double c)
 {
     const HsSystem& system = HsSystem::instance();
@@ -234,7 +234,7 @@ Pose3 toPose(double tx, double ty, double tz, double a, double b, double c)
     return Pose3(t.x, t.y, t.z, qx, qy, qz, qw);
 }
 
-// ÄÚ²¿Î»×Ë»»³ÉÍâ²¿Æ½ÒÆºÍÅ·À­½Ç
+// å†…éƒ¨ä½å§¿æ¢æˆå¤–éƒ¨å¹³ç§»å’Œæ¬§æ‹‰è§’
 void fromPose(const Pose3& pose, double* tx, double* ty, double* tz,
               double* a, double* b, double* c)
 {

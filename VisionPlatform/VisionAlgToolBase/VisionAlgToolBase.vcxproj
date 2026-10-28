@@ -38,9 +38,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AlgToolBaseRegistry.cpp" />
+    <ClCompile Include="TolShot.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlgToolBase.h" />
+    <ClInclude Include="TolShot.h" />
     <ClInclude Include="AlgExport.h" />
   </ItemGroup>
   <ItemGroup>

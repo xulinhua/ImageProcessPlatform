@@ -1,6 +1,6 @@
 /**
  * @file ToolEditorRegistry.cpp
- * @brief ToolEditorRegistryÊµÏÖ
+ * @brief ToolEditorRegistryå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -11,14 +11,14 @@
 
 namespace Vision {
 
-// ½ø³ÌÄÚÎ¨Ò»µÇ¼Ç±í
+// è¿›ç¨‹å†…å”¯ä¸€ç™»è®°è¡¨
 ToolEditorRegistry& ToolEditorRegistry::instance()
 {
     static ToolEditorRegistry g;
     return g;
 }
 
-// µÇ¼Ç¹¤¾ßÃûµ½²ÎÊıÒ³¹¤³§¡£Í¨ÓÃÒ³²»°´Ãû×ÖµÇ¼Ç
+// ç™»è®°å·¥å…·ååˆ°å‚æ•°é¡µå·¥å‚ã€‚é€šç”¨é¡µä¸æŒ‰åå­—ç™»è®°
 void ToolEditorRegistry::add(const std::string& toolName, ToolEditorFactory factory)
 {
     if (factory) {
@@ -26,7 +26,7 @@ void ToolEditorRegistry::add(const std::string& toolName, ToolEditorFactory fact
     }
 }
 
-// ²ÎÊıÒ³Ò»ÂÉ°´¹¤¾ß¿ÇµÄ²ÎÊıËµÃ÷Éú³É
+// å‚æ•°é¡µä¸€å¾‹æŒ‰å·¥å…·å£³çš„å‚æ•°è¯´æ˜ç”Ÿæˆ
 ToolEditorBase* ToolEditorRegistry::create(const std::string& toolName, QWidget* parent)
 {
     if (toolName == "preprocess.filter" || toolName == "detect.blob") {
@@ -35,7 +35,7 @@ ToolEditorBase* ToolEditorRegistry::create(const std::string& toolName, QWidget*
     return createGenericEditor(parent);
 }
 
-// ²»ÔÙµÇ¼Ç×¨ÓÃ²ÎÊıÒ³
+// ä¸å†ç™»è®°ä¸“ç”¨å‚æ•°é¡µ
 void registerToolEditors()
 {
 }

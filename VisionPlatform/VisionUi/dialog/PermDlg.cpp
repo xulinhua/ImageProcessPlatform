@@ -1,6 +1,6 @@
 /**
  * @file PermDlg.cpp
- * @brief PermDlgÊµÏÖ
+ * @brief PermDlgå®žçŽ°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -29,17 +29,17 @@
 
 namespace Vision {
 
-// ¿Ø¼þÈ¨ÏÞ£ºÒ³Ãæ·Ö×é + Èý½ÇÉ«¹´Ñ¡
+// æŽ§ä»¶æƒé™ï¼šé¡µé¢åˆ†ç»„ + ä¸‰è§’è‰²å‹¾é€‰
 PermDlg::PermDlg(Session* session, QWidget* parent)
     : QDialog(parent)
     , m_session(session)
 {
-    setWindowTitle(T("¿Ø¼þÈ¨ÏÞ"));
+    setWindowTitle(T("æŽ§ä»¶æƒé™"));
     setModal(true);
     resize(780, 560);
 
     QLabel* hint = new QLabel(
-        T("°´Ò³ÃæÕ¹¿ªºó¹´Ñ¡¸ÃÒ³ÏÂµÄ¿Ø¼þ¡£¹ÜÀíÔ±µÄ¡¸ÓÃ»§¹ÜÀí¡¹¡¸ÏµÍ³ÉèÖÃ¡¹¡¸ÈÕÖ¾¡¹²»¿É¹Ø±Õ£¬ÒÔÃâ°Ñ×Ô¼ºËøÔÚÍâÃæ¡£"),
+        T("æŒ‰é¡µé¢å±•å¼€åŽå‹¾é€‰è¯¥é¡µä¸‹çš„æŽ§ä»¶ã€‚ç®¡ç†å‘˜çš„ã€Œç”¨æˆ·ç®¡ç†ã€ã€Œç³»ç»Ÿè®¾ç½®ã€ã€Œæ—¥å¿—ã€ä¸å¯å…³é—­ï¼Œä»¥å…æŠŠè‡ªå·±é”åœ¨å¤–é¢ã€‚"),
         this);
     hint->setWordWrap(true);
     hint->setObjectName(QLatin1String("hint"));
@@ -47,7 +47,7 @@ PermDlg::PermDlg(Session* session, QWidget* parent)
     m_tree = new QTreeWidget(this);
     m_tree->setColumnCount(4);
     QStringList h;
-    h << T("Ò³Ãæ / ¿Ø¼þ") << T("²Ù×÷Ô±") << T("¹¤³ÌÊ¦") << T("¹ÜÀíÔ±");
+    h << T("é¡µé¢ / æŽ§ä»¶") << T("æ“ä½œå‘˜") << T("å·¥ç¨‹å¸ˆ") << T("ç®¡ç†å‘˜");
     m_tree->setHeaderLabels(h);
     m_tree->header()->setStretchLastSection(true);
     m_tree->setRootIsDecorated(true);
@@ -55,10 +55,10 @@ PermDlg::PermDlg(Session* session, QWidget* parent)
     m_tree->setSelectionMode(QAbstractItemView::NoSelection);
     m_tree->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
-    QPushButton* reset = new QPushButton(T("»Ö¸´Ä¬ÈÏ"), this);
+    QPushButton* reset = new QPushButton(T("æ¢å¤é»˜è®¤"), this);
     connect(reset, SIGNAL(clicked()), this, SLOT(onReset()));
     QDialogButtonBox* box = new QDialogButtonBox(QDialogButtonBox::Save | QDialogButtonBox::Cancel, this);
-    box->button(QDialogButtonBox::Save)->setText(T("±£´æ"));
+    box->button(QDialogButtonBox::Save)->setText(T("ä¿å­˜"));
     setButtonRole(box->button(QDialogButtonBox::Save), "primary");
     connect(box, SIGNAL(accepted()), this, SLOT(onSave()));
     connect(box, SIGNAL(rejected()), this, SLOT(reject()));
@@ -78,7 +78,7 @@ PermDlg::PermDlg(Session* session, QWidget* parent)
     loadTree(false);
 }
 
-// ÂäÅÌ²¢¼Ç²Ù×÷ÈÕÖ¾
+// è½ç›˜å¹¶è®°æ“ä½œæ—¥å¿—
 void PermDlg::loadTree(bool useDefaults)
 {
     m_tree->clear();
@@ -122,7 +122,7 @@ void PermDlg::loadTree(bool useDefaults)
                 row->setCheckState(c + 1, on ? Qt::Checked : Qt::Unchecked);
                 if (locked) {
                     row->setFlags(row->flags() | Qt::ItemIsUserCheckable);
-                    row->setToolTip(c + 1, T("´ËÏî²»¿É¹Ø±Õ"));
+                    row->setToolTip(c + 1, T("æ­¤é¡¹ä¸å¯å…³é—­"));
                 } else {
                     row->setFlags(row->flags() | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
                 }
@@ -133,7 +133,7 @@ void PermDlg::loadTree(bool useDefaults)
     m_tree->resizeColumnToContents(0);
 }
 
-// ÂäÅÌ²¢¼Ç²Ù×÷ÈÕÖ¾
+// è½ç›˜å¹¶è®°æ“ä½œæ—¥å¿—
 quint32 PermDlg::maskFromColumn(int col) const
 {
     quint32 m = 0;
@@ -155,20 +155,20 @@ quint32 PermDlg::maskFromColumn(int col) const
     return m;
 }
 
-// ÂäÅÌ²¢¼Ç²Ù×÷ÈÕÖ¾
+// è½ç›˜å¹¶è®°æ“ä½œæ—¥å¿—
 void PermDlg::onReset()
 {
     loadTree(true);
 }
 
-// ÂäÅÌ²¢¼Ç²Ù×÷ÈÕÖ¾
+// è½ç›˜å¹¶è®°æ“ä½œæ—¥å¿—
 void PermDlg::onSave()
 {
     m_session->settings().setPermMask(RoleOperator, maskFromColumn(1));
     m_session->settings().setPermMask(RoleEngineer, maskFromColumn(2));
     m_session->settings().setPermMask(RoleAdmin, maskFromColumn(3));
     if (!VisionCfgMgr::saveSettings(m_session->settings())) {
-        QMessageBox::warning(this, T("¿Ø¼þÈ¨ÏÞ"), T("±£´æÊ§°Ü¡£"));
+        QMessageBox::warning(this, T("æŽ§ä»¶æƒé™"), T("ä¿å­˜å¤±è´¥ã€‚"));
         return;
     }
     auditLog("perm_save", m_session->user().loginName, std::string());

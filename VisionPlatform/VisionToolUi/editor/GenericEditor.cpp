@@ -1,6 +1,6 @@
 /**
  * @file GenericEditor.cpp
- * @brief GenericEditorÊµÏÖ
+ * @brief GenericEditorå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -37,7 +37,7 @@ struct FieldRow {
 
 /**
  * @class GenericEditor
- * @brief °´¹¤¾ß¿Ç paramFields Éú³É²ÎÊı±íµ¥
+ * @brief æŒ‰å·¥å…·å£³ paramFields ç”Ÿæˆå‚æ•°è¡¨å•
  */
 class GenericEditor : public ToolEditorBase {
 public:
@@ -62,7 +62,7 @@ protected:
             fields = shell->paramFields();
         }
         if (fields.empty()) {
-            QLabel* tip = new QLabel(T("¸Ã¹¤¾ßÃ»ÓĞ²ÎÊı¡£"), this);
+            QLabel* tip = new QLabel(T("è¯¥å·¥å…·æ²¡æœ‰å‚æ•°ã€‚"), this);
             tip->setWordWrap(true);
             m_lay->addWidget(tip);
             m_holders.push_back(tip);
@@ -167,7 +167,7 @@ private:
             editor = box;
         } else if (f.type == ParamFieldType::Device) {
             QComboBox* box = mkParamCombo(this);
-            box->addItem(T("£¨ÎŞ£©"), QString());
+            box->addItem(T("ï¼ˆæ— ï¼‰"), QString());
             if (m_sol) {
                 for (int i = 0; i < static_cast<int>(m_sol->inventory.size()); ++i) {
                     const HardwareDevice& d = m_sol->inventory[static_cast<size_t>(i)];
@@ -211,11 +211,11 @@ private:
                 QHBoxLayout* h = new QHBoxLayout(wrap);
                 h->setContentsMargins(0, 0, 0, 0);
                 h->addWidget(line, 1);
-                QPushButton* browse = new QPushButton(T("ä¯ÀÀ"), wrap);
+                QPushButton* browse = new QPushButton(T("æµè§ˆ"), wrap);
                 h->addWidget(browse);
                 connect(browse, static_cast<void (QPushButton::*)(bool)>(&QPushButton::clicked),
                         this, [this, line](bool) {
-                    const QString path = QFileDialog::getOpenFileName(this, T("Ñ¡ÔñÎÄ¼ş"), line->text());
+                    const QString path = QFileDialog::getOpenFileName(this, T("é€‰æ‹©æ–‡ä»¶"), line->text());
                     if (!path.isEmpty()) {
                         line->setText(path);
                         onEdited();
@@ -242,7 +242,7 @@ private:
     std::vector<QWidget*> m_holders;
 };
 
-// °´×¢²á¹¤¾ßµÄ²ÎÊıËµÃ÷Éú³É²ÎÊıÒ³
+// æŒ‰æ³¨å†Œå·¥å…·çš„å‚æ•°è¯´æ˜ç”Ÿæˆå‚æ•°é¡µ
 ToolEditorBase* createGenericEditor(QWidget* parent)
 {
     return new GenericEditor(parent);

@@ -1,6 +1,6 @@
 /**
  * @file SerialChannel.h
- * @brief SerialChannelÍ·ÎÄ¼ş
+ * @brief SerialChannelå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -16,40 +16,40 @@
 
 namespace Vision {
 
-/** @class SerialChannel @brief Win32 ´®¿Ú¡£Í¬Ò»Ê±¿ÌÒ»¸ö¶Ô¶Ë£¬peerId ºöÂÔ */
+/** @class SerialChannel @brief Win32 ä¸²å£ã€‚åŒä¸€æ—¶åˆ»ä¸€ä¸ªå¯¹ç«¯ï¼ŒpeerId å¿½ç•¥ */
 class VISION_COMM_API SerialChannel : public ICommChannel {
 public:
-    /** @brief ¹¹ÔìÎ´´ò¿ªµÄ´®¿Ú */
+    /** @brief æ„é€ æœªæ‰“å¼€çš„ä¸²å£ */
     SerialChannel();
-    /** @brief Îö¹¹Ê±¹Ø±Õ´®¿Ú */
+    /** @brief ææ„æ—¶å…³é—­ä¸²å£ */
     ~SerialChannel();
 
-    /** @brief ´«ÊäÖÖÀàÎª´®¿Ú */
+    /** @brief ä¼ è¾“ç§ç±»ä¸ºä¸²å£ */
     CommTransport transport() const;
-    /** @brief °´¶Ë¿Ú¡¢²¨ÌØÂÊµÈ²ÎÊı´ò¿ª */
+    /** @brief æŒ‰ç«¯å£ã€æ³¢ç‰¹ç‡ç­‰å‚æ•°æ‰“å¼€ */
     bool open(const ParamMap& params, std::string* err);
-    /** @brief ¹Ø±Õ¾ä±ú */
+    /** @brief å…³é—­å¥æŸ„ */
     void close();
-    /** @brief ¾ä±úÊÇ·ñÓĞĞ§ */
+    /** @brief å¥æŸ„æ˜¯å¦æœ‰æ•ˆ */
     bool isOpen() const;
-    /** @brief ÒÑ´ò¿ªÊ±¸øÒ»¸ö¿Õ id µÄ¶Ô¶Ë */
+    /** @brief å·²æ‰“å¼€æ—¶ç»™ä¸€ä¸ªç©º id çš„å¯¹ç«¯ */
     std::vector<CommPeer> peers() const;
-    /** @brief Ğ´³öÕû¶Î×Ö½Ú£¬ºöÂÔ¶Ô¶Ë id */
+    /** @brief å†™å‡ºæ•´æ®µå­—èŠ‚ï¼Œå¿½ç•¥å¯¹ç«¯ id */
     bool write(const std::string& peerId, const CommBytes& data, int timeoutMs, std::string* err);
-    /** @brief °´³¬Ê±¶ÁÒ»Åú£¬ºöÂÔ¶Ô¶Ë id */
+    /** @brief æŒ‰è¶…æ—¶è¯»ä¸€æ‰¹ï¼Œå¿½ç•¥å¯¹ç«¯ id */
     CommBytes read(const std::string& peerId, int maxBytes, int timeoutMs, std::string* err);
-    /** @brief Çå¿Õ½ÓÊÕ»º³å */
+    /** @brief æ¸…ç©ºæ¥æ”¶ç¼“å†² */
     void drain(const std::string& peerId);
-    /** @brief ´®¿Ú²»Çø·Ö½ÓÈë¶Ë£¬Ê¼ÖÕ·µ»Ø¿Õ */
+    /** @brief ä¸²å£ä¸åŒºåˆ†æ¥å…¥ç«¯ï¼Œå§‹ç»ˆè¿”å›ç©º */
     std::string waitIncoming(int timeoutMs);
 
-    /** @brief ±¾»ú´®¿ÚÃû£¬Èç COM3 */
+    /** @brief æœ¬æœºä¸²å£åï¼Œå¦‚ COM3 */
     static std::vector<std::string> listPorts();
 
 private:
-    /** @brief °ÑÕâÒ»´Î¶ÁĞ´µÄ³¬Ê±Ğ´µ½´®¿Ú */
+    /** @brief æŠŠè¿™ä¸€æ¬¡è¯»å†™çš„è¶…æ—¶å†™åˆ°ä¸²å£ */
     void applyTimeouts(int timeoutMs);
-    HANDLE m_handle; ///< INVALID_HANDLE_VALUE ±íÊ¾Î´´ò¿ª
+    HANDLE m_handle; ///< INVALID_HANDLE_VALUE è¡¨ç¤ºæœªæ‰“å¼€
 };
 
 }

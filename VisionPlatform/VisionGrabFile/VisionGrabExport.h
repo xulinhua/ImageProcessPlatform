@@ -1,6 +1,6 @@
 /**
  * @file VisionGrabExport.h
- * @brief VisionGrabExportͷ�ļ�
+ * @brief VisionGrabExport头文件
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.

@@ -1,6 +1,6 @@
 /**
  * @file HsTuple.cpp
- * @brief HsTupleÊµÏÖ
+ * @brief HsTupleå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -24,7 +24,7 @@
 namespace HsCommData {
 
 struct HsTuple::Body {
-    TupleType type;                 ///< µ±Ç°ÖÖÀà
+    TupleType type;                 ///< å½“å‰ç§ç±»
     std::vector<int64_t> longs;     ///< TupleLong
     std::vector<double> doubles;    ///< TupleDouble
     std::vector<std::string> texts; ///< TupleString
@@ -36,7 +36,7 @@ struct HsTuple::Body {
     }
 };
 
-// ´¿Êı×éÉı³É»ìºÏ£¬Ô­Êı×éÇå¿Õ
+// çº¯æ•°ç»„å‡æˆæ··åˆï¼ŒåŸæ•°ç»„æ¸…ç©º
 void HsTuple::promote(Body* body)
 {
     if (!body || body->type == TupleMixed || body->type == TupleEmpty) {
@@ -78,69 +78,69 @@ void HsTuple::promote(Body* body)
     body->type = TupleMixed;
 }
 
-// ×·¼ÓÒ»¸ö»ìºÏÔªËØ
+// è¿½åŠ ä¸€ä¸ªæ··åˆå…ƒç´ 
 void HsTuple::pushMixed(Body* body, const TupleElem& elem)
 {
     promote(body);
     body->mixed.push_back(elem);
 }
 
-// ÕûÊı 0
+// æ•´æ•° 0
 TupleElem::TupleElem()
     : kind(ElemLong)
 {
     num.i = 0;
 }
 
-// ¿ÕÔª×é
+// ç©ºå…ƒç»„
 HsTuple::HsTuple()
 {
 }
 
-// Í¬ÀàĞÍ¿½±´£¬¹²Ïí»º³å
+// åŒç±»å‹æ‹·è´ï¼Œå…±äº«ç¼“å†²
 HsTuple::HsTuple(const HsTuple& other)
     : m_body(other.m_body)
 {
 }
 
-// Í¬ÀàĞÍ¸³Öµ£¬¹²Ïí»º³å
+// åŒç±»å‹èµ‹å€¼ï¼Œå…±äº«ç¼“å†²
 HsTuple& HsTuple::operator=(const HsTuple& other)
 {
     m_body = other.m_body;
     return *this;
 }
 
-// Ò»¸öÕûÊı
+// ä¸€ä¸ªæ•´æ•°
 HsTuple::HsTuple(int64_t value)
 {
     append(value);
 }
 
-// 32 Î»ÕûÊı ctor£¬Éı 64 Î»£¬±ÜÃâÓë double ¹¹ÔìÆçÒå
+// 32 ä½æ•´æ•° ctorï¼Œå‡ 64 ä½ï¼Œé¿å…ä¸ double æ„é€ æ­§ä¹‰
 HsTuple::HsTuple(int value)
     : HsTuple(static_cast<int64_t>(value))
 {
 }
 
-// Ò»¸ö¸¡µãÊı
+// ä¸€ä¸ªæµ®ç‚¹æ•°
 HsTuple::HsTuple(double value)
 {
     append(value);
 }
 
-// Ò»¸ö×Ö·û´®
+// ä¸€ä¸ªå­—ç¬¦ä¸²
 HsTuple::HsTuple(const char* value)
 {
     append(value);
 }
 
-// Ò»¸ö×Ö·û´®
+// ä¸€ä¸ªå­—ç¬¦ä¸²
 HsTuple::HsTuple(const std::string& value)
 {
     append(value);
 }
 
-// ÕûÊıÊı×é
+// æ•´æ•°æ•°ç»„
 HsTuple::HsTuple(const int64_t* data, int count)
 {
     if (!data || count <= 0) {
@@ -151,7 +151,7 @@ HsTuple::HsTuple(const int64_t* data, int count)
     m_body->longs.assign(data, data + count);
 }
 
-// ¸¡µãÊı×é
+// æµ®ç‚¹æ•°ç»„
 HsTuple::HsTuple(const double* data, int count)
 {
     if (!data || count <= 0) {
@@ -162,43 +162,43 @@ HsTuple::HsTuple(const double* data, int count)
     m_body->doubles.assign(data, data + count);
 }
 
-// »»³ÉÕâÒ»¸öÕûÊı
+// æ¢æˆè¿™ä¸€ä¸ªæ•´æ•°
 HsTuple& HsTuple::operator=(int value)
 {
     return *this = HsTuple(static_cast<int64_t>(value));
 }
 
-// »»³ÉÕâÒ»¸öÕûÊı
+// æ¢æˆè¿™ä¸€ä¸ªæ•´æ•°
 HsTuple& HsTuple::operator=(int64_t value)
 {
     return *this = HsTuple(value);
 }
 
-// »»³ÉÕâÒ»¸ö¸¡µãÊı
+// æ¢æˆè¿™ä¸€ä¸ªæµ®ç‚¹æ•°
 HsTuple& HsTuple::operator=(double value)
 {
     return *this = HsTuple(value);
 }
 
-// »»³ÉÕâÒ»¸ö×Ö·û´®
+// æ¢æˆè¿™ä¸€ä¸ªå­—ç¬¦ä¸²
 HsTuple& HsTuple::operator=(const char* value)
 {
     return *this = HsTuple(value);
 }
 
-// »»³ÉÕâÒ»¸ö×Ö·û´®
+// æ¢æˆè¿™ä¸€ä¸ªå­—ç¬¦ä¸²
 HsTuple& HsTuple::operator=(const std::string& value)
 {
     return *this = HsTuple(value);
 }
 
-// Ã»ÓĞÔªËØ
+// æ²¡æœ‰å…ƒç´ 
 bool HsTuple::isEmpty() const
 {
     return length() == 0;
 }
 
-// ÔªËØ¸öÊı
+// å…ƒç´ ä¸ªæ•°
 int HsTuple::length() const
 {
     if (!m_body) {
@@ -218,7 +218,7 @@ int HsTuple::length() const
     }
 }
 
-// µ±Ç°´æ´¢ÖÖÀà
+// å½“å‰å­˜å‚¨ç§ç±»
 TupleType HsTuple::type() const
 {
     if (!m_body) {
@@ -227,13 +227,13 @@ TupleType HsTuple::type() const
     return m_body->type;
 }
 
-// Çå¿Õ
+// æ¸…ç©º
 void HsTuple::clear()
 {
     m_body.reset();
 }
 
-// Éî¿½»º³å
+// æ·±æ‹·ç¼“å†²
 HsTuple HsTuple::clone() const
 {
     HsTuple out;
@@ -244,7 +244,7 @@ HsTuple HsTuple::clone() const
     return out;
 }
 
-// ×·¼ÓÕûÊı
+// è¿½åŠ æ•´æ•°
 void HsTuple::append(int64_t value)
 {
     ensure();
@@ -260,7 +260,7 @@ void HsTuple::append(int64_t value)
     pushMixed(m_body.get(), elem);
 }
 
-// ×·¼Ó¸¡µã
+// è¿½åŠ æµ®ç‚¹
 void HsTuple::append(double value)
 {
     ensure();
@@ -276,13 +276,13 @@ void HsTuple::append(double value)
     pushMixed(m_body.get(), elem);
 }
 
-// ×·¼Ó×Ö·û´®
+// è¿½åŠ å­—ç¬¦ä¸²
 void HsTuple::append(const char* value)
 {
     append(std::string(value ? value : ""));
 }
 
-// ×·¼Ó×Ö·û´®
+// è¿½åŠ å­—ç¬¦ä¸²
 void HsTuple::append(const std::string& value)
 {
     ensure();
@@ -298,7 +298,7 @@ void HsTuple::append(const std::string& value)
     pushMixed(m_body.get(), elem);
 }
 
-// ½ÓÉÏÁíÒ»Ôª×é
+// æ¥ä¸Šå¦ä¸€å…ƒç»„
 void HsTuple::append(const HsTuple& other)
 {
     if (other.isEmpty()) {
@@ -353,7 +353,7 @@ void HsTuple::append(const HsTuple& other)
     }
 }
 
-// ¶ÁÕûÊı
+// è¯»æ•´æ•°
 bool HsTuple::getLong(int index, int64_t* out) const
 {
     if (!out) {
@@ -377,7 +377,7 @@ bool HsTuple::getLong(int index, int64_t* out) const
     return false;
 }
 
-// ¶Á¸¡µãÊı
+// è¯»æµ®ç‚¹æ•°
 bool HsTuple::getDouble(int index, double* out) const
 {
     if (!out) {
@@ -401,7 +401,7 @@ bool HsTuple::getDouble(int index, double* out) const
     return false;
 }
 
-// ¶Á×Ö·û´®
+// è¯»å­—ç¬¦ä¸²
 bool HsTuple::getString(int index, std::string* out) const
 {
     if (!out) {
@@ -425,7 +425,7 @@ bool HsTuple::getString(int index, std::string* out) const
     return false;
 }
 
-// ´¿ÕûÊıÁ¬Ğø»º³å¡£ÀàĞÍ²»·ûÅ×Òì³£
+// çº¯æ•´æ•°è¿ç»­ç¼“å†²ã€‚ç±»å‹ä¸ç¬¦æŠ›å¼‚å¸¸
 const int64_t* HsTuple::longData() const
 {
     if (!m_body || m_body->type != TupleLong) {
@@ -434,7 +434,7 @@ const int64_t* HsTuple::longData() const
     return m_body->longs.empty() ? 0 : m_body->longs.data();
 }
 
-// ¿ÉĞ´ÕûÊı»º³å¡£ÀàĞÍ²»·ûÅ×Òì³£
+// å¯å†™æ•´æ•°ç¼“å†²ã€‚ç±»å‹ä¸ç¬¦æŠ›å¼‚å¸¸
 int64_t* HsTuple::longData()
 {
     if (!m_body || m_body->type != TupleLong) {
@@ -444,7 +444,7 @@ int64_t* HsTuple::longData()
     return m_body->longs.empty() ? 0 : m_body->longs.data();
 }
 
-// ´¿¸¡µãÁ¬Ğø»º³å¡£ÀàĞÍ²»·ûÅ×Òì³£
+// çº¯æµ®ç‚¹è¿ç»­ç¼“å†²ã€‚ç±»å‹ä¸ç¬¦æŠ›å¼‚å¸¸
 const double* HsTuple::doubleData() const
 {
     if (!m_body || m_body->type != TupleDouble) {
@@ -453,7 +453,7 @@ const double* HsTuple::doubleData() const
     return m_body->doubles.empty() ? 0 : m_body->doubles.data();
 }
 
-// ¿ÉĞ´¸¡µã»º³å¡£ÀàĞÍ²»·ûÅ×Òì³£
+// å¯å†™æµ®ç‚¹ç¼“å†²ã€‚ç±»å‹ä¸ç¬¦æŠ›å¼‚å¸¸
 double* HsTuple::doubleData()
 {
     if (!m_body || m_body->type != TupleDouble) {
@@ -463,7 +463,7 @@ double* HsTuple::doubleData()
     return m_body->doubles.empty() ? 0 : m_body->doubles.data();
 }
 
-// ¸Ä³ÉÕûÊı¡£Ô½½çÅ×Òì³£
+// æ”¹æˆæ•´æ•°ã€‚è¶Šç•ŒæŠ›å¼‚å¸¸
 bool HsTuple::setLong(int index, int64_t value)
 {
     index = resolveIndex(index);
@@ -479,7 +479,7 @@ bool HsTuple::setLong(int index, int64_t value)
     return true;
 }
 
-// ¸Ä³É¸¡µã¡£Ô½½çÅ×Òì³£
+// æ”¹æˆæµ®ç‚¹ã€‚è¶Šç•ŒæŠ›å¼‚å¸¸
 bool HsTuple::setDouble(int index, double value)
 {
     index = resolveIndex(index);
@@ -495,7 +495,7 @@ bool HsTuple::setDouble(int index, double value)
     return true;
 }
 
-// ¸Ä³É×Ö·û´®¡£Ô½½çÅ×Òì³£
+// æ”¹æˆå­—ç¬¦ä¸²ã€‚è¶Šç•ŒæŠ›å¼‚å¸¸
 bool HsTuple::setString(int index, const std::string& value)
 {
     index = resolveIndex(index);
@@ -511,7 +511,7 @@ bool HsTuple::setString(int index, const std::string& value)
     return true;
 }
 
-// ±£Ö¤»º³å´æÔÚ
+// ä¿è¯ç¼“å†²å­˜åœ¨
 void HsTuple::ensure()
 {
     if (!m_body) {
@@ -519,7 +519,7 @@ void HsTuple::ensure()
     }
 }
 
-// ±»¹²ÏíÊ±¸´ÖÆ»º³å
+// è¢«å…±äº«æ—¶å¤åˆ¶ç¼“å†²
 void HsTuple::detach()
 {
     if (m_body && m_body.use_count() > 1) {
@@ -527,7 +527,7 @@ void HsTuple::detach()
     }
 }
 
-// È¡³öÒ»¸ñ¡£Ô½½çÅ×Òì³£
+// å–å‡ºä¸€æ ¼ã€‚è¶Šç•ŒæŠ›å¼‚å¸¸
 HsTuple HsTuple::operator[](int index) const
 {
     index = resolveIndex(index);
@@ -547,13 +547,13 @@ HsTuple HsTuple::operator[](int index) const
     return HsTuple();
 }
 
-// µÚ 0 ¸ö 32 Î»ÕûÊı
+// ç¬¬ 0 ä¸ª 32 ä½æ•´æ•°
 int HsTuple::I() const
 {
     return I(0);
 }
 
-// µÚ index ¸ö 32 Î»ÕûÊı¡£ÀàĞÍ²»·û¡¢Ô½½ç»ò³¬³ö int ·¶Î§
+// ç¬¬ index ä¸ª 32 ä½æ•´æ•°ã€‚ç±»å‹ä¸ç¬¦ã€è¶Šç•Œæˆ–è¶…å‡º int èŒƒå›´
 int HsTuple::I(int index) const
 {
     index = resolveIndex(index);
@@ -567,13 +567,13 @@ int HsTuple::I(int index) const
     return static_cast<int>(value);
 }
 
-// µÚ 0 ¸ö³¤ÕûÊı
+// ç¬¬ 0 ä¸ªé•¿æ•´æ•°
 int64_t HsTuple::L() const
 {
     return L(0);
 }
 
-// µÚ index ¸ö³¤ÕûÊı¡£ÀàĞÍ²»·û»òÔ½½çÅ× HsException
+// ç¬¬ index ä¸ªé•¿æ•´æ•°ã€‚ç±»å‹ä¸ç¬¦æˆ–è¶Šç•ŒæŠ› HsException
 int64_t HsTuple::L(int index) const
 {
     index = resolveIndex(index);
@@ -584,13 +584,13 @@ int64_t HsTuple::L(int index) const
     return value;
 }
 
-// µÚ 0 ¸ö¸¡µãÊı
+// ç¬¬ 0 ä¸ªæµ®ç‚¹æ•°
 double HsTuple::D() const
 {
     return D(0);
 }
 
-// µÚ index ¸ö¸¡µãÊı£»ÀàĞÍ²»·û»òÔ½½çÅ×Òì³£
+// ç¬¬ index ä¸ªæµ®ç‚¹æ•°ï¼›ç±»å‹ä¸ç¬¦æˆ–è¶Šç•ŒæŠ›å¼‚å¸¸
 double HsTuple::D(int index) const
 {
     index = resolveIndex(index);
@@ -601,13 +601,13 @@ double HsTuple::D(int index) const
     return value;
 }
 
-// µÚ 0 ¸ö×Ö·û´®
+// ç¬¬ 0 ä¸ªå­—ç¬¦ä¸²
 std::string HsTuple::S() const
 {
     return S(0);
 }
 
-// µÚ index ¸ö×Ö·û´®¡£ÀàĞÍ²»·û»òÔ½½çÅ× HsException
+// ç¬¬ index ä¸ªå­—ç¬¦ä¸²ã€‚ç±»å‹ä¸ç¬¦æˆ–è¶Šç•ŒæŠ› HsException
 std::string HsTuple::S(int index) const
 {
     index = resolveIndex(index);
@@ -618,13 +618,13 @@ std::string HsTuple::S(int index) const
     return text;
 }
 
-// µÚ 0 ¸ö×Ö·û´®Ö¸Õë
+// ç¬¬ 0 ä¸ªå­—ç¬¦ä¸²æŒ‡é’ˆ
 const char* HsTuple::C() const
 {
     return C(0);
 }
 
-// µÚ index ¸ö×Ö·û´®µÄ C Ö¸Õë¡£ÀàĞÍ²»·û»òÔ½½çÅ× HsException
+// ç¬¬ index ä¸ªå­—ç¬¦ä¸²çš„ C æŒ‡é’ˆã€‚ç±»å‹ä¸ç¬¦æˆ–è¶Šç•ŒæŠ› HsException
 const char* HsTuple::C(int index) const
 {
     index = resolveIndex(index);
@@ -666,7 +666,7 @@ struct ElemSnap {
     }
 };
 
-// È¡³öÒ»¸ñ¡£Ô½½çÎª ElemNone
+// å–å‡ºä¸€æ ¼ã€‚è¶Šç•Œä¸º ElemNone
 ElemSnap snapAt(const HsTuple& t, int index)
 {
     ElemSnap s;
@@ -686,7 +686,7 @@ ElemSnap snapAt(const HsTuple& t, int index)
     return s;
 }
 
-// µ¥¸ñ±È½Ï£º-1/0/1 ÎªĞ¡ÓÚ¡¢ÏàµÈ¡¢´óÓÚ£»-2 ±íÊ¾Êı×ÖÓë×Ö·û´®²»¿É±È£¬»ò³öÏÖ NaN
+// å•æ ¼æ¯”è¾ƒï¼š-1/0/1 ä¸ºå°äºã€ç›¸ç­‰ã€å¤§äºï¼›-2 è¡¨ç¤ºæ•°å­—ä¸å­—ç¬¦ä¸²ä¸å¯æ¯”ï¼Œæˆ–å‡ºç° NaN
 int cmpElem(const ElemSnap& a, const ElemSnap& b)
 {
     const bool aNum = a.cls == ElemNumLong || a.cls == ElemNumDouble;
@@ -727,7 +727,7 @@ int cmpElem(const ElemSnap& a, const ElemSnap& b)
     return -2;
 }
 
-// ×ÖµäĞò£»Ç°×ºÏàÍ¬Ôò¸ü¶ÌµÄ¸üĞ¡¡£²»¿É±ÈÊ± *bad ÖÃ true
+// å­—å…¸åºï¼›å‰ç¼€ç›¸åŒåˆ™æ›´çŸ­çš„æ›´å°ã€‚ä¸å¯æ¯”æ—¶ *bad ç½® true
 int cmpTuples(const HsTuple& a, const HsTuple& b, bool* bad)
 {
     *bad = false;
@@ -769,7 +769,7 @@ enum ArithOp {
     ArithDiv
 };
 
-// ¹ã²¥½á¹û³¤¶È£»ÈÎÒ»Îª¿ÕÔò *empty=true£»Á½±ß³¤¶È¾ù·Ç 1 ÇÒ²»µÈÔòÅ×ÀàĞÍÒì³£
+// å¹¿æ’­ç»“æœé•¿åº¦ï¼›ä»»ä¸€ä¸ºç©ºåˆ™ *empty=trueï¼›ä¸¤è¾¹é•¿åº¦å‡é 1 ä¸”ä¸ç­‰åˆ™æŠ›ç±»å‹å¼‚å¸¸
 int broadcastCount(int na, int nb, bool* empty)
 {
     *empty = false;
@@ -787,14 +787,14 @@ int broadcastCount(int na, int nb, bool* empty)
     return 0;
 }
 
-// Ò»±ß³¤¶ÈÎª 1 Ê±¹Ì¶¨È¡µÚ 0 ¸ö
+// ä¸€è¾¹é•¿åº¦ä¸º 1 æ—¶å›ºå®šå–ç¬¬ 0 ä¸ª
 void pairIndex(int i, int na, int nb, int* ia, int* ib)
 {
     *ia = (na == 1 && nb != 1) ? 0 : i;
     *ib = (nb == 1 && na != 1) ? 0 : i;
 }
 
-// ÖğÔªËØ±È½Ï£»ÏàµÈÊ±Êı×ÖÓë×Ö·û´®²»ËãÏàµÈ£»²»¿É±ÈÀàĞÍÅ×Òì³£
+// é€å…ƒç´ æ¯”è¾ƒï¼›ç›¸ç­‰æ—¶æ•°å­—ä¸å­—ç¬¦ä¸²ä¸ç®—ç›¸ç­‰ï¼›ä¸å¯æ¯”ç±»å‹æŠ›å¼‚å¸¸
 HsTuple elemPred(const HsTuple& a, const HsTuple& b, ElemPred pred)
 {
     bool empty = false;
@@ -833,7 +833,7 @@ HsTuple elemPred(const HsTuple& a, const HsTuple& b, ElemPred pred)
     return out;
 }
 
-// ÕûÊıÏà¼Ó¡£Òç³öÅ× HS_ERR_INT_RANGE
+// æ•´æ•°ç›¸åŠ ã€‚æº¢å‡ºæŠ› HS_ERR_INT_RANGE
 int64_t add64(int64_t a, int64_t b)
 {
     if (b > 0 && a > INT64_MAX - b) {
@@ -845,7 +845,7 @@ int64_t add64(int64_t a, int64_t b)
     return a + b;
 }
 
-// ÕûÊıÏà¼õ¡£Òç³öÅ× HS_ERR_INT_RANGE
+// æ•´æ•°ç›¸å‡ã€‚æº¢å‡ºæŠ› HS_ERR_INT_RANGE
 int64_t sub64(int64_t a, int64_t b)
 {
     if (b > 0 && a < INT64_MIN + b) {
@@ -857,7 +857,7 @@ int64_t sub64(int64_t a, int64_t b)
     return a - b;
 }
 
-// ÕûÊıÏà³Ë¡£Òç³öÅ× HS_ERR_INT_RANGE
+// æ•´æ•°ç›¸ä¹˜ã€‚æº¢å‡ºæŠ› HS_ERR_INT_RANGE
 int64_t mul64(int64_t a, int64_t b)
 {
     if (a == 0 || b == 0) {
@@ -899,7 +899,7 @@ int64_t mul64(int64_t a, int64_t b)
     return a * b;
 }
 
-// ÕûÊıÏà³ı¡£³ıÊıÊÇ 0 Å×ÀàĞÍ´íÎó¡£INT64_MIN / -1 Òç³ö
+// æ•´æ•°ç›¸é™¤ã€‚é™¤æ•°æ˜¯ 0 æŠ›ç±»å‹é”™è¯¯ã€‚INT64_MIN / -1 æº¢å‡º
 int64_t div64(int64_t a, int64_t b)
 {
     if (b == 0) {
@@ -911,7 +911,7 @@ int64_t div64(int64_t a, int64_t b)
     return a / b;
 }
 
-// Êı×Ö×ª³ÉÆ´½ÓÓÃµÄÎÄ±¾¡£ÕûÊı²»´øĞ¡Êı£¬¸¡µãÓÃ½ô´Õ¸ñ
+// æ•°å­—è½¬æˆæ‹¼æ¥ç”¨çš„æ–‡æœ¬ã€‚æ•´æ•°ä¸å¸¦å°æ•°ï¼Œæµ®ç‚¹ç”¨ç´§å‡‘æ ¼
 std::string numText(const ElemSnap& e)
 {
     if (e.cls == ElemNumLong) {
@@ -922,7 +922,7 @@ std::string numText(const ElemSnap& e)
     return std::string(buf);
 }
 
-// Ò»¸ñµÄËÄÔòÔËËã£¬½á¹û×·¼Óµ½ out
+// ä¸€æ ¼çš„å››åˆ™è¿ç®—ï¼Œç»“æœè¿½åŠ åˆ° out
 void appendArith(HsTuple* out, const ElemSnap& a, const ElemSnap& b, ArithOp op)
 {
     const bool aNum = a.cls == ElemNumLong || a.cls == ElemNumDouble;
@@ -972,7 +972,7 @@ void appendArith(HsTuple* out, const ElemSnap& a, const ElemSnap& b, ArithOp op)
     out->append(r);
 }
 
-// ÖğÔªËØËÄÔòÔËËã
+// é€å…ƒç´ å››åˆ™è¿ç®—
 HsTuple arithTuples(const HsTuple& a, const HsTuple& b, ArithOp op)
 {
     bool empty = false;
@@ -994,7 +994,7 @@ HsTuple arithTuples(const HsTuple& a, const HsTuple& b, ArithOp op)
 
 }
 
-// Õû×éÏàµÈ¡£Êı×ÖºÍ×Ö·û´®²»ÄÜ±ÈÊ±ÊÓÎª²»ÏàµÈ
+// æ•´ç»„ç›¸ç­‰ã€‚æ•°å­—å’Œå­—ç¬¦ä¸²ä¸èƒ½æ¯”æ—¶è§†ä¸ºä¸ç›¸ç­‰
 bool HsTuple::operator==(const HsTuple& other) const
 {
     bool bad = false;
@@ -1005,13 +1005,13 @@ bool HsTuple::operator==(const HsTuple& other) const
     return c == 0;
 }
 
-// Õû×é²»µÈ
+// æ•´ç»„ä¸ç­‰
 bool HsTuple::operator!=(const HsTuple& other) const
 {
     return !(*this == other);
 }
 
-// ×ÖµäĞòĞ¡ÓÚ¡£Êı×ÖÓë×Ö·û´®²»ÄÜ±ÈÔòÅ×ÀàĞÍ´íÎó
+// å­—å…¸åºå°äºã€‚æ•°å­—ä¸å­—ç¬¦ä¸²ä¸èƒ½æ¯”åˆ™æŠ›ç±»å‹é”™è¯¯
 bool HsTuple::operator<(const HsTuple& other) const
 {
     bool bad = false;
@@ -1022,7 +1022,7 @@ bool HsTuple::operator<(const HsTuple& other) const
     return c < 0;
 }
 
-// ×ÖµäĞò´óÓÚ
+// å­—å…¸åºå¤§äº
 bool HsTuple::operator>(const HsTuple& other) const
 {
     bool bad = false;
@@ -1033,7 +1033,7 @@ bool HsTuple::operator>(const HsTuple& other) const
     return c > 0;
 }
 
-// ×ÖµäĞòĞ¡ÓÚµÈÓÚ
+// å­—å…¸åºå°äºç­‰äº
 bool HsTuple::operator<=(const HsTuple& other) const
 {
     bool bad = false;
@@ -1044,7 +1044,7 @@ bool HsTuple::operator<=(const HsTuple& other) const
     return c <= 0;
 }
 
-// ×ÖµäĞò´óÓÚµÈÓÚ
+// å­—å…¸åºå¤§äºç­‰äº
 bool HsTuple::operator>=(const HsTuple& other) const
 {
     bool bad = false;
@@ -1055,67 +1055,67 @@ bool HsTuple::operator>=(const HsTuple& other) const
     return c >= 0;
 }
 
-// ÖğÔªËØÏàµÈ
+// é€å…ƒç´ ç›¸ç­‰
 HsTuple HsTuple::equalElem(const HsTuple& other) const
 {
     return elemPred(*this, other, PredEq);
 }
 
-// ÖğÔªËØ²»µÈ
+// é€å…ƒç´ ä¸ç­‰
 HsTuple HsTuple::notEqualElem(const HsTuple& other) const
 {
     return elemPred(*this, other, PredNe);
 }
 
-// ÖğÔªËØĞ¡ÓÚ
+// é€å…ƒç´ å°äº
 HsTuple HsTuple::lessElem(const HsTuple& other) const
 {
     return elemPred(*this, other, PredLt);
 }
 
-// ÖğÔªËØ´óÓÚ
+// é€å…ƒç´ å¤§äº
 HsTuple HsTuple::greaterElem(const HsTuple& other) const
 {
     return elemPred(*this, other, PredGt);
 }
 
-// ÖğÔªËØĞ¡ÓÚµÈÓÚ
+// é€å…ƒç´ å°äºç­‰äº
 HsTuple HsTuple::lessEqualElem(const HsTuple& other) const
 {
     return elemPred(*this, other, PredLe);
 }
 
-// ÖğÔªËØ´óÓÚµÈÓÚ
+// é€å…ƒç´ å¤§äºç­‰äº
 HsTuple HsTuple::greaterEqualElem(const HsTuple& other) const
 {
     return elemPred(*this, other, PredGe);
 }
 
-// ÖğÔªËØ¼Ó
+// é€å…ƒç´ åŠ 
 HsTuple HsTuple::operator+(const HsTuple& other) const
 {
     return arithTuples(*this, other, ArithAdd);
 }
 
-// ÖğÔªËØ¼õ
+// é€å…ƒç´ å‡
 HsTuple HsTuple::operator-(const HsTuple& other) const
 {
     return arithTuples(*this, other, ArithSub);
 }
 
-// ÖğÔªËØ³Ë
+// é€å…ƒç´ ä¹˜
 HsTuple HsTuple::operator*(const HsTuple& other) const
 {
     return arithTuples(*this, other, ArithMul);
 }
 
-// ÖğÔªËØ³ı
+// é€å…ƒç´ é™¤
 HsTuple HsTuple::operator/(const HsTuple& other) const
 {
     return arithTuples(*this, other, ArithDiv);
 }
 
-// ÖğÔªËØÈ¡¸º
+// é€å…ƒç´ å–è´Ÿ
 HsTuple HsTuple::operator-() const
 {
     HsTuple out;
@@ -1137,7 +1137,7 @@ HsTuple HsTuple::operator-() const
 }
 
 
-// ¸ºÏÂ±ê¹éÒ»»¯µ½ [0, length())
+// è´Ÿä¸‹æ ‡å½’ä¸€åŒ–åˆ° [0, length())
 int HsTuple::resolveIndex(int index) const
 {
     const int n = length();
@@ -1150,7 +1150,7 @@ int HsTuple::resolveIndex(int index) const
     return index;
 }
 
-// ²åÈëÏÂ±êÔÊĞíµÈÓÚ length()
+// æ’å…¥ä¸‹æ ‡å…è®¸ç­‰äº length()
 static int resolveInsertIndex(const HsTuple& t, int index)
 {
     const int n = t.length();
@@ -1163,7 +1163,7 @@ static int resolveInsertIndex(const HsTuple& t, int index)
     return index;
 }
 
-// ¶ÁÏÂ±êÔª×éÖĞµÄÕûÊıÏÂ±ê
+// è¯»ä¸‹æ ‡å…ƒç»„ä¸­çš„æ•´æ•°ä¸‹æ ‡
 static int readIndexAt(const HsTuple& indices, int i, int bound)
 {
     int64_t v = 0;
@@ -1183,7 +1183,7 @@ static int readIndexAt(const HsTuple& indices, int i, int bound)
     return idx;
 }
 
-// ÑÚÂë¸ñÊÇ·ñ·Ç 0
+// æ©ç æ ¼æ˜¯å¦é 0
 static bool maskOn(const HsTuple& mask, int i)
 {
     int64_t li = 0;
@@ -1198,7 +1198,7 @@ static bool maskOn(const HsTuple& mask, int i)
     return false;
 }
 
-// °ÑµÚ index ¸ñ×·¼Óµ½ out
+// æŠŠç¬¬ index æ ¼è¿½åŠ åˆ° out
 static void appendAt(const HsTuple& src, int index, HsTuple* out)
 {
     int64_t li = 0;

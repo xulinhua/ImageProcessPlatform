@@ -1,6 +1,6 @@
 /**
  * @file FileGrabber.cpp
- * @brief FileGrabberÊµÏÖ
+ * @brief FileGrabberå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -19,7 +19,7 @@
 
 namespace Vision {
 
-// Æ´½ÓÂ·¾¶
+// æ‹¼æ¥è·¯å¾„
 static std::string joinPath(const std::string& a, const std::string& b)
 {
     if (a.empty()) {
@@ -32,7 +32,7 @@ static std::string joinPath(const std::string& a, const std::string& b)
     return a + "\\" + b;
 }
 
-// À©Õ¹Ãû×ªĞ¡Ğ´
+// æ‰©å±•åè½¬å°å†™
 static std::string extLower(const std::string& n)
 {
     const size_t dot = n.find_last_of('.');
@@ -42,28 +42,28 @@ static std::string extLower(const std::string& n)
     return vpLower(n.substr(dot + 1));
 }
 
-// ÊÇ·ñÎª³£¼ûÍ¼ÏñÃû
+// æ˜¯å¦ä¸ºå¸¸è§å›¾åƒå
 static bool isImageName(const std::string& n)
 {
     const std::string e = extLower(n);
     return e == "png" || e == "bmp" || e == "jpg" || e == "jpeg" || e == "tif" || e == "tiff";
 }
 
-// Â·¾¶ÊÇ·ñ´æÔÚ£¨ACP Â·¾¶×ª¿í×Ö·û£©
+// è·¯å¾„æ˜¯å¦å­˜åœ¨ï¼ˆACP è·¯å¾„è½¬å®½å­—ç¬¦ï¼‰
 static bool pathExists(const std::string& p)
 {
     const DWORD a = GetFileAttributesW(utf8ToWide(p).c_str());
     return a != INVALID_FILE_ATTRIBUTES;
 }
 
-// ÊÇ·ñÄ¿Â¼
+// æ˜¯å¦ç›®å½•
 static bool isDir(const std::string& p)
 {
     const DWORD a = GetFileAttributesW(utf8ToWide(p).c_str());
     return a != INVALID_FILE_ATTRIBUTES && (a & FILE_ATTRIBUTE_DIRECTORY) != 0;
 }
 
-// Ã¶¾ÙÄ¿Â¼ÏÂÍ¼Ïñ£¬»òµ¥ÎÄ¼şÔòÖ»·µ»Ø¸ÃÎÄ¼ş
+// æšä¸¾ç›®å½•ä¸‹å›¾åƒï¼Œæˆ–å•æ–‡ä»¶åˆ™åªè¿”å›è¯¥æ–‡ä»¶
 std::vector<std::string> FileGrabber::imageFiles(const std::string& path)
 {
     std::vector<std::string> out;
@@ -96,7 +96,7 @@ std::vector<std::string> FileGrabber::imageFiles(const std::string& path)
     return out;
 }
 
-// sourceMode=file ¹Ì¶¨µ¥ÎÄ¼ş£»·ñÔòÄ¿Â¼Ñ­»·£¨Ğ´ runtime£©
+// sourceMode=file å›ºå®šå•æ–‡ä»¶ï¼›å¦åˆ™ç›®å½•å¾ªç¯ï¼ˆå†™ runtimeï¼‰
 static HsCommData::HsImage loadWithStb(const std::string& file, int64_t frameId, std::string* err);
 
 HsCommData::HsImage FileGrabber::grab(const std::string& path, const std::string& sourceMode,
@@ -114,7 +114,7 @@ HsCommData::HsImage FileGrabber::grab(const std::string& path, const std::string
     if (sourceMode == "file") {
         if (path.empty() || isDir(path) || !pathExists(path)) {
             if (err) {
-                *err = Vision::acpToUtf8("ÇëÖ¸¶¨ÓĞĞ§µÄµ¥¸öÍ¼ÏñÎÄ¼ş");
+                *err = "è¯·æŒ‡å®šæœ‰æ•ˆçš„å•ä¸ªå›¾åƒæ–‡ä»¶";
             }
             return HsCommData::HsImage();
         }
@@ -128,7 +128,7 @@ HsCommData::HsImage FileGrabber::grab(const std::string& path, const std::string
     const std::vector<std::string> files = imageFiles(path);
     if (files.empty()) {
         if (err) {
-            *err = Vision::acpToUtf8("Ã»ÓĞ¿ÉÓÃÍ¼Ïñ¡£ÇëÔÚÉè±¸»òÏà»ú¹¤¾ßÀïÖ¸¶¨ÎÄ¼ş¼Ğ/ÎÄ¼ş¡£");
+            *err = "æ²¡æœ‰å¯ç”¨å›¾åƒã€‚è¯·åœ¨è®¾å¤‡æˆ–ç›¸æœºå·¥å…·é‡ŒæŒ‡å®šæ–‡ä»¶å¤¹/æ–‡ä»¶ã€‚";
         }
         return HsCommData::HsImage();
     }
@@ -150,7 +150,7 @@ static HsCommData::HsImage loadWithStb(const std::string& file, int64_t frameId,
     FILE* f = _wfopen(utf8ToWide(file).c_str(), L"rb");
     if (!f) {
         if (err) {
-            *err = Vision::acpToUtf8("ÎŞ·¨´ò¿ªÍ¼Ïñ£º") + file;
+            *err = "æ— æ³•æ‰“å¼€å›¾åƒï¼š" + file;
         }
         return HsCommData::HsImage();
     }
@@ -158,7 +158,7 @@ static HsCommData::HsImage loadWithStb(const std::string& file, int64_t frameId,
     fclose(f);
     if (!data || w <= 0 || h <= 0) {
         if (err) {
-            *err = Vision::acpToUtf8("ÎŞ·¨½âÂëÍ¼Ïñ£º") + file;
+            *err = "æ— æ³•è§£ç å›¾åƒï¼š" + file;
         }
         if (data) {
             stbi_image_free(data);

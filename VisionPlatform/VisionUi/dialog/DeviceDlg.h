@@ -1,6 +1,6 @@
 /**
  * @file DeviceDlg.h
- * @brief DeviceDlgÍ·ÎÄ¼ş
+ * @brief DeviceDlgå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -28,65 +28,65 @@ struct Solution;
 
 /**
  * @class DeviceDlg
- * @brief µ¥Éè±¸ÅäÖÃ£º°´Ïà»ú/¿ØÖÆ¿¨/PLC ÏÔÊ¾²»Í¬×Ö¶Î
+ * @brief å•è®¾å¤‡é…ç½®ï¼šæŒ‰ç›¸æœº/æ§åˆ¶å¡/PLC æ˜¾ç¤ºä¸åŒå­—æ®µ
  */
 class VISION_UI_API DeviceDlg : public QDialog {
     Q_OBJECT
 public:
-    /** @brief ±à¼­Ö¸¶¨Éè±¸£»»á»°Óë·½°¸²»ÓµÓĞ */
+    /** @brief ç¼–è¾‘æŒ‡å®šè®¾å¤‡ï¼›ä¼šè¯ä¸æ–¹æ¡ˆä¸æ‹¥æœ‰ */
     DeviceDlg(Session* session, Solution* solution, const QString& deviceId, QWidget* parent = 0);
 
 private slots:
-    /** @brief Ğ´»Ø²İ¸å²¢¹Ø±Õ */
+    /** @brief å†™å›è‰ç¨¿å¹¶å…³é—­ */
     void onOk();
-    /** @brief Ñ¡ÔñÎÄ¼şÔ´Ä¿Â¼ */
+    /** @brief é€‰æ‹©æ–‡ä»¶æºç›®å½• */
     void onBrowse();
-    /** @brief ¿Ø¼ş¸Ä¶¯ºóÍ¬²½²İ¸åÓë×Ö¶ÎÏÔÒş */
+    /** @brief æ§ä»¶æ”¹åŠ¨ååŒæ­¥è‰ç¨¿ä¸å­—æ®µæ˜¾éš */
     void onEdited();
-    /** @brief ÖÖÀà±ä»¯ºóË¢ĞÂ¿É¼û×Ö¶Î */
+    /** @brief ç§ç±»å˜åŒ–ååˆ·æ–°å¯è§å­—æ®µ */
     void onKindChanged(int);
-    /** @brief Ìí¼ÓÒª¼ÇÂ¼µÄÍ¼Ïñ */
+    /** @brief æ·»åŠ è¦è®°å½•çš„å›¾åƒ */
     void onAddImages();
-    /** @brief ´ÓÁĞ±íÒÆ³ıÑ¡ÖĞÍ¼Ïñ */
+    /** @brief ä»åˆ—è¡¨ç§»é™¤é€‰ä¸­å›¾åƒ */
     void onRemoveImage();
 
 protected:
-    /** @brief ¹Ø±ÕÇ°Ñ¯ÎÊÊÇ·ñ±£´æ */
+    /** @brief å…³é—­å‰è¯¢é—®æ˜¯å¦ä¿å­˜ */
     void reject();
-    /** @brief ±êÌâÀ¸¹Ø±ÕÊ±Í¬ÑùÑ¯ÎÊÊÇ·ñ±£´æ */
+    /** @brief æ ‡é¢˜æ å…³é—­æ—¶åŒæ ·è¯¢é—®æ˜¯å¦ä¿å­˜ */
     void closeEvent(QCloseEvent* event);
 
 private:
-    /** @brief °Ñ½çÃæ×Ö¶ÎĞ´ÈëÉè±¸²İ¸å */
+    /** @brief æŠŠç•Œé¢å­—æ®µå†™å…¥è®¾å¤‡è‰ç¨¿ */
     void flushUiToDraft();
     /**
-     * @brief Î´±£´æÊ±Ñ¯ÎÊÊÇ·ñ±£´æ
-     * @return 0 È¡Ïû£¬1 ²»±£´æ£¬2 ÒÑ±£´æ
+     * @brief æœªä¿å­˜æ—¶è¯¢é—®æ˜¯å¦ä¿å­˜
+     * @return 0 å–æ¶ˆï¼Œ1 ä¸ä¿å­˜ï¼Œ2 å·²ä¿å­˜
      */
     int askCloseAction();
-    /** @brief Ìá½»²İ¸åµ½·½°¸£»Ê§°ÜÔòµ¯´° */
+    /** @brief æäº¤è‰ç¨¿åˆ°æ–¹æ¡ˆï¼›å¤±è´¥åˆ™å¼¹çª— */
     bool trySave();
-    /** @brief °´Ïà»ú¡¢¿ØÖÆ¿¨¡¢PLC ÏÔÒş×Ö¶Î */
+    /** @brief æŒ‰ç›¸æœºã€æ§åˆ¶å¡ã€PLC æ˜¾éšå­—æ®µ */
     void syncFieldVisibility();
-    /** @brief ÓÃ·½°¸ÀïµÄÍ¨ĞÅÍ¨µÀÌî³äÏÂÀ­ */
+    /** @brief ç”¨æ–¹æ¡ˆé‡Œçš„é€šä¿¡é€šé“å¡«å……ä¸‹æ‹‰ */
     void reloadCommCombo();
 
-    Session* m_session;            ///< »á»°
-    Solution* m_sol;               ///< ·½°¸
-    QString m_id;                  ///< Éè±¸ id
+    Session* m_session;            ///< ä¼šè¯
+    Solution* m_sol;               ///< æ–¹æ¡ˆ
+    QString m_id;                  ///< è®¾å¤‡ id
     DeviceRecipe m_draft;          ///< draft
-    DeviceRecipe m_formalSnapshot; ///< ¿ìÕÕ
-    QLineEdit* m_name;             ///< Ãû³Æ
-    QComboBox* m_kind;             ///< ÖÖÀà
-    QComboBox* m_backend;          ///< Ïà»úºó¶Ë
-    QLineEdit* m_path;             ///< ÎÄ¼şÔ´Ä¿Â¼
-    QWidget* m_pathRow;            ///< Ä¿Â¼ĞĞÈİÆ÷
-    QListWidget* m_images;         ///< Í¼ÏñÂ·¾¶ÁĞ±í
-    QWidget* m_imageRow;           ///< Í¼ÏñÁĞ±íĞĞ
-    QLineEdit* m_vendor;           ///< ¿ØÖÆ¿¨³§ÉÌ
-    QLineEdit* m_address;          ///< ¿ØÖÆ¿¨µØÖ·
-    QComboBox* m_comm;             ///< PLC °ó¶¨Í¨µÀ
-    QSpinBox* m_slave;             ///< PLC ´ÓÕ¾
+    DeviceRecipe m_formalSnapshot; ///< å¿«ç…§
+    QLineEdit* m_name;             ///< åç§°
+    QComboBox* m_kind;             ///< ç§ç±»
+    QComboBox* m_backend;          ///< ç›¸æœºåç«¯
+    QLineEdit* m_path;             ///< æ–‡ä»¶æºç›®å½•
+    QWidget* m_pathRow;            ///< ç›®å½•è¡Œå®¹å™¨
+    QListWidget* m_images;         ///< å›¾åƒè·¯å¾„åˆ—è¡¨
+    QWidget* m_imageRow;           ///< å›¾åƒåˆ—è¡¨è¡Œ
+    QLineEdit* m_vendor;           ///< æ§åˆ¶å¡å‚å•†
+    QLineEdit* m_address;          ///< æ§åˆ¶å¡åœ°å€
+    QComboBox* m_comm;             ///< PLC ç»‘å®šé€šé“
+    QSpinBox* m_slave;             ///< PLC ä»ç«™
 };
 
 }

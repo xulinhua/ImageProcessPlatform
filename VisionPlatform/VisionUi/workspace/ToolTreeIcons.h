@@ -1,6 +1,6 @@
 /**
  * @file ToolTreeIcons.h
- * @brief ToolTreeIconsÍ·ÎÄ¼ş
+ * @brief ToolTreeIconså¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -17,7 +17,7 @@
 namespace Vision {
 
 /**
- * @brief ±¾Á÷³Ì¹¤¾ßÊ÷Í¼±ê¼ü£¨Óë icons/tools/*.svg ÎÄ¼şÃû¶ÔÓ¦£©
+ * @brief æœ¬æµç¨‹å·¥å…·æ ‘å›¾æ ‡é”®ï¼ˆä¸ icons/tools/*.svg æ–‡ä»¶åå¯¹åº”ï¼‰
  */
 enum ToolTreeIconKey {
     ToolTreeIconCamera = 0,     ///< camera.svg
@@ -30,26 +30,26 @@ enum ToolTreeIconKey {
     ToolTreeIconParallel,       ///< parallel.svg
     ToolTreeIconIf,             ///< if.svg
     ToolTreeIconBranch,         ///< branch.svg
-    ToolTreeIconCount ///< Í¼±ê¸öÊı
+    ToolTreeIconCount ///< å›¾æ ‡ä¸ªæ•°
 };
 
-/** @brief ToolType ¡ú Í¼±ê¼ü */
+/** @brief ToolType â†’ å›¾æ ‡é”® */
 VISION_UI_API int toolTreeIconKeyForType(ToolType type);
 
 /**
- * @brief °´¼üÈ¡Í¼±ê£ºÓÅÏÈ exe/icons/tools/*.svg£¬È±Ê§Ê±ÓÃÏ¸ÏßÕ¼Î»
+ * @brief æŒ‰é”®å–å›¾æ ‡ï¼šä¼˜å…ˆ exe/icons/tools/*.svgï¼Œç¼ºå¤±æ—¶ç”¨ç»†çº¿å ä½
  * @param key ToolTreeIconKey
  */
 VISION_UI_API QIcon toolTreeIcon(int key);
 
 /**
- * @brief °´¾ßÌå toolName È¡Í¼±ê£¨tools/<toolName>.svg£©£¬È±Ê§Ê±»ØÍËµ½ÀàĞÍÍ¼±ê
- * @param toolName Èç locate.template
+ * @brief æŒ‰å…·ä½“ toolName å–å›¾æ ‡ï¼ˆtools/<toolName>.svgï¼‰ï¼Œç¼ºå¤±æ—¶å›é€€åˆ°ç±»å‹å›¾æ ‡
+ * @param toolName å¦‚ locate.template
  * @param typeKeyFallback ToolTreeIconKey
  */
 VISION_UI_API QIcon toolTreeIconForName(const QString& toolName, int typeKeyFallback);
 
-/** @brief Çå¿Õ»º´æ£¨Ìæ»»´ÅÅÌÍ¼±êºó¿Éµ÷ÓÃÒÔÖØĞÂ¼ÓÔØ£© */
+/** @brief æ¸…ç©ºç¼“å­˜ï¼ˆæ›¿æ¢ç£ç›˜å›¾æ ‡åå¯è°ƒç”¨ä»¥é‡æ–°åŠ è½½ï¼‰ */
 VISION_UI_API void clearToolTreeIconCache();
 
 }

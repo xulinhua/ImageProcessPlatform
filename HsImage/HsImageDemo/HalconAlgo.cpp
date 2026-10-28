@@ -1,6 +1,6 @@
 /**
  * @file HalconAlgo.cpp
- * @brief HalconAlgoÊµÏÖ
+ * @brief HalconAlgoå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -29,13 +29,13 @@ static bool g_himgReady = false;
 static QImage g_gray;
 static bool g_grayReady = false;
 
-// BT.601 ÁÁ¶È£¬Óë¿Ø¼ş HUD È¡ÑùÒ»ÖÂ
+// BT.601 äº®åº¦ï¼Œä¸æ§ä»¶ HUD å–æ ·ä¸€è‡´
 static int luma8(int r, int g, int b)
 {
     return qBound(0, qRound(0.299 * r + 0.587 * g + 0.114 * b), 255);
 }
 
-// ×ª 8bit »Ò¶È£¨²»ÓÃ QImage::convertToFormat£¬Æä qGray Óë HUD ²î 1¡«2£©
+// è½¬ 8bit ç°åº¦ï¼ˆä¸ç”¨ QImage::convertToFormatï¼Œå…¶ qGray ä¸ HUD å·® 1ï½2ï¼‰
 static QImage toLuma8(const QImage& src)
 {
     if (src.isNull()) {
@@ -63,7 +63,7 @@ static QImage toLuma8(const QImage& src)
     return gray;
 }
 
-// CPU É¨»Ò¶ÈÍ¼Éú³ÉĞĞ³Ì
+// CPU æ‰«ç°åº¦å›¾ç”Ÿæˆè¡Œç¨‹
 static HsCommData::HsRegion rleFromGrayCpu(const QImage& gray, int tMin, int tMax)
 {
     HsCommData::HsRegion out;
@@ -112,7 +112,7 @@ static HsCommData::HsRegion rleFromGrayCpu(const QImage& gray, int tMin, int tMa
     return out;
 }
 
-// ±¾½ø³ÌÊÇ·ñÁ´½ÓÁË Halcon
+// æœ¬è¿›ç¨‹æ˜¯å¦é“¾æ¥äº† Halcon
 bool hasHalconEngine()
 {
 #ifdef HSIMAGE_HAS_HALCON
@@ -122,17 +122,17 @@ bool hasHalconEngine()
 #endif
 }
 
-// ÒıÇæÏÔÊ¾Ãû£¨ÖĞÎÄ×ß fromLocal8Bit£¬±ÜÃâ QStringLiteral ÔÚ MSVC ÏÂÂÒÂë£©
+// å¼•æ“æ˜¾ç¤ºåï¼ˆä¸­æ–‡èµ° fromUtf8ï¼Œé¿å… QStringLiteral åœ¨ MSVC ä¸‹ä¹±ç ï¼‰
 QString halconEngineName()
 {
 #ifdef HSIMAGE_HAS_HALCON
-    return QString::fromLocal8Bit("Halcon 17.12");
+    return QString::fromUtf8("Halcon 17.12");
 #else
-    return QString::fromLocal8Bit("±¾µØÉ¨Ãè£¨Î´Á´½Ó Halcon£©");
+    return QString::fromUtf8("æœ¬åœ°æ‰«æï¼ˆæœªé“¾æ¥ Halconï¼‰");
 #endif
 }
 
-// ×¼±¸ãĞÖµÊäÈëÍ¼£¨BT.601 »Ò¶È£¬¿ÉÑ¡ HImage£©
+// å‡†å¤‡é˜ˆå€¼è¾“å…¥å›¾ï¼ˆBT.601 ç°åº¦ï¼Œå¯é€‰ HImageï¼‰
 bool prepareThresholdImage(const QImage& src, QString* error)
 {
     g_grayReady = false;
@@ -141,17 +141,17 @@ bool prepareThresholdImage(const QImage& src, QString* error)
 #endif
     if (src.isNull()) {
         if (error) {
-            *error = QString::fromLocal8Bit("Í¼ÏñÎª¿Õ");
+            *error = QString::fromUtf8("å›¾åƒä¸ºç©º");
         }
         return false;
     }
 
-    // ²»ÓÃ QImage::convertToFormat(Grayscale8)£¬Æä qGray Óë HUD ÁÁ¶È²î 1¡«2¡£
+    // ä¸ç”¨ QImage::convertToFormat(Grayscale8)ï¼Œå…¶ qGray ä¸ HUD äº®åº¦å·® 1ï½2ã€‚
     g_gray = toLuma8(src);
     g_grayReady = !g_gray.isNull();
     if (!g_grayReady) {
         if (error) {
-            *error = QString::fromLocal8Bit("ÎŞ·¨×ªÎª 8bit »Ò¶È");
+            *error = QString::fromUtf8("æ— æ³•è½¬ä¸º 8bit ç°åº¦");
         }
         return false;
     }
@@ -170,7 +170,7 @@ bool prepareThresholdImage(const QImage& src, QString* error)
     } catch (const HException& ex) {
         g_himgReady = false;
         if (error) {
-            *error = QString::fromLocal8Bit(ex.ErrorMessage().Text());
+            *error = QString::fromUtf8(ex.ErrorMessage().Text());
         }
         return false;
     }
@@ -179,10 +179,10 @@ bool prepareThresholdImage(const QImage& src, QString* error)
 }
 
 #ifdef HSIMAGE_HAS_HALCON
-// Halcon HsCommData::HsRegion ×ª HsCommData::HsRegion£¨0-based ÏÒ£©
+// Halcon HsCommData::HsRegion è½¬ HsCommData::HsRegionï¼ˆ0-based å¼¦ï¼‰
 static HsCommData::HsRegion rleFromHalconRegion(const HRegion& region)
 {
-    // GetRegionRuns °´ 0-based ÏñËØĞ´Èë HsCommData::Chord£»ÈôÊµ²âÕû·ùÆ« 1 ÏñËØÔÙ¸Ä´Ë´¦£¬²»¸ÄäÖÈ¾¡£
+    // GetRegionRuns æŒ‰ 0-based åƒç´ å†™å…¥ HsCommData::Chordï¼›è‹¥å®æµ‹æ•´å¹…å 1 åƒç´ å†æ”¹æ­¤å¤„ï¼Œä¸æ”¹æ¸²æŸ“ã€‚
     HsCommData::HsRegion out;
     HTuple rows;
     HTuple cb;
@@ -212,7 +212,7 @@ static HsCommData::HsRegion rleFromHalconRegion(const HRegion& region)
 }
 #endif
 
-// ¶ÔÒÑ×¼±¸µÄ»Ò¶ÈÍ¼×öãĞÖµ
+// å¯¹å·²å‡†å¤‡çš„ç°åº¦å›¾åšé˜ˆå€¼
 ThresholdRst runGrayThreshold(int tMin, int tMax)
 {
     ThresholdRst r;
@@ -221,7 +221,7 @@ ThresholdRst runGrayThreshold(int tMin, int tMax)
     r.thresholdUs = 0;
     r.convertUs = 0;
     if (!g_grayReady) {
-        r.error = QString::fromLocal8Bit("ÉĞÎ´¼ÓÔØ²âÊÔÍ¼Ïñ");
+        r.error = QString::fromUtf8("å°šæœªåŠ è½½æµ‹è¯•å›¾åƒ");
         return r;
     }
 
@@ -242,7 +242,7 @@ ThresholdRst runGrayThreshold(int tMin, int tMax)
             r.usedHalcon = true;
             return r;
         } catch (const HException& ex) {
-            r.error = QString::fromLocal8Bit(ex.ErrorMessage().Text());
+            r.error = QString::fromUtf8(ex.ErrorMessage().Text());
             return r;
         }
     }

@@ -1,6 +1,6 @@
 /**
  * @file FrameOverlay.h
- * @brief FrameOverlayÍ·ÎÄ¼ş
+ * @brief FrameOverlayå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -21,17 +21,17 @@ namespace HsCommData {
 
 /**
  * @class FrameOverlay
- * @brief Ò»Ö¡µÄ½á¹ûµş¼Ó¡£frameId ĞëÓëµ±Ç°µ×Í¼Ò»ÖÂ£¬·ñÔòÕâÒ»Ö¡²»»­
+ * @brief ä¸€å¸§çš„ç»“æœå åŠ ã€‚frameId é¡»ä¸å½“å‰åº•å›¾ä¸€è‡´ï¼Œå¦åˆ™è¿™ä¸€å¸§ä¸ç”»
  */
 class HSCOMMDATA_EXPORT FrameOverlay {
 public:
-    int64_t frameId;            ///< ¶ÔÓ¦µ×Í¼Ö¡ºÅ
-    std::vector<Graphic> items; ///< ±¾Ö¡ Stack Í¼Ôª
+    int64_t frameId;            ///< å¯¹åº”åº•å›¾å¸§å·
+    std::vector<Graphic> items; ///< æœ¬å¸§ Stack å›¾å…ƒ
 
-    FrameOverlay(); ///< frameId Îª 0
-    explicit FrameOverlay(int64_t frameId); ///< Ö¸¶¨Ö¡ºÅ
+    FrameOverlay(); ///< frameId ä¸º 0
+    explicit FrameOverlay(int64_t frameId); ///< æŒ‡å®šå¸§å·
 
-    /** @brief ´´½¨¹²Ïí¿ìÕÕ */
+    /** @brief åˆ›å»ºå…±äº«å¿«ç…§ */
     static std::shared_ptr<FrameOverlay> create(int64_t frameId);
 };
 

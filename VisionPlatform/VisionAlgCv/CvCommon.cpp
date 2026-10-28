@@ -1,6 +1,6 @@
 /**
  * @file CvCommon.cpp
- * @brief CvCommonÊµÏÖ
+ * @brief CvCommonå®žçŽ°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.

@@ -1,6 +1,6 @@
 /**
  * @file PermMgr.h
- * @brief PermMgrÍ·ÎÄ¼ş
+ * @brief PermMgrå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -18,38 +18,38 @@ namespace Vision {
 
 /**
  * @class PermDesc
- * @brief Ä¿Â¼ÀïµÄÒ»ÌõÈ¨ÏŞ£ºµã·Ö±êÊ¶¡¢·Ö×é¡¢È¨ÏŞÎ»
+ * @brief ç›®å½•é‡Œçš„ä¸€æ¡æƒé™ï¼šç‚¹åˆ†æ ‡è¯†ã€åˆ†ç»„ã€æƒé™ä½
  */
 struct PermDesc {
-    std::string id;    ///< µã·Ö±êÊ¶
-    std::string group; ///< ·Ö×é£¬Èç runtime / design
-    Perm bit;    ///< ¶ÔÓ¦È¨ÏŞÎ»
+    std::string id;    ///< ç‚¹åˆ†æ ‡è¯†
+    std::string group; ///< åˆ†ç»„ï¼Œå¦‚ runtime / design
+    Perm bit;    ///< å¯¹åº”æƒé™ä½
     PermDesc() : bit(PermNone) {}
 };
 
 /**
  * @class PermMgr
- * @brief ÒÑÖªÈ¨ÏŞ±êÊ¶Ä¿Â¼¡£Î´Öª±êÊ¶Ò»ÂÉÊÓÎªÎŞÈ¨ÏŞ
+ * @brief å·²çŸ¥æƒé™æ ‡è¯†ç›®å½•ã€‚æœªçŸ¥æ ‡è¯†ä¸€å¾‹è§†ä¸ºæ— æƒé™
  */
 class VISION_AUTH_API PermMgr {
 public:
-    /** @brief ½ø³ÌÄÚÎ¨Ò»Ä¿Â¼ */
+    /** @brief è¿›ç¨‹å†…å”¯ä¸€ç›®å½• */
     static PermMgr& instance();
-    /** @brief µÇ¼ÇÒ»Ìõ£»Í¬±êÊ¶Ôò¸²¸Ç */
+    /** @brief ç™»è®°ä¸€æ¡ï¼›åŒæ ‡è¯†åˆ™è¦†ç›– */
     void add(const PermDesc& d);
-    /** @brief Ä¿Â¼Îª¿ÕÊ±ÌîÈëÄÚÖÃÈ¨ÏŞ */
+    /** @brief ç›®å½•ä¸ºç©ºæ—¶å¡«å…¥å†…ç½®æƒé™ */
     void ensureBuiltins();
-    /** @brief ¸Ã±êÊ¶ÊÇ·ñÒÑµÇ¼Ç */
+    /** @brief è¯¥æ ‡è¯†æ˜¯å¦å·²ç™»è®° */
     bool contains(const std::string& id) const;
     const std::vector<PermDesc>& all() const;
-    /** @brief ¶ÁÄ³½ÇÉ«µÄÈ¨ÏŞÑÚÂë */
+    /** @brief è¯»æŸè§’è‰²çš„æƒé™æ©ç  */
     bool loadRoleMask(UserRole role, uint32_t* mask, std::string* error);
-    /** @brief Ğ´Ä³½ÇÉ«µÄÈ¨ÏŞÑÚÂë */
+    /** @brief å†™æŸè§’è‰²çš„æƒé™æ©ç  */
     bool saveRoleMask(UserRole role, uint32_t mask, std::string* error);
 
 private:
     PermMgr() {}
-    std::vector<PermDesc> m_items; ///< ÒÑµÇ¼ÇÈ¨ÏŞ
+    std::vector<PermDesc> m_items; ///< å·²ç™»è®°æƒé™
 };
 
 }

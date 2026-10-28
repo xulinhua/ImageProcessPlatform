@@ -1,6 +1,6 @@
 /**
  * @file StageTimer.cpp
- * @brief StageTimerÊµÏÖ
+ * @brief StageTimerå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -13,14 +13,14 @@
 
 namespace Vision {
 
-// È«Áã¶Î
+// å…¨é›¶æ®µ
 StageSpan::StageSpan()
     : ms(0)
     , us(0)
 {
 }
 
-// ¼ÆÊı¹éÁã
+// è®¡æ•°å½’é›¶
 StageTimer::OpenSpan::OpenSpan()
     : tick(0)
 {
@@ -28,7 +28,7 @@ StageTimer::OpenSpan::OpenSpan()
 
 namespace {
 
-// QPC ÆµÂÊ¡£½ø³ÌÄÚÖ»È¡Ò»´Î
+// QPC é¢‘ç‡ã€‚è¿›ç¨‹å†…åªå–ä¸€æ¬¡
 int64_t qpcFreq()
 {
     static int64_t freq = 0;
@@ -43,7 +43,7 @@ int64_t qpcFreq()
     return freq;
 }
 
-// Ò»ĞĞ£ºÃû×Ö¼ÓºÁÃë£¬±£ÁôÈıÎ»Ğ¡Êı
+// ä¸€è¡Œï¼šåå­—åŠ æ¯«ç§’ï¼Œä¿ç•™ä¸‰ä½å°æ•°
 void appendLine(std::string* out, const std::string& name, double ms)
 {
     char buf[64];
@@ -55,19 +55,19 @@ void appendLine(std::string* out, const std::string& name, double ms)
 
 } // namespace
 
-// ¹¹Ôì
+// æ„é€ 
 StageTimer::StageTimer()
 {
 }
 
-// Çå¿Õ
+// æ¸…ç©º
 void StageTimer::clear()
 {
     m_open.clear();
     m_spans.clear();
 }
 
-// µ±Ç° QPC ¼ÆÊı
+// å½“å‰ QPC è®¡æ•°
 int64_t StageTimer::tick()
 {
     if (qpcFreq() <= 0) {
@@ -78,7 +78,7 @@ int64_t StageTimer::tick()
     return c.QuadPart;
 }
 
-// ¼ÆÊı²î»»³ÉºÁÃëºÍÎ¢Ãë
+// è®¡æ•°å·®æ¢æˆæ¯«ç§’å’Œå¾®ç§’
 void StageTimer::ticksTo(int64_t dt, double* ms, int64_t* us)
 {
     const int64_t freq = qpcFreq();
@@ -94,7 +94,7 @@ void StageTimer::ticksTo(int64_t dt, double* ms, int64_t* us)
     }
 }
 
-// Î´½áÊø¶ÎÀïÍ¬ÃûÏÂ±ê
+// æœªç»“æŸæ®µé‡ŒåŒåä¸‹æ ‡
 int StageTimer::findOpen(const std::string& name) const
 {
     for (int i = static_cast<int>(m_open.size()) - 1; i >= 0; --i) {
@@ -105,7 +105,7 @@ int StageTimer::findOpen(const std::string& name) const
     return -1;
 }
 
-// °´ÏÂ±ê½áÊøÒ»¶Î
+// æŒ‰ä¸‹æ ‡ç»“æŸä¸€æ®µ
 void StageTimer::closeAt(int index)
 {
     if (index < 0 || index >= static_cast<int>(m_open.size())) {
@@ -119,7 +119,7 @@ void StageTimer::closeAt(int index)
     m_spans.push_back(span);
 }
 
-// ¿ªÊ¼Ò»¶Î
+// å¼€å§‹ä¸€æ®µ
 void StageTimer::begin(const std::string& name)
 {
     const int exist = findOpen(name);
@@ -132,7 +132,7 @@ void StageTimer::begin(const std::string& name)
     m_open.push_back(open);
 }
 
-// ½áÊøÒ»¶Î
+// ç»“æŸä¸€æ®µ
 void StageTimer::end(const std::string& name)
 {
     if (m_open.empty()) {
@@ -145,7 +145,7 @@ void StageTimer::end(const std::string& name)
     closeAt(findOpen(name));
 }
 
-// ´®ĞĞÇĞµ½ÏÂÒ»¶Î
+// ä¸²è¡Œåˆ‡åˆ°ä¸‹ä¸€æ®µ
 void StageTimer::lap(const std::string& name)
 {
     if (!m_open.empty()) {
@@ -154,7 +154,7 @@ void StageTimer::lap(const std::string& name)
     begin(name);
 }
 
-// Ä³½×¶Î×î½üÒ»´ÎºÁÃë
+// æŸé˜¶æ®µæœ€è¿‘ä¸€æ¬¡æ¯«ç§’
 double StageTimer::ms(const std::string& name) const
 {
     for (int i = static_cast<int>(m_spans.size()) - 1; i >= 0; --i) {
@@ -165,7 +165,7 @@ double StageTimer::ms(const std::string& name) const
     return -1;
 }
 
-// Ä³½×¶Î×î½üÒ»´ÎÎ¢Ãë
+// æŸé˜¶æ®µæœ€è¿‘ä¸€æ¬¡å¾®ç§’
 int64_t StageTimer::us(const std::string& name) const
 {
     for (int i = static_cast<int>(m_spans.size()) - 1; i >= 0; --i) {
@@ -176,7 +176,7 @@ int64_t StageTimer::us(const std::string& name) const
     return -1;
 }
 
-// ÒÑ½áÊøÆ¬¶ÎºÏ¼ÆºÁÃë
+// å·²ç»“æŸç‰‡æ®µåˆè®¡æ¯«ç§’
 double StageTimer::totalMs() const
 {
     double sum = 0;
@@ -186,7 +186,7 @@ double StageTimer::totalMs() const
     return sum;
 }
 
-// Ä³Ò»½×¶ÎÒ»ĞĞ
+// æŸä¸€é˜¶æ®µä¸€è¡Œ
 std::string StageTimer::report(const std::string& name) const
 {
     const double v = ms(name);
@@ -201,18 +201,18 @@ std::string StageTimer::report(const std::string& name) const
     return line;
 }
 
-// È«²¿Æ¬¶Î»ã×Ü
+// å…¨éƒ¨ç‰‡æ®µæ±‡æ€»
 std::string StageTimer::summary() const
 {
     std::string text;
     for (size_t i = 0; i < m_spans.size(); ++i) {
         appendLine(&text, m_spans[i].name, m_spans[i].ms);
     }
-    appendLine(&text, "ºÏ¼Æ", totalMs());
+    appendLine(&text, "åˆè®¡", totalMs());
     return text;
 }
 
-// ÒÑ½áÊøÆ¬¶Î£¬°´½áÊøË³Ğò
+// å·²ç»“æŸç‰‡æ®µï¼ŒæŒ‰ç»“æŸé¡ºåº
 const std::vector<StageSpan>& StageTimer::spans() const
 {
     return m_spans;

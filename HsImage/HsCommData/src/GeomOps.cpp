@@ -1,6 +1,6 @@
 /**
  * @file GeomOps.cpp
- * @brief GeomOpsÊµÏÖ
+ * @brief GeomOpså®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -14,25 +14,25 @@
 
 namespace HsCommData {
 
-// ÏòÁ¿Ïà¼Ó
+// å‘é‡ç›¸åŠ 
 Point2d operator+(const Point2d& a, const Point2d& b)
 {
     return Point2d(a.x + b.x, a.y + b.y);
 }
 
-// ÏòÁ¿Ïà¼õ
+// å‘é‡ç›¸å‡
 Point2d operator-(const Point2d& a, const Point2d& b)
 {
     return Point2d(a.x - b.x, a.y - b.y);
 }
 
-// Êı³Ë
+// æ•°ä¹˜
 Point2d operator*(const Point2d& a, double s)
 {
     return Point2d(a.x * s, a.y * s);
 }
 
-// Ô­µØÏà¼Ó
+// åŸåœ°ç›¸åŠ 
 Point2d& operator+=(Point2d& a, const Point2d& b)
 {
     a.x += b.x;
@@ -40,13 +40,13 @@ Point2d& operator+=(Point2d& a, const Point2d& b)
     return a;
 }
 
-// µã»ı
+// ç‚¹ç§¯
 double dot2(const Point2d& a, const Point2d& b)
 {
     return a.x * b.x + a.y * b.y;
 }
 
-// Á½µã¾àÀë
+// ä¸¤ç‚¹è·ç¦»
 double dist2(const Point2d& a, const Point2d& b)
 {
     const double dx = a.x - b.x;
@@ -54,67 +54,67 @@ double dist2(const Point2d& a, const Point2d& b)
     return std::sqrt(dx * dx + dy * dy);
 }
 
-// Á½µã¹¹Ôì°üÎ§ºĞ²¢¹æ·¶¿í¸ß
+// ä¸¤ç‚¹æ„é€ åŒ…å›´ç›’å¹¶è§„èŒƒå®½é«˜
 Box2 fromPoints(const Point2d& a, const Point2d& b)
 {
     return normalized(Box2(a.x, a.y, b.x - a.x, b.y - a.y));
 }
 
-// ×ó±ß½ç
+// å·¦è¾¹ç•Œ
 double left(const Box2& box)
 {
     return box.x;
 }
 
-// ÉÏ±ß½ç
+// ä¸Šè¾¹ç•Œ
 double top(const Box2& box)
 {
     return box.y;
 }
 
-// ÓÒ±ß½ç£¬¿ªÇø¼ä x+w
+// å³è¾¹ç•Œï¼Œå¼€åŒºé—´ x+w
 double right(const Box2& box)
 {
     return box.x + box.w;
 }
 
-// ÏÂ±ß½ç£¬¿ªÇø¼ä y+h
+// ä¸‹è¾¹ç•Œï¼Œå¼€åŒºé—´ y+h
 double bottom(const Box2& box)
 {
     return box.y + box.h;
 }
 
-// ¿í
+// å®½
 double width(const Box2& box)
 {
     return box.w;
 }
 
-// ¸ß
+// é«˜
 double height(const Box2& box)
 {
     return box.h;
 }
 
-// ×óÉÏ½Ç
+// å·¦ä¸Šè§’
 Point2d topLeft(const Box2& box)
 {
     return Point2d(box.x, box.y);
 }
 
-// ÖĞĞÄ
+// ä¸­å¿ƒ
 Point2d center(const Box2& box)
 {
     return Point2d(box.x + box.w * 0.5, box.y + box.h * 0.5);
 }
 
-// ¿í»ò¸ß·ÇÕıÔò¿Õ
+// å®½æˆ–é«˜éæ­£åˆ™ç©º
 bool isEmpty(const Box2& box)
 {
     return box.w <= 0.0 || box.h <= 0.0;
 }
 
-// ¿í¸ßÈ¡·Ç¸º
+// å®½é«˜å–éè´Ÿ
 Box2 normalized(const Box2& box)
 {
     Box2 r = box;
@@ -129,14 +129,14 @@ Box2 normalized(const Box2& box)
     return r;
 }
 
-// Æ½ÒÆ£¬µ¥Î»ÏñËØ
+// å¹³ç§»ï¼Œå•ä½åƒç´ 
 void translate(Box2& box, double dx, double dy)
 {
     box.x += dx;
     box.y += dy;
 }
 
-// ²¢¼¯°üÎ§ºĞ
+// å¹¶é›†åŒ…å›´ç›’
 Box2 united(const Box2& a, const Box2& b)
 {
     if (isEmpty(a)) {
@@ -152,7 +152,7 @@ Box2 united(const Box2& a, const Box2& b)
     return Box2(l, t, rgt - l, btm - t);
 }
 
-// ÓÃº¬¶ËµãµÄ½Çµã¹¹Ôì
+// ç”¨å«ç«¯ç‚¹çš„è§’ç‚¹æ„é€ 
 IRect fromInclusive(int x0, int y0, int x1, int y1)
 {
     if (x1 < x0) {
@@ -168,44 +168,44 @@ IRect fromInclusive(int x0, int y0, int x1, int y1)
     return IRect(x0, y0, x1 - x0 + 1, y1 - y0 + 1);
 }
 
-// ×óÁĞ
+// å·¦åˆ—
 int left(const IRect& rect)
 {
     return rect.x;
 }
 
-// ÉÏĞĞ
+// ä¸Šè¡Œ
 int top(const IRect& rect)
 {
     return rect.y;
 }
 
-// ÓÒÁĞ£¬º¬¶Ëµã
+// å³åˆ—ï¼Œå«ç«¯ç‚¹
 int right(const IRect& rect)
 {
     return rect.x + rect.width - 1;
 }
 
-// ÏÂĞĞ£¬º¬¶Ëµã
+// ä¸‹è¡Œï¼Œå«ç«¯ç‚¹
 int bottom(const IRect& rect)
 {
     return rect.y + rect.height - 1;
 }
 
-// ¿í»ò¸ß·ÇÕıÔò¿Õ
+// å®½æˆ–é«˜éæ­£åˆ™ç©º
 bool isEmpty(const IRect& rect)
 {
     return rect.width <= 0 || rect.height <= 0;
 }
 
-// Æ½ÒÆ£¬µ¥Î»ÏñËØ
+// å¹³ç§»ï¼Œå•ä½åƒç´ 
 void translate(IRect& rect, int dx, int dy)
 {
     rect.x += dx;
     rect.y += dy;
 }
 
-// µ¥Î»Î»×Ë
+// å•ä½ä½å§¿
 Pose2::Pose2()
     : tx(0.0)
     , ty(0.0)
@@ -213,7 +213,7 @@ Pose2::Pose2()
 {
 }
 
-// Ö¸¶¨Æ½ÒÆºÍ×ª½Ç
+// æŒ‡å®šå¹³ç§»å’Œè½¬è§’
 Pose2::Pose2(double tx_, double ty_, double angle_)
     : tx(tx_)
     , ty(ty_)
@@ -221,7 +221,7 @@ Pose2::Pose2(double tx_, double ty_, double angle_)
 {
 }
 
-// Ö»Ğı×ªÏòÁ¿£¬²»¼ÓÆ½ÒÆ
+// åªæ—‹è½¬å‘é‡ï¼Œä¸åŠ å¹³ç§»
 Point2d Pose2::rotate(const Point2d& v) const
 {
     const double c = std::cos(angle);
@@ -229,14 +229,14 @@ Point2d Pose2::rotate(const Point2d& v) const
     return Point2d(c * v.x - s * v.y, s * v.x + c * v.y);
 }
 
-// ¾Ö²¿µã±äµ½Í¼Ïñ£ºÏÈĞı×ªÔÙ¼ÓÆ½ÒÆ
+// å±€éƒ¨ç‚¹å˜åˆ°å›¾åƒï¼šå…ˆæ—‹è½¬å†åŠ å¹³ç§»
 Point2d Pose2::apply(const Point2d& p) const
 {
     const Point2d r = rotate(p);
     return Point2d(r.x + tx, r.y + ty);
 }
 
-// ÄæÎ»×Ë
+// é€†ä½å§¿
 Pose2 Pose2::inverse() const
 {
     const double c = std::cos(angle);
@@ -245,37 +245,37 @@ Pose2 Pose2::inverse() const
 }
 
 
-// ÄÚ²¿×ª½Ç£¬»¡¶È
+// å†…éƒ¨è½¬è§’ï¼Œå¼§åº¦
 double Pose2::angRad() const
 {
     return angle;
 }
 
-// Ğ´ÈëÄÚ²¿»¡¶È
+// å†™å…¥å†…éƒ¨å¼§åº¦
 void Pose2::setAngRad(double rad)
 {
     angle = rad;
 }
 
-// ×ª½ÇµÄ¶ÈÊı£¬Õı·½ÏòÓëÄÚ²¿ÏàÍ¬
+// è½¬è§’çš„åº¦æ•°ï¼Œæ­£æ–¹å‘ä¸å†…éƒ¨ç›¸åŒ
 double Pose2::angDeg() const
 {
     return toDegree(angle);
 }
 
-// °´¶ÈÊıĞ´Èë£¬Õı·½ÏòÓëÄÚ²¿ÏàÍ¬
+// æŒ‰åº¦æ•°å†™å…¥ï¼Œæ­£æ–¹å‘ä¸å†…éƒ¨ç›¸åŒ
 void Pose2::setAngDeg(double deg)
 {
     angle = toRadian(deg);
 }
 
-// °´ÏµÍ³½Ç¶Èµ¥Î»ºÍÕı·½Ïò¶ÁÈ¡
+// æŒ‰ç³»ç»Ÿè§’åº¦å•ä½å’Œæ­£æ–¹å‘è¯»å–
 double Pose2::ang() const
 {
     return fromAngle(angle);
 }
 
-// °´ÏµÍ³½Ç¶Èµ¥Î»ºÍÕı·½ÏòĞ´Èë
+// æŒ‰ç³»ç»Ÿè§’åº¦å•ä½å’Œæ­£æ–¹å‘å†™å…¥
 void Pose2::setAng(double external)
 {
     angle = toAngle(external);

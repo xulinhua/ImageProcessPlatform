@@ -1,6 +1,6 @@
 /**
  * @file CvImageConvert.cpp
- * @brief CvImageConvertÊµÏÖ
+ * @brief CvImageConvertå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -12,7 +12,7 @@
 
 namespace Vision {
 
-// ÊÇ·ñÎª¿ÉÖ±½Ó²ğ³É BGR µÄ½»´í±àÂë
+// æ˜¯å¦ä¸ºå¯ç›´æ¥æ‹†æˆ BGR çš„äº¤é”™ç¼–ç 
 static bool isInterleavedRgbFamily(HsCommData::PixelEncoding enc)
 {
     return enc == HsCommData::EncodeRgb
@@ -21,7 +21,7 @@ static bool isInterleavedRgbFamily(HsCommData::PixelEncoding enc)
         || enc == HsCommData::EncodeBgra;
 }
 
-// HsImage ×ª»Ò¶È Mat£¨²ÊÉ«°´ÁÁ¶ÈÕÛ»Òºó¿½±´£©
+// HsImage è½¬ç°åº¦ Matï¼ˆå½©è‰²æŒ‰äº®åº¦æŠ˜ç°åæ‹·è´ï¼‰
 bool hsImageToMatGray(const HsCommData::HsImage& img, cv::Mat*& out, std::string* err)
 {
     if (!out) {
@@ -51,7 +51,7 @@ bool hsImageToMatGray(const HsCommData::HsImage& img, cv::Mat*& out, std::string
     return true;
 }
 
-// HsImage ×ª Mat¡£µ¥Í¨µÀ¡ú»Ò¶È£»Èı/ËÄÍ¨µÀ½»´í¡úBGR
+// HsImage è½¬ Matã€‚å•é€šé“â†’ç°åº¦ï¼›ä¸‰/å››é€šé“äº¤é”™â†’BGR
 bool hsImageToMat(const HsCommData::HsImage& img, cv::Mat*& out, std::string* err)
 {
     if (!out) {
@@ -94,7 +94,7 @@ bool hsImageToMat(const HsCommData::HsImage& img, cv::Mat*& out, std::string* er
     return true;
 }
 
-// Mat ×ª HsImage¡£1 Í¨µÀ¡úmono8£»3 Í¨µÀ BGR¡úrgb8
+// Mat è½¬ HsImageã€‚1 é€šé“â†’mono8ï¼›3 é€šé“ BGRâ†’rgb8
 bool matToHsImage(const cv::Mat& img, int64_t frameId, HsCommData::HsImage*& out, std::string* err)
 {
     if (!out) {

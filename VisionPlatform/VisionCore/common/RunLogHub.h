@@ -1,6 +1,6 @@
 /**
  * @file RunLogHub.h
- * @brief RunLogHubÍ·ÎÄ¼ş
+ * @brief RunLogHubå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -17,34 +17,34 @@ namespace Vision {
 
 /**
  * @class RunLogHub
- * @brief ÔËĞĞÈÕÖ¾¶à sink ·Ö·¢Æ÷£¨ÉÈ³ö£©£»²»ÓµÓĞ sink£»ÅÉ·¢¼ÓËø£¬¹©¶àÏß³Ì Job °²È«Ğ´Èë
- * @note ×¢²áµ½ Station/Job µÄÈÔÊÇµ¥Ò» IRunListener*£»UI Óë VisionLog µÈ×÷Îª×Ó sink ¹Ò½Ó
+ * @brief è¿è¡Œæ—¥å¿—å¤š sink åˆ†å‘å™¨ï¼ˆæ‰‡å‡ºï¼‰ï¼›ä¸æ‹¥æœ‰ sinkï¼›æ´¾å‘åŠ é”ï¼Œä¾›å¤šçº¿ç¨‹ Job å®‰å…¨å†™å…¥
+ * @note æ³¨å†Œåˆ° Station/Job çš„ä»æ˜¯å•ä¸€ IRunListener*ï¼›UI ä¸ VisionLog ç­‰ä½œä¸ºå­ sink æŒ‚æ¥
  */
 class VISIONCORE_API RunLogHub : public IRunListener {
 public:
-    /** @brief ¹¹Ôì²¢³õÊ¼»¯Ëø */
+    /** @brief æ„é€ å¹¶åˆå§‹åŒ–é” */
     RunLogHub();
-    /** @brief ÊÍ·ÅËø */
+    /** @brief é‡Šæ”¾é” */
     ~RunLogHub();
 
     /**
-     * @brief ×·¼Ó sink£¨²»ÓµÓĞ£»ÖØ¸´Ìí¼ÓºöÂÔ£©
-     * @param sink ¼àÌıÆ÷£¬ÉúÃüÖÜÆÚĞë³¤ÓÚ±¾ hub »òÏÈ remove
+     * @brief è¿½åŠ  sinkï¼ˆä¸æ‹¥æœ‰ï¼›é‡å¤æ·»åŠ å¿½ç•¥ï¼‰
+     * @param sink ç›‘å¬å™¨ï¼Œç”Ÿå‘½å‘¨æœŸé¡»é•¿äºæœ¬ hub æˆ–å…ˆ remove
      */
     void addSink(IRunListener* sink);
-    /** @brief ÒÆ³ı sink£»Î´×¢²áÔòÎŞ²Ù×÷ */
+    /** @brief ç§»é™¤ sinkï¼›æœªæ³¨å†Œåˆ™æ— æ“ä½œ */
     void removeSink(IRunListener* sink);
-    /** @brief Çå¿ÕÈ«²¿ sink */
+    /** @brief æ¸…ç©ºå…¨éƒ¨ sink */
     void clearSinks();
-    /** @brief µ±Ç° sink ¸öÊı */
+    /** @brief å½“å‰ sink ä¸ªæ•° */
     int sinkCount() const;
 
-    /** @brief ÉÈ³öµ½È«²¿ sink£¨³ÖËø¿½±´ÁĞ±íºóÊÍ·Å£¬±ÜÃâ sink ÄÚ·´×¢²áËÀËø£© */
+    /** @brief æ‰‡å‡ºåˆ°å…¨éƒ¨ sinkï¼ˆæŒé”æ‹·è´åˆ—è¡¨åé‡Šæ”¾ï¼Œé¿å… sink å†…åæ³¨å†Œæ­»é”ï¼‰ */
     void onRunLog(const RunLogEvent& ev);
 
 private:
-    mutable void* m_cs;                 ///< CRITICAL_SECTION*£¬±ÜÃâÍ·ÎÄ¼şÀ­ windows.h
-    std::vector<IRunListener*> m_sinks; ///< ×Ó sink£¬²»ÓµÓĞ
+    mutable void* m_cs;                 ///< CRITICAL_SECTION*ï¼Œé¿å…å¤´æ–‡ä»¶æ‹‰ windows.h
+    std::vector<IRunListener*> m_sinks; ///< å­ sinkï¼Œä¸æ‹¥æœ‰
 };
 
 

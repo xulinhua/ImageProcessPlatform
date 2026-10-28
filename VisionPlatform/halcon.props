@@ -1,28 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <!--
-    Halcon 头文件、库目录、链接依赖。Algo.Halcon.* 与 VisionApp 都导入本表。
-    环境变量 HALCONROOT 优先；若该目录没有 HalconCpp.h，再按常见安装路径探测。
+    Halcon 17.12 头文件、库、运行库在 VisionPlatform\third_party\Halcon。
+    不探测本机 Program Files，也不读环境变量 HALCONROOT。
+    本机安装只有 x64-win64 的导入库，Win32 目录未拷入。
   -->
   <PropertyGroup>
-    <HALCONROOT Condition="'$(HALCONROOT)'==''">C:\Program Files\MVTec\HALCON-17.12-Progress</HALCONROOT>
-    <HALCONROOT Condition="!Exists('$(HALCONROOT)\include\halconcpp\HalconCpp.h') And Exists('C:\Program Files\MVTec\HALCON-17.12-Progress\include\halconcpp\HalconCpp.h')">C:\Program Files\MVTec\HALCON-17.12-Progress</HALCONROOT>
-    <HALCONROOT Condition="!Exists('$(HALCONROOT)\include\halconcpp\HalconCpp.h') And Exists('C:\Program Files\MVTec\HALCON-18.11-Progress\include\halconcpp\HalconCpp.h')">C:\Program Files\MVTec\HALCON-18.11-Progress</HALCONROOT>
-    <HALCONROOT Condition="!Exists('$(HALCONROOT)\include\halconcpp\HalconCpp.h') And Exists('C:\Program Files\MVTec\HALCON-20.11-Progress\include\halconcpp\HalconCpp.h')">C:\Program Files\MVTec\HALCON-20.11-Progress</HALCONROOT>
-    <HALCONROOT Condition="!Exists('$(HALCONROOT)\include\halconcpp\HalconCpp.h') And Exists('C:\Program Files\MVTec\HALCON-21.11-Progress\include\halconcpp\HalconCpp.h')">C:\Program Files\MVTec\HALCON-21.11-Progress</HALCONROOT>
-    <HALCONROOT Condition="!Exists('$(HALCONROOT)\include\halconcpp\HalconCpp.h') And Exists('C:\Program Files\MVTec\HALCON-22.11-Progress\include\halconcpp\HalconCpp.h')">C:\Program Files\MVTec\HALCON-22.11-Progress</HALCONROOT>
-    <HALCONROOT Condition="!Exists('$(HALCONROOT)\include\halconcpp\HalconCpp.h') And Exists('C:\Program Files\MVTec\HALCON-23.11-Progress\include\halconcpp\HalconCpp.h')">C:\Program Files\MVTec\HALCON-23.11-Progress</HALCONROOT>
-    <HALCONROOT Condition="!Exists('$(HALCONROOT)\include\halconcpp\HalconCpp.h') And Exists('C:\Program Files\MVTec\HALCON-24.05-Progress\include\halconcpp\HalconCpp.h')">C:\Program Files\MVTec\HALCON-24.05-Progress</HALCONROOT>
+    <HalconRoot>$(MSBuildThisFileDirectory)third_party\Halcon</HalconRoot>
     <HALCONARCH Condition="'$(Platform)'=='Win32'">x86sse2-win32</HALCONARCH>
     <HALCONARCH Condition="'$(Platform)'!='Win32'">x64-win64</HALCONARCH>
-    <HalconInc>$(HALCONROOT)\include</HalconInc>
-    <HalconIncCpp>$(HALCONROOT)\include\halconcpp</HalconIncCpp>
-    <HalconLib>$(HALCONROOT)\lib\$(HALCONARCH)</HalconLib>
-    <HalconBin>$(HALCONROOT)\bin\$(HALCONARCH)</HalconBin>
+    <HalconInc>$(HalconRoot)\include</HalconInc>
+    <HalconIncCpp>$(HalconRoot)\include\halconcpp</HalconIncCpp>
+    <HalconLib>$(HalconRoot)\lib\$(HALCONARCH)</HalconLib>
+    <HalconBin>$(HalconRoot)\bin\$(HALCONARCH)</HalconBin>
     <VisionHasHalcon>false</VisionHasHalcon>
-    <VisionHasHalcon Condition="Exists('$(HalconIncCpp)\HalconCpp.h')">true</VisionHasHalcon>
+    <VisionHasHalcon Condition="Exists('$(HalconIncCpp)\HalconCpp.h') And Exists('$(HalconLib)\halconcpp.lib')">true</VisionHasHalcon>
   </PropertyGroup>
-  <!-- VC++ 目录：VS2015 属性页和 IntelliSense 读这里，不只读 ClCompile -->
   <PropertyGroup>
     <IncludePath>$(HalconInc);$(HalconIncCpp);$(IncludePath)</IncludePath>
     <LibraryPath>$(HalconLib);$(LibraryPath)</LibraryPath>

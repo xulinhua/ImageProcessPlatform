@@ -1,6 +1,6 @@
 /**
  * @file ConvertBench.h
- * @brief ConvertBenchÍ·ÎÄ¼ş
+ * @brief ConvertBenchå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -17,28 +17,28 @@
 #endif
 
 /**
- * @brief ²ÊÉ«ÏñËØÅÅÁĞ²îÒìÏÂµÄ×ª»»ÊµÏÖ£¨¼ÆÊ±¿Ú¾¶¼û benchColorConvert£©
+ * @brief å½©è‰²åƒç´ æ’åˆ—å·®å¼‚ä¸‹çš„è½¬æ¢å®ç°ï¼ˆè®¡æ—¶å£å¾„è§ benchColorConvertï¼‰
  */
 enum ColorConvertMethod {
-    ColorMethodForLoop = 0,      ///< ½»´í¡úÆ½Ãæ£ºPointer + for
+    ColorMethodForLoop = 0,      ///< äº¤é”™â†’å¹³é¢ï¼šPointer + for
     ColorMethodInterleave = 1,   ///< GenImageInterleaved / InterleaveChannels+memcpy
-    ColorMethodGenImage3 = 2,    ///< ²ğÆ½Ãæ + GenImage3 / Decompose3 + Æ´½»´í
-    ColorMethodOpenCvMerge = 3   ///< ÊĞÃæ³£¼û£ºcv::split+GenImage3 / Pointer3+cv::merge
+    ColorMethodGenImage3 = 2,    ///< æ‹†å¹³é¢ + GenImage3 / Decompose3 + æ‹¼äº¤é”™
+    ColorMethodOpenCvMerge = 3   ///< å¸‚é¢å¸¸è§ï¼šcv::split+GenImage3 / Pointer3+cv::merge
 };
 
 /**
  * @class ConvertBenchRst
- * @brief Ò»´Î×ª»»¼ÆÊ±½á¹û£¨½Ó¿Ú¶Î·Ö¿ª£ºbuffer->H / H->buffer£©
+ * @brief ä¸€æ¬¡è½¬æ¢è®¡æ—¶ç»“æœï¼ˆæ¥å£æ®µåˆ†å¼€ï¼šbuffer->H / H->bufferï¼‰
  */
 struct ConvertBenchRst {
-    bool ok;          ///< ÊÇ·ñ³É¹¦
-    QString error;    ///< Ê§°ÜÔ­Òò
-    double msToH;     ///< buffer -> Halcon£¨ºÁÃë£©£»Î´²âÎª -1
-    double msFromH;   ///< Halcon -> buffer£¨ºÁÃë£©£»Î´²âÎª -1
-    double ms;        ///< ±¾´ÎÒÑ²â¶ÎºÏ¼Æ£¨msToH + ÓĞĞ§µÄ msFromH£©
-    QString detail;   ///< ²¹³äËµÃ÷£¨³ß´ç¡¢·½Ê½£©
-    QString stages;   ///< ·Ö½×¶ÎºÄÊ±£¨·½Ê½2µÈ£©£»¿Õ±íÊ¾ÎŞ
-    QImage outImage;  ///< H->buffer ½á¹ûÍ¼£»½ö->H Ê±Îª¿Õ
+    bool ok;          ///< æ˜¯å¦æˆåŠŸ
+    QString error;    ///< å¤±è´¥åŸå› 
+    double msToH;     ///< buffer -> Halconï¼ˆæ¯«ç§’ï¼‰ï¼›æœªæµ‹ä¸º -1
+    double msFromH;   ///< Halcon -> bufferï¼ˆæ¯«ç§’ï¼‰ï¼›æœªæµ‹ä¸º -1
+    double ms;        ///< æœ¬æ¬¡å·²æµ‹æ®µåˆè®¡ï¼ˆmsToH + æœ‰æ•ˆçš„ msFromHï¼‰
+    QString detail;   ///< è¡¥å……è¯´æ˜ï¼ˆå°ºå¯¸ã€æ–¹å¼ï¼‰
+    QString stages;   ///< åˆ†é˜¶æ®µè€—æ—¶ï¼ˆæ–¹å¼2ç­‰ï¼‰ï¼›ç©ºè¡¨ç¤ºæ— 
+    QImage outImage;  ///< H->buffer ç»“æœå›¾ï¼›ä»…->H æ—¶ä¸ºç©º
     ConvertBenchRst()
         : ok(false)
         , msToH(-1.0)
@@ -47,43 +47,43 @@ struct ConvertBenchRst {
     {}
 };
 
-/** @brief ±¾½ø³ÌÊÇ·ñÁ´½Ó Halcon */
+/** @brief æœ¬è¿›ç¨‹æ˜¯å¦é“¾æ¥ Halcon */
 bool convertBenchHasHalcon();
-/** @brief ±¾½ø³ÌÊÇ·ñÁ´½Ó OpenCV */
+/** @brief æœ¬è¿›ç¨‹æ˜¯å¦é“¾æ¥ OpenCV */
 bool convertBenchHasOpenCv();
 
 /**
- * @brief Éú³ÉÔ¼ 500 ÍòÏñËØ»Ò¶ÈÍ¼£¨Ä¬ÈÏ 2448¡Á2048£©
- * @param width ¿í
- * @param height ¸ß
+ * @brief ç”Ÿæˆçº¦ 500 ä¸‡åƒç´ ç°åº¦å›¾ï¼ˆé»˜è®¤ 2448Ã—2048ï¼‰
+ * @param width å®½
+ * @param height é«˜
  */
 QImage makeBenchGrayImage(int width = 2448, int height = 2048);
 /**
- * @brief Éú³ÉÔ¼ 500 ÍòÏñËØ²ÊÉ«Í¼£¨RGB888 ½»´í£©
- * @param width ¿í
- * @param height ¸ß
+ * @brief ç”Ÿæˆçº¦ 500 ä¸‡åƒç´ å½©è‰²å›¾ï¼ˆRGB888 äº¤é”™ï¼‰
+ * @param width å®½
+ * @param height é«˜
  */
 QImage makeBenchColorImage(int width = 2448, int height = 2048);
 
 #ifdef HSIMAGE_HAS_OPENCV
-/** @brief QImage »Ò¶È/RGB ¡ú cv::Mat£¨²ÊÍ¼Îª BGR£© */
+/** @brief QImage ç°åº¦/RGB â†’ cv::Matï¼ˆå½©å›¾ä¸º BGRï¼‰ */
 cv::Mat qImageToMat(const QImage& img);
-/** @brief cv::Mat ¡ú QImage£¨BGR¡úRGB£© */
+/** @brief cv::Mat â†’ QImageï¼ˆBGRâ†’RGBï¼‰ */
 QImage matToQImage(const cv::Mat& mat);
 #endif
 
 /**
- * @brief »Ò¶È½Ó¿Ú¼ÆÊ±£º·Ö±ğÍ³¼Æ buffer->H Óë H->buffer£¨²»º¬Éî¿½ËùÓĞÈ¨£©
- * @param src »Ò¶ÈÍ¼
- * @param toHalconOnly ÕæÔòÖ»²â buffer->H
+ * @brief ç°åº¦æ¥å£è®¡æ—¶ï¼šåˆ†åˆ«ç»Ÿè®¡ buffer->H ä¸ H->bufferï¼ˆä¸å«æ·±æ‹·æ‰€æœ‰æƒï¼‰
+ * @param src ç°åº¦å›¾
+ * @param toHalconOnly çœŸåˆ™åªæµ‹ buffer->H
  */
 ConvertBenchRst benchGrayRoundTrip(const QImage& src, bool toHalconOnly);
 
 /**
- * @brief ²ÊÉ«½Ó¿Ú¼ÆÊ±£º·Ö±ğÍ³¼Æ buffer->H Óë H->buffer£¨²»º¬ CopyImage / QImage<->Mat£©
- * @param src RGB888 »ò RGB32 Í¼
- * @param method ÈıÖÖÊµÏÖÖ®Ò»
- * @param toHalconOnly ÕæÔòÖ»²â buffer->H
+ * @brief å½©è‰²æ¥å£è®¡æ—¶ï¼šåˆ†åˆ«ç»Ÿè®¡ buffer->H ä¸ H->bufferï¼ˆä¸å« CopyImage / QImage<->Matï¼‰
+ * @param src RGB888 æˆ– RGB32 å›¾
+ * @param method ä¸‰ç§å®ç°ä¹‹ä¸€
+ * @param toHalconOnly çœŸåˆ™åªæµ‹ buffer->H
  */
 ConvertBenchRst benchColorConvert(const QImage& src, ColorConvertMethod method, bool toHalconOnly);
 

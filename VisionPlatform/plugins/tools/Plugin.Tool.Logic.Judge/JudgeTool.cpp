@@ -1,6 +1,6 @@
 /**
  * @file JudgeTool.cpp
- * @brief JudgeToolÊµÏÖ
+ * @brief JudgeToolå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -15,21 +15,21 @@
 #include <map>
 
 namespace {
-// µ±Ç°°æ±¾¡£±ØĞëµÈÓÚ±ä¸ü±í×îºóÒ»ĞĞ
+// å½“å‰ç‰ˆæœ¬ã€‚å¿…é¡»ç­‰äºå˜æ›´è¡¨æœ€åä¸€è¡Œ
 const char kToolVersion[] = "1.0.0.0";
-// ±ä¸ü±í¡£Ö»×·¼Ó£¬²»É¾¾ÉĞĞ
+// å˜æ›´è¡¨ã€‚åªè¿½åŠ ï¼Œä¸åˆ æ—§è¡Œ
 const Vision::VerNoteRaw kVerNotes[] = {
-    { "1.0.0.0", "Ê×°æ" },
+    { "1.0.0.0", "é¦–ç‰ˆ" },
 };
 
-// ×¢²áÃû
+// æ³¨å†Œå
 const char kToolName[] = "logic.judge";
-// ½çÃæÏÔÊ¾Ãû
-const char kDisplayName[] = "ÅĞ¶¨";
-// ¹¤¾ßËµÃ÷
-const char kDescription[] = "»ã×ÜÉÏÓÎ OK/NG£¬»ò°´ÒıÓÃ×Ö¶Î£¨score/area/count¡­£©×öÊıÖµÅĞ¶¨";
+// ç•Œé¢æ˜¾ç¤ºå
+const char kDisplayName[] = "åˆ¤å®š";
+// å·¥å…·è¯´æ˜
+const char kDescription[] = "æ±‡æ€»ä¸Šæ¸¸ OK/NGï¼Œæˆ–æŒ‰å¼•ç”¨å­—æ®µï¼ˆscore/area/countâ€¦ï¼‰åšæ•°å€¼åˆ¤å®š";
 
-// Ò»ÌõÊıÖµÅĞ¶¨Ìõ¼ş
+// ä¸€æ¡æ•°å€¼åˆ¤å®šæ¡ä»¶
 struct JudgeTerm {
     std::string srcId;
     std::string key;
@@ -38,7 +38,7 @@ struct JudgeTerm {
     JudgeTerm() : value(0.0) {}
 };
 
-// ¶ÁÈ¡µÚ i ÌõÊıÖµÌõ¼ş
+// è¯»å–ç¬¬ i æ¡æ•°å€¼æ¡ä»¶
 bool loadTerm(const Vision::ParamMap& p, int i, JudgeTerm* out)
 {
     if (!out) {
@@ -68,7 +68,7 @@ bool loadTerm(const Vision::ParamMap& p, int i, JudgeTerm* out)
     return true;
 }
 
-// ´ÓÉÏÓÎ½á¹û¶ÁÈ¡ÊıÖµ×Ö¶Î
+// ä»ä¸Šæ¸¸ç»“æœè¯»å–æ•°å€¼å­—æ®µ
 bool readField(const Vision::ParamMap& v, const std::string& key, double* out)
 {
     if (!out) {
@@ -96,7 +96,7 @@ bool readField(const Vision::ParamMap& v, const std::string& key, double* out)
     return false;
 }
 
-// °´ÔËËã·û±È½Ï×óÓÒÖµ
+// æŒ‰è¿ç®—ç¬¦æ¯”è¾ƒå·¦å³å€¼
 bool compareOp(double lhs, const std::string& op, double rhs)
 {
     if (op == ">=") {
@@ -118,44 +118,44 @@ bool compareOp(double lhs, const std::string& op, double rhs)
 }
 }
 
-// ×¢²áÃû
+// æ³¨å†Œå
 std::string Vision::JudgeTool::toolName() const
 {
     return kToolName;
 }
 
-// ¹¤¾ß´óÀà
+// å·¥å…·å¤§ç±»
 Vision::ToolType Vision::JudgeTool::type() const
 {
     return Vision::ToolType::Logic;
 }
 
-// ½çÃæÏÔÊ¾Ãû
+// ç•Œé¢æ˜¾ç¤ºå
 std::string Vision::JudgeTool::displayName() const
 {
-    return Vision::acpToUtf8(kDisplayName);
+    return kDisplayName;
 }
 
-// ¹¤¾ß°æ±¾
+// å·¥å…·ç‰ˆæœ¬
 std::string Vision::JudgeTool::version() const
 {
     return std::string(kToolVersion);
 }
 
-// °æ±¾±ä¸ü£¬Ö»×·¼Ó
+// ç‰ˆæœ¬å˜æ›´ï¼Œåªè¿½åŠ 
 std::vector<Vision::VerNote> Vision::JudgeTool::versionNotes() const
 {
     return Vision::verNotesFrom(kVerNotes, static_cast<int>(sizeof(kVerNotes) / sizeof(kVerNotes[0])));
 }
 
 
-// ¹¤¾ßËµÃ÷
+// å·¥å…·è¯´æ˜
 std::string Vision::JudgeTool::description() const
 {
-    return Vision::acpToUtf8(kDescription);
+    return kDescription;
 }
 
-// È±Ê¡²ÎÊı
+// ç¼ºçœå‚æ•°
 Vision::ParamMap Vision::JudgeTool::defaultParams() const
 {
         Vision::ParamMap p;
@@ -164,16 +164,16 @@ Vision::ParamMap Vision::JudgeTool::defaultParams() const
         return p;
     }
 
-// ²ÎÊıËµÃ÷
+// å‚æ•°è¯´æ˜
 std::vector<Vision::ParamField> Vision::JudgeTool::paramFields() const
 {
         std::vector<Vision::ParamField> f;
-        f.push_back(Vision::paramBool("useOkAnd", "»ã×ÜÉÏÓÎOK", true));
-        f.push_back(Vision::paramInt("termCount", "ÊıÖµÌõ¼şÊı", 0, true, 0, true, 16));
+        f.push_back(Vision::paramBool("useOkAnd", "æ±‡æ€»ä¸Šæ¸¸OK", true));
+        f.push_back(Vision::paramInt("termCount", "æ•°å€¼æ¡ä»¶æ•°", 0, true, 0, true, 16));
         return f;
     }
 
-// »ã×ÜÉÏÓÎ½á¹û²¢°´ÊıÖµÌõ¼şÅĞ¶¨
+// æ±‡æ€»ä¸Šæ¸¸ç»“æœå¹¶æŒ‰æ•°å€¼æ¡ä»¶åˆ¤å®š
 Vision::ToolOut Vision::JudgeTool::execute(const Vision::ToolIn& in)
 {
         Vision::ToolOut out;
@@ -225,7 +225,7 @@ Vision::ToolOut Vision::JudgeTool::execute(const Vision::ToolIn& in)
                 sprintf_s(buf, "%s.%s%s%.4g%s", srcName.c_str(), term.key.c_str(), term.op.c_str(),
                           term.value, pass ? "=OK" : "=NG");
             } else {
-                sprintf_s(buf, "%s.%s(ÎŞÊı¾İ)=NG", srcName.c_str(), term.key.c_str());
+                sprintf_s(buf, "%s.%s(æ— æ•°æ®)=NG", srcName.c_str(), term.key.c_str());
             }
             parts += buf;
         }
@@ -234,14 +234,14 @@ Vision::ToolOut Vision::JudgeTool::execute(const Vision::ToolIn& in)
         Vision::PortLogic L;
         L.ok = ok;
         L.valid = true;
-        L.message = parts.empty() ? Vision::acpToUtf8("ÎŞÅĞ¶¨Ìõ¼ş") : parts;
+        L.message = parts.empty() ? "æ— åˆ¤å®šæ¡ä»¶" : parts;
         out.io.logics.push_back(L);
         out.message = L.message;
         out.image = in.input;
         return out;
     }
 
-// ¿ËÂ¡±¾ÊµÀı
+// å…‹éš†æœ¬å®ä¾‹
 Vision::ToolBase* Vision::JudgeTool::clone() const
 {
     JudgeTool* p = new JudgeTool();
@@ -249,7 +249,7 @@ Vision::ToolBase* Vision::JudgeTool::clone() const
     return p;
 }
 
-// ·µ»Ø±¾¹¤¾ß²ÎÊı¶ÔÏó
+// è¿”å›æœ¬å·¥å…·å‚æ•°å¯¹è±¡
 
 const Vision::ToolParaBase* Vision::JudgeTool::toolParam() const
 {

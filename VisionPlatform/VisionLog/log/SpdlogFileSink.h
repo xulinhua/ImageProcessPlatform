@@ -1,6 +1,6 @@
 /**
  * @file SpdlogFileSink.h
- * @brief SpdlogFileSinkÍ·ÎÄ¼ş
+ * @brief SpdlogFileSinkå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -17,45 +17,45 @@ namespace detail {
 
 /**
  * @class SpdlogFileSink
- * @brief °´ spdlog rotating_file_sink + async ÓïÒåÊµÏÖµÄÊä³ö¶Ë£º
- *        ºóÌ¨Ïß³ÌĞ´Èë SQLite¡£²»ÒıÈë fmt£¬ÒÔ±ã VS2015 / C++11 ¿É±àÒë¡£
+ * @brief æŒ‰ spdlog rotating_file_sink + async è¯­ä¹‰å®ç°çš„è¾“å‡ºç«¯ï¼š
+ *        åå°çº¿ç¨‹å†™å…¥ SQLiteã€‚ä¸å¼•å…¥ fmtã€‚
  */
 class VISION_LOG_API SpdlogFileSink {
 public:
-    /** @brief ´´½¨¶ÓÁĞºÍÍ¬²½ÊÂ¼ş */
+    /** @brief åˆ›å»ºé˜Ÿåˆ—å’ŒåŒæ­¥äº‹ä»¶ */
     SpdlogFileSink();
-    /** @brief Í£Ğ´Ïß³Ì²¢ÊÍ·Å¾ä±ú */
+    /** @brief åœå†™çº¿ç¨‹å¹¶é‡Šæ”¾å¥æŸ„ */
     ~SpdlogFileSink();
 
-    /** @brief Æô¶¯ºóÌ¨Ğ´¿âÏß³Ì */
+    /** @brief å¯åŠ¨åå°å†™åº“çº¿ç¨‹ */
     void start();
-    /** @brief Í£Ïß³Ì²¢Ë¢Íê¶ÓÁĞ */
+    /** @brief åœçº¿ç¨‹å¹¶åˆ·å®Œé˜Ÿåˆ— */
     void stop();
-    /** @brief Èë¶Ó£»ÂúÊ±¶ªÆúµÍÓÚ minKeep µÄ¼ÇÂ¼£¬Éó¼ÆÓë´íÎó¾¡Á¿±£Áô */
+    /** @brief å…¥é˜Ÿï¼›æ»¡æ—¶ä¸¢å¼ƒä½äº minKeep çš„è®°å½•ï¼Œå®¡è®¡ä¸é”™è¯¯å°½é‡ä¿ç•™ */
     void enqueue(const LogRecord& rec);
-    /** @brief µÈµ½¶ÓÁĞĞ´Íê£¬¹©²éÑ¯Ç°µ÷ÓÃ */
+    /** @brief ç­‰åˆ°é˜Ÿåˆ—å†™å®Œï¼Œä¾›æŸ¥è¯¢å‰è°ƒç”¨ */
     void flush();
-    /** @brief ¸ÃÍ¨µÀµÍÓÚ´Ë¼¶±ğµÄ¼ÇÂ¼²»Èë¿â */
+    /** @brief è¯¥é€šé“ä½äºæ­¤çº§åˆ«çš„è®°å½•ä¸å…¥åº“ */
     void setMinLevel(LogChannel ch, LogLevel minLevel);
-    /** @brief ¹ØµôµÄÍ¨µÀ²»ÔÙÈë¶Ó */
+    /** @brief å…³æ‰çš„é€šé“ä¸å†å…¥é˜Ÿ */
     void setEnabled(LogChannel ch, bool on);
-    /** @brief ¸ÃÍ¨µÀµ±Ç°×îµÍ¼¶±ğ */
+    /** @brief è¯¥é€šé“å½“å‰æœ€ä½çº§åˆ« */
     LogLevel minLevel(LogChannel ch) const;
-    /** @brief ¸ÃÍ¨µÀÊÇ·ñÔÚĞ´ */
+    /** @brief è¯¥é€šé“æ˜¯å¦åœ¨å†™ */
     bool enabled(LogChannel ch) const;
-    /** @brief ºóÌ¨Ïß³ÌÈë¿Ú */
+    /** @brief åå°çº¿ç¨‹å…¥å£ */
     void runLoop();
     struct Impl;
-    Impl* m; ///< ¶ÓÁĞ¡¢Ïß³ÌÓëÍ¨µÀ¿ª¹Ø
+    Impl* m; ///< é˜Ÿåˆ—ã€çº¿ç¨‹ä¸é€šé“å¼€å…³
 
 private:
-    /** @brief ½ûÖ¹¿½±´ */
+    /** @brief ç¦æ­¢æ‹·è´ */
     SpdlogFileSink(const SpdlogFileSink&);
-    /** @brief ½ûÖ¹¸³Öµ */
+    /** @brief ç¦æ­¢èµ‹å€¼ */
     SpdlogFileSink& operator=(const SpdlogFileSink&);
 };
 
-/** @brief ½ø³ÌÄÚÎ¨Ò»µÄÒì²½Êä³ö¶Ë */
+/** @brief è¿›ç¨‹å†…å”¯ä¸€çš„å¼‚æ­¥è¾“å‡ºç«¯ */
 VISION_LOG_API SpdlogFileSink& logSink();
 
 }

@@ -1,6 +1,6 @@
 /**
  * @file SettingsDlg.cpp
- * @brief SettingsDlgÊµÏÖ
+ * @brief SettingsDlgå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -40,7 +40,7 @@ namespace Vision {
 
 namespace {
 
-// Ö»¶ÁÂ·¾¶ĞĞ£º±à¼­¿ò + ´ò¿ª°´Å¥
+// åªè¯»è·¯å¾„è¡Œï¼šç¼–è¾‘æ¡† + æ‰“å¼€æŒ‰é’®
 QWidget* makePathRow(QWidget* parent, QLineEdit** editOut, const QString& path,
                      QObject* receiver, const char* openSlot)
 {
@@ -49,8 +49,8 @@ QWidget* makePathRow(QWidget* parent, QLineEdit** editOut, const QString& path,
     lay->setContentsMargins(0, 0, 0, 0);
     QLineEdit* edit = new QLineEdit(path, row);
     edit->setReadOnly(true);
-    QPushButton* btn = new QPushButton(T("´ò¿ª"), row);
-    bindTrKey(btn, "´ò¿ª");
+    QPushButton* btn = new QPushButton(T("æ‰“å¼€"), row);
+    bindTrKey(btn, "æ‰“å¼€");
     QObject::connect(btn, SIGNAL(clicked()), receiver, openSlot);
     lay->addWidget(edit, 1);
     lay->addWidget(btn);
@@ -62,7 +62,7 @@ QWidget* makePathRow(QWidget* parent, QLineEdit** editOut, const QString& path,
 
 } // namespace
 
-// ÉèÖÃÖĞĞÄ£º×óµ¼º½ + ÎåÒ³
+// è®¾ç½®ä¸­å¿ƒï¼šå·¦å¯¼èˆª + äº”é¡µ
 SettingsDlg::SettingsDlg(Session* session, QWidget* parent)
     : QDialog(parent)
     , m_session(session)
@@ -83,7 +83,7 @@ SettingsDlg::SettingsDlg(Session* session, QWidget* parent)
     , m_btnOpenLogsFolder(nullptr)
     , m_canEdit(session && session->has(PermEditAppSettings))
 {
-    setWindowTitle(T("ÉèÖÃ"));
+    setWindowTitle(T("è®¾ç½®"));
     setModal(true);
     resize(860, 560);
     enableDialogResize(this);
@@ -91,47 +91,39 @@ SettingsDlg::SettingsDlg(Session* session, QWidget* parent)
     m_nav = new QListWidget(this);
     m_nav->setFixedWidth(180);
     m_nav->setObjectName(QLatin1String("settingsNav"));
-    m_nav->addItem(T("³£¹æ"));
-    m_nav->addItem(T("½çÃæÍâ¹Û"));
-    m_nav->addItem(T("Â·¾¶Óë´æ´¢"));
-    m_nav->addItem(T("ÔËĞĞÓëÈÕÖ¾"));
+    m_nav->addItem(T("å¸¸è§„"));
+    m_nav->addItem(T("ç•Œé¢å¤–è§‚"));
+    m_nav->addItem(T("è·¯å¾„ä¸å­˜å‚¨"));
+    m_nav->addItem(T("è¿è¡Œä¸æ—¥å¿—"));
     m_nav->setCurrentRow(0);
     connect(m_nav, SIGNAL(currentRowChanged(int)), this, SLOT(onCategoryChanged(int)));
 
-    // ¡ª¡ª ³£¹æ ¡ª¡ª
-    m_autoOp = new QCheckBox(T("¿ª»ú×Ô¶¯µÇÂ¼²Ù×÷Ô±£¨½ö operator£¬Ö±½Ó½øÔËĞĞÌ¬£©"), this);
+    // â€”â€” å¸¸è§„ â€”â€”
+    m_autoOp = new QCheckBox(T("å¼€æœºè‡ªåŠ¨ç™»å½•æ“ä½œå‘˜ï¼ˆä»… operatorï¼Œç›´æ¥è¿›è¿è¡Œæ€ï¼‰"), this);
     m_startupMode = new QComboBox(this);
     m_startupMode->addItem(QString::fromUtf8(startupAppModeTitle(StartupModeDesign).c_str()),
                            static_cast<int>(StartupModeDesign));
     m_startupMode->addItem(QString::fromUtf8(startupAppModeTitle(StartupModeRuntime).c_str()),
                            static_cast<int>(StartupModeRuntime));
     m_closeAction = new QComboBox(this);
-    m_closeAction->addItem(QString::fromUtf8(closeMainWindowActionTitle(CloseActionExit).c_str()),
-                           static_cast<int>(CloseActionExit));
     m_closeAction->addItem(QString::fromUtf8(closeMainWindowActionTitle(CloseActionMinimizeTray).c_str()),
                            static_cast<int>(CloseActionMinimizeTray));
-    // ÍĞÅÌÎ´ÊµÏÖ£º»ÒÏÔµÚ¶şÏî
-    if (QStandardItemModel* stdModel = qobject_cast<QStandardItemModel*>(m_closeAction->model())) {
-        if (QStandardItem* trayItem = stdModel->item(1)) {
-            trayItem->setEnabled(false);
-        }
-    }
-    m_closeHint = new QLabel(T("¡¸×îĞ¡»¯µ½ÍĞÅÌ¡¹½«ÔÚºóĞø°æ±¾Ìá¹©£¬µ±Ç°½ö¿ÉÑ¡ÔñÍË³ö³ÌĞò¡£"), this);
+    m_closeAction->hide();
+    m_closeHint = new QLabel(T("å…³é—­ä¸»çª—å£åå›åˆ°æ‰˜ç›˜ï¼Œå·¥ç«™æœåŠ¡ç»§ç»­è¿è¡Œã€‚"), this);
     m_closeHint->setObjectName(QLatin1String("hint"));
     m_closeHint->setWordWrap(true);
 
     QWidget* pageGeneral = new QWidget(this);
     QVBoxLayout* gLay = new QVBoxLayout(pageGeneral);
-    m_generalBox = new QGroupBox(T("Æô¶¯Óë¹Ø±Õ"), pageGeneral);
+    m_generalBox = new QGroupBox(T("å¯åŠ¨ä¸å…³é—­"), pageGeneral);
     QFormLayout* gForm = new QFormLayout(m_generalBox);
     gForm->addRow(QString(), m_autoOp);
-    QLabel* lab_2040619317 = new QLabel(T("Æô¶¯ºóÄ¬ÈÏ½øÈë"), this); bindTrKey(lab_2040619317, "Æô¶¯ºóÄ¬ÈÏ½øÈë"); gForm->addRow(lab_2040619317, m_startupMode);
-    QLabel* lab_1167718789 = new QLabel(T("¹Ø±ÕÖ÷´°¿ÚÊ±"), this); bindTrKey(lab_1167718789, "¹Ø±ÕÖ÷´°¿ÚÊ±"); gForm->addRow(lab_1167718789, m_closeAction);
+    QLabel* lab_2040619317 = new QLabel(T("å¯åŠ¨åé»˜è®¤è¿›å…¥"), this); bindTrKey(lab_2040619317, "å¯åŠ¨åé»˜è®¤è¿›å…¥"); gForm->addRow(lab_2040619317, m_startupMode);
     gForm->addRow(m_closeHint);
     gLay->addWidget(m_generalBox);
     gLay->addStretch();
 
-    // ¡ª¡ª ½çÃæÍâ¹Û ¡ª¡ª
+    // â€”â€” ç•Œé¢å¤–è§‚ â€”â€”
     m_theme = new QComboBox(this);
     for (int i = 0; i < themeCount(); ++i) {
         const char* id = themeIdAt(i);
@@ -142,52 +134,52 @@ SettingsDlg::SettingsDlg(Session* session, QWidget* parent)
         const QString title = QString::fromUtf8(Translate::languageNativeNameAt(i).c_str());
         m_lang->addItem(title, QString::fromLatin1(Translate::languageKeyAt(i).c_str()));
     }
-    m_uiHint = new QLabel(T("Ö÷½çÃæÁ¢¼´ÇĞ»»¡£ÒÑ´ò¿ªµÄ´°¿Ú¹Ø±ÕºóÖØĞÂ´ò¿ª£¬¼´ÎªĞÂÓïÑÔ¡£"), this);
+    m_uiHint = new QLabel(T("ä¸»ç•Œé¢ç«‹å³åˆ‡æ¢ã€‚å·²æ‰“å¼€çš„çª—å£å…³é—­åé‡æ–°æ‰“å¼€ï¼Œå³ä¸ºæ–°è¯­è¨€ã€‚"), this);
     m_uiHint->setObjectName(QLatin1String("hint"));
     m_uiHint->setWordWrap(true);
     QWidget* pageUi = new QWidget(this);
     QFormLayout* uiForm = new QFormLayout(pageUi);
-    QLabel* lab_440008882 = new QLabel(T("Ö÷Ìâµµ"), this); bindTrKey(lab_440008882, "Ö÷Ìâµµ"); uiForm->addRow(lab_440008882, m_theme);
-    QLabel* lab_1576360391 = new QLabel(T("½çÃæÓïÑÔ"), this); bindTrKey(lab_1576360391, "½çÃæÓïÑÔ"); uiForm->addRow(lab_1576360391, m_lang);
+    QLabel* lab_440008882 = new QLabel(T("ä¸»é¢˜æ¡£"), this); bindTrKey(lab_440008882, "ä¸»é¢˜æ¡£"); uiForm->addRow(lab_440008882, m_theme);
+    QLabel* lab_1576360391 = new QLabel(T("ç•Œé¢è¯­è¨€"), this); bindTrKey(lab_1576360391, "ç•Œé¢è¯­è¨€"); uiForm->addRow(lab_1576360391, m_lang);
     uiForm->addRow(m_uiHint);
 
-    // ¡ª¡ª Â·¾¶Óë´æ´¢ ¡ª¡ª
+    // â€”â€” è·¯å¾„ä¸å­˜å‚¨ â€”â€”
     QWidget* pagePath = new QWidget(this);
     QFormLayout* pForm = new QFormLayout(pagePath);
-    QLabel* labp1069909073 = new QLabel(T("Êı¾İÄ¿Â¼"), this); bindTrKey(labp1069909073, "Êı¾İÄ¿Â¼"); pForm->addRow(labp1069909073, makePathRow(pagePath, &m_dataDir, qs(AppPaths::dataDir()),
+    QLabel* labp1069909073 = new QLabel(T("æ•°æ®ç›®å½•"), this); bindTrKey(labp1069909073, "æ•°æ®ç›®å½•"); pForm->addRow(labp1069909073, makePathRow(pagePath, &m_dataDir, qs(AppPaths::dataDir()),
                                               this, SLOT(onOpenDataDir())));
-    QLabel* labp_db = new QLabel(T("Êı¾İ¿â"), this); bindTrKey(labp_db, "Êı¾İ¿â"); pForm->addRow(labp_db, makePathRow(pagePath, &m_dbFile, qs(AppPaths::databaseFile()),
+    QLabel* labp_db = new QLabel(T("æ•°æ®åº“"), this); bindTrKey(labp_db, "æ•°æ®åº“"); pForm->addRow(labp_db, makePathRow(pagePath, &m_dbFile, qs(AppPaths::databaseFile()),
                                             this, SLOT(onOpenDataDir())));
-    QLabel* labp_sols = new QLabel(T("·½°¸Ä¿Â¼"), this); bindTrKey(labp_sols, "·½°¸Ä¿Â¼"); pForm->addRow(labp_sols, makePathRow(pagePath, &m_solsDir, qs(AppPaths::solutionsDir()),
+    QLabel* labp_sols = new QLabel(T("æ–¹æ¡ˆç›®å½•"), this); bindTrKey(labp_sols, "æ–¹æ¡ˆç›®å½•"); pForm->addRow(labp_sols, makePathRow(pagePath, &m_solsDir, qs(AppPaths::solutionsDir()),
                                               this, SLOT(onOpenSolutionsDir())));
     m_lastSol = new QLineEdit(this);
     m_lastSol->setReadOnly(true);
-    QLabel* lab_1172506318 = new QLabel(T("ÉÏ´Î·½°¸"), this); bindTrKey(lab_1172506318, "ÉÏ´Î·½°¸"); pForm->addRow(lab_1172506318, m_lastSol);
-    m_pathHint = new QLabel(T("ÓÃ»§ÓëÈÕÖ¾´æÔÚÊı¾İ¿âÖĞ¡£Êı¾İ¸ùÄ¿Â¼ÓÉ°²×°Ô¼¶¨¾ö¶¨£¬±¾Ò³½ö²é¿´Óë´ò¿ª£¬²»Ö§³ÖËæÒâ¸ÄÂ·¾¶¡£"), pagePath);
+    QLabel* lab_1172506318 = new QLabel(T("ä¸Šæ¬¡æ–¹æ¡ˆ"), this); bindTrKey(lab_1172506318, "ä¸Šæ¬¡æ–¹æ¡ˆ"); pForm->addRow(lab_1172506318, m_lastSol);
+    m_pathHint = new QLabel(T("ç”¨æˆ·ä¸æ—¥å¿—å­˜åœ¨æ•°æ®åº“ä¸­ã€‚æ•°æ®æ ¹ç›®å½•ç”±å®‰è£…çº¦å®šå†³å®šï¼Œæœ¬é¡µä»…æŸ¥çœ‹ä¸æ‰“å¼€ï¼Œä¸æ”¯æŒéšæ„æ”¹è·¯å¾„ã€‚"), pagePath);
     m_pathHint->setObjectName(QLatin1String("hint"));
     m_pathHint->setWordWrap(true);
     pForm->addRow(m_pathHint);
 
-    // ¡ª¡ª ÔËĞĞÓëÈÕÖ¾ ¡ª¡ª
+    // â€”â€” è¿è¡Œä¸æ—¥å¿— â€”â€”
     QWidget* pageRun = new QWidget(this);
     QVBoxLayout* rLay = new QVBoxLayout(pageRun);
     m_runHint = new QLabel(
-        T("²úÁ¿ÇåÁã¡¢ÔËĞĞ»­Ãæ²¼¾ÖÊôÓÚ·½°¸/ÔËĞĞÌ¬£¬ÇëÔÚÔËĞĞÒ³»ò¡¸ÊÓÍ¼ ¡ú »­ÃæÅäÖÃ¡¹ÖĞĞŞ¸Ä¡£"
-          "Á÷³ÌÊÔÅÜ½á¹ûµ¯´°ÔÚ´ËÅäÖÃ£»Ä¬ÈÏ¾ù²»µ¯´°¡£"), pageRun);
+        T("äº§é‡æ¸…é›¶ã€è¿è¡Œç”»é¢å¸ƒå±€å±äºæ–¹æ¡ˆ/è¿è¡Œæ€ï¼Œè¯·åœ¨è¿è¡Œé¡µæˆ–ã€Œè§†å›¾ â†’ ç”»é¢é…ç½®ã€ä¸­ä¿®æ”¹ã€‚"
+          "æµç¨‹è¯•è·‘ç»“æœå¼¹çª—åœ¨æ­¤é…ç½®ï¼›é»˜è®¤å‡ä¸å¼¹çª—ã€‚"), pageRun);
     m_runHint->setObjectName(QLatin1String("hint"));
     m_runHint->setWordWrap(true);
-    m_popupBox = new QGroupBox(T("Á÷³ÌÊÔÅÜµ¯´°"), pageRun);
+    m_popupBox = new QGroupBox(T("æµç¨‹è¯•è·‘å¼¹çª—"), pageRun);
     QVBoxLayout* popupLay = new QVBoxLayout(m_popupBox);
-    m_popupJobOk = new QCheckBox(T("½á¹û OK Ê±µ¯´°"), m_popupBox);
-    m_popupJobNg = new QCheckBox(T("½á¹û NG Ê±µ¯´°"), m_popupBox);
-    m_popupJobEx = new QCheckBox(T("ÔËĞĞÒì³£Ê±µ¯´°"), m_popupBox);
+    m_popupJobOk = new QCheckBox(T("ç»“æœ OK æ—¶å¼¹çª—"), m_popupBox);
+    m_popupJobNg = new QCheckBox(T("ç»“æœ NG æ—¶å¼¹çª—"), m_popupBox);
+    m_popupJobEx = new QCheckBox(T("è¿è¡Œå¼‚å¸¸æ—¶å¼¹çª—"), m_popupBox);
     popupLay->addWidget(m_popupJobOk);
     popupLay->addWidget(m_popupJobNg);
     popupLay->addWidget(m_popupJobEx);
-    m_btnOpenLogsDlg = new QPushButton(T("´ò¿ªÈÕÖ¾¹Ü¿Ø¡­"), pageRun);
+    m_btnOpenLogsDlg = new QPushButton(T("æ‰“å¼€æ—¥å¿—ç®¡æ§â€¦"), pageRun);
     setButtonRole(m_btnOpenLogsDlg, "primary");
     connect(m_btnOpenLogsDlg, SIGNAL(clicked()), this, SLOT(onOpenLogDlg()));
-    m_btnOpenLogsFolder = new QPushButton(T("´ò¿ªÊı¾İÄ¿Â¼"), pageRun);
+    m_btnOpenLogsFolder = new QPushButton(T("æ‰“å¼€æ•°æ®ç›®å½•"), pageRun);
     connect(m_btnOpenLogsFolder, SIGNAL(clicked()), this, SLOT(onOpenDataDir()));
     rLay->addWidget(m_runHint);
     rLay->addWidget(m_popupBox);
@@ -207,9 +199,9 @@ SettingsDlg::SettingsDlg(Session* session, QWidget* parent)
     body->addWidget(m_stack, 1);
 
     QDialogButtonBox* box = new QDialogButtonBox(this);
-    m_btnOk = box->addButton(T("È·¶¨"), QDialogButtonBox::AcceptRole);
-    m_btnCancel = box->addButton(T("È¡Ïû"), QDialogButtonBox::RejectRole);
-    m_btnApply = box->addButton(T("Ó¦ÓÃ"), QDialogButtonBox::ApplyRole);
+    m_btnOk = box->addButton(T("ç¡®å®š"), QDialogButtonBox::AcceptRole);
+    m_btnCancel = box->addButton(T("å–æ¶ˆ"), QDialogButtonBox::RejectRole);
+    m_btnApply = box->addButton(T("åº”ç”¨"), QDialogButtonBox::ApplyRole);
     setButtonRole(m_btnOk, "primary");
     connect(m_btnOk, SIGNAL(clicked()), this, SLOT(onOk()));
     connect(m_btnCancel, SIGNAL(clicked()), this, SLOT(reject()));
@@ -225,7 +217,7 @@ SettingsDlg::SettingsDlg(Session* session, QWidget* parent)
 
     m_autoOp->setEnabled(m_canEdit);
     m_startupMode->setEnabled(m_canEdit);
-    m_closeAction->setEnabled(m_canEdit);
+    m_closeAction->setEnabled(false);
     m_theme->setEnabled(m_canEdit);
     m_lang->setEnabled(m_canEdit);
     if (m_popupJobOk) {
@@ -241,7 +233,7 @@ SettingsDlg::SettingsDlg(Session* session, QWidget* parent)
     m_btnApply->setEnabled(m_canEdit);
 }
 
-// ×ó²à·ÖÀàÇĞ»»ÓÒ²àÒ³
+// å·¦ä¾§åˆ†ç±»åˆ‡æ¢å³ä¾§é¡µ
 void SettingsDlg::onCategoryChanged(int row)
 {
     if (row >= 0 && row < m_stack->count()) {
@@ -249,7 +241,7 @@ void SettingsDlg::onCategoryChanged(int row)
     }
 }
 
-// ÓÃ±¾»úÉèÖÃÌî³ä¿Ø¼ş
+// ç”¨æœ¬æœºè®¾ç½®å¡«å……æ§ä»¶
 void SettingsDlg::loadFromSettings()
 {
     const AppSettings& cur = m_session->settings();
@@ -258,7 +250,7 @@ void SettingsDlg::loadFromSettings()
     if (m_startupMode->currentIndex() < 0) {
         m_startupMode->setCurrentIndex(0);
     }
-    m_closeAction->setCurrentIndex(0); // ÍĞÅÌ»ÒÏÔ£¬Ê¼ÖÕÏÔÊ¾ÍË³ö
+    m_closeAction->setCurrentIndex(0);
     for (int i = 0; i < m_theme->count(); ++i) {
         if (m_theme->itemData(i).toString() == QString::fromLatin1(cur.themeId.c_str())) {
             m_theme->setCurrentIndex(i);
@@ -275,7 +267,7 @@ void SettingsDlg::loadFromSettings()
     m_dbFile->setText(qs(AppPaths::databaseFile()));
     m_solsDir->setText(qs(AppPaths::solutionsDir()));
     m_lastSol->setText(cur.lastSolutionPath.empty()
-                           ? T("£¨ÉĞÎŞ£©")
+                           ? T("ï¼ˆå°šæ— ï¼‰")
                            : qs(cur.lastSolutionPath));
     if (m_popupJobOk) {
         m_popupJobOk->setChecked(cur.popupJobOk);
@@ -288,7 +280,7 @@ void SettingsDlg::loadFromSettings()
     }
 }
 
-// Ğ´ÅÌ²¢Ó¦ÓÃÖ÷ÌâÓëÓïÑÔ
+// å†™ç›˜å¹¶åº”ç”¨ä¸»é¢˜ä¸è¯­è¨€
 bool SettingsDlg::applySettings(bool interactivePrompt)
 {
     Q_UNUSED(interactivePrompt);
@@ -298,7 +290,7 @@ bool SettingsDlg::applySettings(bool interactivePrompt)
     AppSettings& s = m_session->settings();
     s.autoLoginOperator = m_autoOp->isChecked();
     s.startupMode = startupAppModeFromInt(m_startupMode->currentData().toInt());
-    s.closeAction = CloseActionExit; // ÍĞÅÌÎ´ÊµÏÖ
+    s.closeAction = CloseActionMinimizeTray;
     s.themeId = ss(m_theme->currentData().toString());
     s.language = ss(m_lang->currentData().toString());
     s.popupJobOk = m_popupJobOk && m_popupJobOk->isChecked();
@@ -311,7 +303,7 @@ bool SettingsDlg::applySettings(bool interactivePrompt)
         s.language = "zh-CN";
     }
     if (!VisionCfgMgr::saveSettings(s)) {
-        QMessageBox::warning(this, T("ÉèÖÃ"), T("±£´æÊ§°Ü¡£"));
+        QMessageBox::warning(this, T("è®¾ç½®"), T("ä¿å­˜å¤±è´¥ã€‚"));
         return false;
     }
     applyAppTheme(s.themeId);
@@ -321,13 +313,13 @@ bool SettingsDlg::applySettings(bool interactivePrompt)
     return true;
 }
 
-// Ó¦ÓÃµ«²»¹Ø´°
+// åº”ç”¨ä½†ä¸å…³çª—
 void SettingsDlg::onApply()
 {
     applySettings(true);
 }
 
-// Ó¦ÓÃ³É¹¦ºó¹Ø±Õ
+// åº”ç”¨æˆåŠŸåå…³é—­
 void SettingsDlg::onOk()
 {
     if (!applySettings(true)) {
@@ -336,7 +328,7 @@ void SettingsDlg::onOk()
     accept();
 }
 
-// ÓÃ×ÊÔ´¹ÜÀíÆ÷´ò¿ªÂ·¾¶
+// ç”¨èµ„æºç®¡ç†å™¨æ‰“å¼€è·¯å¾„
 void SettingsDlg::openPath(const QString& path)
 {
     if (!path.isEmpty()) {
@@ -344,82 +336,82 @@ void SettingsDlg::openPath(const QString& path)
     }
 }
 
-// ´ò¿ªÊı¾İÄ¿Â¼
+// æ‰“å¼€æ•°æ®ç›®å½•
 void SettingsDlg::onOpenDataDir()
 {
     openPath(qs(AppPaths::dataDir()));
 }
 
-// ´ò¿ª·½°¸Ä¿Â¼
+// æ‰“å¼€æ–¹æ¡ˆç›®å½•
 void SettingsDlg::onOpenSolutionsDir()
 {
     openPath(qs(AppPaths::solutionsDir()));
 }
 
-// µ¯³öÈÕÖ¾¹Ü¿Ø
+// å¼¹å‡ºæ—¥å¿—ç®¡æ§
 void SettingsDlg::onOpenLogDlg()
 {
     LogDlg dlg(m_session, this);
     dlg.exec();
 }
 
-// ÓïÑÔÈÈÇĞ»»£ºË¢ĞÂÉèÖÃÖĞĞÄÈ«²¿¾²Ì¬ÎÄ°¸
+// è¯­è¨€çƒ­åˆ‡æ¢ï¼šåˆ·æ–°è®¾ç½®ä¸­å¿ƒå…¨éƒ¨é™æ€æ–‡æ¡ˆ
 void SettingsDlg::retranslateUi()
 {
-    setWindowTitle(T("ÉèÖÃ"));
+    setWindowTitle(T("è®¾ç½®"));
     if (m_titleLabel) {
-        m_titleLabel->setText(T("ÉèÖÃ"));
+        m_titleLabel->setText(T("è®¾ç½®"));
     }
     if (m_nav->count() >= 4) {
-        m_nav->item(0)->setText(T("³£¹æ"));
-        m_nav->item(1)->setText(T("½çÃæÍâ¹Û"));
-        m_nav->item(2)->setText(T("Â·¾¶Óë´æ´¢"));
-        m_nav->item(3)->setText(T("ÔËĞĞÓëÈÕÖ¾"));
+        m_nav->item(0)->setText(T("å¸¸è§„"));
+        m_nav->item(1)->setText(T("ç•Œé¢å¤–è§‚"));
+        m_nav->item(2)->setText(T("è·¯å¾„ä¸å­˜å‚¨"));
+        m_nav->item(3)->setText(T("è¿è¡Œä¸æ—¥å¿—"));
     }
-    m_autoOp->setText(T("¿ª»ú×Ô¶¯µÇÂ¼²Ù×÷Ô±£¨½ö operator£¬Ö±½Ó½øÔËĞĞÌ¬£©"));
+    m_autoOp->setText(T("å¼€æœºè‡ªåŠ¨ç™»å½•æ“ä½œå‘˜ï¼ˆä»… operatorï¼Œç›´æ¥è¿›è¿è¡Œæ€ï¼‰"));
     if (m_generalBox) {
-        m_generalBox->setTitle(T("Æô¶¯Óë¹Ø±Õ"));
+        m_generalBox->setTitle(T("å¯åŠ¨ä¸å…³é—­"));
     }
     if (m_closeHint) {
-        m_closeHint->setText(T("¡¸×îĞ¡»¯µ½ÍĞÅÌ¡¹½«ÔÚºóĞø°æ±¾Ìá¹©£¬µ±Ç°½ö¿ÉÑ¡ÔñÍË³ö³ÌĞò¡£"));
+        m_closeHint->setText(T("ã€Œæœ€å°åŒ–åˆ°æ‰˜ç›˜ã€å°†åœ¨åç»­ç‰ˆæœ¬æä¾›ï¼Œå½“å‰ä»…å¯é€‰æ‹©é€€å‡ºç¨‹åºã€‚"));
     }
     if (m_uiHint) {
-        m_uiHint->setText(T("Ö÷½çÃæÁ¢¼´ÇĞ»»¡£ÒÑ´ò¿ªµÄ´°¿Ú¹Ø±ÕºóÖØĞÂ´ò¿ª£¬¼´ÎªĞÂÓïÑÔ¡£"));
+        m_uiHint->setText(T("ä¸»ç•Œé¢ç«‹å³åˆ‡æ¢ã€‚å·²æ‰“å¼€çš„çª—å£å…³é—­åé‡æ–°æ‰“å¼€ï¼Œå³ä¸ºæ–°è¯­è¨€ã€‚"));
     }
     if (m_pathHint) {
-        m_pathHint->setText(T("ÓÃ»§ÓëÈÕÖ¾´æÔÚÊı¾İ¿âÖĞ¡£Êı¾İ¸ùÄ¿Â¼ÓÉ°²×°Ô¼¶¨¾ö¶¨£¬±¾Ò³½ö²é¿´Óë´ò¿ª£¬²»Ö§³ÖËæÒâ¸ÄÂ·¾¶¡£"));
+        m_pathHint->setText(T("ç”¨æˆ·ä¸æ—¥å¿—å­˜åœ¨æ•°æ®åº“ä¸­ã€‚æ•°æ®æ ¹ç›®å½•ç”±å®‰è£…çº¦å®šå†³å®šï¼Œæœ¬é¡µä»…æŸ¥çœ‹ä¸æ‰“å¼€ï¼Œä¸æ”¯æŒéšæ„æ”¹è·¯å¾„ã€‚"));
     }
     if (m_runHint) {
-        m_runHint->setText(T("²úÁ¿ÇåÁã¡¢ÔËĞĞ»­Ãæ²¼¾ÖÊôÓÚ·½°¸/ÔËĞĞÌ¬£¬ÇëÔÚÔËĞĞÒ³»ò¡¸ÊÓÍ¼ ¡ú »­ÃæÅäÖÃ¡¹ÖĞĞŞ¸Ä¡£Á÷³ÌÊÔÅÜ½á¹ûµ¯´°ÔÚ´ËÅäÖÃ£»Ä¬ÈÏ¾ù²»µ¯´°¡£"));
+        m_runHint->setText(T("äº§é‡æ¸…é›¶ã€è¿è¡Œç”»é¢å¸ƒå±€å±äºæ–¹æ¡ˆ/è¿è¡Œæ€ï¼Œè¯·åœ¨è¿è¡Œé¡µæˆ–ã€Œè§†å›¾ â†’ ç”»é¢é…ç½®ã€ä¸­ä¿®æ”¹ã€‚æµç¨‹è¯•è·‘ç»“æœå¼¹çª—åœ¨æ­¤é…ç½®ï¼›é»˜è®¤å‡ä¸å¼¹çª—ã€‚"));
     }
     if (m_popupBox) {
-        m_popupBox->setTitle(T("Á÷³ÌÊÔÅÜµ¯´°"));
+        m_popupBox->setTitle(T("æµç¨‹è¯•è·‘å¼¹çª—"));
     }
     if (m_popupJobOk) {
-        m_popupJobOk->setText(T("½á¹û OK Ê±µ¯´°"));
+        m_popupJobOk->setText(T("ç»“æœ OK æ—¶å¼¹çª—"));
     }
     if (m_popupJobNg) {
-        m_popupJobNg->setText(T("½á¹û NG Ê±µ¯´°"));
+        m_popupJobNg->setText(T("ç»“æœ NG æ—¶å¼¹çª—"));
     }
     if (m_popupJobEx) {
-        m_popupJobEx->setText(T("ÔËĞĞÒì³£Ê±µ¯´°"));
+        m_popupJobEx->setText(T("è¿è¡Œå¼‚å¸¸æ—¶å¼¹çª—"));
     }
     if (m_btnOpenLogsDlg) {
-        m_btnOpenLogsDlg->setText(T("´ò¿ªÈÕÖ¾¹Ü¿Ø¡­"));
+        m_btnOpenLogsDlg->setText(T("æ‰“å¼€æ—¥å¿—ç®¡æ§â€¦"));
     }
     if (m_btnOpenLogsFolder) {
-        m_btnOpenLogsFolder->setText(T("´ò¿ªÊı¾İÄ¿Â¼"));
+        m_btnOpenLogsFolder->setText(T("æ‰“å¼€æ•°æ®ç›®å½•"));
     }
     if (m_btnOk) {
-        m_btnOk->setText(T("È·¶¨"));
+        m_btnOk->setText(T("ç¡®å®š"));
     }
     if (m_btnCancel) {
-        m_btnCancel->setText(T("È¡Ïû"));
+        m_btnCancel->setText(T("å–æ¶ˆ"));
     }
     if (m_btnApply) {
-        m_btnApply->setText(T("Ó¦ÓÃ"));
+        m_btnApply->setText(T("åº”ç”¨"));
     }
-    // Ö÷Ìâ/Æô¶¯/¹Ø±ÕÏÂÀ­Ïî±êÌâËæÓïÑÔË¢ĞÂ£¨±£Áô itemData£©
+    // ä¸»é¢˜/å¯åŠ¨/å…³é—­ä¸‹æ‹‰é¡¹æ ‡é¢˜éšè¯­è¨€åˆ·æ–°ï¼ˆä¿ç•™ itemDataï¼‰
     for (int i = 0; i < m_theme->count(); ++i) {
         const QString id = m_theme->itemData(i).toString();
         m_theme->setItemText(i, QString::fromUtf8(themeTitle(ss(id).c_str()).c_str()));

@@ -1,6 +1,6 @@
 /**
  * @file CommMgrDlg.cpp
- * @brief CommMgrDlgÊµÏÖ
+ * @brief CommMgrDlgå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -36,22 +36,22 @@ namespace Vision {
 
 namespace {
 
-// ½çÃæ×Ö½Ú×ªµ½Í¨ĞÅ»º³å
+// ç•Œé¢å­—èŠ‚è½¬åˆ°é€šä¿¡ç¼“å†²
 CommBytes toBytes(const QByteArray& a)
 {
     return CommBytes(a.begin(), a.end());
 }
 
-// Í¨ĞÅ»º³å×ª»Ø±¾µØ±àÂëÎÄ±¾
+// é€šä¿¡ç¼“å†²è½¬å›æœ¬åœ°ç¼–ç æ–‡æœ¬
 QString fromBytes(const CommBytes& b)
 {
     if (b.empty()) {
         return QString();
     }
-    return QString::fromLocal8Bit(reinterpret_cast<const char*>(&b[0]), static_cast<int>(b.size()));
+    return QString::fromUtf8(reinterpret_cast<const char*>(&b[0]), static_cast<int>(b.size()));
 }
 
-/** @brief ÁĞ±íºÍÀàĞÍ±êÇ©£ºModbus °´ RTU / TCP ÏÔÊ¾£¬²»¸ú´«Êä²ãÃû×Ö»ìÔÚÒ»Æğ */
+/** @brief åˆ—è¡¨å’Œç±»å‹æ ‡ç­¾ï¼šModbus æŒ‰ RTU / TCP æ˜¾ç¤ºï¼Œä¸è·Ÿä¼ è¾“å±‚åå­—æ··åœ¨ä¸€èµ· */
 QString channelKindText(CommChannelType type, bool modbus)
 {
     if (modbus && type == CommSerial) {
@@ -63,7 +63,7 @@ QString channelKindText(CommChannelType type, bool modbus)
     return QString::fromUtf8(commChannelTypeTitle(type).c_str());
 }
 
-// ÒÑÁ¬½ÓÂÌÉ«¼Ó´Ö£¬·ñÔò»ÒÉ«
+// å·²è¿æ¥ç»¿è‰²åŠ ç²—ï¼Œå¦åˆ™ç°è‰²
 void paintConnStatus(QLabel* lab, const QString& text, bool open)
 {
     lab->setText(text);
@@ -76,13 +76,13 @@ void paintConnStatus(QLabel* lab, const QString& text, bool open)
 
 } // namespace
 
-// Í¨ĞÅ¹ÜÀí£ºÍ¨µÀÁĞ±í¡¢²ÎÊıÒ³ÓëÊÕ·¢²âÊÔ
+// é€šä¿¡ç®¡ç†ï¼šé€šé“åˆ—è¡¨ã€å‚æ•°é¡µä¸æ”¶å‘æµ‹è¯•
 CommMgrDlg::CommMgrDlg(Session* session, Solution* solution, QWidget* parent)
     : QDialog(parent)
     , m_session(session)
     , m_sol(solution)
 {
-    setWindowTitle(T("Í¨ĞÅ¹ÜÀí"));
+    setWindowTitle(T("é€šä¿¡ç®¡ç†"));
     resize(1080, 680);
     enableDialogResize(this);
     const bool can = session->has(PermEditComm);
@@ -97,11 +97,11 @@ CommMgrDlg::CommMgrDlg(Session* session, Solution* solution, QWidget* parent)
         " border-radius:4px; padding:4px 8px; font-weight:bold;"));
 
     m_protocol = new QComboBox(this);
-    m_protocol->addItem(T("Ô­Ê¼×Ö½Ú"), QLatin1String("raw"));
-    m_protocol->addItem(T("MODBUS Ö÷Õ¾"), QLatin1String("master"));
-    m_protocol->addItem(T("MODBUS ´ÓÕ¾"), QLatin1String("slave"));
+    m_protocol->addItem(T("åŸå§‹å­—èŠ‚"), QLatin1String("raw"));
+    m_protocol->addItem(T("MODBUS ä¸»ç«™"), QLatin1String("master"));
+    m_protocol->addItem(T("MODBUS ä»ç«™"), QLatin1String("slave"));
     m_protocol->setEnabled(can);
-    m_protocolLabel = new QLabel(T("Ğ­Òé"), this);
+    m_protocolLabel = new QLabel(T("åè®®"), this);
 
     m_serialPort = new QComboBox(this);
     m_baud = new QSpinBox(this);
@@ -111,9 +111,9 @@ CommMgrDlg::CommMgrDlg(Session* session, Solution* solution, QWidget* parent)
     m_dataBits->setRange(7, 8);
     m_dataBits->setValue(8);
     m_parity = new QComboBox(this);
-    m_parity->addItem(T("ÎŞ"), QLatin1String("none"));
-    m_parity->addItem(T("Å¼"), QLatin1String("even"));
-    m_parity->addItem(T("Ææ"), QLatin1String("odd"));
+    m_parity->addItem(T("æ— "), QLatin1String("none"));
+    m_parity->addItem(T("å¶"), QLatin1String("even"));
+    m_parity->addItem(T("å¥‡"), QLatin1String("odd"));
     m_stopBits = new QSpinBox(this);
     m_stopBits->setRange(1, 2);
     m_stopBits->setValue(1);
@@ -136,10 +136,10 @@ CommMgrDlg::CommMgrDlg(Session* session, Solution* solution, QWidget* parent)
     m_udpRemote->setValue(9000);
 
     m_mbArea = new QComboBox(this);
-    m_mbArea->addItem(T("ÏßÈ¦"), ModbusCoil);
-    m_mbArea->addItem(T("ÀëÉ¢ÊäÈë"), ModbusDiscrete);
-    m_mbArea->addItem(T("±£³Ö¼Ä´æÆ÷"), ModbusHolding);
-    m_mbArea->addItem(T("ÊäÈë¼Ä´æÆ÷"), ModbusInput);
+    m_mbArea->addItem(T("çº¿åœˆ"), ModbusCoil);
+    m_mbArea->addItem(T("ç¦»æ•£è¾“å…¥"), ModbusDiscrete);
+    m_mbArea->addItem(T("ä¿æŒå¯„å­˜å™¨"), ModbusHolding);
+    m_mbArea->addItem(T("è¾“å…¥å¯„å­˜å™¨"), ModbusInput);
     m_mbSlave = new QSpinBox(this);
     m_mbSlave->setRange(0, 255);
     m_mbSlave->setValue(1);
@@ -154,60 +154,60 @@ CommMgrDlg::CommMgrDlg(Session* session, Solution* solution, QWidget* parent)
     m_stack = new QStackedWidget(this);
     QWidget* serialPage = new QWidget(m_stack);
     QFormLayout* sf = new QFormLayout(serialPage);
-    QPushButton* refreshPorts = new QPushButton(T("Ë¢ĞÂ´®¿Ú"), serialPage);
+    QPushButton* refreshPorts = new QPushButton(T("åˆ·æ–°ä¸²å£"), serialPage);
     connect(refreshPorts, SIGNAL(clicked()), this, SLOT(onRefreshPorts()));
-    sf->addRow(T("¶Ë¿Ú"), m_serialPort);
+    sf->addRow(T("ç«¯å£"), m_serialPort);
     sf->addRow(T(""), refreshPorts);
-    sf->addRow(T("²¨ÌØÂÊ"), m_baud);
-    sf->addRow(T("Êı¾İÎ»"), m_dataBits);
-    sf->addRow(T("Ğ£Ñé"), m_parity);
-    sf->addRow(T("Í£Ö¹Î»"), m_stopBits);
+    sf->addRow(T("æ³¢ç‰¹ç‡"), m_baud);
+    sf->addRow(T("æ•°æ®ä½"), m_dataBits);
+    sf->addRow(T("æ ¡éªŒ"), m_parity);
+    sf->addRow(T("åœæ­¢ä½"), m_stopBits);
 
     QWidget* clientPage = new QWidget(m_stack);
     QFormLayout* cf = new QFormLayout(clientPage);
-    cf->addRow(T("Ö÷»ú"), m_host);
-    cf->addRow(T("¶Ë¿Ú"), m_tcpPort);
+    cf->addRow(T("ä¸»æœº"), m_host);
+    cf->addRow(T("ç«¯å£"), m_tcpPort);
 
     QWidget* serverPage = new QWidget(m_stack);
     QFormLayout* vf = new QFormLayout(serverPage);
-    QPushButton* refreshPeers = new QPushButton(T("Ë¢ĞÂ¿Í»§¶Ë"), serverPage);
+    QPushButton* refreshPeers = new QPushButton(T("åˆ·æ–°å®¢æˆ·ç«¯"), serverPage);
     connect(refreshPeers, SIGNAL(clicked()), this, SLOT(onRefreshPeers()));
-    vf->addRow(T("¼àÌı¶Ë¿Ú"), m_listenPort);
-    vf->addRow(T("¿Í»§¶Ë"), m_peers);
+    vf->addRow(T("ç›‘å¬ç«¯å£"), m_listenPort);
+    vf->addRow(T("å®¢æˆ·ç«¯"), m_peers);
     vf->addRow(T(""), refreshPeers);
 
     QWidget* udpPage = new QWidget(m_stack);
     QFormLayout* uf = new QFormLayout(udpPage);
-    uf->addRow(T("±¾»ú¶Ë¿Ú"), m_udpBind);
-    uf->addRow(T("¶Ô¶ËÖ÷»ú"), m_udpHost);
-    uf->addRow(T("¶Ô¶Ë¶Ë¿Ú"), m_udpRemote);
+    uf->addRow(T("æœ¬æœºç«¯å£"), m_udpBind);
+    uf->addRow(T("å¯¹ç«¯ä¸»æœº"), m_udpHost);
+    uf->addRow(T("å¯¹ç«¯ç«¯å£"), m_udpRemote);
 
     m_stack->addWidget(serialPage);
     m_stack->addWidget(clientPage);
     m_stack->addWidget(serverPage);
     m_stack->addWidget(udpPage);
 
-    m_status = new QLabel(T("Î´Á¬½Ó"), this);
+    m_status = new QLabel(T("æœªè¿æ¥"), this);
     m_io = new QPlainTextEdit(this);
     m_io->setReadOnly(true);
-    m_io->setPlaceholderText(T("ÊÕ·¢¼ÇÂ¼"));
+    m_io->setPlaceholderText(T("æ”¶å‘è®°å½•"));
     m_io->setStyleSheet(QLatin1String("font-family: Consolas, monospace;"));
     m_sendEdit = new QLineEdit(this);
-    m_sendEdit->setPlaceholderText(T("Òª·¢ËÍµÄÎÄ±¾"));
+    m_sendEdit->setPlaceholderText(T("è¦å‘é€çš„æ–‡æœ¬"));
 
-    QPushButton* addSerial = new QPushButton(T("´®¿Ú"), this);
-    QPushButton* addClient = new QPushButton(T("TCP¿Í»§¶Ë"), this);
-    QPushButton* addServer = new QPushButton(T("TCP·şÎñ¶Ë"), this);
+    QPushButton* addSerial = new QPushButton(T("ä¸²å£"), this);
+    QPushButton* addClient = new QPushButton(T("TCPå®¢æˆ·ç«¯"), this);
+    QPushButton* addServer = new QPushButton(T("TCPæœåŠ¡ç«¯"), this);
     QPushButton* addUdp = new QPushButton(T("UDP"), this);
     QPushButton* addMbRtu = new QPushButton(T("MODBUS RTU"), this);
     QPushButton* addMbTcp = new QPushButton(T("MODBUS TCP"), this);
-    QPushButton* delBtn = new QPushButton(T("É¾³ı"), this);
-    QPushButton* applyBtn = new QPushButton(T("Ó¦ÓÃ²ÎÊı"), this);
-    QPushButton* connBtn = new QPushButton(T("Á¬½Ó"), this);
-    QPushButton* discBtn = new QPushButton(T("¶Ï¿ª"), this);
-    QPushButton* sendBtn = new QPushButton(T("·¢ËÍ"), this);
-    QPushButton* mbRead = new QPushButton(T("MODBUS ¶Á"), this);
-    QPushButton* mbWrite = new QPushButton(T("MODBUS Ğ´"), this);
+    QPushButton* delBtn = new QPushButton(T("åˆ é™¤"), this);
+    QPushButton* applyBtn = new QPushButton(T("åº”ç”¨å‚æ•°"), this);
+    QPushButton* connBtn = new QPushButton(T("è¿æ¥"), this);
+    QPushButton* discBtn = new QPushButton(T("æ–­å¼€"), this);
+    QPushButton* sendBtn = new QPushButton(T("å‘é€"), this);
+    QPushButton* mbRead = new QPushButton(T("MODBUS è¯»"), this);
+    QPushButton* mbWrite = new QPushButton(T("MODBUS å†™"), this);
     setButtonRole(connBtn, "primary");
 
     addSerial->setEnabled(can);
@@ -241,7 +241,7 @@ CommMgrDlg::CommMgrDlg(Session* session, Solution* solution, QWidget* parent)
     leftCard->setMinimumWidth(260);
     leftCard->setMaximumWidth(320);
     QVBoxLayout* left = new QVBoxLayout(leftCard);
-    QLabel* listTitle = new QLabel(T("Í¨µÀ"), leftCard);
+    QLabel* listTitle = new QLabel(T("é€šé“"), leftCard);
     listTitle->setObjectName(QLatin1String("section"));
     left->addWidget(listTitle);
     left->addWidget(m_list, 1);
@@ -256,7 +256,7 @@ CommMgrDlg::CommMgrDlg(Session* session, Solution* solution, QWidget* parent)
     left->addWidget(delBtn);
 
     QGridLayout* head = new QGridLayout();
-    head->addWidget(new QLabel(T("Ãû³Æ"), this), 0, 0);
+    head->addWidget(new QLabel(T("åç§°"), this), 0, 0);
     head->addWidget(m_name, 0, 1);
     head->addWidget(m_type, 0, 2);
     head->addWidget(m_status, 0, 3);
@@ -273,22 +273,22 @@ CommMgrDlg::CommMgrDlg(Session* session, Solution* solution, QWidget* parent)
     m_modbusPanel = new QWidget(this);
     QGridLayout* mbGrid = new QGridLayout(m_modbusPanel);
     mbGrid->setContentsMargins(0, 0, 0, 0);
-    mbGrid->addWidget(new QLabel(T("´ÓÕ¾ºÅ"), m_modbusPanel), 0, 0);
+    mbGrid->addWidget(new QLabel(T("ä»ç«™å·"), m_modbusPanel), 0, 0);
     mbGrid->addWidget(m_mbSlave, 0, 1);
-    mbGrid->addWidget(new QLabel(T("Êı¾İÇø"), m_modbusPanel), 0, 2);
+    mbGrid->addWidget(new QLabel(T("æ•°æ®åŒº"), m_modbusPanel), 0, 2);
     mbGrid->addWidget(m_mbArea, 0, 3);
-    mbGrid->addWidget(new QLabel(T("µØÖ·"), m_modbusPanel), 1, 0);
+    mbGrid->addWidget(new QLabel(T("åœ°å€"), m_modbusPanel), 1, 0);
     mbGrid->addWidget(m_mbAddr, 1, 1);
-    mbGrid->addWidget(new QLabel(T("ÊıÁ¿"), m_modbusPanel), 1, 2);
+    mbGrid->addWidget(new QLabel(T("æ•°é‡"), m_modbusPanel), 1, 2);
     mbGrid->addWidget(m_mbCount, 1, 3);
-    mbGrid->addWidget(new QLabel(T("Ğ´Öµ"), m_modbusPanel), 2, 0);
+    mbGrid->addWidget(new QLabel(T("å†™å€¼"), m_modbusPanel), 2, 0);
     mbGrid->addWidget(m_mbValue, 2, 1);
     mbGrid->addWidget(mbRead, 2, 2);
     mbGrid->addWidget(mbWrite, 2, 3);
 
     QFrame* connCard = makeCard(this);
     QVBoxLayout* connLay = new QVBoxLayout(connCard);
-    QLabel* connTitle = new QLabel(T("Á¬½Ó"), connCard);
+    QLabel* connTitle = new QLabel(T("è¿æ¥"), connCard);
     connTitle->setObjectName(QLatin1String("section"));
     connLay->addWidget(connTitle);
     connLay->addLayout(head);
@@ -302,7 +302,7 @@ CommMgrDlg::CommMgrDlg(Session* session, Solution* solution, QWidget* parent)
 
     QFrame* testCard = makeCard(this);
     QVBoxLayout* testLay = new QVBoxLayout(testCard);
-    QLabel* testTitle = new QLabel(T("µ÷ÊÔ"), testCard);
+    QLabel* testTitle = new QLabel(T("è°ƒè¯•"), testCard);
     testTitle->setObjectName(QLatin1String("section"));
     testLay->addWidget(testTitle);
     testLay->addWidget(m_io, 1);
@@ -326,7 +326,7 @@ CommMgrDlg::CommMgrDlg(Session* session, Solution* solution, QWidget* parent)
     refreshList();
 }
 
-// ÖØÁĞ±¾»ú´®¿Ú²¢¾¡Á¿±£³ÖÔ­Ñ¡Ôñ
+// é‡åˆ—æœ¬æœºä¸²å£å¹¶å°½é‡ä¿æŒåŸé€‰æ‹©
 void CommMgrDlg::onRefreshPorts()
 {
     const std::vector<std::string> ports = CommMgr::instance().listSerialPorts();
@@ -343,7 +343,7 @@ void CommMgrDlg::onRefreshPorts()
     }
 }
 
-// ÖØÁĞ TCP ·şÎñ¶ËÒÑ½ÓÈëµÄ¶Ô¶Ë
+// é‡åˆ— TCP æœåŠ¡ç«¯å·²æ¥å…¥çš„å¯¹ç«¯
 void CommMgrDlg::onRefreshPeers()
 {
     CommChannel* ch = currentChannel();
@@ -367,7 +367,7 @@ void CommMgrDlg::onRefreshPeers()
     }
 }
 
-// °´·½°¸Í¨µÀÖØ½¨×ó²àÁĞ±í²¢¾¡Á¿±£³ÖÑ¡ÖĞ
+// æŒ‰æ–¹æ¡ˆé€šé“é‡å»ºå·¦ä¾§åˆ—è¡¨å¹¶å°½é‡ä¿æŒé€‰ä¸­
 void CommMgrDlg::refreshList()
 {
     const QString keep = currentId();
@@ -375,11 +375,11 @@ void CommMgrDlg::refreshList()
     for (size_t i = 0; i < m_sol->commChannels.size(); ++i) {
         const CommChannel& c = m_sol->commChannels[i];
         const bool open = CommMgr::instance().isOpen(c.id);
-        QString state = T("Î´Á¬½Ó");
+        QString state = T("æœªè¿æ¥");
         if (open && c.type == CommTcpServer) {
-            state = T("¼àÌıÖĞ");
+            state = T("ç›‘å¬ä¸­");
         } else if (open) {
-            state = T("ÒÑÁ¬½Ó");
+            state = T("å·²è¿æ¥");
         }
         QListWidgetItem* it = new QListWidgetItem(
             qs(c.name) + QLatin1String("    ")
@@ -401,14 +401,14 @@ void CommMgrDlg::refreshList()
     onSel();
 }
 
-// µ±Ç°ÁĞ±íÏîÉÏµÄÍ¨µÀ id
+// å½“å‰åˆ—è¡¨é¡¹ä¸Šçš„é€šé“ id
 QString CommMgrDlg::currentId() const
 {
     QListWidgetItem* it = m_list->currentItem();
     return it ? it->data(Qt::UserRole).toString() : QString();
 }
 
-// TCP ·şÎñ¶Ëµ±Ç°¶Ô¶Ë£¬ÆäËüÀàĞÍÎª¿Õ
+// TCP æœåŠ¡ç«¯å½“å‰å¯¹ç«¯ï¼Œå…¶å®ƒç±»å‹ä¸ºç©º
 std::string CommMgrDlg::currentPeerId() const
 {
     CommChannel* ch = const_cast<CommMgrDlg*>(this)->currentChannel();
@@ -418,13 +418,13 @@ std::string CommMgrDlg::currentPeerId() const
     return ss(m_peers->currentData().toString());
 }
 
-// °´ÁĞ±íÑ¡ÖĞ²éÕÒÍ¨µÀ
+// æŒ‰åˆ—è¡¨é€‰ä¸­æŸ¥æ‰¾é€šé“
 CommChannel* CommMgrDlg::currentChannel()
 {
     return m_sol->findCommChannel(oid(currentId()));
 }
 
-// °´Í¨µÀÀàĞÍÇĞ»»ÓÒ²à²ÎÊıÒ³
+// æŒ‰é€šé“ç±»å‹åˆ‡æ¢å³ä¾§å‚æ•°é¡µ
 void CommMgrDlg::syncTypePage(CommChannelType t)
 {
     if (t == CommTcpClient) {
@@ -438,7 +438,7 @@ void CommMgrDlg::syncTypePage(CommChannelType t)
     }
 }
 
-// °´Ğ­ÒéÏÔÒşÔ­Ê¼ÊÕ·¢»ò Modbus ²âÊÔÇø
+// æŒ‰åè®®æ˜¾éšåŸå§‹æ”¶å‘æˆ– Modbus æµ‹è¯•åŒº
 void CommMgrDlg::syncActionPanel()
 {
     CommChannel* ch = currentChannel();
@@ -451,7 +451,7 @@ void CommMgrDlg::syncActionPanel()
     m_modbusPanel->setVisible(modbus);
 }
 
-// Ğ­Òé±ä»¯ºó¸üĞÂÀàĞÍ±êÇ©ºÍ²âÊÔÇø
+// åè®®å˜åŒ–åæ›´æ–°ç±»å‹æ ‡ç­¾å’Œæµ‹è¯•åŒº
 void CommMgrDlg::onProtocolChanged()
 {
     CommChannel* ch = currentChannel();
@@ -463,7 +463,7 @@ void CommMgrDlg::onProtocolChanged()
     syncActionPanel();
 }
 
-// °ÑÍ¨µÀ²ÎÊı¹à½øÓÒ²à¿Ø¼ş
+// æŠŠé€šé“å‚æ•°çŒè¿›å³ä¾§æ§ä»¶
 void CommMgrDlg::loadFields(const CommChannel& ch)
 {
     m_name->setText(qs(ch.name));
@@ -491,9 +491,9 @@ void CommMgrDlg::loadFields(const CommChannel& ch)
     m_mbSlave->setValue(ch.params.value("slaveId").toInt(1));
     const bool open = CommMgr::instance().isOpen(ch.id);
     if (open && ch.type == CommTcpServer) {
-        paintConnStatus(m_status, T("¼àÌıÖĞ"), true);
+        paintConnStatus(m_status, T("ç›‘å¬ä¸­"), true);
     } else {
-        paintConnStatus(m_status, open ? T("ÒÑÁ¬½Ó") : T("Î´Á¬½Ó"), open);
+        paintConnStatus(m_status, open ? T("å·²è¿æ¥") : T("æœªè¿æ¥"), open);
     }
     if (ch.type == CommTcpServer) {
         onRefreshPeers();
@@ -501,7 +501,7 @@ void CommMgrDlg::loadFields(const CommChannel& ch)
     syncActionPanel();
 }
 
-// °ÑÓÒ²à¿Ø¼şĞ´»ØÍ¨µÀ²ÎÊı
+// æŠŠå³ä¾§æ§ä»¶å†™å›é€šé“å‚æ•°
 void CommMgrDlg::saveFieldsTo(CommChannel* ch)
 {
     if (!ch) {
@@ -540,7 +540,7 @@ void CommMgrDlg::saveFieldsTo(CommChannel* ch)
     }
 }
 
-// Ñ¡ÖĞÍ¨µÀºó¼ÓÔØÆä²ÎÊı
+// é€‰ä¸­é€šé“ååŠ è½½å…¶å‚æ•°
 void CommMgrDlg::onSel()
 {
     CommChannel* ch = currentChannel();
@@ -550,7 +550,7 @@ void CommMgrDlg::onSel()
     loadFields(*ch);
 }
 
-// ×·¼ÓÒ»ÌõÍ¨µÀ²¢Ñ¡ÖĞ
+// è¿½åŠ ä¸€æ¡é€šé“å¹¶é€‰ä¸­
 void CommMgrDlg::addChannel(CommChannelType type, const char* nameKey, bool modbus)
 {
     CommChannel c;
@@ -585,50 +585,50 @@ void CommMgrDlg::addChannel(CommChannelType type, const char* nameKey, bool modb
     m_list->setCurrentRow(m_list->count() - 1);
 }
 
-// ĞÂÔöÔ­Ê¼´®¿ÚÍ¨µÀ
+// æ–°å¢åŸå§‹ä¸²å£é€šé“
 void CommMgrDlg::onAddSerial()
 {
-    addChannel(CommSerial, "´®¿Ú{0}", false);
+    addChannel(CommSerial, "ä¸²å£{0}", false);
 }
 
-// ĞÂÔö TCP ¿Í»§¶ËÍ¨µÀ
+// æ–°å¢ TCP å®¢æˆ·ç«¯é€šé“
 void CommMgrDlg::onAddTcpClient()
 {
-    addChannel(CommTcpClient, "TCP¿Í»§¶Ë{0}", false);
+    addChannel(CommTcpClient, "TCPå®¢æˆ·ç«¯{0}", false);
 }
 
-// ĞÂÔö TCP ·şÎñ¶ËÍ¨µÀ
+// æ–°å¢ TCP æœåŠ¡ç«¯é€šé“
 void CommMgrDlg::onAddTcpServer()
 {
-    addChannel(CommTcpServer, "TCP·şÎñ¶Ë{0}", false);
+    addChannel(CommTcpServer, "TCPæœåŠ¡ç«¯{0}", false);
 }
 
-// ĞÂÔö UDP Í¨µÀ
+// æ–°å¢ UDP é€šé“
 void CommMgrDlg::onAddUdp()
 {
     addChannel(CommUdp, "UDP{0}", false);
 }
 
-// ĞÂÔö Modbus RTU Í¨µÀ
+// æ–°å¢ Modbus RTU é€šé“
 void CommMgrDlg::onAddModbusRtu()
 {
     addChannel(CommSerial, "MODBUS RTU{0}", true);
 }
 
-// ĞÂÔö Modbus TCP ¿Í»§¶ËÍ¨µÀ
+// æ–°å¢ Modbus TCP å®¢æˆ·ç«¯é€šé“
 void CommMgrDlg::onAddModbusTcp()
 {
     addChannel(CommTcpClient, "MODBUS TCP{0}", true);
 }
 
-// È·ÈÏºóÉ¾³ıµ±Ç°Í¨µÀ²¢¶Ï¿ª
+// ç¡®è®¤ååˆ é™¤å½“å‰é€šé“å¹¶æ–­å¼€
 void CommMgrDlg::onRemove()
 {
     const QString id = currentId();
     if (id.isEmpty()) {
         return;
     }
-    if (QMessageBox::question(this, T("É¾³ı"), T("É¾³ı¸ÃÍ¨ĞÅÍ¨µÀ£¿")) != QMessageBox::Yes) {
+    if (QMessageBox::question(this, T("åˆ é™¤"), T("åˆ é™¤è¯¥é€šä¿¡é€šé“ï¼Ÿ")) != QMessageBox::Yes) {
         return;
     }
     CommMgr::instance().closeChannel(oid(id));
@@ -642,7 +642,7 @@ void CommMgrDlg::onRemove()
     refreshList();
 }
 
-// °Ñ½çÃæ²ÎÊıĞ´»Ø·½°¸
+// æŠŠç•Œé¢å‚æ•°å†™å›æ–¹æ¡ˆ
 void CommMgrDlg::onApplyFields()
 {
     CommChannel* ch = currentChannel();
@@ -652,10 +652,10 @@ void CommMgrDlg::onApplyFields()
     saveFieldsTo(ch);
     m_sol->dirty = true;
     refreshList();
-    m_io->appendPlainText(T("²ÎÊıÒÑÓ¦ÓÃ¡£ÒÑÁ¬½ÓÊ±ÇëÖØĞÂÁ¬½Ó¡£"));
+    m_io->appendPlainText(T("å‚æ•°å·²åº”ç”¨ã€‚å·²è¿æ¥æ—¶è¯·é‡æ–°è¿æ¥ã€‚"));
 }
 
-// ±£´æ²ÎÊı²¢´ò¿ªµ±Ç°Í¨µÀ
+// ä¿å­˜å‚æ•°å¹¶æ‰“å¼€å½“å‰é€šé“
 void CommMgrDlg::onConnect()
 {
     CommChannel* ch = currentChannel();
@@ -665,22 +665,22 @@ void CommMgrDlg::onConnect()
     saveFieldsTo(ch);
     std::string err;
     if (!CommMgr::instance().openChannel(*ch, &err)) {
-        QMessageBox::warning(this, T("Á¬½Ó"), qs(err));
-        paintConnStatus(m_status, T("Î´Á¬½Ó"), false);
+        QMessageBox::warning(this, T("è¿æ¥"), qs(err));
+        paintConnStatus(m_status, T("æœªè¿æ¥"), false);
         return;
     }
     m_sol->dirty = true;
     if (ch->type == CommTcpServer) {
-        paintConnStatus(m_status, T("¼àÌıÖĞ"), true);
+        paintConnStatus(m_status, T("ç›‘å¬ä¸­"), true);
         onRefreshPeers();
     } else {
-        paintConnStatus(m_status, T("ÒÑÁ¬½Ó"), true);
+        paintConnStatus(m_status, T("å·²è¿æ¥"), true);
     }
     refreshList();
-    m_io->appendPlainText(T("ÒÑÁ¬½Ó£º") + qs(ch->name));
+    m_io->appendPlainText(T("å·²è¿æ¥ï¼š") + qs(ch->name));
 }
 
-// ¹Ø±Õµ±Ç°Í¨µÀ
+// å…³é—­å½“å‰é€šé“
 void CommMgrDlg::onDisconnect()
 {
     CommChannel* ch = currentChannel();
@@ -688,13 +688,13 @@ void CommMgrDlg::onDisconnect()
         return;
     }
     CommMgr::instance().closeChannel(ch->id);
-    paintConnStatus(m_status, T("Î´Á¬½Ó"), false);
+    paintConnStatus(m_status, T("æœªè¿æ¥"), false);
     m_peers->clear();
     refreshList();
-    m_io->appendPlainText(T("ÒÑ¶Ï¿ª¡£"));
+    m_io->appendPlainText(T("å·²æ–­å¼€ã€‚"));
 }
 
-// ·¢ËÍÔ­Ê¼×Ö½Ú²¢³¢ÊÔ¶Á»Ø
+// å‘é€åŸå§‹å­—èŠ‚å¹¶å°è¯•è¯»å›
 void CommMgrDlg::onSend()
 {
     CommChannel* ch = currentChannel();
@@ -702,14 +702,14 @@ void CommMgrDlg::onSend()
         return;
     }
     if (ch->params.value("protocol").toString() == "modbus") {
-        m_io->appendPlainText(T("MODBUS Í¨µÀÇëÓÃÏÂÃæµÄ¶Á/Ğ´¡£"));
+        m_io->appendPlainText(T("MODBUS é€šé“è¯·ç”¨ä¸‹é¢çš„è¯»/å†™ã€‚"));
         return;
     }
     std::string err;
     const std::string peer = currentPeerId();
-    const CommBytes data = toBytes(m_sendEdit->text().toLocal8Bit());
+    const CommBytes data = toBytes(m_sendEdit->text().toUtf8());
     if (!CommMgr::instance().writeBytes(ch->id, peer, data, &err)) {
-        m_io->appendPlainText(T("·¢ËÍÊ§°Ü£º") + qs(err));
+        m_io->appendPlainText(T("å‘é€å¤±è´¥ï¼š") + qs(err));
         return;
     }
     m_io->appendPlainText(T(">> ") + m_sendEdit->text());
@@ -719,7 +719,7 @@ void CommMgrDlg::onSend()
     }
 }
 
-// °´µ±Ç°ÇøÓëµØÖ·¶Á Modbus
+// æŒ‰å½“å‰åŒºä¸åœ°å€è¯» Modbus
 void CommMgrDlg::onModbusRead()
 {
     CommChannel* ch = currentChannel();
@@ -728,7 +728,7 @@ void CommMgrDlg::onModbusRead()
     }
     saveFieldsTo(ch);
     if (ch->params.value("protocol").toString() != "modbus") {
-        QMessageBox::information(this, T("MODBUS"), T("Çë°ÑĞ­ÒéÑ¡³É MODBUS ²¢ÖØĞÂÁ¬½Ó¡£"));
+        QMessageBox::information(this, T("MODBUS"), T("è¯·æŠŠåè®®é€‰æˆ MODBUS å¹¶é‡æ–°è¿æ¥ã€‚"));
         return;
     }
     const int area = m_mbArea->currentData().toInt();
@@ -738,10 +738,10 @@ void CommMgrDlg::onModbusRead()
         std::vector<uint16_t> vals;
         if (!CommMgr::instance().modbusReadRegs(ch->id, peer, m_mbSlave->value(), static_cast<ModbusTable>(area),
                                                 m_mbAddr->value(), m_mbCount->value(), &vals, &err)) {
-            m_io->appendPlainText(T("¶ÁÊ§°Ü£º") + qs(err));
+            m_io->appendPlainText(T("è¯»å¤±è´¥ï¼š") + qs(err));
             return;
         }
-        QString line = T("¶Á¼Ä´æÆ÷£º");
+        QString line = T("è¯»å¯„å­˜å™¨ï¼š");
         for (size_t i = 0; i < vals.size(); ++i) {
             if (i) {
                 line += QLatin1Char(',');
@@ -754,10 +754,10 @@ void CommMgrDlg::onModbusRead()
     std::vector<unsigned char> bits;
     if (!CommMgr::instance().modbusReadBits(ch->id, peer, m_mbSlave->value(), static_cast<ModbusTable>(area),
                                             m_mbAddr->value(), m_mbCount->value(), &bits, &err)) {
-        m_io->appendPlainText(T("¶ÁÊ§°Ü£º") + qs(err));
+        m_io->appendPlainText(T("è¯»å¤±è´¥ï¼š") + qs(err));
         return;
     }
-    QString line = T("¶ÁÎ»£º");
+    QString line = T("è¯»ä½ï¼š");
     for (size_t i = 0; i < bits.size(); ++i) {
         if (i) {
             line += QLatin1Char(',');
@@ -767,7 +767,7 @@ void CommMgrDlg::onModbusRead()
     m_io->appendPlainText(line);
 }
 
-// °´µ±Ç°ÇøÓëµØÖ·Ğ´ Modbus
+// æŒ‰å½“å‰åŒºä¸åœ°å€å†™ Modbus
 void CommMgrDlg::onModbusWrite()
 {
     CommChannel* ch = currentChannel();
@@ -776,7 +776,7 @@ void CommMgrDlg::onModbusWrite()
     }
     saveFieldsTo(ch);
     if (ch->params.value("protocol").toString() != "modbus") {
-        QMessageBox::information(this, T("MODBUS"), T("Çë°ÑĞ­ÒéÑ¡³É MODBUS ²¢ÖØĞÂÁ¬½Ó¡£"));
+        QMessageBox::information(this, T("MODBUS"), T("è¯·æŠŠåè®®é€‰æˆ MODBUS å¹¶é‡æ–°è¿æ¥ã€‚"));
         return;
     }
     const int area = m_mbArea->currentData().toInt();
@@ -787,18 +787,18 @@ void CommMgrDlg::onModbusWrite()
         std::vector<uint16_t> regs(static_cast<size_t>(count), static_cast<uint16_t>(m_mbValue->value()));
         if (!CommMgr::instance().modbusWriteRegs(ch->id, peer, m_mbSlave->value(), static_cast<ModbusTable>(area),
                                                  m_mbAddr->value(), regs, &err)) {
-            m_io->appendPlainText(T("Ğ´Ê§°Ü£º") + qs(err));
+            m_io->appendPlainText(T("å†™å¤±è´¥ï¼š") + qs(err));
             return;
         }
     } else {
         std::vector<unsigned char> bits(static_cast<size_t>(count), m_mbValue->value() ? 1 : 0);
         if (!CommMgr::instance().modbusWriteBits(ch->id, peer, m_mbSlave->value(), static_cast<ModbusTable>(area),
                                                  m_mbAddr->value(), bits, &err)) {
-            m_io->appendPlainText(T("Ğ´Ê§°Ü£º") + qs(err));
+            m_io->appendPlainText(T("å†™å¤±è´¥ï¼š") + qs(err));
             return;
         }
     }
-    m_io->appendPlainText(T("Ğ´³É¹¦¡£"));
+    m_io->appendPlainText(T("å†™æˆåŠŸã€‚"));
 }
 
 }

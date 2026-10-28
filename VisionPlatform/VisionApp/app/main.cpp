@@ -1,12 +1,19 @@
 /**
  * @file main.cpp
- * @brief mainÊµÏÖ
+ * @brief mainå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
  */
 
 #include "MainWindow.h"
+#include "CrashDump.h"
+#include "LicenseGate.h"
+#include "SoftLicense.h"
+#include "ConsoleHost.h"
+#include "TrayApp.h"
+#include "SharedFrames.h"
+#include "NodeSettings.h"
 #include "AppPaths.h"
 #include "Translate.h"
 #include "QtConv.h"
@@ -19,6 +26,7 @@
 #include <HsCommData/Graphic.h>
 #include "Theme.h"
 #include <QApplication>
+#include <QMetaObject>
 #include <QEvent>
 #include <QIcon>
 #include <QMessageBox>
@@ -28,7 +36,7 @@
 
 namespace {
 
-// ¼ÓÔØÓ¦ÓÃÍ¼±ê£ºÓÅÏÈ exe/icons/app£¬Æä´ÎÔ´ÂëÅÔÏà¶ÔÂ·¾¶£¨¿ª·¢Î´¿½±´Ê±£©
+// åŠ è½½åº”ç”¨å›¾æ ‡ï¼šä¼˜å…ˆ exe/icons/appï¼Œå…¶æ¬¡æºç æ—ç›¸å¯¹è·¯å¾„ï¼ˆå¼€å‘æœªæ‹·è´æ—¶ï¼‰
 QIcon loadAppIcon()
 {
     const QStringList candidates = QStringList()
@@ -45,7 +53,7 @@ QIcon loadAppIcon()
     return QIcon();
 }
 
-// ËùÓĞ QDialog Ä¬ÈÏ¿ÉÊÖ¶¯À­Éì
+// æ‰€æœ‰ QDialog é»˜è®¤å¯æ‰‹åŠ¨æ‹‰ä¼¸
 class DialogResizeFilter : public QObject {
 public:
     explicit DialogResizeFilter(QObject* parent)
@@ -66,7 +74,7 @@ protected:
     }
 };
 
-// ÅĞ¶Ï×Ö·û´®ÊÇ·ñÎªºÏ·¨ UTF-8
+// åˆ¤æ–­å­—ç¬¦ä¸²æ˜¯å¦ä¸ºåˆæ³• UTF-8
 static bool utf8Ok(const std::string& s)
 {
     const unsigned char* p = reinterpret_cast<const unsigned char*>(s.data());
@@ -99,7 +107,18 @@ static bool utf8Ok(const std::string& s)
     return true;
 }
 
-// ¿âÀï¾ÉµÄÏÔÊ¾ÃûÈô²»ÊÇ UTF-8£¬¸Ä³É½ÇÉ«Ãû¡£²»´Ó users.json µ¼Èë
+// å•æœºæ§åˆ¶å°ï¼šæŠŠ start/stop æ’é˜Ÿåˆ°ç•Œé¢çº¿ç¨‹
+void consoleStartStation(void* window)
+{
+    QMetaObject::invokeMethod(static_cast<Vision::MainWindow*>(window), "startStation", Qt::QueuedConnection);
+}
+
+void consoleStopStation(void* window)
+{
+    QMetaObject::invokeMethod(static_cast<Vision::MainWindow*>(window), "stopStation", Qt::QueuedConnection);
+}
+
+// åº“é‡Œæ—§çš„æ˜¾ç¤ºåè‹¥ä¸æ˜¯ UTF-8ï¼Œæ”¹æˆè§’è‰²åã€‚ä¸ä» users.json å¯¼å…¥
 static bool repairDisplayNames(Vision::AuthMgr* users)
 {
     if (!users) {
@@ -121,9 +140,10 @@ static bool repairDisplayNames(Vision::AuthMgr* users)
 
 } // namespace
 
-// µ¥ÊµÀı¡¢×¢²á¹¤¾ß¡¢¼ÓÔØÓÃ»§ÉèÖÃ£¬ÔÙ½øÖ÷´°
+// å•å®ä¾‹ã€æ³¨å†Œå·¥å…·ã€åŠ è½½ç”¨æˆ·è®¾ç½®ï¼Œå†è¿›ä¸»çª—
 int main(int argc, char* argv[])
 {
+    Vision::CrashDump::install();
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QApplication app(argc, argv);
     app.setApplicationName(QStringLiteral("VisionPlatform"));
@@ -138,6 +158,10 @@ int main(int argc, char* argv[])
     }
 
     Vision::AppPaths::setExeDir(Vision::ss(QApplication::applicationDirPath()));
+    Vision::SoftLicense license;
+    if (!Vision::promptLicense(&license, license.open())) {
+        return 0;
+    }
     HsCtrl::registerGraphicMetaTypes();
     Vision::LogMgr::startup();
     {
@@ -153,8 +177,8 @@ int main(int argc, char* argv[])
         session.users().ensureDefaults();
         if (!session.users().save(&loadErr)) {
             QMessageBox::warning(0,
-                                 QString::fromUtf8(Vision::Translate::tr("ÓÃ»§¿â").c_str()),
-                                 QString::fromUtf8(Vision::Translate::tr("ÎŞ·¨¶ÁÈ¡±¾»úÉèÖÃ").c_str())
+                                 QString::fromUtf8(Vision::Translate::tr("ç”¨æˆ·åº“").c_str()),
+                                 QString::fromUtf8(Vision::Translate::tr("æ— æ³•è¯»å–æœ¬æœºè®¾ç½®").c_str())
                                  + QLatin1Char('\n') + QString::fromUtf8(loadErr.c_str()));
         }
     } else if (repairDisplayNames(&session.users())) {
@@ -163,15 +187,15 @@ int main(int argc, char* argv[])
     const Vision::FileLoadStatus sst = Vision::VisionCfgMgr::loadSettings(&session.settings(), &loadErr);
     if (sst == Vision::FileLoadCorrupt) {
         QMessageBox::warning(0,
-                             QString::fromUtf8(Vision::Translate::tr("±¾»úÉèÖÃ").c_str()),
-                             QString::fromUtf8(Vision::Translate::tr("±¾»úÉèÖÃËğ»µ£¬ÒÑÊ¹ÓÃÄ¬ÈÏÉèÖÃ¡£").c_str())
+                             QString::fromUtf8(Vision::Translate::tr("æœ¬æœºè®¾ç½®").c_str()),
+                             QString::fromUtf8(Vision::Translate::tr("æœ¬æœºè®¾ç½®æŸåï¼Œå·²ä½¿ç”¨é»˜è®¤è®¾ç½®ã€‚").c_str())
                              + QLatin1Char('\n') + QString::fromUtf8(loadErr.c_str()));
     }
     Vision::Translate::setLanguageKey(session.settings().language);
     Vision::applyAppTheme(session.settings().themeId);
     app.installEventFilter(new DialogResizeFilter(&app));
 
-    // ¿ª·¢½×¶Î£º²»µ¯µÇÂ¼£¬¹ÜÀíÔ±¿Õ¿ÚÁî£¬»Ö¸´³ö³§È¨ÏŞ
+    // å¼€å‘é˜¶æ®µï¼šä¸å¼¹ç™»å½•ï¼Œç®¡ç†å‘˜ç©ºå£ä»¤ï¼Œæ¢å¤å‡ºå‚æƒé™
 #ifdef _DEBUG
     bool usersChanged = session.users().ensureBuiltinEmptyPasswords();
     usersChanged = session.users().ensureAdminAccount() || usersChanged;
@@ -180,8 +204,8 @@ int main(int argc, char* argv[])
     }
     if (!session.enterAdminForDev()) {
         QMessageBox::critical(0,
-                              QString::fromUtf8(Vision::Translate::tr("ÓÃ»§¿â").c_str()),
-                              QString::fromUtf8(Vision::Translate::tr("ÎŞ·¨½øÈëÏµÍ³£ºÃ»ÓĞ¿ÉÓÃÕË»§¡£").c_str()));
+                              QString::fromUtf8(Vision::Translate::tr("ç”¨æˆ·åº“").c_str()),
+                              QString::fromUtf8(Vision::Translate::tr("æ— æ³•è¿›å…¥ç³»ç»Ÿï¼šæ²¡æœ‰å¯ç”¨è´¦æˆ·ã€‚").c_str()));
         Vision::LogMgr::shutdown();
         return 1;
     }
@@ -197,9 +221,33 @@ int main(int argc, char* argv[])
     }
 #endif
 
+    Vision::NodeSettings node;
+    node.load(0);
+    const bool serviceRun = node.role != Vision::NodeRoleStandalone;
+    const bool stationSvc = serviceRun && node.stationEnabled;
+    const bool linkSvc = serviceRun && node.linkEnabled;
+    std::string ipcErr;
+    if (serviceRun) {
+        Vision::SharedFrames::instance().map(Vision::SharedFrames::kDefaultSlotBytes, &ipcErr);
+    }
+    const bool consoleMode = app.arguments().contains(QStringLiteral("--console"));
     Vision::MainWindow w(&session);
-    w.show();
+    w.setResidentTray(!consoleMode);
+    w.setServiceRun(serviceRun);
+    ConsoleHost console;
+    TrayApp* tray = 0;
+    if (consoleMode) {
+        if (!serviceRun) {
+            console.setLocalRun(&consoleStartStation, &consoleStopStation, &w);
+        }
+        console.start();
+    } else {
+        tray = new TrayApp(&w, stationSvc, linkSvc, &app);
+    }
+    Vision::watchLicense(&app, &w);
+    Vision::CrashDump::install();
     const int rc = app.exec();
+    delete tray;
     Vision::LogMgr::shutdown();
     return rc;
 }

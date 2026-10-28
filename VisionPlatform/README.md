@@ -1,6 +1,6 @@
 # 通用视觉平台（VisionPlatform）
 
-VS2015（v140）+ Qt 5.9.9 + C++11。方案文件：`VisionPlatform.sln`，启动工程 **VisionApp**，产出 `VisionPlatform.exe`。
+VS2022（v143）+ Qt 5.15.2 + C++17。方案文件：`VisionPlatform.sln`，启动工程 **VisionApp**，产出 `VisionPlatform.exe`。
 
 - **使用**（本文）：环境、编译、运行、账户与数据目录
 - **架构**：[docs/architecture.md](docs/architecture.md)（工程分层、领域模型、调度与版本流）
@@ -14,9 +14,9 @@ VS2015（v140）+ Qt 5.9.9 + C++11。方案文件：`VisionPlatform.sln`，启�
 
 | 项 | 说明 |
 |---|---|
-| IDE / 工具集 | Visual Studio 2015，平台工具集 **v140** |
-| Qt | 5.9.9（msvc2015 / msvc2015_64），路径见 `qt.props`，可用环境变量 **`QTDIR`** 覆盖 |
-| Halcon | 可选；`halcon.props` 探测 `HALCONROOT`。有 SDK 时编入真实后端，否则走 builtin |
+| IDE / 工具集 | Visual Studio 2022，平台工具集 **v143**，C++17 |
+| Qt | 5.15.2。必须设置环境变量 **`QTDIR`** 为套件目录：x64 用 `msvc2019_64`，Win32 用 `msvc2019`。工程内不写默认路径 |
+| Halcon | 17.12，已放在 `third_party\Halcon`（x64-win64）。`halcon.props` 只认这个相对路径 |
 | 推荐配置 | **x64 \| Debug** |
 
 ### 编译与运行

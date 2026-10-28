@@ -3,7 +3,7 @@
 
 /**
  * @file MeasureCalib.h
- * @brief Í¼ÏñÆ½ÃæµÄÏñËØ±ÈÀı¡£¼¸ºÎÈÔÓÃÏñËØ£¬²âÁ¿Ê±ÔÙ»»³ÉÏÔÊ¾µ¥Î»¡£
+ * @brief å›¾åƒå¹³é¢çš„åƒç´ æ¯”ä¾‹ã€‚å‡ ä½•ä»ç”¨åƒç´ ï¼Œæµ‹é‡æ—¶å†æ¢æˆæ˜¾ç¤ºå•ä½ã€‚
  */
 
 #include <HsCommData/HsCommDataExport.h>
@@ -14,82 +14,82 @@
 
 namespace HsCommData {
 
-/** @brief ²âÁ¿ÏÔÊ¾µ¥Î» */
+/** @brief æµ‹é‡æ˜¾ç¤ºå•ä½ */
 enum LengthUnit {
-    UnitPx = 0, ///< ÏñËØ
-    UnitMm,     ///< ºÁÃ×
-    UnitUm,     ///< Î¢Ã×
-    UnitPulse,   ///< Âö³å
-    UnitMax ///< ¸öÊı£¬²»ÊÇºÏ·¨Öµ
+    UnitPx = 0, ///< åƒç´ 
+    UnitMm,     ///< æ¯«ç±³
+    UnitUm,     ///< å¾®ç±³
+    UnitPulse,   ///< è„‰å†²
+    UnitMax ///< ä¸ªæ•°ï¼Œä¸æ˜¯åˆæ³•å€¼
 };
 
 /**
  * @class UnitFactor
- * @brief Ä³Ò»µ¥Î»ÏÂ£¬1 ¸öÏñËØ¶ÔÓ¦¶àÉÙ
+ * @brief æŸä¸€å•ä½ä¸‹ï¼Œ1 ä¸ªåƒç´ å¯¹åº”å¤šå°‘
  */
 struct HSCOMMDATA_EXPORT UnitFactor {
-    LengthUnit unit;     ///< µ¥Î»
-    double xPerPixel;    ///< ÁĞ·½Ïò
-    double yPerPixel;    ///< ĞĞ·½Ïò
+    LengthUnit unit;     ///< å•ä½
+    double xPerPixel;    ///< åˆ—æ–¹å‘
+    double yPerPixel;    ///< è¡Œæ–¹å‘
 
     UnitFactor() : unit(UnitPx), xPerPixel(1.0), yPerPixel(1.0) {}
 };
 
 /**
  * @class ImageCalib
- * @brief ´°¿ÚÊ¹ÓÃµÄÏñËØ±ÈÀı¡£factors Îª¿Õ±íÊ¾ÉĞÎ´±ê¶¨
+ * @brief çª—å£ä½¿ç”¨çš„åƒç´ æ¯”ä¾‹ã€‚factors ä¸ºç©ºè¡¨ç¤ºå°šæœªæ ‡å®š
  */
 struct HSCOMMDATA_EXPORT ImageCalib {
-    std::vector<UnitFactor> factors; ///< ÒÑĞ´ÈëµÄ±ÈÀı¡£Ã»ÓĞµÄµ¥Î»°´ 1:1
-    std::vector<LengthUnit> show;    ///< ÒªÏÔÊ¾µÄµ¥Î»£¬Ë³Ğò¼´ÏÔÊ¾Ë³Ğò£¬¿É¶à¸ö
+    std::vector<UnitFactor> factors; ///< å·²å†™å…¥çš„æ¯”ä¾‹ã€‚æ²¡æœ‰çš„å•ä½æŒ‰ 1:1
+    std::vector<LengthUnit> show;    ///< è¦æ˜¾ç¤ºçš„å•ä½ï¼Œé¡ºåºå³æ˜¾ç¤ºé¡ºåºï¼Œå¯å¤šä¸ª
 
-    /** @brief Ä¬ÈÏÖ»ÏÔÊ¾ÏñËØ£¬±ÈÀı 1:1 */
+    /** @brief é»˜è®¤åªæ˜¾ç¤ºåƒç´ ï¼Œæ¯”ä¾‹ 1:1 */
     ImageCalib();
 };
 
 /**
- * @brief È¡Ä³¸öµ¥Î»µÄ±ÈÀı¡£ÏñËØºãÎª 1¡£Î¢Ã×¿É´ÓºÁÃ×³Ë 1000£¬ºÁÃ×¿É´ÓÎ¢Ã×³ı 1000¡£¶¼Ã»ÓĞÔò 1:1
+ * @brief å–æŸä¸ªå•ä½çš„æ¯”ä¾‹ã€‚åƒç´ æ’ä¸º 1ã€‚å¾®ç±³å¯ä»æ¯«ç±³ä¹˜ 1000ï¼Œæ¯«ç±³å¯ä»å¾®ç±³é™¤ 1000ã€‚éƒ½æ²¡æœ‰åˆ™ 1:1
  */
 HSCOMMDATA_EXPORT UnitFactor resolveFactor(const ImageCalib& calib, LengthUnit unit);
 
-/** @brief ÏñËØÎ»ÒÆ»»³É¸Ãµ¥Î»ÏÂµÄ³¤¶È */
+/** @brief åƒç´ ä½ç§»æ¢æˆè¯¥å•ä½ä¸‹çš„é•¿åº¦ */
 HSCOMMDATA_EXPORT double lengthIn(double dxPx, double dyPx, const UnitFactor& factor);
 
 /**
- * @brief °´ show Æ´³¤¶È¡£¶à¸öµ¥Î»ÓÃ¿Õ¸ñ¸ô¿ª
+ * @brief æŒ‰ show æ‹¼é•¿åº¦ã€‚å¤šä¸ªå•ä½ç”¨ç©ºæ ¼éš”å¼€
  * @return UTF-8
  */
 HSCOMMDATA_EXPORT std::string formatLength(double dxPx, double dyPx, const ImageCalib& calib);
 
 /**
- * @brief °´ show Æ´µãµÄºá×İ×ø±ê¡£Ö»ÓĞÏñËØÊ±·µ»Ø¿Õ´®£¬±ÜÃâºÍÔ­ÓĞÏñËØ¶ÁÊıÖØ¸´
+ * @brief æŒ‰ show æ‹¼ç‚¹çš„æ¨ªçºµåæ ‡ã€‚åªæœ‰åƒç´ æ—¶è¿”å›ç©ºä¸²ï¼Œé¿å…å’ŒåŸæœ‰åƒç´ è¯»æ•°é‡å¤
  * @return UTF-8
  */
 HSCOMMDATA_EXPORT std::string formatPoint(double xPx, double yPx, const ImageCalib& calib);
 
 /**
- * @brief ÏñËØÔ²µÄ°ë¾¶ºÍÖ±¾¶¡£X¡¢Y ±ÈÀıÏàÍ¬±¨Ò»¸ö°ë¾¶£¬²»Í¬Ôò·Ö¿ª±¨
+ * @brief åƒç´ åœ†çš„åŠå¾„å’Œç›´å¾„ã€‚Xã€Y æ¯”ä¾‹ç›¸åŒæŠ¥ä¸€ä¸ªåŠå¾„ï¼Œä¸åŒåˆ™åˆ†å¼€æŠ¥
  * @return UTF-8
  */
 HSCOMMDATA_EXPORT std::string formatRadius(double rPx, const ImageCalib& calib);
 
 /**
- * @brief ¶¥µã´¦µÄ¼Ğ½Ç£¬µ¥Î»¶È¡£ÏÈ°´ÏÔÊ¾ÓÃµÄ±ÈÀıËõ·ÅÔÙÇó½Ç
- * @param a Ò»±ßÉÏµÄµã
- * @param vertex ¶¥µã
- * @param c ÁíÒ»±ßÉÏµÄµã
+ * @brief é¡¶ç‚¹å¤„çš„å¤¹è§’ï¼Œå•ä½åº¦ã€‚å…ˆæŒ‰æ˜¾ç¤ºç”¨çš„æ¯”ä¾‹ç¼©æ”¾å†æ±‚è§’
+ * @param a ä¸€è¾¹ä¸Šçš„ç‚¹
+ * @param vertex é¡¶ç‚¹
+ * @param c å¦ä¸€è¾¹ä¸Šçš„ç‚¹
  * @return UTF-8
  */
 HSCOMMDATA_EXPORT std::string formatAngle(const Point2d& a, const Point2d& vertex, const Point2d& c,
                                           const ImageCalib& calib);
 /**
- * @brief Öá¶ÔÆë¾ØĞÎµÄ¿íºÍ¸ß¡£¿í×ßÁĞ±ÈÀı£¬¸ß×ßĞĞ±ÈÀı
+ * @brief è½´å¯¹é½çŸ©å½¢çš„å®½å’Œé«˜ã€‚å®½èµ°åˆ—æ¯”ä¾‹ï¼Œé«˜èµ°è¡Œæ¯”ä¾‹
  * @return UTF-8
  */
 HSCOMMDATA_EXPORT std::string formatRect(double wPx, double hPx, const ImageCalib& calib);
 
 /**
- * @brief ÍÖÔ²Á½Ìõ°ëÖá¡£°ëÖáa×ßÁĞ±ÈÀı£¬°ëÖáb×ßĞĞ±ÈÀı
+ * @brief æ¤­åœ†ä¸¤æ¡åŠè½´ã€‚åŠè½´aèµ°åˆ—æ¯”ä¾‹ï¼ŒåŠè½´bèµ°è¡Œæ¯”ä¾‹
  * @return UTF-8
  */
 HSCOMMDATA_EXPORT std::string formatEllipse(double raPx, double rbPx, const ImageCalib& calib);

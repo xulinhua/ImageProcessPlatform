@@ -1,6 +1,6 @@
 /**
  * @file HsTuple.h
- * @brief HsTupleÍ·ÎÄ¼ş
+ * @brief HsTupleå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -17,333 +17,333 @@
 
 namespace HsCommData {
 
-/** @brief Ôª×éµÄ´æ´¢ÖÖÀà¡£»ìºÏÖ®Ç°Ö»ÓĞÒ»ÖÖÊı×é */
+/** @brief å…ƒç»„çš„å­˜å‚¨ç§ç±»ã€‚æ··åˆä¹‹å‰åªæœ‰ä¸€ç§æ•°ç»„ */
 enum TupleType {
-    TupleEmpty = 0, ///< ¿Õ
-    TupleLong,      ///< ½ö int64
-    TupleDouble,    ///< ½ö double
-    TupleString,    ///< ½ö×Ö·û´®
-    TupleMixed      ///< ÔªËØÀàĞÍ¿ÉÒÔ²»Í¬
+    TupleEmpty = 0, ///< ç©º
+    TupleLong,      ///< ä»… int64
+    TupleDouble,    ///< ä»… double
+    TupleString,    ///< ä»…å­—ç¬¦ä¸²
+    TupleMixed      ///< å…ƒç´ ç±»å‹å¯ä»¥ä¸åŒ
 };
 
-/** @brief »ìºÏÔª×éÀïÒ»¸öÔªËØµÄÖÖÀà */
+/** @brief æ··åˆå…ƒç»„é‡Œä¸€ä¸ªå…ƒç´ çš„ç§ç±» */
 enum TupleElemKind {
-    ElemLong = 0, ///< ³¤ÕûÊı
-    ElemDouble,   ///< ¸¡µã
-    ElemString    ///< ×Ö·û´®
+    ElemLong = 0, ///< é•¿æ•´æ•°
+    ElemDouble,   ///< æµ®ç‚¹
+    ElemString    ///< å­—ç¬¦ä¸²
 };
 
 /**
  * @class TupleElem
- * @brief »ìºÏÔª×éµÄÒ»¸öÔªËØ¡£num ÀïÕûÊıºÍ¸¡µã¹²ÓÃ´æ´¢£¬×Ö·û´®Áí·Å
+ * @brief æ··åˆå…ƒç»„çš„ä¸€ä¸ªå…ƒç´ ã€‚num é‡Œæ•´æ•°å’Œæµ®ç‚¹å…±ç”¨å­˜å‚¨ï¼Œå­—ç¬¦ä¸²å¦æ”¾
  */
 struct HSCOMMDATA_EXPORT TupleElem {
-    TupleElemKind kind; ///< ±¾ÔªËØÖÖÀà
+    TupleElemKind kind; ///< æœ¬å…ƒç´ ç§ç±»
     union {
         int64_t i; ///< ElemLong
         double d;  ///< ElemDouble
     } num;
-    std::string text; ///< ElemString Ê±ÓĞĞ§
+    std::string text; ///< ElemString æ—¶æœ‰æ•ˆ
 
-    TupleElem(); ///< ÕûÊı 0
+    TupleElem(); ///< æ•´æ•° 0
 };
 
 /**
  * @class HsTuple
- * @brief ¿ØÖÆ²ÎÊıÔª×é¡£¿½±´¹²Ïí»º³å£¬Ğ´ÈëÊ±²Å¸´ÖÆ
- * ´¿ÕûÊı»ò´¿¸¡µã¿ÉÄÃÁ¬ĞøÖ¸Õë¡£ÀàĞÍ²»·û·µ»Ø 0¡£¿ÉÓÃÕûÊı¡¢¸¡µã»ò×Ö·û´®Ö±½Ó¹¹ÔìºÍ¸³Öµ£¬½á¹ûÖ»º¬ÕâÒ»¸ö
+ * @brief æ§åˆ¶å‚æ•°å…ƒç»„ã€‚æ‹·è´å…±äº«ç¼“å†²ï¼Œå†™å…¥æ—¶æ‰å¤åˆ¶
+ * çº¯æ•´æ•°æˆ–çº¯æµ®ç‚¹å¯æ‹¿è¿ç»­æŒ‡é’ˆã€‚ç±»å‹ä¸ç¬¦è¿”å› 0ã€‚å¯ç”¨æ•´æ•°ã€æµ®ç‚¹æˆ–å­—ç¬¦ä¸²ç›´æ¥æ„é€ å’Œèµ‹å€¼ï¼Œç»“æœåªå«è¿™ä¸€ä¸ª
  */
 class HSCOMMDATA_EXPORT HsTuple {
 public:
-    HsTuple(); ///< ¿Õ
-    /** @brief Í¬ÀàĞÍ¿½±´£¬Ö»¹²Ïí»º³å */
+    HsTuple(); ///< ç©º
+    /** @brief åŒç±»å‹æ‹·è´ï¼Œåªå…±äº«ç¼“å†² */
     HsTuple(const HsTuple& other);
-    /** @brief Í¬ÀàĞÍ¸³Öµ£¬Ö»¹²Ïí»º³å¡£Éî¿½ÓÃ clone */
+    /** @brief åŒç±»å‹èµ‹å€¼ï¼Œåªå…±äº«ç¼“å†²ã€‚æ·±æ‹·ç”¨ clone */
     HsTuple& operator=(const HsTuple& other);
-    HsTuple(int64_t value); ///< Ò»¸öÕûÊı
-    HsTuple(int value); ///< Ò»¸ö 32 Î»ÕûÊı£¬±ÜÃâºÍ¸¡µã¹¹Ôì¶şÒå
-    HsTuple(double value); ///< Ò»¸ö¸¡µã
-    HsTuple(const char* value); ///< Ò»¸ö×Ö·û´®¡£¿ÕÖ¸Õëµ±¿Õ´®
-    HsTuple(const std::string& value); ///< Ò»¸ö×Ö·û´®
-    HsTuple(const int64_t* data, int count); ///< ÕûÊıÊı×é¡£count<=0 »ò data Îª¿ÕÔò¿ÕÔª×é
-    HsTuple(const double* data, int count); ///< ¸¡µãÊı×é
+    HsTuple(int64_t value); ///< ä¸€ä¸ªæ•´æ•°
+    HsTuple(int value); ///< ä¸€ä¸ª 32 ä½æ•´æ•°ï¼Œé¿å…å’Œæµ®ç‚¹æ„é€ äºŒä¹‰
+    HsTuple(double value); ///< ä¸€ä¸ªæµ®ç‚¹
+    HsTuple(const char* value); ///< ä¸€ä¸ªå­—ç¬¦ä¸²ã€‚ç©ºæŒ‡é’ˆå½“ç©ºä¸²
+    HsTuple(const std::string& value); ///< ä¸€ä¸ªå­—ç¬¦ä¸²
+    HsTuple(const int64_t* data, int count); ///< æ•´æ•°æ•°ç»„ã€‚count<=0 æˆ– data ä¸ºç©ºåˆ™ç©ºå…ƒç»„
+    HsTuple(const double* data, int count); ///< æµ®ç‚¹æ•°ç»„
 
-    /** @brief »»³ÉÕâÒ»¸öÕûÊı£¬²»×·¼Ó */
+    /** @brief æ¢æˆè¿™ä¸€ä¸ªæ•´æ•°ï¼Œä¸è¿½åŠ  */
     HsTuple& operator=(int value);
-    /** @brief »»³ÉÕâÒ»¸öÕûÊı£¬²»×·¼Ó */
+    /** @brief æ¢æˆè¿™ä¸€ä¸ªæ•´æ•°ï¼Œä¸è¿½åŠ  */
     HsTuple& operator=(int64_t value);
-    /** @brief »»³ÉÕâÒ»¸ö¸¡µã£¬²»×·¼Ó */
+    /** @brief æ¢æˆè¿™ä¸€ä¸ªæµ®ç‚¹ï¼Œä¸è¿½åŠ  */
     HsTuple& operator=(double value);
-    /** @brief »»³ÉÕâÒ»¸ö×Ö·û´®¡£¿ÕÖ¸Õëµ±¿Õ´®£¬²»×·¼Ó */
+    /** @brief æ¢æˆè¿™ä¸€ä¸ªå­—ç¬¦ä¸²ã€‚ç©ºæŒ‡é’ˆå½“ç©ºä¸²ï¼Œä¸è¿½åŠ  */
     HsTuple& operator=(const char* value);
-    /** @brief »»³ÉÕâÒ»¸ö×Ö·û´®£¬²»×·¼Ó */
+    /** @brief æ¢æˆè¿™ä¸€ä¸ªå­—ç¬¦ä¸²ï¼Œä¸è¿½åŠ  */
     HsTuple& operator=(const std::string& value);
 
     /**
-     * @brief È¡³öÒ»¸ñ£¬½á¹ûÊÇĞÂµÄµ¥ÔªËØÔª×é¡£Ô½½çÅ× HsException
-     * ¸ÄÄ³Ò»¸ñÓÃ setLong¡¢setDouble¡¢setString£¬Ğ´ÈëÇ°»á²ğ¿ª¹²Ïí»º³å
+     * @brief å–å‡ºä¸€æ ¼ï¼Œç»“æœæ˜¯æ–°çš„å•å…ƒç´ å…ƒç»„ã€‚è¶Šç•ŒæŠ› HsException
+     * æ”¹æŸä¸€æ ¼ç”¨ setLongã€setDoubleã€setStringï¼Œå†™å…¥å‰ä¼šæ‹†å¼€å…±äº«ç¼“å†²
      */
     HsTuple operator[](int index) const;
 
-    /** @brief µÚ 0 ¸ö 32 Î»ÕûÊı¡£ÀàĞÍ²»·û¡¢Ô½½ç»ò³¬³ö int Å× HsException */
+    /** @brief ç¬¬ 0 ä¸ª 32 ä½æ•´æ•°ã€‚ç±»å‹ä¸ç¬¦ã€è¶Šç•Œæˆ–è¶…å‡º int æŠ› HsException */
     int I() const;
-    /** @brief µÚ index ¸ö 32 Î»ÕûÊı¡£ÀàĞÍ²»·û¡¢Ô½½ç»ò³¬³ö int Å× HsException */
+    /** @brief ç¬¬ index ä¸ª 32 ä½æ•´æ•°ã€‚ç±»å‹ä¸ç¬¦ã€è¶Šç•Œæˆ–è¶…å‡º int æŠ› HsException */
     int I(int index) const;
-    /** @brief µÚ 0 ¸ö³¤ÕûÊı¡£ÀàĞÍ²»·û»òÔ½½çÅ× HsException */
+    /** @brief ç¬¬ 0 ä¸ªé•¿æ•´æ•°ã€‚ç±»å‹ä¸ç¬¦æˆ–è¶Šç•ŒæŠ› HsException */
     int64_t L() const;
-    /** @brief µÚ index ¸ö³¤ÕûÊı¡£ÀàĞÍ²»·û»òÔ½½çÅ× HsException */
+    /** @brief ç¬¬ index ä¸ªé•¿æ•´æ•°ã€‚ç±»å‹ä¸ç¬¦æˆ–è¶Šç•ŒæŠ› HsException */
     int64_t L(int index) const;
-    /** @brief µÚ 0 ¸ö¸¡µã¡£ÀàĞÍ²»·û»òÔ½½çÅ× HsException */
+    /** @brief ç¬¬ 0 ä¸ªæµ®ç‚¹ã€‚ç±»å‹ä¸ç¬¦æˆ–è¶Šç•ŒæŠ› HsException */
     double D() const;
-    /** @brief µÚ index ¸ö¸¡µã¡£ÀàĞÍ²»·û»òÔ½½çÅ× HsException */
+    /** @brief ç¬¬ index ä¸ªæµ®ç‚¹ã€‚ç±»å‹ä¸ç¬¦æˆ–è¶Šç•ŒæŠ› HsException */
     double D(int index) const;
-    /** @brief µÚ 0 ¸ö×Ö·û´®¡£ÀàĞÍ²»·û»òÔ½½çÅ× HsException */
+    /** @brief ç¬¬ 0 ä¸ªå­—ç¬¦ä¸²ã€‚ç±»å‹ä¸ç¬¦æˆ–è¶Šç•ŒæŠ› HsException */
     std::string S() const;
-    /** @brief µÚ index ¸ö×Ö·û´®¡£ÀàĞÍ²»·û»òÔ½½çÅ× HsException */
+    /** @brief ç¬¬ index ä¸ªå­—ç¬¦ä¸²ã€‚ç±»å‹ä¸ç¬¦æˆ–è¶Šç•ŒæŠ› HsException */
     std::string S(int index) const;
     /**
-     * @brief µÚ 0 ¸ö×Ö·û´®µÄ C Ö¸Õë¡£ÀàĞÍ²»·û»òÔ½½çÅ× HsException
-     * ¶ÔÏó¸Ä¶¯»òÎö¹¹ºóÖ¸ÕëÊ§Ğ§
+     * @brief ç¬¬ 0 ä¸ªå­—ç¬¦ä¸²çš„ C æŒ‡é’ˆã€‚ç±»å‹ä¸ç¬¦æˆ–è¶Šç•ŒæŠ› HsException
+     * å¯¹è±¡æ”¹åŠ¨æˆ–ææ„åæŒ‡é’ˆå¤±æ•ˆ
      */
     const char* C() const;
     /**
-     * @brief µÚ index ¸ö×Ö·û´®µÄ C Ö¸Õë¡£ÀàĞÍ²»·û»òÔ½½çÅ× HsException
-     * ¶ÔÏó¸Ä¶¯»òÎö¹¹ºóÖ¸ÕëÊ§Ğ§
+     * @brief ç¬¬ index ä¸ªå­—ç¬¦ä¸²çš„ C æŒ‡é’ˆã€‚ç±»å‹ä¸ç¬¦æˆ–è¶Šç•ŒæŠ› HsException
+     * å¯¹è±¡æ”¹åŠ¨æˆ–ææ„åæŒ‡é’ˆå¤±æ•ˆ
      */
     const char* C(int index) const;
 
-    /** @brief ÎŞÔªËØ */
+    /** @brief æ— å…ƒç´  */
     bool isEmpty() const;
-    /** @brief ÔªËØ¸öÊı */
+    /** @brief å…ƒç´ ä¸ªæ•° */
     int length() const;
-    /** @brief µ±Ç°´æ´¢ÖÖÀà */
+    /** @brief å½“å‰å­˜å‚¨ç§ç±» */
     TupleType type() const;
 
-    /** @brief Çå¿Õ£¬Î´·ÖÅä»º³å */
+    /** @brief æ¸…ç©ºï¼Œæœªåˆ†é…ç¼“å†² */
     void clear();
-    /** @brief Éî¿½È«²¿ÔªËØ */
+    /** @brief æ·±æ‹·å…¨éƒ¨å…ƒç´  */
     HsTuple clone() const;
 
-    /** @brief Ä©Î²×·¼ÓÒ»¸öÕûÊı¡£±ØÒªÊ±Éı³É»ìºÏ */
+    /** @brief æœ«å°¾è¿½åŠ ä¸€ä¸ªæ•´æ•°ã€‚å¿…è¦æ—¶å‡æˆæ··åˆ */
     void append(int64_t value);
-    /** @brief Ä©Î²×·¼ÓÒ»¸ö¸¡µã¡£±ØÒªÊ±Éı³É»ìºÏ */
+    /** @brief æœ«å°¾è¿½åŠ ä¸€ä¸ªæµ®ç‚¹ã€‚å¿…è¦æ—¶å‡æˆæ··åˆ */
     void append(double value);
-    /** @brief Ä©Î²×·¼ÓÒ»¸ö×Ö·û´®¡£¿ÕÖ¸Õëµ±¿Õ´® */
+    /** @brief æœ«å°¾è¿½åŠ ä¸€ä¸ªå­—ç¬¦ä¸²ã€‚ç©ºæŒ‡é’ˆå½“ç©ºä¸² */
     void append(const char* value);
-    /** @brief Ä©Î²×·¼ÓÒ»¸ö×Ö·û´® */
+    /** @brief æœ«å°¾è¿½åŠ ä¸€ä¸ªå­—ç¬¦ä¸² */
     void append(const std::string& value);
-    /** @brief Ä©Î²×·¼ÓÕû¸öÔª×é */
+    /** @brief æœ«å°¾è¿½åŠ æ•´ä¸ªå…ƒç»„ */
     void append(const HsTuple& other);
 
-    /** @brief ÊÔÈ¡ÕûÊı¡£Ê§°Ü·µ»Ø false£¬²»Å× */
+    /** @brief è¯•å–æ•´æ•°ã€‚å¤±è´¥è¿”å› falseï¼Œä¸æŠ› */
     bool getLong(int index, int64_t* out) const;
-    /** @brief ÊÔÈ¡¸¡µã¡£Ê§°Ü·µ»Ø false£¬²»Å× */
+    /** @brief è¯•å–æµ®ç‚¹ã€‚å¤±è´¥è¿”å› falseï¼Œä¸æŠ› */
     bool getDouble(int index, double* out) const;
-    /** @brief ÊÔÈ¡×Ö·û´®¡£Ê§°Ü·µ»Ø false£¬²»Å× */
+    /** @brief è¯•å–å­—ç¬¦ä¸²ã€‚å¤±è´¥è¿”å› falseï¼Œä¸æŠ› */
     bool getString(int index, std::string* out) const;
 
     /**
-     * @brief Ö»¶ÁÁ¬ĞøÕûÊı»º³å¡£·Ç´¿ÕûÊıÅ× HsException£¬¿ÕÔª×é·µ»Ø 0
-     * Ğ´Èë»á²ğ¿ª¹²Ïí£¬Ö¸ÕëÊ§Ğ§
+     * @brief åªè¯»è¿ç»­æ•´æ•°ç¼“å†²ã€‚éçº¯æ•´æ•°æŠ› HsExceptionï¼Œç©ºå…ƒç»„è¿”å› 0
+     * å†™å…¥ä¼šæ‹†å¼€å…±äº«ï¼ŒæŒ‡é’ˆå¤±æ•ˆ
      */
     const int64_t* longData() const;
-    /** @brief ¿ÉĞ´Á¬ĞøÕûÊı»º³å¡£·Ç´¿ÕûÊı»ò¿ÕÅ× HsException */
+    /** @brief å¯å†™è¿ç»­æ•´æ•°ç¼“å†²ã€‚éçº¯æ•´æ•°æˆ–ç©ºæŠ› HsException */
     int64_t* longData();
-    /** @brief Ö»¶ÁÁ¬Ğø¸¡µã»º³å¡£·Ç´¿¸¡µãÅ× HsException£¬¿ÕÔª×é·µ»Ø 0 */
+    /** @brief åªè¯»è¿ç»­æµ®ç‚¹ç¼“å†²ã€‚éçº¯æµ®ç‚¹æŠ› HsExceptionï¼Œç©ºå…ƒç»„è¿”å› 0 */
     const double* doubleData() const;
-    /** @brief ¿ÉĞ´Á¬Ğø¸¡µã»º³å¡£·Ç´¿¸¡µã»ò¿ÕÅ× HsException */
+    /** @brief å¯å†™è¿ç»­æµ®ç‚¹ç¼“å†²ã€‚éçº¯æµ®ç‚¹æˆ–ç©ºæŠ› HsException */
     double* doubleData();
 
-    /** @brief ¸ÄµÚ index ¸öÎªÕûÊı¡£Ô½½çÅ× HsException¡£±ØÒªÊ±Éı»ìºÏ */
+    /** @brief æ”¹ç¬¬ index ä¸ªä¸ºæ•´æ•°ã€‚è¶Šç•ŒæŠ› HsExceptionã€‚å¿…è¦æ—¶å‡æ··åˆ */
     bool setLong(int index, int64_t value);
-    /** @brief ¸ÄµÚ index ¸öÎª¸¡µã¡£Ô½½çÅ× HsException */
+    /** @brief æ”¹ç¬¬ index ä¸ªä¸ºæµ®ç‚¹ã€‚è¶Šç•ŒæŠ› HsException */
     bool setDouble(int index, double value);
-    /** @brief ¸ÄµÚ index ¸öÎª×Ö·û´®¡£Ô½½çÅ× HsException */
+    /** @brief æ”¹ç¬¬ index ä¸ªä¸ºå­—ç¬¦ä¸²ã€‚è¶Šç•ŒæŠ› HsException */
     bool setString(int index, const std::string& value);
 
     /**
-     * @brief Õû×éÏàµÈ£¬¶ÔÓ¦ Halcon tuple_equal / ==
-     * ¸öÊıÏàÍ¬£¬ÇÒ¶ÔÓ¦ÔªËØÖµÏàÍ¬¡£ÕûÊıºÍ¸¡µã°´ÊıÖµ±È£¬1 Óë 1.0 ÏàµÈ¡£
-     * Êı×ÖºÍ×Ö·û´®²»ÊÇÏàµÈ£¬²»Å×Òì³£
+     * @brief æ•´ç»„ç›¸ç­‰ï¼Œå¯¹åº” Halcon tuple_equal / ==
+     * ä¸ªæ•°ç›¸åŒï¼Œä¸”å¯¹åº”å…ƒç´ å€¼ç›¸åŒã€‚æ•´æ•°å’Œæµ®ç‚¹æŒ‰æ•°å€¼æ¯”ï¼Œ1 ä¸ 1.0 ç›¸ç­‰ã€‚
+     * æ•°å­—å’Œå­—ç¬¦ä¸²ä¸æ˜¯ç›¸ç­‰ï¼Œä¸æŠ›å¼‚å¸¸
      */
     bool operator==(const HsTuple& other) const;
-    /** @brief Õû×é²»µÈ£¬¶ÔÓ¦ tuple_not_equal / != */
+    /** @brief æ•´ç»„ä¸ç­‰ï¼Œå¯¹åº” tuple_not_equal / != */
     bool operator!=(const HsTuple& other) const;
     /**
-     * @brief ×ÖµäĞòĞ¡ÓÚ£¬¶ÔÓ¦ tuple_less / <
-     * Ç°×ºÏàÍ¬Ôò¸ü¶ÌµÄ¸üĞ¡¡£¿ÕÔª×éĞ¡ÓÚ·Ç¿Õ¡£Êı×ÖÓë×Ö·û´®²»ÄÜ±È£¬Å× HS_ERR_TYPE
+     * @brief å­—å…¸åºå°äºï¼Œå¯¹åº” tuple_less / <
+     * å‰ç¼€ç›¸åŒåˆ™æ›´çŸ­çš„æ›´å°ã€‚ç©ºå…ƒç»„å°äºéç©ºã€‚æ•°å­—ä¸å­—ç¬¦ä¸²ä¸èƒ½æ¯”ï¼ŒæŠ› HS_ERR_TYPE
      */
     bool operator<(const HsTuple& other) const;
-    /** @brief ×ÖµäĞò´óÓÚ£¬¶ÔÓ¦ tuple_greater / > */
+    /** @brief å­—å…¸åºå¤§äºï¼Œå¯¹åº” tuple_greater / > */
     bool operator>(const HsTuple& other) const;
-    /** @brief ×ÖµäĞòĞ¡ÓÚµÈÓÚ£¬¶ÔÓ¦ tuple_less_equal / <= */
+    /** @brief å­—å…¸åºå°äºç­‰äºï¼Œå¯¹åº” tuple_less_equal / <= */
     bool operator<=(const HsTuple& other) const;
-    /** @brief ×ÖµäĞò´óÓÚµÈÓÚ£¬¶ÔÓ¦ tuple_greater_equal / >= */
+    /** @brief å­—å…¸åºå¤§äºç­‰äºï¼Œå¯¹åº” tuple_greater_equal / >= */
     bool operator>=(const HsTuple& other) const;
 
     /**
-     * @brief ÖğÔªËØÏàµÈ£¬¶ÔÓ¦ tuple_equal_elem
-     * ³¤¶ÈÏàÍ¬ÖğÏî±È£¬Ò»±ßÖ»ÓĞ 1 ¸öÔò¹ã²¥µ½ÁíÒ»±ß¡£
-     * Êı×ÖºÍ×Ö·û´®²»ËãÏàµÈ£¬¸ÃÏîÎª 0£¬²»Å×Òì³£¡£
-     * ½á¹ûÎª 0/1 ÕûÊıÔª×é
+     * @brief é€å…ƒç´ ç›¸ç­‰ï¼Œå¯¹åº” tuple_equal_elem
+     * é•¿åº¦ç›¸åŒé€é¡¹æ¯”ï¼Œä¸€è¾¹åªæœ‰ 1 ä¸ªåˆ™å¹¿æ’­åˆ°å¦ä¸€è¾¹ã€‚
+     * æ•°å­—å’Œå­—ç¬¦ä¸²ä¸ç®—ç›¸ç­‰ï¼Œè¯¥é¡¹ä¸º 0ï¼Œä¸æŠ›å¼‚å¸¸ã€‚
+     * ç»“æœä¸º 0/1 æ•´æ•°å…ƒç»„
      */
     HsTuple equalElem(const HsTuple& other) const;
-    /** @brief ÖğÔªËØ²»µÈ£¬¶ÔÓ¦ tuple_not_equal_elem¡£¹æÔòÍ¬ equalElem */
+    /** @brief é€å…ƒç´ ä¸ç­‰ï¼Œå¯¹åº” tuple_not_equal_elemã€‚è§„åˆ™åŒ equalElem */
     HsTuple notEqualElem(const HsTuple& other) const;
     /**
-     * @brief ÖğÔªËØĞ¡ÓÚ£¬¶ÔÓ¦ tuple_less_elem
-     * ÀàĞÍ²»ÄÜ±ÈÊ±Å× HS_ERR_TYPE¡£½á¹ûÎª 0/1 ÕûÊıÔª×é
+     * @brief é€å…ƒç´ å°äºï¼Œå¯¹åº” tuple_less_elem
+     * ç±»å‹ä¸èƒ½æ¯”æ—¶æŠ› HS_ERR_TYPEã€‚ç»“æœä¸º 0/1 æ•´æ•°å…ƒç»„
      */
     HsTuple lessElem(const HsTuple& other) const;
-    /** @brief ÖğÔªËØ´óÓÚ£¬¶ÔÓ¦ tuple_greater_elem */
+    /** @brief é€å…ƒç´ å¤§äºï¼Œå¯¹åº” tuple_greater_elem */
     HsTuple greaterElem(const HsTuple& other) const;
-    /** @brief ÖğÔªËØĞ¡ÓÚµÈÓÚ£¬¶ÔÓ¦ tuple_less_equal_elem */
+    /** @brief é€å…ƒç´ å°äºç­‰äºï¼Œå¯¹åº” tuple_less_equal_elem */
     HsTuple lessEqualElem(const HsTuple& other) const;
-    /** @brief ÖğÔªËØ´óÓÚµÈÓÚ£¬¶ÔÓ¦ tuple_greater_equal_elem */
+    /** @brief é€å…ƒç´ å¤§äºç­‰äºï¼Œå¯¹åº” tuple_greater_equal_elem */
     HsTuple greaterEqualElem(const HsTuple& other) const;
 
     /**
-     * @brief ÖğÔªËØ¼Ó£¬¶ÔÓ¦ tuple_add / +
-     * ³¤¶ÈÏàÍ¬ÖğÏîËã£¬Ò»±ßÖ»ÓĞ 1 ¸öÔò¹ã²¥¡£¿ÕÓëÈÎÒâµÃ¿Õ¡£
-     * ÕûÊıÓë¸¡µã°´ÊıÖµËã£¬½á¹ûÉıµ½ÄÜÈİÄÉµÄÀàĞÍ¡£
-     * ×Ö·û´®²ÎÓë¼Ó¼õ³Ë³ı»òÀàĞÍ²»ÄÜËãÊ±Å× HS_ERR_TYPE
+     * @brief é€å…ƒç´ åŠ ï¼Œå¯¹åº” tuple_add / +
+     * é•¿åº¦ç›¸åŒé€é¡¹ç®—ï¼Œä¸€è¾¹åªæœ‰ 1 ä¸ªåˆ™å¹¿æ’­ã€‚ç©ºä¸ä»»æ„å¾—ç©ºã€‚
+     * æ•´æ•°ä¸æµ®ç‚¹æŒ‰æ•°å€¼ç®—ï¼Œç»“æœå‡åˆ°èƒ½å®¹çº³çš„ç±»å‹ã€‚
+     * å­—ç¬¦ä¸²å‚ä¸åŠ å‡ä¹˜é™¤æˆ–ç±»å‹ä¸èƒ½ç®—æ—¶æŠ› HS_ERR_TYPE
      */
     HsTuple operator+(const HsTuple& other) const;
     /**
-     * @brief ÖğÔªËØ¼õ£¬¶ÔÓ¦ tuple_sub / -
-     * ¹æÔòÍ¬¼Ó¡£ÀàĞÍ²»ÄÜËãÅ× HS_ERR_TYPE
+     * @brief é€å…ƒç´ å‡ï¼Œå¯¹åº” tuple_sub / -
+     * è§„åˆ™åŒåŠ ã€‚ç±»å‹ä¸èƒ½ç®—æŠ› HS_ERR_TYPE
      */
     HsTuple operator-(const HsTuple& other) const;
     /**
-     * @brief ÖğÔªËØ³Ë£¬¶ÔÓ¦ tuple_mult / *
-     * ¹æÔòÍ¬¼Ó¡£ÀàĞÍ²»ÄÜËãÅ× HS_ERR_TYPE
+     * @brief é€å…ƒç´ ä¹˜ï¼Œå¯¹åº” tuple_mult / *
+     * è§„åˆ™åŒåŠ ã€‚ç±»å‹ä¸èƒ½ç®—æŠ› HS_ERR_TYPE
      */
     HsTuple operator*(const HsTuple& other) const;
     /**
-     * @brief ÖğÔªËØ³ı£¬¶ÔÓ¦ tuple_div / /
-     * ÕûÊı³ıÕûÊıÏòÁãÈ¡Õû¡£³ıÊıÎª 0 Å× HS_ERR_TYPE¡£×Ö·û´®²ÎÓëÔòÅ×
+     * @brief é€å…ƒç´ é™¤ï¼Œå¯¹åº” tuple_div / /
+     * æ•´æ•°é™¤æ•´æ•°å‘é›¶å–æ•´ã€‚é™¤æ•°ä¸º 0 æŠ› HS_ERR_TYPEã€‚å­—ç¬¦ä¸²å‚ä¸åˆ™æŠ›
      */
     HsTuple operator/(const HsTuple& other) const;
-    /** @brief ÖğÔªËØÈ¡¸º¡£×Ö·û´®Å× HS_ERR_TYPE¡£¿ÕµÃ¿Õ */
+    /** @brief é€å…ƒç´ å–è´Ÿã€‚å­—ç¬¦ä¸²æŠ› HS_ERR_TYPEã€‚ç©ºå¾—ç©º */
     HsTuple operator-() const;
 
     /**
-     * @brief µÈ²îÕûÊıĞòÁĞ£¬¶ÔÓ¦ tuple_gen_sequence
-     * start µ½ end º¬¶Ëµã¡£step Îª 0 Å× HS_ERR_TYPE¡£·½ÏòÓë step ²»·ûÔòÎª¿Õ
+     * @brief ç­‰å·®æ•´æ•°åºåˆ—ï¼Œå¯¹åº” tuple_gen_sequence
+     * start åˆ° end å«ç«¯ç‚¹ã€‚step ä¸º 0 æŠ› HS_ERR_TYPEã€‚æ–¹å‘ä¸ step ä¸ç¬¦åˆ™ä¸ºç©º
      */
     static HsTuple genSequence(int64_t start, int64_t end, int64_t step = 1);
     /**
-     * @brief ÖØ¸´Í¬Ò»ÕûÊı count ´Î£¬¶ÔÓ¦ tuple_gen_const¡£count<=0 Îª¿Õ
+     * @brief é‡å¤åŒä¸€æ•´æ•° count æ¬¡ï¼Œå¯¹åº” tuple_gen_constã€‚count<=0 ä¸ºç©º
      */
     static HsTuple genConst(int count, int64_t value);
-    /** @brief ÖØ¸´Í¬Ò»¸¡µã count ´Î */
+    /** @brief é‡å¤åŒä¸€æµ®ç‚¹ count æ¬¡ */
     static HsTuple genConst(int count, double value);
-    /** @brief ÖØ¸´Í¬Ò»×Ö·û´® count ´Î¡£¿ÕÖ¸Õëµ±¿Õ´® */
+    /** @brief é‡å¤åŒä¸€å­—ç¬¦ä¸² count æ¬¡ã€‚ç©ºæŒ‡é’ˆå½“ç©ºä¸² */
     static HsTuple genConst(int count, const char* value);
-    /** @brief ÖØ¸´Í¬Ò»×Ö·û´® count ´Î */
+    /** @brief é‡å¤åŒä¸€å­—ç¬¦ä¸² count æ¬¡ */
     static HsTuple genConst(int count, const std::string& value);
 
     /**
-     * @brief °´ÏÂ±êÌôÑ¡£¬¶ÔÓ¦ tuple_select¡£indices ÔªËØĞëÎªÕûÊıÏÂ±ê
+     * @brief æŒ‰ä¸‹æ ‡æŒ‘é€‰ï¼Œå¯¹åº” tuple_selectã€‚indices å…ƒç´ é¡»ä¸ºæ•´æ•°ä¸‹æ ‡
      */
     HsTuple select(const HsTuple& indices) const;
     /**
-     * @brief °´ 0/1 ÑÚÂëÌôÑ¡¡£ÑÚÂë³¤¶ÈĞëÒ»ÖÂ£¬·Ç 0 ±£Áô
-     * equalElem µÄ½á¹û¿ÉÖ±½Óµ±ÑÚÂë
+     * @brief æŒ‰ 0/1 æ©ç æŒ‘é€‰ã€‚æ©ç é•¿åº¦é¡»ä¸€è‡´ï¼Œé 0 ä¿ç•™
+     * equalElem çš„ç»“æœå¯ç›´æ¥å½“æ©ç 
      */
     HsTuple selectMask(const HsTuple& mask) const;
     /**
-     * @brief °´ÏÂ±êÉ¾³ı¡£indices ÔªËØĞëÎªÕûÊıÏÂ±ê£¬ÏÂ±ê´Ó´óµ½Ğ¡´¦Àí
+     * @brief æŒ‰ä¸‹æ ‡åˆ é™¤ã€‚indices å…ƒç´ é¡»ä¸ºæ•´æ•°ä¸‹æ ‡ï¼Œä¸‹æ ‡ä»å¤§åˆ°å°å¤„ç†
      */
     void remove(const HsTuple& indices);
     /**
-     * @brief °´ÑÚÂëÉ¾³ı¡£·Ç 0 Î»ÖÃÉ¾³ı
+     * @brief æŒ‰æ©ç åˆ é™¤ã€‚é 0 ä½ç½®åˆ é™¤
      */
     void removeMask(const HsTuple& mask);
     /**
-     * @brief ÔÚ index Ç°²åÈë values¡£index µÈÓÚ length() Ôò×·¼Ó
+     * @brief åœ¨ index å‰æ’å…¥ valuesã€‚index ç­‰äº length() åˆ™è¿½åŠ 
      */
     void insert(int index, const HsTuple& values);
     /**
-     * @brief ÓÃ values Ìæ»»´Ó index Æğ¡£values ÓĞ¼¸¸ñ¾Í»»¼¸¸ñ
+     * @brief ç”¨ values æ›¿æ¢ä» index èµ·ã€‚values æœ‰å‡ æ ¼å°±æ¢å‡ æ ¼
      */
     void replace(int index, const HsTuple& values);
 
     /**
-     * @brief ÇóºÍ£¬¶ÔÓ¦ tuple_sum¡£¿ÕÎª 0¡£×Ö·û´®Å× HS_ERR_TYPE
-     * ÕûÊıÓë¸¡µã°´ÊıÖµÀÛ¼Ó£¬½á¹ûÀàĞÍÄÜÈİÄÉ¼´¿É
+     * @brief æ±‚å’Œï¼Œå¯¹åº” tuple_sumã€‚ç©ºä¸º 0ã€‚å­—ç¬¦ä¸²æŠ› HS_ERR_TYPE
+     * æ•´æ•°ä¸æµ®ç‚¹æŒ‰æ•°å€¼ç´¯åŠ ï¼Œç»“æœç±»å‹èƒ½å®¹çº³å³å¯
      */
     HsTuple sum() const;
     /**
-     * @brief ×îĞ¡Öµ£¬¶ÔÓ¦ tuple_min¡£¿ÕÅ× HS_ERR_INDEX¡£×Ö·û´®Å× HS_ERR_TYPE
+     * @brief æœ€å°å€¼ï¼Œå¯¹åº” tuple_minã€‚ç©ºæŠ› HS_ERR_INDEXã€‚å­—ç¬¦ä¸²æŠ› HS_ERR_TYPE
      */
     HsTuple min() const;
     /**
-     * @brief ×î´óÖµ£¬¶ÔÓ¦ tuple_max¡£¹æÔòÍ¬ min
+     * @brief æœ€å¤§å€¼ï¼Œå¯¹åº” tuple_maxã€‚è§„åˆ™åŒ min
      */
     HsTuple max() const;
     /**
-     * @brief Æ½¾ùÖµ£¬¶ÔÓ¦ tuple_mean¡£¿Õ»òº¬×Ö·û´®Å×Òì³£
+     * @brief å¹³å‡å€¼ï¼Œå¯¹åº” tuple_meanã€‚ç©ºæˆ–å«å­—ç¬¦ä¸²æŠ›å¼‚å¸¸
      */
     HsTuple mean() const;
 
     /**
-     * @brief ×ªÕûÊıÔª×é£¬¶ÔÓ¦ tuple_int¡£ÏòÁãÈ¡Õû¡£×Ö·û´®Å× HS_ERR_TYPE
+     * @brief è½¬æ•´æ•°å…ƒç»„ï¼Œå¯¹åº” tuple_intã€‚å‘é›¶å–æ•´ã€‚å­—ç¬¦ä¸²æŠ› HS_ERR_TYPE
      */
     HsTuple toLong() const;
     /**
-     * @brief ×ª¸¡µãÔª×é£¬¶ÔÓ¦ tuple_real¡£×Ö·û´®Å× HS_ERR_TYPE
+     * @brief è½¬æµ®ç‚¹å…ƒç»„ï¼Œå¯¹åº” tuple_realã€‚å­—ç¬¦ä¸²æŠ› HS_ERR_TYPE
      */
     HsTuple toDouble() const;
 
     /**
-     * @brief ÖğÔªËØ¾ø¶ÔÖµ£¬¶ÔÓ¦ tuple_abs¡£×Ö·û´®Å× HS_ERR_TYPE
+     * @brief é€å…ƒç´ ç»å¯¹å€¼ï¼Œå¯¹åº” tuple_absã€‚å­—ç¬¦ä¸²æŠ› HS_ERR_TYPE
      */
     HsTuple abs() const;
     /**
-     * @brief ÖğÔªËØÈ¡Ä££¬¶ÔÓ¦ tuple_mod / %
-     * ¹æÔòÍ¬¼Ó¡£³ıÊıÎª 0 Å× HS_ERR_TYPE¡£¹ã²¥Í¬ +
+     * @brief é€å…ƒç´ å–æ¨¡ï¼Œå¯¹åº” tuple_mod / %
+     * è§„åˆ™åŒåŠ ã€‚é™¤æ•°ä¸º 0 æŠ› HS_ERR_TYPEã€‚å¹¿æ’­åŒ +
      */
     HsTuple operator%(const HsTuple& other) const;
 
     /**
-     * @brief Ğ´³öÔª×éÎÄ¼ş£¬¶ÔÓ¦ write_tuple
-     * @param fileName Â·¾¶¡£¿Õ»ò´ò²»¿ªÊ±Å× HsException
+     * @brief å†™å‡ºå…ƒç»„æ–‡ä»¶ï¼Œå¯¹åº” write_tuple
+     * @param fileName è·¯å¾„ã€‚ç©ºæˆ–æ‰“ä¸å¼€æ—¶æŠ› HsException
      */
     void writeTuple(const char* fileName) const;
     /**
-     * @brief ¶ÁÈëÔª×éÎÄ¼ş£¬¶ÔÓ¦ read_tuple¡£¸²¸Ç±¾¶ÔÏó
-     * @param fileName Â·¾¶
+     * @brief è¯»å…¥å…ƒç»„æ–‡ä»¶ï¼Œå¯¹åº” read_tupleã€‚è¦†ç›–æœ¬å¯¹è±¡
+     * @param fileName è·¯å¾„
      */
     void readTuple(const char* fileName);
 
 private:
-    /** @brief ¸ºÏÂ±êÊÕµ½ [0, length())¡£·Ç·¨ÔòÅ× */
+    /** @brief è´Ÿä¸‹æ ‡æ”¶åˆ° [0, length())ã€‚éæ³•åˆ™æŠ› */
     int resolveIndex(int index) const;
     struct Body;
 
-    /** @brief È·±£ÒÑ·ÖÅä»º³å */
+    /** @brief ç¡®ä¿å·²åˆ†é…ç¼“å†² */
     void ensure();
-    /** @brief Èô±»¹²ÏíÔò²ğ¿ª¿½±´ */
+    /** @brief è‹¥è¢«å…±äº«åˆ™æ‹†å¼€æ‹·è´ */
     void detach();
-    /** @brief ´¿Êı×éÉı³É»ìºÏ */
+    /** @brief çº¯æ•°ç»„å‡æˆæ··åˆ */
     static void promote(Body* body);
-    /** @brief ×·¼ÓÒ»¸ö»ìºÏÔªËØ */
+    /** @brief è¿½åŠ ä¸€ä¸ªæ··åˆå…ƒç´  */
     static void pushMixed(Body* body, const TupleElem& elem);
 
-    std::shared_ptr<Body> m_body; ///< ÔªËØ»º³å¡£¿ÕÖ¸Õë±íÊ¾¿ÕÔª×é
+    std::shared_ptr<Body> m_body; ///< å…ƒç´ ç¼“å†²ã€‚ç©ºæŒ‡é’ˆè¡¨ç¤ºç©ºå…ƒç»„
 };
 
 /**
- * @brief Ğ´³öÔª×éÎÄ¼ş£¬¶ÔÓ¦ write_tuple
- * @param tuple ´ıĞ´Ôª×é
- * @param fileName Â·¾¶¡£¿Õ»ò´ò²»¿ªÊ±Å× HsException
+ * @brief å†™å‡ºå…ƒç»„æ–‡ä»¶ï¼Œå¯¹åº” write_tuple
+ * @param tuple å¾…å†™å…ƒç»„
+ * @param fileName è·¯å¾„ã€‚ç©ºæˆ–æ‰“ä¸å¼€æ—¶æŠ› HsException
  */
 HSCOMMDATA_EXPORT void writeTuple(const HsTuple& tuple, const char* fileName);
 /**
- * @brief ¶ÁÈëÔª×éÎÄ¼ş£¬¶ÔÓ¦ read_tuple¡£Ğ´Èë tuple
- * @param tuple Ä¿±ê¡£¿ÕÖ¸ÕëÅ× HsException
- * @param fileName Â·¾¶
+ * @brief è¯»å…¥å…ƒç»„æ–‡ä»¶ï¼Œå¯¹åº” read_tupleã€‚å†™å…¥ tuple
+ * @param tuple ç›®æ ‡ã€‚ç©ºæŒ‡é’ˆæŠ› HsException
+ * @param fileName è·¯å¾„
  */
 HSCOMMDATA_EXPORT void readTuple(HsTuple* tuple, const char* fileName);
 

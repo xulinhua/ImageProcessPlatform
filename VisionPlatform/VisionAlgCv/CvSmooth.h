@@ -1,6 +1,6 @@
 /**
  * @file CvSmooth.h
- * @brief CvSmoothÍ·ÎÄ¼ş
+ * @brief CvSmoothå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -15,16 +15,30 @@ namespace Vision {
 
 /**
  * @class CvSmooth
- * @brief Í¼ÏñÆ½»¬Á÷Ë®£¨OpenCV£©
+ * @brief å›¾åƒå¹³æ»‘æµæ°´ï¼ˆOpenCVï¼‰
  */
 class CvSmooth : public AlgToolBase {
 public:
     std::string toolName() const { return "preprocess.smooth"; }
     AlgLibKind algLib() const { return AlgLibCv; }
     std::string version() const;
-    /** @brief °æ±¾±ä¸ü£¬Ö»×·¼Ó */
+    /** @brief ç‰ˆæœ¬å˜æ›´ï¼Œåªè¿½åŠ  */
     std::vector<VerNote> versionNotes() const;
-    /** @brief °´²½Öè×öÍ¼ÏñÆ½»¬ */
+    /** @brief æŒ‰æ­¥éª¤åšå›¾åƒå¹³æ»‘ */
+    int execute(const AlgToolIn& in, AlgToolOut* out) override {
+        if (!out) {
+            return HS_ERR_NULL;
+        }
+        *out = run(in);
+        if (out->ok) {
+            out->errCode = HS_OK;
+            return HS_OK;
+        }
+        if (out->errCode == HS_OK || out->errCode == 1) {
+            out->errCode = HS_ERR_OPERATOR;
+        }
+        return out->errCode;
+    }
     AlgToolOut run(const AlgToolIn& in);
     AlgToolBase* clone() const { return new CvSmooth(); }
 };

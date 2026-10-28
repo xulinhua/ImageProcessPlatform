@@ -1,6 +1,6 @@
 /**
  * @file FilterTool.h
- * @brief 图像滤波：多步骤增强、平滑和灰度形态学
+ * @brief 鍥惧儚婊ゆ尝锛氬姝ラ澧炲己銆佸钩婊戝拰鐏板害褰㈡�佸
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -16,7 +16,7 @@ namespace Vision {
 
 /**
  * @class FilterTool
- * @brief 图像滤波：登记参数，执行交给算法插件
+ * @brief 鍥惧儚婊ゆ尝锛氱櫥璁板弬鏁帮紝鎵ц浜ょ粰绠楁硶鎻掍欢
  */
 class FilterTool : public ToolBase {
 public:

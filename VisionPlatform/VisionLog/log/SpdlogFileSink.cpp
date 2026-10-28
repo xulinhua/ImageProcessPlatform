@@ -1,6 +1,6 @@
 /**
  * @file SpdlogFileSink.cpp
- * @brief SpdlogFileSinkÊµÏÖ
+ * @brief SpdlogFileSinkå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -20,23 +20,23 @@ namespace detail {
 namespace {
 
 enum {
-    kMaxQueue = 4096, ///< ´ıĞ´¶ÓÁĞÉÏÏŞ
-    kKeepDays = 30    ///< Èë¿âºó±£ÁôÌìÊı
+    kMaxQueue = 4096, ///< å¾…å†™é˜Ÿåˆ—ä¸Šé™
+    kKeepDays = 30    ///< å…¥åº“åä¿ç•™å¤©æ•°
 };
 
 } // namespace
 
 struct SpdlogFileSink::Impl {
-    CRITICAL_SECTION cs;     ///< ±£»¤¶ÓÁĞ
-    HANDLE thread;            ///< ºóÌ¨Ïß³Ì
-    HANDLE wake;              ///< ÓĞĞÂ¼ÇÂ¼»òÒªÍË³ö
-    HANDLE flushed;           ///< Ë¢¶ÓÁĞÍê³É
-    bool stop;                ///< ÇëÇóÍË³ö
-    bool started;             ///< Ïß³ÌÒÑÆô¶¯
-    bool flushReq;            ///< ÇëÇóË¢Íê¶ÓÁĞ
-    std::queue<LogRecord> q;  ///< ´ıĞ´¶ÓÁĞ
-    LogLevel minLv[4];        ///< ¸÷Í¨µÀ×îµÍ¼¶±ğ
-    bool on[4];               ///< ¸÷Í¨µÀÊÇ·ñÆôÓÃ
+    CRITICAL_SECTION cs;     ///< ä¿æŠ¤é˜Ÿåˆ—
+    HANDLE thread;            ///< åå°çº¿ç¨‹
+    HANDLE wake;              ///< æœ‰æ–°è®°å½•æˆ–è¦é€€å‡º
+    HANDLE flushed;           ///< åˆ·é˜Ÿåˆ—å®Œæˆ
+    bool stop;                ///< è¯·æ±‚é€€å‡º
+    bool started;             ///< çº¿ç¨‹å·²å¯åŠ¨
+    bool flushReq;            ///< è¯·æ±‚åˆ·å®Œé˜Ÿåˆ—
+    std::queue<LogRecord> q;  ///< å¾…å†™é˜Ÿåˆ—
+    LogLevel minLv[4];        ///< å„é€šé“æœ€ä½çº§åˆ«
+    bool on[4];               ///< å„é€šé“æ˜¯å¦å¯ç”¨
 
     Impl()
         : thread(0)
@@ -57,20 +57,20 @@ struct SpdlogFileSink::Impl {
     }
 };
 
-// ºóÌ¨Ïß³ÌÈë¿Ú£¬×ªµ÷Ğ´¿âÑ­»·
+// åå°çº¿ç¨‹å…¥å£ï¼Œè½¬è°ƒå†™åº“å¾ªç¯
 static DWORD WINAPI sinkThread(LPVOID p)
 {
     static_cast<SpdlogFileSink*>(p)->runLoop();
     return 0;
 }
 
-// ´´½¨¶ÓÁĞºÍÍ¬²½ÊÂ¼ş
+// åˆ›å»ºé˜Ÿåˆ—å’ŒåŒæ­¥äº‹ä»¶
 SpdlogFileSink::SpdlogFileSink()
     : m(new Impl())
 {
 }
 
-// Í£Ğ´Ïß³Ì²¢ÊÍ·Å¾ä±ú
+// åœå†™çº¿ç¨‹å¹¶é‡Šæ”¾å¥æŸ„
 SpdlogFileSink::~SpdlogFileSink()
 {
     stop();
@@ -87,7 +87,7 @@ SpdlogFileSink::~SpdlogFileSink()
     }
 }
 
-// Æô¶¯ºóÌ¨Ğ´¿âÏß³Ì
+// å¯åŠ¨åå°å†™åº“çº¿ç¨‹
 void SpdlogFileSink::start()
 {
     EnterCriticalSection(&m->cs);
@@ -101,7 +101,7 @@ void SpdlogFileSink::start()
     LeaveCriticalSection(&m->cs);
 }
 
-// Í£Ïß³Ì²¢Ë¢Íê¶ÓÁĞ
+// åœçº¿ç¨‹å¹¶åˆ·å®Œé˜Ÿåˆ—
 void SpdlogFileSink::stop()
 {
     EnterCriticalSection(&m->cs);
@@ -122,7 +122,7 @@ void SpdlogFileSink::stop()
     m->started = false;
 }
 
-// ¸ÃÍ¨µÀµÍÓÚ´Ë¼¶±ğµÄ¼ÇÂ¼²»Èë¿â
+// è¯¥é€šé“ä½äºæ­¤çº§åˆ«çš„è®°å½•ä¸å…¥åº“
 void SpdlogFileSink::setMinLevel(LogChannel ch, LogLevel minLevel)
 {
     const int i = static_cast<int>(ch);
@@ -134,7 +134,7 @@ void SpdlogFileSink::setMinLevel(LogChannel ch, LogLevel minLevel)
     LeaveCriticalSection(&m->cs);
 }
 
-// ¹ØµôµÄÍ¨µÀ²»ÔÙÈë¶Ó
+// å…³æ‰çš„é€šé“ä¸å†å…¥é˜Ÿ
 void SpdlogFileSink::setEnabled(LogChannel ch, bool on)
 {
     const int i = static_cast<int>(ch);
@@ -146,7 +146,7 @@ void SpdlogFileSink::setEnabled(LogChannel ch, bool on)
     LeaveCriticalSection(&m->cs);
 }
 
-// ¸ÃÍ¨µÀµ±Ç°×îµÍ¼¶±ğ
+// è¯¥é€šé“å½“å‰æœ€ä½çº§åˆ«
 LogLevel SpdlogFileSink::minLevel(LogChannel ch) const
 {
     const int i = static_cast<int>(ch);
@@ -156,7 +156,7 @@ LogLevel SpdlogFileSink::minLevel(LogChannel ch) const
     return m->minLv[i];
 }
 
-// ¸ÃÍ¨µÀÊÇ·ñÔÚĞ´
+// è¯¥é€šé“æ˜¯å¦åœ¨å†™
 bool SpdlogFileSink::enabled(LogChannel ch) const
 {
     const int i = static_cast<int>(ch);
@@ -166,7 +166,7 @@ bool SpdlogFileSink::enabled(LogChannel ch) const
     return m->on[i];
 }
 
-// Èë¶Ó£»ÂúÊ±¾¡Á¿ÁôÏÂÉó¼ÆºÍ´íÎó
+// å…¥é˜Ÿï¼›æ»¡æ—¶å°½é‡ç•™ä¸‹å®¡è®¡å’Œé”™è¯¯
 void SpdlogFileSink::enqueue(const LogRecord& rec)
 {
     const int i = static_cast<int>(rec.channel);
@@ -207,7 +207,7 @@ void SpdlogFileSink::enqueue(const LogRecord& rec)
     }
 }
 
-// µÈµ½¶ÓÁĞĞ´Íê
+// ç­‰åˆ°é˜Ÿåˆ—å†™å®Œ
 void SpdlogFileSink::flush()
 {
     if (!m->started) {
@@ -235,7 +235,7 @@ void SpdlogFileSink::flush()
     }
 }
 
-// ºóÌ¨Ñ­»·£º³ö¶ÓĞ´¿â£¬²¢°´ÌìÇåÀí
+// åå°å¾ªç¯ï¼šå‡ºé˜Ÿå†™åº“ï¼Œå¹¶æŒ‰å¤©æ¸…ç†
 void SpdlogFileSink::runLoop()
 {
     LogDb::instance().pruneOlderThanDays(kKeepDays);
@@ -272,7 +272,7 @@ void SpdlogFileSink::runLoop()
     }
 }
 
-// ½ø³ÌÄÚÎ¨Ò»µÄÒì²½Êä³ö¶Ë
+// è¿›ç¨‹å†…å”¯ä¸€çš„å¼‚æ­¥è¾“å‡ºç«¯
 SpdlogFileSink& logSink()
 {
     static SpdlogFileSink g;

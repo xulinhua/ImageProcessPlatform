@@ -1,6 +1,6 @@
 /**
  * @file VisionLogRunSink.h
- * @brief VisionLogRunSinkÍ·ÎÄ¼ş
+ * @brief VisionLogRunSinkå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -17,32 +17,32 @@ namespace Vision {
 
 /**
  * @class LogMgrRunSink
- * @brief °ÑÔËĞĞÈÕÖ¾×Ô¶¯Ğ´Èë VisionLog£¨debug Àà£©£»²»ÓµÓĞ»á»°£¬Éí·İÓÉÍâ²¿Ë¢ĞÂ
+ * @brief æŠŠè¿è¡Œæ—¥å¿—è‡ªåŠ¨å†™å…¥ VisionLogï¼ˆdebug ç±»ï¼‰ï¼›ä¸æ‹¥æœ‰ä¼šè¯ï¼Œèº«ä»½ç”±å¤–éƒ¨åˆ·æ–°
  */
 class VISION_UI_API VisionLogRunSink : public IRunListener {
 public:
-    /** @brief ¿ÕÉí·İ£¬ÂäÅÌÃÅ¼÷Îª Info */
+    /** @brief ç©ºèº«ä»½ï¼Œè½ç›˜é—¨æ§›ä¸º Info */
     VisionLogRunSink();
 
     /**
-     * @brief Ë¢ĞÂÂäÅÌÉí·İ£¨µÇÂ¼/×¢ÏúÊ±µ÷ÓÃ£©
-     * @param user µÇÂ¼Ãû
-     * @param role ½ÇÉ«¼ü
+     * @brief åˆ·æ–°è½ç›˜èº«ä»½ï¼ˆç™»å½•/æ³¨é”€æ—¶è°ƒç”¨ï¼‰
+     * @param user ç™»å½•å
+     * @param role è§’è‰²é”®
      */
     void setIdentity(const std::string& user, const std::string& role);
     /**
-     * @brief ×îµÍÂäÅÌ¼¶±ğ£¨Ä¬ÈÏ Info£¬Debug ²»Ë¢ÅÌ£©
-     * @param minLevel º¬¸Ã¼¶¼°ÒÔÉÏ
+     * @brief æœ€ä½è½ç›˜çº§åˆ«ï¼ˆé»˜è®¤ Infoï¼ŒDebug ä¸åˆ·ç›˜ï¼‰
+     * @param minLevel å«è¯¥çº§åŠä»¥ä¸Š
      */
     void setMinLevel(RunLogLevel minLevel);
 
-    /** @brief ×·¼ÓÒ»Ìõ debug ÈÕÖ¾ */
+    /** @brief è¿½åŠ ä¸€æ¡ debug æ—¥å¿— */
     void onRunLog(const RunLogEvent& ev);
 
 private:
-    std::string m_user;       ///< µÇÂ¼Ãû
-    std::string m_role;       ///< ½ÇÉ«
-    RunLogLevel m_minLevel;   ///< ÂäÅÌÃÅ¼÷
+    std::string m_user;       ///< ç™»å½•å
+    std::string m_role;       ///< è§’è‰²
+    RunLogLevel m_minLevel;   ///< è½ç›˜é—¨æ§›
 };
 
 }

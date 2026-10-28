@@ -1,6 +1,6 @@
 /**
  * @file AppMode.h
- * @brief AppModeÍ·ÎÄ¼ş
+ * @brief AppModeå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -11,11 +11,11 @@
 
 namespace Vision {
 
-/** @brief Ó¦ÓÃÄ£Ê½£ºÉè¼ÆÌ¬ / ÔËĞĞÌ¬ / ¸´¼ìÌ¬ */
+/** @brief åº”ç”¨æ¨¡å¼ï¼šè®¾è®¡æ€ / è¿è¡Œæ€ / å¤æ£€æ€ */
 enum AppMode {
-    ModeDesign = 0, ///< Éè¼ÆÌ¬
-    ModeRuntime,    ///< ÔËĞĞÌ¬
-    ModeRecheck     ///< ¸´¼ìÌ¬£¨ÀëÏßÅúÅÜ£©
+    ModeDesign = 0, ///< è®¾è®¡æ€
+    ModeRuntime,    ///< è¿è¡Œæ€
+    ModeRecheck     ///< å¤æ£€æ€ï¼ˆç¦»çº¿æ‰¹è·‘ï¼‰
 };
 
 }

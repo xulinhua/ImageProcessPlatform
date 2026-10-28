@@ -1,6 +1,6 @@
 /**
  * @file ImageLayer.h
- * @brief ImageLayerͷ�ļ�
+ * @brief ImageLayer头文件
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -11,7 +11,7 @@
 #include "ImageItem.h"
 #include <HsCtrl/HsImageWindowTypes.h>
 namespace HsCtrl {
-/** @class ImageLayer @brief ��ͼͼ�㣺֡���ͼ�ڵ� */
+/** @class ImageLayer @brief 底图图层：帧与底图节点 */
 class ImageLayer {
 public:
     ImageLayer();

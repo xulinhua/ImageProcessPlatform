@@ -1,6 +1,6 @@
 /**
  * @file HalConvert.h
- * @brief HalConvertÍ·ÎÄ¼ş
+ * @brief HalConvertå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -8,14 +8,14 @@
 
 #ifndef VISION_HALCONCONVERT_H
 #define VISION_HALCONCONVERT_H
-/** @brief ¼æÈİ¾ÉÍ·£ºÇë¸ÄÓÃ HalImageConvert.h */
+/** @brief å…¼å®¹æ—§å¤´ï¼šè¯·æ”¹ç”¨ HalImageConvert.h */
 #include "HalImageConvert.h"
 
 namespace Vision {
-/** @deprecated ÇëÓÃ hsImageToHObject£¬²ÊÉ«ÔÙ Rgb1ToGray */
+/** @deprecated è¯·ç”¨ hsImageToHObjectï¼Œå½©è‰²å† Rgb1ToGray */
     bool frameToHImageGray(const HsCommData::HsImage& fb, HalconCpp::HImage*& out, std::string* err);
 
-/** @deprecated ÇëÓÃ hObjectToHsImage */
+/** @deprecated è¯·ç”¨ hObjectToHsImage */
 inline bool hImageToFrame(const HalconCpp::HImage& img, int64_t frameId, HsCommData::HsImage*& out, std::string* err)
 {
     return hObjectToHsImage(img, frameId, out, err);

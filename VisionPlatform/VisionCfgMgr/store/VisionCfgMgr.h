@@ -1,6 +1,6 @@
 /**
  * @file VisionCfgMgr.h
- * @brief VisionCfgMgrÍ·ÎÄ¼þ
+ * @brief VisionCfgMgrå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -17,40 +17,40 @@
 namespace Vision {
 
 enum FileLoadStatus {
-    FileLoadOk = 0,      ///< ¶Áµ½ÓÐÐ§ÄÚÈÝ
-    FileLoadMissing,     ///< ÎÄ¼þ²»´æÔÚ
-    FileLoadCorrupt      ///< ´æÔÚµ«ÎÞ·¨½âÎö
+    FileLoadOk = 0,      ///< è¯»åˆ°æœ‰æ•ˆå†…å®¹
+    FileLoadMissing,     ///< æ–‡ä»¶ä¸å­˜åœ¨
+    FileLoadCorrupt      ///< å­˜åœ¨ä½†æ— æ³•è§£æž
 };
 
 /**
  * @class VisionCfgMgr
- * @brief ·½°¸Óë±¾»úÉèÖÃµÄ´æÅÌÈë¿Ú¡£ÓÃ»§ÓëÈÕÖ¾ÔÚ SQLite£¬²»¾­¹ý±¾Àà
+ * @brief æ–¹æ¡ˆä¸Žæœ¬æœºè®¾ç½®çš„å­˜ç›˜å…¥å£ã€‚ç”¨æˆ·ä¸Žæ—¥å¿—åœ¨ SQLiteï¼Œä¸ç»è¿‡æœ¬ç±»
  */
 class VISION_CONFIG_API VisionCfgMgr {
 public:
     /**
-     * @brief Ð´·½°¸µ½ s.filePath
-     * @param error Ê§°ÜÔ­Òò
+     * @brief å†™æ–¹æ¡ˆåˆ° s.filePath
+     * @param error å¤±è´¥åŽŸå› 
      */
     static bool saveSolution(const Solution& s, std::string* error);
     /**
-     * @brief ¶Á·½°¸
-     * @param error Ê§°ÜÔ­Òò
+     * @brief è¯»æ–¹æ¡ˆ
+     * @param error å¤±è´¥åŽŸå› 
      */
     static bool loadSolution(const std::string& path, Solution* s, std::string* error);
-    /** @brief ¿É´æÅÌÅä·½Ö¸ÎÆ£¬²»º¬±£´æÕß¡¢Ê±¼ä¡¢Èí¼þ°æ±¾ºÍ paraVersion */
+    /** @brief å¯å­˜ç›˜é…æ–¹æŒ‡çº¹ï¼Œä¸å«ä¿å­˜è€…ã€æ—¶é—´ã€è½¯ä»¶ç‰ˆæœ¬å’Œ paraVersion */
     static std::string persistFingerprint(const Solution& s);
     /**
-     * @brief Îª·½°¸ÅÔÂ· .vpdata ½¨ºÃÈ«²¿¹¤¾ßÄ¿Â¼£¨±£´æ³É¹¦ºóµ÷ÓÃ£©
+     * @brief ä¸ºæ–¹æ¡ˆæ—è·¯ .vpdata å»ºå¥½å…¨éƒ¨å·¥å…·ç›®å½•ï¼ˆä¿å­˜æˆåŠŸåŽè°ƒç”¨ï¼‰
      */
     static bool ensureSolutionDataDirs(const Solution& s);
-    /** @brief Ð´±¾»úÉèÖÃ */
+    /** @brief å†™æœ¬æœºè®¾ç½® */
     static bool saveSettings(const AppSettings& s);
     /**
-     * @brief ¶Á±¾»úÉèÖÃµ½ *s£»Ê§°ÜÊ± *s Îª³ö³§Ä¬ÈÏ
+     * @brief è¯»æœ¬æœºè®¾ç½®åˆ° *sï¼›å¤±è´¥æ—¶ *s ä¸ºå‡ºåŽ‚é»˜è®¤
      */
     static FileLoadStatus loadSettings(AppSettings* s, std::string* error);
-    /** @brief ¶Á±¾»úÉèÖÃ£¬Ê§°Ü·µ»Ø³ö³§Ä¬ÈÏ */
+    /** @brief è¯»æœ¬æœºè®¾ç½®ï¼Œå¤±è´¥è¿”å›žå‡ºåŽ‚é»˜è®¤ */
     static AppSettings loadSettings();
 };
 

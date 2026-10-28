@@ -1,6 +1,6 @@
 /**
  * @file DrawingLayer.h
- * @brief DrawingLayerÍ·ÎÄ¼ş
+ * @brief DrawingLayerå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -13,7 +13,7 @@
 #include "QtGeom.h"
 #include <QHash>
 namespace HsCtrl {
-/** @class DrawingLayer @brief »æÖÆ²ã£ºÉè¼ÆÌ¬ ROIÓëÏÔÒş */
+/** @class DrawingLayer @brief ç»˜åˆ¶å±‚ï¼šè®¾è®¡æ€ ROIä¸æ˜¾éš */
 class DrawingLayer {
 public:
     DrawingLayer();

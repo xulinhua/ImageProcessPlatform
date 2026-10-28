@@ -1,6 +1,6 @@
 /**
  * @file ToolParamUi.cpp
- * @brief ToolParamUiÊµÏÖ
+ * @brief ToolParamUiå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -22,7 +22,7 @@ namespace Vision {
 
 namespace {
 
-// ÊäÈë¿Ø¼ş£º¹Ì¶¨ 28px ¸ß£¬ºáÏò¿ÉÀ©Õ¹
+// è¾“å…¥æ§ä»¶ï¼šå›ºå®š 28px é«˜ï¼Œæ¨ªå‘å¯æ‰©å±•
 static void styleParamInput(QWidget* w)
 {
     if (!w) {
@@ -35,7 +35,7 @@ static void styleParamInput(QWidget* w)
     w->setSizePolicy(sp);
 }
 
-// ±êÇ©/¿é£º×İÏò²»²ÎÓëÀ­Éì
+// æ ‡ç­¾/å—ï¼šçºµå‘ä¸å‚ä¸æ‹‰ä¼¸
 static void sealVertical(QWidget* w)
 {
     if (!w) {
@@ -49,7 +49,7 @@ static void sealVertical(QWidget* w)
 
 }
 
-// ²ÎÊıÒ³¸ùÑùÊ½
+// å‚æ•°é¡µæ ¹æ ·å¼
 void initToolParamEditor(QWidget* editor)
 {
     if (!editor) {
@@ -59,7 +59,7 @@ void initToolParamEditor(QWidget* editor)
     sealVertical(editor);
 }
 
-// ²½½ø¿òÍ³Ò»ÑùÊ½
+// æ­¥è¿›æ¡†ç»Ÿä¸€æ ·å¼
 static void styleSpinBox(QAbstractSpinBox* spin)
 {
     if (!spin) {
@@ -73,7 +73,7 @@ static void styleSpinBox(QAbstractSpinBox* spin)
     styleParamInput(spin);
 }
 
-// ÏÂÀ­¿òÍ³Ò»ÑùÊ½
+// ä¸‹æ‹‰æ¡†ç»Ÿä¸€æ ·å¼
 static void styleComboBox(QComboBox* combo)
 {
     if (!combo) {
@@ -86,7 +86,7 @@ static void styleComboBox(QComboBox* combo)
     styleParamInput(combo);
 }
 
-// ÎªÒ³ÄÚ¿Ø¼ş²¹ objectName
+// ä¸ºé¡µå†…æ§ä»¶è¡¥ objectName
 void applyParamControlStyle(QWidget* root)
 {
     if (!root) {
@@ -131,7 +131,7 @@ void applyParamControlStyle(QWidget* root)
     }
 }
 
-// °´µ±Ç°¿í¶ÈÖØËã²ÎÊıÒ³¸ß¶È£¬×İÏòËøËÀÎªÄÚÈİ¸ß
+// æŒ‰å½“å‰å®½åº¦é‡ç®—å‚æ•°é¡µé«˜åº¦ï¼Œçºµå‘é”æ­»ä¸ºå†…å®¹é«˜
 void finalizeParamEditorLayout(QWidget* editor)
 {
     if (!editor) {
@@ -153,7 +153,7 @@ void finalizeParamEditorLayout(QWidget* editor)
     for (int i = 0; i < rows.size(); ++i) {
         sealVertical(rows.at(i));
     }
-    // ·Ç cell/row µÄ¶¥²ã¿é£¨Èç°´Å¥£©Ò²Ëø¸ß¶È
+    // é cell/row çš„é¡¶å±‚å—ï¼ˆå¦‚æŒ‰é’®ï¼‰ä¹Ÿé”é«˜åº¦
     for (int i = 0; i < lay->count(); ++i) {
         QLayoutItem* item = lay->itemAt(i);
         if (!item) {
@@ -180,7 +180,7 @@ void finalizeParamEditorLayout(QWidget* editor)
     sealVertical(editor);
 }
 
-// ²ÎÊı±êÇ©
+// å‚æ•°æ ‡ç­¾
 QLabel* mkParamLabel(QWidget* parent, const QString& text)
 {
     QLabel* lab = new QLabel(text, parent);
@@ -190,7 +190,7 @@ QLabel* mkParamLabel(QWidget* parent, const QString& text)
     return lab;
 }
 
-// ÕûĞÍ²½½ø¿ò
+// æ•´å‹æ­¥è¿›æ¡†
 QSpinBox* mkParamSpin(QWidget* parent, int lo, int hi)
 {
     QSpinBox* s = new QSpinBox(parent);
@@ -199,7 +199,7 @@ QSpinBox* mkParamSpin(QWidget* parent, int lo, int hi)
     return s;
 }
 
-// ¸¡µã²½½ø¿ò
+// æµ®ç‚¹æ­¥è¿›æ¡†
 QDoubleSpinBox* mkParamDSpin(QWidget* parent, double lo, double hi, int dec, double step)
 {
     QDoubleSpinBox* s = new QDoubleSpinBox(parent);
@@ -210,7 +210,7 @@ QDoubleSpinBox* mkParamDSpin(QWidget* parent, double lo, double hi, int dec, dou
     return s;
 }
 
-// ÏÂÀ­¿ò
+// ä¸‹æ‹‰æ¡†
 QComboBox* mkParamCombo(QWidget* parent)
 {
     QComboBox* c = new QComboBox(parent);
@@ -218,7 +218,7 @@ QComboBox* mkParamCombo(QWidget* parent)
     return c;
 }
 
-// ¹´Ñ¡¿ò
+// å‹¾é€‰æ¡†
 QCheckBox* mkParamCheck(QWidget* parent, const QString& text)
 {
     QCheckBox* c = new QCheckBox(text, parent);
@@ -228,7 +228,7 @@ QCheckBox* mkParamCheck(QWidget* parent, const QString& text)
     return c;
 }
 
-// ±êÇ©ÔÚÉÏ¡¢¿Ø¼şÔÚÏÂ
+// æ ‡ç­¾åœ¨ä¸Šã€æ§ä»¶åœ¨ä¸‹
 QWidget* mkParamCell(QWidget* parent, const QString& label, QWidget* control)
 {
     QWidget* cell = new QWidget(parent);
@@ -245,7 +245,7 @@ QWidget* mkParamCell(QWidget* parent, const QString& label, QWidget* control)
     return cell;
 }
 
-// Ò»ĞĞÁ½ÁĞ²ÎÊı
+// ä¸€è¡Œä¸¤åˆ—å‚æ•°
 QWidget* mkParamRow2(QWidget* parent,
                      const QString& label1, QWidget* control1,
                      const QString& label2, QWidget* control2,
@@ -264,7 +264,7 @@ QWidget* mkParamRow2(QWidget* parent,
     return row;
 }
 
-// ×ÔÉÏ¶øÏÂ²ÎÊıÕ»
+// è‡ªä¸Šè€Œä¸‹å‚æ•°æ ˆ
 QVBoxLayout* mkParamStack(QWidget* host, int spacing)
 {
     QVBoxLayout* lay = new QVBoxLayout(host);
@@ -274,7 +274,7 @@ QVBoxLayout* mkParamStack(QWidget* host, int spacing)
     return lay;
 }
 
-// Ïò²ÎÊıÕ»×·¼ÓÒ»ĞĞ
+// å‘å‚æ•°æ ˆè¿½åŠ ä¸€è¡Œ
 void addParamStackItem(QVBoxLayout* lay, QWidget* block)
 {
     if (!lay || !block) {

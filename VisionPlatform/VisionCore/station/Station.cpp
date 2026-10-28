@@ -1,6 +1,6 @@
 /**
  * @file Station.cpp
- * @brief StationÊµÏÖ
+ * @brief Stationå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -22,7 +22,7 @@
 namespace Vision {
 
 
-// °ó¶¨ÅäÖÃ²¢´´½¨ÏÂÊôÁ÷³Ì
+// ç»‘å®šé…ç½®å¹¶åˆ›å»ºä¸‹å±æµç¨‹
 Station::Station(StationCfg* config)
     : m_config(config)
     , m_listener(nullptr)
@@ -30,7 +30,7 @@ Station::Station(StationCfg* config)
     rebuildJobsUnlocked();
 }
 
-// ÊÍ·ÅÏÂÊôÁ÷³Ì
+// é‡Šæ”¾ä¸‹å±æµç¨‹
 Station::~Station()
 {
     std::lock_guard<std::recursive_mutex> lock(m_mutex);
@@ -45,13 +45,13 @@ Station::~Station()
     m_listener = nullptr;
 }
 
-// Ğ´ÈÕÖ¾£¨Info£©
+// å†™æ—¥å¿—ï¼ˆInfoï¼‰
 void Station::log(const std::string& line)
 {
     log(RunLogInfo, line);
 }
 
-// ½á¹¹»¯¹¤Õ¾ÈÕÖ¾
+// ç»“æ„åŒ–å·¥ç«™æ—¥å¿—
 void Station::log(RunLogLevel level, const std::string& message)
 {
     std::lock_guard<std::recursive_mutex> lock(m_mutex);
@@ -67,12 +67,12 @@ void Station::log(RunLogLevel level, const std::string& message)
     m_listener->onRunLog(ev);
 }
 
-// ÉèÖÃ¼àÌı²¢ÏÂ·¢µ½¸÷ Job
+// è®¾ç½®ç›‘å¬å¹¶ä¸‹å‘åˆ°å„ Job
 void Station::setListener(IRunListener* listener)
 {
     std::lock_guard<std::recursive_mutex> lock(m_mutex);
     m_listener = listener;
-    // Çå¿Õ¼àÌıÊ±²»Åö config->id£¬±ÜÃâ stations À©ÈİºóĞü¿ÕÖ¸Õë´¥·¢ bad_alloc
+    // æ¸…ç©ºç›‘å¬æ—¶ä¸ç¢° config->idï¼Œé¿å… stations æ‰©å®¹åæ‚¬ç©ºæŒ‡é’ˆè§¦å‘ bad_alloc
     ObjectId sid;
     if (listener && m_config) {
         sid = m_config->id;
@@ -87,14 +87,14 @@ void Station::setListener(IRunListener* listener)
     }
 }
 
-// °´µ±Ç°ÅäÖÃÖØ½¨ Job ÁĞ±í
+// æŒ‰å½“å‰é…ç½®é‡å»º Job åˆ—è¡¨
 void Station::rebuildJobs()
 {
     std::lock_guard<std::recursive_mutex> lock(m_mutex);
     rebuildJobsUnlocked();
 }
 
-// ÖØ½¨£¨ÒÑ³ÖËø£©
+// é‡å»ºï¼ˆå·²æŒé”ï¼‰
 void Station::rebuildJobsUnlocked()
 {
     std::map<std::string, Job*> kept;
@@ -144,7 +144,7 @@ void Station::rebindConfig(StationCfg* config)
     rebuildJobsUnlocked();
 }
 
-// °´ id ²éÕÒÁ÷³ÌÊµÀı
+// æŒ‰ id æŸ¥æ‰¾æµç¨‹å®ä¾‹
 Job* Station::findJob(const ObjectId& id) const
 {
     std::lock_guard<std::recursive_mutex> lock(m_mutex);
@@ -156,7 +156,7 @@ Job* Station::findJob(const ObjectId& id) const
     return 0;
 }
 
-// ²éÕÒ°üº¬¸Ã¹¤¾ßµÄÁ÷³ÌÊµÀı
+// æŸ¥æ‰¾åŒ…å«è¯¥å·¥å…·çš„æµç¨‹å®ä¾‹
 Job* Station::findJobOfTool(const ObjectId& toolId) const
 {
     std::lock_guard<std::recursive_mutex> lock(m_mutex);
@@ -168,7 +168,7 @@ Job* Station::findJobOfTool(const ObjectId& toolId) const
     return 0;
 }
 
-// °´ÏÂ±êÈ¡Á÷³Ì
+// æŒ‰ä¸‹æ ‡å–æµç¨‹
 Job* Station::jobAt(int index) const
 {
     std::lock_guard<std::recursive_mutex> lock(m_mutex);
@@ -178,21 +178,21 @@ Job* Station::jobAt(int index) const
     return m_jobs[static_cast<size_t>(index)];
 }
 
-// ¿ªÊ¼Ñ­»·
+// å¼€å§‹å¾ªç¯
 void Station::start()
 {
     std::lock_guard<std::recursive_mutex> lock(m_mutex);
     m_runtime.running = true;
 }
 
-// Í£Ö¹Ñ­»·
+// åœæ­¢å¾ªç¯
 void Station::stop()
 {
     std::lock_guard<std::recursive_mutex> lock(m_mutex);
     m_runtime.running = false;
 }
 
-// Çå¿ÕÈ«²¿Á÷³ÌÔËĞĞÌ¬Óë×ÜÏß
+// æ¸…ç©ºå…¨éƒ¨æµç¨‹è¿è¡Œæ€ä¸æ€»çº¿
 void Station::clearAllRuntimes()
 {
     std::lock_guard<std::recursive_mutex> lock(m_mutex);
@@ -204,25 +204,30 @@ void Station::clearAllRuntimes()
     bus.clear();
 }
 
-// ÅÜÒ»ÂÖÆôÓÃÖĞµÄÁ÷³Ì£¨´®ĞĞ£©
+// è·‘ä¸€è½®å¯ç”¨ä¸­çš„æµç¨‹ï¼ˆä¸²è¡Œï¼‰
 StationRunRst Station::tick(Solution* sol)
 {
     return tick(sol, 0);
 }
 
-// ÅÜÒ»ÂÖ£»²¢ĞĞÊ±ÓÃÏß³Ì³Ø£¨³ÖËøÖÁÕûÖÜÆÚ½áÊø£¬½ûÖ¹ÖĞÍ¾ rebuild£©
-StationRunRst Station::tick(Solution* sol, ThreadPool* pool)
+// è·‘ä¸€è½®ï¼›å¹¶è¡Œæ—¶ç”¨çº¿ç¨‹æ± ï¼ˆæŒé”è‡³æ•´å‘¨æœŸç»“æŸï¼Œç¦æ­¢ä¸­é€” rebuildï¼‰
+StationRunRst Station::tick(Solution* sol, ThreadPool* pool, bool includeCalled)
 {
     std::lock_guard<std::recursive_mutex> lock(m_mutex);
     StationRunRst sr;
     StageTimer watch;
     watch.begin("cycle");
+    if (sol && sol->haltAll) {
+        sr.ok = false;
+        sr.summary = std::string(Translate::tr("åœå…¨éƒ¨"));
+        return sr;
+    }
     if (!m_config) {
-        sr.summary = std::string(Translate::tr("Ã»ÓĞ¹¤Õ¾"));
+        sr.summary = std::string(Translate::tr("æ²¡æœ‰å·¥ç«™"));
         return sr;
     }
     if (!m_config->enabled) {
-        sr.summary = std::string(Translate::tr("¹¤Õ¾Î´Ê¹ÄÜ"));
+        sr.summary = std::string(Translate::tr("å·¥ç«™æœªä½¿èƒ½"));
         sr.ok = true;
         return sr;
     }
@@ -232,12 +237,34 @@ StationRunRst Station::tick(Solution* sol, ThreadPool* pool)
     std::vector<Job*> enabled;
     for (size_t i = 0; i < m_jobs.size(); ++i) {
         Job* job = m_jobs[i];
-        if (job && job->config() && job->config()->enabled) {
-            enabled.push_back(job);
+        if (!job || !job->config() || !job->config()->enabled) {
+            continue;
         }
+        const ExecWay way = job->config()->execMode;
+        if (way == ExecStopped || way == ExecUnloadOnce) {
+            continue;
+        }
+        if (way == ExecCalled && !includeCalled) {
+            continue;
+        }
+        if (way == ExecLoadOnce) {
+            const std::string id = job->config()->id.toString();
+            bool seen = false;
+            for (size_t k = 0; k < m_loadOnce.size(); ++k) {
+                if (m_loadOnce[k] == id) {
+                    seen = true;
+                    break;
+                }
+            }
+            if (seen) {
+                continue;
+            }
+            m_loadOnce.push_back(id);
+        }
+        enabled.push_back(job);
     }
 
-    // ¸÷ Job ÒÑ³Ö¶ÀÁ¢ Tool/Alg ÊµÀı£»ScheduleParallel Ê±Ïß³Ì³Ø²¢ĞĞÅÜÁ÷³Ì
+    // å„ Job å·²æŒç‹¬ç«‹ Tool/Alg å®ä¾‹ï¼›ScheduleParallel æ—¶çº¿ç¨‹æ± å¹¶è¡Œè·‘æµç¨‹
     const bool parallel = (m_config->jobSchedule == ScheduleParallel && pool && enabled.size() > 1);
     std::vector<ToolOut> outs(enabled.size());
 
@@ -270,6 +297,10 @@ StationRunRst Station::tick(Solution* sol, ThreadPool* pool)
             bus.insert(job->config()->id.toString() + ".fromJobId", job->config()->id.toString());
             if (!r.ok) {
                 sr.ok = false;
+                if (sol && (m_config->failPolicy == FailStopAll
+                            || job->config()->failPolicy == FailStopAll)) {
+                    sol->haltAll = true;
+                }
             }
         }
     } else {
@@ -287,11 +318,14 @@ StationRunRst Station::tick(Solution* sol, ThreadPool* pool)
             bus.insert(job->config()->id.toString() + ".fromJobId", job->config()->id.toString());
             if (!r.ok) {
                 sr.ok = false;
-                if (m_config->failPolicy == FailStopStation
-                    || job->config()->failPolicy == FailStopStation) {
-                    if (m_config->jobSchedule == ScheduleSequence) {
-                        break;
-                    }
+                const bool stopAll = m_config->failPolicy == FailStopAll
+                    || job->config()->failPolicy == FailStopAll;
+                if (stopAll && sol) {
+                    sol->haltAll = true;
+                }
+                if (stopAll || (m_config->failPolicy != FailContinue
+                                && m_config->jobSchedule == ScheduleSequence)) {
+                    break;
                 }
             }
         }
@@ -299,7 +333,7 @@ StationRunRst Station::tick(Solution* sol, ThreadPool* pool)
 
     watch.end("cycle");
     sr.cycleMs = static_cast<int>(watch.ms("cycle"));
-    sr.summary = Translate::format("{0}  {1} ÌõÁ÷³Ì  {2}ms",
+    sr.summary = Translate::format("{0}  {1} æ¡æµç¨‹  {2}ms",
                                    sr.ok ? std::string("OK") : std::string("NG"),
                                    std::to_string(sr.jobsRun),
                                    std::to_string(sr.cycleMs));
@@ -307,35 +341,92 @@ StationRunRst Station::tick(Solution* sol, ThreadPool* pool)
     m_runtime.lastCycleMs = sr.cycleMs;
     m_runtime.lastSummary = sr.summary;
     log(sr.ok ? RunLogInfo : RunLogWarn,
-        Translate::format("¹¤Õ¾½áÊø {0}  {1}", m_config->name, sr.summary));
+        Translate::format("å·¥ç«™ç»“æŸ {0}  {1}", m_config->name, sr.summary));
     return sr;
 }
 
-// µ±Ç°ÅäÖÃ
+StationRunRst Station::run(ExecMode mode, const ObjectId& jobId, Solution* sol)
+{
+    (void)mode;
+    std::lock_guard<std::recursive_mutex> lock(m_mutex);
+    StationRunRst sr;
+    if (sol && sol->haltAll) {
+        sr.ok = false;
+        sr.summary = std::string(Translate::tr("åœå…¨éƒ¨"));
+        return sr;
+    }
+    if (!m_config) {
+        sr.summary = std::string(Translate::tr("æ²¡æœ‰å·¥ç«™"));
+        return sr;
+    }
+    Job* job = 0;
+    for (size_t i = 0; i < m_jobs.size(); ++i) {
+        if (m_jobs[i] && m_jobs[i]->config() && m_jobs[i]->config()->id == jobId) {
+            job = m_jobs[i];
+            break;
+        }
+    }
+    if (!job) {
+        sr.summary = std::string(Translate::tr("æ²¡æœ‰æµç¨‹"));
+        return sr;
+    }
+    job->initAutoParas();
+    const ToolOut r = job->run(sol);
+    sr.jobsRun = 1;
+    sr.image = r.image;
+    sr.objects = r.objects;
+    sr.source = r.source;
+    sr.ok = r.ok;
+    bus.insert(job->config()->id.toString() + ".ok", r.ok);
+    if (!r.ok && sol && (m_config->failPolicy == FailStopAll || job->config()->failPolicy == FailStopAll)) {
+        sol->haltAll = true;
+    }
+    sr.summary = sr.ok ? std::string("OK") : std::string("NG");
+    m_runtime.lastOk = sr.ok;
+    m_runtime.lastSummary = sr.summary;
+    return sr;
+}
+
+void Station::runUnloadOnce(Solution* sol)
+{
+    std::lock_guard<std::recursive_mutex> lock(m_mutex);
+    for (size_t i = 0; i < m_jobs.size(); ++i) {
+        Job* job = m_jobs[i];
+        if (!job || !job->config() || !job->config()->enabled) {
+            continue;
+        }
+        if (job->config()->execMode != ExecUnloadOnce && !job->config()->runOnUnloadOnce) {
+            continue;
+        }
+        job->initAutoParas();
+        job->run(sol);
+    }
+}
+
 StationCfg* Station::config() const
 {
     return m_config;
 }
 
-// ÔËĞĞÌ¬
+// è¿è¡Œæ€
 StationRuntime& Station::runtime()
 {
     return m_runtime;
 }
 
-// ÔËĞĞÌ¬£¨Ö»¶Á£©
+// è¿è¡Œæ€ï¼ˆåªè¯»ï¼‰
 const StationRuntime& Station::runtime() const
 {
     return m_runtime;
 }
 
-// Á÷³ÌÊı
+// æµç¨‹æ•°
 int Station::jobCount() const
 {
     return static_cast<int>(m_jobs.size());
 }
 
-// ÊÇ·ñÔËĞĞÖĞ
+// æ˜¯å¦è¿è¡Œä¸­
 bool Station::isRunning() const
 {
     return m_runtime.running;

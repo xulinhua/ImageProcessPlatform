@@ -1,6 +1,6 @@
 /**
  * @file StackLayer.h
- * @brief StackLayerÍ·ÎÄ¼ş
+ * @brief StackLayerå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -14,7 +14,7 @@
 #include <QHash>
 #include <memory>
 namespace HsCtrl {
-/** @class StackLayer @brief µş²ã£º½á¹û¼¸ºÎ¡¢Í¼Ôª±íÓëÏÔÒş */
+/** @class StackLayer @brief å å±‚ï¼šç»“æœå‡ ä½•ã€å›¾å…ƒè¡¨ä¸æ˜¾éš */
 class StackLayer {
 public:
     StackLayer();

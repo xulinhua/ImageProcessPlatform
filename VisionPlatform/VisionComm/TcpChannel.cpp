@@ -1,6 +1,6 @@
 /**
  * @file TcpChannel.cpp
- * @brief TcpChannelÊµÏÖ
+ * @brief TcpChannelå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -17,14 +17,14 @@ namespace Vision {
 
 namespace {
 
-// ¹Ø±Õ Nagle£¬Ğ¡°ü¾¡¿ì·¢³ö
+// å…³é—­ Nagleï¼Œå°åŒ…å°½å¿«å‘å‡º
 void setNoDelay(SOCKET sock)
 {
     BOOL on = TRUE;
     setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, reinterpret_cast<const char*>(&on), sizeof(on));
 }
 
-// ·Ç×èÈûÁ¬½Ó£¬ÔÚ³¬Ê±ÄÚµÈµ½³É¹¦»òÊ§°Ü
+// éé˜»å¡è¿æ¥ï¼Œåœ¨è¶…æ—¶å†…ç­‰åˆ°æˆåŠŸæˆ–å¤±è´¥
 bool connectWithTimeout(SOCKET sock, const sockaddr_in& addr, int timeoutMs, std::string* err)
 {
     u_long nb = 1;
@@ -36,12 +36,12 @@ bool connectWithTimeout(SOCKET sock, const sockaddr_in& addr, int timeoutMs, std
         return true;
     }
     if (WSAGetLastError() != WSAEWOULDBLOCK && WSAGetLastError() != WSAEINPROGRESS) {
-        setCommErr(err, Vision::acpToUtf8("TCP Á¬½ÓÊ§°Ü"));
+        setCommErr(err, "TCP è¿æ¥å¤±è´¥");
         return false;
     }
     const int w = commWaitSocket(sock, false, timeoutMs <= 0 ? 3000 : timeoutMs);
     if (w <= 0) {
-        setCommErr(err, w == 0 ? "TCP Á¬½Ó³¬Ê±" : "TCP Á¬½ÓÊ§°Ü");
+        setCommErr(err, w == 0 ? "TCP è¿æ¥è¶…æ—¶" : "TCP è¿æ¥å¤±è´¥");
         return false;
     }
     int soerr = 0;
@@ -50,7 +50,7 @@ bool connectWithTimeout(SOCKET sock, const sockaddr_in& addr, int timeoutMs, std
     nb = 0;
     ioctlsocket(sock, FIONBIO, &nb);
     if (soerr != 0) {
-        setCommErr(err, Vision::acpToUtf8("TCP Á¬½ÓÊ§°Ü"));
+        setCommErr(err, "TCP è¿æ¥å¤±è´¥");
         return false;
     }
     return true;
@@ -58,74 +58,135 @@ bool connectWithTimeout(SOCKET sock, const sockaddr_in& addr, int timeoutMs, std
 
 } // namespace
 
-// Ì×½Ó×ÖÖÃÎªÎ´Á¬½Ó
+// å¥—æ¥å­—ç½®ä¸ºæœªè¿æ¥
 TcpClientChannel::TcpClientChannel()
     : m_sock(INVALID_SOCKET)
+    , m_port(0)
+    , m_timeoutMs(3000)
+    , m_autoReconnect(false)
+    , m_stopReconnect(false)
 {
 }
 
-// Îö¹¹Ê±¶Ï¿ª
+// ææ„æ—¶æ–­å¼€
 TcpClientChannel::~TcpClientChannel()
 {
     close();
 }
 
-// Á¬µ½Ö÷»úºÍ¶Ë¿Ú£¬²¢¼ÇÏÂ¶Ô¶ËÎÄ±¾
-bool TcpClientChannel::open(const ParamMap& params, std::string* err)
+// è¿åˆ°ä¸»æœºå’Œç«¯å£ï¼Œå¹¶è®°ä¸‹å¯¹ç«¯æ–‡æœ¬
+bool TcpClientChannel::connectOnce(std::string* err)
 {
-    close();
-    commNetEnsure();
-    const std::string host = params.value("host").toString();
-    const int port = params.value("port").toInt(9000);
     unsigned long ip = 0;
-    if (!commResolveIpv4(host, &ip, err)) {
+    if (!commResolveIpv4(m_host, &ip, err)) {
         return false;
     }
-    if (port <= 0 || port > 65535) {
-        setCommErr(err, Vision::acpToUtf8("¶Ë¿ÚÎŞĞ§"));
-        return false;
-    }
-    m_sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-    if (m_sock == INVALID_SOCKET) {
-        setCommErr(err, Vision::acpToUtf8("´´½¨Ì×½Ó×ÖÊ§°Ü"));
+    SOCKET sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    if (sock == INVALID_SOCKET) {
+        setCommErr(err, "åˆ›å»ºå¥—æ¥å­—å¤±è´¥");
         return false;
     }
     sockaddr_in addr;
     std::memset(&addr, 0, sizeof(addr));
     addr.sin_family = AF_INET;
     addr.sin_addr.s_addr = ip;
-    addr.sin_port = htons(static_cast<u_short>(port));
-    const int timeout = params.value("timeoutMs").toInt(3000);
-    if (!connectWithTimeout(m_sock, addr, timeout, err)) {
-        close();
+    addr.sin_port = htons(static_cast<u_short>(m_port));
+    if (!connectWithTimeout(sock, addr, m_timeoutMs, err)) {
+        closesocket(sock);
         return false;
     }
-    setNoDelay(m_sock);
+    setNoDelay(sock);
     char ipText[64];
     inet_ntop(AF_INET, &addr.sin_addr, ipText, sizeof(ipText));
     char buf[80];
-    sprintf_s(buf, "%s:%d", ipText, port);
+    sprintf_s(buf, "%s:%d", ipText, m_port);
+    std::lock_guard<std::mutex> lock(m_mu);
+    if (m_stopReconnect.load() && m_autoReconnect) {
+        closesocket(sock);
+        return false;
+    }
+    if (m_sock != INVALID_SOCKET) {
+        closesocket(m_sock);
+    }
+    m_sock = sock;
     m_remote = buf;
     return true;
 }
 
-// ¶Ï¿ª²¢Çå¶Ô¶ËÎÄ±¾
+void TcpClientChannel::reconnectMain()
+{
+    int backoff = 1000;
+    while (!m_stopReconnect.load()) {
+        bool need = false;
+        {
+            std::lock_guard<std::mutex> lock(m_mu);
+            need = m_sock == INVALID_SOCKET;
+        }
+        if (!need) {
+            backoff = 1000;
+            Sleep(200);
+            continue;
+        }
+        std::string err;
+        if (connectOnce(&err)) {
+            backoff = 1000;
+        } else {
+            Sleep(static_cast<DWORD>(backoff));
+            if (backoff < 10000) {
+                backoff *= 2;
+            }
+            if (backoff > 10000) {
+                backoff = 10000;
+            }
+        }
+    }
+}
+
+bool TcpClientChannel::open(const ParamMap& params, std::string* err)
+{
+    close();
+    commNetEnsure();
+    m_host = params.value("host").toString();
+    m_port = params.value("port").toInt(9000);
+    m_timeoutMs = params.value("timeoutMs").toInt(3000);
+    m_autoReconnect = params.value("autoReconnect").toBool(false);
+    if (m_port <= 0 || m_port > 65535) {
+        setCommErr(err, "ç«¯å£æ— æ•ˆ");
+        return false;
+    }
+    m_stopReconnect.store(false);
+    const bool ok = connectOnce(err);
+    if (m_autoReconnect) {
+        m_reconnectThread = std::thread(&TcpClientChannel::reconnectMain, this);
+        return true;
+    }
+    return ok;
+}
+
+// æ–­å¼€å¹¶æ¸…å¯¹ç«¯æ–‡æœ¬ã€‚è‡ªåŠ¨é‡è¿çº¿ç¨‹å…ˆåœæ‰
 void TcpClientChannel::close()
 {
+    m_stopReconnect.store(true);
+    if (m_reconnectThread.joinable() && m_reconnectThread.get_id() != std::this_thread::get_id()) {
+        m_reconnectThread.join();
+    }
+    std::lock_guard<std::mutex> lock(m_mu);
     if (m_sock != INVALID_SOCKET) {
         closesocket(m_sock);
         m_sock = INVALID_SOCKET;
     }
     m_remote.clear();
+    m_autoReconnect = false;
 }
 
-// Ì×½Ó×ÖÊÇ·ñÓĞĞ§
+// å¥—æ¥å­—æ˜¯å¦æœ‰æ•ˆ
 bool TcpClientChannel::isOpen() const
 {
+    std::lock_guard<std::mutex> lock(m_mu);
     return m_sock != INVALID_SOCKET;
 }
 
-// ÒÑÁ¬½ÓÊ±·µ»Ø¶Ô¶ËµØÖ·
+// å·²è¿æ¥æ—¶è¿”å›å¯¹ç«¯åœ°å€
 std::vector<CommPeer> TcpClientChannel::peers() const
 {
     std::vector<CommPeer> list;
@@ -137,39 +198,63 @@ std::vector<CommPeer> TcpClientChannel::peers() const
     return list;
 }
 
-// °ÑÕû¶Î×Ö½Ú·¢¸øÒÑÁ¬½Ó¶Ô¶Ë
+// æŠŠæ•´æ®µå­—èŠ‚å‘ç»™å·²è¿æ¥å¯¹ç«¯
 bool TcpClientChannel::write(const std::string&, const CommBytes& data, int timeoutMs, std::string* err)
 {
-    if (!isOpen()) {
-        setCommErr(err, Vision::acpToUtf8("Í¨µÀÎ´´ò¿ª"));
+    SOCKET sock = INVALID_SOCKET;
+    {
+        std::lock_guard<std::mutex> lock(m_mu);
+        sock = m_sock;
+    }
+    if (sock == INVALID_SOCKET) {
+        setCommErr(err, "é€šé“æœªæ‰“å¼€");
         return false;
     }
     if (data.empty()) {
         return true;
     }
-    return commSendAll(m_sock, data, timeoutMs <= 0 ? 1000 : timeoutMs, err);
+    if (!commSendAll(sock, data, timeoutMs <= 0 ? 1000 : timeoutMs, err)) {
+        std::lock_guard<std::mutex> lock(m_mu);
+        if (m_sock == sock) {
+            closesocket(m_sock);
+            m_sock = INVALID_SOCKET;
+            m_remote.clear();
+        }
+        return false;
+    }
+    return true;
 }
 
-// ¶ÁÒ»Åú£»¶Ô¶Ë¹Ø±ÕÔò¶Ï¿ª
+// è¯»ä¸€æ‰¹ï¼›å¯¹ç«¯å…³é—­åˆ™æ–­å¼€
 CommBytes TcpClientChannel::read(const std::string&, int maxBytes, int timeoutMs, std::string* err)
 {
     CommBytes out;
-    if (!isOpen()) {
-        setCommErr(err, Vision::acpToUtf8("Í¨µÀÎ´´ò¿ª"));
+    SOCKET sock = INVALID_SOCKET;
+    {
+        std::lock_guard<std::mutex> lock(m_mu);
+        sock = m_sock;
+    }
+    if (sock == INVALID_SOCKET) {
+        setCommErr(err, "é€šé“æœªæ‰“å¼€");
         return out;
     }
-    const int rc = commRecvSome(m_sock, maxBytes, timeoutMs, &out, err);
+    const int rc = commRecvSome(sock, maxBytes, timeoutMs, &out, err);
     if (rc == -2) {
-        setCommErr(err, Vision::acpToUtf8("¶Ô¶ËÒÑ¹Ø±Õ"));
-        close();
+        setCommErr(err, "å¯¹ç«¯å·²å…³é—­");
+        std::lock_guard<std::mutex> lock(m_mu);
+        if (m_sock == sock) {
+            closesocket(m_sock);
+            m_sock = INVALID_SOCKET;
+            m_remote.clear();
+        }
         out.clear();
     } else if (rc == 0 && timeoutMs > 0) {
-        setCommErr(err, Vision::acpToUtf8("¶Á³¬Ê±"));
+        setCommErr(err, "è¯»è¶…æ—¶");
     }
     return out;
 }
 
-// °Ñµ±Ç°¿É¶ÁÊı¾İ¶ªµô
+// æŠŠå½“å‰å¯è¯»æ•°æ®ä¸¢æ‰
 void TcpClientChannel::drain(const std::string&)
 {
     if (!isOpen()) {
@@ -180,40 +265,42 @@ void TcpClientChannel::drain(const std::string&)
     }
 }
 
-// ¿Í»§¶ËÃ»ÓĞ¶àÁ¬½Ó£¬²»µÈ´ı½ÓÈë
+// å®¢æˆ·ç«¯æ²¡æœ‰å¤šè¿æ¥ï¼Œä¸ç­‰å¾…æ¥å…¥
 std::string TcpClientChannel::waitIncoming(int)
 {
     return std::string();
 }
 
-// ¼àÌıÌ×½Ó×ÖÖÃÎªÎ´´ò¿ª
+// ç›‘å¬å¥—æ¥å­—ç½®ä¸ºæœªæ‰“å¼€
 TcpServerChannel::TcpServerChannel()
     : m_listen(INVALID_SOCKET)
     , m_open(false)
     , m_run(false)
     , m_nextId(1)
+    , m_maxClients(FD_SETSIZE - 1)
+    , m_rxLimit(8 * 1024 * 1024)
 {
 }
 
-// Îö¹¹Ê±Í£Ö¹¼àÌı
+// ææ„æ—¶åœæ­¢ç›‘å¬
 TcpServerChannel::~TcpServerChannel()
 {
     close();
 }
 
-// °ó¶¨¶Ë¿Ú²¢À­Æğ½ÓÈëÏß³Ì
+// ç»‘å®šç«¯å£å¹¶æ‹‰èµ·æ¥å…¥çº¿ç¨‹
 bool TcpServerChannel::open(const ParamMap& params, std::string* err)
 {
     close();
     commNetEnsure();
     const int port = params.value("port").toInt(9000);
     if (port <= 0 || port > 65535) {
-        setCommErr(err, Vision::acpToUtf8("¶Ë¿ÚÎŞĞ§"));
+        setCommErr(err, "ç«¯å£æ— æ•ˆ");
         return false;
     }
     m_listen = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (m_listen == INVALID_SOCKET) {
-        setCommErr(err, Vision::acpToUtf8("´´½¨Ì×½Ó×ÖÊ§°Ü"));
+        setCommErr(err, "åˆ›å»ºå¥—æ¥å­—å¤±è´¥");
         return false;
     }
     BOOL reuse = TRUE;
@@ -224,12 +311,16 @@ bool TcpServerChannel::open(const ParamMap& params, std::string* err)
     addr.sin_addr.s_addr = htonl(INADDR_ANY);
     addr.sin_port = htons(static_cast<u_short>(port));
     if (bind(m_listen, reinterpret_cast<sockaddr*>(&addr), sizeof(addr)) != 0) {
-        setCommErr(err, Vision::acpToUtf8("¶Ë¿Ú°ó¶¨Ê§°Ü"));
+        setCommErr(err, "ç«¯å£ç»‘å®šå¤±è´¥");
         close();
         return false;
     }
-    if (listen(m_listen, 8) != 0) {
-        setCommErr(err, Vision::acpToUtf8("¼àÌıÊ§°Ü"));
+    const int requested = params.value("maxClients").toInt(FD_SETSIZE - 1);
+    m_maxClients = requested < 1 ? 1 : requested;
+    const int rxLimit = params.value("rxLimit").toInt(8 * 1024 * 1024);
+    m_rxLimit = rxLimit < 64 * 1024 ? 64 * 1024 : rxLimit;
+    if (listen(m_listen, m_maxClients) != 0) {
+        setCommErr(err, "ç›‘å¬å¤±è´¥");
         close();
         return false;
     }
@@ -239,7 +330,7 @@ bool TcpServerChannel::open(const ParamMap& params, std::string* err)
     return true;
 }
 
-// Í£Ïß³Ì¡¢¹Ø¼àÌı¡¢¶Ï¿ªÈ«²¿¿Í»§¶Ë
+// åœçº¿ç¨‹ã€å…³ç›‘å¬ã€æ–­å¼€å…¨éƒ¨å®¢æˆ·ç«¯
 void TcpServerChannel::close()
 {
     {
@@ -264,14 +355,14 @@ void TcpServerChannel::close()
     m_clients.clear();
 }
 
-// ÊÇ·ñÈÔÔÚ¼àÌı
+// æ˜¯å¦ä»åœ¨ç›‘å¬
 bool TcpServerChannel::isOpen() const
 {
     std::lock_guard<std::mutex> lock(m_mu);
     return m_open;
 }
 
-// ÁĞ³öÒÑ½ÓÈëµÄ¿Í»§¶Ë
+// åˆ—å‡ºå·²æ¥å…¥çš„å®¢æˆ·ç«¯
 std::vector<CommPeer> TcpServerChannel::peers() const
 {
     std::lock_guard<std::mutex> lock(m_mu);
@@ -285,7 +376,7 @@ std::vector<CommPeer> TcpServerChannel::peers() const
     return list;
 }
 
-// ¹Øµô²¢ÒÆ³ıÒ»¸ö¿Í»§¶Ë
+// å…³æ‰å¹¶ç§»é™¤ä¸€ä¸ªå®¢æˆ·ç«¯
 void TcpServerChannel::dropClient(const std::string& id)
 {
     std::map<std::string, Client>::iterator it = m_clients.find(id);
@@ -298,7 +389,7 @@ void TcpServerChannel::dropClient(const std::string& id)
     m_clients.erase(it);
 }
 
-// ½ÓÈëĞÂ¿Í»§¶Ë£¬²¢°ÑÊÕµ½µÄ×Ö½Ú·Å½ø»º³å
+// æ¥å…¥æ–°å®¢æˆ·ç«¯ï¼Œå¹¶æŠŠæ”¶åˆ°çš„å­—èŠ‚æ”¾è¿›ç¼“å†²
 void TcpServerChannel::threadMain()
 {
     while (true) {
@@ -317,16 +408,20 @@ void TcpServerChannel::threadMain()
         if (listenSock == INVALID_SOCKET) {
             break;
         }
-        fd_set rfds;
-        FD_ZERO(&rfds);
-        FD_SET(listenSock, &rfds);
+        std::vector<WSAPOLLFD> fds;
+        WSAPOLLFD listenFd;
+        listenFd.fd = listenSock;
+        listenFd.events = POLLIN;
+        listenFd.revents = 0;
+        fds.push_back(listenFd);
         for (size_t i = 0; i < socks.size(); ++i) {
-            FD_SET(socks[i].second, &rfds);
+            WSAPOLLFD one;
+            one.fd = socks[i].second;
+            one.events = POLLIN;
+            one.revents = 0;
+            fds.push_back(one);
         }
-        timeval tv;
-        tv.tv_sec = 0;
-        tv.tv_usec = 100 * 1000;
-        const int rc = select(0, &rfds, 0, 0, &tv);
+        const int rc = WSAPoll(fds.data(), static_cast<ULONG>(fds.size()), 100);
         if (rc < 0) {
             std::lock_guard<std::mutex> lock(m_mu);
             if (!m_run) {
@@ -338,12 +433,12 @@ void TcpServerChannel::threadMain()
         if (!m_run) {
             break;
         }
-        if (FD_ISSET(listenSock, &rfds)) {
+        if (!fds.empty() && (fds[0].revents & POLLIN)) {
             sockaddr_in remote;
             int len = sizeof(remote);
             SOCKET client = accept(listenSock, reinterpret_cast<sockaddr*>(&remote), &len);
             if (client != INVALID_SOCKET) {
-                if (m_clients.size() + 1 >= FD_SETSIZE) {
+                if (static_cast<int>(m_clients.size()) + 1 >= m_maxClients) {
                     closesocket(client);
                 } else {
                     setNoDelay(client);
@@ -360,7 +455,7 @@ void TcpServerChannel::threadMain()
             }
         }
         for (size_t i = 0; i < socks.size(); ++i) {
-            if (!FD_ISSET(socks[i].second, &rfds)) {
+            if (i + 1 >= fds.size() || (fds[i + 1].revents & POLLIN) == 0) {
                 continue;
             }
             std::map<std::string, Client>::iterator it = m_clients.find(socks[i].first);
@@ -375,24 +470,27 @@ void TcpServerChannel::threadMain()
                 continue;
             }
             it->second.rx.insert(it->second.rx.end(), buf, buf + n);
+            if (static_cast<int>(it->second.rx.size()) > m_rxLimit) {
+                dropClient(it->first);
+            }
             m_cv.notify_all();
         }
     }
 }
 
-// ÏòÖ¸¶¨¿Í»§¶ËĞ´Õû¶Î×Ö½Ú
+// å‘æŒ‡å®šå®¢æˆ·ç«¯å†™æ•´æ®µå­—èŠ‚
 bool TcpServerChannel::write(const std::string& peerId, const CommBytes& data, int timeoutMs, std::string* err)
 {
     SOCKET sock = INVALID_SOCKET;
     {
         std::lock_guard<std::mutex> lock(m_mu);
         if (!m_open) {
-            setCommErr(err, Vision::acpToUtf8("Í¨µÀÎ´´ò¿ª"));
+            setCommErr(err, "é€šé“æœªæ‰“å¼€");
             return false;
         }
         std::map<std::string, Client>::iterator it = m_clients.find(peerId);
         if (it == m_clients.end()) {
-            setCommErr(err, Vision::acpToUtf8("Î´Ñ¡Ôñ¿Í»§¶Ë"));
+            setCommErr(err, "æœªé€‰æ‹©å®¢æˆ·ç«¯");
             return false;
         }
         sock = it->second.sock;
@@ -403,7 +501,7 @@ bool TcpServerChannel::write(const std::string& peerId, const CommBytes& data, i
     return commSendAll(sock, data, timeoutMs <= 0 ? 1000 : timeoutMs, err);
 }
 
-// ´ÓÖ¸¶¨¿Í»§¶ËµÄ»º³åÈ¡×Ö½Ú£¬Ã»ÓĞÔòµÈµ½³¬Ê±
+// ä»æŒ‡å®šå®¢æˆ·ç«¯çš„ç¼“å†²å–å­—èŠ‚ï¼Œæ²¡æœ‰åˆ™ç­‰åˆ°è¶…æ—¶
 CommBytes TcpServerChannel::read(const std::string& peerId, int maxBytes, int timeoutMs, std::string* err)
 {
     CommBytes out;
@@ -412,12 +510,12 @@ CommBytes TcpServerChannel::read(const std::string& peerId, int maxBytes, int ti
     }
     std::unique_lock<std::mutex> lock(m_mu);
     if (!m_open) {
-        setCommErr(err, Vision::acpToUtf8("Í¨µÀÎ´´ò¿ª"));
+        setCommErr(err, "é€šé“æœªæ‰“å¼€");
         return out;
     }
     std::map<std::string, Client>::iterator it = m_clients.find(peerId);
     if (it == m_clients.end()) {
-        setCommErr(err, Vision::acpToUtf8("Î´Ñ¡Ôñ¿Í»§¶Ë"));
+        setCommErr(err, "æœªé€‰æ‹©å®¢æˆ·ç«¯");
         return out;
     }
     if (it->second.rx.empty() && timeoutMs > 0) {
@@ -428,16 +526,16 @@ CommBytes TcpServerChannel::read(const std::string& peerId, int maxBytes, int ti
         it = m_clients.find(peerId);
     }
     if (!m_open) {
-        setCommErr(err, Vision::acpToUtf8("Í¨µÀÎ´´ò¿ª"));
+        setCommErr(err, "é€šé“æœªæ‰“å¼€");
         return out;
     }
     if (it == m_clients.end()) {
-        setCommErr(err, Vision::acpToUtf8("¿Í»§¶ËÒÑ¶Ï¿ª"));
+        setCommErr(err, "å®¢æˆ·ç«¯å·²æ–­å¼€");
         return out;
     }
     if (it->second.rx.empty()) {
         if (timeoutMs > 0) {
-            setCommErr(err, Vision::acpToUtf8("¶Á³¬Ê±"));
+            setCommErr(err, "è¯»è¶…æ—¶");
         }
         return out;
     }
@@ -448,7 +546,7 @@ CommBytes TcpServerChannel::read(const std::string& peerId, int maxBytes, int ti
     return out;
 }
 
-// ¶ªµôÖ¸¶¨¿Í»§¶Ë»òÈ«²¿¿Í»§¶ËµÄ½ÓÊÕ»º³å
+// ä¸¢æ‰æŒ‡å®šå®¢æˆ·ç«¯æˆ–å…¨éƒ¨å®¢æˆ·ç«¯çš„æ¥æ”¶ç¼“å†²
 void TcpServerChannel::drain(const std::string& peerId)
 {
     std::lock_guard<std::mutex> lock(m_mu);
@@ -464,7 +562,7 @@ void TcpServerChannel::drain(const std::string& peerId)
     }
 }
 
-// µÈµ½ÈÎÒ»¿Í»§¶Ë»º³åÀïÓĞÊı¾İ£¬·µ»ØÆä id
+// ç­‰åˆ°ä»»ä¸€å®¢æˆ·ç«¯ç¼“å†²é‡Œæœ‰æ•°æ®ï¼Œè¿”å›å…¶ id
 std::string TcpServerChannel::waitIncoming(int timeoutMs)
 {
     std::unique_lock<std::mutex> lock(m_mu);
@@ -488,13 +586,13 @@ std::string TcpServerChannel::waitIncoming(int timeoutMs)
     return std::string();
 }
 
-// ´«ÊäÀàĞÍ
+// ä¼ è¾“ç±»å‹
 CommTransport TcpClientChannel::transport() const
 {
     return TransportTcpClient;
 }
 
-// ´«ÊäÀàĞÍ
+// ä¼ è¾“ç±»å‹
 CommTransport TcpServerChannel::transport() const
 {
     return TransportTcpServer;

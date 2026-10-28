@@ -1,6 +1,6 @@
 /**
  * @file HsImageWindowMenu.cpp
- * @brief HsImageWindowMenu µœ÷
+ * @brief HsImageWindowMenuÂÆûÁé∞
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -12,28 +12,28 @@
 #include <QActionGroup>
 #include <QMenu>
 namespace HsCtrl {
-// ≤‚¡ø◊”≤Àµ•¿Ôµƒπ§æﬂ√˚
+// ÊµãÈáèÂ≠êËèúÂçïÈáåÁöÑÂ∑•ÂÖ∑Âêç
 static QString measureToolTitle(DrawTool tool)
 {
     switch (tool) {
     case ToolBrowse:
-        return QString::fromUtf8("‰Ø¿¿");
+        return QString::fromUtf8("ÊµèËßà");
     case ToolMeasureDist:
-        return QString::fromUtf8("æ‡¿Î");
+        return QString::fromUtf8("Ë∑ùÁ¶ª");
     case ToolMeasureAngle:
-        return QString::fromUtf8("º–Ω«");
+        return QString::fromUtf8("Â§πËßí");
     case ToolMeasureRadius:
-        return QString::fromUtf8("∞Îæ∂");
+        return QString::fromUtf8("ÂçäÂæÑ");
     case ToolMeasureRect:
-        return QString::fromUtf8("æÿ–Œ");
+        return QString::fromUtf8("Áü©ÂΩ¢");
     case ToolMeasureEllipse:
-        return QString::fromUtf8("Õ÷‘≤");
+        return QString::fromUtf8("Ê§≠ÂúÜ");
     default:
         return QString();
     }
 }
 
-// Õ˘≤‚¡ø≤Àµ•º”“ªœÓ£¨≤¢±Í≥ˆµ±«∞π§æﬂ
+// ÂæÄÊµãÈáèËèúÂçïÂä†‰∏ÄÈ°πÔºåÂπ∂Ê†áÂá∫ÂΩìÂâçÂ∑•ÂÖ∑
 static QAction* addMeasureTool(QMenu* menu, QActionGroup* group, DrawTool tool, DrawTool current)
 {
     QAction* act = menu->addAction(measureToolTitle(tool));
@@ -44,7 +44,7 @@ static QAction* addMeasureTool(QMenu* menu, QActionGroup* group, DrawTool tool, 
     return act;
 }
 
-// µØ≥ˆÕºœÒ¥∞ø⁄”“º¸≤Àµ•
+// ÂºπÂá∫ÂõæÂÉèÁ™óÂè£Âè≥ÈîÆËèúÂçï
 void HsImageWindowMenu::popup(HsImageWindow* window, const QPoint& globalPos,
                               bool hasImage, bool viewReady, bool canCancelDraw,
                               const QString& measureId)
@@ -53,15 +53,15 @@ void HsImageWindowMenu::popup(HsImageWindow* window, const QPoint& globalPos,
         return;
     }
     QMenu menu(window);
-    QAction* snapAct = menu.addAction(QString::fromUtf8("±£¥ÊøÏ’’..."));
-    QAction* origAct = menu.addAction(QString::fromUtf8("µº≥ˆ‘≠Õº..."));
+    QAction* snapAct = menu.addAction(QString::fromUtf8("‰øùÂ≠òÂø´ÁÖß..."));
+    QAction* origAct = menu.addAction(QString::fromUtf8("ÂØºÂá∫ÂéüÂõæ..."));
     origAct->setEnabled(hasImage);
 
-    QMenu* viewMenu = menu.addMenu(QString::fromUtf8(" ”Õº"));
-    QAction* zoomInAct = viewMenu->addAction(QString::fromUtf8("∑≈¥Û"));
-    QAction* zoomOutAct = viewMenu->addAction(QString::fromUtf8("Àı–°"));
-    QAction* fitAct = viewMenu->addAction(QString::fromUtf8("  ”¶¥∞ø⁄"));
-    QAction* resetAct = viewMenu->addAction(QString::fromUtf8(" µº œÒÀÿ"));
+    QMenu* viewMenu = menu.addMenu(QString::fromUtf8("ËßÜÂõæ"));
+    QAction* zoomInAct = viewMenu->addAction(QString::fromUtf8("ÊîæÂ§ß"));
+    QAction* zoomOutAct = viewMenu->addAction(QString::fromUtf8("Áº©Â∞è"));
+    QAction* fitAct = viewMenu->addAction(QString::fromUtf8("ÈÄÇÂ∫îÁ™óÂè£"));
+    QAction* resetAct = viewMenu->addAction(QString::fromUtf8("ÂÆûÈôÖÂÉèÁ¥†"));
     zoomInAct->setEnabled(viewReady);
     zoomOutAct->setEnabled(viewReady);
     fitAct->setEnabled(viewReady);
@@ -71,7 +71,7 @@ void HsImageWindowMenu::popup(HsImageWindow* window, const QPoint& globalPos,
     QActionGroup* measureGroup = nullptr;
     const std::vector<DrawTool> measureShown = window->measureTools();
     if (!measureShown.empty()) {
-        QMenu* measureMenu = menu.addMenu(QString::fromUtf8("≤‚¡ø"));
+        QMenu* measureMenu = menu.addMenu(QString::fromUtf8("ÊµãÈáè"));
         measureGroup = new QActionGroup(measureMenu);
         measureGroup->setExclusive(true);
         const DrawTool current = window->drawTool();
@@ -84,21 +84,21 @@ void HsImageWindowMenu::popup(HsImageWindow* window, const QPoint& globalPos,
             addMeasureTool(measureMenu, measureGroup, measureShown[i], current);
         }
         measureMenu->addSeparator();
-        clearMeasAct = measureMenu->addAction(QString::fromUtf8("«Â≥˝≤‚¡ø"));
+        clearMeasAct = measureMenu->addAction(QString::fromUtf8("Ê∏ÖÈô§ÊµãÈáè"));
         clearMeasAct->setEnabled(!window->measureResultLines().isEmpty());
     }
 
-    QMenu* showMenu = menu.addMenu(QString::fromUtf8("œ‘ æ"));
-    QAction* imageAct = showMenu->addAction(QString::fromUtf8("µ◊Õº"));
-    QAction* stackAct = showMenu->addAction(QString::fromUtf8("µ˛≤„"));
+    QMenu* showMenu = menu.addMenu(QString::fromUtf8("ÊòæÁ§∫"));
+    QAction* imageAct = showMenu->addAction(QString::fromUtf8("Â∫ïÂõæ"));
+    QAction* stackAct = showMenu->addAction(QString::fromUtf8("Âè†Â±Ç"));
     QAction* drawAct = nullptr;
     if (window->windowMode() != WindowRuntime) {
-        drawAct = showMenu->addAction(QString::fromUtf8("ªÊ÷∆"));
+        drawAct = showMenu->addAction(QString::fromUtf8("ÁªòÂà∂"));
         drawAct->setCheckable(true);
         drawAct->setChecked(window->isDrawingVisible());
     }
-    QAction* inspectAct = showMenu->addAction(QString::fromUtf8("œÒÀÿºÏ—È"));
-    QAction* hudAct = showMenu->addAction(QString::fromUtf8("◊¥Ã¨¿∏"));
+    QAction* inspectAct = showMenu->addAction(QString::fromUtf8("ÂÉèÁ¥†Ê£ÄÈ™å"));
+    QAction* hudAct = showMenu->addAction(QString::fromUtf8("Áä∂ÊÄÅÊ†è"));
     imageAct->setCheckable(true);
     stackAct->setCheckable(true);
     inspectAct->setCheckable(true);
@@ -108,24 +108,24 @@ void HsImageWindowMenu::popup(HsImageWindow* window, const QPoint& globalPos,
     inspectAct->setChecked(window->isPixelInspect());
     hudAct->setChecked(window->isHudVisible());
 
-    QMenu* barMenu = menu.addMenu(QString::fromUtf8("π§æﬂ¿∏"));
-    QAction* barVis = barMenu->addAction(QString::fromUtf8("œ‘ æπ§æﬂ¿∏"));
+    QMenu* barMenu = menu.addMenu(QString::fromUtf8("Â∑•ÂÖ∑Ê†è"));
+    QAction* barVis = barMenu->addAction(QString::fromUtf8("ÊòæÁ§∫Â∑•ÂÖ∑Ê†è"));
     barVis->setCheckable(true);
     barVis->setChecked(window->isOverlayToolbarVisible());
     QAction* measVis = nullptr;
     if (!window->measureTools().empty()) {
-        measVis = barMenu->addAction(QString::fromUtf8("œ‘ æ≤‚¡ø"));
+        measVis = barMenu->addAction(QString::fromUtf8("ÊòæÁ§∫ÊµãÈáè"));
         measVis->setCheckable(true);
         measVis->setChecked(window->isMeasureToolbarVisible());
     }
-    QMenu* dockMenu = barMenu->addMenu(QString::fromUtf8("Œª÷√"));
+    QMenu* dockMenu = barMenu->addMenu(QString::fromUtf8("‰ΩçÁΩÆ"));
     QActionGroup* dockGroup = new QActionGroup(dockMenu);
     dockGroup->setExclusive(true);
     const Qt::Corner corner = window->overlayToolbarCorner();
-    QAction* dockTl = dockMenu->addAction(QString::fromUtf8("◊Û…œ"));
-    QAction* dockTr = dockMenu->addAction(QString::fromUtf8("”“…œ"));
-    QAction* dockBl = dockMenu->addAction(QString::fromUtf8("◊Ûœ¬"));
-    QAction* dockBr = dockMenu->addAction(QString::fromUtf8("”“œ¬"));
+    QAction* dockTl = dockMenu->addAction(QString::fromUtf8("Â∑¶‰∏ä"));
+    QAction* dockTr = dockMenu->addAction(QString::fromUtf8("Âè≥‰∏ä"));
+    QAction* dockBl = dockMenu->addAction(QString::fromUtf8("Â∑¶‰∏ã"));
+    QAction* dockBr = dockMenu->addAction(QString::fromUtf8("Âè≥‰∏ã"));
     dockTl->setCheckable(true);
     dockTr->setCheckable(true);
     dockBl->setCheckable(true);
@@ -142,12 +142,12 @@ void HsImageWindowMenu::popup(HsImageWindow* window, const QPoint& globalPos,
     dockGroup->addAction(dockTr);
     dockGroup->addAction(dockBl);
     dockGroup->addAction(dockBr);
-    QMenu* orientMenu = barMenu->addMenu(QString::fromUtf8("≈≈¡–"));
+    QMenu* orientMenu = barMenu->addMenu(QString::fromUtf8("ÊéíÂàó"));
     QActionGroup* orientGroup = new QActionGroup(orientMenu);
     orientGroup->setExclusive(true);
     const Qt::Orientation orient = window->overlayToolbarOrientation();
-    QAction* orientV = orientMenu->addAction(QString::fromUtf8("¥π÷±"));
-    QAction* orientH = orientMenu->addAction(QString::fromUtf8("ÀÆ∆Ω"));
+    QAction* orientV = orientMenu->addAction(QString::fromUtf8("ÂûÇÁõ¥"));
+    QAction* orientH = orientMenu->addAction(QString::fromUtf8("Ê∞¥Âπ≥"));
     orientV->setCheckable(true);
     orientH->setCheckable(true);
     orientV->setChecked(orient == Qt::Vertical);
@@ -160,13 +160,13 @@ void HsImageWindowMenu::popup(HsImageWindow* window, const QPoint& globalPos,
     menu.addSeparator();
     QAction* delAct = nullptr;
     if (!measureId.isEmpty()) {
-        delAct = menu.addAction(QString::fromUtf8("…æ≥˝¥ÀœÓ"));
+        delAct = menu.addAction(QString::fromUtf8("Âà†Èô§Ê≠§È°π"));
     }
-    QAction* clearAct = menu.addAction(QString::fromUtf8("«Â≥˝œ‘ æ"));
+    QAction* clearAct = menu.addAction(QString::fromUtf8("Ê∏ÖÈô§ÊòæÁ§∫"));
     QAction* cancelAct = nullptr;
     if (canCancelDraw) {
         menu.addSeparator();
-        cancelAct = menu.addAction(QString::fromUtf8("»°œ˚ªÊ÷∆"));
+        cancelAct = menu.addAction(QString::fromUtf8("ÂèñÊ∂àÁªòÂà∂"));
     }
 
     QAction* chosen = menu.exec(globalPos);

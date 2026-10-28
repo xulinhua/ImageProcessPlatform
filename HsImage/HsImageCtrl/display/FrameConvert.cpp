@@ -1,6 +1,6 @@
 /**
  * @file FrameConvert.cpp
- * @brief FrameConvertÊµÏÖ
+ * @brief FrameConvertå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -14,7 +14,7 @@ namespace HsCtrl {
 
 namespace {
 
-// °´ĞĞ¿½±´ÏñËØ£¬Ô´²½³¤ÓëÄ¿±êĞĞ×Ö½ÚÊı¿ÉÒÔ²»Í¬
+// æŒ‰è¡Œæ‹·è´åƒç´ ï¼Œæºæ­¥é•¿ä¸ç›®æ ‡è¡Œå­—èŠ‚æ•°å¯ä»¥ä¸åŒ
 void copyRows(QImage* dst, const unsigned char* src, int srcStride, int rowBytes)
 {
     for (int y = 0; y < dst->height(); ++y) {
@@ -25,7 +25,7 @@ void copyRows(QImage* dst, const unsigned char* src, int srcStride, int rowBytes
 
 } // namespace
 
-// QImage ×ªÏÔÊ¾»º³å£º»Ò¶È±£³Ö£¬ÆäÓà×ª³É RGB888
+// QImage è½¬æ˜¾ç¤ºç¼“å†²ï¼šç°åº¦ä¿æŒï¼Œå…¶ä½™è½¬æˆ RGB888
 HsCommData::HsImage frameFromQImage(const QImage& img, int64_t frameId)
 {
     if (img.isNull() || img.width() <= 0 || img.height() <= 0) {
@@ -53,7 +53,7 @@ HsCommData::HsImage frameFromQImage(const QImage& img, int64_t frameId)
     return fb;
 }
 
-// ÏÔÊ¾»º³å×ª QImage£¬Î´Öª byte ±àÂë×ßÖğµãÈ¡Ñù
+// æ˜¾ç¤ºç¼“å†²è½¬ QImageï¼ŒæœªçŸ¥ byte ç¼–ç èµ°é€ç‚¹å–æ ·
 QImage qImageFromFrame(const HsCommData::HsImage& fb)
 {
     if (fb.isNull()) {

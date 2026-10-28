@@ -1,6 +1,6 @@
 /**
  * @file HalBlob.h
- * @brief HalBlobÍ·ÎÄ¼ş
+ * @brief HalBlobå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -10,23 +10,43 @@
 #define VISION_HALCONBLOB_H
 
 #include "AlgToolBase.h"
+#include "HalconCpp.h"
 
 namespace Vision {
 
 /**
  * @class HalBlob
- * @brief ¾ø¶Ô¡¢Ïà¶Ô¡¢¶¯Ì¬ãĞÖµ Blob£¨Halcon£©
+ * @brief ç»å¯¹ã€ç›¸å¯¹ã€åŠ¨æ€é˜ˆå€¼ Blobï¼ˆHalconï¼‰
  */
 class HalBlob : public AlgToolBase {
 public:
     std::string toolName() const { return "detect.blob"; }
-    AlgLibKind algLib() const { return AlgLibHal; }
+    AlgLibKind algLib() const { return AlgLibHal; }
     std::string version() const;
-    /** @brief °æ±¾±ä¸ü£¬Ö»×·¼Ó */
+    /** @brief ç‰ˆæœ¬å˜æ›´ï¼Œåªè¿½åŠ  */
     std::vector<VerNote> versionNotes() const;
-    /** @brief ÔÚËÑË÷ÓòÀï×öãĞÖµ·Ö¸î²¢Êä³öÁ¬Í¨Óò */
+    /** @brief åœ¨æœç´¢åŸŸé‡Œåšé˜ˆå€¼åˆ†å‰²å¹¶è¾“å‡ºè¿é€šåŸŸ */
+    int execute(const AlgToolIn& in, AlgToolOut* out) override {
+        if (!out) {
+            return HS_ERR_NULL;
+        }
+        *out = run(in);
+        if (out->ok) {
+            out->errCode = HS_OK;
+            return HS_OK;
+        }
+        if (out->errCode == HS_OK || out->errCode == 1) {
+            out->errCode = HS_ERR_OPERATOR;
+        }
+        return out->errCode;
+    }
     AlgToolOut run(const AlgToolIn& in);
     AlgToolBase* clone() const { return new HalBlob(); }
+
+private:
+    /** @brief è¿é€šã€è®¡æ•°å¹¶æ‰“åŒ…ã€‚é¢ç§¯ä¸Šé™ä¸º 0 æ—¶ä¸å°é¡¶ */
+    AlgToolOut packRegions(const HalconCpp::HObject& region, const AlgToolIn& in,
+                           double minArea, double maxArea, const std::string& okMsg) const;
 };
 
 }

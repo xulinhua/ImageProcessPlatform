@@ -77,3 +77,9 @@ HsImage/image_widget/
 HsImage/bin/
 HsImage/obj/
 HsImage/.vs/
+
+# 仓库内第三方库要入库。上面的 *.dll、*.lib、bin/ 会把新拷进来的文件挡住。
+!VisionPlatform/third_party/**/bin/
+!VisionPlatform/third_party/**/bin/**
+!VisionPlatform/third_party/**/*.dll
+!VisionPlatform/third_party/**/*.lib

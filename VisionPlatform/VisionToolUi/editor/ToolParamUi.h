@@ -1,6 +1,6 @@
 /**
  * @file ToolParamUi.h
- * @brief ToolParamUiÍ·ÎÄ¼ş
+ * @brief ToolParamUiå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -22,43 +22,43 @@ class QWidget;
 
 namespace Vision {
 
-/** @brief ²ÎÊıÒ³¸ùÑùÊ½£¨objectName=toolDebugParam£© */
+/** @brief å‚æ•°é¡µæ ¹æ ·å¼ï¼ˆobjectName=toolDebugParamï¼‰ */
 VISION_TOOLUI_API void initToolParamEditor(QWidget* editor);
-/** @brief ÎªÒ³ÄÚ Spin/Combo/Check/Label ²¹ objectName Óë¸ß¶È */
+/** @brief ä¸ºé¡µå†… Spin/Combo/Check/Label è¡¥ objectName ä¸é«˜åº¦ */
 VISION_TOOLUI_API void applyParamControlStyle(QWidget* root);
-/** @brief Ëø¶¨²ÎÊıÒ³¸ß¶ÈÎªÄÚÈİ¸ß¶È£¨bind/show ºóµ÷ÓÃ£© */
+/** @brief é”å®šå‚æ•°é¡µé«˜åº¦ä¸ºå†…å®¹é«˜åº¦ï¼ˆbind/show åè°ƒç”¨ï¼‰ */
 VISION_TOOLUI_API void finalizeParamEditorLayout(QWidget* editor);
 
-/** @brief ²ÎÊı±êÇ© */
+/** @brief å‚æ•°æ ‡ç­¾ */
 VISION_TOOLUI_API QLabel* mkParamLabel(QWidget* parent, const QString& text);
-/** @brief ÕûĞÍ²½½ø¿ò */
+/** @brief æ•´å‹æ­¥è¿›æ¡† */
 VISION_TOOLUI_API QSpinBox* mkParamSpin(QWidget* parent, int lo, int hi);
-/** @brief ¸¡µã²½½ø¿ò */
+/** @brief æµ®ç‚¹æ­¥è¿›æ¡† */
 VISION_TOOLUI_API QDoubleSpinBox* mkParamDSpin(QWidget* parent, double lo, double hi, int dec, double step = 1.0);
-/** @brief ÏÂÀ­¿ò */
+/** @brief ä¸‹æ‹‰æ¡† */
 VISION_TOOLUI_API QComboBox* mkParamCombo(QWidget* parent);
-/** @brief ¹´Ñ¡¿ò */
+/** @brief å‹¾é€‰æ¡† */
 VISION_TOOLUI_API QCheckBox* mkParamCheck(QWidget* parent, const QString& text);
 
 /**
- * @brief µ¥ÁĞ²ÎÊı£º±êÇ©ÔÚÉÏ¡¢¿Ø¼şÔÚÏÂ
- * @param parent ËŞÖ÷
- * @param label ±êÇ©ÎÄ×Ö
- * @param control ÒÑ´´½¨µÄ¿Ø¼ş
+ * @brief å•åˆ—å‚æ•°ï¼šæ ‡ç­¾åœ¨ä¸Šã€æ§ä»¶åœ¨ä¸‹
+ * @param parent å®¿ä¸»
+ * @param label æ ‡ç­¾æ–‡å­—
+ * @param control å·²åˆ›å»ºçš„æ§ä»¶
  */
 VISION_TOOLUI_API QWidget* mkParamCell(QWidget* parent, const QString& label, QWidget* control);
 
 /**
- * @brief Ò»ĞĞÁ½ÁĞ²ÎÊı£¨¸÷Õ¼°ë¿í£©
+ * @brief ä¸€è¡Œä¸¤åˆ—å‚æ•°ï¼ˆå„å åŠå®½ï¼‰
  */
 VISION_TOOLUI_API QWidget* mkParamRow2(QWidget* parent,
                      const QString& label1, QWidget* control1,
                      const QString& label2, QWidget* control2,
                      int hSpacing = 12);
 
-/** @brief ×ÔÉÏ¶øÏÂÅÅÁĞµÄ²ÎÊıÕ» */
+/** @brief è‡ªä¸Šè€Œä¸‹æ’åˆ—çš„å‚æ•°æ ˆ */
 VISION_TOOLUI_API QVBoxLayout* mkParamStack(QWidget* host, int spacing = 10);
-/** @brief Ïò²ÎÊıÕ»×·¼ÓÒ»ĞĞ£¨¶¥¶ÔÆë£© */
+/** @brief å‘å‚æ•°æ ˆè¿½åŠ ä¸€è¡Œï¼ˆé¡¶å¯¹é½ï¼‰ */
 VISION_TOOLUI_API void addParamStackItem(QVBoxLayout* lay, QWidget* block);
 
 }

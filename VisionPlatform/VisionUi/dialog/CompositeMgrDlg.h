@@ -1,6 +1,6 @@
 /**
  * @file CompositeMgrDlg.h
- * @brief CompositeMgrDlgͷ�ļ�
+ * @brief CompositeMgrDlg头文件
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.

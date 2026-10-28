@@ -1,6 +1,6 @@
 /**
  * @file HsMat.cpp
- * @brief HsMatÊµÏÖ
+ * @brief HsMatå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -15,9 +15,9 @@
 namespace HsCommData {
 
 struct HsMat::Body {
-    int rows;                    ///< ĞĞÊı
-    int cols;                    ///< ÁĞÊı
-    std::vector<double> values;  ///< ĞĞÓÅÏÈ£¬³¤¶ÈµÈÓÚ rows * cols
+    int rows;                    ///< è¡Œæ•°
+    int cols;                    ///< åˆ—æ•°
+    std::vector<double> values;  ///< è¡Œä¼˜å…ˆï¼Œé•¿åº¦ç­‰äº rows * cols
 
     Body()
         : rows(0)
@@ -26,18 +26,18 @@ struct HsMat::Body {
     }
 };
 
-// ¿Õ¾ØÕó
+// ç©ºçŸ©é˜µ
 HsMat::HsMat()
 {
 }
 
-// ¹²Ïí»º³å
+// å…±äº«ç¼“å†²
 HsMat::HsMat(const HsMat& other)
     : m_body(other.m_body)
 {
 }
 
-// ¹²Ïí»º³å
+// å…±äº«ç¼“å†²
 HsMat& HsMat::operator=(const HsMat& other)
 {
     if (this != &other) {
@@ -46,13 +46,13 @@ HsMat& HsMat::operator=(const HsMat& other)
     return *this;
 }
 
-// È« 0
+// å…¨ 0
 HsMat::HsMat(int rows, int cols)
 {
     ensure(rows, cols);
 }
 
-// ´ÓÍâ²¿Êı×é¿½Èë
+// ä»å¤–éƒ¨æ•°ç»„æ‹·å…¥
 HsMat::HsMat(int rows, int cols, const double* data)
 {
     if (rows < 0 || cols < 0) {
@@ -72,7 +72,7 @@ HsMat::HsMat(int rows, int cols, const double* data)
     std::memcpy(&m_body->values[0], data, static_cast<size_t>(n) * sizeof(double));
 }
 
-// µ¥Î»Õó
+// å•ä½é˜µ
 HsMat HsMat::eye(int n)
 {
     if (n < 1) {
@@ -86,7 +86,7 @@ HsMat HsMat::eye(int n)
     return m;
 }
 
-// Ôª×é»¹Ô­
+// å…ƒç»„è¿˜åŸ
 HsMat HsMat::fromTuple(const HsTuple& tuple, int rows, int cols)
 {
     if (rows < 0 || cols < 0 || (rows == 0) != (cols == 0)) {
@@ -118,37 +118,37 @@ HsMat HsMat::fromTuple(const HsTuple& tuple, int rows, int cols)
     return m;
 }
 
-// ÎŞÔªËØ
+// æ— å…ƒç´ 
 bool HsMat::isEmpty() const
 {
     return !m_body || m_body->values.empty();
 }
 
-// ĞĞÊı
+// è¡Œæ•°
 int HsMat::rows() const
 {
     return m_body ? m_body->rows : 0;
 }
 
-// ÁĞÊı
+// åˆ—æ•°
 int HsMat::cols() const
 {
     return m_body ? m_body->cols : 0;
 }
 
-// ÔªËØ¸öÊı
+// å…ƒç´ ä¸ªæ•°
 int HsMat::length() const
 {
     return m_body ? static_cast<int>(m_body->values.size()) : 0;
 }
 
-// ¶ÁÒ»¸ñ
+// è¯»ä¸€æ ¼
 double HsMat::at(int row, int col) const
 {
     return m_body->values[static_cast<size_t>(indexOf(row, col))];
 }
 
-// Ğ´Ò»¸ñ
+// å†™ä¸€æ ¼
 void HsMat::set(int row, int col, double value)
 {
     const int i = indexOf(row, col);
@@ -156,7 +156,7 @@ void HsMat::set(int row, int col, double value)
     m_body->values[static_cast<size_t>(i)] = value;
 }
 
-// Ö»¶Á»º³å
+// åªè¯»ç¼“å†²
 const double* HsMat::data() const
 {
     if (!m_body || m_body->values.empty()) {
@@ -165,7 +165,7 @@ const double* HsMat::data() const
     return &m_body->values[0];
 }
 
-// ¿ÉĞ´»º³å
+// å¯å†™ç¼“å†²
 double* HsMat::data()
 {
     if (!m_body || m_body->values.empty()) {
@@ -175,7 +175,7 @@ double* HsMat::data()
     return &m_body->values[0];
 }
 
-// Éî¿½
+// æ·±æ‹·
 HsMat HsMat::clone() const
 {
     HsMat out;
@@ -189,7 +189,7 @@ HsMat HsMat::clone() const
     return out;
 }
 
-// ÅÅ³É¸¡µãÔª×é
+// æ’æˆæµ®ç‚¹å…ƒç»„
 HsTuple HsMat::toTuple() const
 {
     if (!m_body || m_body->values.empty()) {
@@ -198,7 +198,7 @@ HsTuple HsMat::toTuple() const
     return HsTuple(&m_body->values[0], static_cast<int>(m_body->values.size()));
 }
 
-// ĞĞÁĞºÍÔªËØ¶¼ÏàÍ¬
+// è¡Œåˆ—å’Œå…ƒç´ éƒ½ç›¸åŒ
 bool HsMat::operator==(const HsMat& other) const
 {
     if (rows() != other.rows() || cols() != other.cols()) {
@@ -217,13 +217,13 @@ bool HsMat::operator==(const HsMat& other) const
     return true;
 }
 
-// ²»µÈ
+// ä¸ç­‰
 bool HsMat::operator!=(const HsMat& other) const
 {
     return !(*this == other);
 }
 
-// ·ÖÅäÈ« 0 »º³å
+// åˆ†é…å…¨ 0 ç¼“å†²
 void HsMat::ensure(int rows, int cols)
 {
     if (rows < 0 || cols < 0 || (rows == 0) != (cols == 0)) {
@@ -239,7 +239,7 @@ void HsMat::ensure(int rows, int cols)
     m_body->values.assign(static_cast<size_t>(rows) * static_cast<size_t>(cols), 0.0);
 }
 
-// ¹²ÏíÔò²ğ¿ª
+// å…±äº«åˆ™æ‹†å¼€
 void HsMat::detach()
 {
     if (!m_body || m_body.use_count() <= 1) {
@@ -252,7 +252,7 @@ void HsMat::detach()
     m_body = copy;
 }
 
-// ĞĞÁĞ»»³ÉÏßĞÔÏÂ±ê
+// è¡Œåˆ—æ¢æˆçº¿æ€§ä¸‹æ ‡
 int HsMat::indexOf(int row, int col) const
 {
     if (!m_body || row < 0 || col < 0 || row >= m_body->rows || col >= m_body->cols) {

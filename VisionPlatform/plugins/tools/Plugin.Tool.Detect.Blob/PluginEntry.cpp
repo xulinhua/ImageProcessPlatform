@@ -1,6 +1,6 @@
 /**
  * @file PluginEntry.cpp
- * @brief PluginEntryÊµÏÖ
+ * @brief PluginEntryå®žçŽ°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -14,7 +14,7 @@ VISION_PLUGIN_EXPORT int VisionPlugin_apiVersion()
     return 1;
 }
 
-// ×¢²á Blob ¼ì²â¹¤¾ß
+// æ³¨å†Œ Blob æ£€æµ‹å·¥å…·
 VISION_PLUGIN_EXPORT void VisionPlugin_register(Vision::IPluginHost* host)
 {
     if (!host) {

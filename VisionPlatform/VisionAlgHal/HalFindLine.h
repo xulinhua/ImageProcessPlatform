@@ -1,6 +1,6 @@
 /**
  * @file HalFindLine.h
- * @brief HalFindLineÍ·ÎÄ¼ş
+ * @brief HalFindLineå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -15,16 +15,30 @@ namespace Vision {
 
 /**
  * @class HalFindLine
- * @brief ÑØ¿¨³ß±ßÔµµãÄâºÏÖ±Ïß£¬Ö§³Ö¶à ROI£¨Halcon£©
+ * @brief æ²¿å¡å°ºè¾¹ç¼˜ç‚¹æ‹Ÿåˆç›´çº¿ï¼Œæ”¯æŒå¤š ROIï¼ˆHalconï¼‰
  */
 class HalFindLine : public AlgToolBase {
 public:
     std::string toolName() const { return "locate.find_line"; }
     AlgLibKind algLib() const { return AlgLibHal; }
     std::string version() const;
-    /** @brief °æ±¾±ä¸ü£¬Ö»×·¼Ó */
+    /** @brief ç‰ˆæœ¬å˜æ›´ï¼Œåªè¿½åŠ  */
     std::vector<VerNote> versionNotes() const;
-    /** @brief ÔÚ¸÷ ROI ÉÏÄâºÏÖ±Ïß */
+    /** @brief åœ¨å„ ROI ä¸Šæ‹Ÿåˆç›´çº¿ */
+    int execute(const AlgToolIn& in, AlgToolOut* out) override {
+        if (!out) {
+            return HS_ERR_NULL;
+        }
+        *out = run(in);
+        if (out->ok) {
+            out->errCode = HS_OK;
+            return HS_OK;
+        }
+        if (out->errCode == HS_OK || out->errCode == 1) {
+            out->errCode = HS_ERR_OPERATOR;
+        }
+        return out->errCode;
+    }
     AlgToolOut run(const AlgToolIn& in);
     AlgToolBase* clone() const { return new HalFindLine(); }
 };

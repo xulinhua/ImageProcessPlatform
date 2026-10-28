@@ -1,6 +1,6 @@
 /**
  * @file ToolParaFilter.hpp
- * @brief FilterTool ÔËĞĞ²ÎÊı
+ * @brief FilterTool è¿è¡Œå‚æ•°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -15,7 +15,7 @@
 
 namespace Vision {
 
-/** @brief ÂË²¨¹¤¾ßÂäÅÌ¼ü¡£×Ö·û´®Ö»Ğ´ÔÚÕâÀï */
+/** @brief æ»¤æ³¢å·¥å…·è½ç›˜é”®ã€‚å­—ç¬¦ä¸²åªå†™åœ¨è¿™é‡Œ */
 struct FilterKey {
     static constexpr const char* stepCount = "stepCount";
     static constexpr const char* op = "op";
@@ -56,15 +56,15 @@ struct FilterKey {
 
 /**
  * @class ToolParaFilter
- * @brief FilterTool ÔËĞĞ²ÎÊı
+ * @brief FilterTool è¿è¡Œå‚æ•°
  */
 class ToolParaFilter : public ToolParaBase {
 public:
-    /** @brief Ê¾½Ì²ÎÊı¡£ÂË²¨²»ĞèÒªÊ¾½Ì */
+    /** @brief ç¤ºæ•™å‚æ•°ã€‚æ»¤æ³¢ä¸éœ€è¦ç¤ºæ•™ */
     struct Teach {
     };
 
-    /** @brief Ò»²½Ô¤´¦ÀíµÄÔËĞĞ²ÎÊı */
+    /** @brief ä¸€æ­¥é¢„å¤„ç†çš„è¿è¡Œå‚æ•° */
     struct Step {
         std::string op;
         int maskW;
@@ -88,7 +88,7 @@ public:
         }
     };
 
-    /** @brief ÔËĞĞ²ÎÊı£º²½Êı¼ÓÓĞĞò²½ÖèÁĞ±í */
+    /** @brief è¿è¡Œå‚æ•°ï¼šæ­¥æ•°åŠ æœ‰åºæ­¥éª¤åˆ—è¡¨ */
     struct Run {
         int stepCount;
         std::vector<Step> steps;
@@ -102,7 +102,7 @@ public:
     Teach teach;
     Run run;
 
-    /** @brief ´Ó ToolParam ÌîĞ´¡£ĞÂ step ¼üÓÅÏÈ£¬¾É pl_* Ö»¶Á */
+    /** @brief ä» ToolParam å¡«å†™ã€‚æ–° step é”®ä¼˜å…ˆï¼Œæ—§ pl_* åªè¯» */
     void load(const ToolParam& src)
     {
         const ParamMap& m = src.run;
@@ -125,7 +125,7 @@ public:
         judge = src.judge;
     }
 
-    /** @brief ¼æÈİ¾É·½°¸µÄÊı×ÖËã×ÓÃû */
+    /** @brief å…¼å®¹æ—§æ–¹æ¡ˆçš„æ•°å­—ç®—å­å */
     static std::string normalizeOp(const std::string& raw)
     {
         if (raw == "0" || raw == FilterKey::opEquHisto)   return FilterKey::opEquHisto;
@@ -146,7 +146,7 @@ public:
         return FilterKey::opEquHisto;
     }
 
-    /** @brief ĞÎÌ¬Ñ§ÑÚÄ¤ĞÎ×´¹éÒ»»¯ */
+    /** @brief å½¢æ€å­¦æ©è†œå½¢çŠ¶å½’ä¸€åŒ– */
     static std::string normalizeShape(const std::string& raw)
     {
         if (raw == FilterKey::shapeOctagon) return FilterKey::shapeOctagon;

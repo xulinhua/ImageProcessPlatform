@@ -1,6 +1,6 @@
 /**
  * @file PluginEntry.cpp
- * @brief PluginEntryÊµÏÖ
+ * @brief PluginEntryå®žçŽ°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.

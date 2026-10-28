@@ -1,6 +1,6 @@
 /**
  * @file CompositeMgr.cpp
- * @brief CompositeMgrÊµÏÖ
+ * @brief CompositeMgrå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -9,6 +9,7 @@
 #include "CompositeMgr.h"
 #include "AppPaths.h"
 #include "Json.h"
+#include "CfgStore.h"
 #include "TextEncoding.h"
 #include <fstream>
 #include <sstream>
@@ -29,19 +30,12 @@ std::string fileOf(const ObjectId& id)
 
 bool readUtf8(const std::string& path, std::string* out)
 {
-    HANDLE h = CreateFileW(utf8ToWide(path).c_str(), GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
-    if (h == INVALID_HANDLE_VALUE) {
+    const CfgBytes got = CfgStore().read(path);
+    if (got.kind != CfgFilePlain && got.kind != CfgFileSealed) {
         return false;
     }
-    std::string data;
-    char buf[4096];
-    DWORD n = 0;
-    while (ReadFile(h, buf, sizeof(buf), &n, 0) && n > 0) {
-        data.append(buf, buf + n);
-    }
-    CloseHandle(h);
     if (out) {
-        *out = data;
+        *out = got.json;
     }
     return true;
 }
@@ -49,23 +43,7 @@ bool readUtf8(const std::string& path, std::string* out)
 bool writeUtf8(const std::string& path, const std::string& data)
 {
     AppPaths::ensureDirs();
-    const std::string tmp = path + ".tmp";
-    HANDLE h = CreateFileW(utf8ToWide(tmp).c_str(), GENERIC_WRITE, 0, 0, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
-    if (h == INVALID_HANDLE_VALUE) {
-        return false;
-    }
-    DWORD n = 0;
-    const BOOL ok = WriteFile(h, data.data(), static_cast<DWORD>(data.size()), &n, 0);
-    CloseHandle(h);
-    if (!ok || n != data.size()) {
-        DeleteFileW(utf8ToWide(tmp).c_str());
-        return false;
-    }
-    DeleteFileW(utf8ToWide(path).c_str());
-    if (!MoveFileW(utf8ToWide(tmp).c_str(), utf8ToWide(path).c_str())) {
-        return false;
-    }
-    return true;
+    return CfgStore().write(path, data);
 }
 
 JsonValue portToJson(const CompositePort& p)
@@ -264,14 +242,14 @@ bool CompositeMgr::saveOne(const ObjectId& id, std::string* error) const
     const CompositeDef* d = find(id);
     if (!d || d->scope != CompositeLibrary) {
         if (error) {
-            *error = acpToUtf8("²»ÊÇ¶ÀÁ¢×éºÏ¹¤¾ß");
+            *error = "ä¸æ˜¯ç‹¬ç«‹ç»„åˆå·¥å…·";
         }
         return false;
     }
     const std::string path = fileOf(id);
     if (!writeUtf8(path, JsonValue::stringify(compositeToJson(*d), true))) {
         if (error) {
-            *error = acpToUtf8("Ğ´Èë×éºÏÎÄ¼şÊ§°Ü");
+            *error = "å†™å…¥ç»„åˆæ–‡ä»¶å¤±è´¥";
         }
         return false;
     }
@@ -293,7 +271,7 @@ ObjectId CompositeMgr::create(CompositeScope scope, const std::string& name, std
 {
     if (scope == CompositeSolution && !m_solution) {
         if (error) {
-            *error = acpToUtf8("Ã»ÓĞ´ò¿ªµÄ·½°¸");
+            *error = "æ²¡æœ‰æ‰“å¼€çš„æ–¹æ¡ˆ";
         }
         return ObjectId();
     }
@@ -304,7 +282,7 @@ ObjectId CompositeMgr::create(CompositeScope scope, const std::string& name, std
     d.version = "1.0.0.0";
     d.inner.id = ObjectId::create();
     d.inner.name = d.name;
-    d.inner.trigger = TriggerLoop;
+    d.inner.execMode = ExecActive;
     d.inner.root.kind = GroupSequence;
     d.inner.root.id = ObjectId::create();
     if (scope == CompositeLibrary) {
@@ -351,7 +329,7 @@ bool CompositeMgr::remove(const ObjectId& id, std::string* error)
             for (size_t j = 0; j < st.jobs.size(); ++j) {
                 if (jobUses(st.jobs[j], id)) {
                     if (error) {
-                        *error = acpToUtf8("Á÷³ÌÀï»¹ÔÚÊ¹ÓÃ");
+                        *error = "æµç¨‹é‡Œè¿˜åœ¨ä½¿ç”¨";
                     }
                     return false;
                 }

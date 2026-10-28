@@ -1,6 +1,6 @@
 /**
  * @file RecheckWorkspace.cpp
- * @brief RecheckWorkspaceÊµÏÖ
+ * @brief RecheckWorkspaceå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -48,7 +48,7 @@ namespace Vision {
 namespace {
 
 
-// JSON ×Ö·û´®×ªÒå
+// JSON å­—ç¬¦ä¸²è½¬ä¹‰
 QString jsonEsc(const QString& s)
 {
     QString o;
@@ -81,7 +81,7 @@ QString jsonEsc(const QString& s)
 
 } // namespace
 
-// ¸´¼ì¹¤×÷Çø£ºÅäÖÃÌõ + ½á¹û±í + ÏêÇéÍ¼
+// å¤æ£€å·¥ä½œåŒºï¼šé…ç½®æ¡ + ç»“æœè¡¨ + è¯¦æƒ…å›¾
 RecheckWorkspace::RecheckWorkspace(Session* session, Solution* solution, QWidget* parent)
     : QWidget(parent)
     , m_session(session)
@@ -95,30 +95,30 @@ RecheckWorkspace::RecheckWorkspace(Session* session, Solution* solution, QWidget
     , m_canRun(true)
 {
     m_folder = new QLineEdit(this);
-    m_folder->setPlaceholderText(T("Í¼ÏñÎÄ¼ş¼Ğ"));
-    m_folder->setProperty("vpTr", QByteArray("Í¼ÏñÎÄ¼ş¼Ğ"));
-    QPushButton* browse = new QPushButton(T("ä¯ÀÀ¡­"), this);
-    bindTrKey(browse, "ä¯ÀÀ¡­");
+    m_folder->setPlaceholderText(T("å›¾åƒæ–‡ä»¶å¤¹"));
+    m_folder->setProperty("vpTr", QByteArray("å›¾åƒæ–‡ä»¶å¤¹"));
+    QPushButton* browse = new QPushButton(T("æµè§ˆâ€¦"), this);
+    bindTrKey(browse, "æµè§ˆâ€¦");
     connect(browse, SIGNAL(clicked()), this, SLOT(onBrowseFolder()));
 
     m_stationCombo = new QComboBox(this);
     m_jobCombo = new QComboBox(this);
     connect(m_stationCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(onStationChanged()));
 
-    m_fileCount = new QLabel(T("ÒÑÉ¨Ãè 0 ÕÅ"), this);
-    bindTrKey(m_fileCount, "ÒÑÉ¨Ãè 0 ÕÅ");
+    m_fileCount = new QLabel(T("å·²æ‰«æ 0 å¼ "), this);
+    bindTrKey(m_fileCount, "å·²æ‰«æ 0 å¼ ");
     m_fileCount->setObjectName(QLatin1String("hint"));
 
-    m_btnStart = new QPushButton(T("¿ªÊ¼¸´¼ì"), this);
-    bindTrKey(m_btnStart, "¿ªÊ¼¸´¼ì");
+    m_btnStart = new QPushButton(T("å¼€å§‹å¤æ£€"), this);
+    bindTrKey(m_btnStart, "å¼€å§‹å¤æ£€");
     setButtonRole(m_btnStart, "primary");
     connect(m_btnStart, SIGNAL(clicked()), this, SLOT(onStart()));
-    m_btnPause = new QPushButton(T("ÔİÍ£"), this);
-    bindTrKey(m_btnPause, "ÔİÍ£");
+    m_btnPause = new QPushButton(T("æš‚åœ"), this);
+    bindTrKey(m_btnPause, "æš‚åœ");
     m_btnPause->setEnabled(false);
     connect(m_btnPause, SIGNAL(clicked()), this, SLOT(onPauseResume()));
-    m_btnStop = new QPushButton(T("Í£Ö¹"), this);
-    bindTrKey(m_btnStop, "Í£Ö¹");
+    m_btnStop = new QPushButton(T("åœæ­¢"), this);
+    bindTrKey(m_btnStop, "åœæ­¢");
     m_btnStop->setEnabled(false);
     connect(m_btnStop, SIGNAL(clicked()), this, SLOT(onStop()));
 
@@ -129,31 +129,31 @@ RecheckWorkspace::RecheckWorkspace(Session* session, Solution* solution, QWidget
     m_progress->setTextVisible(true);
     m_progress->setFormat(QLatin1String("%v/%m"));
 
-    m_stats = new QLabel(T("OK 0  NG 0  Ê§°Ü 0"), this);
-    bindTrKey(m_stats, "OK 0  NG 0  Ê§°Ü 0");
+    m_stats = new QLabel(T("OK 0  NG 0  å¤±è´¥ 0"), this);
+    bindTrKey(m_stats, "OK 0  NG 0  å¤±è´¥ 0");
     m_filter = new QComboBox(this);
-    m_filter->addItem(T("È«²¿"), 0);
-    m_filter->addItem(T("ÎÊÌâ"), 1);
-    m_filter->addItem(T("½ö NG"), 2);
-    m_filter->addItem(T("½öÊ§°Ü"), 3);
+    m_filter->addItem(T("å…¨éƒ¨"), 0);
+    m_filter->addItem(T("é—®é¢˜"), 1);
+    m_filter->addItem(T("ä»… NG"), 2);
+    m_filter->addItem(T("ä»…å¤±è´¥"), 3);
     connect(m_filter, SIGNAL(currentIndexChanged(int)), this, SLOT(onFilterChanged()));
-    m_btnExport = new QPushButton(T("µ¼³ö CSV¡­"), this);
-    bindTrKey(m_btnExport, "µ¼³ö CSV¡­");
+    m_btnExport = new QPushButton(T("å¯¼å‡º CSVâ€¦"), this);
+    bindTrKey(m_btnExport, "å¯¼å‡º CSVâ€¦");
     connect(m_btnExport, SIGNAL(clicked()), this, SLOT(onExportCsv()));
-    m_btnReport = new QPushButton(T("±£´æ±¨¸æ¡­"), this);
-    bindTrKey(m_btnReport, "±£´æ±¨¸æ¡­");
+    m_btnReport = new QPushButton(T("ä¿å­˜æŠ¥å‘Šâ€¦"), this);
+    bindTrKey(m_btnReport, "ä¿å­˜æŠ¥å‘Šâ€¦");
     connect(m_btnReport, SIGNAL(clicked()), this, SLOT(onSaveReport()));
-    m_btnDebug = new QPushButton(T("´ò¿ªÉè¼Æµ÷ÊÔ"), this);
-    bindTrKey(m_btnDebug, "´ò¿ªÉè¼Æµ÷ÊÔ");
+    m_btnDebug = new QPushButton(T("æ‰“å¼€è®¾è®¡è°ƒè¯•"), this);
+    bindTrKey(m_btnDebug, "æ‰“å¼€è®¾è®¡è°ƒè¯•");
     connect(m_btnDebug, SIGNAL(clicked()), this, SLOT(onOpenDesignDebug()));
 
     QHBoxLayout* cfg1 = new QHBoxLayout();
-    cfg1->addWidget(new QLabel(T("Í¼ÏñÄ¿Â¼"), this));
+    cfg1->addWidget(new QLabel(T("å›¾åƒç›®å½•"), this));
     cfg1->addWidget(m_folder, 1);
     cfg1->addWidget(browse);
-    cfg1->addWidget(new QLabel(T("¹¤Õ¾"), this));
+    cfg1->addWidget(new QLabel(T("å·¥ç«™"), this));
     cfg1->addWidget(m_stationCombo);
-    cfg1->addWidget(new QLabel(T("Á÷³Ì"), this));
+    cfg1->addWidget(new QLabel(T("æµç¨‹"), this));
     cfg1->addWidget(m_jobCombo);
 
     QHBoxLayout* cfg2 = new QHBoxLayout();
@@ -163,7 +163,7 @@ RecheckWorkspace::RecheckWorkspace(Session* session, Solution* solution, QWidget
     cfg2->addWidget(m_progress, 1);
     cfg2->addWidget(m_stats);
     cfg2->addWidget(m_fileCount);
-    cfg2->addWidget(new QLabel(T("¹ıÂË"), this));
+    cfg2->addWidget(new QLabel(T("è¿‡æ»¤"), this));
     cfg2->addWidget(m_filter);
     cfg2->addWidget(m_btnExport);
     cfg2->addWidget(m_btnReport);
@@ -179,7 +179,7 @@ RecheckWorkspace::RecheckWorkspace(Session* session, Solution* solution, QWidget
     m_table = new QTableWidget(this);
     m_table->setColumnCount(5);
     QStringList headers;
-    headers << T("#") << T("ÎÄ¼şÃû") << T("ÅĞ¶¨") << T("ºÄÊ±ms") << T("ÕªÒª");
+    headers << T("#") << T("æ–‡ä»¶å") << T("åˆ¤å®š") << T("è€—æ—¶ms") << T("æ‘˜è¦");
     m_table->setHorizontalHeaderLabels(headers);
     m_table->horizontalHeader()->setStretchLastSection(true);
     m_table->verticalHeader()->setVisible(false);
@@ -189,8 +189,8 @@ RecheckWorkspace::RecheckWorkspace(Session* session, Solution* solution, QWidget
     m_table->setAlternatingRowColors(true);
     connect(m_table, SIGNAL(itemSelectionChanged()), this, SLOT(onRowSelected()));
 
-    m_detailTitle = new QLabel(T("ÏêÇé£¨Ñ¡ÖĞ½á¹ûĞĞ£©"), this);
-    bindTrKey(m_detailTitle, "ÏêÇé£¨Ñ¡ÖĞ½á¹ûĞĞ£©");
+    m_detailTitle = new QLabel(T("è¯¦æƒ…ï¼ˆé€‰ä¸­ç»“æœè¡Œï¼‰"), this);
+    bindTrKey(m_detailTitle, "è¯¦æƒ…ï¼ˆé€‰ä¸­ç»“æœè¡Œï¼‰");
     m_detailTitle->setObjectName(QLatin1String("section"));
     m_view = new HsCtrl::HsImageWindow(this);
     m_view->setWindowMode(HsCtrl::WindowRuntime);
@@ -200,7 +200,7 @@ RecheckWorkspace::RecheckWorkspace(Session* session, Solution* solution, QWidget
     m_toolTable = new QTableWidget(this);
     m_toolTable->setColumnCount(4);
     QStringList th;
-    th << T("¹¤¾ß") << T("ÅĞ¶¨") << T("ºÄÊ±ms") << T("ËµÃ÷");
+    th << T("å·¥å…·") << T("åˆ¤å®š") << T("è€—æ—¶ms") << T("è¯´æ˜");
     m_toolTable->setHorizontalHeaderLabels(th);
     m_toolTable->horizontalHeader()->setStretchLastSection(true);
     m_toolTable->verticalHeader()->setVisible(false);
@@ -233,7 +233,7 @@ RecheckWorkspace::RecheckWorkspace(Session* session, Solution* solution, QWidget
     updateRunButtons();
 }
 
-// Ë¢ĞÂ¹¤Õ¾/Á÷³ÌÏÂÀ­
+// åˆ·æ–°å·¥ç«™/æµç¨‹ä¸‹æ‹‰
 void RecheckWorkspace::reloadCombos()
 {
     const QString keepSt = m_stationCombo->currentData().toString();
@@ -257,20 +257,20 @@ void RecheckWorkspace::reloadCombos()
     onStationChanged();
 }
 
-// °ó¶¨¹¤Õ¾ÔËĞĞÊµÀı
+// ç»‘å®šå·¥ç«™è¿è¡Œå®ä¾‹
 void RecheckWorkspace::setStation(Station* station)
 {
     m_station = station;
 }
 
-// ÔËĞĞÈ¨ÏŞ
+// è¿è¡Œæƒé™
 void RecheckWorkspace::setRunPerms(bool canRun)
 {
     m_canRun = canRun;
     updateRunButtons();
 }
 
-// µ±Ç°¹¤Õ¾ÅäÖÃ
+// å½“å‰å·¥ç«™é…ç½®
 StationCfg* RecheckWorkspace::currentStationConfig() const
 {
     if (!m_sol) {
@@ -279,7 +279,7 @@ StationCfg* RecheckWorkspace::currentStationConfig() const
     return m_sol->findStationConfig(oid(m_stationCombo->currentData().toString()));
 }
 
-// µ±Ç°Á÷³ÌÅäÖÃ
+// å½“å‰æµç¨‹é…ç½®
 JobCfg* RecheckWorkspace::currentJobConfig() const
 {
     if (!m_sol) {
@@ -288,7 +288,7 @@ JobCfg* RecheckWorkspace::currentJobConfig() const
     return m_sol->findJobConfig(oid(m_jobCombo->currentData().toString()));
 }
 
-// ¹¤Õ¾±ä»¯ ¡ú Ë¢ĞÂÁ÷³ÌÁĞ±í
+// å·¥ç«™å˜åŒ– â†’ åˆ·æ–°æµç¨‹åˆ—è¡¨
 void RecheckWorkspace::onStationChanged()
 {
     const QString keepJob = m_jobCombo->currentData().toString();
@@ -310,24 +310,24 @@ void RecheckWorkspace::onStationChanged()
     }
 }
 
-// ä¯ÀÀÎÄ¼ş¼Ğ²¢Ô¤É¨ÃèÕÅÊı
+// æµè§ˆæ–‡ä»¶å¤¹å¹¶é¢„æ‰«æå¼ æ•°
 void RecheckWorkspace::onBrowseFolder()
 {
-    const QString dir = QFileDialog::getExistingDirectory(this, T("Ñ¡ÔñÍ¼ÏñÎÄ¼ş¼Ğ"), m_folder->text());
+    const QString dir = QFileDialog::getExistingDirectory(this, T("é€‰æ‹©å›¾åƒæ–‡ä»¶å¤¹"), m_folder->text());
     if (dir.isEmpty()) {
         return;
     }
     m_folder->setText(dir);
     const std::vector<std::string> files = FileGrabber::imageFiles(ss(dir));
-    m_fileCount->setText(Tf("ÒÑÉ¨Ãè {0} ÕÅ", QString::number(static_cast<int>(files.size()))));
+    m_fileCount->setText(Tf("å·²æ‰«æ {0} å¼ ", QString::number(static_cast<int>(files.size()))));
 }
 
-// ²İ¸å£ºÏà»úÎÄ¼ş¹¤¾ßÇ¿ÖÆÖ¸Ïòµ¥ÕÅÍ¼
+// è‰ç¨¿ï¼šç›¸æœºæ–‡ä»¶å·¥å…·å¼ºåˆ¶æŒ‡å‘å•å¼ å›¾
 bool RecheckWorkspace::applyImageToDraft(JobCfg* draft, const std::string& imagePath, QString* err) const
 {
     if (!draft) {
         if (err) {
-            *err = T("Ã»ÓĞÁ÷³Ì¡£");
+            *err = T("æ²¡æœ‰æµç¨‹ã€‚");
         }
         return false;
     }
@@ -339,21 +339,21 @@ bool RecheckWorkspace::applyImageToDraft(JobCfg* draft, const std::string& image
         if (!isCam) {
             continue;
         }
-        // Ç¿ÖÆµ¥ÎÄ¼şÊäÈë£¬²»¸Ä·½°¸ formal
+        // å¼ºåˆ¶å•æ–‡ä»¶è¾“å…¥ï¼Œä¸æ”¹æ–¹æ¡ˆ formal
         t.params.insert("path", imagePath);
         t.params.insert("sourceMode", std::string("file"));
         ++hit;
     }
     if (hit == 0) {
         if (err) {
-            *err = T("¸ÃÁ÷³ÌÃ»ÓĞ¿ÉÓÃµÄÍ¼Ïñ²É¼¯¹¤¾ß£¨ĞèÒª camera.file£©¡£");
+            *err = T("è¯¥æµç¨‹æ²¡æœ‰å¯ç”¨çš„å›¾åƒé‡‡é›†å·¥å…·ï¼ˆéœ€è¦ camera.fileï¼‰ã€‚");
         }
         return false;
     }
     return true;
 }
 
-// ´Ó Job ÔËĞĞÌ¬ÊÕ¼¯¸÷¹¤¾ßĞĞ
+// ä» Job è¿è¡Œæ€æ”¶é›†å„å·¥å…·è¡Œ
 void RecheckWorkspace::collectToolRows(Job* job, const JobCfg* formal, Item* item) const
 {
     if (!item) {
@@ -375,11 +375,11 @@ void RecheckWorkspace::collectToolRows(Job* job, const JobCfg* formal, Item* ite
             row.ok = tok;
         }
         if (!row.ran) {
-            row.summary = T("Î´ÅÜ");
+            row.summary = T("æœªæ‰§è¡Œ");
         } else {
             row.summary = row.ok ? T("OK") : T("NG");
             const ParamMap vals = job->cachedValues(t.id);
-            // ÈôÓĞ message Àà×Ö·û´®²ÎÊıÔò¸½ÉÏ
+            // è‹¥æœ‰ message ç±»å­—ç¬¦ä¸²å‚æ•°åˆ™é™„ä¸Š
             const std::string msg = vals.value("message").toString();
             if (!msg.empty()) {
                 row.summary += QLatin1String("  ") + qs(msg);
@@ -389,7 +389,7 @@ void RecheckWorkspace::collectToolRows(Job* job, const JobCfg* formal, Item* ite
     }
 }
 
-// ÅĞ¶¨ÎÄ°¸
+// åˆ¤å®šæ–‡æ¡ˆ
 QString RecheckWorkspace::verdictText(Verdict v)
 {
     if (v == VerdictOk) {
@@ -398,48 +398,48 @@ QString RecheckWorkspace::verdictText(Verdict v)
     if (v == VerdictNg) {
         return T("NG");
     }
-    return T("Ê§°Ü");
+    return T("å¤±è´¥");
 }
 
-// ¿ªÊ¼ÅúÅÜ
+// å¼€å§‹æ‰¹è·‘
 void RecheckWorkspace::onStart()
 {
     if (m_running) {
         return;
     }
     if (!m_canRun) {
-        QMessageBox::warning(this, T("È¨ÏŞ"), T("µ±Ç°ÓÃ»§²»ÄÜµ÷ÊÔÔËĞĞ¡£"));
+        QMessageBox::warning(this, T("æƒé™"), T("å½“å‰ç”¨æˆ·ä¸èƒ½è°ƒè¯•è¿è¡Œã€‚"));
         return;
     }
     StationCfg* stConfig = currentStationConfig();
     JobCfg* jobConfig = currentJobConfig();
     if (!stConfig || !jobConfig) {
-        QMessageBox::information(this, T("¸´¼ì"), T("ÇëÏÈÑ¡Ôñ¹¤Õ¾ÓëÁ÷³Ì¡£"));
+        QMessageBox::information(this, T("å¤æ£€"), T("è¯·å…ˆé€‰æ‹©å·¥ç«™ä¸æµç¨‹ã€‚"));
         return;
     }
     const QString folder = m_folder->text().trimmed();
     if (folder.isEmpty()) {
-        QMessageBox::information(this, T("¸´¼ì"), T("ÇëÑ¡ÔñÍ¼ÏñÎÄ¼ş¼Ğ¡£"));
+        QMessageBox::information(this, T("å¤æ£€"), T("è¯·é€‰æ‹©å›¾åƒæ–‡ä»¶å¤¹ã€‚"));
         return;
     }
     m_queue = FileGrabber::imageFiles(ss(folder));
     if (m_queue.empty()) {
-        QMessageBox::information(this, T("¸´¼ì"), T("ÎÄ¼ş¼ĞÖĞÃ»ÓĞÖ§³ÖµÄÍ¼ÏñÎÄ¼ş¡£"));
+        QMessageBox::information(this, T("å¤æ£€"), T("æ–‡ä»¶å¤¹ä¸­æ²¡æœ‰æ”¯æŒçš„å›¾åƒæ–‡ä»¶ã€‚"));
         return;
     }
 
-    // ÏÈÈÃÖ÷´°°ó¶¨¹¤Õ¾ÊµÀı
+    // å…ˆè®©ä¸»çª—ç»‘å®šå·¥ç«™å®ä¾‹
     emit prepareStation(qs(stConfig->id));
     if (!m_station || !m_station->findJob(jobConfig->id)) {
-        QMessageBox::warning(this, T("¸´¼ì"), T("ÕÒ²»µ½¸ÃÁ÷³ÌÔËĞĞÊµÀı¡£"));
+        QMessageBox::warning(this, T("å¤æ£€"), T("æ‰¾ä¸åˆ°è¯¥æµç¨‹è¿è¡Œå®ä¾‹ã€‚"));
         return;
     }
 
-    // Ô¤¼ì£º²İ¸åÄÜ·ñ×¢Èë path
+    // é¢„æ£€ï¼šè‰ç¨¿èƒ½å¦æ³¨å…¥ path
     JobCfg probe = *jobConfig;
     QString err;
     if (!applyImageToDraft(&probe, m_queue.front(), &err)) {
-        QMessageBox::warning(this, T("¸´¼ì"), err);
+        QMessageBox::warning(this, T("å¤æ£€"), err);
         return;
     }
 
@@ -455,14 +455,14 @@ void RecheckWorkspace::onStart()
     m_running = true;
     m_progress->setMaximum(static_cast<int>(m_queue.size()));
     m_progress->setValue(0);
-    m_fileCount->setText(Tf("ÒÑÉ¨Ãè {0} ÕÅ", QString::number(static_cast<int>(m_queue.size()))));
+    m_fileCount->setText(Tf("å·²æ‰«æ {0} å¼ ", QString::number(static_cast<int>(m_queue.size()))));
     updateRunButtons();
     refillTable();
     updateProgressLabels();
     QTimer::singleShot(0, this, SLOT(onStepNext()));
 }
 
-// ÇëÇóÍ£Ö¹£¨µ±Ç°ÕÅÅÜÍêºóÍ£ÏÂ£©
+// è¯·æ±‚åœæ­¢ï¼ˆå½“å‰å¼ è·‘å®Œååœä¸‹ï¼‰
 void RecheckWorkspace::onStop()
 {
     m_stopRequested = true;
@@ -473,7 +473,7 @@ void RecheckWorkspace::onStop()
     }
 }
 
-// ÍË³öÈí¼ş£ºÁ¢¿Ì½áÊøÅúÅÜ×´Ì¬£¨³ØÓÉÖ÷´° drain£©
+// é€€å‡ºè½¯ä»¶ï¼šç«‹åˆ»ç»“æŸæ‰¹è·‘çŠ¶æ€ï¼ˆæ± ç”±ä¸»çª— drainï¼‰
 void RecheckWorkspace::abortBatch()
 {
     m_stopRequested = true;
@@ -483,7 +483,7 @@ void RecheckWorkspace::abortBatch()
     updateRunButtons();
 }
 
-// ÔİÍ£ / ¼ÌĞø
+// æš‚åœ / ç»§ç»­
 void RecheckWorkspace::onPauseResume()
 {
     if (!m_running) {
@@ -496,7 +496,7 @@ void RecheckWorkspace::onPauseResume()
     }
 }
 
-// ÅÜÏÂÒ»ÕÅ£ºÍ¶µİÏß³Ì³Ø£¬²»¶Â UI
+// è·‘ä¸‹ä¸€å¼ ï¼šæŠ•é€’çº¿ç¨‹æ± ï¼Œä¸å µ UI
 void RecheckWorkspace::onStepNext()
 {
     if (!m_running || m_stepBusy) {
@@ -522,7 +522,7 @@ void RecheckWorkspace::onStepNext()
         m_paused = false;
         m_stepBusy = false;
         updateRunButtons();
-        QMessageBox::warning(this, T("¸´¼ì"), T("Á÷³Ì»ò¹¤Õ¾ÊµÀıÒÑÊ§Ğ§¡£"));
+        QMessageBox::warning(this, T("å¤æ£€"), T("æµç¨‹æˆ–å·¥ç«™å®ä¾‹å·²å¤±æ•ˆã€‚"));
         return;
     }
     Job* job = m_station->findJob(formal->id);
@@ -531,7 +531,7 @@ void RecheckWorkspace::onStepNext()
         m_paused = false;
         m_stepBusy = false;
         updateRunButtons();
-        QMessageBox::warning(this, T("¸´¼ì"), T("ÕÒ²»µ½¸ÃÁ÷³ÌÔËĞĞÊµÀı¡£"));
+        QMessageBox::warning(this, T("å¤æ£€"), T("æ‰¾ä¸åˆ°è¯¥æµç¨‹è¿è¡Œå®ä¾‹ã€‚"));
         return;
     }
     if (job->isRunning()) {
@@ -588,7 +588,7 @@ void RecheckWorkspace::onStepNext()
     });
 }
 
-// µ¥ÕÅ½á¹û»Ø UI
+// å•å¼ ç»“æœå› UI
 void RecheckWorkspace::onStepFinished(void* itemPtr)
 {
     Item* item = static_cast<Item*>(itemPtr);
@@ -634,7 +634,7 @@ void RecheckWorkspace::onStepFinished(void* itemPtr)
     }
 }
 
-// Ë¢ĞÂ½ø¶ÈÓë OK/NG/Ê§°Ü
+// åˆ·æ–°è¿›åº¦ä¸ OK/NG/å¤±è´¥
 void RecheckWorkspace::updateProgressLabels()
 {
     int ok = 0;
@@ -653,26 +653,26 @@ void RecheckWorkspace::updateProgressLabels()
         }
     }
     m_stats->setText(T("OK ") + QString::number(ok) + T("  NG ") + QString::number(ng)
-                     + T("  Ê§°Ü ") + QString::number(fail));
+                     + T("  å¤±è´¥ ") + QString::number(fail));
     if (m_running) {
         m_progress->setFormat(QString::number(m_queueIndex) + QLatin1Char('/')
                               + QString::number(m_progress->maximum()));
     }
 }
 
-// ¸üĞÂ¿ªÊ¼/ÔİÍ£/Í£Ö¹°´Å¥
+// æ›´æ–°å¼€å§‹/æš‚åœ/åœæ­¢æŒ‰é’®
 void RecheckWorkspace::updateRunButtons()
 {
     m_btnStart->setEnabled(m_canRun && !m_running);
     m_btnPause->setEnabled(m_running);
-    m_btnPause->setText(m_paused ? T("¼ÌĞø") : T("ÔİÍ£"));
+    m_btnPause->setText(m_paused ? T("ç»§ç»­") : T("æš‚åœ"));
     m_btnStop->setEnabled(m_running);
     m_btnExport->setEnabled(m_canRun && !m_items.isEmpty());
     m_btnReport->setEnabled(m_canRun && !m_items.isEmpty());
     m_btnDebug->setEnabled(m_canRun && currentItem() != 0);
 }
 
-// ÖØÌî±í¸ñ
+// é‡å¡«è¡¨æ ¼
 void RecheckWorkspace::refillTable()
 {
     const int filter = m_filter->currentData().toInt();
@@ -726,7 +726,7 @@ void RecheckWorkspace::refillTable()
     updateRunButtons();
 }
 
-// ±í¸ñĞĞ ¡ú items ÏÂ±ê
+// è¡¨æ ¼è¡Œ â†’ items ä¸‹æ ‡
 int RecheckWorkspace::itemIndexFromRow(int row) const
 {
     if (row < 0 || row >= m_table->rowCount()) {
@@ -736,7 +736,7 @@ int RecheckWorkspace::itemIndexFromRow(int row) const
     return it ? it->data(Qt::UserRole).toInt() : -1;
 }
 
-// µ±Ç°Ñ¡ÖĞ Item
+// å½“å‰é€‰ä¸­ Item
 const RecheckWorkspace::Item* RecheckWorkspace::currentItem() const
 {
     const int idx = itemIndexFromRow(m_table->currentRow());
@@ -746,7 +746,7 @@ const RecheckWorkspace::Item* RecheckWorkspace::currentItem() const
     return &m_items[idx];
 }
 
-// Ñ¡ÖĞĞĞ ¡ú ÏêÇé
+// é€‰ä¸­è¡Œ â†’ è¯¦æƒ…
 void RecheckWorkspace::onRowSelected()
 {
     const Item* item = currentItem();
@@ -754,17 +754,17 @@ void RecheckWorkspace::onRowSelected()
     updateRunButtons();
 }
 
-// ¹ıÂËÌõ¼ş±ä»¯
+// è¿‡æ»¤æ¡ä»¶å˜åŒ–
 void RecheckWorkspace::onFilterChanged()
 {
     refillTable();
 }
 
-// ÏÔÊ¾ÏêÇé
+// æ˜¾ç¤ºè¯¦æƒ…
 void RecheckWorkspace::showDetail(const Item* item)
 {
     if (!item || !item->ran) {
-        m_detailTitle->setText(T("ÏêÇé£¨Ñ¡ÖĞ½á¹ûĞĞ£©"));
+        m_detailTitle->setText(T("è¯¦æƒ…ï¼ˆé€‰ä¸­ç»“æœè¡Œï¼‰"));
         m_view->clearImage();
         m_view->setOverlay(std::vector<HsCommData::Graphic>(), 0);
         m_toolTable->setRowCount(0);
@@ -785,7 +785,7 @@ void RecheckWorkspace::showDetail(const Item* item)
     if (item->tools.isEmpty()) {
         const int r = m_toolTable->rowCount();
         m_toolTable->insertRow(r);
-        m_toolTable->setItem(r, 0, new QTableWidgetItem(T("»ã×Ü")));
+        m_toolTable->setItem(r, 0, new QTableWidgetItem(T("æ±‡æ€»")));
         m_toolTable->setItem(r, 1, new QTableWidgetItem(verdictText(item->verdict)));
         m_toolTable->setItem(r, 2, new QTableWidgetItem(QString::number(item->elapsedMs)));
         m_toolTable->setItem(r, 3, new QTableWidgetItem(item->message));
@@ -798,7 +798,7 @@ void RecheckWorkspace::showDetail(const Item* item)
         QTableWidgetItem* name = new QTableWidgetItem(tr.name);
         name->setData(Qt::UserRole, tr.toolId);
         m_toolTable->setItem(r, 0, name);
-        QString v = T("Î´ÅÜ");
+        QString v = T("æœªæ‰§è¡Œ");
         if (tr.ran) {
             v = tr.ok ? T("OK") : T("NG");
         }
@@ -817,14 +817,14 @@ void RecheckWorkspace::showDetail(const Item* item)
     }
 }
 
-// µ¼³ö CSV
+// å¯¼å‡º CSV
 void RecheckWorkspace::onExportCsv()
 {
     if (m_items.isEmpty()) {
-        QMessageBox::information(this, T("µ¼³ö"), T("Ã»ÓĞ¿Éµ¼³öµÄ½á¹û¡£"));
+        QMessageBox::information(this, T("å¯¼å‡º"), T("æ²¡æœ‰å¯å¯¼å‡ºçš„ç»“æœã€‚"));
         return;
     }
-    const QString path = QFileDialog::getSaveFileName(this, T("µ¼³ö CSV"),
+    const QString path = QFileDialog::getSaveFileName(this, T("å¯¼å‡º CSV"),
                                                       QLatin1String("recheck.csv"),
                                                       T("CSV (*.csv)"));
     if (path.isEmpty()) {
@@ -832,13 +832,13 @@ void RecheckWorkspace::onExportCsv()
     }
     QFile f(path);
     if (!f.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        QMessageBox::warning(this, T("µ¼³ö"), T("ÎŞ·¨Ğ´ÈëÎÄ¼ş¡£"));
+        QMessageBox::warning(this, T("å¯¼å‡º"), T("æ— æ³•å†™å…¥æ–‡ä»¶ã€‚"));
         return;
     }
     QTextStream out(&f);
     out << QByteArray("\xEF\xBB\xBF");
-    out << T("ĞòºÅ") << ',' << T("ÎÄ¼şÃû") << ',' << T("Â·¾¶") << ','
-        << T("ÅĞ¶¨") << ',' << T("ºÄÊ±ms") << ',' << T("ÕªÒª") << '\n';
+    out << T("åºå·") << ',' << T("æ–‡ä»¶å") << ',' << T("è·¯å¾„") << ','
+        << T("åˆ¤å®š") << ',' << T("è€—æ—¶ms") << ',' << T("æ‘˜è¦") << '\n';
     for (int i = 0; i < m_items.size(); ++i) {
         const Item& it = m_items[i];
         QString msg = it.message;
@@ -852,13 +852,13 @@ void RecheckWorkspace::onExportCsv()
     }
 }
 
-// Ğ´»á»°±¨¸æ JSON
+// å†™ä¼šè¯æŠ¥å‘Š JSON
 bool RecheckWorkspace::writeReportFile(const QString& path, QString* err) const
 {
     QFile f(path);
     if (!f.open(QIODevice::WriteOnly | QIODevice::Text)) {
         if (err) {
-            *err = T("ÎŞ·¨Ğ´ÈëÎÄ¼ş¡£");
+            *err = T("æ— æ³•å†™å…¥æ–‡ä»¶ã€‚");
         }
         return false;
     }
@@ -922,7 +922,7 @@ bool RecheckWorkspace::writeReportFile(const QString& path, QString* err) const
     return true;
 }
 
-// ÅúÅÜ½áÊø×Ô¶¯Âä±¨¸æ
+// æ‰¹è·‘ç»“æŸè‡ªåŠ¨è½æŠ¥å‘Š
 void RecheckWorkspace::autoSaveReportIfNeeded()
 {
     if (m_items.isEmpty()) {
@@ -941,11 +941,11 @@ void RecheckWorkspace::autoSaveReportIfNeeded()
     }
 }
 
-// ÊÖ¶¯±£´æ±¨¸æ
+// æ‰‹åŠ¨ä¿å­˜æŠ¥å‘Š
 void RecheckWorkspace::onSaveReport()
 {
     if (m_items.isEmpty()) {
-        QMessageBox::information(this, T("±¨¸æ"), T("Ã»ÓĞ¿É±£´æµÄ½á¹û¡£"));
+        QMessageBox::information(this, T("æŠ¥å‘Š"), T("æ²¡æœ‰å¯ä¿å­˜çš„ç»“æœã€‚"));
         return;
     }
     AppPaths::ensureDirs();
@@ -955,26 +955,26 @@ void RecheckWorkspace::onSaveReport()
                   + QDateTime::currentDateTime().toString(QLatin1String("yyyyMMdd-HHmmss"))
                   + QLatin1String(".json");
     }
-    const QString path = QFileDialog::getSaveFileName(this, T("±£´æ»á»°±¨¸æ"), suggest,
+    const QString path = QFileDialog::getSaveFileName(this, T("ä¿å­˜ä¼šè¯æŠ¥å‘Š"), suggest,
                                                       T("JSON (*.json)"));
     if (path.isEmpty()) {
         return;
     }
     QString err;
     if (!writeReportFile(path, &err)) {
-        QMessageBox::warning(this, T("±¨¸æ"), err.isEmpty() ? T("ÎŞ·¨Ğ´ÈëÎÄ¼ş¡£") : err);
+        QMessageBox::warning(this, T("æŠ¥å‘Š"), err.isEmpty() ? T("æ— æ³•å†™å…¥æ–‡ä»¶ã€‚") : err);
         return;
     }
     m_lastReportPath = path;
-    QMessageBox::information(this, T("±¨¸æ"), T("ÒÑ±£´æ£º") + path);
+    QMessageBox::information(this, T("æŠ¥å‘Š"), T("å·²ä¿å­˜ï¼š") + path);
 }
 
-// ÓÃµ±Ç°ĞĞÌø×ªÉè¼Æµ÷ÊÔ
+// ç”¨å½“å‰è¡Œè·³è½¬è®¾è®¡è°ƒè¯•
 void RecheckWorkspace::onOpenDesignDebug()
 {
     const Item* item = currentItem();
     if (!item) {
-        QMessageBox::information(this, T("Éè¼Æµ÷ÊÔ"), T("ÇëÏÈÑ¡ÖĞÒ»Ìõ¸´¼ì½á¹û¡£"));
+        QMessageBox::information(this, T("è®¾è®¡è°ƒè¯•"), T("è¯·å…ˆé€‰ä¸­ä¸€æ¡å¤æ£€ç»“æœã€‚"));
         return;
     }
     QString jobId = m_sessionJobId;
@@ -1001,7 +1001,7 @@ void RecheckWorkspace::onOpenDesignDebug()
     emit openDesignDebug(jobId, toolId, item->path);
 }
 
-// Ë«»÷¹¤¾ß½á¹ûĞĞ ¡ú ¸Ã¹¤¾ßµ÷ÊÔ
+// åŒå‡»å·¥å…·ç»“æœè¡Œ â†’ è¯¥å·¥å…·è°ƒè¯•
 void RecheckWorkspace::onToolDouble(int row, int)
 {
     const Item* item = currentItem();
@@ -1020,7 +1020,7 @@ void RecheckWorkspace::onToolDouble(int row, int)
     emit openDesignDebug(jobId, name->data(Qt::UserRole).toString(), item->path);
 }
 
-// ÓïÑÔÈÈÇĞ»»£ºË¢¸´¼ìÒ³¾²Ì¬ÎÄ°¸Óë±íÍ·
+// è¯­è¨€çƒ­åˆ‡æ¢ï¼šåˆ·å¤æ£€é¡µé™æ€æ–‡æ¡ˆä¸è¡¨å¤´
 void RecheckWorkspace::retranslateUi()
 {
     retranslateBound(this);
@@ -1028,23 +1028,23 @@ void RecheckWorkspace::retranslateUi()
         m_folder->setPlaceholderText(T(m_folder->property("vpTr").toByteArray().constData()));
     }
     const int fi = m_filter->currentIndex();
-    m_filter->setItemText(0, T("È«²¿"));
-    m_filter->setItemText(1, T("ÎÊÌâ"));
-    m_filter->setItemText(2, T("½ö NG"));
-    m_filter->setItemText(3, T("½öÊ§°Ü"));
+    m_filter->setItemText(0, T("å…¨éƒ¨"));
+    m_filter->setItemText(1, T("é—®é¢˜"));
+    m_filter->setItemText(2, T("ä»… NG"));
+    m_filter->setItemText(3, T("ä»…å¤±è´¥"));
     if (fi >= 0) {
         m_filter->setCurrentIndex(fi);
     }
     QStringList headers;
-    headers << T("#") << T("ÎÄ¼şÃû") << T("ÅĞ¶¨")
-            << T("ºÄÊ±ms") << T("ÕªÒª");
+    headers << T("#") << T("æ–‡ä»¶å") << T("åˆ¤å®š")
+            << T("è€—æ—¶ms") << T("æ‘˜è¦");
     m_table->setHorizontalHeaderLabels(headers);
     QStringList th;
-    th << T("¹¤¾ß") << T("ÅĞ¶¨")
-       << T("ºÄÊ±ms") << T("ËµÃ÷");
+    th << T("å·¥å…·") << T("åˆ¤å®š")
+       << T("è€—æ—¶ms") << T("è¯´æ˜");
     m_toolTable->setHorizontalHeaderLabels(th);
     updateProgressLabels();
-    m_btnPause->setText(m_paused ? T("¼ÌĞø") : T("ÔİÍ£"));
+    m_btnPause->setText(m_paused ? T("ç»§ç»­") : T("æš‚åœ"));
 }
 }
 

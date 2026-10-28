@@ -1,6 +1,6 @@
 /**
  * @file JobFlowCanvasPanel.cpp
- * @brief JobFlowCanvasPanelÊµÏÖ
+ * @brief JobFlowCanvasPanelå®žçŽ°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -21,7 +21,7 @@
 
 namespace Vision {
 
-// Á÷³Ì»­²¼Ãæ°å
+// æµç¨‹ç”»å¸ƒé¢æ¿
 JobFlowCanvasPanel::JobFlowCanvasPanel(Session* session, Solution* solution, QWidget* parent)
     : QWidget(parent)
     , m_session(session)
@@ -64,25 +64,25 @@ JobFlowCanvasPanel::JobFlowCanvasPanel(Session* session, Solution* solution, QWi
     lay->addWidget(m_canvas, 1);
 }
 
-// ÄÚ²¿»­²¼
+// å†…éƒ¨ç”»å¸ƒ
 JobCanvas* JobFlowCanvasPanel::canvas() const
 {
     return m_canvas;
 }
 
-// ÊÇ·ñÔÊÐí¸Ä»­²¼
+// æ˜¯å¦å…è®¸æ”¹ç”»å¸ƒ
 void JobFlowCanvasPanel::setEditable(bool editable)
 {
     m_editable = editable;
 }
 
-// ÊÇ·ñ²Ý¸åÄ£Ê½
+// æ˜¯å¦è‰ç¨¿æ¨¡å¼
 void JobFlowCanvasPanel::setDraftMode(bool draft)
 {
     m_draftMode = draft;
 }
 
-// °ó¶¨Òª»­µÄÁ÷³Ì
+// ç»‘å®šè¦ç”»çš„æµç¨‹
 void JobFlowCanvasPanel::bindJob(JobCfg* job)
 {
     m_job = job;
@@ -91,20 +91,20 @@ void JobFlowCanvasPanel::bindJob(JobCfg* job)
     }
 }
 
-// ÉèÖÃÁ÷³Ì id
+// è®¾ç½®æµç¨‹ id
 void JobFlowCanvasPanel::setJobId(const QString& jobId)
 {
     m_jobId = jobId;
     m_job = m_sol ? m_sol->findJobConfig(oid(jobId)) : 0;
 }
 
-// ÉèÖÃ»ØÍË¹¤¾ß id
+// è®¾ç½®å›žé€€å·¥å…· id
 void JobFlowCanvasPanel::setFallbackToolId(const QString& toolId)
 {
     m_fallbackToolId = toolId;
 }
 
-// ÉèÖÃ¿Õ×´Ì¬ÌáÊ¾
+// è®¾ç½®ç©ºçŠ¶æ€æç¤º
 void JobFlowCanvasPanel::setHintText(const QString& text)
 {
     if (!m_hint) {
@@ -119,7 +119,7 @@ void JobFlowCanvasPanel::setHintText(const QString& text)
     }
 }
 
-// °´Á÷³ÌÖØ»­»­²¼
+// æŒ‰æµç¨‹é‡ç”»ç”»å¸ƒ
 void JobFlowCanvasPanel::showJob(const QString& selectedId)
 {
     if (!m_canvas) {
@@ -139,7 +139,7 @@ void JobFlowCanvasPanel::showJob(const QString& selectedId)
     }
 }
 
-// Ëõ·ÅÖÃ»Ø 100%
+// ç¼©æ”¾ç½®å›ž 100%
 void JobFlowCanvasPanel::resetZoom()
 {
     if (m_canvas) {
@@ -147,13 +147,13 @@ void JobFlowCanvasPanel::resetZoom()
     }
 }
 
-// ¶Ï¿ªÒ»ÌõÁ¬Ïß
+// æ–­å¼€ä¸€æ¡è¿žçº¿
 void JobFlowCanvasPanel::unlinkLink(int linkIndex)
 {
     onUnlink(linkIndex);
 }
 
-// ½âÎöµ±Ç°Á÷³ÌÅäÖÃ
+// è§£æžå½“å‰æµç¨‹é…ç½®
 JobCfg* JobFlowCanvasPanel::resolveJob() const
 {
     if (m_job) {
@@ -174,13 +174,13 @@ JobCfg* JobFlowCanvasPanel::resolveJob() const
     return 0;
 }
 
-// ÊÇ·ñÔÊÐí¸ÄÁ¬Ïß
+// æ˜¯å¦å…è®¸æ”¹è¿žçº¿
 bool JobFlowCanvasPanel::canEditLinks() const
 {
     return m_editable && m_session && m_session->has(PermEditSolution);
 }
 
-// ¶Ë¿ÚÍÏÏßÁ¬ÉÏ
+// ç«¯å£æ‹–çº¿è¿žä¸Š
 void JobFlowCanvasPanel::onLinkPorts(const QString& fromId, const QString& fromPort,
                                      const QString& toId, const QString& toPort)
 {
@@ -205,20 +205,20 @@ void JobFlowCanvasPanel::onLinkPorts(const QString& fromId, const QString& fromP
     emit linksChanged();
 }
 
-// µã¹¤¾ßÊ±ÇåµôÑ¡ÖÐµÄÏß
+// ç‚¹å·¥å…·æ—¶æ¸…æŽ‰é€‰ä¸­çš„çº¿
 void JobFlowCanvasPanel::onToolClickedClearWire(const QString& toolId)
 {
     m_selectedLinkIndex = -1;
     emit toolClicked(toolId);
 }
 
-// µãÖÐÒ»ÌõÁ¬Ïß
+// ç‚¹ä¸­ä¸€æ¡è¿žçº¿
 void JobFlowCanvasPanel::onWireClicked(int linkIndex)
 {
     m_selectedLinkIndex = linkIndex;
 }
 
-// ÓÃ»§¸ÄÍêÁ¬ÏßÕÛÏß
+// ç”¨æˆ·æ”¹å®Œè¿žçº¿æŠ˜çº¿
 void JobFlowCanvasPanel::onLinkRouteChanged(int linkIndex)
 {
     if (!canEditLinks() || !m_sol || !m_canvas) {
@@ -243,13 +243,13 @@ void JobFlowCanvasPanel::onLinkRouteChanged(int linkIndex)
     emit linksChanged();
 }
 
-// »Ö¸´Á¬Ïß×Ô¶¯Â·ÓÉ
+// æ¢å¤è¿žçº¿è‡ªåŠ¨è·¯ç”±
 void JobFlowCanvasPanel::onLinkRouteReset(int linkIndex)
 {
     resetLinkRoute(linkIndex);
 }
 
-// »Ö¸´Ö¸¶¨Á¬Ïß×Ô¶¯Â·ÓÉ
+// æ¢å¤æŒ‡å®šè¿žçº¿è‡ªåŠ¨è·¯ç”±
 void JobFlowCanvasPanel::resetLinkRoute(int linkIndex)
 {
     if (!canEditLinks() || !m_sol) {
@@ -270,7 +270,7 @@ void JobFlowCanvasPanel::resetLinkRoute(int linkIndex)
     emit linksChanged();
 }
 
-// ¶Ï¿ªÑ¡ÖÐµÄÁ¬Ïß
+// æ–­å¼€é€‰ä¸­çš„è¿žçº¿
 void JobFlowCanvasPanel::onUnlink(int linkIndex)
 {
     if (!canEditLinks() || !m_sol) {
@@ -289,7 +289,7 @@ void JobFlowCanvasPanel::onUnlink(int linkIndex)
     emit linksChanged();
 }
 
-// ×é±»ÍÏ¶¯
+// ç»„è¢«æ‹–åŠ¨
 void JobFlowCanvasPanel::onGroupMoved(const QString& groupId, qreal x, qreal y)
 {
     if (!canEditLinks() || !m_sol || groupId.isEmpty()) {
@@ -313,7 +313,7 @@ void JobFlowCanvasPanel::onGroupMoved(const QString& groupId, qreal x, qreal y)
     m_canvas->showJob(job, groupId, m_selectedLinkIndex);
 }
 
-// ¹¤¾ß½Úµã±»ÍÏ¶¯
+// å·¥å…·èŠ‚ç‚¹è¢«æ‹–åŠ¨
 void JobFlowCanvasPanel::onNodeMoved(const QString& toolId, qreal x, qreal y)
 {
     if (!canEditLinks() || !m_sol || toolId.isEmpty()) {

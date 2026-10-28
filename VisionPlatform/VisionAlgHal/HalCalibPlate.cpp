@@ -1,6 +1,6 @@
 /**
  * @file HalCalibPlate.cpp
- * @brief HalCalibPlateÊµÏÖ
+ * @brief HalCalibPlateå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -95,11 +95,11 @@ std::string tupleText(const HalconCpp::HTuple& t)
 
 }
 
-// ÓÃ Halcon ±ê¶¨°åÃèÊöÎÄ¼şÕÒ±ê¼Ç²¢ÇóÄÚ²Î
+// ç”¨ Halcon æ ‡å®šæ¿æè¿°æ–‡ä»¶æ‰¾æ ‡è®°å¹¶æ±‚å†…å‚
 namespace {
 const char kVer_HalCalibPlate[] = "1.0.0.0";
 const Vision::VerNoteRaw kNotes_HalCalibPlate[] = {
-    { "1.0.0.0", "Ê×°æ" },
+    { "1.0.0.0", "é¦–ç‰ˆ" },
 };
 }
 
@@ -108,7 +108,7 @@ std::string Vision::HalCalibPlate::version() const
     return kVer_HalCalibPlate;
 }
 
-// °æ±¾±ä¸ü£¬Ö»×·¼Ó
+// ç‰ˆæœ¬å˜æ›´ï¼Œåªè¿½åŠ 
 std::vector<Vision::VerNote> Vision::HalCalibPlate::versionNotes() const
 {
     return Vision::verNotesFrom(kNotes_HalCalibPlate, static_cast<int>(sizeof(kNotes_HalCalibPlate) / sizeof(kNotes_HalCalibPlate[0])));

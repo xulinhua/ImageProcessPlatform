@@ -1,6 +1,6 @@
 /**
  * @file HalObjectConvert.h
- * @brief HalObjectConvertÍ·ÎÄ¼ş
+ * @brief HalObjectConvertå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -19,40 +19,40 @@
 
 namespace Vision {
 
-/** @brief ÇøÓòÊÇ·ñÎŞÓĞĞ§Ãæ»ı */
+/** @brief åŒºåŸŸæ˜¯å¦æ— æœ‰æ•ˆé¢ç§¯ */
 VISION_HALCOM_API bool hoIsEmpty(const HalconCpp::HObject& r);
 
-/** @brief Õû·ù¾ØĞÎÇøÓò£¨Halcon ĞĞ/ÁĞ±ÕÇø¼ä£© */
+/** @brief æ•´å¹…çŸ©å½¢åŒºåŸŸï¼ˆHalcon è¡Œ/åˆ—é—­åŒºé—´ï¼‰ */
 VISION_HALCOM_API HalconCpp::HObject fullImageRegion(int imgW, int imgH);
 
 /**
- * @brief µ¥¸ñ»òÕû´ü HsObject ×ª HObject£¨ÇøÓò²¢¼¯£»Ô²/¾Ø/Ïß/ÂÖÀªµÈÉú³É¶ÔÓ¦ region£©
- * @note Í¼Ïñ¸ñÇëÓÃ HalImageConvert£¬±¾º¯ÊıÌø¹ı ObjImage
+ * @brief å•æ ¼æˆ–æ•´è¢‹ HsObject è½¬ HObjectï¼ˆåŒºåŸŸå¹¶é›†ï¼›åœ†/çŸ©/çº¿/è½®å»“ç­‰ç”Ÿæˆå¯¹åº” regionï¼‰
+ * @note å›¾åƒæ ¼è¯·ç”¨ HalImageConvertï¼Œæœ¬å‡½æ•°è·³è¿‡ ObjImage
  */
 VISION_HALCOM_API HalconCpp::HObject hsObjectToHObject(const HsCommData::HsObject& obj, int imgW, int imgH);
 
-/** @brief HsRegion ĞĞ³Ì ¡ú HObject */
+/** @brief HsRegion è¡Œç¨‹ â†’ HObject */
 VISION_HALCOM_API HalconCpp::HObject hsRegionToHObject(const HsCommData::HsRegion& reg);
 
-/** @brief ¶àÖ»ÉÏÓÎÇøÓò¶ÔÏó²¢¼¯£»¿ÕÔòÕû·ùÍ¼ */
+/** @brief å¤šåªä¸Šæ¸¸åŒºåŸŸå¯¹è±¡å¹¶é›†ï¼›ç©ºåˆ™æ•´å¹…å›¾ */
 VISION_HALCOM_API HalconCpp::HObject hsRegionsToHObject(const std::vector<HsCommData::HsObject>& regs, int imgW, int imgH);
 
-/** @brief µ¥Ö» HsObject ¡ú ÇøÓò£»ÎŞĞ§ÔòÕû·ùÍ¼ */
+/** @brief å•åª HsObject â†’ åŒºåŸŸï¼›æ— æ•ˆåˆ™æ•´å¹…å›¾ */
 VISION_HALCOM_API HalconCpp::HObject toolRoiToHObject(const HsCommData::HsObject& roi, int imgW, int imgH);
 
-/** @brief ¶à ROI ²¢¼¯£»¿ÕÔòÕû·ùÍ¼ */
+/** @brief å¤š ROI å¹¶é›†ï¼›ç©ºåˆ™æ•´å¹…å›¾ */
 VISION_HALCOM_API HalconCpp::HObject toolRoisToHObject(const std::vector<HsCommData::HsObject>& rois, int imgW, int imgH);
 
-/** @brief HObject(Region) ¡ú HsObject(ObjRegion) */
+/** @brief HObject(Region) â†’ HsObject(ObjRegion) */
 VISION_HALCOM_API HsCommData::HsObject hObjectToRegionObject(const HalconCpp::HObject& r);
 
-/** @brief ½á¹ûÔ² ¡ú HsObject */
+/** @brief ç»“æœåœ† â†’ HsObject */
 VISION_HALCOM_API HsCommData::HsObject circleObject(double cx, double cy, double r);
 
-/** @brief ½á¹ûÏß¶Î ¡ú HsObject */
+/** @brief ç»“æœçº¿æ®µ â†’ HsObject */
 VISION_HALCOM_API HsCommData::HsObject lineObject(double x1, double y1, double x2, double y2);
 
-/** @brief Æ¥ÅäµãÊ®×Ö£¨Á½¶ÎÏß¶Î£©¡ú HsObject */
+/** @brief åŒ¹é…ç‚¹åå­—ï¼ˆä¸¤æ®µçº¿æ®µï¼‰â†’ HsObject */
 VISION_HALCOM_API HsCommData::HsObject crossObject(double cx, double cy);
 
 }

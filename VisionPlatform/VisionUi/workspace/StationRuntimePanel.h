@@ -1,6 +1,6 @@
 /**
  * @file StationRuntimePanel.h
- * @brief StationRuntimePanelÍ·ÎÄ¼ş
+ * @brief StationRuntimePanelå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -29,95 +29,95 @@ class Station;
 
 /**
  * @class StationRuntimePanel
- * @brief µ¥¹¤Õ¾ÔËĞĞÃæ°å£ºÍ¼ÏñÍø¸ñ¡¢²úÁ¿¿¨¡¢½á¹ûÀúÊ·£¨²»º¬È«¾Ö¿ªÊ¼/Í£Ö¹£©
+ * @brief å•å·¥ç«™è¿è¡Œé¢æ¿ï¼šå›¾åƒç½‘æ ¼ã€äº§é‡å¡ã€ç»“æœå†å²ï¼ˆä¸å«å…¨å±€å¼€å§‹/åœæ­¢ï¼‰
  */
 class VISION_UI_API StationRuntimePanel : public QWidget {
     Q_OBJECT
 public:
-    /** @brief ¿ÕÃæ°å */
+    /** @brief ç©ºé¢æ¿ */
     explicit StationRuntimePanel(QWidget* parent = 0);
 
-    /** @brief °ó¶¨µÄ¹¤Õ¾ÅäÖÃ id£»Î´°ó¶¨Ê±Îª¿Õ */
+    /** @brief ç»‘å®šçš„å·¥ç«™é…ç½® idï¼›æœªç»‘å®šæ—¶ä¸ºç©º */
     ObjectId stationId() const;
-    /** @brief µ±Ç°²¼¾ÖÏÂµÚÒ»¸öÒÑÊ¹ÄÜµÄÍ¼Ïñ´° */
+    /** @brief å½“å‰å¸ƒå±€ä¸‹ç¬¬ä¸€ä¸ªå·²ä½¿èƒ½çš„å›¾åƒçª— */
     HsCtrl::HsImageWindow* imageWindow() const;
-    /** @brief °ó¶¨·½°¸/¹¤Õ¾ÅäÖÃ/ÔËĞĞÊµÀı£¬°´ runtimeView Ë¢ĞÂ²¼¾Ö */
+    /** @brief ç»‘å®šæ–¹æ¡ˆ/å·¥ç«™é…ç½®/è¿è¡Œå®ä¾‹ï¼ŒæŒ‰ runtimeView åˆ·æ–°å¸ƒå±€ */
     void bindContext(Solution* sol, StationCfg* st, Station* station);
     /**
-     * @brief ½ö¸üĞÂÔËĞĞÊµÀıÖ¸Õë£¨Í£Ö¹ºóÖÃ¿Õ¡¢ÔÙ¿ªÊ¼Ê±¹Ò»Ø£©£¬²»Ë¢²¼¾Ö¡¢²»Çå»­Ãæ
-     * @param station ÔËĞĞÊµÀı£»Í£Ö¹ºó´« 0
+     * @brief ä»…æ›´æ–°è¿è¡Œå®ä¾‹æŒ‡é’ˆï¼ˆåœæ­¢åç½®ç©ºã€å†å¼€å§‹æ—¶æŒ‚å›ï¼‰ï¼Œä¸åˆ·å¸ƒå±€ã€ä¸æ¸…ç”»é¢
+     * @param station è¿è¡Œå®ä¾‹ï¼›åœæ­¢åä¼  0
      */
     void setRuntimeStation(Station* station);
-    /** @brief ²úÁ¿Óë½ÚÅÄ */
+    /** @brief äº§é‡ä¸èŠ‚æ‹ */
     void setCounts(int total, int pass, int fail, int cycleMs);
-    /** @brief ×î½üÒ»´ÎÅĞ¶¨½á¹û */
+    /** @brief æœ€è¿‘ä¸€æ¬¡åˆ¤å®šç»“æœ */
     void setLastOk(bool ok);
-    /** @brief ÊµÊ±²É¼¯Ö¸Ê¾ */
+    /** @brief å®æ—¶é‡‡é›†æŒ‡ç¤º */
     void setLive(bool live);
-    /** @brief ×·¼ÓÒ»ÌõÀúÊ·£¨º¬ËõÂÔÍ¼£© */
+    /** @brief è¿½åŠ ä¸€æ¡å†å²ï¼ˆå«ç¼©ç•¥å›¾ï¼‰ */
     void addResult(bool ok, const QString& line, const QImage& thumb);
-    /** @brief Çå¿ÕÀúÊ·²¢¸´Î»¼ÆÊı */
+    /** @brief æ¸…ç©ºå†å²å¹¶å¤ä½è®¡æ•° */
     void resetHistory();
-    /** @brief Ë¢ĞÂ±¾ÅÄ»ã×ÜÍ¼£¬ÔÙ°´¸÷¸ñÅäÖÃË¢»º´æ */
+    /** @brief åˆ·æ–°æœ¬æ‹æ±‡æ€»å›¾ï¼Œå†æŒ‰å„æ ¼é…ç½®åˆ·ç¼“å­˜ */
     void setRunImages(const HsCommData::HsImage& source,
                       const HsCommData::HsImage& result,
                       const QVector<HsCommData::Graphic>& overlay);
 
 private slots:
-    /** @brief ÀúÊ·¹ıÂË£ºÈ«²¿¡¢OK¡¢NG */
+    /** @brief å†å²è¿‡æ»¤ï¼šå…¨éƒ¨ã€OKã€NG */
     void onHistFilter();
 
 private:
     /**
      * @class HistItem
-     * @brief Ò»Ìõ½á¹ûÀúÊ·
+     * @brief ä¸€æ¡ç»“æœå†å²
      */
     struct HistItem {
         bool ok;       ///< OK/NG
-        QString tip;   ///< ÕªÒª
-        QString time;  ///< Ê±¼ä
-        QImage thumb;  ///< ËõÂÔÍ¼
+        QString tip;   ///< æ‘˜è¦
+        QString time;  ///< æ—¶é—´
+        QImage thumb;  ///< ç¼©ç•¥å›¾
         HistItem() : ok(false) {}
     };
-    /** @brief °´¹ıÂËÖØÅÅÀúÊ·Ìõ */
+    /** @brief æŒ‰è¿‡æ»¤é‡æ’å†å²æ¡ */
     void rebuildHist();
-    /** @brief °´µ±Ç°ĞĞÁĞÓëÊ¹ÄÜÖØ½¨Íø¸ñ²¢ÏÔÒşÃæ°å */
+    /** @brief æŒ‰å½“å‰è¡Œåˆ—ä¸ä½¿èƒ½é‡å»ºç½‘æ ¼å¹¶æ˜¾éšé¢æ¿ */
     void applyLayout();
-    /** @brief °Ñ»º´æÖ¡»­µ½¸÷¸ñ */
+    /** @brief æŠŠç¼“å­˜å¸§ç”»åˆ°å„æ ¼ */
     void applyImages();
-    /** @brief ¹¤¾ßÊµÀıÃû£»¿Õ id Îª¹¤Õ¾½á¹û */
+    /** @brief å·¥å…·å®ä¾‹åï¼›ç©º id ä¸ºå·¥ç«™ç»“æœ */
     QString toolCaption(const ObjectId& id) const;
 
-    HsCtrl::HsImageWindow* m_cells[9]; ///< ×î¶à 9 ¸öÍ¼Ïñ´°
-    QLabel* m_cellTitles[9];            ///< ¸÷¸ñ±êÌâ
-    QWidget* m_cellPanes[9];            ///< ¸÷¸ñÈİÆ÷
-    QGridLayout* m_gridLay;             ///< Í¼ÏñÍø¸ñ
-    QWidget* m_statsCard;               ///< ÓÒ²àÍ³¼Æ¿¨
-    QWidget* m_histBlock;               ///< µ×²¿ÀúÊ·Çø
-    QLabel* m_stationTitle;             ///< ¹¤Õ¾Ãû
-    QLabel* m_banner;                   ///< OK/NG ºá·ù
-    QLabel* m_total;                    ///< ×ÜÊı
+    HsCtrl::HsImageWindow* m_cells[9]; ///< æœ€å¤š 9 ä¸ªå›¾åƒçª—
+    QLabel* m_cellTitles[9];            ///< å„æ ¼æ ‡é¢˜
+    QWidget* m_cellPanes[9];            ///< å„æ ¼å®¹å™¨
+    QGridLayout* m_gridLay;             ///< å›¾åƒç½‘æ ¼
+    QWidget* m_statsCard;               ///< å³ä¾§ç»Ÿè®¡å¡
+    QWidget* m_histBlock;               ///< åº•éƒ¨å†å²åŒº
+    QLabel* m_stationTitle;             ///< å·¥ç«™å
+    QLabel* m_banner;                   ///< OK/NG æ¨ªå¹…
+    QLabel* m_total;                    ///< æ€»æ•°
     QLabel* m_pass;                     ///< OK
     QLabel* m_fail;                     ///< NG
-    QLabel* m_yield;                    ///< Á¼ÂÊ
-    QLabel* m_cycle;                    ///< ½ÚÅÄ
-    QLabel* m_online;                   ///< ÔÚÏß×´Ì¬
-    QLabel* m_live;                     ///< ÊµÊ±Ö¸Ê¾
-    QWidget* m_ngRow;                   ///< ÀúÊ·ÌõÈİÆ÷
-    QHBoxLayout* m_ngLay;               ///< ÀúÊ·Ìõ²¼¾Ö
-    QPushButton* m_fAll;                ///< ¹ıÂËÈ«²¿
-    QPushButton* m_fOk;                 ///< ¹ıÂË OK
-    QPushButton* m_fNg;                 ///< ¹ıÂË NG
-    int m_histFilter;                   ///< 0È«²¿ 1OK 2NG
-    Solution* m_sol;                    ///< µ±Ç°·½°¸£¨²»ÓµÓĞ£©
-    StationCfg* m_stationPtr;        ///< µ±Ç°¹¤Õ¾ÅäÖÃ£¨²»ÓµÓĞ£©
-    Station* m_station;                 ///< ¹¤Õ¾ÔËĞĞÊµÀı£¨²»ÓµÓĞ£©
-    RuntimeView m_viewConfig;              ///< µ±Ç°»­ÃæÅäÖÃ¸±±¾
-    HsCommData::HsImage m_lastSrc;     ///< »º´æÔ´Í¼
-    HsCommData::HsImage m_lastRst;     ///< »º´æ½á¹ûÍ¼
-    QVector<HsCommData::Graphic> m_lastGfx;///< »º´æµş¼Ó
-    QVector<HistItem> m_hist;           ///< ÀúÊ·
-    bool m_needFit;                   ///< ÏÂ´ÎË¢Í¼Ê± fit£¨²¼¾Ö±ä»¯ºó£©
+    QLabel* m_yield;                    ///< è‰¯ç‡
+    QLabel* m_cycle;                    ///< èŠ‚æ‹
+    QLabel* m_online;                   ///< åœ¨çº¿çŠ¶æ€
+    QLabel* m_live;                     ///< å®æ—¶æŒ‡ç¤º
+    QWidget* m_ngRow;                   ///< å†å²æ¡å®¹å™¨
+    QHBoxLayout* m_ngLay;               ///< å†å²æ¡å¸ƒå±€
+    QPushButton* m_fAll;                ///< è¿‡æ»¤å…¨éƒ¨
+    QPushButton* m_fOk;                 ///< è¿‡æ»¤ OK
+    QPushButton* m_fNg;                 ///< è¿‡æ»¤ NG
+    int m_histFilter;                   ///< 0å…¨éƒ¨ 1OK 2NG
+    Solution* m_sol;                    ///< å½“å‰æ–¹æ¡ˆï¼ˆä¸æ‹¥æœ‰ï¼‰
+    StationCfg* m_stationPtr;        ///< å½“å‰å·¥ç«™é…ç½®ï¼ˆä¸æ‹¥æœ‰ï¼‰
+    Station* m_station;                 ///< å·¥ç«™è¿è¡Œå®ä¾‹ï¼ˆä¸æ‹¥æœ‰ï¼‰
+    RuntimeView m_viewConfig;              ///< å½“å‰ç”»é¢é…ç½®å‰¯æœ¬
+    HsCommData::HsImage m_lastSrc;     ///< ç¼“å­˜æºå›¾
+    HsCommData::HsImage m_lastRst;     ///< ç¼“å­˜ç»“æœå›¾
+    QVector<HsCommData::Graphic> m_lastGfx;///< ç¼“å­˜å åŠ 
+    QVector<HistItem> m_hist;           ///< å†å²
+    bool m_needFit;                   ///< ä¸‹æ¬¡åˆ·å›¾æ—¶ fitï¼ˆå¸ƒå±€å˜åŒ–åï¼‰
 };
 
 }

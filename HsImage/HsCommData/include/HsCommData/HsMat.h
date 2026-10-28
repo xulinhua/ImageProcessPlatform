@@ -1,6 +1,6 @@
 /**
  * @file HsMat.h
- * @brief HsMatÍ·ÎÄ¼ş
+ * @brief HsMatå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -19,84 +19,84 @@ namespace HsCommData {
 
 /**
  * @class HsMat
- * @brief Ë«¾«¶È¾ØÕó¡£ĞĞÓÅÏÈ¡¢½ô´Õ´æ·Å¡£¿½±´¹²Ïí»º³å£¬Ğ´ÈëÊ±²Å¸´ÖÆ
- * ²»ÊÇ HsTuple µÄÔªËØ¡£Òª½øÔª×é¿ÚÊ±ÓÃ toTuple£¬¶Á»ØÓÃ fromTuple¡£
+ * @brief åŒç²¾åº¦çŸ©é˜µã€‚è¡Œä¼˜å…ˆã€ç´§å‡‘å­˜æ”¾ã€‚æ‹·è´å…±äº«ç¼“å†²ï¼Œå†™å…¥æ—¶æ‰å¤åˆ¶
+ * ä¸æ˜¯ HsTuple çš„å…ƒç´ ã€‚è¦è¿›å…ƒç»„å£æ—¶ç”¨ toTupleï¼Œè¯»å›ç”¨ fromTupleã€‚
  */
 class HSCOMMDATA_EXPORT HsMat {
 public:
-    HsMat(); ///< ¿Õ¾ØÕó£¬0 ĞĞ 0 ÁĞ
-    /** @brief Í¬ÀàĞÍ¿½±´£¬Ö»¹²Ïí»º³å */
+    HsMat(); ///< ç©ºçŸ©é˜µï¼Œ0 è¡Œ 0 åˆ—
+    /** @brief åŒç±»å‹æ‹·è´ï¼Œåªå…±äº«ç¼“å†² */
     HsMat(const HsMat& other);
-    /** @brief Í¬ÀàĞÍ¸³Öµ£¬Ö»¹²Ïí»º³å¡£Éî¿½ÓÃ clone */
+    /** @brief åŒç±»å‹èµ‹å€¼ï¼Œåªå…±äº«ç¼“å†²ã€‚æ·±æ‹·ç”¨ clone */
     HsMat& operator=(const HsMat& other);
     /**
-     * @brief rows ĞĞ cols ÁĞ£¬ÔªËØÎª 0
-     * ÈÎÒ»±ßĞ¡ÓÚ 0 Å× HsException
+     * @brief rows è¡Œ cols åˆ—ï¼Œå…ƒç´ ä¸º 0
+     * ä»»ä¸€è¾¹å°äº 0 æŠ› HsException
      */
     HsMat(int rows, int cols);
     /**
-     * @brief ´ÓĞĞÓÅÏÈÊı×é¿½Èë¡£data Îª¿ÕÇÒĞĞÁĞ¶¼Îª 0 Ôò¿Õ¾ØÕó
-     * ¸öÊıĞëÎª rows * cols¡£ÈÎÒ»±ßĞ¡ÓÚ 0£¬»ò data Îª¿Õµ«ÔªËØ¸öÊı´óÓÚ 0£¬Å× HsException
+     * @brief ä»è¡Œä¼˜å…ˆæ•°ç»„æ‹·å…¥ã€‚data ä¸ºç©ºä¸”è¡Œåˆ—éƒ½ä¸º 0 åˆ™ç©ºçŸ©é˜µ
+     * ä¸ªæ•°é¡»ä¸º rows * colsã€‚ä»»ä¸€è¾¹å°äº 0ï¼Œæˆ– data ä¸ºç©ºä½†å…ƒç´ ä¸ªæ•°å¤§äº 0ï¼ŒæŠ› HsException
      */
     HsMat(int rows, int cols, const double* data);
 
-    /** @brief n ½×µ¥Î»Õó¡£n Ğ¡ÓÚ 1 Å× HsException */
+    /** @brief n é˜¶å•ä½é˜µã€‚n å°äº 1 æŠ› HsException */
     static HsMat eye(int n);
     /**
-     * @brief ´Ó´¿Êı×ÖÔª×é»¹Ô­¡£³¤¶ÈĞëµÈÓÚ rows * cols£¬°´ĞĞÓÅÏÈ
-     * º¬×Ö·û´®»ò³¤¶È²»·ûÅ× HsException
+     * @brief ä»çº¯æ•°å­—å…ƒç»„è¿˜åŸã€‚é•¿åº¦é¡»ç­‰äº rows * colsï¼ŒæŒ‰è¡Œä¼˜å…ˆ
+     * å«å­—ç¬¦ä¸²æˆ–é•¿åº¦ä¸ç¬¦æŠ› HsException
      */
     static HsMat fromTuple(const HsTuple& tuple, int rows, int cols);
 
-    /** @brief ÎŞÔªËØ */
+    /** @brief æ— å…ƒç´  */
     bool isEmpty() const;
-    /** @brief ĞĞÊı¡£¿Õ¾ØÕóÎª 0 */
+    /** @brief è¡Œæ•°ã€‚ç©ºçŸ©é˜µä¸º 0 */
     int rows() const;
-    /** @brief ÁĞÊı¡£¿Õ¾ØÕóÎª 0 */
+    /** @brief åˆ—æ•°ã€‚ç©ºçŸ©é˜µä¸º 0 */
     int cols() const;
-    /** @brief ÔªËØ¸öÊı£¬µÈÓÚ rows * cols */
+    /** @brief å…ƒç´ ä¸ªæ•°ï¼Œç­‰äº rows * cols */
     int length() const;
 
     /**
-     * @brief µÚ row ĞĞµÚ col ÁĞ¡£Ô½½çÅ× HsException
+     * @brief ç¬¬ row è¡Œç¬¬ col åˆ—ã€‚è¶Šç•ŒæŠ› HsException
      */
     double at(int row, int col) const;
     /**
-     * @brief ¸ÄÒ»¸ñ¡£Ô½½çÅ× HsException¡£¹²ÏíÊ±ÏÈ²ğ¿ª
+     * @brief æ”¹ä¸€æ ¼ã€‚è¶Šç•ŒæŠ› HsExceptionã€‚å…±äº«æ—¶å…ˆæ‹†å¼€
      */
     void set(int row, int col, double value);
 
     /**
-     * @brief Ö»¶ÁĞĞÓÅÏÈ»º³å¡£¿Õ¾ØÕó·µ»Ø 0
-     * Ğ´Èë»á²ğ¿ª¹²Ïí£¬Ö¸ÕëÊ§Ğ§
+     * @brief åªè¯»è¡Œä¼˜å…ˆç¼“å†²ã€‚ç©ºçŸ©é˜µè¿”å› 0
+     * å†™å…¥ä¼šæ‹†å¼€å…±äº«ï¼ŒæŒ‡é’ˆå¤±æ•ˆ
      */
     const double* data() const;
     /**
-     * @brief ¿ÉĞ´ĞĞÓÅÏÈ»º³å¡£¿Õ¾ØÕóÅ× HsException
-     * ¹²ÏíÊ±ÏÈ²ğ¿ª
+     * @brief å¯å†™è¡Œä¼˜å…ˆç¼“å†²ã€‚ç©ºçŸ©é˜µæŠ› HsException
+     * å…±äº«æ—¶å…ˆæ‹†å¼€
      */
     double* data();
 
-    /** @brief Éî¿½È«²¿ÔªËØ */
+    /** @brief æ·±æ‹·å…¨éƒ¨å…ƒç´  */
     HsMat clone() const;
-    /** @brief ÅÅ³É TupleDouble£¬ĞĞÓÅÏÈ¡£¿Õ¾ØÕóµÃµ½¿ÕÔª×é */
+    /** @brief æ’æˆ TupleDoubleï¼Œè¡Œä¼˜å…ˆã€‚ç©ºçŸ©é˜µå¾—åˆ°ç©ºå…ƒç»„ */
     HsTuple toTuple() const;
 
-    /** @brief ĞĞÁĞÓë¶ÔÓ¦ÔªËØ¶¼ÏàÍ¬ */
+    /** @brief è¡Œåˆ—ä¸å¯¹åº”å…ƒç´ éƒ½ç›¸åŒ */
     bool operator==(const HsMat& other) const;
-    /** @brief Óë operator== Ïà·´ */
+    /** @brief ä¸ operator== ç›¸å */
     bool operator!=(const HsMat& other) const;
 
 private:
     struct Body;
-    /** @brief È·±£ÒÑ·ÖÅä»º³å */
+    /** @brief ç¡®ä¿å·²åˆ†é…ç¼“å†² */
     void ensure(int rows, int cols);
-    /** @brief Èô±»¹²ÏíÔò²ğ¿ª¿½±´ */
+    /** @brief è‹¥è¢«å…±äº«åˆ™æ‹†å¼€æ‹·è´ */
     void detach();
-    /** @brief ÏÂ±êÊÕµ½ÏßĞÔÎ»ÖÃ¡£Ô½½çÅ× */
+    /** @brief ä¸‹æ ‡æ”¶åˆ°çº¿æ€§ä½ç½®ã€‚è¶Šç•ŒæŠ› */
     int indexOf(int row, int col) const;
 
-    std::shared_ptr<Body> m_body; ///< ÔªËØ»º³å¡£¿ÕÖ¸Õë±íÊ¾¿Õ¾ØÕó
+    std::shared_ptr<Body> m_body; ///< å…ƒç´ ç¼“å†²ã€‚ç©ºæŒ‡é’ˆè¡¨ç¤ºç©ºçŸ©é˜µ
 };
 
 }

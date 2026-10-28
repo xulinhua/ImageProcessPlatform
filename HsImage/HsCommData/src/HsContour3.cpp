@@ -1,6 +1,6 @@
 /**
  * @file HsContour3.cpp
- * @brief HsContour3ÊµÏÖ
+ * @brief HsContour3å®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -10,20 +10,20 @@
 
 namespace HsCommData {
 
-// Ä¬ÈÏ¿ªÕÛÏß
+// é»˜è®¤å¼€æŠ˜çº¿
 Contour3::Contour3()
     : closed(false)
 {
 }
 
-// Í¬ÀàĞÍ¿½±´£¬µãÁĞÕû·İ¸´ÖÆ
+// åŒç±»å‹æ‹·è´ï¼Œç‚¹åˆ—æ•´ä»½å¤åˆ¶
 Contour3::Contour3(const Contour3& other)
     : pts(other.pts)
     , closed(other.closed)
 {
 }
 
-// Í¬ÀàĞÍ¸³Öµ£¬µãÁĞÕû·İ¸´ÖÆ
+// åŒç±»å‹èµ‹å€¼ï¼Œç‚¹åˆ—æ•´ä»½å¤åˆ¶
 Contour3& Contour3::operator=(const Contour3& other)
 {
     if (this != &other) {
@@ -33,13 +33,13 @@ Contour3& Contour3::operator=(const Contour3& other)
     return *this;
 }
 
-// ÎŞ¶¥µãÔòÎª¿Õ
+// æ— é¡¶ç‚¹åˆ™ä¸ºç©º
 bool Contour3::isEmpty() const
 {
     return pts.empty();
 }
 
-// ¶¥µã°üÎ§ºĞ
+// é¡¶ç‚¹åŒ…å›´ç›’
 Aabb3 Contour3::bounds() const
 {
     if (pts.empty()) {

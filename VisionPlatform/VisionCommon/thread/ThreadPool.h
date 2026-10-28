@@ -1,6 +1,6 @@
 /**
  * @file ThreadPool.h
- * @brief ThreadPoolÍ·ÎÄ¼ş
+ * @brief ThreadPoolå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -17,67 +17,67 @@ namespace Vision {
 
 /**
  * @class ThreadPool
- * @brief ¹Ì¶¨Ïß³ÌÊıµÄ C++ ÈÎÎñ³Ø£¨ÎŞ Qt£©£»Éè¼ÆÌ¬/¸´¼ì/¹¤Õ¾²¢ĞĞ Job ¹²ÓÃ
+ * @brief å›ºå®šçº¿ç¨‹æ•°çš„ C++ ä»»åŠ¡æ± ï¼ˆæ—  Qtï¼‰ï¼›è®¾è®¡æ€/å¤æ£€/å·¥ç«™å¹¶è¡Œ Job å…±ç”¨
  */
 class VISION_COMMON_API ThreadPool {
 public:
     /**
-     * @brief ´´½¨Ïß³Ì³Ø
-     * @param threadCount ¹¤×÷Ïß³ÌÊı£»0 ±íÊ¾°´Ó²¼ş²¢·¢£¨ÖÁÉÙ 2£©
+     * @brief åˆ›å»ºçº¿ç¨‹æ± 
+     * @param threadCount å·¥ä½œçº¿ç¨‹æ•°ï¼›0 è¡¨ç¤ºæŒ‰ç¡¬ä»¶å¹¶å‘ï¼ˆè‡³å°‘ 2ï¼‰
      */
     explicit ThreadPool(std::size_t threadCount = 0);
-    /** @brief Í£Ö¹²¢ join È«²¿¹¤×÷Ïß³Ì */
+    /** @brief åœæ­¢å¹¶ join å…¨éƒ¨å·¥ä½œçº¿ç¨‹ */
     ~ThreadPool();
 
     /**
-     * @brief Í¶µİÈÎÎñ£¨¿É´ÓÈÎÒâÏß³Ìµ÷ÓÃ£©
-     * @param task ÎŞ²Î¿Éµ÷ÓÃ¶ÔÏó
+     * @brief æŠ•é€’ä»»åŠ¡ï¼ˆå¯ä»ä»»æ„çº¿ç¨‹è°ƒç”¨ï¼‰
+     * @param task æ— å‚å¯è°ƒç”¨å¯¹è±¡
      */
     void enqueue(const std::function<void()>& task);
 
     /**
-     * @brief ÊÇ·ñÈÔ½ÓÊÜĞÂÈÎÎñ£¨¹Ø±ÕÈí¼şÇ°ÉèÎª false£©
-     * @param on true ½ÓÊÜ£»false ¾Ü¾ø enqueue
+     * @brief æ˜¯å¦ä»æ¥å—æ–°ä»»åŠ¡ï¼ˆå…³é—­è½¯ä»¶å‰è®¾ä¸º falseï¼‰
+     * @param on true æ¥å—ï¼›false æ‹’ç» enqueue
      */
     void setAccepting(bool on);
 
     /**
-     * @brief ¶ªµôÉĞÎ´¿ªÊ¼µÄÅÅ¶ÓÈÎÎñ£¨ÔÚ·ÉÈÎÎñ²»ÖĞ¶Ï£©
+     * @brief ä¸¢æ‰å°šæœªå¼€å§‹çš„æ’é˜Ÿä»»åŠ¡ï¼ˆåœ¨é£ä»»åŠ¡ä¸ä¸­æ–­ï¼‰
      */
     void clearPending();
 
     /**
-     * @brief µÈ´ı¶ÓÁĞÇå¿ÕÇÒÔÚ·ÉÈÎÎñ½áÊø£¨Ïú»Ù Station/Job Ç°µ÷ÓÃ£©
+     * @brief ç­‰å¾…é˜Ÿåˆ—æ¸…ç©ºä¸”åœ¨é£ä»»åŠ¡ç»“æŸï¼ˆé”€æ¯ Station/Job å‰è°ƒç”¨ï¼‰
      */
     void waitIdle();
 
     /**
-     * @brief ¹Ø±ÕÈë¿Ú£º¾ÜÊÕ + Çå¿ÕÅÅ¶Ó + µÈ´ıÔÚ·É½áÊø£¨ÍË³öÈí¼şÓÃ£©
+     * @brief å…³é—­å…¥å£ï¼šæ‹’æ”¶ + æ¸…ç©ºæ’é˜Ÿ + ç­‰å¾…åœ¨é£ç»“æŸï¼ˆé€€å‡ºè½¯ä»¶ç”¨ï¼‰
      */
     void drainForShutdown();
 
-    /** @brief µ±Ç°¹¤×÷Ïß³ÌÊı */
+    /** @brief å½“å‰å·¥ä½œçº¿ç¨‹æ•° */
     std::size_t threadCount() const;
 
     /**
-     * @brief ½ø³ÌÄÚ¹²Ïí³Ø£¨Éè¼Æµ÷ÊÔ + ¸´¼ì + ¹¤Õ¾²¢ĞĞ Job£©
-     * @return µ¥ÀıÒıÓÃ
+     * @brief è¿›ç¨‹å†…å…±äº«æ± ï¼ˆè®¾è®¡è°ƒè¯• + å¤æ£€ + å·¥ç«™å¹¶è¡Œ Jobï¼‰
+     * @return å•ä¾‹å¼•ç”¨
      */
     static ThreadPool& shared();
 
 private:
-    /** @brief ½ûÖ¹¿½±´ */
+    /** @brief ç¦æ­¢æ‹·è´ */
     ThreadPool(const ThreadPool&);
-    /** @brief ½ûÖ¹¸³Öµ */
+    /** @brief ç¦æ­¢èµ‹å€¼ */
     ThreadPool& operator=(const ThreadPool&);
 
-    /** @brief ¹¤×÷Ïß³ÌÑ­»·È¡ÈÎÎñ */
+    /** @brief å·¥ä½œçº¿ç¨‹å¾ªç¯å–ä»»åŠ¡ */
     void workerLoop();
 
-    /** @class Impl @brief ¶ÓÁĞ¡¢ËøºÍ¹¤×÷Ïß³Ì */
+    /** @class Impl @brief é˜Ÿåˆ—ã€é”å’Œå·¥ä½œçº¿ç¨‹ */
     struct Impl;
-    Impl* m_impl;                 ///< Òş²Ø mutex/queue/thread£¬±ÜÃâÍ·ÎÄ¼şÅòÕÍ
-    std::size_t m_threadCount;    ///< ¹¤×÷Ïß³ÌÊı
+    Impl* m_impl;                 ///< éšè— mutex/queue/threadï¼Œé¿å…å¤´æ–‡ä»¶è†¨èƒ€
+    std::size_t m_threadCount;    ///< å·¥ä½œçº¿ç¨‹æ•°
 };
 
 }

@@ -1,6 +1,6 @@
 /**
  * @file CompositeDef.h
- * @brief CompositeDefÍ·ÎÄ¼þ
+ * @brief CompositeDefå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -16,55 +16,55 @@
 
 namespace Vision {
 
-/** @brief ´´½¨Ê±Ñ¡¶¨¡£ÏîÄ¿µÄ¸ú·½°¸×ß£¬¶ÀÁ¢µÄ±¾»ú¹²ÓÃ */
+/** @brief åˆ›å»ºæ—¶é€‰å®šã€‚é¡¹ç›®çš„è·Ÿæ–¹æ¡ˆèµ°ï¼Œç‹¬ç«‹çš„æœ¬æœºå…±ç”¨ */
 enum CompositeScope {
-    CompositeSolution = 0, ///< ÏîÄ¿×éºÏ¹¤¾ß
-    CompositeLibrary = 1   ///< ¶ÀÁ¢×éºÏ¹¤¾ß
+    CompositeSolution = 0, ///< é¡¹ç›®ç»„åˆå·¥å…·
+    CompositeLibrary = 1   ///< ç‹¬ç«‹ç»„åˆå·¥å…·
 };
 
-/** @class CompositePort @brief Íâ¿ÇÉÏµÄÒ»Õë£¬½Óµ½ÄÚ²¿Ä³¸ö¹¤¾ßµÄÒ»¿Ú */
+/** @class CompositePort @brief å¤–å£³ä¸Šçš„ä¸€é’ˆï¼ŒæŽ¥åˆ°å†…éƒ¨æŸä¸ªå·¥å…·çš„ä¸€å£ */
 struct CompositePort {
-    std::string name;      ///< Íâ¿ÇÉÏµÄÏÔÊ¾Ãû
-    PortDir dir;           ///< ÊäÈë»òÊä³ö
-    PortData data;         ///< Êý¾ÝÀàÐÍ
-    ObjectId innerToolId;  ///< ÄÚ²¿¹¤¾ß
-    PortSlot innerPort;    ///< ÄÚ²¿ÄÇÒ»¿Ú
+    std::string name;      ///< å¤–å£³ä¸Šçš„æ˜¾ç¤ºå
+    PortDir dir;           ///< è¾“å…¥æˆ–è¾“å‡º
+    PortData data;         ///< æ•°æ®ç±»åž‹
+    ObjectId innerToolId;  ///< å†…éƒ¨å·¥å…·
+    PortSlot innerPort;    ///< å†…éƒ¨é‚£ä¸€å£
     CompositePort() : dir(PortDir::In), data(PortData::Image) {}
 };
 
-/** @class CompositeRoiPub @brief Íâ¿ÇÉÏµÄÒ»¸ö ROI ·ÖÇø */
+/** @class CompositeRoiPub @brief å¤–å£³ä¸Šçš„ä¸€ä¸ª ROI åˆ†åŒº */
 struct CompositeRoiPub {
-    std::string name;      ///< Íâ¿ÇÉÏµÄÏÔÊ¾Ãû
-    ObjectId innerToolId;  ///< ÄÚ²¿¹¤¾ß
-    std::string innerSlot; ///< ÄÚ²¿·ÖÇø¼ü£¬¶ÔÓ¦ RoiSlotRule.slot
+    std::string name;      ///< å¤–å£³ä¸Šçš„æ˜¾ç¤ºå
+    ObjectId innerToolId;  ///< å†…éƒ¨å·¥å…·
+    std::string innerSlot; ///< å†…éƒ¨åˆ†åŒºé”®ï¼Œå¯¹åº” RoiSlotRule.slot
 };
 
-/** @class CompositeParaPub @brief Íâ¿ÇÉÏµÄÒ»¸ö²ÎÊý */
+/** @class CompositeParaPub @brief å¤–å£³ä¸Šçš„ä¸€ä¸ªå‚æ•° */
 struct CompositeParaPub {
-    std::string name;      ///< Íâ¿ÇÉÏµÄÏÔÊ¾Ãû
-    ObjectId innerToolId;  ///< ÄÚ²¿¹¤¾ß
-    std::string key;       ///< ÄÚ²¿²ÎÊý¼ü
-    bool learn;            ///< true È¡Ñ§Ï°²ÎÊý£¬·ñÔòÈ¡ÔËÐÐ²ÎÊý
+    std::string name;      ///< å¤–å£³ä¸Šçš„æ˜¾ç¤ºå
+    ObjectId innerToolId;  ///< å†…éƒ¨å·¥å…·
+    std::string key;       ///< å†…éƒ¨å‚æ•°é”®
+    bool learn;            ///< true å–å­¦ä¹ å‚æ•°ï¼Œå¦åˆ™å–è¿è¡Œå‚æ•°
     CompositeParaPub() : learn(false) {}
 };
 
-/** @class CompositeDef @brief Ò»·Ý×éºÏ¶¨Òå */
+/** @class CompositeDef @brief ä¸€ä»½ç»„åˆå®šä¹‰ */
 struct VISIONCORE_API CompositeDef {
-    ObjectId id;                              ///< ¶¨Òå id
-    CompositeScope scope;                     ///< ÏîÄ¿»ò¶ÀÁ¢
-    std::string name;                         ///< ¹¤¾ßÏäÀïµÄÃû×Ö
-    std::string description;                  ///< ËµÃ÷
-    std::string version;                      ///< ËÄ¶Î°æ±¾
-    JobCfg inner;                             ///< ÄÚ²¿Á÷³Ì
-    std::vector<CompositePort> ports;         ///< ¹«¿ªÕë½Å
-    std::vector<CompositeRoiPub> rois;        ///< ¹«¿ªµÄ ROI ·ÖÇø
-    std::vector<CompositeParaPub> paras;      ///< ¹«¿ªµÄ²ÎÊý¼ü
+    ObjectId id;                              ///< å®šä¹‰ id
+    CompositeScope scope;                     ///< é¡¹ç›®æˆ–ç‹¬ç«‹
+    std::string name;                         ///< å·¥å…·ç®±é‡Œçš„åå­—
+    std::string description;                  ///< è¯´æ˜Ž
+    std::string version;                      ///< å››æ®µç‰ˆæœ¬
+    JobCfg inner;                             ///< å†…éƒ¨æµç¨‹
+    std::vector<CompositePort> ports;         ///< å…¬å¼€é’ˆè„š
+    std::vector<CompositeRoiPub> rois;        ///< å…¬å¼€çš„ ROI åˆ†åŒº
+    std::vector<CompositeParaPub> paras;      ///< å…¬å¼€çš„å‚æ•°é”®
     CompositeDef() : scope(CompositeLibrary), version("1.0.0.0") {}
-    /** @brief ³­ÈëÒÑ¹«¿ª×Ö¶Î£¬Éú³ÉÁ÷³Ì½Úµã */
+    /** @brief æŠ„å…¥å·²å…¬å¼€å­—æ®µï¼Œç”Ÿæˆæµç¨‹èŠ‚ç‚¹ */
     ToolCfg makeNode() const;
 };
 
-/** @brief °´ id ²éÕÒ¡£ÓÉ CompositeMgr ×¢²á */
+/** @brief æŒ‰ id æŸ¥æ‰¾ã€‚ç”± CompositeMgr æ³¨å†Œ */
 typedef const CompositeDef* (*CompositeFindFn)(const ObjectId& id);
 VISIONCORE_API void setCompositeFinder(CompositeFindFn fn);
 VISIONCORE_API const CompositeDef* findComposite(const ObjectId& id);

@@ -1,6 +1,6 @@
 /**
  * @file ToolParaCaliper.hpp
- * @brief ToolParaCaliperÍ·ÎÄ¼ş
+ * @brief ToolParaCaliperå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -16,21 +16,21 @@ namespace Vision {
 
 /**
  * @class ToolParaCaliper
- * @brief CaliperTool ÔËĞĞ²ÎÊı
+ * @brief CaliperTool è¿è¡Œå‚æ•°
  */
 class ToolParaCaliper : public ToolParaBase {
 public:
-    /** @brief Ñ§Ï°²ÎÊı£¬Ã»ÓĞÔòÎª¿Õ */
+    /** @brief å­¦ä¹ å‚æ•°ï¼Œæ²¡æœ‰åˆ™ä¸ºç©º */
     struct Learn {
     };
-    /** @brief ÔËĞĞ²ÎÊı */
+    /** @brief è¿è¡Œå‚æ•° */
     struct Run {
-        std::string mode;           ///< Ä£Ê½
-        double sigma;               ///< Æ½»¬
-        double threshold;           ///< ãĞÖµ
-        std::string transition;     ///< ¼«ĞÔ
-        std::string select;         ///< Ñ¡Ôñ
-        int searchCount;            ///< ²éÕÒÌõÊı
+        std::string mode;           ///< æ¨¡å¼
+        double sigma;               ///< å¹³æ»‘
+        double threshold;           ///< é˜ˆå€¼
+        std::string transition;     ///< ææ€§
+        std::string select;         ///< é€‰æ‹©
+        int searchCount;            ///< æŸ¥æ‰¾æ¡æ•°
         Run()
             : mode("width")
             , sigma(1.0)
@@ -41,10 +41,10 @@ public:
         {}
     };
 
-    Learn learn; ///< Ñ§Ï°²ÎÊı£¬Ã»ÓĞÔòÎª¿Õ
-    Run run;     ///< ÔËĞĞ²ÎÊı
+    Learn learn; ///< å­¦ä¹ å‚æ•°ï¼Œæ²¡æœ‰åˆ™ä¸ºç©º
+    Run run;     ///< è¿è¡Œå‚æ•°
 
-    /** @brief ´Ó ToolParam ÌîĞ´ */
+    /** @brief ä» ToolParam å¡«å†™ */
     void load(const ToolParam& src)
     {
         const ParamMap& m = src.run;

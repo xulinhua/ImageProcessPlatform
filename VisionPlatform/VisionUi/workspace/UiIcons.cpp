@@ -1,6 +1,6 @@
 /**
  * @file UiIcons.cpp
- * @brief UiIconsÊµÏÖ
+ * @brief UiIconså®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -36,7 +36,7 @@ bool g_uiOk[UiIconCount] = { false };
 
 } // namespace
 
-// ¼ÓÔØ²¢»º´æÖ÷½çÃæÍ¼±ê
+// åŠ è½½å¹¶ç¼“å­˜ä¸»ç•Œé¢å›¾æ ‡
 QIcon uiIcon(int key, int px)
 {
     if (key < 0 || key >= UiIconCount) {
@@ -51,7 +51,7 @@ QIcon uiIcon(int key, int px)
     return g_uiCache[key];
 }
 
-// ¶ªµôÖ÷½çÃæÍ¼±ê»º´æ£¬ÏÂ´Î´Ó´ÅÅÌÖØÔØ
+// ä¸¢æ‰ä¸»ç•Œé¢å›¾æ ‡ç¼“å­˜ï¼Œä¸‹æ¬¡ä»ç£ç›˜é‡è½½
 void clearUiIconCache()
 {
     for (int i = 0; i < UiIconCount; ++i) {

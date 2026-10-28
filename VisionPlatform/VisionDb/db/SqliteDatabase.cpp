@@ -1,6 +1,6 @@
 /**
  * @file SqliteDatabase.cpp
- * @brief SqliteDatabaseÊµÏÖ
+ * @brief SqliteDatabaseå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -17,7 +17,7 @@ namespace Vision {
 
 namespace {
 
-// Ğ´Èë´íÎóÎÄ±¾£»error Îª¿ÕÔòºöÂÔ
+// å†™å…¥é”™è¯¯æ–‡æœ¬ï¼›error ä¸ºç©ºåˆ™å¿½ç•¥
 void setErr(std::string* error, const std::string& msg)
 {
     if (error) {
@@ -27,19 +27,19 @@ void setErr(std::string* error, const std::string& msg)
 
 } // namespace
 
-// ÉĞÎ´´ò¿ªµÄÁ¬½Ó
+// å°šæœªæ‰“å¼€çš„è¿æ¥
 SqliteDatabase::SqliteDatabase()
     : m_db(nullptr)
 {
 }
 
-// ¹Ø±ÕÁ¬½Ó
+// å…³é—­è¿æ¥
 SqliteDatabase::~SqliteDatabase()
 {
     close();
 }
 
-// °ÑÒıÇæ´íÎóĞ´µ½ error
+// æŠŠå¼•æ“é”™è¯¯å†™åˆ° error
 void SqliteDatabase::fail(std::string* error, const char* what) const
 {
     std::string msg = what ? what : "sqlite error";
@@ -50,7 +50,7 @@ void SqliteDatabase::fail(std::string* error, const char* what) const
     setErr(error, msg);
 }
 
-// ´ò¿ª»ò´´½¨¿â£¬²¢ÆôÓÃ WAL ÓëÃ¦µÈ´ı
+// æ‰“å¼€æˆ–åˆ›å»ºåº“ï¼Œå¹¶å¯ç”¨ WAL ä¸å¿™ç­‰å¾…
 bool SqliteDatabase::open(const std::string& path, std::string* error)
 {
     close();
@@ -73,7 +73,7 @@ bool SqliteDatabase::open(const std::string& path, std::string* error)
     return true;
 }
 
-// ¹Ø±ÕÁ¬½Ó
+// å…³é—­è¿æ¥
 void SqliteDatabase::close()
 {
     if (m_db) {
@@ -82,7 +82,7 @@ void SqliteDatabase::close()
     }
 }
 
-// °´Ë³Ğò°ó¶¨²ÎÊı£¬´Ó ?1 Æğ
+// æŒ‰é¡ºåºç»‘å®šå‚æ•°ï¼Œä» ?1 èµ·
 bool SqliteDatabase::bindArgs(void* stmtRaw, const std::vector<DbValue>& args, std::string* error)
 {
     sqlite3_stmt* stmt = static_cast<sqlite3_stmt*>(stmtRaw);
@@ -108,13 +108,13 @@ bool SqliteDatabase::bindArgs(void* stmtRaw, const std::vector<DbValue>& args, s
     return true;
 }
 
-// Ö´ĞĞ²»·µ»ØĞĞµÄÓï¾ä
+// æ‰§è¡Œä¸è¿”å›è¡Œçš„è¯­å¥
 bool SqliteDatabase::exec(const std::string& sql, std::string* error)
 {
     return exec(sql, std::vector<DbValue>(), error);
 }
 
-// ´ø°ó¶¨²ÎÊıÖ´ĞĞ£¬²»·µ»ØĞĞ
+// å¸¦ç»‘å®šå‚æ•°æ‰§è¡Œï¼Œä¸è¿”å›è¡Œ
 bool SqliteDatabase::exec(const std::string& sql, const std::vector<DbValue>& args, std::string* error)
 {
     if (!m_db) {
@@ -139,7 +139,7 @@ bool SqliteDatabase::exec(const std::string& sql, const std::vector<DbValue>& ar
     return true;
 }
 
-// ²éÑ¯È«²¿½á¹ûĞĞ
+// æŸ¥è¯¢å…¨éƒ¨ç»“æœè¡Œ
 bool SqliteDatabase::query(const std::string& sql, const std::vector<DbValue>& args,
                            std::vector<std::vector<DbValue> >* rows, std::string* error)
 {
@@ -197,7 +197,7 @@ bool SqliteDatabase::query(const std::string& sql, const std::vector<DbValue>& a
     return true;
 }
 
-// ÏÈ¼ÆÊı£¬ÔÙ×·¼ÓÅÅĞòÓë·ÖÒ³
+// å…ˆè®¡æ•°ï¼Œå†è¿½åŠ æ’åºä¸åˆ†é¡µ
 bool SqliteDatabase::queryPage(const std::string& countSql, const std::string& dataSql,
                                const std::vector<DbValue>& args, const PageQuery& page,
                                PageRst* out, std::string* error)
@@ -231,31 +231,31 @@ bool SqliteDatabase::queryPage(const std::string& countSql, const std::string& d
     return query(sql, args, &out->rows, error);
 }
 
-// ¿ªÊ¼Á¢¼´ÊÂÎñ
+// å¼€å§‹ç«‹å³äº‹åŠ¡
 bool SqliteDatabase::begin(std::string* error)
 {
     return exec("BEGIN IMMEDIATE;", error);
 }
 
-// Ìá½»ÊÂÎñ
+// æäº¤äº‹åŠ¡
 bool SqliteDatabase::commit(std::string* error)
 {
     return exec("COMMIT;", error);
 }
 
-// »Ø¹öÊÂÎñ
+// å›æ»šäº‹åŠ¡
 bool SqliteDatabase::rollback(std::string* error)
 {
     return exec("ROLLBACK;", error);
 }
 
-// ×î½üÒ»´Î²åÈëµÄ rowid
+// æœ€è¿‘ä¸€æ¬¡æ’å…¥çš„ rowid
 int64_t SqliteDatabase::lastInsertId() const
 {
     return m_db ? sqlite3_last_insert_rowid(m_db) : 0;
 }
 
-// È¡ÁùÎ»ÄêÔÂ£»²»×ãÔòÓÃµ±Ç°ÔÂ
+// å–å…­ä½å¹´æœˆï¼›ä¸è¶³åˆ™ç”¨å½“å‰æœˆ
 std::string TableRouter::monthSuffix(const std::string& yyyymm)
 {
     if (yyyymm.size() >= 6) {
@@ -269,25 +269,25 @@ std::string TableRouter::monthSuffix(const std::string& yyyymm)
     return std::string(buf);
 }
 
-// Âß¼­±íÃû¼Ó _YYYYMM
+// é€»è¾‘è¡¨ååŠ  _YYYYMM
 std::string TableRouter::physical(const std::string& logical, const std::string& yyyymm)
 {
     return logical + "_" + monthSuffix(yyyymm);
 }
 
-// µ±Ç°ÔÂµÄÎïÀí±íÃû
+// å½“å‰æœˆçš„ç‰©ç†è¡¨å
 std::string TableRouter::currentMonthPhysical(const std::string& logical)
 {
     return physical(logical, std::string());
 }
 
-// °ó¶¨ÒªÉı¼¶µÄ¿â
+// ç»‘å®šè¦å‡çº§çš„åº“
 SchemaMigrator::SchemaMigrator(IDatabase* db)
     : m_db(db)
 {
 }
 
-// Ã»ÓĞ°æ±¾±íÔò´´½¨
+// æ²¡æœ‰ç‰ˆæœ¬è¡¨åˆ™åˆ›å»º
 bool SchemaMigrator::ensureVersionTable(std::string* error)
 {
     if (!m_db) {
@@ -298,7 +298,7 @@ bool SchemaMigrator::ensureVersionTable(std::string* error)
         "CREATE TABLE IF NOT EXISTS schema_version (version INTEGER PRIMARY KEY);", error);
 }
 
-// ¶ÁÈ¡ schema °æ±¾£¬Ê§°Ü·µ»Ø -1
+// è¯»å– schema ç‰ˆæœ¬ï¼Œå¤±è´¥è¿”å› -1
 int SchemaMigrator::currentVersion(std::string* error)
 {
     if (!ensureVersionTable(error)) {
@@ -317,7 +317,7 @@ int SchemaMigrator::currentVersion(std::string* error)
     return 0;
 }
 
-// Ğ´Èëµ±Ç° schema °æ±¾
+// å†™å…¥å½“å‰ schema ç‰ˆæœ¬
 bool SchemaMigrator::setVersion(int v, std::string* error)
 {
     if (!ensureVersionTable(error)) {
@@ -328,7 +328,7 @@ bool SchemaMigrator::setVersion(int v, std::string* error)
     return m_db->exec("INSERT OR REPLACE INTO schema_version(version) VALUES(?1);", args, error);
 }
 
-// ÊÇ·ñÒÑ´ò¿ª
+// æ˜¯å¦å·²æ‰“å¼€
 bool SqliteDatabase::isOpen() const
 {
     return m_db != 0;
@@ -336,7 +336,7 @@ bool SqliteDatabase::isOpen() const
 
 
 
-// ÒıÇæ±êÊ¶
+// å¼•æ“æ ‡è¯†
 std::string SqliteDatabase::engineId() const
 {
     return "sqlite";

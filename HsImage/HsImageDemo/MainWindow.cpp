@@ -1,6 +1,6 @@
 /**
  * @file MainWindow.cpp
- * @brief MainWindowÊµÏÖ
+ * @brief MainWindowå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -47,13 +47,13 @@
 
 using namespace HsCtrl;
 
-// Ô´ÂëÎªÏµÍ³ ANSI/GBK£ºÕ­×ÖÃæÁ¿ÓÃ±¾µØ´úÂëÒ³×ª QString£¨ÓëÆ½Ì¨ HsImageLib Ò»ÖÂ£©
+// æºç ä¸º UTF-8ï¼šçª„å­—é¢é‡ç”¨ fromUtf8 è½¬ QString
 static QString u8(const char* s)
 {
-    return QString::fromLocal8Bit(s);
+    return QString::fromUtf8(s);
 }
 
-// Ä¿Â¼ÏÂ°´ÎÄ¼şÃûÅÅĞòµÄÍ¼ÏñÂ·¾¶
+// ç›®å½•ä¸‹æŒ‰æ–‡ä»¶åæ’åºçš„å›¾åƒè·¯å¾„
 static QStringList listImageFiles(const QString& dirPath)
 {
     QDir dir(dirPath);
@@ -73,13 +73,13 @@ static QStringList listImageFiles(const QString& dirPath)
     return out;
 }
 
-// pixmap °ü×°ÎªÍ¼±ê
+// pixmap åŒ…è£…ä¸ºå›¾æ ‡
 static QIcon iconFromPixmap(const QPixmap& pm)
 {
     return QIcon(pm);
 }
 
-// 32x32 Í¸Ã÷»­²¼
+// 32x32 é€æ˜ç”»å¸ƒ
 static QPixmap toolCanvas()
 {
     QPixmap pm(32, 32);
@@ -87,7 +87,7 @@ static QPixmap toolCanvas()
     return pm;
 }
 
-// ä¯ÀÀ¹¤¾ßÍ¼±ê
+// æµè§ˆå·¥å…·å›¾æ ‡
 static QIcon iconBrowse()
 {
     QPixmap pm = toolCanvas();
@@ -109,7 +109,7 @@ static QIcon iconBrowse()
     return iconFromPixmap(pm);
 }
 
-// Ô²¹¤¾ßÍ¼±ê
+// åœ†å·¥å…·å›¾æ ‡
 static QIcon iconCircle()
 {
     QPixmap pm = toolCanvas();
@@ -122,7 +122,7 @@ static QIcon iconCircle()
     return iconFromPixmap(pm);
 }
 
-// Öá¶ÔÆë¾ØĞÎÍ¼±ê
+// è½´å¯¹é½çŸ©å½¢å›¾æ ‡
 static QIcon iconRect1()
 {
     QPixmap pm = toolCanvas();
@@ -134,7 +134,7 @@ static QIcon iconRect1()
     return iconFromPixmap(pm);
 }
 
-// Ğı×ª¾ØĞÎÍ¼±ê
+// æ—‹è½¬çŸ©å½¢å›¾æ ‡
 static QIcon iconRect2()
 {
     QPixmap pm = toolCanvas();
@@ -149,7 +149,7 @@ static QIcon iconRect2()
     return iconFromPixmap(pm);
 }
 
-// ÍÖÔ²¹¤¾ßÍ¼±ê
+// æ¤­åœ†å·¥å…·å›¾æ ‡
 static QIcon iconEllipse()
 {
     QPixmap pm = toolCanvas();
@@ -162,7 +162,7 @@ static QIcon iconEllipse()
     return iconFromPixmap(pm);
 }
 
-// Ö±Ïß¹¤¾ßÍ¼±ê
+// ç›´çº¿å·¥å…·å›¾æ ‡
 static QIcon iconLine()
 {
     QPixmap pm = toolCanvas();
@@ -177,7 +177,7 @@ static QIcon iconLine()
     return iconFromPixmap(pm);
 }
 
-// Ê®×Ö¹¤¾ßÍ¼±ê
+// åå­—å·¥å…·å›¾æ ‡
 static QIcon iconCross()
 {
     QPixmap pm = toolCanvas();
@@ -190,7 +190,7 @@ static QIcon iconCross()
     return iconFromPixmap(pm);
 }
 
-// ¶à±ßĞÎ / HsRegion Í¼±ê
+// å¤šè¾¹å½¢ / HsRegion å›¾æ ‡
 static QIcon iconRegion()
 {
     QPixmap pm = toolCanvas();
@@ -205,7 +205,7 @@ static QIcon iconRegion()
     return iconFromPixmap(pm);
 }
 
-// XLD ÕÛÏßÍ¼±ê
+// XLD æŠ˜çº¿å›¾æ ‡
 static QIcon iconXld()
 {
     QPixmap pm = toolCanvas();
@@ -222,7 +222,7 @@ static QIcon iconXld()
     return iconFromPixmap(pm);
 }
 
-// ÎÄ±¾¹¤¾ßÍ¼±ê
+// æ–‡æœ¬å·¥å…·å›¾æ ‡
 static QIcon iconText()
         {
     QPixmap pm = toolCanvas();
@@ -251,7 +251,7 @@ static QIcon iconFit()
     return iconFromPixmap(pm);
 }
 
-// 1:1 Í¼±ê
+// 1:1 å›¾æ ‡
 static QIcon iconOneToOne()
 {
     QPixmap pm = toolCanvas();
@@ -266,7 +266,7 @@ static QIcon iconOneToOne()
     return iconFromPixmap(pm);
 }
 
-// Çå¿ÕÍ¼±ê
+// æ¸…ç©ºå›¾æ ‡
 static QIcon iconClear()
 {
     QPixmap pm = toolCanvas();
@@ -280,7 +280,7 @@ static QIcon iconClear()
     return iconFromPixmap(pm);
 }
 
-// Éú³ÉÆåÅÌ+¼¸ºÎµÄÑİÊ¾»Ò¶ÈÍ¼
+// ç”Ÿæˆæ£‹ç›˜+å‡ ä½•çš„æ¼”ç¤ºç°åº¦å›¾
 static QImage makeDemoImage()
 {
     QImage img(1280, 960, QImage::Format_Grayscale8);
@@ -305,7 +305,7 @@ static QImage makeDemoImage()
     return img;
 }
 
-// kind ÏÔÊ¾Ãû
+// kind æ˜¾ç¤ºå
 static QString kindName(const HsCommData::Graphic& g)
 {
     if (g.kind == HsCommData::KindObject && g.geom.isInitialized()) {
@@ -335,7 +335,7 @@ static QString kindName(const HsCommData::Graphic& g)
     }
 }
 
-// ×é×°½çÃæ²¢¼ÓÔØÑİÊ¾Í¼
+// ç»„è£…ç•Œé¢å¹¶åŠ è½½æ¼”ç¤ºå›¾
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent)
     , m_api(nullptr)
@@ -414,7 +414,7 @@ MainWindow::MainWindow(QWidget* parent)
         m_colorBtns[i] = nullptr;
         m_algoColorBtns[i] = nullptr;
     }
-    setWindowTitle(u8("Í¼Ïñ½»»¥  HsImageWindow"));
+    setWindowTitle(u8("å›¾åƒäº¤äº’  HsImageWindow"));
     resize(1480, 860);
     applyShellStyle();
     buildUi();
@@ -441,7 +441,7 @@ MainWindow::MainWindow(QWidget* parent)
     });
 }
 
-// ÏÈÊÍ·Å¶ÔÍâ¿Ø¼ş£¬±ÜÃâÓë Qt ×Ó¿Ø¼şÎö¹¹Ë³Ğò³åÍ»
+// å…ˆé‡Šæ”¾å¯¹å¤–æ§ä»¶ï¼Œé¿å…ä¸ Qt å­æ§ä»¶ææ„é¡ºåºå†²çª
 MainWindow::~MainWindow()
 {
     if (m_api) {
@@ -451,7 +451,7 @@ MainWindow::~MainWindow()
     m_view = nullptr;
 }
 
-// Ç³É«¿ÇÑùÊ½
+// æµ…è‰²å£³æ ·å¼
 void MainWindow::applyShellStyle()
 {
     setStyleSheet(QStringLiteral(
@@ -479,7 +479,7 @@ void MainWindow::applyShellStyle()
         "QSlider::sub-page:horizontal { background: #91D5FF; border-radius: 3px; }"));
 }
 
-// ×ó²à¹¤¾ßÌõ°´Å¥
+// å·¦ä¾§å·¥å…·æ¡æŒ‰é’®
 QToolButton* MainWindow::addToolButton(QWidget* parent, const QIcon& icon, const QString& text, bool checkable)
 {
     QToolButton* b = new QToolButton(parent);
@@ -494,17 +494,17 @@ QToolButton* MainWindow::addToolButton(QWidget* parent, const QIcon& icon, const
     return b;
 }
 
-// ×é×°²Ëµ¥ÓëÈıÀ¸²¼¾Ö
+// ç»„è£…èœå•ä¸ä¸‰æ å¸ƒå±€
 void MainWindow::buildUi()
 {
-    QMenu* fileMenu = menuBar()->addMenu(u8("ÎÄ¼ş"));
-    QAction* actOpen = fileMenu->addAction(u8("´ò¿ªÍ¼Ïñ..."));
-    QAction* actFolder = fileMenu->addAction(u8("´ò¿ªÎÄ¼ş¼Ğ..."));
+    QMenu* fileMenu = menuBar()->addMenu(u8("æ–‡ä»¶"));
+    QAction* actOpen = fileMenu->addAction(u8("æ‰“å¼€å›¾åƒ..."));
+    QAction* actFolder = fileMenu->addAction(u8("æ‰“å¼€æ–‡ä»¶å¤¹..."));
     fileMenu->addSeparator();
-    QAction* actSnapshot = fileMenu->addAction(u8("±£´æ¿ìÕÕ..."));
-    QAction* actExport = fileMenu->addAction(u8("µ¼³öÔ­Í¼..."));
+    QAction* actSnapshot = fileMenu->addAction(u8("ä¿å­˜å¿«ç…§..."));
+    QAction* actExport = fileMenu->addAction(u8("å¯¼å‡ºåŸå›¾..."));
     fileMenu->addSeparator();
-    QAction* actOverlay = fileMenu->addAction(u8("Ä£Äâµş¼Ó"));
+    QAction* actOverlay = fileMenu->addAction(u8("æ¨¡æ‹Ÿå åŠ "));
     QAction* actLive = fileMenu->addAction(QStringLiteral("Live"));
     actLive->setCheckable(true);
     connect(actOpen, &QAction::triggered, this, &MainWindow::openImage);
@@ -524,7 +524,7 @@ void MainWindow::buildUi()
     header->setStyleSheet(QStringLiteral("background:#FFFFFF; border-bottom:1px solid #D9D9D9;"));
     QHBoxLayout* hl = new QHBoxLayout(header);
     hl->setContentsMargins(12, 0, 12, 0);
-    m_toolCaption = new QLabel(u8("µ±Ç°¹¤¾ß: ä¯ÀÀ"));
+    m_toolCaption = new QLabel(u8("å½“å‰å·¥å…·: æµè§ˆ"));
     m_toolCaption->setObjectName(QStringLiteral("caption"));
     hl->addWidget(m_toolCaption);
     hl->addStretch();
@@ -550,21 +550,21 @@ void MainWindow::buildUi()
         const char* text;
     };
     const ToolDef tools[] = {
-        { ToolBrowse,  iconBrowse(),  "ä¯ÀÀ" },
-        { ToolCircle,  iconCircle(),  "Ô²" },
+        { ToolBrowse,  iconBrowse(),  "æµè§ˆ" },
+        { ToolCircle,  iconCircle(),  "åœ†" },
         { ToolRect1,   iconRect1(),   "Rect1" },
         { ToolRect2,   iconRect2(),   "Rect2" },
-        { ToolEllipse, iconEllipse(), "ÍÖÔ²" },
-        { ToolLine,    iconLine(),    "Ö±Ïß" },
-        { ToolCross,   iconCross(),   "Ê®×Ö" },
+        { ToolEllipse, iconEllipse(), "æ¤­åœ†" },
+        { ToolLine,    iconLine(),    "ç›´çº¿" },
+        { ToolCross,   iconCross(),   "åå­—" },
         { ToolPolygon, iconRegion(),  "Region" },
         { ToolContour, iconXld(),     "XLD" },
-        { ToolText,    iconText(),    "ÎÄ±¾" },
-        { ToolMeasureDist, iconLine(),    "¾àÀë" },
-        { ToolMeasureAngle, iconLine(),   "¼Ğ½Ç" },
-        { ToolMeasureRadius, iconCircle(), "°ë¾¶" },
-        { ToolMeasureRect, iconRect1(),   "¾ØĞÎ" },
-        { ToolMeasureEllipse, iconEllipse(), "ÍÖÔ²" },
+        { ToolText,    iconText(),    "æ–‡æœ¬" },
+        { ToolMeasureDist, iconLine(),    "è·ç¦»" },
+        { ToolMeasureAngle, iconLine(),   "å¤¹è§’" },
+        { ToolMeasureRadius, iconCircle(), "åŠå¾„" },
+        { ToolMeasureRect, iconRect1(),   "çŸ©å½¢" },
+        { ToolMeasureEllipse, iconEllipse(), "æ¤­åœ†" },
     };
     const int nTools = static_cast<int>(sizeof(tools) / sizeof(tools[0]));
     QGridLayout* toolGrid = new QGridLayout;
@@ -585,7 +585,7 @@ void MainWindow::buildUi()
     sep->setStyleSheet(QStringLiteral("color:#D9D9D9;"));
     leftLay->addWidget(sep);
 
-    QToolButton* fitBtn = addToolButton(left, iconFit(), u8("ÊÊÓ¦´°¿Ú"), false);
+    QToolButton* fitBtn = addToolButton(left, iconFit(), u8("é€‚åº”çª—å£"), false);
     QToolButton* oneBtn = addToolButton(left, iconOneToOne(), QStringLiteral("1:1"), false);
     connect(fitBtn, &QToolButton::clicked, this, &MainWindow::fitView);
     connect(oneBtn, &QToolButton::clicked, this, &MainWindow::zoom1to1);
@@ -597,7 +597,7 @@ void MainWindow::buildUi()
     leftLay->addLayout(zoomRow);
     leftLay->addStretch();
 
-    QToolButton* clearLeft = addToolButton(left, iconClear(), u8("Çå¿Õµş¼Ó"), false);
+    QToolButton* clearLeft = addToolButton(left, iconClear(), u8("æ¸…ç©ºå åŠ "), false);
     connect(clearLeft, &QToolButton::clicked, this, &MainWindow::clearOverlay);
     leftLay->addWidget(clearLeft, 0, Qt::AlignHCenter);
 
@@ -646,21 +646,21 @@ void MainWindow::buildUi()
     colLay->addWidget(colL, 1);
     colLay->addWidget(colR, 1);
 
-    QGroupBox* imageBox = new QGroupBox(u8("¼ÓÔØÍ¼Ïñ"));
+    QGroupBox* imageBox = new QGroupBox(u8("åŠ è½½å›¾åƒ"));
     QVBoxLayout* imageLay = new QVBoxLayout(imageBox);
     QHBoxLayout* imageBtnRow = new QHBoxLayout;
-    QPushButton* loadFileBtn = new QPushButton(u8("¼ÓÔØÍ¼Ïñ"));
-    QPushButton* loadFolderBtn = new QPushButton(u8("¼ÓÔØÎÄ¼ş¼Ğ"));
+    QPushButton* loadFileBtn = new QPushButton(u8("åŠ è½½å›¾åƒ"));
+    QPushButton* loadFolderBtn = new QPushButton(u8("åŠ è½½æ–‡ä»¶å¤¹"));
     imageBtnRow->addWidget(loadFileBtn);
     imageBtnRow->addWidget(loadFolderBtn);
     imageLay->addLayout(imageBtnRow);
     QHBoxLayout* navRow = new QHBoxLayout;
-    m_prevImageBtn = new QPushButton(u8("ÉÏÒ»ÕÅ"));
-    m_nextImageBtn = new QPushButton(u8("ÏÂÒ»ÕÅ"));
+    m_prevImageBtn = new QPushButton(u8("ä¸Šä¸€å¼ "));
+    m_nextImageBtn = new QPushButton(u8("ä¸‹ä¸€å¼ "));
     navRow->addWidget(m_prevImageBtn);
     navRow->addWidget(m_nextImageBtn);
     imageLay->addLayout(navRow);
-    m_imagePathLabel = new QLabel(u8("ÄÚÖÃÑİÊ¾Í¼"));
+    m_imagePathLabel = new QLabel(u8("å†…ç½®æ¼”ç¤ºå›¾"));
     m_imagePathLabel->setWordWrap(true);
     m_imagePathLabel->setStyleSheet(QStringLiteral("color:#888888;"));
     imageLay->addWidget(m_imagePathLabel);
@@ -669,17 +669,17 @@ void MainWindow::buildUi()
     connect(m_prevImageBtn, &QPushButton::clicked, this, &MainWindow::showPrevImage);
     connect(m_nextImageBtn, &QPushButton::clicked, this, &MainWindow::showNextImage);
 
-    QGroupBox* refreshBox = new QGroupBox(u8("Ë¢ĞÂ²ßÂÔ"));
+    QGroupBox* refreshBox = new QGroupBox(u8("åˆ·æ–°ç­–ç•¥"));
     QVBoxLayout* refreshLay = new QVBoxLayout(refreshBox);
-    QLabel* refreshHint = new QLabel(u8("¹´Ñ¡ºó»»µ×Í¼Ê±Çåµô¶ÔÓ¦²ã¡£T ¹¤¾ß / ·ÅÖÃµÄÎÄ×ÖÖ»ÊÜ¡¸»æÖÆÎÄ×Ö¡¹¿ØÖÆ£¬²»ÊÜ¡¸½»»¥ ROI¡¹Ó°Ïì¡£"));
+    QLabel* refreshHint = new QLabel(u8("å‹¾é€‰åæ¢åº•å›¾æ—¶æ¸…æ‰å¯¹åº”å±‚ã€‚T å·¥å…· / æ”¾ç½®çš„æ–‡å­—åªå—ã€Œç»˜åˆ¶æ–‡å­—ã€æ§åˆ¶ï¼Œä¸å—ã€Œäº¤äº’ ROIã€å½±å“ã€‚"));
     refreshHint->setWordWrap(true);
     refreshHint->setStyleSheet(QStringLiteral("color:#888888;"));
     refreshLay->addWidget(refreshHint);
-    m_refreshStack = new QCheckBox(u8("Ë¢ĞÂ½á¹û Stack"));
-    m_refreshDrawing = new QCheckBox(u8("Ë¢ĞÂ½»»¥ ROI"));
-    m_refreshText = new QCheckBox(u8("Ë¢ĞÂ»æÖÆÎÄ×Ö"));
-    m_refreshDrawing->setToolTip(u8("Ô²/¾ØĞÎ/ÍÖÔ²/Region/XLD¡£²»º¬ÎÄ×Ö"));
-    m_refreshText->setToolTip(u8("º¬ T ¹¤¾ß¡¢·ÅÖÃ°´Å¥ºÍ drawInfo"));
+    m_refreshStack = new QCheckBox(u8("åˆ·æ–°ç»“æœ Stack"));
+    m_refreshDrawing = new QCheckBox(u8("åˆ·æ–°äº¤äº’ ROI"));
+    m_refreshText = new QCheckBox(u8("åˆ·æ–°ç»˜åˆ¶æ–‡å­—"));
+    m_refreshDrawing->setToolTip(u8("åœ†/çŸ©å½¢/æ¤­åœ†/Region/XLDã€‚ä¸å«æ–‡å­—"));
+    m_refreshText->setToolTip(u8("å« T å·¥å…·ã€æ”¾ç½®æŒ‰é’®å’Œ drawInfo"));
     refreshLay->addWidget(m_refreshStack);
     refreshLay->addWidget(m_refreshDrawing);
     refreshLay->addWidget(m_refreshText);
@@ -687,17 +687,17 @@ void MainWindow::buildUi()
     connect(m_refreshDrawing, &QCheckBox::toggled, this, &MainWindow::applyRefreshPolicyFromUi);
     connect(m_refreshText, &QCheckBox::toggled, this, &MainWindow::applyRefreshPolicyFromUi);
 
-    QGroupBox* barBox = new QGroupBox(u8("¹¤¾ßÀ¸"));
+    QGroupBox* barBox = new QGroupBox(u8("å·¥å…·æ "));
     QVBoxLayout* barLay = new QVBoxLayout(barBox);
-    m_toolbarVisible = new QCheckBox(u8("ÏÔÊ¾¸¡¶¯¹¤¾ßÀ¸"));
+    m_toolbarVisible = new QCheckBox(u8("æ˜¾ç¤ºæµ®åŠ¨å·¥å…·æ "));
     m_toolbarVisible->setChecked(true);
     barLay->addWidget(m_toolbarVisible);
     QHBoxLayout* measRow = new QHBoxLayout;
-    m_measDist = new QCheckBox(QString::fromLocal8Bit("¾àÀë"));
-    m_measAngle = new QCheckBox(QString::fromLocal8Bit("¼Ğ½Ç"));
-    m_measRadius = new QCheckBox(QString::fromLocal8Bit("Ô²"));
-    m_measRect = new QCheckBox(QString::fromLocal8Bit("¾ØĞÎ"));
-    m_measEllipse = new QCheckBox(QString::fromLocal8Bit("ÍÖÔ²"));
+    m_measDist = new QCheckBox(QString::fromUtf8("è·ç¦»"));
+    m_measAngle = new QCheckBox(QString::fromUtf8("å¤¹è§’"));
+    m_measRadius = new QCheckBox(QString::fromUtf8("åœ†"));
+    m_measRect = new QCheckBox(QString::fromUtf8("çŸ©å½¢"));
+    m_measEllipse = new QCheckBox(QString::fromUtf8("æ¤­åœ†"));
     m_measDist->setChecked(true);
     m_measAngle->setChecked(true);
     m_measRadius->setChecked(true);
@@ -712,7 +712,7 @@ void MainWindow::buildUi()
     m_calibPreset = new QComboBox;
     m_calibPreset->addItem(QString::fromUtf8("1:1 px"));
     m_calibPreset->addItem(QString::fromUtf8("0.012 mm"));
-    m_calibPreset->addItem(QString::fromLocal8Bit("mm + ¦Ìm"));
+    m_calibPreset->addItem(QString::fromUtf8("mm + Î¼m"));
     m_calibPreset->addItem(QString::fromUtf8("pulse"));
     barLay->addWidget(m_calibPreset);
     connect(m_measDist, &QCheckBox::toggled, this, [this](bool) { applyShownMeasureTools(); });
@@ -725,7 +725,7 @@ void MainWindow::buildUi()
     m_calibUnit = new QComboBox;
     m_calibUnit->addItem(QString::fromUtf8("px"));
     m_calibUnit->addItem(QString::fromUtf8("mm"));
-    m_calibUnit->addItem(QString::fromLocal8Bit("¦Ìm"));
+    m_calibUnit->addItem(QString::fromUtf8("Î¼m"));
     m_calibUnit->addItem(QString::fromUtf8("pulse"));
     m_calibX = new QDoubleSpinBox;
     m_calibY = new QDoubleSpinBox;
@@ -744,7 +744,7 @@ void MainWindow::buildUi()
     QHBoxLayout* showRow = new QHBoxLayout;
     m_showPx = new QCheckBox(QString::fromUtf8("px"));
     m_showMm = new QCheckBox(QString::fromUtf8("mm"));
-    m_showUm = new QCheckBox(QString::fromLocal8Bit("¦Ìm"));
+    m_showUm = new QCheckBox(QString::fromUtf8("Î¼m"));
     m_showPulse = new QCheckBox(QString::fromUtf8("pulse"));
     m_showPx->setChecked(true);
     showRow->addWidget(m_showPx);
@@ -752,12 +752,12 @@ void MainWindow::buildUi()
     showRow->addWidget(m_showUm);
     showRow->addWidget(m_showPulse);
     barLay->addLayout(showRow);
-    QPushButton* calibBtn = new QPushButton(QString::fromLocal8Bit("Ğ´Èë±ê¶¨"));
+    QPushButton* calibBtn = new QPushButton(QString::fromUtf8("å†™å…¥æ ‡å®š"));
     barLay->addWidget(calibBtn);
     m_measureLog = new QPlainTextEdit;
     m_measureLog->setReadOnly(true);
     m_measureLog->setFixedHeight(96);
-    m_measureLog->setPlaceholderText(QString::fromLocal8Bit("²âÁ¿½á¹û"));
+    m_measureLog->setPlaceholderText(QString::fromUtf8("æµ‹é‡ç»“æœ"));
     barLay->addWidget(m_measureLog);
     connect(calibBtn, &QPushButton::clicked, this, [this]() { applyCalibFromUi(); });
     connect(m_calibUnit, SIGNAL(currentIndexChanged(int)), this, SLOT(applyCalibFromUi()));
@@ -768,19 +768,19 @@ void MainWindow::buildUi()
     connect(m_showUm, &QCheckBox::toggled, this, [this](bool) { applyCalibFromUi(); });
     connect(m_showPulse, &QCheckBox::toggled, this, [this](bool) { applyCalibFromUi(); });
     QHBoxLayout* cornerRow = new QHBoxLayout;
-    cornerRow->addWidget(new QLabel(u8("Î»ÖÃ")));
+    cornerRow->addWidget(new QLabel(u8("ä½ç½®")));
     m_toolbarCorner = new QComboBox;
-    m_toolbarCorner->addItem(u8("×óÉÏ"), static_cast<int>(Qt::TopLeftCorner));
-    m_toolbarCorner->addItem(u8("ÓÒÉÏ"), static_cast<int>(Qt::TopRightCorner));
-    m_toolbarCorner->addItem(u8("×óÏÂ"), static_cast<int>(Qt::BottomLeftCorner));
-    m_toolbarCorner->addItem(u8("ÓÒÏÂ"), static_cast<int>(Qt::BottomRightCorner));
+    m_toolbarCorner->addItem(u8("å·¦ä¸Š"), static_cast<int>(Qt::TopLeftCorner));
+    m_toolbarCorner->addItem(u8("å³ä¸Š"), static_cast<int>(Qt::TopRightCorner));
+    m_toolbarCorner->addItem(u8("å·¦ä¸‹"), static_cast<int>(Qt::BottomLeftCorner));
+    m_toolbarCorner->addItem(u8("å³ä¸‹"), static_cast<int>(Qt::BottomRightCorner));
     m_toolbarCorner->setCurrentIndex(1);
     cornerRow->addWidget(m_toolbarCorner, 1);
     barLay->addLayout(cornerRow);
     QHBoxLayout* orientRow = new QHBoxLayout;
-    orientRow->addWidget(new QLabel(u8("ÅÅÁĞ")));
-    m_toolbarVertical = new QRadioButton(u8("´¹Ö±"));
-    m_toolbarHorizontal = new QRadioButton(u8("Ë®Æ½"));
+    orientRow->addWidget(new QLabel(u8("æ’åˆ—")));
+    m_toolbarVertical = new QRadioButton(u8("å‚ç›´"));
+    m_toolbarHorizontal = new QRadioButton(u8("æ°´å¹³"));
     m_toolbarVertical->setChecked(true);
     QButtonGroup* orientGroup = new QButtonGroup(this);
     orientGroup->addButton(m_toolbarVertical);
@@ -794,49 +794,49 @@ void MainWindow::buildUi()
     connect(m_toolbarVertical, &QRadioButton::toggled, this, &MainWindow::onToolbarOrientation);
 
     QHBoxLayout* skinRow = new QHBoxLayout;
-    skinRow->addWidget(new QLabel(u8("Æ¤·ô")));
+    skinRow->addWidget(new QLabel(u8("çš®è‚¤")));
     m_toolbarSkin = new QComboBox;
-    m_toolbarSkin->addItem(u8("ÉîÉ«°ëÍ¸Ã÷"), static_cast<int>(ToolbarSkinDark));
-    m_toolbarSkin->addItem(u8("Ç³É«°ëÍ¸Ã÷"), static_cast<int>(ToolbarSkinLight));
-    m_toolbarSkin->addItem(u8("Í¸Ã÷"), static_cast<int>(ToolbarSkinTransparent));
-    m_toolbarSkin->addItem(u8("ÉîÉ«²»Í¸Ã÷"), static_cast<int>(ToolbarSkinDarkSolid));
-    m_toolbarSkin->addItem(u8("Ç³É«²»Í¸Ã÷"), static_cast<int>(ToolbarSkinLightSolid));
+    m_toolbarSkin->addItem(u8("æ·±è‰²åŠé€æ˜"), static_cast<int>(ToolbarSkinDark));
+    m_toolbarSkin->addItem(u8("æµ…è‰²åŠé€æ˜"), static_cast<int>(ToolbarSkinLight));
+    m_toolbarSkin->addItem(u8("é€æ˜"), static_cast<int>(ToolbarSkinTransparent));
+    m_toolbarSkin->addItem(u8("æ·±è‰²ä¸é€æ˜"), static_cast<int>(ToolbarSkinDarkSolid));
+    m_toolbarSkin->addItem(u8("æµ…è‰²ä¸é€æ˜"), static_cast<int>(ToolbarSkinLightSolid));
     m_toolbarSkin->setCurrentIndex(0);
     skinRow->addWidget(m_toolbarSkin, 1);
     barLay->addLayout(skinRow);
     connect(m_toolbarSkin, SIGNAL(currentIndexChanged(int)), this, SLOT(onToolbarSkin(int)));
 
-    QGroupBox* vpBox = new QGroupBox(u8("ÊÓ¿Ú±³¾°"));
+    QGroupBox* vpBox = new QGroupBox(u8("è§†å£èƒŒæ™¯"));
     QVBoxLayout* vpLay = new QVBoxLayout(vpBox);
-    QLabel* vpHint = new QLabel(u8("letterbox / ÎŞÍ¼ÇøÓò¡£ÆåÅÌ¸ñ°´ÆÁÄ»ÏñËØ»­£¬²»ËæËõ·Å±ä¸ñ¡£"));
+    QLabel* vpHint = new QLabel(u8("letterbox / æ— å›¾åŒºåŸŸã€‚æ£‹ç›˜æ ¼æŒ‰å±å¹•åƒç´ ç”»ï¼Œä¸éšç¼©æ”¾å˜æ ¼ã€‚"));
     vpHint->setWordWrap(true);
     vpHint->setStyleSheet(QStringLiteral("color:#888888;"));
     vpLay->addWidget(vpHint);
     m_viewportBg = new QComboBox;
-    m_viewportBg->addItem(u8("ÉîÉ«"), static_cast<int>(ViewportDark));
-    m_viewportBg->addItem(u8("ÖĞĞÔ»Ò"), static_cast<int>(ViewportMid));
-    m_viewportBg->addItem(u8("Ç³É«"), static_cast<int>(ViewportLight));
-    m_viewportBg->addItem(u8("Ç³É«ÆåÅÌ¸ñ"), static_cast<int>(ViewportCheckerboard));
-    m_viewportBg->addItem(u8("ÉîÉ«ÆåÅÌ¸ñ"), static_cast<int>(ViewportCheckerboardDark));
-    m_viewportBg->addItem(u8("×Ô¶¨Òå´¿É«"), static_cast<int>(ViewportCustom));
+    m_viewportBg->addItem(u8("æ·±è‰²"), static_cast<int>(ViewportDark));
+    m_viewportBg->addItem(u8("ä¸­æ€§ç°"), static_cast<int>(ViewportMid));
+    m_viewportBg->addItem(u8("æµ…è‰²"), static_cast<int>(ViewportLight));
+    m_viewportBg->addItem(u8("æµ…è‰²æ£‹ç›˜æ ¼"), static_cast<int>(ViewportCheckerboard));
+    m_viewportBg->addItem(u8("æ·±è‰²æ£‹ç›˜æ ¼"), static_cast<int>(ViewportCheckerboardDark));
+    m_viewportBg->addItem(u8("è‡ªå®šä¹‰çº¯è‰²"), static_cast<int>(ViewportCustom));
     m_viewportBg->setCurrentIndex(0);
     vpLay->addWidget(m_viewportBg);
     QHBoxLayout* vpColorRow = new QHBoxLayout;
-    vpColorRow->addWidget(new QLabel(u8("×Ô¶¨ÒåÉ«")));
+    vpColorRow->addWidget(new QLabel(u8("è‡ªå®šä¹‰è‰²")));
     m_viewportColorBtn = new QToolButton;
     m_viewportColorBtn->setText(QStringLiteral("..."));
     m_viewportColorBtn->setFixedSize(28, 22);
-    m_viewportColorBtn->setToolTip(u8("´¿É«Ìî³ä£¬»ò×÷ÎªÆåÅÌ¸ñÇ³¸ñÑÕÉ«"));
+    m_viewportColorBtn->setToolTip(u8("çº¯è‰²å¡«å……ï¼Œæˆ–ä½œä¸ºæ£‹ç›˜æ ¼æµ…æ ¼é¢œè‰²"));
     vpColorRow->addWidget(m_viewportColorBtn);
     vpColorRow->addStretch();
     vpLay->addLayout(vpColorRow);
     connect(m_viewportBg, SIGNAL(currentIndexChanged(int)), this, SLOT(onViewportBackground(int)));
     connect(m_viewportColorBtn, &QToolButton::clicked, this, &MainWindow::onViewportColor);
 
-    QGroupBox* brush = new QGroupBox(u8("»­±Ê"));
+    QGroupBox* brush = new QGroupBox(u8("ç”»ç¬”"));
     QVBoxLayout* bl = new QVBoxLayout(brush);
     QHBoxLayout* widthRow = new QHBoxLayout;
-    widthRow->addWidget(new QLabel(u8("Ïß¿í")));
+    widthRow->addWidget(new QLabel(u8("çº¿å®½")));
     m_widthSpin = new QSpinBox;
     m_widthSpin->setRange(1, 20);
     m_widthSpin->setValue(2);
@@ -844,18 +844,18 @@ void MainWindow::buildUi()
     widthRow->addWidget(m_widthSpin, 1);
     bl->addLayout(widthRow);
     QHBoxLayout* lineRow = new QHBoxLayout;
-    lineRow->addWidget(new QLabel(u8("ÏßĞÍ")));
+    lineRow->addWidget(new QLabel(u8("çº¿å‹")));
     m_lineCombo = new QComboBox;
-    m_lineCombo->addItem(u8("ÊµÏß"), static_cast<int>(HsCommData::LineSolid));
-    m_lineCombo->addItem(u8("ĞéÏß"), static_cast<int>(HsCommData::LineDash));
-    m_lineCombo->addItem(u8("µãÏß"), static_cast<int>(HsCommData::LineDot));
-    m_lineCombo->addItem(u8("µã»®Ïß"), static_cast<int>(HsCommData::LineDashDot));
+    m_lineCombo->addItem(u8("å®çº¿"), static_cast<int>(HsCommData::LineSolid));
+    m_lineCombo->addItem(u8("è™šçº¿"), static_cast<int>(HsCommData::LineDash));
+    m_lineCombo->addItem(u8("ç‚¹çº¿"), static_cast<int>(HsCommData::LineDot));
+    m_lineCombo->addItem(u8("ç‚¹åˆ’çº¿"), static_cast<int>(HsCommData::LineDashDot));
     lineRow->addWidget(m_lineCombo, 1);
     bl->addLayout(lineRow);
     connect(m_lineCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(onWidthChanged(int)));
 
     QHBoxLayout* colorRow = new QHBoxLayout;
-    colorRow->addWidget(new QLabel(u8("ÑÕÉ«")));
+    colorRow->addWidget(new QLabel(u8("é¢œè‰²")));
     m_colorGroup = new QButtonGroup(this);
     m_colorGroup->setExclusive(true);
     const QColor presets[4] = {
@@ -879,7 +879,7 @@ void MainWindow::buildUi()
     QToolButton* pick = new QToolButton;
     pick->setText(QStringLiteral("..."));
     pick->setFixedSize(22, 22);
-    pick->setToolTip(u8("×Ô¶¨ÒåÑÕÉ«"));
+    pick->setToolTip(u8("è‡ªå®šä¹‰é¢œè‰²"));
     colorRow->addWidget(pick);
     colorRow->addStretch();
     bl->addLayout(colorRow);
@@ -887,9 +887,9 @@ void MainWindow::buildUi()
     connect(pick, &QToolButton::clicked, this, &MainWindow::onPickColor);
 
     QHBoxLayout* modeRow = new QHBoxLayout;
-    modeRow->addWidget(new QLabel(u8("»æÖÆÄ£Ê½")));
-    m_strokeRadio = new QRadioButton(u8("Ãè±ß"));
-    m_fillRadio = new QRadioButton(u8("Ìî³ä"));
+    modeRow->addWidget(new QLabel(u8("ç»˜åˆ¶æ¨¡å¼")));
+    m_strokeRadio = new QRadioButton(u8("æè¾¹"));
+    m_fillRadio = new QRadioButton(u8("å¡«å……"));
     m_strokeRadio->setChecked(true);
     modeRow->addWidget(m_strokeRadio);
     modeRow->addWidget(m_fillRadio);
@@ -898,10 +898,10 @@ void MainWindow::buildUi()
     connect(m_widthSpin, SIGNAL(valueChanged(int)), this, SLOT(onWidthChanged(int)));
     connect(m_strokeRadio, &QRadioButton::toggled, this, &MainWindow::onDrawModeChanged);
 
-    QGroupBox* roiBox = new QGroupBox(u8("µ±Ç°ROI"));
+    QGroupBox* roiBox = new QGroupBox(u8("å½“å‰ROI"));
     QVBoxLayout* roiLay = new QVBoxLayout(roiBox);
     QHBoxLayout* typeRow = new QHBoxLayout;
-    typeRow->addWidget(new QLabel(u8("ÀàĞÍ")));
+    typeRow->addWidget(new QLabel(u8("ç±»å‹")));
     m_typeEdit = new QLineEdit(QStringLiteral("--"));
     m_typeEdit->setReadOnly(true);
     typeRow->addWidget(m_typeEdit, 1);
@@ -916,20 +916,20 @@ void MainWindow::buildUi()
     m_roiGeom->setReadOnly(true);
     m_roiGeom->setMaximumHeight(118);
     m_roiGeom->setMinimumHeight(88);
-    m_roiGeom->setPlaceholderText(u8("Ñ¡ÖĞ»ò»æÖÆ ROI ºóÏÔÊ¾¼¸ºÎ²ÎÊı"));
+    m_roiGeom->setPlaceholderText(u8("é€‰ä¸­æˆ–ç»˜åˆ¶ ROI åæ˜¾ç¤ºå‡ ä½•å‚æ•°"));
     roiLay->addWidget(m_roiGeom);
 
     QHBoxLayout* textRow = new QHBoxLayout;
-    textRow->addWidget(new QLabel(u8("ÎÄ×Ö")));
+    textRow->addWidget(new QLabel(u8("æ–‡å­—")));
     m_textEdit = new QLineEdit(u8("Text"));
-    m_textEdit->setPlaceholderText(u8("ÒªÏÔÊ¾µÄÎÄ×Ö"));
+    m_textEdit->setPlaceholderText(u8("è¦æ˜¾ç¤ºçš„æ–‡å­—"));
     textRow->addWidget(m_textEdit, 1);
     roiLay->addLayout(textRow);
 
     QHBoxLayout* textSpaceRow = new QHBoxLayout;
-    textSpaceRow->addWidget(new QLabel(u8("×ø±ê")));
-    m_textImageRadio = new QRadioButton(u8("Í¼Ïñ"));
-    m_textWindowRadio = new QRadioButton(u8("´°¿Ú"));
+    textSpaceRow->addWidget(new QLabel(u8("åæ ‡")));
+    m_textImageRadio = new QRadioButton(u8("å›¾åƒ"));
+    m_textWindowRadio = new QRadioButton(u8("çª—å£"));
     m_textImageRadio->setChecked(true);
     QButtonGroup* textSpaceGroup = new QButtonGroup(this);
     textSpaceGroup->addButton(m_textImageRadio);
@@ -955,13 +955,13 @@ void MainWindow::buildUi()
     roiLay->addLayout(textPosRow);
 
     QHBoxLayout* textFontRow = new QHBoxLayout;
-    textFontRow->addWidget(new QLabel(u8("×ÖºÅ")));
+    textFontRow->addWidget(new QLabel(u8("å­—å·")));
     m_textFontSpin = new QSpinBox;
     m_textFontSpin->setRange(8, 72);
     m_textFontSpin->setValue(14);
     m_textFontSpin->setSuffix(QStringLiteral(" px"));
     textFontRow->addWidget(m_textFontSpin);
-    QPushButton* placeTextBtn = new QPushButton(u8("·ÅÖÃ"));
+    QPushButton* placeTextBtn = new QPushButton(u8("æ”¾ç½®"));
     textFontRow->addWidget(placeTextBtn, 1);
     roiLay->addLayout(textFontRow);
 
@@ -970,13 +970,13 @@ void MainWindow::buildUi()
     connect(m_textFontSpin, SIGNAL(valueChanged(int)), this, SLOT(syncTextToolToView()));
     connect(placeTextBtn, &QPushButton::clicked, this, &MainWindow::onPlaceText);
 
-    QGroupBox* layerBox = new QGroupBox(u8("Í¼²ã"));
+    QGroupBox* layerBox = new QGroupBox(u8("å›¾å±‚"));
     QVBoxLayout* layerLay = new QVBoxLayout(layerBox);
-    m_layerImage = new QCheckBox(u8("Í¼Ïñ"));
-    m_layerStack = new QCheckBox(u8("½á¹û Stack"));
+    m_layerImage = new QCheckBox(u8("å›¾åƒ"));
+    m_layerStack = new QCheckBox(u8("ç»“æœ Stack"));
     m_layerDrawing = new QCheckBox(u8("ROI Drawing"));
     m_layerHud = new QCheckBox(u8("HUD"));
-    m_pixelInspect = new QCheckBox(u8("ÏñËØ¼ìÑé"));
+    m_pixelInspect = new QCheckBox(u8("åƒç´ æ£€éªŒ"));
     m_layerImage->setChecked(true);
     m_layerStack->setChecked(true);
     m_layerDrawing->setChecked(true);
@@ -994,19 +994,19 @@ void MainWindow::buildUi()
     connect(m_pixelInspect, &QCheckBox::toggled, this, &MainWindow::onPixelInspect);
     m_view->setPixelInspect(true);
 
-    QGroupBox* algoBox = new QGroupBox(u8("Ëã·¨²âÊÔ"));
+    QGroupBox* algoBox = new QGroupBox(u8("ç®—æ³•æµ‹è¯•"));
     QVBoxLayout* algoLay = new QVBoxLayout(algoBox);
     algoLay->setSpacing(6);
 
     QHBoxLayout* algoBtnRow = new QHBoxLayout;
-    QPushButton* algoLoad = new QPushButton(u8("¼ÓÔØÍ¼Ïñ"));
-    QPushButton* algoUse = new QPushButton(u8("µ±Ç°Í¼Ïñ"));
+    QPushButton* algoLoad = new QPushButton(u8("åŠ è½½å›¾åƒ"));
+    QPushButton* algoUse = new QPushButton(u8("å½“å‰å›¾åƒ"));
     algoBtnRow->addWidget(algoLoad);
     algoBtnRow->addWidget(algoUse);
     algoLay->addLayout(algoBtnRow);
 
     QHBoxLayout* thRow = new QHBoxLayout;
-    thRow->addWidget(new QLabel(u8("ãĞÖµ")));
+    thRow->addWidget(new QLabel(u8("é˜ˆå€¼")));
     m_thSlider = new QSlider(Qt::Horizontal);
     m_thSlider->setRange(0, 255);
     m_thSlider->setValue(128);
@@ -1019,7 +1019,7 @@ void MainWindow::buildUi()
     algoLay->addLayout(thRow);
 
     QHBoxLayout* algoColorRow = new QHBoxLayout;
-    algoColorRow->addWidget(new QLabel(u8("ÑÕÉ«")));
+    algoColorRow->addWidget(new QLabel(u8("é¢œè‰²")));
     m_algoColorGroup = new QButtonGroup(this);
     m_algoColorGroup->setExclusive(true);
     const QColor algoPresets[4] = {
@@ -1041,13 +1041,13 @@ void MainWindow::buildUi()
     m_algoPickBtn = new QToolButton;
     m_algoPickBtn->setText(QStringLiteral("..."));
     m_algoPickBtn->setFixedSize(22, 22);
-    m_algoPickBtn->setToolTip(u8("×Ô¶¨ÒåÑÕÉ«"));
+    m_algoPickBtn->setToolTip(u8("è‡ªå®šä¹‰é¢œè‰²"));
     algoColorRow->addWidget(m_algoPickBtn);
     algoColorRow->addStretch();
     algoLay->addLayout(algoColorRow);
 
     QHBoxLayout* algoOpRow = new QHBoxLayout;
-    algoOpRow->addWidget(new QLabel(u8("Í¸Ã÷¶È")));
+    algoOpRow->addWidget(new QLabel(u8("é€æ˜åº¦")));
     m_algoOpacitySlider = new QSlider(Qt::Horizontal);
     m_algoOpacitySlider->setRange(0, 100);
     m_algoOpacitySlider->setValue(35);
@@ -1060,9 +1060,9 @@ void MainWindow::buildUi()
     algoOpRow->addWidget(m_algoOpacitySpin);
     algoLay->addLayout(algoOpRow);
 
-    m_algoLive = new QCheckBox(u8("»¬¸ËÊµÊ±ÌáÈ¡"));
+    m_algoLive = new QCheckBox(u8("æ»‘æ†å®æ—¶æå–"));
     m_algoLive->setChecked(true);
-    m_algoStress = new QCheckBox(u8("Á¬Ë¢²âË¢ĞÂÆµÂÊ"));
+    m_algoStress = new QCheckBox(u8("è¿åˆ·æµ‹åˆ·æ–°é¢‘ç‡"));
     algoLay->addWidget(m_algoLive);
     algoLay->addWidget(m_algoStress);
 
@@ -1071,7 +1071,7 @@ void MainWindow::buildUi()
     m_algoStats->setAlignment(Qt::AlignTop | Qt::AlignLeft);
     m_algoStats->setMinimumHeight(96);
     m_algoStats->setStyleSheet(QStringLiteral("color:#555555; font-size:11px;"));
-    m_algoStats->setText(u8("ÒıÇæ: ") + halconEngineName() + u8("\n¼ÓÔØÍ¼ÏñºóÍÏ¶¯ãĞÖµ»¬¸Ë¡£"));
+    m_algoStats->setText(u8("å¼•æ“: ") + halconEngineName() + u8("\nåŠ è½½å›¾åƒåæ‹–åŠ¨é˜ˆå€¼æ»‘æ†ã€‚"));
     algoLay->addWidget(m_algoStats, 1);
 
     connect(algoLoad, &QPushButton::clicked, this, &MainWindow::loadAlgoImage);
@@ -1085,9 +1085,9 @@ void MainWindow::buildUi()
     connect(m_algoStress, &QCheckBox::toggled, this, &MainWindow::onAlgoStress);
 
     QHBoxLayout* btnRow = new QHBoxLayout;
-    QPushButton* clearDraw = new QPushButton(u8("Çå¿Õ"));
-    QPushButton* clearOv = new QPushButton(u8("Çå¿Õµş¼Ó"));
-    QPushButton* ok = new QPushButton(u8("È·¶¨"));
+    QPushButton* clearDraw = new QPushButton(u8("æ¸…ç©º"));
+    QPushButton* clearOv = new QPushButton(u8("æ¸…ç©ºå åŠ "));
+    QPushButton* ok = new QPushButton(u8("ç¡®å®š"));
     ok->setObjectName(QStringLiteral("primaryBtn"));
     ok->setMinimumWidth(88);
     btnRow->addWidget(clearDraw);
@@ -1100,24 +1100,24 @@ void MainWindow::buildUi()
 
     ll->addWidget(imageBox);
 
-    QGroupBox* sessionBox = new QGroupBox(u8("»æÖÆ»á»°"));
+    QGroupBox* sessionBox = new QGroupBox(u8("ç»˜åˆ¶ä¼šè¯"));
     QVBoxLayout* sessionLay = new QVBoxLayout(sessionBox);
-    QLabel* sessionHint = new QLabel(u8("Ò»´ÎÒ»Ìõ¡£ĞÎ×´ËÉ¿ª¼´Ìá½»¡£¶à±ßĞÎÓÒ¼ü»ò Enter ½áÊø¡£Í¿Ä¨£º×ó¼üÍ¿¡¢ÓÒ¼ü²Á£¬Enter »ò¡¸È·¶¨¡¹Ìá½»¡£Esc È¡Ïû¡£Ctrl+Z ³·ÏúÒ»±Ê£¬Delete Çå¿Õ¡£Ë«»÷²»ÔÙÊÊÓ¦´°¿Ú¡£"));
+    QLabel* sessionHint = new QLabel(u8("ä¸€æ¬¡ä¸€æ¡ã€‚å½¢çŠ¶æ¾å¼€å³æäº¤ã€‚å¤šè¾¹å½¢å³é”®æˆ– Enter ç»“æŸã€‚æ¶‚æŠ¹ï¼šå·¦é”®æ¶‚ã€å³é”®æ“¦ï¼ŒEnter æˆ–ã€Œç¡®å®šã€æäº¤ã€‚Esc å–æ¶ˆã€‚Ctrl+Z æ’¤é”€ä¸€ç¬”ï¼ŒDelete æ¸…ç©ºã€‚åŒå‡»ä¸å†é€‚åº”çª—å£ã€‚"));
     sessionHint->setWordWrap(true);
     sessionHint->setStyleSheet(QStringLiteral("color:#888888;"));
     sessionLay->addWidget(sessionHint);
     QGridLayout* sessionGrid = new QGridLayout;
-    QPushButton* sessionCircle = new QPushButton(u8("Ä£Ì¬Ô²"));
-    QPushButton* sessionRect = new QPushButton(u8("Ä£Ì¬¾ØĞÎ"));
-    QPushButton* sessionPoly = new QPushButton(u8("Ä£Ì¬ÇøÓò"));
-    QPushButton* sessionBrush = new QPushButton(u8("ÆÁ±ÎÍ¿Ä¨"));
+    QPushButton* sessionCircle = new QPushButton(u8("æ¨¡æ€åœ†"));
+    QPushButton* sessionRect = new QPushButton(u8("æ¨¡æ€çŸ©å½¢"));
+    QPushButton* sessionPoly = new QPushButton(u8("æ¨¡æ€åŒºåŸŸ"));
+    QPushButton* sessionBrush = new QPushButton(u8("å±è”½æ¶‚æŠ¹"));
     sessionGrid->addWidget(sessionCircle, 0, 0);
     sessionGrid->addWidget(sessionRect, 0, 1);
     sessionGrid->addWidget(sessionPoly, 1, 0);
     sessionGrid->addWidget(sessionBrush, 1, 1);
     sessionLay->addLayout(sessionGrid);
     QHBoxLayout* radiusRow = new QHBoxLayout;
-    radiusRow->addWidget(new QLabel(u8("±Ê°ë¾¶")));
+    radiusRow->addWidget(new QLabel(u8("ç¬”åŠå¾„")));
     QDoubleSpinBox* radiusSpin = new QDoubleSpinBox;
     radiusSpin->setDecimals(1);
     radiusSpin->setSingleStep(0.1);
@@ -1127,8 +1127,8 @@ void MainWindow::buildUi()
     radiusRow->addWidget(radiusSpin, 1);
     sessionLay->addLayout(radiusRow);
     QHBoxLayout* sessionBtnRow = new QHBoxLayout;
-    QPushButton* sessionOk = new QPushButton(u8("È·¶¨"));
-    QPushButton* sessionCancel = new QPushButton(u8("È¡Ïû"));
+    QPushButton* sessionOk = new QPushButton(u8("ç¡®å®š"));
+    QPushButton* sessionCancel = new QPushButton(u8("å–æ¶ˆ"));
     sessionBtnRow->addWidget(sessionOk);
     sessionBtnRow->addWidget(sessionCancel);
     sessionLay->addLayout(sessionBtnRow);
@@ -1175,35 +1175,35 @@ void MainWindow::buildUi()
     updateFolderNav();
 }
 
-// ¸üĞÂ¹¤¾ßÀ¸ËµÃ÷ÎÄ×Ö
+// æ›´æ–°å·¥å…·æ è¯´æ˜æ–‡å­—
 void MainWindow::updateToolCaption()
 {
-    QString name = u8("ä¯ÀÀ");
+    QString name = u8("æµè§ˆ");
     switch (m_view->drawTool()) {
-    case ToolCircle:  name = u8("Ô²"); break;
+    case ToolCircle:  name = u8("åœ†"); break;
     case ToolRect1:   name = QStringLiteral("Rect1"); break;
     case ToolRect2:   name = QStringLiteral("Rect2"); break;
-    case ToolEllipse: name = u8("ÍÖÔ²"); break;
-    case ToolLine:    name = u8("Ö±Ïß"); break;
-    case ToolCross:   name = u8("Ê®×Ö"); break;
+    case ToolEllipse: name = u8("æ¤­åœ†"); break;
+    case ToolLine:    name = u8("ç›´çº¿"); break;
+    case ToolCross:   name = u8("åå­—"); break;
     case ToolPolygon: name = QStringLiteral("Region"); break;
     case ToolContour: name = QStringLiteral("XLD"); break;
-    case ToolText:    name = u8("ÎÄ±¾"); break;
-    case ToolMeasureDist:   name = u8("¾àÀë"); break;
-    case ToolMeasureAngle:  name = u8("¼Ğ½Ç"); break;
-    case ToolMeasureRadius: name = u8("°ë¾¶"); break;
-    case ToolMeasureRect:    name = u8("¾ØĞÎ"); break;
-    case ToolMeasureEllipse: name = u8("ÍÖÔ²"); break;
-    case ToolBrush:   name = u8("ÆÁ±ÎÍ¿Ä¨"); break;
+    case ToolText:    name = u8("æ–‡æœ¬"); break;
+    case ToolMeasureDist:   name = u8("è·ç¦»"); break;
+    case ToolMeasureAngle:  name = u8("å¤¹è§’"); break;
+    case ToolMeasureRadius: name = u8("åŠå¾„"); break;
+    case ToolMeasureRect:    name = u8("çŸ©å½¢"); break;
+    case ToolMeasureEllipse: name = u8("æ¤­åœ†"); break;
+    case ToolBrush:   name = u8("å±è”½æ¶‚æŠ¹"); break;
     default: break;
     }
     if (m_view->drawSessionActive()) {
-        name += u8("  [»á»°]");
+        name += u8("  [ä¼šè¯]");
     }
-    m_toolCaption->setText(u8("µ±Ç°¹¤¾ß: ") + name);
+    m_toolCaption->setText(u8("å½“å‰å·¥å…·: ") + name);
 }
 
-// °Ñ×ó²à»­±ÊĞ´µ½´°¿Ú
+// æŠŠå·¦ä¾§ç”»ç¬”å†™åˆ°çª—å£
 void MainWindow::applyPenToView()
 {
     HsCommData::Style s = HsCommData::Style::drawingStyle();
@@ -1219,8 +1219,8 @@ void MainWindow::applyPenToView()
     m_view->setDrawingStyle(s);
 }
 
-// ¼ÓÔØÄÚÖÃÑİÊ¾Í¼Îªµ×Í¼
-// Demo ³ÖÓĞ QImage£¬¾­¶ÔÍâ API ½»¸øÊÓÍ¼
+// åŠ è½½å†…ç½®æ¼”ç¤ºå›¾ä¸ºåº•å›¾
+// Demo æŒæœ‰ QImageï¼Œç»å¯¹å¤– API äº¤ç»™è§†å›¾
 void MainWindow::pushSourceToView()
 {
     if (m_api) {
@@ -1228,7 +1228,7 @@ void MainWindow::pushSourceToView()
     }
 }
 
-// ¼ÓÔØÄÚÖÃÑİÊ¾Í¼Îªµ×Í¼
+// åŠ è½½å†…ç½®æ¼”ç¤ºå›¾ä¸ºåº•å›¾
 void MainWindow::loadGeneratedImage()
 {
     ++m_frameSeq;
@@ -1239,11 +1239,11 @@ void MainWindow::loadGeneratedImage()
     updateFolderNav();
 }
 
-// ´ò¿ªÍ¼ÏñÎÄ¼ş²¢ÉèÎªµ×Í¼
+// æ‰“å¼€å›¾åƒæ–‡ä»¶å¹¶è®¾ä¸ºåº•å›¾
 void MainWindow::openImage()
 {
     const QString path = QFileDialog::getOpenFileName(
-        this, u8("´ò¿ªÍ¼Ïñ"), QString(),
+        this, u8("æ‰“å¼€å›¾åƒ"), QString(),
         QStringLiteral("Images (*.png *.jpg *.jpeg *.bmp *.tif *.tiff)"));
     if (path.isEmpty()) {
         return;
@@ -1256,16 +1256,16 @@ void MainWindow::openImage()
     updateFolderNav();
 }
 
-// ´ò¿ªÎÄ¼ş¼Ğ£¬¼ÓÔØµÚÒ»ÕÅ
+// æ‰“å¼€æ–‡ä»¶å¤¹ï¼ŒåŠ è½½ç¬¬ä¸€å¼ 
 void MainWindow::openFolder()
 {
-    const QString dir = QFileDialog::getExistingDirectory(this, u8("¼ÓÔØÎÄ¼ş¼Ğ"));
+    const QString dir = QFileDialog::getExistingDirectory(this, u8("åŠ è½½æ–‡ä»¶å¤¹"));
     if (dir.isEmpty()) {
         return;
     }
     const QStringList files = listImageFiles(dir);
     if (files.isEmpty()) {
-        QMessageBox::information(this, u8("¼ÓÔØÎÄ¼ş¼Ğ"), u8("¸ÃÎÄ¼ş¼ĞÃ»ÓĞ¿ÉÊ¶±ğµÄÍ¼Ïñ¡£"));
+        QMessageBox::information(this, u8("åŠ è½½æ–‡ä»¶å¤¹"), u8("è¯¥æ–‡ä»¶å¤¹æ²¡æœ‰å¯è¯†åˆ«çš„å›¾åƒã€‚"));
         return;
     }
     m_folderFiles = files;
@@ -1274,7 +1274,7 @@ void MainWindow::openFolder()
     updateFolderNav();
 }
 
-// ÎÄ¼ş¼ĞÉÏÒ»ÕÅ£¨Ñ­»·£©
+// æ–‡ä»¶å¤¹ä¸Šä¸€å¼ ï¼ˆå¾ªç¯ï¼‰
 void MainWindow::showPrevImage()
 {
     if (m_folderFiles.size() < 2) {
@@ -1285,7 +1285,7 @@ void MainWindow::showPrevImage()
     updateFolderNav();
 }
 
-// ÎÄ¼ş¼ĞÏÂÒ»ÕÅ£¨Ñ­»·£©
+// æ–‡ä»¶å¤¹ä¸‹ä¸€å¼ ï¼ˆå¾ªç¯ï¼‰
 void MainWindow::showNextImage()
 {
     if (m_folderFiles.size() < 2) {
@@ -1296,12 +1296,12 @@ void MainWindow::showNextImage()
     updateFolderNav();
 }
 
-// ½âÂëÎÄ¼şÎªµ×Í¼£»»»Í¼×ß´°¿ÚË¢ĞÂ²ßÂÔ
+// è§£ç æ–‡ä»¶ä¸ºåº•å›¾ï¼›æ¢å›¾èµ°çª—å£åˆ·æ–°ç­–ç•¥
 bool MainWindow::loadImagePath(const QString& path)
 {
     QImage img;
     if (!img.load(path)) {
-        QMessageBox::warning(this, u8("¼ÓÔØÍ¼Ïñ"), u8("ÎŞ·¨´ò¿ª: ") + path);
+        QMessageBox::warning(this, u8("åŠ è½½å›¾åƒ"), u8("æ— æ³•æ‰“å¼€: ") + path);
         return false;
     }
     ++m_frameSeq;
@@ -1311,7 +1311,7 @@ bool MainWindow::loadImagePath(const QString& path)
     return true;
 }
 
-// Ë¢ĞÂÎÄ¼ş¼ĞĞòºÅÓë·­Ò³°´Å¥
+// åˆ·æ–°æ–‡ä»¶å¤¹åºå·ä¸ç¿»é¡µæŒ‰é’®
 void MainWindow::updateFolderNav()
 {
     const bool hasList = !m_folderFiles.isEmpty() && m_folderIndex >= 0
@@ -1326,7 +1326,7 @@ void MainWindow::updateFolderNav()
         return;
     }
     if (!hasList) {
-        m_imagePathLabel->setText(u8("ÄÚÖÃÑİÊ¾Í¼"));
+        m_imagePathLabel->setText(u8("å†…ç½®æ¼”ç¤ºå›¾"));
         return;
     }
     const QFileInfo fi(m_folderFiles.at(m_folderIndex));
@@ -1336,56 +1336,56 @@ void MainWindow::updateFolderNav()
                                   .arg(fi.fileName()));
 }
 
-// ±£´æÊÓ¿Ú¿ìÕÕ
+// ä¿å­˜è§†å£å¿«ç…§
 void MainWindow::saveSnapshot()
 {
     const QString path = QFileDialog::getSaveFileName(
-        this, u8("±£´æ¿ìÕÕ"), QStringLiteral("snapshot.png"),
+        this, u8("ä¿å­˜å¿«ç…§"), QStringLiteral("snapshot.png"),
         QStringLiteral("PNG (*.png);;JPEG (*.jpg)"));
     if (path.isEmpty()) {
         return;
     }
     QString err;
     if (!m_view->saveSnapshot(path, &err)) {
-        QMessageBox::warning(this, u8("±£´æ¿ìÕÕ"), err);
+        QMessageBox::warning(this, u8("ä¿å­˜å¿«ç…§"), err);
     }
 }
 
-// µ¼³öÔ­Í¼ÏñËØ
+// å¯¼å‡ºåŸå›¾åƒç´ 
 void MainWindow::exportOriginal()
 {
     const QString path = QFileDialog::getSaveFileName(
-        this, u8("µ¼³öÔ­Í¼"), QStringLiteral("image.png"),
+        this, u8("å¯¼å‡ºåŸå›¾"), QStringLiteral("image.png"),
         QStringLiteral("PNG (*.png);;JPEG (*.jpg);;BMP (*.bmp)"));
     if (path.isEmpty()) {
         return;
     }
     QString err;
     if (!m_view->saveCurrentFrame(path, &err)) {
-        QMessageBox::warning(this, u8("µ¼³öÔ­Í¼"), err);
+        QMessageBox::warning(this, u8("å¯¼å‡ºåŸå›¾"), err);
     }
 }
 
-// Õû·ùÍ¼ÊÊÓ¦´°¿Ú
+// æ•´å¹…å›¾é€‚åº”çª—å£
 void MainWindow::fitView()
 {
     m_view->fitToWindow();
 }
 
-// 1:1 ÏÔÊ¾
+// 1:1 æ˜¾ç¤º
 void MainWindow::zoom1to1()
 {
     m_view->zoomActualSize();
 }
 
-// Çå¿Õ Stack
+// æ¸…ç©º Stack
 void MainWindow::clearOverlay()
 {
     m_view->clearWindow();
     m_view->clearDrawInfo();
 }
 
-// Çå¿Õ Drawing
+// æ¸…ç©º Drawing
 void MainWindow::clearDrawings()
 {
     m_view->clearDrawings();
@@ -1396,7 +1396,7 @@ void MainWindow::clearDrawings()
     }
 }
 
-// Ğ´ÈëÒ»×éÊ¾Àı Stack Í¼Ôª£¨³£ÓÃĞÎ×´×ß disp*£¬¿Í»§²»±Ø´« frameId£©
+// å†™å…¥ä¸€ç»„ç¤ºä¾‹ Stack å›¾å…ƒï¼ˆå¸¸ç”¨å½¢çŠ¶èµ° disp*ï¼Œå®¢æˆ·ä¸å¿…ä¼  frameIdï¼‰
 void MainWindow::mockOverlay()
 {
     if (!m_view->hasImage()) {
@@ -1422,7 +1422,7 @@ void MainWindow::mockOverlay()
     sampleEll.setAngRad(0.4);
     m_view->dispEllipse(sampleEll);
 
-    // Keypoints / Skeleton / Badge / Mask ÈÔ×ßĞ­ÒéÕûÖ¡×·¼Ó
+    // Keypoints / Skeleton / Badge / Mask ä»èµ°åè®®æ•´å¸§è¿½åŠ 
     const qint64 fid = m_view->currentFrameId();
     std::shared_ptr<HsCommData::FrameOverlay> sc = HsCommData::FrameOverlay::create(fid);
     if (m_view->overlay()) {
@@ -1502,11 +1502,11 @@ void MainWindow::mockOverlay()
     sc->items.push_back(mask);
 
     m_view->setOverlay(sc);
-    m_view->drawInfo(DrawInfoImage, u8("Í¼Ïñ×ø±ê"), QPointF(420, 272), 14, QColor(0x52, 0xC4, 0x1A));
-    m_view->addDrawInfo(DrawInfoWindow, u8("´°¿Ú×ø±ê"), QPointF(12, 36), 14, QColor(0xFA, 0xAD, 0x14));
+    m_view->drawInfo(DrawInfoImage, u8("å›¾åƒåæ ‡"), QPointF(420, 272), 14, QColor(0x52, 0xC4, 0x1A));
+    m_view->addDrawInfo(DrawInfoWindow, u8("çª—å£åæ ‡"), QPointF(12, 36), 14, QColor(0xFA, 0xAD, 0x14));
 }
 
-// Ä£ÄâÊµÊ±Ë¢ Overlay
+// æ¨¡æ‹Ÿå®æ—¶åˆ· Overlay
 void MainWindow::toggleLive(bool on)
 {
     m_view->setLive(on);
@@ -1517,7 +1517,7 @@ void MainWindow::toggleLive(bool on)
     }
 }
 
-// ÇĞ»»»æÖÆ¹¤¾ß
+// åˆ‡æ¢ç»˜åˆ¶å·¥å…·
 void MainWindow::onToolId(int id)
 {
     if (m_view->drawSessionActive()) {
@@ -1576,13 +1576,13 @@ void MainWindow::onDrawSessionFinished(const HsCommData::Graphic& g, bool accept
     }
     updateToolCaption();
     m_toolCaption->setText(m_toolCaption->text()
-                           + (accepted ? u8("  | ÒÑÌá½»") : u8("  | ÒÑÈ¡Ïû")));
+                           + (accepted ? u8("  | å·²æäº¤") : u8("  | å·²å–æ¶ˆ")));
 }
 
 void MainWindow::beginSession(DrawTool tool)
 {
     if (!m_view->beginDrawSession(tool)) {
-        m_toolCaption->setText(u8("ÎŞ·¨¿ªÊ¼»á»°£ºÎŞµ×Í¼£¬»òÒÑ¾­ÔÚ»á»°ÖĞ"));
+        m_toolCaption->setText(u8("æ— æ³•å¼€å§‹ä¼šè¯ï¼šæ— åº•å›¾ï¼Œæˆ–å·²ç»åœ¨ä¼šè¯ä¸­"));
         return;
     }
     m_toolGroup->setExclusive(false);
@@ -1594,13 +1594,13 @@ void MainWindow::beginSession(DrawTool tool)
     updateToolCaption();
 }
 
-// »­±ÊÏß¿í±ä»¯
+// ç”»ç¬”çº¿å®½å˜åŒ–
 void MainWindow::onWidthChanged(int)
 {
     applyPenToView();
 }
 
-// Ô¤Éè»­±ÊÑÕÉ«
+// é¢„è®¾ç”»ç¬”é¢œè‰²
 void MainWindow::onColorId(int id)
 {
     const QColor presets[4] = {
@@ -1615,10 +1615,10 @@ void MainWindow::onColorId(int id)
     }
 }
 
-// ×Ô¶¨Òå»­±ÊÑÕÉ«
+// è‡ªå®šä¹‰ç”»ç¬”é¢œè‰²
 void MainWindow::onPickColor()
 {
-    const QColor c = QColorDialog::getColor(m_penColor, this, u8("Ñ¡ÔñÑÕÉ«"));
+    const QColor c = QColorDialog::getColor(m_penColor, this, u8("é€‰æ‹©é¢œè‰²"));
     if (!c.isValid()) {
         return;
     }
@@ -1627,49 +1627,49 @@ void MainWindow::onPickColor()
     applyPenToView();
 }
 
-// Ãè±ß / Ìî³äÇĞ»»
+// æè¾¹ / å¡«å……åˆ‡æ¢
 void MainWindow::onDrawModeChanged()
 {
     applyPenToView();
 }
 
-// µ×Í¼²ãÏÔÒş
+// åº•å›¾å±‚æ˜¾éš
 void MainWindow::onLayerImage(bool on)
 {
     m_view->setImageVisible(on);
 }
 
-// Stack ²ãÏÔÒş
+// Stack å±‚æ˜¾éš
 void MainWindow::onLayerStack(bool on)
 {
     m_view->setStackVisible(on);
 }
 
-// Drawing ²ãÏÔÒş
+// Drawing å±‚æ˜¾éš
 void MainWindow::onLayerDrawing(bool on)
 {
     m_view->setDrawingVisible(on);
 }
 
-// HUD ÏÔÒş
+// HUD æ˜¾éš
 void MainWindow::onLayerHud(bool on)
 {
     m_view->setHudVisible(on);
 }
 
-// ÏñËØ¼ìÑé¿ª¹Ø
+// åƒç´ æ£€éªŒå¼€å…³
 void MainWindow::onPixelInspect(bool on)
 {
     m_view->setPixelInspect(on);
 }
 
-// ¸¡¶¯¹¤¾ßÌõÏÔÒş
+// æµ®åŠ¨å·¥å…·æ¡æ˜¾éš
 void MainWindow::onToolbarVisible(bool on)
 {
     m_view->setOverlayToolbarVisible(on);
 }
 
-// °´¹´Ñ¡¾ö¶¨¹¤¾ßÌõÉÏÏÔÊ¾ÄÄĞ©²âÁ¿°´Å¥
+// æŒ‰å‹¾é€‰å†³å®šå·¥å…·æ¡ä¸Šæ˜¾ç¤ºå“ªäº›æµ‹é‡æŒ‰é’®
 void MainWindow::applyShownMeasureTools()
 {
     if (!m_view) {
@@ -1695,7 +1695,7 @@ void MainWindow::applyShownMeasureTools()
     m_view->setMeasureToolbarVisible(!tools.empty());
 }
 
-// ÇĞ»»²âÊÔÓÃÏñËØ±ÈÀı¡£0 Îª 1:1
+// åˆ‡æ¢æµ‹è¯•ç”¨åƒç´ æ¯”ä¾‹ã€‚0 ä¸º 1:1
 void MainWindow::onCalibPreset(int index)
 {
     if (!m_calibUnit || !m_calibX || !m_calibY || index < 0) {
@@ -1722,7 +1722,7 @@ void MainWindow::onCalibPreset(int index)
     applyCalibFromUi();
 }
 
-// ÓÃÃæ°åÉÏµÄµ¥Î»ºÍÃ¿ÏñËØ±ÈÀıĞ´Èë±ê¶¨
+// ç”¨é¢æ¿ä¸Šçš„å•ä½å’Œæ¯åƒç´ æ¯”ä¾‹å†™å…¥æ ‡å®š
 void MainWindow::applyCalibFromUi()
 {
     if (!m_view || m_calibBusy) {
@@ -1765,7 +1765,7 @@ void MainWindow::applyCalibFromUi()
     refreshMeasureLog();
 }
 
-// Ë¢ĞÂ²âÁ¿½á¹û¿ò
+// åˆ·æ–°æµ‹é‡ç»“æœæ¡†
 void MainWindow::refreshMeasureLog()
 {
     if (!m_view || !m_measureLog) {
@@ -1773,13 +1773,13 @@ void MainWindow::refreshMeasureLog()
     }
     const QStringList lines = m_view->measureResultLines();
     if (lines.isEmpty()) {
-        m_measureLog->setPlainText(QString::fromLocal8Bit("»¹Ã»ÓĞ²âÁ¿"));
+        m_measureLog->setPlainText(QString::fromUtf8("è¿˜æ²¡æœ‰æµ‹é‡"));
         return;
     }
     m_measureLog->setPlainText(lines.join(QStringLiteral("\n")));
 }
 
-// ¹¤¾ßÌõÍ£¿¿½Ç
+// å·¥å…·æ¡åœé è§’
 void MainWindow::onToolbarCorner(int index)
 {
     if (!m_toolbarCorner || index < 0) {
@@ -1789,14 +1789,14 @@ void MainWindow::onToolbarCorner(int index)
     m_view->setOverlayToolbarCorner(static_cast<Qt::Corner>(corner));
 }
 
-// ¹¤¾ßÌõ´¹Ö±»òË®Æ½
+// å·¥å…·æ¡å‚ç›´æˆ–æ°´å¹³
 void MainWindow::onToolbarOrientation()
 {
     m_view->setOverlayToolbarOrientation(
         m_toolbarHorizontal && m_toolbarHorizontal->isChecked() ? Qt::Horizontal : Qt::Vertical);
 }
 
-// ¹¤¾ßÌõÆ¤·ô
+// å·¥å…·æ¡çš®è‚¤
 void MainWindow::onToolbarSkin(int index)
 {
     if (!m_toolbarSkin || index < 0) {
@@ -1806,7 +1806,7 @@ void MainWindow::onToolbarSkin(int index)
         static_cast<OverlayToolbarSkin>(m_toolbarSkin->itemData(index).toInt()));
 }
 
-// ÊÓ¿Ú±³¾°·ç¸ñ
+// è§†å£èƒŒæ™¯é£æ ¼
 void MainWindow::onViewportBackground(int index)
 {
     if (!m_viewportBg || index < 0) {
@@ -1816,14 +1816,14 @@ void MainWindow::onViewportBackground(int index)
         static_cast<ViewportBackground>(m_viewportBg->itemData(index).toInt()));
 }
 
-// ÊÓ¿Ú×Ô¶¨ÒåÉ«£¨´¿É«»òÆåÅÌ¸ñÇ³¸ñ£©
+// è§†å£è‡ªå®šä¹‰è‰²ï¼ˆçº¯è‰²æˆ–æ£‹ç›˜æ ¼æµ…æ ¼ï¼‰
 void MainWindow::onViewportColor()
 {
     QColor cur = m_view->viewportBackgroundCustomColor();
     if (!cur.isValid()) {
         cur = m_view->backgroundColor();
     }
-    const QColor c = QColorDialog::getColor(cur, this, u8("ÊÓ¿ÚÑÕÉ«"));
+    const QColor c = QColorDialog::getColor(cur, this, u8("è§†å£é¢œè‰²"));
     if (!c.isValid()) {
         return;
     }
@@ -1844,7 +1844,7 @@ void MainWindow::onViewportColor()
     }
 }
 
-// °ÑË¢ĞÂ²ßÂÔĞ´µ½´°¿Ú£¨ÏÂ´Î»»µ×Í¼ÉúĞ§£©
+// æŠŠåˆ·æ–°ç­–ç•¥å†™åˆ°çª—å£ï¼ˆä¸‹æ¬¡æ¢åº•å›¾ç”Ÿæ•ˆï¼‰
 void MainWindow::applyRefreshPolicyFromUi()
 {
     ImageRefreshPolicy p;
@@ -1854,7 +1854,7 @@ void MainWindow::applyRefreshPolicyFromUi()
     m_view->setImageRefreshPolicy(p);
 }
 
-// Ñ¡ÖĞ ROI ±ä»¯£¬Ë¢ĞÂÓÒ²à¼¸ºÎ
+// é€‰ä¸­ ROI å˜åŒ–ï¼Œåˆ·æ–°å³ä¾§å‡ ä½•
 void MainWindow::onRoiSelected(const HsCommData::Graphic& g)
 {
     if (g.id.empty()) {
@@ -1869,7 +1869,7 @@ void MainWindow::onRoiSelected(const HsCommData::Graphic& g)
     fillTextUi(g);
 }
 
-// °Ñ HsCommData::Graphic ¼¸ºÎĞ´µ½ÓÒ²àÎÄ±¾
+// æŠŠ HsCommData::Graphic å‡ ä½•å†™åˆ°å³ä¾§æ–‡æœ¬
 void MainWindow::showRoiGeom(const HsCommData::Graphic& g)
 {
     if (!m_roiGeom) {
@@ -1880,19 +1880,19 @@ void MainWindow::showRoiGeom(const HsCommData::Graphic& g)
         return;
     }
 
-    const QString deg = QString::fromLocal8Bit("¡ã");
-    const QString unit = HsCommData::HsSystem::instance().angleUnit == HsCommData::HsSystem::UnitDegree ? deg : QString::fromLocal8Bit("rad");
+    const QString deg = QString::fromUtf8("Â°");
+    const QString unit = HsCommData::HsSystem::instance().angleUnit == HsCommData::HsSystem::UnitDegree ? deg : QString::fromUtf8("rad");
     QString t;
     if (g.kind == HsCommData::KindObject && g.geom.isInitialized()) {
     switch (g.geom.kind()) {
     case HsCommData::ObjCircle:
-        t = u8("ÖĞĞÄ  (%1, %2)\n°ë¾¶  %3")
+        t = u8("ä¸­å¿ƒ  (%1, %2)\nåŠå¾„  %3")
                 .arg(g.geom.circleAt(0)->c.x, 0, 'f', 2)
                 .arg(g.geom.circleAt(0)->c.y, 0, 'f', 2)
                 .arg(g.geom.circleAt(0)->r, 0, 'f', 2);
         break;
     case HsCommData::ObjEllipse:
-        t = u8("ÖĞĞÄ  (%1, %2)\nra    %3\nrb    %4\nphi   %5 %6")
+        t = u8("ä¸­å¿ƒ  (%1, %2)\nra    %3\nrb    %4\nphi   %5 %6")
                 .arg(g.geom.ellipseAt(0)->c.x, 0, 'f', 2)
                 .arg(g.geom.ellipseAt(0)->c.y, 0, 'f', 2)
                 .arg(g.geom.ellipseAt(0)->ra, 0, 'f', 2)
@@ -1902,7 +1902,7 @@ void MainWindow::showRoiGeom(const HsCommData::Graphic& g)
         break;
     case HsCommData::ObjRect1: {
         const HsCommData::Box2 r = normalized(g.geom.rect1At(0)->r);
-        t = u8("×óÉÏ  (%1, %2)\nÓÒÏÂ  (%3, %4)\n¿í¸ß  %5 ¡Á %6")
+        t = u8("å·¦ä¸Š  (%1, %2)\nå³ä¸‹  (%3, %4)\nå®½é«˜  %5 Ã— %6")
                 .arg(HsCommData::left(r), 0, 'f', 2)
                 .arg(HsCommData::top(r), 0, 'f', 2)
                 .arg(HsCommData::right(r), 0, 'f', 2)
@@ -1912,7 +1912,7 @@ void MainWindow::showRoiGeom(const HsCommData::Graphic& g)
         break;
     }
     case HsCommData::ObjRect2:
-        t = u8("ÖĞĞÄ  (%1, %2)\nl1    %3\nl2    %4\nphi   %5 %6")
+        t = u8("ä¸­å¿ƒ  (%1, %2)\nl1    %3\nl2    %4\nphi   %5 %6")
                 .arg(g.geom.rect2At(0)->c.x, 0, 'f', 2)
                 .arg(g.geom.rect2At(0)->c.y, 0, 'f', 2)
                 .arg(g.geom.rect2At(0)->l1, 0, 'f', 2)
@@ -1921,7 +1921,7 @@ void MainWindow::showRoiGeom(const HsCommData::Graphic& g)
                                 .arg(unit);
         break;
     case HsCommData::ObjLine:
-        t = u8("Æğµã  (%1, %2)\nÖÕµã  (%3, %4)\n³¤¶È  %5")
+        t = u8("èµ·ç‚¹  (%1, %2)\nç»ˆç‚¹  (%3, %4)\né•¿åº¦  %5")
                 .arg(g.geom.lineAt(0)->a.x, 0, 'f', 2)
                 .arg(g.geom.lineAt(0)->a.y, 0, 'f', 2)
                 .arg(g.geom.lineAt(0)->b.x, 0, 'f', 2)
@@ -1931,14 +1931,14 @@ void MainWindow::showRoiGeom(const HsCommData::Graphic& g)
         break;
     case HsCommData::ObjContour: {
         const int n = static_cast<int>(g.geom.contourAt(0)->ptCount());
-        t = u8("µãÊı  %1\n±ÕºÏ  %2")
+        t = u8("ç‚¹æ•°  %1\né—­åˆ  %2")
                 .arg(n)
-                .arg(g.geom.contourAt(0)->closed ? u8("ÊÇ") : u8("·ñ"));
+                .arg(g.geom.contourAt(0)->closed ? u8("æ˜¯") : u8("å¦"));
         if (n > 0) {
-            t += u8("\nÆğµã  (%1, %2)")
+            t += u8("\nèµ·ç‚¹  (%1, %2)")
                      .arg(g.geom.contourAt(0)->ptFront().x, 0, 'f', 2)
                      .arg(g.geom.contourAt(0)->ptFront().y, 0, 'f', 2);
-            t += u8("\nÖÕµã  (%1, %2)")
+            t += u8("\nç»ˆç‚¹  (%1, %2)")
                      .arg(g.geom.contourAt(0)->ptBack().x, 0, 'f', 2)
                      .arg(g.geom.contourAt(0)->ptBack().y, 0, 'f', 2);
         }
@@ -1946,7 +1946,7 @@ void MainWindow::showRoiGeom(const HsCommData::Graphic& g)
     }
     case HsCommData::ObjRegion: {
         const HsCommData::IRect b = g.geom.regionAt(0)->bounds;
-        t = u8("°üÎ§ºĞ  (%1, %2) - (%3, %4)\n¿í¸ß    %5 ¡Á %6\nÃæ»ı    %7\nÏÒÊı    %8")
+        t = u8("åŒ…å›´ç›’  (%1, %2) - (%3, %4)\nå®½é«˜    %5 Ã— %6\né¢ç§¯    %7\nå¼¦æ•°    %8")
                 .arg(HsCommData::left(b))
                 .arg(HsCommData::top(b))
                 .arg(HsCommData::right(b))
@@ -1967,13 +1967,13 @@ void MainWindow::showRoiGeom(const HsCommData::Graphic& g)
             break;
         }
         if (g.cross[0].size < 0.0) {
-            t = u8("ÖĞĞÄ  (%1, %2)\n³ß´ç  ´©´°\nphi   %3 %4")
+            t = u8("ä¸­å¿ƒ  (%1, %2)\nå°ºå¯¸  ç©¿çª—\nphi   %3 %4")
                     .arg(g.cross[0].center.x, 0, 'f', 2)
                     .arg(g.cross[0].center.y, 0, 'f', 2)
                     .arg(g.cross[0].ang(), 0, 'f', 4)
                                         .arg(unit);
         } else {
-            t = u8("ÖĞĞÄ  (%1, %2)\n°ë¿í  %3\nphi   %4 %5")
+            t = u8("ä¸­å¿ƒ  (%1, %2)\nåŠå®½  %3\nphi   %4 %5")
                     .arg(g.cross[0].center.x, 0, 'f', 2)
                     .arg(g.cross[0].center.y, 0, 'f', 2)
                     .arg(g.cross[0].size, 0, 'f', 2)
@@ -1985,7 +1985,7 @@ void MainWindow::showRoiGeom(const HsCommData::Graphic& g)
         if (g.arrow.empty()) {
             break;
         }
-        t = u8("¼ıÎ²  (%1, %2)\n¼ıÍ·  (%3, %4)\n³¤¶È  %5")
+        t = u8("ç®­å°¾  (%1, %2)\nç®­å¤´  (%3, %4)\né•¿åº¦  %5")
                 .arg(g.arrow[0].tail.x, 0, 'f', 2)
                 .arg(g.arrow[0].tail.y, 0, 'f', 2)
                 .arg(g.arrow[0].head.x, 0, 'f', 2)
@@ -1997,8 +1997,8 @@ void MainWindow::showRoiGeom(const HsCommData::Graphic& g)
         if (g.text.empty()) {
             break;
         }
-        t = u8("ÎÄ×Ö  %1\nÎ»ÖÃ  (%2, %3)\n×ÖºÅ  %4 px")
-                .arg(QString::fromLocal8Bit(g.text[0].content.data(), static_cast<int>(g.text[0].content.size())))
+        t = u8("æ–‡å­—  %1\nä½ç½®  (%2, %3)\nå­—å·  %4 px")
+                .arg(QString::fromUtf8(g.text[0].content.data(), static_cast<int>(g.text[0].content.size())))
                 .arg(g.text[0].anchor.x, 0, 'f', 2)
                 .arg(g.text[0].anchor.y, 0, 'f', 2)
                 .arg(qRound(g.text[0].fontPx));
@@ -2011,7 +2011,7 @@ void MainWindow::showRoiGeom(const HsCommData::Graphic& g)
     m_roiGeom->setPlainText(t);
 }
 
-// Ñ¡ÖĞÎÄ±¾ ROI Ê±»ØÌîÎÄ×ÖÃæ°å
+// é€‰ä¸­æ–‡æœ¬ ROI æ—¶å›å¡«æ–‡å­—é¢æ¿
 void MainWindow::fillTextUi(const HsCommData::Graphic& g)
 {
     if (m_textUiBusy || !m_textEdit) {
@@ -2021,7 +2021,7 @@ void MainWindow::fillTextUi(const HsCommData::Graphic& g)
         return;
     }
     m_textUiBusy = true;
-    m_textEdit->setText(QString::fromLocal8Bit(g.text[0].content.data(), static_cast<int>(g.text[0].content.size())));
+    m_textEdit->setText(QString::fromUtf8(g.text[0].content.data(), static_cast<int>(g.text[0].content.size())));
     m_textXSpin->setValue(g.text[0].anchor.x);
     m_textYSpin->setValue(g.text[0].anchor.y);
     const int px = qRound(g.text[0].fontPx);
@@ -2033,7 +2033,7 @@ void MainWindow::fillTextUi(const HsCommData::Graphic& g)
     syncTextToolToView();
 }
 
-// °ÑÎÄ±¾Ãæ°åÍ¬²½µ½´°¿Ú¹¤¾ß×´Ì¬
+// æŠŠæ–‡æœ¬é¢æ¿åŒæ­¥åˆ°çª—å£å·¥å…·çŠ¶æ€
 void MainWindow::syncTextToolToView()
 {
     if (m_textUiBusy || !m_view || !m_textEdit) {
@@ -2044,7 +2044,7 @@ void MainWindow::syncTextToolToView()
     m_view->setTextToolSpace(m_textWindowRadio->isChecked() ? DrawInfoWindow : DrawInfoImage);
 }
 
-// ÎÄ±¾¹¤¾ßµãÏÂ£¬»ØÌî×ø±ê
+// æ–‡æœ¬å·¥å…·ç‚¹ä¸‹ï¼Œå›å¡«åæ ‡
 void MainWindow::onTextAnchorPicked(const QPointF& imagePt, const QPointF& widgetPt)
 {
     if (!m_textXSpin) {
@@ -2061,7 +2061,7 @@ void MainWindow::onTextAnchorPicked(const QPointF& imagePt, const QPointF& widge
     m_textUiBusy = false;
 }
 
-// °ÑÓÒ²àÎÄ±¾×ø±ê·Åµ½´°¿Ú
+// æŠŠå³ä¾§æ–‡æœ¬åæ ‡æ”¾åˆ°çª—å£
 void MainWindow::onPlaceText()
 {
     if (!m_view || !m_textEdit) {
@@ -2105,14 +2105,14 @@ void MainWindow::onPlaceText()
     m_view->setDrawing(t);
 }
 
-// ROI ËÉÊÖÌá½»
+// ROI æ¾æ‰‹æäº¤
 void MainWindow::onRoiCommitted(const HsCommData::Graphic& g)
 {
     onRoiSelected(g);
     refreshMeasureLog();
 }
 
-// È·ÈÏµ±Ç°Ñ¡ÖĞ ROI£¨Õ¼Î»£©
+// ç¡®è®¤å½“å‰é€‰ä¸­ ROIï¼ˆå ä½ï¼‰
 void MainWindow::onConfirm()
 {
     const HsCommData::Graphic g = m_view->selectedDrawing();
@@ -2121,11 +2121,11 @@ void MainWindow::onConfirm()
     }
 }
 
-// °ó¶¨Ëã·¨ÊäÈëÍ¼
+// ç»‘å®šç®—æ³•è¾“å…¥å›¾
 bool MainWindow::bindAlgoImage(const QImage& img, bool showInView)
 {
     if (img.isNull()) {
-        m_algoStats->setText(u8("Í¼ÏñÎª¿Õ"));
+        m_algoStats->setText(u8("å›¾åƒä¸ºç©º"));
         return false;
     }
     if (showInView) {
@@ -2139,25 +2139,25 @@ bool MainWindow::bindAlgoImage(const QImage& img, bool showInView)
         m_algoStats->setText(err);
         return false;
     }
-    m_algoStats->setText(u8("ÒıÇæ: ") + halconEngineName()
-                         + u8("\nÒÑ°ó¶¨ ") + QString::number(src.width())
+    m_algoStats->setText(u8("å¼•æ“: ") + halconEngineName()
+                         + u8("\nå·²ç»‘å®š ") + QString::number(src.width())
                          + QLatin1Char('x') + QString::number(src.height())
-                         + u8("£¬ÍÏ¶¯ãĞÖµ»¬¸ËÌáÈ¡ÇøÓò¡£"));
+                         + u8("ï¼Œæ‹–åŠ¨é˜ˆå€¼æ»‘æ†æå–åŒºåŸŸã€‚"));
     return true;
 }
 
-// ÎªËã·¨²âÊÔ¼ÓÔØÍ¼Ïñ
+// ä¸ºç®—æ³•æµ‹è¯•åŠ è½½å›¾åƒ
 void MainWindow::loadAlgoImage()
 {
     const QString path = QFileDialog::getOpenFileName(
-        this, u8("¼ÓÔØ²âÊÔÍ¼Ïñ"), QString(),
+        this, u8("åŠ è½½æµ‹è¯•å›¾åƒ"), QString(),
         QStringLiteral("Images (*.png *.jpg *.jpeg *.bmp *.tif *.tiff)"));
     if (path.isEmpty()) {
         return;
     }
     QImage img;
     if (!img.load(path)) {
-        m_algoStats->setText(u8("Í¼Ïñ¼ÓÔØÊ§°Ü"));
+        m_algoStats->setText(u8("å›¾åƒåŠ è½½å¤±è´¥"));
         return;
     }
     if (!bindAlgoImage(img, true)) {
@@ -2168,11 +2168,11 @@ void MainWindow::loadAlgoImage()
     }
 }
 
-// ÓÃµ±Ç°µ×Í¼×öËã·¨ÊäÈë
+// ç”¨å½“å‰åº•å›¾åšç®—æ³•è¾“å…¥
 void MainWindow::useCurrentImage()
 {
     if (m_sourceImage.isNull()) {
-        m_algoStats->setText(u8("µ±Ç°Ã»ÓĞÍ¼Ïñ"));
+        m_algoStats->setText(u8("å½“å‰æ²¡æœ‰å›¾åƒ"));
         return;
     }
     if (!bindAlgoImage(m_sourceImage, false)) {
@@ -2183,7 +2183,7 @@ void MainWindow::useCurrentImage()
     }
 }
 
-// ãĞÖµ»¬Ìõ±ä»¯£¬Ë¢ĞÂ Overlay
+// é˜ˆå€¼æ»‘æ¡å˜åŒ–ï¼Œåˆ·æ–° Overlay
 void MainWindow::onThresholdChanged(int v)
 {
     if (m_thSlider->value() != v) {
@@ -2201,7 +2201,7 @@ void MainWindow::onThresholdChanged(int v)
     }
 }
 
-// Ñ¹Á¦²âÊÔ£º¶¨Ê±·´¸´Ë¢ãĞÖµ
+// å‹åŠ›æµ‹è¯•ï¼šå®šæ—¶åå¤åˆ·é˜ˆå€¼
 void MainWindow::onAlgoStress(bool on)
 {
     if (on) {
@@ -2214,7 +2214,7 @@ void MainWindow::onAlgoStress(bool on)
     }
 }
 
-// ÅÜÒ»´ÎãĞÖµ²¢ setOverlay
+// è·‘ä¸€æ¬¡é˜ˆå€¼å¹¶ setOverlay
 void MainWindow::runAlgoRefresh()
 {
     if (m_algoBusy) {
@@ -2229,7 +2229,7 @@ void MainWindow::runAlgoRefresh()
 
     const int t = m_thSpin->value();
     ThresholdRst r = runGrayThreshold(t, 255);
-    if (!r.ok && r.error.contains(QString::fromLocal8Bit("ÉĞÎ´"))) {
+    if (!r.ok && r.error.contains(QString::fromUtf8("å°šæœª"))) {
         bindAlgoImage(m_sourceImage, false);
         r = runGrayThreshold(t, 255);
     }
@@ -2283,25 +2283,25 @@ void MainWindow::runAlgoRefresh()
             text = r.error;
         } else {
             const double instHz = (totalUs > 0) ? (1000000.0 / static_cast<double>(totalUs)) : 0.0;
-            text = u8("ÒıÇæ: ") + (r.usedHalcon ? halconEngineName() : u8("±¾µØÉ¨Ãè"))
-                 + u8("\nãĞÖµ ") + QString::number(t)
-                 + u8("    Ãæ»ı ") + QString::number(r.rle.area())
-                 + u8("    ÏÒ ") + QString::number(r.rle.runCount())
-                 + u8("\nãĞÖµ ") + QString::number(r.thresholdUs / 1000.0, 'f', 2) + u8(" ms")
-                 + u8("  ×ª»» ") + QString::number(r.convertUs / 1000.0, 'f', 2) + u8(" ms")
-                 + u8("  ¹¹Í¼ ") + QString::number(pathUs / 1000.0, 'f', 2) + u8(" ms")
-                 + u8("\nË¢ĞÂ ") + QString::number(refreshUs / 1000.0, 'f', 2) + u8(" ms")
-                 + u8("  ºÏ¼Æ ") + QString::number(totalUs / 1000.0, 'f', 2) + u8(" ms")
-                 + u8("\n±¾´Î ") + QString::number(instHz, 'f', 1) + u8(" Hz")
-                 + u8("    Á¬Ë¢ ") + QString::number(m_algoPushHz, 'f', 1) + u8(" Hz")
-                 + u8("    ¿Ø¼ş ") + QString::number(m_view->fps(), 'f', 1) + u8(" FPS");
+            text = u8("å¼•æ“: ") + (r.usedHalcon ? halconEngineName() : u8("æœ¬åœ°æ‰«æ"))
+                 + u8("\né˜ˆå€¼ ") + QString::number(t)
+                 + u8("    é¢ç§¯ ") + QString::number(r.rle.area())
+                 + u8("    å¼¦ ") + QString::number(r.rle.runCount())
+                 + u8("\né˜ˆå€¼ ") + QString::number(r.thresholdUs / 1000.0, 'f', 2) + u8(" ms")
+                 + u8("  è½¬æ¢ ") + QString::number(r.convertUs / 1000.0, 'f', 2) + u8(" ms")
+                 + u8("  æ„å›¾ ") + QString::number(pathUs / 1000.0, 'f', 2) + u8(" ms")
+                 + u8("\nåˆ·æ–° ") + QString::number(refreshUs / 1000.0, 'f', 2) + u8(" ms")
+                 + u8("  åˆè®¡ ") + QString::number(totalUs / 1000.0, 'f', 2) + u8(" ms")
+                 + u8("\næœ¬æ¬¡ ") + QString::number(instHz, 'f', 1) + u8(" Hz")
+                 + u8("    è¿åˆ· ") + QString::number(m_algoPushHz, 'f', 1) + u8(" Hz")
+                 + u8("    æ§ä»¶ ") + QString::number(m_view->fps(), 'f', 1) + u8(" FPS");
         }
         m_algoStats->setText(text);
     }
     m_algoBusy = false;
 }
 
-// Ëã·¨ÑÕÉ«°´Å¥Íâ¹Û
+// ç®—æ³•é¢œè‰²æŒ‰é’®å¤–è§‚
 void MainWindow::styleAlgoColorButton(QToolButton* btn, const QColor& c, bool checkedBorder)
 {
     if (!btn) {
@@ -2315,7 +2315,7 @@ void MainWindow::styleAlgoColorButton(QToolButton* btn, const QColor& c, bool ch
     btn->setStyleSheet(css);
 }
 
-// µ±Ç°Ëã·¨Ìî³äÉ«£¨º¬Í¸Ã÷¶È»¬Ìõ£©
+// å½“å‰ç®—æ³•å¡«å……è‰²ï¼ˆå«é€æ˜åº¦æ»‘æ¡ï¼‰
 QColor MainWindow::algoFillColor() const
 {
     const int pct = m_algoOpacitySpin ? m_algoOpacitySpin->value() : 35;
@@ -2324,7 +2324,7 @@ QColor MainWindow::algoFillColor() const
     return c;
 }
 
-// µş¼ÓÉ«Ô¤Éè
+// å åŠ è‰²é¢„è®¾
 void MainWindow::onAlgoColorId(int id)
 {
     const QColor presets[4] = {
@@ -2339,10 +2339,10 @@ void MainWindow::onAlgoColorId(int id)
     }
 }
 
-// µş¼ÓÉ«×Ô¶¨Òå
+// å åŠ è‰²è‡ªå®šä¹‰
 void MainWindow::onAlgoPickColor()
 {
-    const QColor c = QColorDialog::getColor(m_algoColor, this, u8("ãĞÖµÏÔÊ¾ÑÕÉ«"));
+    const QColor c = QColorDialog::getColor(m_algoColor, this, u8("é˜ˆå€¼æ˜¾ç¤ºé¢œè‰²"));
     if (!c.isValid()) {
         return;
     }
@@ -2357,7 +2357,7 @@ void MainWindow::onAlgoPickColor()
     runAlgoRefresh();
 }
 
-// Ëã·¨Ìî³ä²»Í¸Ã÷¶È
+// ç®—æ³•å¡«å……ä¸é€æ˜åº¦
 void MainWindow::onAlgoOpacityChanged(int pct)
 {
     pct = qBound(0, pct, 100);

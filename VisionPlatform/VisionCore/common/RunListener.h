@@ -1,6 +1,6 @@
 /**
  * @file RunListener.h
- * @brief RunListenerÍ·ÎÄ¼ş
+ * @brief RunListenerå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -16,46 +16,46 @@
 namespace Vision {
 
 /**
- * @brief ÔËĞĞÈÕÖ¾¼¶±ğ£¨Óë UI ×ÅÉ« / ÂäÅÌ¹ıÂË¹²ÓÃ£©
+ * @brief è¿è¡Œæ—¥å¿—çº§åˆ«ï¼ˆä¸ UI ç€è‰² / è½ç›˜è¿‡æ»¤å…±ç”¨ï¼‰
  */
 enum RunLogLevel {
-    RunLogDebug = 0, ///< Ï¸½Ú£¨Ìõ¼ş·ÖÖ§µÈ£©
-    RunLogInfo,      ///< Õı³£½ø¶È£¨¹¤¾ß OK¡¢¹¤Õ¾½áÊø£©
-    RunLogWarn,      ///< ¿É»Ö¸´Òì³££¨¹¤¾ß NG£©
-    RunLogError      ///< ÑÏÖØÊ§°Ü£¨ÎŞÅäÖÃ¡¢ÖĞÖ¹£©
+    RunLogDebug = 0, ///< ç»†èŠ‚ï¼ˆæ¡ä»¶åˆ†æ”¯ç­‰ï¼‰
+    RunLogInfo,      ///< æ­£å¸¸è¿›åº¦ï¼ˆå·¥å…· OKã€å·¥ç«™ç»“æŸï¼‰
+    RunLogWarn,      ///< å¯æ¢å¤å¼‚å¸¸ï¼ˆå·¥å…· NGï¼‰
+    RunLogError      ///< ä¸¥é‡å¤±è´¥ï¼ˆæ— é…ç½®ã€ä¸­æ­¢ï¼‰
 };
 
 /**
  * @class RunLogEvent
- * @brief Ò»Ìõ½á¹¹»¯ÔËĞĞÈÕÖ¾£¨·Ç´¿×Ö·û´®£©
+ * @brief ä¸€æ¡ç»“æ„åŒ–è¿è¡Œæ—¥å¿—ï¼ˆéçº¯å­—ç¬¦ä¸²ï¼‰
  */
 struct VISIONCORE_API RunLogEvent {
-    RunLogLevel level;   ///< ¼¶±ğ
-    ObjectId stationId;  ///< ¹¤Õ¾ÅäÖÃ id£¨¿É¿Õ£©
-    ObjectId jobId;      ///< Á÷³ÌÅäÖÃ id£¨¿É¿Õ£©
-    ObjectId toolId;     ///< ¹¤¾ßÅäÖÃ id£¨¿É¿Õ£©
-    std::string message; ///< ÕıÎÄ
-    int elapsedMs;       ///< ºÄÊ±£»Î´ÖªÎª -1
+    RunLogLevel level;   ///< çº§åˆ«
+    ObjectId stationId;  ///< å·¥ç«™é…ç½® idï¼ˆå¯ç©ºï¼‰
+    ObjectId jobId;      ///< æµç¨‹é…ç½® idï¼ˆå¯ç©ºï¼‰
+    ObjectId toolId;     ///< å·¥å…·é…ç½® idï¼ˆå¯ç©ºï¼‰
+    std::string message; ///< æ­£æ–‡
+    int elapsedMs;       ///< è€—æ—¶ï¼›æœªçŸ¥ä¸º -1
     RunLogEvent()
         : level(RunLogInfo)
         , elapsedMs(-1)
     {}
-    /** @brief ¼¶±ğ¶Ì±êÇ© */
+    /** @brief çº§åˆ«çŸ­æ ‡ç­¾ */
     static const char* levelTag(RunLogLevel level);
-    /** @brief Æ´¸øÈË¿´µÄÕıÎÄ */
+    /** @brief æ‹¼ç»™äººçœ‹çš„æ­£æ–‡ */
     std::string formatMessage() const;
-    /** @brief Æ´ÍêÕûÕï¶ÏĞĞ */
+    /** @brief æ‹¼å®Œæ•´è¯Šæ–­è¡Œ */
     std::string formatLine() const;
 };
 
 /**
  * @class IRunListener
- * @brief ÔËĞĞÈÕÖ¾ sink¡£HMI / ÂäÅÌÊµÏÖ£»½ûÖ¹ Qt¡£Í¬²½ÉÈ³ö£¬UI sink Ğë×ÔĞĞÇĞµ½ UI Ïß³Ì
+ * @brief è¿è¡Œæ—¥å¿— sinkã€‚HMI / è½ç›˜å®ç°ï¼›ç¦æ­¢ Qtã€‚åŒæ­¥æ‰‡å‡ºï¼ŒUI sink é¡»è‡ªè¡Œåˆ‡åˆ° UI çº¿ç¨‹
  */
 class VISIONCORE_API IRunListener {
 public:
-    virtual ~IRunListener() {} ///< ĞéÎö¹¹
-    /** @brief ½ÓÊÕÒ»Ìõ½á¹¹»¯ÔËĞĞÈÕÖ¾ */
+    virtual ~IRunListener() {} ///< è™šææ„
+    /** @brief æ¥æ”¶ä¸€æ¡ç»“æ„åŒ–è¿è¡Œæ—¥å¿— */
     virtual void onRunLog(const RunLogEvent& ev) = 0;
 };
 

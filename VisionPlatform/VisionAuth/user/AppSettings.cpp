@@ -1,6 +1,6 @@
 /**
  * @file AppSettings.cpp
- * @brief AppSettingsÊµÏÖ
+ * @brief AppSettingså®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -11,7 +11,7 @@
 
 namespace Vision {
 
-// ¸Ã½ÇÉ«¿ÉÅäÖÃÑÚÂëÔÙ²¢ÉÏËø¶¨È¨ÏŞ
+// è¯¥è§’è‰²å¯é…ç½®æ©ç å†å¹¶ä¸Šé”å®šæƒé™
 uint32_t AppSettings::permMask(UserRole role) const
 {
     switch (role) {
@@ -24,7 +24,7 @@ uint32_t AppSettings::permMask(UserRole role) const
     }
 }
 
-// Ğ´ÈëÑÚÂëÊ±Ç¿ÖÆ±£ÁôËø¶¨È¨ÏŞ
+// å†™å…¥æ©ç æ—¶å¼ºåˆ¶ä¿ç•™é”å®šæƒé™
 void AppSettings::setPermMask(UserRole role, uint32_t mask)
 {
     mask |= lockedPerms(role);
@@ -41,7 +41,7 @@ void AppSettings::setPermMask(UserRole role, uint32_t mask)
     }
 }
 
-// Èı½ÇÉ«È¨ÏŞ»Ö¸´³ö³§Ä¬ÈÏ
+// ä¸‰è§’è‰²æƒé™æ¢å¤å‡ºå‚é»˜è®¤
 void AppSettings::resetPermsToDefault()
 {
     permOperator = defaultPerms(RoleOperator);
@@ -49,7 +49,7 @@ void AppSettings::resetPermsToDefault()
     permAdmin = defaultPerms(RoleAdmin);
 }
 
-// Á÷³ÌÊÔÅÜ½á¹ûÊÇ·ñµ¯´°
+// æµç¨‹è¯•è·‘ç»“æœæ˜¯å¦å¼¹çª—
 bool AppSettings::shouldPopupJobResult(bool ok, bool isException) const
 {
     if (isException) {
@@ -61,31 +61,31 @@ bool AppSettings::shouldPopupJobResult(bool ok, bool isException) const
     return popupJobNg;
 }
 
-// Æô¶¯Ä£Ê½ÏÔÊ¾Ãû
+// å¯åŠ¨æ¨¡å¼æ˜¾ç¤ºå
 std::string startupAppModeTitle(StartupAppMode m)
 {
     switch (m) {
     case StartupModeRuntime:
-        return Translate::tr("ÔËĞĞ");
+        return Translate::tr("è¿è¡Œ");
     case StartupModeDesign:
     default:
-        return Translate::tr("Éè¼Æ");
+        return Translate::tr("è®¾è®¡");
     }
 }
 
-// ¹Ø±ÕĞĞÎªÏÔÊ¾Ãû
+// å…³é—­è¡Œä¸ºæ˜¾ç¤ºå
 std::string closeMainWindowActionTitle(CloseMainWindowAction a)
 {
     switch (a) {
     case CloseActionMinimizeTray:
-        return Translate::tr("×îĞ¡»¯µ½ÍĞÅÌ£¨ºóĞø°æ±¾£©");
+        return Translate::tr("æœ€å°åŒ–åˆ°æ‰˜ç›˜ï¼ˆåç»­ç‰ˆæœ¬ï¼‰");
     case CloseActionExit:
     default:
-        return Translate::tr("ÍË³ö³ÌĞò");
+        return Translate::tr("é€€å‡ºç¨‹åº");
     }
 }
 
-// ÕûÊı×ªÆô¶¯Ä£Ê½£¬Ô½½ç»ØÉè¼ÆÌ¬
+// æ•´æ•°è½¬å¯åŠ¨æ¨¡å¼ï¼Œè¶Šç•Œå›è®¾è®¡æ€
 StartupAppMode startupAppModeFromInt(int v)
 {
     if (v == StartupModeRuntime) {
@@ -94,7 +94,7 @@ StartupAppMode startupAppModeFromInt(int v)
     return StartupModeDesign;
 }
 
-// ÕûÊı×ª¹Ø±ÕĞĞÎª£¬Ô½½ç»ØÍË³ö
+// æ•´æ•°è½¬å…³é—­è¡Œä¸ºï¼Œè¶Šç•Œå›é€€å‡º
 CloseMainWindowAction closeMainWindowActionFromInt(int v)
 {
     if (v == CloseActionMinimizeTray) {

@@ -1,6 +1,6 @@
 /**
  * @file ToolParaBase.cpp
- * @brief ToolParaBaseÊµÏÖ
+ * @brief ToolParaBaseå®žçŽ°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.

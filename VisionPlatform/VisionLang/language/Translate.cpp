@@ -1,13 +1,12 @@
 /**
  * @file Translate.cpp
- * @brief TranslateÊµÏÖ
+ * @brief Translateå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
  */
 
 #include "Translate.h"
-#include "TextEncoding.h"
 #include <map>
 #include <mutex>
 #include <set>
@@ -19,23 +18,22 @@ namespace Vision {
 namespace {
 
 struct LangRow {
-    std::string key; ///< ´æÅÌ¼ü
-    std::string native; ///< ÓïÑÔ±¾Ãû
-    std::string file; ///< ´ÊÌõÎÄ¼şÃû£»Ã»ÓĞÔòÎª -
+    std::string key; ///< å­˜ç›˜é”®
+    std::string native; ///< è¯­è¨€æœ¬å
+    std::string file; ///< è¯æ¡æ–‡ä»¶åï¼›æ²¡æœ‰åˆ™ä¸º -
 };
 
 LangId g_lang = LangZhCN;
 std::string g_langKey = "zh-CN";
 std::vector<LangRow> g_langs;
 std::map<std::string, std::string> g_table;
-std::map<std::string, std::string> g_utf8Keys;
 bool g_listReady = false;
 std::set<std::string> g_missing;
 std::recursive_mutex g_mu;
 
 struct Entry {
-    const char* key; ///< Ô´ÓïÑÔ×ÖÃæÁ¿
-    const char* en; ///< Ó¢ÎÄÒëÎÄ
+    const char* key; ///< æºè¯­è¨€å­—é¢é‡
+    const char* en; ///< è‹±æ–‡è¯‘æ–‡
 };
 
 }
@@ -45,13 +43,13 @@ static const Entry kEn[] = {
     { 0, 0 }
 };
 
-// ÊÇ·ñ¼òÌåÖĞÎÄ¼ü
+// æ˜¯å¦ç®€ä½“ä¸­æ–‡é”®
 static bool isZhKey(const std::string& key)
 {
     return key.empty() || key == "zh" || key == "zh-CN";
 }
 
-// µ±Ç°Ä£¿éËùÔÚÄ¿Â¼
+// å½“å‰æ¨¡å—æ‰€åœ¨ç›®å½•
 static std::wstring exeDirW()
 {
     wchar_t buf[MAX_PATH];
@@ -67,7 +65,7 @@ static std::wstring exeDirW()
     return path.substr(0, slash);
 }
 
-// UTF-8 ×ª¿í×Ö·û£¬ÓÃÀ´Æ´´ÊÌõÂ·¾¶
+// UTF-8 è½¬å®½å­—ç¬¦ï¼Œç”¨æ¥æ‹¼è¯æ¡è·¯å¾„
 static std::wstring langUtf8ToWide(const std::string& text)
 {
     if (text.empty()) {
@@ -82,7 +80,7 @@ static std::wstring langUtf8ToWide(const std::string& text)
     return out;
 }
 
-// ¶ÁÕû¸ö´ÊÌõÎÄ¼ş£¬²¢È¥µô BOM
+// è¯»æ•´ä¸ªè¯æ¡æ–‡ä»¶ï¼Œå¹¶å»æ‰ BOM
 static bool readUtf8(const std::wstring& path, std::string* out)
 {
     if (!out) {
@@ -117,7 +115,7 @@ static bool readUtf8(const std::wstring& path, std::string* out)
     return true;
 }
 
-// °Ñ×ªÒåµÄ»»ĞĞ¡¢ÖÆ±íºÍ·´Ğ±¸Ü»¹Ô­³É×Ö·û
+// æŠŠè½¬ä¹‰çš„æ¢è¡Œã€åˆ¶è¡¨å’Œåæ–œæ è¿˜åŸæˆå­—ç¬¦
 static std::string unescapeField(const std::string& text)
 {
     std::string out;
@@ -151,7 +149,7 @@ static std::string unescapeField(const std::string& text)
     return out;
 }
 
-// °´ĞĞÇĞ¿ª£¬È¥µôĞĞÎ²»Ø³µ
+// æŒ‰è¡Œåˆ‡å¼€ï¼Œå»æ‰è¡Œå°¾å›è½¦
 static void splitLines(const std::string& text, std::vector<std::string>* lines)
 {
     std::string cur;
@@ -174,7 +172,7 @@ static void splitLines(const std::string& text, std::vector<std::string>* lines)
     }
 }
 
-// Æ´ exe ÏÂ lang Ä¿Â¼ÖĞµÄ´ÊÌõÂ·¾¶
+// æ‹¼ exe ä¸‹ lang ç›®å½•ä¸­çš„è¯æ¡è·¯å¾„
 static std::wstring langFilePath(const std::string& name)
 {
     const std::wstring dir = exeDirW();
@@ -184,7 +182,7 @@ static std::wstring langFilePath(const std::string& name)
     return dir + L"\\lang\\" + langUtf8ToWide(name);
 }
 
-// ¶ÁÓïÑÔÁĞ±í£»È±ÎÄ¼şÊ±Ö»±£ÁôÖĞÓ¢
+// è¯»è¯­è¨€åˆ—è¡¨ï¼›ç¼ºæ–‡ä»¶æ—¶åªä¿ç•™ä¸­è‹±
 static void loadLanguageList()
 {
     if (g_listReady) {
@@ -221,7 +219,7 @@ static void loadLanguageList()
     if (g_langs.empty()) {
         LangRow zh;
         zh.key = "zh-CN";
-        zh.native = "¼òÌåÖĞÎÄ";
+        zh.native = "ç®€ä½“ä¸­æ–‡";
         zh.file = "-";
         LangRow en;
         en.key = "en-US";
@@ -232,7 +230,7 @@ static void loadLanguageList()
     }
 }
 
-// °´´æÅÌ¼üÕÒÓïÑÔĞĞ
+// æŒ‰å­˜ç›˜é”®æ‰¾è¯­è¨€è¡Œ
 static const LangRow* findLang(const std::string& key)
 {
     for (size_t i = 0; i < g_langs.size(); ++i) {
@@ -243,7 +241,7 @@ static const LangRow* findLang(const std::string& key)
     return 0;
 }
 
-// ÓÃ´ÊÌõÎÄ¼ş¸²¸ÇÄÚÖÃÒëÎÄ
+// ç”¨è¯æ¡æ–‡ä»¶è¦†ç›–å†…ç½®è¯‘æ–‡
 static void overlayFile(const std::string& fileName)
 {
     std::string text;
@@ -270,7 +268,7 @@ static void overlayFile(const std::string& fileName)
     }
 }
 
-// °´µ±Ç°ÓïÑÔÖØ½¨²éÕÒ±í
+// æŒ‰å½“å‰è¯­è¨€é‡å»ºæŸ¥æ‰¾è¡¨
 static void rebuildTable()
 {
     g_table.clear();
@@ -295,7 +293,7 @@ static void rebuildTable()
     overlayFile(fileName);
 }
 
-// °Ñ»¨À¨ºÅÕ¼Î»»»³É¶ÔÓ¦²ÎÊı
+// æŠŠèŠ±æ‹¬å·å ä½æ¢æˆå¯¹åº”å‚æ•°
 static std::string applyArgs(const std::string& text, const std::vector<std::string>& args)
 {
     std::string out;
@@ -327,7 +325,7 @@ static std::string applyArgs(const std::string& text, const std::vector<std::str
 }
 
 #ifdef _DEBUG
-// °ÑÈ±´ÊÌõ¼Çµ½ lang Ä¿Â¼µÄ missing.txt
+// æŠŠç¼ºè¯æ¡è®°åˆ° lang ç›®å½•çš„ missing.txt
 static void noteMissing(const std::string& key)
 {
     if (key.empty() || g_missing.find(key) != g_missing.end()) {
@@ -358,28 +356,12 @@ static void noteMissing(const std::string& key)
 }
 #endif
 
-// °ÑÔ´ÎÄ¼ş×ÖÃæÁ¿´ÓGBK×ª³ÉUTF-8²¢»º´æ
 static const char* sourceAsUtf8(const char* key)
 {
-    bool high = false;
-    for (const unsigned char* p = reinterpret_cast<const unsigned char*>(key); *p; ++p) {
-        if (*p >= 0x80) {
-            high = true;
-            break;
-        }
-    }
-    if (!high) {
-        return key;
-    }
-    const std::string raw(key);
-    std::map<std::string, std::string>::iterator it = g_utf8Keys.find(raw);
-    if (it == g_utf8Keys.end()) {
-        it = g_utf8Keys.insert(std::make_pair(raw, Vision::acpToUtf8(raw))).first;
-    }
-    return it->second.c_str();
+    return key ? key : "";
 }
 
-// °´µ±Ç°ÓïÑÔÈ¡ÒëÎÄ¸±±¾¡£Ô´ÓïÑÔ·µ»Ø¼üµÄ UTF-8£¬ÆäËüÓïÖÖ²é´ÊÌõ±í
+// æŒ‰å½“å‰è¯­è¨€å–è¯‘æ–‡å‰¯æœ¬ã€‚æºè¯­è¨€è¿”å›é”®çš„ UTF-8ï¼Œå…¶å®ƒè¯­ç§æŸ¥è¯æ¡è¡¨
 static std::string lookup(const char* key)
 {
     std::lock_guard<std::recursive_mutex> lock(g_mu);
@@ -405,13 +387,13 @@ static std::string lookup(const char* key)
     return it->second;
 }
 
-// ÇĞµ½ÖĞÎÄ»òÓ¢ÎÄ²¢ÖØ½¨´ÊÌõ±í
+// åˆ‡åˆ°ä¸­æ–‡æˆ–è‹±æ–‡å¹¶é‡å»ºè¯æ¡è¡¨
 void Translate::setLanguage(LangId lang)
 {
     setLanguageKey(lang == LangEnUS ? "en-US" : "zh-CN");
 }
 
-// °´´æÅÌ¼üÇĞ»»£»²»ÈÏÊ¶Ôò»Øµ½ÖĞÎÄ
+// æŒ‰å­˜ç›˜é”®åˆ‡æ¢ï¼›ä¸è®¤è¯†åˆ™å›åˆ°ä¸­æ–‡
 bool Translate::setLanguageKey(const std::string& key)
 {
     std::lock_guard<std::recursive_mutex> lock(g_mu);
@@ -434,7 +416,7 @@ bool Translate::setLanguageKey(const std::string& key)
     return known;
 }
 
-// µ±Ç°ÓïÑÔÃ¶¾Ù
+// å½“å‰è¯­è¨€æšä¸¾
 LangId Translate::language()
 {
     std::lock_guard<std::recursive_mutex> lock(g_mu);
@@ -442,7 +424,7 @@ LangId Translate::language()
     return g_lang;
 }
 
-// µ±Ç°´æÅÌ¼ü
+// å½“å‰å­˜ç›˜é”®
 std::string Translate::languageKey()
 {
     std::lock_guard<std::recursive_mutex> lock(g_mu);
@@ -450,7 +432,7 @@ std::string Translate::languageKey()
     return g_langKey.c_str();
 }
 
-// ÓïÑÔÖÖÊı
+// è¯­è¨€ç§æ•°
 int Translate::languageCount()
 {
     std::lock_guard<std::recursive_mutex> lock(g_mu);
@@ -458,7 +440,7 @@ int Translate::languageCount()
     return static_cast<int>(g_langs.size());
 }
 
-// °´ÏÂ±êÈ¡ÓïÑÔ£»Ô½½ç»ò·ÇÓ¢ÎÄ»ØÖĞÎÄ
+// æŒ‰ä¸‹æ ‡å–è¯­è¨€ï¼›è¶Šç•Œæˆ–éè‹±æ–‡å›ä¸­æ–‡
 LangId Translate::languageAt(int i)
 {
     std::lock_guard<std::recursive_mutex> lock(g_mu);
@@ -469,7 +451,7 @@ LangId Translate::languageAt(int i)
     return LangZhCN;
 }
 
-// °´ÏÂ±êÈ¡´æÅÌ¼ü£»Ô½½ç¿Õ´®
+// æŒ‰ä¸‹æ ‡å–å­˜ç›˜é”®ï¼›è¶Šç•Œç©ºä¸²
 std::string Translate::languageKeyAt(int i)
 {
     std::lock_guard<std::recursive_mutex> lock(g_mu);
@@ -480,13 +462,13 @@ std::string Translate::languageKeyAt(int i)
     return g_langs[static_cast<size_t>(i)].key.c_str();
 }
 
-// Ã¶¾Ù¶ÔÓ¦µÄ´æÅÌ¼ü
+// æšä¸¾å¯¹åº”çš„å­˜ç›˜é”®
 std::string Translate::languageKeyOf(LangId lang)
 {
     return (lang == LangEnUS) ? "en-US" : "zh-CN";
 }
 
-// ÓïÑÔ±¾Ãû£¬²»Ëæ½çÃæÓïÑÔ±ä
+// è¯­è¨€æœ¬åï¼Œä¸éšç•Œé¢è¯­è¨€å˜
 std::string Translate::languageNativeName(LangId lang)
 {
     std::lock_guard<std::recursive_mutex> lock(g_mu);
@@ -497,10 +479,10 @@ std::string Translate::languageNativeName(LangId lang)
             return g_langs[i].native.c_str();
         }
     }
-    return (lang == LangEnUS) ? "English" : "¼òÌåÖĞÎÄ";
+    return (lang == LangEnUS) ? "English" : "ç®€ä½“ä¸­æ–‡";
 }
 
-// °´ÏÂ±êÈ¡ÓïÑÔ±¾Ãû£»Ô½½ç¿Õ´®
+// æŒ‰ä¸‹æ ‡å–è¯­è¨€æœ¬åï¼›è¶Šç•Œç©ºä¸²
 std::string Translate::languageNativeNameAt(int i)
 {
     std::lock_guard<std::recursive_mutex> lock(g_mu);
@@ -511,19 +493,19 @@ std::string Translate::languageNativeNameAt(int i)
     return g_langs[static_cast<size_t>(i)].native.c_str();
 }
 
-// È¡µ±Ç°ÓïÑÔÎÄ±¾
+// å–å½“å‰è¯­è¨€æ–‡æœ¬
 std::string Translate::tr(const char* key)
 {
     return lookup(key);
 }
 
-// È¡ÒëÎÄ²¢Ìæ»»È«²¿Õ¼Î»
+// å–è¯‘æ–‡å¹¶æ›¿æ¢å…¨éƒ¨å ä½
 std::string Translate::format(const char* key, const std::vector<std::string>& args)
 {
     return applyArgs(lookup(key), args);
 }
 
-// ÓÃÒ»¸ö²ÎÊıÌæ»»Õ¼Î»
+// ç”¨ä¸€ä¸ªå‚æ•°æ›¿æ¢å ä½
 std::string Translate::format(const char* key, const std::string& a0)
 {
     std::vector<std::string> args;
@@ -531,7 +513,7 @@ std::string Translate::format(const char* key, const std::string& a0)
     return format(key, args);
 }
 
-// ÓÃÁ½¸ö²ÎÊıÌæ»»Õ¼Î»
+// ç”¨ä¸¤ä¸ªå‚æ•°æ›¿æ¢å ä½
 std::string Translate::format(const char* key, const std::string& a0, const std::string& a1)
 {
     std::vector<std::string> args;
@@ -540,7 +522,7 @@ std::string Translate::format(const char* key, const std::string& a0, const std:
     return format(key, args);
 }
 
-// ÓÃÈı¸ö²ÎÊıÌæ»»Õ¼Î»
+// ç”¨ä¸‰ä¸ªå‚æ•°æ›¿æ¢å ä½
 std::string Translate::format(const char* key, const std::string& a0, const std::string& a1, const std::string& a2)
 {
     std::vector<std::string> args;

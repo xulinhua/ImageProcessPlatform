@@ -1,6 +1,6 @@
 /**
  * @file MeasureLayer.cpp
- * @brief MeasureLayerÊµÏÖ
+ * @brief MeasureLayerå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -95,25 +95,25 @@ QString MeasureLayer::labelText(DrawTool tool, bool preview, const HsCommData::G
     return measureLabel(tool, preview, g, cal);
 }
 
-// Í¼²ã½Úµã
+// å›¾å±‚èŠ‚ç‚¹
 LayerItem* MeasureLayer::node() const
 {
     return m_node;
 }
 
-// Í¼Ôª±í
+// å›¾å…ƒè¡¨
 QHash<QString, GraphicItem*>& MeasureLayer::items()
 {
     return m_items;
 }
 
-// Í¼Ôª±í£¨Ö»¶Á£©
+// å›¾å…ƒè¡¨ï¼ˆåªè¯»ï¼‰
 const QHash<QString, GraphicItem*>& MeasureLayer::items() const
 {
     return m_items;
 }
 
-// ÊÇ·ñº¬¸Ã id
+// æ˜¯å¦å«è¯¥ id
 bool MeasureLayer::contains(const QString& id) const
 {
     return m_items.contains(id);

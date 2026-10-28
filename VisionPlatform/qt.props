@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  Qt 安装前缀优先读环境变量 QTDIR。未设置时 QtEnv.props 落到本机固定目录。
+  套件与 BondVision 的 x64 相同：Qt 5.15.2 msvc2019_64。
+  Win32 指向同版本的 msvc2019。工程工具集仍是 VS2022 v143、C++17。
+-->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup Condition="'$(Platform)'=='Win32'">
-    <QTDIR Condition="'$(QTDIR)'==''">C:\Qt\Qt5.9.9\5.9.9\msvc2015</QTDIR>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Platform)'=='x64'">
-    <QTDIR Condition="'$(QTDIR)'==''">C:\Qt\Qt5.9.9\5.9.9\msvc2015_64</QTDIR>
-  </PropertyGroup>
+  <Import Project="$(MSBuildThisFileDirectory)..\QtEnv.props" />
   <PropertyGroup>
     <QtInc>$(QTDIR)\include</QtInc>
     <QtLib>$(QTDIR)\lib</QtLib>

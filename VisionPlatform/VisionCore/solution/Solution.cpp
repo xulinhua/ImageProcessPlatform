@@ -1,6 +1,6 @@
 /**
  * @file Solution.cpp
- * @brief SolutionÊµÏÖ
+ * @brief Solutionå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -19,7 +19,7 @@
 
 namespace Vision {
 
-// °´ id ²éÕÒ¹¤Õ¾
+// æŒ‰ id æŸ¥æ‰¾å·¥ç«™
 StationCfg* Solution::findStationConfig(const ObjectId& id)
 {
     for (int i = 0; i < static_cast<int>(stations.size()); ++i) {
@@ -30,7 +30,7 @@ StationCfg* Solution::findStationConfig(const ObjectId& id)
     return 0;
 }
 
-// °´ id ²éÕÒ¹¤Õ¾£¨Ö»¶Á£©
+// æŒ‰ id æŸ¥æ‰¾å·¥ç«™ï¼ˆåªè¯»ï¼‰
 const StationCfg* Solution::findStationConfig(const ObjectId& id) const
 {
     for (int i = 0; i < static_cast<int>(stations.size()); ++i) {
@@ -41,7 +41,7 @@ const StationCfg* Solution::findStationConfig(const ObjectId& id) const
     return 0;
 }
 
-// ÔÚÈ«²¿¹¤Õ¾µÄ JobCfg ÖĞ°´ id ²éÕÒ
+// åœ¨å…¨éƒ¨å·¥ç«™çš„ JobCfg ä¸­æŒ‰ id æŸ¥æ‰¾
 JobCfg* Solution::findJobConfig(const ObjectId& id)
 {
     for (int i = 0; i < static_cast<int>(stations.size()); ++i) {
@@ -55,7 +55,7 @@ JobCfg* Solution::findJobConfig(const ObjectId& id)
     return 0;
 }
 
-// ÔÚÈ«²¿ JobCfg ÖĞ°´ id ²éÕÒ¹¤¾ß
+// åœ¨å…¨éƒ¨ JobCfg ä¸­æŒ‰ id æŸ¥æ‰¾å·¥å…·
 ToolCfg* Solution::findTool(const ObjectId& id)
 {
     for (int i = 0; i < static_cast<int>(stations.size()); ++i) {
@@ -70,7 +70,7 @@ ToolCfg* Solution::findTool(const ObjectId& id)
     return 0;
 }
 
-// ÔÚÈ«²¿ JobCfg ÖĞ°´ id ²éÕÒ¹¤¾ß£¨Ö»¶Á£©
+// åœ¨å…¨éƒ¨ JobCfg ä¸­æŒ‰ id æŸ¥æ‰¾å·¥å…·ï¼ˆåªè¯»ï¼‰
 const ToolCfg* Solution::findTool(const ObjectId& id) const
 {
     for (int i = 0; i < static_cast<int>(stations.size()); ++i) {
@@ -85,7 +85,7 @@ const ToolCfg* Solution::findTool(const ObjectId& id) const
     return 0;
 }
 
-// °´ id ²éÕÒÓ²¼şÉè±¸
+// æŒ‰ id æŸ¥æ‰¾ç¡¬ä»¶è®¾å¤‡
 HardwareDevice* Solution::findDevice(const ObjectId& id)
 {
     for (int i = 0; i < static_cast<int>(inventory.size()); ++i) {
@@ -96,7 +96,7 @@ HardwareDevice* Solution::findDevice(const ObjectId& id)
     return 0;
 }
 
-// °´ id ²éÕÒÓ²¼şÉè±¸£¨Ö»¶Á£©
+// æŒ‰ id æŸ¥æ‰¾ç¡¬ä»¶è®¾å¤‡ï¼ˆåªè¯»ï¼‰
 const HardwareDevice* Solution::findDevice(const ObjectId& id) const
 {
     for (int i = 0; i < static_cast<int>(inventory.size()); ++i) {
@@ -107,7 +107,7 @@ const HardwareDevice* Solution::findDevice(const ObjectId& id) const
     return 0;
 }
 
-// °´ id ²éÕÒÍ¨ĞÅÍ¨µÀ
+// æŒ‰ id æŸ¥æ‰¾é€šä¿¡é€šé“
 CommChannel* Solution::findCommChannel(const ObjectId& id)
 {
     for (int i = 0; i < static_cast<int>(commChannels.size()); ++i) {
@@ -118,7 +118,7 @@ CommChannel* Solution::findCommChannel(const ObjectId& id)
     return 0;
 }
 
-// °´ id ²éÕÒÍ¨ĞÅÍ¨µÀ£¨Ö»¶Á£©
+// æŒ‰ id æŸ¥æ‰¾é€šä¿¡é€šé“ï¼ˆåªè¯»ï¼‰
 const CommChannel* Solution::findCommChannel(const ObjectId& id) const
 {
     for (int i = 0; i < static_cast<int>(commChannels.size()); ++i) {
@@ -129,7 +129,7 @@ const CommChannel* Solution::findCommChannel(const ObjectId& id) const
     return 0;
 }
 
-// ÕÒ³ö¹¤¾ßËùÊô JobCfg£¬¿ÉÑ¡Ğ´³öËùÊô¹¤Õ¾
+// æ‰¾å‡ºå·¥å…·æ‰€å± JobCfgï¼Œå¯é€‰å†™å‡ºæ‰€å±å·¥ç«™
 JobCfg* Solution::findJobCfgOfTool(const ObjectId& toolId, StationCfg** stationOut)
 {
     if (stationOut) {
@@ -149,7 +149,7 @@ JobCfg* Solution::findJobCfgOfTool(const ObjectId& toolId, StationCfg** stationO
     return 0;
 }
 
-// ²éÕÒÁ÷³ÌËùÊô¹¤Õ¾
+// æŸ¥æ‰¾æµç¨‹æ‰€å±å·¥ç«™
 StationCfg* Solution::findStationCfgOfJob(const ObjectId& jobId)
 {
     for (int i = 0; i < static_cast<int>(stations.size()); ++i) {
@@ -163,7 +163,7 @@ StationCfg* Solution::findStationCfgOfJob(const ObjectId& jobId)
     return 0;
 }
 
-// µÚÒ»¸ö¹¤Õ¾£¬ÎŞÔò 0
+// ç¬¬ä¸€ä¸ªå·¥ç«™ï¼Œæ— åˆ™ 0
 StationCfg* Solution::primaryStation()
 {
     if (stations.empty()) {
@@ -172,7 +172,7 @@ StationCfg* Solution::primaryStation()
     return &stations[0];
 }
 
-// »æÖÆ¼¸ºÎĞ´»Ø·ÖÇø¼ÇÂ¼£¬ÒıÓÃÌõ±£Áô
+// ç»˜åˆ¶å‡ ä½•å†™å›åˆ†åŒºè®°å½•ï¼Œå¼•ç”¨æ¡ä¿ç•™
 static void syncRoiItemsFromRois(ToolCfg* t)
 {
     if (!t) {
@@ -250,7 +250,7 @@ static void syncRoiItemsFromRois(ToolCfg* t)
     }
     t->param.roiItems = next;
 }
-// Á½µãÂÖÀªÊÕ³ÉÖ±Ïß
+// ä¸¤ç‚¹è½®å»“æ”¶æˆç›´çº¿
 void ToolCfg::syncRois()
 {
         if (preferredRoiKind() == static_cast<int>(HsCommData::ObjLine)) {
@@ -272,13 +272,13 @@ void ToolCfg::syncRois()
     syncRoiItemsFromRois(this);
 }
 
-// Êµ¼ÊÊ¹ÓÃµÄ ROI ÁĞ±í
+// å®é™…ä½¿ç”¨çš„ ROI åˆ—è¡¨
 std::vector<HsCommData::HsObject> ToolCfg::effectiveRois() const
 {
     return rois;
 }
 
-// ²é×¢²á±íÈ¡¹¤¾ßÄÜÁ¦
+// æŸ¥æ³¨å†Œè¡¨å–å·¥å…·èƒ½åŠ›
 ToolCaps ToolCfg::capsFor(const std::string& toolName)
 {
     ToolBase* impl = ToolRegistry::instance().find(ToolCfg::canonicalize(toolName));
@@ -290,8 +290,8 @@ ToolCaps ToolCfg::capsFor(const std::string& toolName)
 
 
 
-// ÔËĞĞ»­Ãæ£ºĞĞÓëÁĞ¼Ğµ½ 1..3£¬´°¸ñÊ¼ÖÕ±£³Ö 9 ¸ñÒÔÃâÇĞ»»²¼¾Ö¶ªÅäÖÃ
-// ¸ñ×ÓÊı
+// è¿è¡Œç”»é¢ï¼šè¡Œä¸åˆ—å¤¹åˆ° 1..3ï¼Œçª—æ ¼å§‹ç»ˆä¿æŒ 9 æ ¼ä»¥å…åˆ‡æ¢å¸ƒå±€ä¸¢é…ç½®
+// æ ¼å­æ•°
 int RuntimeView::slotCount() const
 {
     return rows * cols;
@@ -321,7 +321,7 @@ void RuntimeView::normalize()
     }
 }
 
-// ÓÃ×¢²á±íÄ¬ÈÏ²ÎÊı²¹ÆëÈ±Ê§Ïî£¬²¢Í¬²½¹¤¾ßÀàĞÍ
+// ç”¨æ³¨å†Œè¡¨é»˜è®¤å‚æ•°è¡¥é½ç¼ºå¤±é¡¹ï¼Œå¹¶åŒæ­¥å·¥å…·ç±»å‹
 void ToolCfg::ensureDefaults()
 {
         toolName = ToolCfg::canonicalize(toolName);
@@ -339,7 +339,7 @@ void ToolCfg::ensureDefaults()
     }
 }
 
-// ²å¼şÎ´µÇ¼ÇÊ±°´Ãû³ÆÇ°×ºÍÆ¶Ï¹¤¾ß´óÀà
+// æ’ä»¶æœªç™»è®°æ—¶æŒ‰åç§°å‰ç¼€æ¨æ–­å·¥å…·å¤§ç±»
 static ToolType typeFromToolName(const std::string& key)
 {
     if (key.compare(0, 11, "preprocess.") == 0) {
@@ -360,9 +360,24 @@ static ToolType typeFromToolName(const std::string& key)
     if (key.compare(0, 7, "result.") == 0) {
         return ToolType::RstProcess;
     }
+    if (key.compare(0, 10, "acquire3d.") == 0) {
+        return ToolType::Acquire3D;
+    }
+    if (key.compare(0, 10, "prepare3d.") == 0) {
+        return ToolType::Prepare3D;
+    }
+    if (key.compare(0, 10, "measure3d.") == 0) {
+        return ToolType::Measure3D;
+    }
+    if (key.compare(0, 8, "align3d.") == 0) {
+        return ToolType::Align3D;
+    }
+    if (key.compare(0, 6, "infer.") == 0) {
+        return ToolType::Infer;
+    }
     return ToolType::Acquire;
 }
-// °´×¢²áÃû´´½¨¹¤¾ßÅäÖÃ£»Î´µÇ¼Ç·µ»Ø¿Õ¼ÇÂ¼
+// æŒ‰æ³¨å†Œååˆ›å»ºå·¥å…·é…ç½®ï¼›æœªç™»è®°è¿”å›ç©ºè®°å½•
 ToolCfg ToolCfg::createRegistered(const std::string& toolName, const ObjectId& deviceId)
 {
     ToolBase* t = ToolRegistry::instance().find(toolName);
@@ -381,7 +396,7 @@ ToolCfg ToolCfg::createRegistered(const std::string& toolName, const ObjectId& d
     return config;
 }
 
-// ¸´ÖÆ¼ÇÂ¼²¢»»ĞÂ id£»ÒÑ°Ú¹ıµÄ½Úµã´í¿ªÒ»µãÒÔÃâµşÔÚÔ­´¦
+// å¤åˆ¶è®°å½•å¹¶æ¢æ–° idï¼›å·²æ‘†è¿‡çš„èŠ‚ç‚¹é”™å¼€ä¸€ç‚¹ä»¥å…å åœ¨åŸå¤„
 ToolCfg ToolCfg::duplicate() const
 {
     ToolCfg t = *this;
@@ -394,7 +409,7 @@ ToolCfg ToolCfg::duplicate() const
     return t;
 }
 
-// ÓÅÏÈ×ß×¢²á±í create£»Î´×¢²áÔòÊÖÌîÒ»Ìõ¿ÉÓÃ¼ÇÂ¼
+// ä¼˜å…ˆèµ°æ³¨å†Œè¡¨ createï¼›æœªæ³¨å†Œåˆ™æ‰‹å¡«ä¸€æ¡å¯ç”¨è®°å½•
 ToolCfg ToolCfg::make(const std::string& toolName, const ObjectId& deviceId)
 {
     const std::string key = ToolCfg::canonicalize(toolName);
@@ -410,37 +425,37 @@ ToolCfg ToolCfg::make(const std::string& toolName, const ObjectId& deviceId)
     t.name = toolName;
     return t;
 }
-// ±¾¹¤¾ßµÄ»­²¼ÄÜÁ¦
+// æœ¬å·¥å…·çš„ç”»å¸ƒèƒ½åŠ›
 ToolCaps ToolCfg::caps() const
 {
     return ToolCfg::capsFor(toolName);
 }
 
-// ÊÇ·ñÔÚÍ¼ÉÏ»­ ROI
+// æ˜¯å¦åœ¨å›¾ä¸Šç”» ROI
 bool ToolCfg::usesRoi() const
 {
     return caps().usesRoi;
 }
 
-// ÊÇ·ñÔÊĞí¶à ROI
+// æ˜¯å¦å…è®¸å¤š ROI
 bool ToolCfg::usesMultiRoi() const
 {
     return caps().usesMultiRoi();
 }
 
-// ÍÆ¼ö¼¸ºÎÖÖÀà
+// æ¨èå‡ ä½•ç§ç±»
 int ToolCfg::preferredRoiKind() const
 {
     return caps().preferredRoiKind();
 }
 
-// ¼¸ºÎÖÖÀàÊÇ·ñÓëÍÆ¼öÒ»ÖÂ
+// å‡ ä½•ç§ç±»æ˜¯å¦ä¸æ¨èä¸€è‡´
 bool ToolCfg::roiKindMatches(int kind) const
 {
     return caps().kindMatches(kind);
 }
 
-// ¾É toolName Ó³Éäµ½µ±Ç°Ãû
+// æ—§ toolName æ˜ å°„åˆ°å½“å‰å
 std::string ToolCfg::canonicalize(const std::string& n)
 {
     if (n == "detect.find_circle") {
@@ -458,14 +473,14 @@ std::string ToolCfg::canonicalize(const std::string& n)
     return n;
 }
 
-// ĞÂ½¨¿Õ·½°¸£¬²»º¬¹¤Õ¾
+// æ–°å»ºç©ºæ–¹æ¡ˆï¼Œä¸å«å·¥ç«™
 Solution Solution::makeEmpty()
 {
     Solution s;
-    s.name = std::string(Translate::tr("Î´ÃüÃû·½°¸"));
+    s.name = std::string(Translate::tr("æœªå‘½åæ–¹æ¡ˆ"));
     HardwareDevice d;
     d.id = ObjectId::create();
-    d.name = std::string(Translate::tr("ÎÄ¼ş¼Ğ"));
+    d.name = std::string(Translate::tr("æ–‡ä»¶å¤¹"));
     d.kind = DeviceFolder;
     d.cameraBackend = CameraBackendFile;
     d.defaultParams.insert("folder", AppPaths::exeDir() + "/samples");

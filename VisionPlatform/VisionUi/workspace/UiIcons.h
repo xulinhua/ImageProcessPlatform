@@ -1,6 +1,6 @@
 /**
  * @file UiIcons.h
- * @brief UiIconsÍ·ÎÄ¼ş
+ * @brief UiIconså¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -14,34 +14,34 @@
 
 namespace Vision {
 
-/** @brief Ö÷½çÃæ/¹¤¾ßÀ¸Í¼±ê¼ü£¨¶ÔÓ¦ icons/ui/*.svg£© */
+/** @brief ä¸»ç•Œé¢/å·¥å…·æ å›¾æ ‡é”®ï¼ˆå¯¹åº” icons/ui/*.svgï¼‰ */
 enum UiIconKey {
-    UiIconNew = 0, ///< ĞÂ½¨·½°¸
-    UiIconOpen, ///< ´ò¿ª·½°¸
-    UiIconSave, ///< ±£´æ·½°¸
-    UiIconStations, ///< ¹¤Õ¾¹ÜÀí
-    UiIconDevices, ///< Éè±¸¹ÜÀí
-    UiIconComm, ///< Í¨ĞÅ¹ÜÀí
-    UiIconRun, ///< ÅÜ±¾Á÷³Ì
-    UiIconStart, ///< ¿ªÊ¼ÔËĞĞ
-    UiIconStop, ///< Í£Ö¹ÔËĞĞ
-    UiIconReset, ///< ²úÁ¿ÇåÁã
-    UiIconDesign, ///< Éè¼ÆÒ³
-    UiIconRuntime, ///< ÔËĞĞÒ³
-    UiIconRecheck, ///< ¸´¼ìÒ³
-    UiIconNewStation, ///< ĞÂ½¨¹¤Õ¾
-    UiIconNewJob, ///< ĞÂ½¨Á÷³Ì
-    UiIconCount ///< Í¼±ê¸öÊı
+    UiIconNew = 0, ///< æ–°å»ºæ–¹æ¡ˆ
+    UiIconOpen, ///< æ‰“å¼€æ–¹æ¡ˆ
+    UiIconSave, ///< ä¿å­˜æ–¹æ¡ˆ
+    UiIconStations, ///< å·¥ç«™ç®¡ç†
+    UiIconDevices, ///< è®¾å¤‡ç®¡ç†
+    UiIconComm, ///< é€šä¿¡ç®¡ç†
+    UiIconRun, ///< è·‘æœ¬æµç¨‹
+    UiIconStart, ///< å¼€å§‹è¿è¡Œ
+    UiIconStop, ///< åœæ­¢è¿è¡Œ
+    UiIconReset, ///< äº§é‡æ¸…é›¶
+    UiIconDesign, ///< è®¾è®¡é¡µ
+    UiIconRuntime, ///< è¿è¡Œé¡µ
+    UiIconRecheck, ///< å¤æ£€é¡µ
+    UiIconNewStation, ///< æ–°å»ºå·¥ç«™
+    UiIconNewJob, ///< æ–°å»ºæµç¨‹
+    UiIconCount ///< å›¾æ ‡ä¸ªæ•°
 };
 
 /**
- * @brief È¡Ö÷½çÃæÍ¼±ê£¨ÓÅÏÈ icons/ui/*.svg£©
+ * @brief å–ä¸»ç•Œé¢å›¾æ ‡ï¼ˆä¼˜å…ˆ icons/ui/*.svgï¼‰
  * @param key UiIconKey
- * @param px äÖÈ¾³ß´ç£¬Ä¬ÈÏ 20
+ * @param px æ¸²æŸ“å°ºå¯¸ï¼Œé»˜è®¤ 20
  */
 VISION_UI_API QIcon uiIcon(int key, int px = 20);
 
-/** @brief Çå¿ÕÖ÷½çÃæÍ¼±ê»º´æ */
+/** @brief æ¸…ç©ºä¸»ç•Œé¢å›¾æ ‡ç¼“å­˜ */
 VISION_UI_API void clearUiIconCache();
 
 }

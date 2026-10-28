@@ -1,6 +1,6 @@
 /**
  * @file HsObject.cpp
- * @brief HsObjectÊµÏÖ
+ * @brief HsObjectå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -16,7 +16,7 @@ namespace HsCommData {
 
 namespace {
 
-// ¾ä±úÎö¹¹Ê±ÊÍ·ÅÁªºÏÌå
+// å¥æŸ„ææ„æ—¶é‡Šæ”¾è”åˆä½“
 struct ObjectUnionDel {
     void operator()(ObjectUnion* p) const
     {
@@ -26,19 +26,19 @@ struct ObjectUnionDel {
     }
 };
 
-// ĞÂ½¨Ò»·İ¶ÀÁ¢¾ä±ú
+// æ–°å»ºä¸€ä»½ç‹¬ç«‹å¥æŸ„
 std::shared_ptr<ObjectUnion> makeUnion()
 {
     return std::shared_ptr<ObjectUnion>(new ObjectUnion(), ObjectUnionDel());
 }
 
-// Éî¿½Ò»·İ¾ä±ú
+// æ·±æ‹·ä¸€ä»½å¥æŸ„
 std::shared_ptr<ObjectUnion> copyUnion(const ObjectUnion& src)
 {
     return std::shared_ptr<ObjectUnion>(new ObjectUnion(src), ObjectUnionDel());
 }
 
-// ÏÂ±ê»òÖÖÀà²»¶Ô¾ÍÅ×
+// ä¸‹æ ‡æˆ–ç§ç±»ä¸å¯¹å°±æŠ›
 const ObjectUnion* needKind(const ObjectUnion* u, ObjectKind want)
 {
     if (!u) {
@@ -50,7 +50,7 @@ const ObjectUnion* needKind(const ObjectUnion* u, ObjectKind want)
     return u;
 }
 
-// ÏÂ±ê»òÖÖÀà²»¶Ô¾ÍÅ×
+// ä¸‹æ ‡æˆ–ç§ç±»ä¸å¯¹å°±æŠ›
 ObjectUnion* needKind(ObjectUnion* u, ObjectKind want)
 {
     if (!u) {
@@ -64,20 +64,20 @@ ObjectUnion* needKind(ObjectUnion* u, ObjectKind want)
 
 } // namespace
 
-// ¿ÕÁªºÏ£¬Ö¸ÕëÇåÁã
+// ç©ºè”åˆï¼ŒæŒ‡é’ˆæ¸…é›¶
 ObjectUnion::ObjectUnion()
     : m_kind(ObjEmpty)
 {
     m_slot.image = nullptr;
 }
 
-// ÊÍ·Åµ±Ç°ÄÇÒ»ÖÖ
+// é‡Šæ”¾å½“å‰é‚£ä¸€ç§
 ObjectUnion::~ObjectUnion()
 {
     reset();
 }
 
-// Éî¿½µ±Ç°ÖÖÀà
+// æ·±æ‹·å½“å‰ç§ç±»
 ObjectUnion::ObjectUnion(const ObjectUnion& other)
     : m_kind(ObjEmpty)
 {
@@ -115,7 +115,7 @@ ObjectUnion::ObjectUnion(const ObjectUnion& other)
     }
 }
 
-// ÏÈÇåÔÙ¿½
+// å…ˆæ¸…å†æ‹·
 ObjectUnion& ObjectUnion::operator=(const ObjectUnion& other)
 {
     if (this != &other) {
@@ -129,13 +129,13 @@ ObjectUnion& ObjectUnion::operator=(const ObjectUnion& other)
     return *this;
 }
 
-// µ±Ç°ÖÖÀà
+// å½“å‰ç§ç±»
 ObjectKind ObjectUnion::kind() const
 {
     return m_kind;
 }
 
-// ÊÍ·Åµ±Ç°Ö¸Õë
+// é‡Šæ”¾å½“å‰æŒ‡é’ˆ
 void ObjectUnion::reset()
 {
     switch (m_kind) {
@@ -191,7 +191,7 @@ void ObjectUnion::reset()
     m_slot.image = nullptr;
 }
 
-// »»³ÉÍ¼Ïñ
+// æ¢æˆå›¾åƒ
 void ObjectUnion::setImage(const HsImage& value)
 {
     reset();
@@ -199,7 +199,7 @@ void ObjectUnion::setImage(const HsImage& value)
     m_kind = ObjImage;
 }
 
-// »»³ÉÇøÓò
+// æ¢æˆåŒºåŸŸ
 void ObjectUnion::setRegion(const HsRegion& value)
 {
     reset();
@@ -207,7 +207,7 @@ void ObjectUnion::setRegion(const HsRegion& value)
     m_kind = ObjRegion;
 }
 
-// »»³ÉÂÖÀª
+// æ¢æˆè½®å»“
 void ObjectUnion::setContour(const HsContour& value)
 {
     reset();
@@ -215,7 +215,7 @@ void ObjectUnion::setContour(const HsContour& value)
     m_kind = ObjContour;
 }
 
-// »»³ÉÕÛÏß±Æ½ü
+// æ¢æˆæŠ˜çº¿é€¼è¿‘
 void ObjectUnion::setPoly(const HsPoly& value)
 {
     reset();
@@ -223,7 +223,7 @@ void ObjectUnion::setPoly(const HsPoly& value)
     m_kind = ObjPoly;
 }
 
-// »»³ÉÔ²
+// æ¢æˆåœ†
 void ObjectUnion::setCircle(const CircleP& value)
 {
     reset();
@@ -231,7 +231,7 @@ void ObjectUnion::setCircle(const CircleP& value)
     m_kind = ObjCircle;
 }
 
-// »»³ÉÍÖÔ²
+// æ¢æˆæ¤­åœ†
 void ObjectUnion::setEllipse(const EllipseP& value)
 {
     reset();
@@ -239,7 +239,7 @@ void ObjectUnion::setEllipse(const EllipseP& value)
     m_kind = ObjEllipse;
 }
 
-// »»³ÉÖá¶ÔÆë¾ØĞÎ
+// æ¢æˆè½´å¯¹é½çŸ©å½¢
 void ObjectUnion::setRect1(const Rect1P& value)
 {
     reset();
@@ -247,7 +247,7 @@ void ObjectUnion::setRect1(const Rect1P& value)
     m_kind = ObjRect1;
 }
 
-// »»³ÉĞı×ª¾ØĞÎ
+// æ¢æˆæ—‹è½¬çŸ©å½¢
 void ObjectUnion::setRect2(const Rect2P& value)
 {
     reset();
@@ -255,7 +255,7 @@ void ObjectUnion::setRect2(const Rect2P& value)
     m_kind = ObjRect2;
 }
 
-// »»³ÉÏß¶Î
+// æ¢æˆçº¿æ®µ
 void ObjectUnion::setLine(const LineP& value)
 {
     reset();
@@ -263,19 +263,19 @@ void ObjectUnion::setLine(const LineP& value)
     m_kind = ObjLine;
 }
 
-// ¿Õ¶ÔÏó
+// ç©ºå¯¹è±¡
 HsObject::HsObject()
 {
 }
 
-// Í¬ÀàĞÍ¿½±´£¬¹²Ïí¾ä±ú¡£Ëø×¡Ô´¶ÔÏóÔÙ¸´ÖÆÖ¸Õë
+// åŒç±»å‹æ‹·è´ï¼Œå…±äº«å¥æŸ„ã€‚é”ä½æºå¯¹è±¡å†å¤åˆ¶æŒ‡é’ˆ
 HsObject::HsObject(const HsObject& other)
 {
     std::lock_guard<std::recursive_mutex> lock(other.m_guard);
     m_items = other.m_items;
 }
 
-// Í¬ÀàĞÍ¸³Öµ£¬¹²Ïí¾ä±ú¡£°´µØÖ·Ë³Ğò¼ÓËø£¬±ÜÃâ»¥ÏàµÈ´ı
+// åŒç±»å‹èµ‹å€¼ï¼Œå…±äº«å¥æŸ„ã€‚æŒ‰åœ°å€é¡ºåºåŠ é”ï¼Œé¿å…äº’ç›¸ç­‰å¾…
 HsObject& HsObject::operator=(const HsObject& other)
 {
     if (this == &other) {
@@ -292,124 +292,124 @@ HsObject& HsObject::operator=(const HsObject& other)
     return *this;
 }
 
-// ÓÉÕâÒ»¸öÍ¼Ïñ¹¹Ôì
+// ç”±è¿™ä¸€ä¸ªå›¾åƒæ„é€ 
 HsObject::HsObject(const HsImage& value)
 {
     *this = fromImage(value);
 }
 
-// ÓÉÕâÒ»¸öÇøÓò¹¹Ôì
+// ç”±è¿™ä¸€ä¸ªåŒºåŸŸæ„é€ 
 HsObject::HsObject(const HsRegion& value)
 {
     *this = fromRegion(value);
 }
 
-// ÓÉÕâÒ»ÌõÂÖÀª¹¹Ôì
+// ç”±è¿™ä¸€æ¡è½®å»“æ„é€ 
 HsObject::HsObject(const HsContour& value)
 {
     *this = fromContour(value);
 }
 
-// ÓÉÕâÒ»ÌõÕÛÏß±Æ½ü¹¹Ôì
+// ç”±è¿™ä¸€æ¡æŠ˜çº¿é€¼è¿‘æ„é€ 
 HsObject::HsObject(const HsPoly& value)
 {
     *this = fromPoly(value);
 }
 
-// ÓÉÕâÒ»¸öÔ²¹¹Ôì
+// ç”±è¿™ä¸€ä¸ªåœ†æ„é€ 
 HsObject::HsObject(const CircleP& value)
 {
     *this = fromCircle(value);
 }
 
-// ÓÉÕâÒ»¸öÍÖÔ²¹¹Ôì
+// ç”±è¿™ä¸€ä¸ªæ¤­åœ†æ„é€ 
 HsObject::HsObject(const EllipseP& value)
 {
     *this = fromEllipse(value);
 }
 
-// ÓÉÕâÒ»¸öÖá¶ÔÆë¾ØĞÎ¹¹Ôì
+// ç”±è¿™ä¸€ä¸ªè½´å¯¹é½çŸ©å½¢æ„é€ 
 HsObject::HsObject(const Rect1P& value)
 {
     *this = fromRect1(value);
 }
 
-// ÓÉÕâÒ»¸öĞı×ª¾ØĞÎ¹¹Ôì
+// ç”±è¿™ä¸€ä¸ªæ—‹è½¬çŸ©å½¢æ„é€ 
 HsObject::HsObject(const Rect2P& value)
 {
     *this = fromRect2(value);
 }
 
-// ÓÉÕâÒ»ÌõÏß¶Î¹¹Ôì
+// ç”±è¿™ä¸€æ¡çº¿æ®µæ„é€ 
 HsObject::HsObject(const LineP& value)
 {
     *this = fromLine(value);
 }
 
-// »»³ÉÕâÒ»¸öÍ¼Ïñ
+// æ¢æˆè¿™ä¸€ä¸ªå›¾åƒ
 HsObject& HsObject::operator=(const HsImage& value)
 {
     *this = fromImage(value);
     return *this;
 }
 
-// »»³ÉÕâÒ»¸öÇøÓò
+// æ¢æˆè¿™ä¸€ä¸ªåŒºåŸŸ
 HsObject& HsObject::operator=(const HsRegion& value)
 {
     *this = fromRegion(value);
     return *this;
 }
 
-// »»³ÉÕâÒ»ÌõÂÖÀª
+// æ¢æˆè¿™ä¸€æ¡è½®å»“
 HsObject& HsObject::operator=(const HsContour& value)
 {
     *this = fromContour(value);
     return *this;
 }
 
-// »»³ÉÕâÒ»ÌõÕÛÏß±Æ½ü
+// æ¢æˆè¿™ä¸€æ¡æŠ˜çº¿é€¼è¿‘
 HsObject& HsObject::operator=(const HsPoly& value)
 {
     *this = fromPoly(value);
     return *this;
 }
 
-// »»³ÉÕâÒ»¸öÔ²
+// æ¢æˆè¿™ä¸€ä¸ªåœ†
 HsObject& HsObject::operator=(const CircleP& value)
 {
     *this = fromCircle(value);
     return *this;
 }
 
-// »»³ÉÕâÒ»¸öÍÖÔ²
+// æ¢æˆè¿™ä¸€ä¸ªæ¤­åœ†
 HsObject& HsObject::operator=(const EllipseP& value)
 {
     *this = fromEllipse(value);
     return *this;
 }
 
-// »»³ÉÕâÒ»¸öÖá¶ÔÆë¾ØĞÎ
+// æ¢æˆè¿™ä¸€ä¸ªè½´å¯¹é½çŸ©å½¢
 HsObject& HsObject::operator=(const Rect1P& value)
 {
     *this = fromRect1(value);
     return *this;
 }
 
-// »»³ÉÕâÒ»¸öĞı×ª¾ØĞÎ
+// æ¢æˆè¿™ä¸€ä¸ªæ—‹è½¬çŸ©å½¢
 HsObject& HsObject::operator=(const Rect2P& value)
 {
     *this = fromRect2(value);
     return *this;
 }
 
-// »»³ÉÕâÒ»ÌõÏß¶Î
+// æ¢æˆè¿™ä¸€æ¡çº¿æ®µ
 HsObject& HsObject::operator=(const LineP& value)
 {
     *this = fromLine(value);
     return *this;
 }
 
-// Ã»ÓĞÔªËØ
+// æ²¡æœ‰å…ƒç´ 
 bool HsObject::isEmpty() const
 {
     std::lock_guard<std::recursive_mutex> guard(m_guard);
@@ -417,13 +417,13 @@ bool HsObject::isEmpty() const
     return !m_items || m_items->list.empty();
 }
 
-// ÖÁÉÙÓĞÒ»¸öÔªËØ
+// è‡³å°‘æœ‰ä¸€ä¸ªå…ƒç´ 
 bool HsObject::isInitialized() const
 {
     return !isEmpty();
 }
 
-// ÔªËØ¸öÊı
+// å…ƒç´ ä¸ªæ•°
 int HsObject::count() const
 {
     std::lock_guard<std::recursive_mutex> guard(m_guard);
@@ -434,7 +434,7 @@ int HsObject::count() const
     return static_cast<int>(m_items->list.size());
 }
 
-// È«ÌåÖÖÀà
+// å…¨ä½“ç§ç±»
 ObjectKind HsObject::kind() const
 {
     std::lock_guard<std::recursive_mutex> guard(m_guard);
@@ -451,7 +451,7 @@ ObjectKind HsObject::kind() const
     return first;
 }
 
-// µ¥¸öÖÖÀà¡£Ô½½çÅ×Òì³£
+// å•ä¸ªç§ç±»ã€‚è¶Šç•ŒæŠ›å¼‚å¸¸
 ObjectKind HsObject::kindAt(int index) const
 {
     const ObjectUnion* u = item(index);
@@ -461,14 +461,14 @@ ObjectKind HsObject::kindAt(int index) const
     return u->kind();
 }
 
-// ÊÍ·Å¾ä±ú
+// é‡Šæ”¾å¥æŸ„
 void HsObject::clear()
 {
     std::lock_guard<std::recursive_mutex> guard(m_guard);
     m_items.reset();
 }
 
-// Éî¿½Ã¿¸öÔªËØ
+// æ·±æ‹·æ¯ä¸ªå…ƒç´ 
 HsObject HsObject::clone() const
 {
     std::lock_guard<std::recursive_mutex> guard(m_guard);
@@ -485,7 +485,7 @@ HsObject HsObject::clone() const
     return out;
 }
 
-// ½ÓÉÏÁíÒ»Ôª×éµÄ¾ä±ú¡£Á½°Ñ¾ä±úËø°´µØÖ·Ë³Ğò»ñÈ¡
+// æ¥ä¸Šå¦ä¸€å…ƒç»„çš„å¥æŸ„ã€‚ä¸¤æŠŠå¥æŸ„é”æŒ‰åœ°å€é¡ºåºè·å–
 void HsObject::append(const HsObject& other)
 {
     if (this == &other) {
@@ -517,7 +517,7 @@ void HsObject::append(const HsObject& other)
     m_items->list.insert(m_items->list.end(), extra.begin(), extra.end());
 }
 
-// È¡³öÒ»¸ö£¬¹²Ïí¸ÃÔªËØ¡£Ô½½çÅ×Òì³£
+// å–å‡ºä¸€ä¸ªï¼Œå…±äº«è¯¥å…ƒç´ ã€‚è¶Šç•ŒæŠ›å¼‚å¸¸
 HsObject HsObject::select(int index) const
 {
     std::lock_guard<std::recursive_mutex> guard(m_guard);
@@ -536,7 +536,7 @@ HsObject HsObject::select(int index) const
     return out;
 }
 
-// È¡³ö°ë¿ªÇø¼ä¡£Ô½½çÅ×Òì³££¬¿ÕÇø¼äÈÔ·µ»Ø¿Õ¶ÔÏó
+// å–å‡ºåŠå¼€åŒºé—´ã€‚è¶Šç•ŒæŠ›å¼‚å¸¸ï¼Œç©ºåŒºé—´ä»è¿”å›ç©ºå¯¹è±¡
 HsObject HsObject::slice(int begin, int end) const
 {
     std::lock_guard<std::recursive_mutex> guard(m_guard);
@@ -557,7 +557,7 @@ HsObject HsObject::slice(int begin, int end) const
     return out;
 }
 
-// µ¥¸öÍ¼Ïñ
+// å•ä¸ªå›¾åƒ
 HsObject HsObject::fromImage(const HsImage& value)
 {
     HsObject out;
@@ -568,7 +568,7 @@ HsObject HsObject::fromImage(const HsImage& value)
     return out;
 }
 
-// µ¥¸öÇøÓò
+// å•ä¸ªåŒºåŸŸ
 HsObject HsObject::fromRegion(const HsRegion& value)
 {
     HsObject out;
@@ -579,7 +579,7 @@ HsObject HsObject::fromRegion(const HsRegion& value)
     return out;
 }
 
-// µ¥¸öÂÖÀª
+// å•ä¸ªè½®å»“
 HsObject HsObject::fromContour(const HsContour& value)
 {
     HsObject out;
@@ -590,7 +590,7 @@ HsObject HsObject::fromContour(const HsContour& value)
     return out;
 }
 
-// µ¥¸öÕÛÏß±Æ½ü
+// å•ä¸ªæŠ˜çº¿é€¼è¿‘
 HsObject HsObject::fromPoly(const HsPoly& value)
 {
     HsObject out;
@@ -601,7 +601,7 @@ HsObject HsObject::fromPoly(const HsPoly& value)
     return out;
 }
 
-// µ¥¸öÔ²
+// å•ä¸ªåœ†
 HsObject HsObject::fromCircle(const CircleP& value)
 {
     HsObject out;
@@ -612,7 +612,7 @@ HsObject HsObject::fromCircle(const CircleP& value)
     return out;
 }
 
-// µ¥¸öÍÖÔ²
+// å•ä¸ªæ¤­åœ†
 HsObject HsObject::fromEllipse(const EllipseP& value)
 {
     HsObject out;
@@ -623,7 +623,7 @@ HsObject HsObject::fromEllipse(const EllipseP& value)
     return out;
 }
 
-// µ¥¸öÖá¶ÔÆë¾ØĞÎ
+// å•ä¸ªè½´å¯¹é½çŸ©å½¢
 HsObject HsObject::fromRect1(const Rect1P& value)
 {
     HsObject out;
@@ -634,7 +634,7 @@ HsObject HsObject::fromRect1(const Rect1P& value)
     return out;
 }
 
-// µ¥¸öĞı×ª¾ØĞÎ
+// å•ä¸ªæ—‹è½¬çŸ©å½¢
 HsObject HsObject::fromRect2(const Rect2P& value)
 {
     HsObject out;
@@ -645,7 +645,7 @@ HsObject HsObject::fromRect2(const Rect2P& value)
     return out;
 }
 
-// µ¥¸öÏß¶Î
+// å•ä¸ªçº¿æ®µ
 HsObject HsObject::fromLine(const LineP& value)
 {
     HsObject out;
@@ -656,133 +656,133 @@ HsObject HsObject::fromLine(const LineP& value)
     return out;
 }
 
-// Ö»¶ÁÍ¼Ïñ¡£ÖÖÀà»òÏÂ±ê²»¶ÔÅ×Òì³£
+// åªè¯»å›¾åƒã€‚ç§ç±»æˆ–ä¸‹æ ‡ä¸å¯¹æŠ›å¼‚å¸¸
 const HsImage* HsObject::imageAt(int index) const
 {
     const ObjectUnion* u = needKind(item(index), ObjImage);
     return u->m_slot.image;
 }
 
-// Ö»¶ÁÇøÓò¡£ÖÖÀà»òÏÂ±ê²»¶ÔÅ×Òì³£
+// åªè¯»åŒºåŸŸã€‚ç§ç±»æˆ–ä¸‹æ ‡ä¸å¯¹æŠ›å¼‚å¸¸
 const HsRegion* HsObject::regionAt(int index) const
 {
     const ObjectUnion* u = needKind(item(index), ObjRegion);
     return u->m_slot.region;
 }
 
-// Ö»¶ÁÂÖÀª¡£ÖÖÀà»òÏÂ±ê²»¶ÔÅ×Òì³£
+// åªè¯»è½®å»“ã€‚ç§ç±»æˆ–ä¸‹æ ‡ä¸å¯¹æŠ›å¼‚å¸¸
 const HsContour* HsObject::contourAt(int index) const
 {
     const ObjectUnion* u = needKind(item(index), ObjContour);
     return u->m_slot.contour;
 }
 
-// Ö»¶ÁÕÛÏß±Æ½ü¡£ÖÖÀà»òÏÂ±ê²»¶ÔÅ×Òì³£
+// åªè¯»æŠ˜çº¿é€¼è¿‘ã€‚ç§ç±»æˆ–ä¸‹æ ‡ä¸å¯¹æŠ›å¼‚å¸¸
 const HsPoly* HsObject::polyAt(int index) const
 {
     const ObjectUnion* u = needKind(item(index), ObjPoly);
     return u->m_slot.poly;
 }
 
-// Ö»¶ÁÔ²¡£ÖÖÀà»òÏÂ±ê²»¶ÔÅ×Òì³£
+// åªè¯»åœ†ã€‚ç§ç±»æˆ–ä¸‹æ ‡ä¸å¯¹æŠ›å¼‚å¸¸
 const CircleP* HsObject::circleAt(int index) const
 {
     const ObjectUnion* u = needKind(item(index), ObjCircle);
     return u->m_slot.circle;
 }
 
-// Ö»¶ÁÍÖÔ²¡£ÖÖÀà»òÏÂ±ê²»¶ÔÅ×Òì³£
+// åªè¯»æ¤­åœ†ã€‚ç§ç±»æˆ–ä¸‹æ ‡ä¸å¯¹æŠ›å¼‚å¸¸
 const EllipseP* HsObject::ellipseAt(int index) const
 {
     const ObjectUnion* u = needKind(item(index), ObjEllipse);
     return u->m_slot.ellipse;
 }
 
-// Ö»¶ÁÖá¶ÔÆë¾ØĞÎ¡£ÖÖÀà»òÏÂ±ê²»¶ÔÅ×Òì³£
+// åªè¯»è½´å¯¹é½çŸ©å½¢ã€‚ç§ç±»æˆ–ä¸‹æ ‡ä¸å¯¹æŠ›å¼‚å¸¸
 const Rect1P* HsObject::rect1At(int index) const
 {
     const ObjectUnion* u = needKind(item(index), ObjRect1);
     return u->m_slot.rect1;
 }
 
-// Ö»¶ÁĞı×ª¾ØĞÎ¡£ÖÖÀà»òÏÂ±ê²»¶ÔÅ×Òì³£
+// åªè¯»æ—‹è½¬çŸ©å½¢ã€‚ç§ç±»æˆ–ä¸‹æ ‡ä¸å¯¹æŠ›å¼‚å¸¸
 const Rect2P* HsObject::rect2At(int index) const
 {
     const ObjectUnion* u = needKind(item(index), ObjRect2);
     return u->m_slot.rect2;
 }
 
-// Ö»¶ÁÏß¶Î¡£ÖÖÀà»òÏÂ±ê²»¶ÔÅ×Òì³£
+// åªè¯»çº¿æ®µã€‚ç§ç±»æˆ–ä¸‹æ ‡ä¸å¯¹æŠ›å¼‚å¸¸
 const LineP* HsObject::lineAt(int index) const
 {
     const ObjectUnion* u = needKind(item(index), ObjLine);
     return u->m_slot.line;
 }
 
-// ¿É¸ÄÍ¼Ïñ¡£ÖÖÀà»òÏÂ±ê²»¶ÔÅ×Òì³£
+// å¯æ”¹å›¾åƒã€‚ç§ç±»æˆ–ä¸‹æ ‡ä¸å¯¹æŠ›å¼‚å¸¸
 HsImage* HsObject::imageAt(int index)
 {
     ObjectUnion* u = needKind(itemWrite(index), ObjImage);
     return u->m_slot.image;
 }
 
-// ¿É¸ÄÇøÓò¡£ÖÖÀà»òÏÂ±ê²»¶ÔÅ×Òì³£
+// å¯æ”¹åŒºåŸŸã€‚ç§ç±»æˆ–ä¸‹æ ‡ä¸å¯¹æŠ›å¼‚å¸¸
 HsRegion* HsObject::regionAt(int index)
 {
     ObjectUnion* u = needKind(itemWrite(index), ObjRegion);
     return u->m_slot.region;
 }
 
-// ¿É¸ÄÂÖÀª¡£ÖÖÀà»òÏÂ±ê²»¶ÔÅ×Òì³£
+// å¯æ”¹è½®å»“ã€‚ç§ç±»æˆ–ä¸‹æ ‡ä¸å¯¹æŠ›å¼‚å¸¸
 HsContour* HsObject::contourAt(int index)
 {
     ObjectUnion* u = needKind(itemWrite(index), ObjContour);
     return u->m_slot.contour;
 }
 
-// ¿É¸ÄÕÛÏß±Æ½ü¡£ÖÖÀà»òÏÂ±ê²»¶ÔÅ×Òì³£
+// å¯æ”¹æŠ˜çº¿é€¼è¿‘ã€‚ç§ç±»æˆ–ä¸‹æ ‡ä¸å¯¹æŠ›å¼‚å¸¸
 HsPoly* HsObject::polyAt(int index)
 {
     ObjectUnion* u = needKind(itemWrite(index), ObjPoly);
     return u->m_slot.poly;
 }
 
-// ¿É¸ÄÔ²¡£ÖÖÀà»òÏÂ±ê²»¶ÔÅ×Òì³£
+// å¯æ”¹åœ†ã€‚ç§ç±»æˆ–ä¸‹æ ‡ä¸å¯¹æŠ›å¼‚å¸¸
 CircleP* HsObject::circleAt(int index)
 {
     ObjectUnion* u = needKind(itemWrite(index), ObjCircle);
     return u->m_slot.circle;
 }
 
-// ¿É¸ÄÍÖÔ²¡£ÖÖÀà»òÏÂ±ê²»¶ÔÅ×Òì³£
+// å¯æ”¹æ¤­åœ†ã€‚ç§ç±»æˆ–ä¸‹æ ‡ä¸å¯¹æŠ›å¼‚å¸¸
 EllipseP* HsObject::ellipseAt(int index)
 {
     ObjectUnion* u = needKind(itemWrite(index), ObjEllipse);
     return u->m_slot.ellipse;
 }
 
-// ¿É¸ÄÖá¶ÔÆë¾ØĞÎ¡£ÖÖÀà»òÏÂ±ê²»¶ÔÅ×Òì³£
+// å¯æ”¹è½´å¯¹é½çŸ©å½¢ã€‚ç§ç±»æˆ–ä¸‹æ ‡ä¸å¯¹æŠ›å¼‚å¸¸
 Rect1P* HsObject::rect1At(int index)
 {
     ObjectUnion* u = needKind(itemWrite(index), ObjRect1);
     return u->m_slot.rect1;
 }
 
-// ¿É¸ÄĞı×ª¾ØĞÎ¡£ÖÖÀà»òÏÂ±ê²»¶ÔÅ×Òì³£
+// å¯æ”¹æ—‹è½¬çŸ©å½¢ã€‚ç§ç±»æˆ–ä¸‹æ ‡ä¸å¯¹æŠ›å¼‚å¸¸
 Rect2P* HsObject::rect2At(int index)
 {
     ObjectUnion* u = needKind(itemWrite(index), ObjRect2);
     return u->m_slot.rect2;
 }
 
-// ¿É¸ÄÏß¶Î¡£ÖÖÀà»òÏÂ±ê²»¶ÔÅ×Òì³£
+// å¯æ”¹çº¿æ®µã€‚ç§ç±»æˆ–ä¸‹æ ‡ä¸å¯¹æŠ›å¼‚å¸¸
 LineP* HsObject::lineAt(int index)
 {
     ObjectUnion* u = needKind(itemWrite(index), ObjLine);
     return u->m_slot.line;
 }
 
-// ±£Ö¤Ôª×é»º³å´æÔÚ
+// ä¿è¯å…ƒç»„ç¼“å†²å­˜åœ¨
 void HsObject::ensure()
 {
     std::lock_guard<std::recursive_mutex> guard(m_guard);
@@ -791,7 +791,7 @@ void HsObject::ensure()
     }
 }
 
-// Ëø×¡¹²ÏíÔª×é¡£µ÷ÓÃ·½ÒÑ³ÖÓĞ m_guard Ê±Ò²¿ÉÔÙËø
+// é”ä½å…±äº«å…ƒç»„ã€‚è°ƒç”¨æ–¹å·²æŒæœ‰ m_guard æ—¶ä¹Ÿå¯å†é”
 std::unique_lock<std::recursive_mutex> HsObject::lockItems() const
 {
     if (!m_items) {
@@ -800,7 +800,7 @@ std::unique_lock<std::recursive_mutex> HsObject::lockItems() const
     return std::unique_lock<std::recursive_mutex>(m_items->mu);
 }
 
-// Ôª×é±»¹²ÏíÊ±¸´ÖÆ¾ä±úÊı×é
+// å…ƒç»„è¢«å…±äº«æ—¶å¤åˆ¶å¥æŸ„æ•°ç»„
 void HsObject::detach()
 {
     std::lock_guard<std::recursive_mutex> guard(m_guard);
@@ -816,7 +816,7 @@ void HsObject::detach()
     m_items = neu;
 }
 
-// Ö»¶ÁÔªËØ
+// åªè¯»å…ƒç´ 
 const ObjectUnion* HsObject::item(int index) const
 {
     std::lock_guard<std::recursive_mutex> guard(m_guard);
@@ -831,7 +831,7 @@ const ObjectUnion* HsObject::item(int index) const
     return m_items->list[static_cast<size_t>(index)].get();
 }
 
-// ¿É¸ÄÔªËØ¡£¹²ÏíÔª×é»ò¹²ÏíÔªËØÊ±ÏÈ¸´ÖÆ
+// å¯æ”¹å…ƒç´ ã€‚å…±äº«å…ƒç»„æˆ–å…±äº«å…ƒç´ æ—¶å…ˆå¤åˆ¶
 ObjectUnion* HsObject::itemWrite(int index)
 {
     std::lock_guard<std::recursive_mutex> guard(m_guard);
@@ -862,7 +862,7 @@ ObjectUnion* HsObject::itemWrite(int index)
 }
 
 
-// ³ÖËø²ğ¿ªºó½âÎöÏÂ±ê¡£Ô½½çÔò²»¸Ä±í
+// æŒé”æ‹†å¼€åè§£æä¸‹æ ‡ã€‚è¶Šç•Œåˆ™ä¸æ”¹è¡¨
 bool HsObject::lockedIndex(int index, bool allowEnd, int* out)
 {
     ensure();
@@ -880,7 +880,7 @@ bool HsObject::lockedIndex(int index, bool allowEnd, int* out)
     return true;
 }
 
-// ¸ºÏÂ±êÊÕµ½ [0, count())
+// è´Ÿä¸‹æ ‡æ”¶åˆ° [0, count())
 int HsObject::resolveIndex(int index) const
 {
     const int n = count();
@@ -895,7 +895,7 @@ int HsObject::resolveIndex(int index) const
 
 
 
-// Ôª×éÀïµÄÏÂ±ê¡£Ô½½çÔò°´ÏµÍ³Òì³£´¦Àí²¢·µ»Ø false
+// å…ƒç»„é‡Œçš„ä¸‹æ ‡ã€‚è¶Šç•Œåˆ™æŒ‰ç³»ç»Ÿå¼‚å¸¸å¤„ç†å¹¶è¿”å› false
 static bool readObjIndex(const HsTuple& indices, int i, int bound, int* out)
 {
     int64_t v = 0;
@@ -940,7 +940,7 @@ HsObject HsObject::select(const HsTuple& indices) const
     return out;
 }
 
-// ³ÖËø²ğ¿ªºóÔÙ°´µ±Ç°±í³¤¼ì²éÏÂ±ê
+// æŒé”æ‹†å¼€åå†æŒ‰å½“å‰è¡¨é•¿æ£€æŸ¥ä¸‹æ ‡
 void HsObject::insert(int index, const HsObject& other)
 {
     if (&other == this) {
@@ -967,7 +967,7 @@ void HsObject::insert(int index, const HsObject& other)
     m_items->list.insert(m_items->list.begin() + at, extra.begin(), extra.end());
 }
 
-// ³ÖËø²ğ¿ªºóÔÙ°´µ±Ç°±í³¤¼ì²éÏÂ±ê
+// æŒé”æ‹†å¼€åå†æŒ‰å½“å‰è¡¨é•¿æ£€æŸ¥ä¸‹æ ‡
 void HsObject::replace(int index, const HsObject& other)
 {
     if (&other == this) {
@@ -995,7 +995,7 @@ void HsObject::replace(int index, const HsObject& other)
     m_items->list.insert(m_items->list.begin() + at, extra.begin(), extra.end());
 }
 
-// ³ÖËø²ğ¿ªºóÔÙ°´µ±Ç°±í³¤¼ì²éÏÂ±ê
+// æŒé”æ‹†å¼€åå†æŒ‰å½“å‰è¡¨é•¿æ£€æŸ¥ä¸‹æ ‡
 void HsObject::remove(int index)
 {
     std::lock_guard<std::recursive_mutex> guard(m_guard);
@@ -1006,7 +1006,7 @@ void HsObject::remove(int index)
     m_items->list.erase(m_items->list.begin() + at);
 }
 
-// °´Ôª×éÏÂ±êÉ¾³ı¡£³ÖËø²ğ¿ªºóÔÙ×öÑÚÂë
+// æŒ‰å…ƒç»„ä¸‹æ ‡åˆ é™¤ã€‚æŒé”æ‹†å¼€åå†åšæ©ç 
 void HsObject::remove(const HsTuple& indices)
 {
     std::lock_guard<std::recursive_mutex> guard(m_guard);
@@ -1037,7 +1037,7 @@ void HsObject::remove(const HsTuple& indices)
     m_items->list.swap(kept);
 }
 
-// ³ÖËø²ğ¿ªºóÔÙ»»ÉÏÕâÒ»¸ñ
+// æŒé”æ‹†å¼€åå†æ¢ä¸Šè¿™ä¸€æ ¼
 void HsObject::setImage(int index, const HsImage& value)
 {
     std::shared_ptr<ObjectUnion> u = makeUnion();
@@ -1050,7 +1050,7 @@ void HsObject::setImage(int index, const HsImage& value)
     m_items->list[static_cast<size_t>(at)] = u;
 }
 
-// ³ÖËø²ğ¿ªºóÔÙ»»ÉÏÕâÒ»¸ñ
+// æŒé”æ‹†å¼€åå†æ¢ä¸Šè¿™ä¸€æ ¼
 void HsObject::setRegion(int index, const HsRegion& value)
 {
     std::shared_ptr<ObjectUnion> u = makeUnion();
@@ -1063,7 +1063,7 @@ void HsObject::setRegion(int index, const HsRegion& value)
     m_items->list[static_cast<size_t>(at)] = u;
 }
 
-// ³ÖËø²ğ¿ªºóÔÙ»»ÉÏÕâÒ»¸ñ
+// æŒé”æ‹†å¼€åå†æ¢ä¸Šè¿™ä¸€æ ¼
 void HsObject::setContour(int index, const HsContour& value)
 {
     std::shared_ptr<ObjectUnion> u = makeUnion();
@@ -1076,7 +1076,7 @@ void HsObject::setContour(int index, const HsContour& value)
     m_items->list[static_cast<size_t>(at)] = u;
 }
 
-// ³ÖËø²ğ¿ªºóÔÙ»»ÉÏÕâÒ»¸ñ
+// æŒé”æ‹†å¼€åå†æ¢ä¸Šè¿™ä¸€æ ¼
 void HsObject::setPoly(int index, const HsPoly& value)
 {
     std::shared_ptr<ObjectUnion> u = makeUnion();
@@ -1089,7 +1089,7 @@ void HsObject::setPoly(int index, const HsPoly& value)
     m_items->list[static_cast<size_t>(at)] = u;
 }
 
-// ³ÖËø²ğ¿ªºóÔÙ»»ÉÏÕâÒ»¸ñ
+// æŒé”æ‹†å¼€åå†æ¢ä¸Šè¿™ä¸€æ ¼
 void HsObject::setCircle(int index, const CircleP& value)
 {
     std::shared_ptr<ObjectUnion> u = makeUnion();
@@ -1102,7 +1102,7 @@ void HsObject::setCircle(int index, const CircleP& value)
     m_items->list[static_cast<size_t>(at)] = u;
 }
 
-// ³ÖËø²ğ¿ªºóÔÙ»»ÉÏÕâÒ»¸ñ
+// æŒé”æ‹†å¼€åå†æ¢ä¸Šè¿™ä¸€æ ¼
 void HsObject::setEllipse(int index, const EllipseP& value)
 {
     std::shared_ptr<ObjectUnion> u = makeUnion();
@@ -1115,7 +1115,7 @@ void HsObject::setEllipse(int index, const EllipseP& value)
     m_items->list[static_cast<size_t>(at)] = u;
 }
 
-// ³ÖËø²ğ¿ªºóÔÙ»»ÉÏÕâÒ»¸ñ
+// æŒé”æ‹†å¼€åå†æ¢ä¸Šè¿™ä¸€æ ¼
 void HsObject::setRect1(int index, const Rect1P& value)
 {
     std::shared_ptr<ObjectUnion> u = makeUnion();
@@ -1128,7 +1128,7 @@ void HsObject::setRect1(int index, const Rect1P& value)
     m_items->list[static_cast<size_t>(at)] = u;
 }
 
-// ³ÖËø²ğ¿ªºóÔÙ»»ÉÏÕâÒ»¸ñ
+// æŒé”æ‹†å¼€åå†æ¢ä¸Šè¿™ä¸€æ ¼
 void HsObject::setRect2(int index, const Rect2P& value)
 {
     std::shared_ptr<ObjectUnion> u = makeUnion();
@@ -1141,7 +1141,7 @@ void HsObject::setRect2(int index, const Rect2P& value)
     m_items->list[static_cast<size_t>(at)] = u;
 }
 
-// ³ÖËø²ğ¿ªºóÔÙ»»ÉÏÕâÒ»¸ñ
+// æŒé”æ‹†å¼€åå†æ¢ä¸Šè¿™ä¸€æ ¼
 void HsObject::setLine(int index, const LineP& value)
 {
     std::shared_ptr<ObjectUnion> u = makeUnion();

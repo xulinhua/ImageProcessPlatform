@@ -1,6 +1,6 @@
 /**
  * @file GraphicItem.cpp
- * @brief GraphicItemÊµÏÖ
+ * @brief GraphicItemå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -23,7 +23,7 @@
 
 namespace HsCtrl {
 
-// Ê®×Ö³ß´çĞ¡ÓÚ 0£ºÈÎÒ»±Û³¤Ëæµ±Ç°´°¿Ú
+// åå­—å°ºå¯¸å°äº 0ï¼šä»»ä¸€è‡‚é•¿éšå½“å‰çª—å£
 static bool isWindowCross(const HsCommData::Graphic& g)
 {
     if (g.kind != HsCommData::KindCross) {
@@ -37,7 +37,7 @@ static bool isWindowCross(const HsCommData::Graphic& g)
     return false;
 }
 
-// KindObject ÇÒÔªËØÈ«ÊÇÇøÓòÊ±×ßĞĞ³Ì»º´æ
+// KindObject ä¸”å…ƒç´ å…¨æ˜¯åŒºåŸŸæ—¶èµ°è¡Œç¨‹ç¼“å­˜
 static bool regionGraphic(const HsCommData::Graphic& g)
 {
     return g.kind == HsCommData::KindObject
@@ -45,7 +45,7 @@ static bool regionGraphic(const HsCommData::Graphic& g)
         && g.geom.kind() == HsCommData::ObjRegion;
 }
 
-// Stack µÄ geom ÀïÖÖÀà²»Ò»ÖÂ
+// Stack çš„ geom é‡Œç§ç±»ä¸ä¸€è‡´
 static bool stackMixed(const HsCommData::Graphic& g)
 {
     return g.role == HsCommData::RoleStack
@@ -53,7 +53,7 @@ static bool stackMixed(const HsCommData::Graphic& g)
         && g.geom.kind() == HsCommData::ObjMixed;
 }
 
-// Stack °ÑÇøÓòĞĞ³ÌÆ´³ÉÒ»¿éÀ´»­£»»ì·ÅÊ±Ìø¹ı²»ÊÇÇøÓòµÄÔªËØ¡£Drawing Ö»ÓÃµÚ 0 ¸ö
+// Stack æŠŠåŒºåŸŸè¡Œç¨‹æ‹¼æˆä¸€å—æ¥ç”»ï¼›æ··æ”¾æ—¶è·³è¿‡ä¸æ˜¯åŒºåŸŸçš„å…ƒç´ ã€‚Drawing åªç”¨ç¬¬ 0 ä¸ª
 static HsCommData::HsRegion shownRegion(const HsCommData::Graphic& g)
 {
     const int n = g.geomSpan();
@@ -101,7 +101,7 @@ static HsCommData::HsRegion shownRegion(const HsCommData::Graphic& g)
     return out;
 }
 
-// Ğı×ª¾ØĞÎËÄ½Ç£¨Í¼Ïñ×ø±ê£©
+// æ—‹è½¬çŸ©å½¢å››è§’ï¼ˆå›¾åƒåæ ‡ï¼‰
 static QPolygonF rect2Polygon(const HsCommData::Rect2P& r)
 {
     const qreal c = qCos(r.phi);
@@ -114,7 +114,7 @@ static QPolygonF rect2Polygon(const HsCommData::Rect2P& r)
     return poly;
 }
 
-// µ¥Î»Ô²Ó³Éäµ½ÍÖÔ²µÄ±ä»»
+// å•ä½åœ†æ˜ å°„åˆ°æ¤­åœ†çš„å˜æ¢
 static QTransform ellipseTransform(const QPointF& c, qreal ra, qreal rb, qreal phi)
 {
     QTransform t;
@@ -124,7 +124,7 @@ static QTransform ellipseTransform(const QPointF& c, qreal ra, qreal rb, qreal p
     return t;
 }
 
-// µ¥Ìõ HsCommData::Graphic µÄ³¡¾° Item
+// å•æ¡ HsCommData::Graphic çš„åœºæ™¯ Item
 GraphicItem::GraphicItem(const HsCommData::Graphic& g, QGraphicsItem* parent)
     : QGraphicsItem(parent)
     , m_g(g)
@@ -138,7 +138,7 @@ GraphicItem::GraphicItem(const HsCommData::Graphic& g, QGraphicsItem* parent)
     rebuildBounds();
 }
 
-// Ìæ»»Ğ­ÒéÊı¾İ²¢ÖØ½¨ HsCommData::HsRegion »º´æ
+// æ›¿æ¢åè®®æ•°æ®å¹¶é‡å»º HsCommData::HsRegion ç¼“å­˜
 void GraphicItem::setGraphic(const HsCommData::Graphic& g)
 {
     prepareGeometryChange();
@@ -149,13 +149,13 @@ void GraphicItem::setGraphic(const HsCommData::Graphic& g)
     update();
 }
 
-// µ±Ç°Ğ­ÒéÊı¾İ¸±±¾
+// å½“å‰åè®®æ•°æ®å‰¯æœ¬
 HsCommData::Graphic GraphicItem::graphic() const
 {
     return m_g;
 }
 
-// Drawing Ñ¡ÖĞ£¨ÏÔÊ¾ÊÖ±ú£©
+// Drawing é€‰ä¸­ï¼ˆæ˜¾ç¤ºæ‰‹æŸ„ï¼‰
 void GraphicItem::setSelectedDrawing(bool on)
 {
     if (m_selected == on) {
@@ -167,13 +167,13 @@ void GraphicItem::setSelectedDrawing(bool on)
     update();
 }
 
-// ÊÇ·ñÎªµ±Ç°Ñ¡ÖĞ ROI
+// æ˜¯å¦ä¸ºå½“å‰é€‰ä¸­ ROI
 bool GraphicItem::isSelectedDrawing() const
 {
     return m_selected;
 }
 
-// ÊÓ¿ÚËõ·Å£¬ÓÃÓÚÊÖ±ú´ÖÏ¸Óë HsCommData::HsRegion LOD
+// è§†å£ç¼©æ”¾ï¼Œç”¨äºæ‰‹æŸ„ç²—ç»†ä¸ HsCommData::HsRegion LOD
 void GraphicItem::setViewScale(qreal s)
 {
     s = qMax(s, 1e-6);
@@ -198,7 +198,7 @@ void GraphicItem::setViewScale(qreal s)
     }
 }
 
-// ÊÇ·ñÎªĞı×ªÊÖ±ú
+// æ˜¯å¦ä¸ºæ—‹è½¬æ‰‹æŸ„
 bool GraphicItem::isRotationHandle(int index) const
 {
     if (m_g.kind == HsCommData::KindObject && m_g.geom.kind() == HsCommData::ObjRect2) {
@@ -213,7 +213,7 @@ bool GraphicItem::isRotationHandle(int index) const
     return false;
 }
 
-// Ğı×ªÊÖ±ú¹â±ê£¨»º´æÒ»ÕÅ pixmap£©
+// æ—‹è½¬æ‰‹æŸ„å…‰æ ‡ï¼ˆç¼“å­˜ä¸€å¼  pixmapï¼‰
 static QCursor rotateHandleCursor()
 {
     static QCursor cur;
@@ -240,7 +240,7 @@ static QCursor rotateHandleCursor()
     return cur;
 }
 
-// °´ÊÓ¿ÚÖĞÊÖ±ú·½ÏòÑ¡À­Éì¹â±ê
+// æŒ‰è§†å£ä¸­æ‰‹æŸ„æ–¹å‘é€‰æ‹‰ä¼¸å…‰æ ‡
 static Qt::CursorShape sizeShapeFromViewAngle(qreal rad)
 {
     qreal deg = rad * 180.0 / HsCommData::kPi;
@@ -262,7 +262,7 @@ static Qt::CursorShape sizeShapeFromViewAngle(qreal rad)
     return Qt::SizeBDiagCursor;
 }
 
-// ¸ÃÊÖ±úÔÚµ±Ç°ÊÓ¿ÚÏÂµÄ¹â±ê
+// è¯¥æ‰‹æŸ„åœ¨å½“å‰è§†å£ä¸‹çš„å…‰æ ‡
 QCursor GraphicItem::cursorForHandle(int index, const QTransform& sceneToView) const
 {
     if (isRotationHandle(index)) {
@@ -307,7 +307,7 @@ QCursor GraphicItem::cursorForHandle(int index, const QTransform& sceneToView) c
     return QCursor(sizeShapeFromViewAngle(ang));
 }
 
-// °´¼¸ºÎÓëÊÖ±úÖØËã°üÎ§ºĞ
+// æŒ‰å‡ ä½•ä¸æ‰‹æŸ„é‡ç®—åŒ…å›´ç›’
 void GraphicItem::rebuildBounds()
 {
     m_g.updateBounds();
@@ -333,7 +333,7 @@ void GraphicItem::rebuildBounds()
     }
 }
 
-// °´ RLE ¸´ÔÓ¶ÈÑ¡Ôñ path »ò mask
+// æŒ‰ RLE å¤æ‚åº¦é€‰æ‹© path æˆ– mask
 void GraphicItem::ensureRegionDisplay()
 {
     if (!regionGraphic(m_g)) {
@@ -345,7 +345,7 @@ void GraphicItem::ensureRegionDisplay()
     m_regionDisp.maskScale = 0;
     m_regionDisp.path = QPainterPath();
     m_regionDisp.outline = QPainterPath();
-    // Ìî³äÓÃĞĞ³Ì»ò mask£¬Ãè±ß²ÅÒª±ßÔµ¡£Á½±ß²»ÒªÒ»Æğ×ö
+    // å¡«å……ç”¨è¡Œç¨‹æˆ– maskï¼Œæè¾¹æ‰è¦è¾¹ç¼˜ã€‚ä¸¤è¾¹ä¸è¦ä¸€èµ·åš
     if (m_g.geomStyle.draw == HsCommData::DrawFill) {
         if (RegionDisplay::preferMask(m_regionDisp.rle)) {
             const qreal lod = RegionDisplay::clampLodScale(m_viewScale);
@@ -358,14 +358,14 @@ void GraphicItem::ensureRegionDisplay()
     }
 }
 
-// mask ÊÇ·ñÒòËõ·Å¹ıÆÚ
+// mask æ˜¯å¦å› ç¼©æ”¾è¿‡æœŸ
 bool GraphicItem::regionLodStale(qreal lod) const
 {
     if (m_regionDisp.maskLod.isNull() || m_regionDisp.maskScale <= 0) {
         return true;
     }
     if (m_viewScale >= 0.999 && m_regionDisp.maskScale < 0.999) {
-        // ·Å´óºó±ØĞë»» 1:1 mask£¬·ñÔòãĞÖµÍ¿É«Ïà¶Ôµ×Í¼´í¸ñ¡£
+        // æ”¾å¤§åå¿…é¡»æ¢ 1:1 maskï¼Œå¦åˆ™é˜ˆå€¼æ¶‚è‰²ç›¸å¯¹åº•å›¾é”™æ ¼ã€‚
         return true;
     }
     const qreal built = m_regionDisp.maskScale;
@@ -373,7 +373,7 @@ bool GraphicItem::regionLodStale(qreal lod) const
     return ratio >= 1.6;
 }
 
-// HsCommData::HsRegion Ìî³äÉ«
+// HsCommData::HsRegion å¡«å……è‰²
 QColor GraphicItem::regionFillColor() const
 {
     QColor c = toQ(m_g.geomStyle.fill);
@@ -384,7 +384,7 @@ QColor GraphicItem::regionFillColor() const
     return c;
 }
 
-// °Ñ mask Ìùµ½ bounds ¾ØĞÎ
+// æŠŠ mask è´´åˆ° bounds çŸ©å½¢
 void GraphicItem::paintRegionMask(QPainter* painter, const QStyleOptionGraphicsItem* option) const
 {
     const QRectF dest(toQ(m_regionDisp.rle.bounds));
@@ -412,13 +412,13 @@ void GraphicItem::paintRegionMask(QPainter* painter, const QStyleOptionGraphicsI
     painter->drawPixmap(vis, pm, src);
 }
 
-// º¬ÊÖ±úµæµÄ°üÎ§ºĞ
+// å«æ‰‹æŸ„å«çš„åŒ…å›´ç›’
 QRectF GraphicItem::boundingRect() const
 {
     return m_bounds;
 }
 
-// ÂÖÀªÂ·¾¶£¨ÃüÖĞÓëÃè±ß¹²ÓÃ£©¡£Stack °Ñ geom ÀïÃ¿¸ö¼¸ºÎ¶¼¼Ó½øÈ¥
+// è½®å»“è·¯å¾„ï¼ˆå‘½ä¸­ä¸æè¾¹å…±ç”¨ï¼‰ã€‚Stack æŠŠ geom é‡Œæ¯ä¸ªå‡ ä½•éƒ½åŠ è¿›å»
 QPainterPath GraphicItem::outlinePath() const
 {
     QPainterPath path;
@@ -565,7 +565,7 @@ QPainterPath GraphicItem::outlinePath() const
     return path;
 }
 
-// ¼ÓÃè±ß¿í¶ÈºóµÄÃüÖĞĞÎ×´
+// åŠ æè¾¹å®½åº¦åçš„å‘½ä¸­å½¢çŠ¶
 QPainterPath GraphicItem::shape() const
 {
     if (regionGraphic(m_g) && !stackMixed(m_g)) {
@@ -579,14 +579,14 @@ QPainterPath GraphicItem::shape() const
     return stroker.createStroke(path).united(path);
 }
 
-// ´Ó painter ÊÀ½ç±ä»»È¡µ±Ç°Ëõ·Å
+// ä» painter ä¸–ç•Œå˜æ¢å–å½“å‰ç¼©æ”¾
 qreal GraphicItem::viewScale(const QPainter* painter) const
 {
     const QTransform wt = painter->worldTransform();
     return QLineF(wt.map(QPointF(0, 0)), wt.map(QPointF(1, 0))).length();
 }
 
-// °´ kind »­¼¸ºÎ£¬Ñ¡ÖĞÊ±»­ÊÖ±ú
+// æŒ‰ kind ç”»å‡ ä½•ï¼Œé€‰ä¸­æ—¶ç”»æ‰‹æŸ„
 void GraphicItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget*)
 {
     if (regionGraphic(m_g) && !stackMixed(m_g)) {
@@ -615,8 +615,8 @@ void GraphicItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* optio
         } else {
             QColor edge = toQ(st.stroke);
             edge.setAlpha(255);
-            // Region µÄ boundary() ÊÇÒ»ÏñËØĞĞ³Ì¡£widthPx ´óÓÚ 1 Ê±ÓÃ QPen
-            // À©±ß£¬²ÅÄÜÏñÆÕÍ¨¼¸ºÎÒ»Ñù×ñÊØ Graphic::GeomStyle.widthPx¡£
+            // Region çš„ boundary() æ˜¯ä¸€åƒç´ è¡Œç¨‹ã€‚widthPx å¤§äº 1 æ—¶ç”¨ QPen
+            // æ‰©è¾¹ï¼Œæ‰èƒ½åƒæ™®é€šå‡ ä½•ä¸€æ ·éµå®ˆ Graphic::GeomStyle.widthPxã€‚
             if (st.widthPx > 1.0) {
                 painter->setPen(pen);
                 painter->setBrush(edge);
@@ -672,7 +672,7 @@ void GraphicItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* optio
     }
 }
 
-// »­Ñ¡ÖĞÊÖ±ú£¨ÆÁÄ»ÏñËØ´óĞ¡£©
+// ç”»é€‰ä¸­æ‰‹æŸ„ï¼ˆå±å¹•åƒç´ å¤§å°ï¼‰
 void GraphicItem::paintHandles(QPainter* painter) const
 {
     const QVector<QPointF> hs = handleScenePositions();
@@ -706,7 +706,7 @@ void GraphicItem::paintHandles(QPainter* painter) const
     painter->restore();
 }
 
-// ÊÖ±úÔÚÍ¼Ïñ×ø±êÏµÖĞµÄÎ»ÖÃ
+// æ‰‹æŸ„åœ¨å›¾åƒåæ ‡ç³»ä¸­çš„ä½ç½®
 QVector<QPointF> GraphicItem::handleScenePositions() const
 {
     QVector<QPointF> hs;
@@ -788,7 +788,7 @@ QVector<QPointF> GraphicItem::handleScenePositions() const
         hs << p;
         qreal s = m_g.cross[0].size;
         if (s < 0.0) {
-            // ´©´°Ê®×Ö£ºÔÚÔ¼ 80 ÆÁÏñËØ´¦·ÅĞéÊÖ±ú£¬ÍÏ¶¯ºóĞ´³ÉÓĞÏŞ°ë¿í
+            // ç©¿çª—åå­—ï¼šåœ¨çº¦ 80 å±åƒç´ å¤„æ”¾è™šæ‰‹æŸ„ï¼Œæ‹–åŠ¨åå†™æˆæœ‰é™åŠå®½
             s = 80.0 / qMax(m_viewScale, 1e-6);
         }
         hs << (p + ax * s);
@@ -814,7 +814,7 @@ QVector<QPointF> GraphicItem::handleScenePositions() const
     return hs;
 }
 
-// ÊÓ¿Ú×ø±êÃüÖĞÊÖ±ú
+// è§†å£åæ ‡å‘½ä¸­æ‰‹æŸ„
 HandleHit GraphicItem::hitHandle(const QPointF& viewPos, const QTransform& sceneToView, qreal hotPx) const
 {
     HandleHit hit;
@@ -835,7 +835,7 @@ HandleHit GraphicItem::hitHandle(const QPointF& viewPos, const QTransform& scene
     return hit;
 }
 
-// Í¼Ïñ×ø±êÃüÖĞÂÖÀª»òÌî³ä
+// å›¾åƒåæ ‡å‘½ä¸­è½®å»“æˆ–å¡«å……
 bool GraphicItem::hitShape(const QPointF& scenePos, qreal imageTol) const
 {
     const bool fillBody = (m_g.role == HsCommData::RoleDrawing);
@@ -1069,7 +1069,7 @@ bool GraphicItem::hitShape(const QPointF& scenePos, qreal imageTol) const
     return false;
 }
 
-// ÊÇ·ñÓĞĞ§
+// æ˜¯å¦æœ‰æ•ˆ
 bool HandleHit::isValid() const
 {
     return index >= 0;

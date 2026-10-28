@@ -1,6 +1,6 @@
 /**
  * @file HalconAlgo.h
- * @brief HalconAlgoÍ·ÎÄ¼ş
+ * @brief HalconAlgoå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -16,32 +16,32 @@
 
 /**
  * @class ThresholdRst
- * @brief »Ò¶ÈãĞÖµÒ»´ÎÔËĞĞµÄ½á¹ûÓëºÄÊ±¡£²ÊÉ«Í¼ÏÈ toLuma8£¬Óë HUD Gray Ò»ÖÂ
+ * @brief ç°åº¦é˜ˆå€¼ä¸€æ¬¡è¿è¡Œçš„ç»“æœä¸è€—æ—¶ã€‚å½©è‰²å›¾å…ˆ toLuma8ï¼Œä¸ HUD Gray ä¸€è‡´
  */
 struct ThresholdRst {
-    HsCommData::HsRegion rle; ///< Ç°¾°ĞĞ³Ì
-    bool ok;                ///< ÊÇ·ñ³É¹¦
-    bool usedHalcon;        ///< true ±íÊ¾×ß Halcon£¬·ñÔò±¾µØÉ¨Ãè
-    QString error;          ///< Ê§°ÜÔ­Òò
-    qint64 thresholdUs;     ///< ãĞÖµ±¾ÉíºÄÊ±£¨Î¢Ãë£©
-    qint64 convertUs;       ///< HsCommData::HsRegion ¡ú HsCommData::HsRegion ×ª»»ºÄÊ±£¨Î¢Ãë£©
+    HsCommData::HsRegion rle; ///< å‰æ™¯è¡Œç¨‹
+    bool ok;                ///< æ˜¯å¦æˆåŠŸ
+    bool usedHalcon;        ///< true è¡¨ç¤ºèµ° Halconï¼Œå¦åˆ™æœ¬åœ°æ‰«æ
+    QString error;          ///< å¤±è´¥åŸå› 
+    qint64 thresholdUs;     ///< é˜ˆå€¼æœ¬èº«è€—æ—¶ï¼ˆå¾®ç§’ï¼‰
+    qint64 convertUs;       ///< HsCommData::HsRegion â†’ HsCommData::HsRegion è½¬æ¢è€—æ—¶ï¼ˆå¾®ç§’ï¼‰
 };
 
 /**
- * @brief ×¼±¸ãĞÖµÊäÈëÍ¼£¨BT.601 »Ò¶È£¬¿ÉÑ¡Éú³É Halcon HImage£©
- * @param src Ô­Í¼
- * @param error Ê§°ÜÊ±Ğ´ÈëÔ­Òò
+ * @brief å‡†å¤‡é˜ˆå€¼è¾“å…¥å›¾ï¼ˆBT.601 ç°åº¦ï¼Œå¯é€‰ç”Ÿæˆ Halcon HImageï¼‰
+ * @param src åŸå›¾
+ * @param error å¤±è´¥æ—¶å†™å…¥åŸå› 
  */
 bool prepareThresholdImage(const QImage& src, QString* error);
 /**
- * @brief ¶ÔÒÑ×¼±¸µÄ»Ò¶ÈÍ¼×öãĞÖµ
- * @param tMin ÏÂÏŞ 0¨C255
- * @param tMax ÉÏÏŞ 0¨C255
+ * @brief å¯¹å·²å‡†å¤‡çš„ç°åº¦å›¾åšé˜ˆå€¼
+ * @param tMin ä¸‹é™ 0â€“255
+ * @param tMax ä¸Šé™ 0â€“255
  */
 ThresholdRst runGrayThreshold(int tMin, int tMax);
-/** @brief ±¾½ø³ÌÊÇ·ñÁ´½ÓÁË Halcon */
+/** @brief æœ¬è¿›ç¨‹æ˜¯å¦é“¾æ¥äº† Halcon */
 bool hasHalconEngine();
-/** @brief ÒıÇæÏÔÊ¾Ãû£¨Halcon °æ±¾»ò±¾µØÉ¨Ãè£© */
+/** @brief å¼•æ“æ˜¾ç¤ºåï¼ˆHalcon ç‰ˆæœ¬æˆ–æœ¬åœ°æ‰«æï¼‰ */
 QString halconEngineName();
 
 #endif

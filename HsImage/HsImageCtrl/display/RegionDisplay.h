@@ -1,6 +1,6 @@
 /**
  * @file RegionDisplay.h
- * @brief RegionDisplayÍ·ÎÄ¼þ
+ * @brief RegionDisplayå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -18,37 +18,37 @@ namespace HsCtrl {
 
 /**
  * @class RegionDisplay
- * @brief HsCommData::HsRegion µÄÏÔÊ¾»º´æ¡£ÏÒÉÙÊ±»­ path£¬ÏÒ¶àÊ±»­ mask¡£
+ * @brief HsCommData::HsRegion çš„æ˜¾ç¤ºç¼“å­˜ã€‚å¼¦å°‘æ—¶ç”» pathï¼Œå¼¦å¤šæ—¶ç”» maskã€‚
  */
 class RegionDisplay {
 public:
-    HsCommData::HsRegion rle; ///< Óë Graphic.geom ÀïÒªÏÔÊ¾µÄÐÐ³ÌÒ»ÖÂ
-    QPainterPath path;        ///< Ìî³äÂÖÀª
-    QPainterPath outline;     ///< ±ßÔµ¡£ÍâÂÖÀªºÍ¿×¶´£¬Ïß¿òÓÃ
-    QPixmap maskLod;          ///< °´ÊÓ¿ÚËõÐ¡µÄÌùÍ¼
-    qreal maskScale;          ///< Éú³É mask Ê±µÄ lod£¬1 ±íÊ¾²»ËõÐ¡
+    HsCommData::HsRegion rle; ///< ä¸Ž Graphic.geom é‡Œè¦æ˜¾ç¤ºçš„è¡Œç¨‹ä¸€è‡´
+    QPainterPath path;        ///< å¡«å……è½®å»“
+    QPainterPath outline;     ///< è¾¹ç¼˜ã€‚å¤–è½®å»“å’Œå­”æ´žï¼Œçº¿æ¡†ç”¨
+    QPixmap maskLod;          ///< æŒ‰è§†å£ç¼©å°çš„è´´å›¾
+    qreal maskScale;          ///< ç”Ÿæˆ mask æ—¶çš„ lodï¼Œ1 è¡¨ç¤ºä¸ç¼©å°
 
-    RegionDisplay(); ///< ¿ÕÏÔÊ¾»º´æ
+    RegionDisplay(); ///< ç©ºæ˜¾ç¤ºç¼“å­˜
 
-    /** @brief ÓÉ rle Éú³ÉÌî³ä path */
+    /** @brief ç”± rle ç”Ÿæˆå¡«å…… path */
     void rebuildPath();
-    /** @brief ÓÉÇøÓò±ßÔµÉú³ÉÏß¿ò path */
+    /** @brief ç”±åŒºåŸŸè¾¹ç¼˜ç”Ÿæˆçº¿æ¡† path */
     void rebuildOutline();
     /**
-     * @brief °´ lodScale Éú³ÉÔ¤³Ë ARGB mask
-     * @param lodScale ´óÓÚ 1 »á±»¼Ð»Ø 1
+     * @brief æŒ‰ lodScale ç”Ÿæˆé¢„ä¹˜ ARGB mask
+     * @param lodScale å¤§äºŽ 1 ä¼šè¢«å¤¹å›ž 1
      */
     void rebuildMask(const QColor& fill, qreal lodScale);
-    /** @brief ÎÞÐÐ³ÌÇÒÎÞ»º´æ */
+    /** @brief æ— è¡Œç¨‹ä¸”æ— ç¼“å­˜ */
     bool isEmpty() const;
 
-    /** @brief ÏÒ¶à»òÃæ»ý´óÊ±¸Ä»­ mask */
+    /** @brief å¼¦å¤šæˆ–é¢ç§¯å¤§æ—¶æ”¹ç”» mask */
     static bool preferMask(const HsCommData::HsRegion& rle);
-    /** @brief ÓÉÊÓ¿ÚËõ·ÅµÃµ½ lod£¬¼Ðµ½ [1/16, 1] */
+    /** @brief ç”±è§†å£ç¼©æ”¾å¾—åˆ° lodï¼Œå¤¹åˆ° [1/16, 1] */
     static qreal clampLodScale(qreal viewScale);
 };
 
-/** @brief Ã¿ÌõÏÒÒ»¸ö 1px ¸ß¾ØÐÎ£¬Æ´³ÉÌî³ä path */
+/** @brief æ¯æ¡å¼¦ä¸€ä¸ª 1px é«˜çŸ©å½¢ï¼Œæ‹¼æˆå¡«å…… path */
 QPainterPath rleToPath(const HsCommData::HsRegion& rle);
 
 }

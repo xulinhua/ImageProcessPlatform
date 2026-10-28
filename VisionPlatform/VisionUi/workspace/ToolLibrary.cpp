@@ -1,6 +1,6 @@
 /**
  * @file ToolLibrary.cpp
- * @brief ToolLibrary µœ÷
+ * @brief ToolLibraryÂÆûÁé∞
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -24,7 +24,7 @@ namespace Vision {
 
 namespace {
 
-// ∑÷¿‡«≥µ◊…´£®”Îπ§æﬂÕº±Í…´œµ∂‘”¶£©
+// ÂàÜÁ±ªÊµÖÂ∫ïËâ≤Ôºà‰∏éÂ∑•ÂÖ∑ÂõæÊ†áËâ≤Á≥ªÂØπÂ∫îÔºâ
 QColor categoryBadgeColor(ToolType ty)
 {
     switch (ty) {
@@ -36,13 +36,18 @@ QColor categoryBadgeColor(ToolType ty)
     case ToolType::Comm: return QColor(0xE0, 0xF2, 0xF1);
     case ToolType::RstProcess: return QColor(0xFF, 0xF3, 0xE0);
     case ToolType::Calib: return QColor(0xE1, 0xF5, 0xFE);
+    case ToolType::Acquire3D: return QColor(0xE0, 0xF7, 0xFA);
+    case ToolType::Prepare3D: return QColor(0xE8, 0xF5, 0xE9);
+    case ToolType::Measure3D: return QColor(0xFF, 0xF8, 0xE1);
+    case ToolType::Align3D: return QColor(0xF3, 0xE5, 0xF5);
+    case ToolType::Infer: return QColor(0xFC, 0xE4, 0xEC);
     }
     return QColor(0xEE, 0xEE, 0xEE);
 }
 
 } // namespace
 
-// ∞¥ ToolType ÃÓ∏∏Ω⁄µ„£¨‘Ÿ∞—√ø∏ˆ“—◊¢≤·æﬂÃÂπ§æﬂπ“µΩ∂‘”¶¿‡–Õœ¬
+// Êåâ ToolType Â°´Áà∂ËäÇÁÇπÔºåÂÜçÊääÊØè‰∏™Â∑≤Ê≥®ÂÜåÂÖ∑‰ΩìÂ∑•ÂÖ∑ÊåÇÂà∞ÂØπÂ∫îÁ±ªÂûã‰∏ã
 void fillRegisteredToolTree(QTreeWidget* lib, bool withFlowStructure)
 {
     if (!lib) {
@@ -50,24 +55,29 @@ void fillRegisteredToolTree(QTreeWidget* lib, bool withFlowStructure)
     }
     lib->clear();
     lib->setIconSize(QSize(20, 20));
-    const int nCat = toolTypeCount();
+    const int nType = toolTypeCount();
+    const int nShow = toolTypeDisplayCount();
     std::vector<QTreeWidgetItem*> cats;
-    cats.resize(static_cast<size_t>(nCat), 0);
-    for (int i = 0; i < nCat; ++i) {
+    cats.resize(static_cast<size_t>(nType), 0);
+    for (int i = 0; i < nShow; ++i) {
         const ToolType ty = toolTypeDisplayAt(i);
+        const int idx = toolTypeToInt(ty);
+        if (idx < 0 || idx >= nType) {
+            continue;
+        }
         QTreeWidgetItem* cat = new QTreeWidgetItem(
             lib, QStringList(QString::fromUtf8(toolTypeTitle(ty).c_str())));
         const int key = toolTreeIconKeyForType(ty);
         const QIcon raw = toolTreeIcon(key);
         cat->setIcon(0, badgeVisionIcon(raw, categoryBadgeColor(ty), 20));
-        cats[static_cast<size_t>(toolTypeToInt(ty))] = cat;
+        cats[static_cast<size_t>(idx)] = cat;
     }
 
     const std::vector<ToolBase*> tools = ToolRegistry::instance().all();
     for (int i = 0; i < static_cast<int>(tools.size()); ++i) {
         const ToolDesc d = tools[static_cast<size_t>(i)]->desc();
         const int ty = toolTypeToInt(d.type);
-        if (ty < 0 || ty >= nCat || !cats[static_cast<size_t>(ty)]) {
+        if (ty < 0 || ty >= nType || !cats[static_cast<size_t>(ty)]) {
             continue;
         }
         QTreeWidgetItem* it = new QTreeWidgetItem(cats[static_cast<size_t>(ty)], QStringList(qs(d.displayName)));
@@ -80,20 +90,20 @@ void fillRegisteredToolTree(QTreeWidget* lib, bool withFlowStructure)
         it->setToolTip(0, tip);
     }
     if (withFlowStructure) {
-        QTreeWidgetItem* st = new QTreeWidgetItem(lib, QStringList(T("¡˜≥ÃΩ·ππ")));
+        QTreeWidgetItem* st = new QTreeWidgetItem(lib, QStringList(T("ÊµÅÁ®ãÁªìÊûÑ")));
         st->setIcon(0, badgeVisionIcon(toolTreeIcon(ToolTreeIconParallel), QColor(0xE3, 0xF2, 0xFD), 20));
-        QTreeWidgetItem* pg = new QTreeWidgetItem(st, QStringList(T("≤¢––◊È")));
+        QTreeWidgetItem* pg = new QTreeWidgetItem(st, QStringList(T("Âπ∂Ë°åÁªÑ")));
         pg->setData(0, Qt::UserRole, QLatin1String("group.parallel"));
         pg->setIcon(0, toolTreeIcon(ToolTreeIconParallel));
-        QTreeWidgetItem* ig = new QTreeWidgetItem(st, QStringList(T("Ãıº˛◊È If/Else")));
+        QTreeWidgetItem* ig = new QTreeWidgetItem(st, QStringList(T("Êù°‰ª∂ÁªÑ If/Else")));
         ig->setData(0, Qt::UserRole, QLatin1String("group.if"));
         ig->setIcon(0, toolTreeIcon(ToolTreeIconIf));
-        QTreeWidgetItem* lg = new QTreeWidgetItem(st, QStringList(T("—≠ª∑◊È")));
+        QTreeWidgetItem* lg = new QTreeWidgetItem(st, QStringList(T("Âæ™ÁéØÁªÑ")));
         lg->setData(0, Qt::UserRole, QLatin1String("group.loop"));
         lg->setIcon(0, toolTreeIcon(ToolTreeIconBranch));
     }
-    QTreeWidgetItem* libCat = new QTreeWidgetItem(lib, QStringList(QString::fromLocal8Bit("∂¿¡¢◊È∫œπ§æﬂ")));
-    QTreeWidgetItem* solCat = new QTreeWidgetItem(lib, QStringList(QString::fromLocal8Bit("œÓƒø◊È∫œπ§æﬂ")));
+    QTreeWidgetItem* libCat = new QTreeWidgetItem(lib, QStringList(QString::fromUtf8("Áã¨Á´ãÁªÑÂêàÂ∑•ÂÖ∑")));
+    QTreeWidgetItem* solCat = new QTreeWidgetItem(lib, QStringList(QString::fromUtf8("È°πÁõÆÁªÑÂêàÂ∑•ÂÖ∑")));
     const std::vector<CompositeDef*> defs = CompositeMgr::instance().all();
     for (size_t i = 0; i < defs.size(); ++i) {
         if (!defs[i]) {

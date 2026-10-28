@@ -1,6 +1,6 @@
 /**
  * @file ToolBase.cpp
- * @brief ToolBaseÊµÏÖ
+ * @brief ToolBaseå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -9,118 +9,124 @@
 #include "ToolBase.h"
 #include "AlgLibKind.h"
 #include "AlgToolBase.h"
+#include <HsCommData/HsError.h>
 
 namespace {
 
 const char kToolVersion[] = "1.0.0.0";
 const Vision::VerNoteRaw kVerNotes[] = {
-    { "1.0.0.0", "Ê×°æ" },
+    { "1.0.0.0", "é¦–ç‰ˆ" },
 };
 
 }
 
 namespace Vision {
 
-// ¿ÕÊµÀı
+// ç©ºå®ä¾‹
 ToolBase::ToolBase()
+    : m_alg(nullptr)
 {
 }
 
-// ÊÍ·ÅÊµÀı
+// é‡Šæ”¾å®ä¾‹
 ToolBase::~ToolBase()
 {
+    if (m_alg) {
+        m_alg->destroy();
+        m_alg = nullptr;
+    }
 }
 
-// Éí·İ£¬ÂäÅÌ
+// èº«ä»½ï¼Œè½ç›˜
 ToolInfo& ToolBase::info()
 {
     return m_info;
 }
 
-// Éí·İ£¬ÂäÅÌ
+// èº«ä»½ï¼Œè½ç›˜
 const ToolInfo& ToolBase::info() const
 {
     return m_info;
 }
 
-// Ğ´ÈëÉí·İ
+// å†™å…¥èº«ä»½
 void ToolBase::setInfo(const ToolInfo& value)
 {
     m_info = value;
 }
 
-// ÊäÈëÁ¬Ïß£¬ÂäÅÌ
+// è¾“å…¥è¿çº¿ï¼Œè½ç›˜
 std::vector<ToolInputLink>& ToolBase::links()
 {
     return m_links;
 }
 
-// ÊäÈëÁ¬Ïß£¬ÂäÅÌ
+// è¾“å…¥è¿çº¿ï¼Œè½ç›˜
 const std::vector<ToolInputLink>& ToolBase::links() const
 {
     return m_links;
 }
 
-// Ğ´ÈëÊäÈëÁ¬Ïß
+// å†™å…¥è¾“å…¥è¿çº¿
 void ToolBase::setLinks(const std::vector<ToolInputLink>& value)
 {
     m_links = value;
 }
 
-// ²ÎÊı£¬ÂäÅÌ
+// å‚æ•°ï¼Œè½ç›˜
 ToolParam& ToolBase::param()
 {
     return m_param;
 }
 
-// ²ÎÊı£¬ÂäÅÌ
+// å‚æ•°ï¼Œè½ç›˜
 const ToolParam& ToolBase::param() const
 {
     return m_param;
 }
 
-// Ğ´Èë²ÎÊı
+// å†™å…¥å‚æ•°
 void ToolBase::setPara(const ToolParam& value)
 {
     m_param = value;
 }
 
-// ±¾ÅÄ IO£¬½öÔËĞĞÌ¬
+// æœ¬æ‹ IOï¼Œä»…è¿è¡Œæ€
 ToolIo& ToolBase::io()
 {
     return m_io;
 }
 
-// ±¾ÅÄ IO£¬½öÔËĞĞÌ¬
+// æœ¬æ‹ IOï¼Œä»…è¿è¡Œæ€
 const ToolIo& ToolBase::io() const
 {
     return m_io;
 }
 
-// Ğ´Èë±¾ÅÄ IO
+// å†™å…¥æœ¬æ‹ IO
 void ToolBase::setIo(const ToolIo& value)
 {
     m_io = value;
 }
 
-// ÔËĞĞÌ¬ÊıÖµ£¬²»ÂäÅÌ
+// è¿è¡Œæ€æ•°å€¼ï¼Œä¸è½ç›˜
 ParamMap& ToolBase::runtime()
 {
     return m_runtime;
 }
 
-// ÔËĞĞÌ¬ÊıÖµ£¬²»ÂäÅÌ
+// è¿è¡Œæ€æ•°å€¼ï¼Œä¸è½ç›˜
 const ParamMap& ToolBase::runtime() const
 {
     return m_runtime;
 }
 
-// Ğ´ÈëÔËĞĞÌ¬ÊıÖµ
+// å†™å…¥è¿è¡Œæ€æ•°å€¼
 void ToolBase::setRuntime(const ParamMap& value)
 {
     m_runtime = value;
 }
-// °´¹¤¾ßÀàĞÍ¸ø³öÄ¬ÈÏ¶Ë¿Ú±í
+// æŒ‰å·¥å…·ç±»å‹ç»™å‡ºé»˜è®¤ç«¯å£è¡¨
 std::vector<PortDesc> defaultPortsForType(ToolType type)
 {
     std::vector<PortDesc> p;
@@ -170,57 +176,86 @@ std::vector<PortDesc> defaultPortsForType(ToolType type)
         p.push_back(PortDesc(PortDir::In, PortData::Pose));
         p.push_back(PortDesc(PortDir::Out, PortData::Pose));
         break;
+    case ToolType::Acquire3D:
+        p.push_back(PortDesc(PortDir::Out, PortData::Cloud));
+        p.push_back(PortDesc(PortDir::Out, PortData::Pose3));
+        p.push_back(PortDesc(PortDir::Out, PortData::Shape3));
+        break;
+    case ToolType::Prepare3D:
+        p.push_back(PortDesc(PortDir::In, PortData::Cloud));
+        p.push_back(PortDesc(PortDir::Out, PortData::Cloud));
+        break;
+    case ToolType::Measure3D:
+        p.push_back(PortDesc(PortDir::In, PortData::Cloud));
+        p.push_back(PortDesc(PortDir::Out, PortData::Shape3));
+        p.push_back(PortDesc(PortDir::Out, PortData::Cloud));
+        p.push_back(PortDesc(PortDir::Out, PortData::Tuple));
+        p.push_back(PortDesc(PortDir::Out, PortData::Logic));
+        break;
+    case ToolType::Align3D:
+        p.push_back(PortDesc(PortDir::In, PortData::Cloud));
+        p.push_back(PortDesc(PortDir::Out, PortData::Pose3));
+        p.push_back(PortDesc(PortDir::Out, PortData::Tuple));
+        p.push_back(PortDesc(PortDir::Out, PortData::Logic));
+        break;
+    case ToolType::Infer:
+        p.push_back(PortDesc(PortDir::In, PortData::Image));
+        p.push_back(PortDesc(PortDir::Out, PortData::Logic));
+        p.push_back(PortDesc(PortDir::Out, PortData::Tuple));
+        p.push_back(PortDesc(PortDir::Out, PortData::Region));
+        p.push_back(PortDesc(PortDir::Out, PortData::Roi));
+        break;
     }
     return p;
 }
 
-// Ä¬ÈÏÎŞËµÃ÷
+// é»˜è®¤æ— è¯´æ˜
 std::string ToolBase::description() const
 {
     return std::string();
 }
 
-// Ä¬ÈÏ¹¤¾ß°æ±¾
+// é»˜è®¤å·¥å…·ç‰ˆæœ¬
 std::string ToolBase::version() const
 {
     return std::string(kToolVersion);
 }
 
-// Ê¾½ÌÒ»´Î¡£Ä¬ÈÏ¿Õ½á¹û
+// ç¤ºæ•™ä¸€æ¬¡ã€‚é»˜è®¤ç©ºç»“æœ
 ToolOut ToolBase::teach(const ToolIn&)
 {
     return ToolOut();
 }
 
-// ´ò¶Ï³¤Ê±¼äÔËĞĞ¡£Ä¬ÈÏ¿Õ
+// æ‰“æ–­é•¿æ—¶é—´è¿è¡Œã€‚é»˜è®¤ç©º
 void ToolBase::stop()
 {
 }
-// °æ±¾±ä¸ü£¬Ö»×·¼Ó
+// ç‰ˆæœ¬å˜æ›´ï¼Œåªè¿½åŠ 
 std::vector<VerNote> ToolBase::versionNotes() const
 {
     return verNotesFrom(kVerNotes, static_cast<int>(sizeof(kVerNotes) / sizeof(kVerNotes[0])));
 }
 
-// Ä¬ÈÏÎŞ²ÎÊı
+// é»˜è®¤æ— å‚æ•°
 ParamMap ToolBase::defaultParams() const
 {
     return ParamMap();
 }
 
-// Ä¬ÈÏÎŞ²ÎÊıËµÃ÷
+// é»˜è®¤æ— å‚æ•°è¯´æ˜
 std::vector<ParamField> ToolBase::paramFields() const
 {
     return std::vector<ParamField>();
 }
 
-// Ä¬ÈÏ¶Ë¿ÚÓÉÀàĞÍ¾ö¶¨
+// é»˜è®¤ç«¯å£ç”±ç±»å‹å†³å®š
 std::vector<PortDesc> ToolBase::ports() const
 {
     return defaultPortsForType(type());
 }
 
-// Ä¬ÈÏÄÜÁ¦£º²É¼¯¡¢Âß¼­¡¢Í¨ĞÅºÍ±ê¶¨²»»­ËÑË÷Çø
+// é»˜è®¤èƒ½åŠ›ï¼šé‡‡é›†ã€é€»è¾‘ã€é€šä¿¡å’Œæ ‡å®šä¸ç”»æœç´¢åŒº
 ToolCaps ToolBase::capabilities() const
 {
     ToolCaps c;
@@ -231,7 +266,7 @@ ToolCaps ToolBase::capabilities() const
     return c;
 }
 
-// ×é×°¹¤¾ßÏäÌõÄ¿
+// ç»„è£…å·¥å…·ç®±æ¡ç›®
 ToolDesc ToolBase::desc() const
 {
     ToolDesc d;
@@ -245,13 +280,13 @@ ToolDesc ToolBase::desc() const
     return d;
 }
 
-// ÔÚ´´½¨±¾¶ÔÏóµÄÄ£¿éÄÚÊÍ·Å
+// åœ¨åˆ›å»ºæœ¬å¯¹è±¡çš„æ¨¡å—å†…é‡Šæ”¾
 void ToolBase::destroy()
 {
     delete this;
 }
 
-// ´ÓÁíÒ»ÊµÀı³­ËÄ¼şÌ×Óë runtime
+// ä»å¦ä¸€å®ä¾‹æŠ„å››ä»¶å¥—ä¸ runtime
 void ToolBase::copyInstanceDataFrom(const ToolBase& other)
 {
     m_info = other.m_info;
@@ -261,7 +296,7 @@ void ToolBase::copyInstanceDataFrom(const ToolBase& other)
     m_runtime = other.m_runtime;
 }
 
-// Ğ´ÈëÉí·İ/Á¬Ïß/²ÎÊı/runtime
+// å†™å…¥èº«ä»½/è¿çº¿/å‚æ•°/runtime
 void ToolBase::applyInstanceData(const ToolInfo& i,
                                  const std::vector<ToolInputLink>& l,
                                  const ToolParam& p,
@@ -273,14 +308,14 @@ void ToolBase::applyInstanceData(const ToolInfo& i,
     m_runtime = rt;
 }
 
-// Çå¿ÕÔËĞĞÌ¬ io Óë runtime
+// æ¸…ç©ºè¿è¡Œæ€ io ä¸ runtime
 void ToolBase::clearRuntime()
 {
     m_io = ToolIo();
     m_runtime = ParamMap();
 }
 
-// ÒÑ×¢²á¹¤¾ß°æ±¾±í£¨¹©¹ØÓÚ¶Ô»°¿ò£©
+// å·²æ³¨å†Œå·¥å…·ç‰ˆæœ¬è¡¨ï¼ˆä¾›å…³äºå¯¹è¯æ¡†ï¼‰
 std::vector<VersionInfo> toolVersions()
 {
     std::vector<VersionInfo> out;
@@ -304,7 +339,7 @@ std::vector<VersionInfo> toolVersions()
     return out;
 }
 
-// È±Ê¡²»Ë¢ĞÂ£¬×ÓÀà°´×Ô¼ºµÄ²ÎÊıÀàÌîĞ´
+// ç¼ºçœä¸åˆ·æ–°ï¼Œå­ç±»æŒ‰è‡ªå·±çš„å‚æ•°ç±»å¡«å†™
 bool ToolBase::initToolParam(ToolParam& src)
 {
     const ToolParaBase* param = toolParam();
@@ -364,13 +399,13 @@ bool ToolBase::adaptParam(ToolParam& src, const std::string& oldVer, const std::
     return true;
 }
 
-// È±Ê¡Ã»ÓĞ²ÎÊı¶ÔÏó
+// ç¼ºçœæ²¡æœ‰å‚æ•°å¯¹è±¡
 const ToolParaBase* ToolBase::toolParam() const
 {
     return 0;
 }
 
-// ²ÎÊıÊÇ·ñ¾ÍĞ÷
+// å‚æ•°æ˜¯å¦å°±ç»ª
 bool ToolBase::paramOk() const
 {
     return m_paramOk;
@@ -378,10 +413,91 @@ bool ToolBase::paramOk() const
 
 
 
-// ²ÎÊı×èÈûÔ­Òò
+// å‚æ•°é˜»å¡åŸå› 
 const std::string& ToolBase::paramBlock() const
 {
     return m_paramBlock;
+}
+
+void ToolBase::attachAlg(const std::string& toolDataDir)
+{
+    if (m_alg != nullptr && m_algDir == toolDataDir) {
+        return;
+    }
+    if (m_alg != nullptr) {
+        m_alg->destroy();
+        m_alg = nullptr;
+    }
+    m_algDir = toolDataDir;
+    AlgToolBase* proto = AlgToolBaseRegistry::instance().get(toolName());
+    if (proto == nullptr) {
+        return;
+    }
+    m_alg = proto->clone();
+    if (m_alg != nullptr) {
+        m_alg->init(toolDataDir);
+    }
+}
+
+AlgToolBase* ToolBase::attachedAlg() const
+{
+    return m_alg;
+}
+
+int ToolBase::saveAlg()
+{
+    if (m_alg != nullptr && !m_algDir.empty()) {
+        m_alg->save(m_algDir);
+    }
+    return HS_OK;
+}
+
+std::string ToolBase::tool_name() const { return toolName(); }
+std::string ToolBase::display_name() const { return displayName(); }
+std::vector<VerNote> ToolBase::version_notes() const { return versionNotes(); }
+ParamMap ToolBase::default_params() const { return defaultParams(); }
+std::vector<ParamField> ToolBase::cfg_param() const { return paramFields(); }
+std::vector<ParamField> ToolBase::cfg_teach() const { return std::vector<ParamField>(); }
+const ToolParaBase* ToolBase::tool_param() const { return toolParam(); }
+int ToolBase::check_param(std::string*) const { return HS_OK; }
+OutputSpec ToolBase::cfg_output() const { return OutputSpec(); }
+TolSpec ToolBase::cfg_tol() const { return TolSpec(); }
+DisplaySpec ToolBase::cfg_display() const { return DisplaySpec(); }
+ToolCaps ToolBase::cfg_roi() const { return capabilities(); }
+std::vector<ToolAction> ToolBase::cfg_action() const { return std::vector<ToolAction>(); }
+int ToolBase::execute(const ToolIn& in, ToolOut* out)
+{
+    if (out == nullptr) {
+        return HS_ERR_NULL;
+    }
+    *out = execute(in);
+    if (out->errCode != HS_OK) {
+        return out->errCode;
+    }
+    return out->ok ? HS_OK : HS_ERR_OPERATOR;
+}
+int ToolBase::action(const std::string&, const ToolIn&, ToolOut* out)
+{
+    if (out != nullptr) {
+        out->ok = false;
+        out->errCode = HS_ERR_OPERATOR;
+        out->message = "unknown action";
+    }
+    return HS_ERR_OPERATOR;
+}
+int ToolBase::save() { return saveAlg(); }
+void ToolBase::clear(const std::string& toolDataDir) { clearAlg(toolDataDir); }
+void ToolBase::log_result(ToolOut*) const {}
+void ToolBase::disp_extra(const ToolIn&, ToolOut*) const {}
+
+void ToolBase::clearAlg(const std::string& toolDataDir)
+{
+    if (m_alg != nullptr) {
+        m_alg->clear(toolDataDir);
+        m_alg->destroy();
+        m_alg = nullptr;
+        m_algDir.clear();
+    }
 }
 
 

@@ -1,6 +1,6 @@
 /**
  * @file ToolEditors.h
- * @brief ToolEditorsÍ·ÎÄ¼ş
+ * @brief ToolEditorså¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -15,10 +15,10 @@
 
 namespace Vision {
 
-/** @brief °´¹¤¾ß¿Ç²ÎÊıËµÃ÷Éú³É²ÎÊıÒ³ */
+/** @brief æŒ‰å·¥å…·å£³å‚æ•°è¯´æ˜ç”Ÿæˆå‚æ•°é¡µ */
 VISION_TOOLUI_API ToolEditorBase* createGenericEditor(QWidget* parent);
 
-/** @brief ÂË²¨ºÍ°ßµãµÄ¶à²½Öè²ÎÊıÒ³ */
+/** @brief æ»¤æ³¢å’Œæ–‘ç‚¹çš„å¤šæ­¥éª¤å‚æ•°é¡µ */
 VISION_TOOLUI_API ToolEditorBase* createStepEditor(const std::string& toolName, QWidget* parent);
 
 }

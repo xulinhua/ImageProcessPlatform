@@ -1,6 +1,6 @@
 /**
  * @file Session.h
- * @brief SessionÍ·ÎÄ¼ş
+ * @brief Sessionå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -20,28 +20,28 @@ namespace Vision {
 
 /**
  * @class ISessionListener
- * @brief »á»°±ä»¯»Øµ÷£ºµ±Ç°ÓÃ»§»ò½çÃæÓïÑÔ±äÁËÍ¨Öª½çÃæ
+ * @brief ä¼šè¯å˜åŒ–å›è°ƒï¼šå½“å‰ç”¨æˆ·æˆ–ç•Œé¢è¯­è¨€å˜äº†é€šçŸ¥ç•Œé¢
  */
 class ISessionListener {
 public:
     virtual ~ISessionListener() {}
-    /** @brief µ±Ç°ÓÃ»§»òÈ¨ÏŞ±äÁË */
+    /** @brief å½“å‰ç”¨æˆ·æˆ–æƒé™å˜äº† */
     virtual void onUserChanged() = 0;
     virtual void onUiLocaleChanged() {}
 };
 
 /**
  * @class Session
- * @brief µ±Ç°µÇÂ¼ÓÃ»§¡¢È¨ÏŞÑÚÂë£¬ÒÔ¼°ÁÙÊ±ÌáÈ¨
+ * @brief å½“å‰ç™»å½•ç”¨æˆ·ã€æƒé™æ©ç ï¼Œä»¥åŠä¸´æ—¶ææƒ
  */
 class VISION_AUTH_API Session {
 public:
-    /** @brief ×¼±¸Ä¿Â¼¡¢ÄÚÖÃÈ¨ÏŞºÍ³ö³§ÓÃ»§ */
+    /** @brief å‡†å¤‡ç›®å½•ã€å†…ç½®æƒé™å’Œå‡ºå‚ç”¨æˆ· */
     Session();
-    /** @brief ½ø³ÌÄÚÎ¨Ò»»á»°¡£ÓÃ»§¡¢È¨ÏŞ¶¼´ÓÕâÀïÈ¡ */
+    /** @brief è¿›ç¨‹å†…å”¯ä¸€ä¼šè¯ã€‚ç”¨æˆ·ã€æƒé™éƒ½ä»è¿™é‡Œå– */
     static Session& instance();
 
-    /** @brief ÉèÖÃ½çÃæ»Øµ÷£¬¿É¿Õ */
+    /** @brief è®¾ç½®ç•Œé¢å›è°ƒï¼Œå¯ç©º */
     void setListener(ISessionListener* listener);
 
     AuthMgr& users();
@@ -53,57 +53,57 @@ public:
     const UserAccount& user() const;
     UserRole role() const;
     uint32_t perms() const;
-    /** @brief µ±Ç°ÑÚÂëÊÇ·ñ°üº¬¸Ãµã·ÖÈ¨ÏŞ±êÊ¶ */
+    /** @brief å½“å‰æ©ç æ˜¯å¦åŒ…å«è¯¥ç‚¹åˆ†æƒé™æ ‡è¯† */
     bool has(const std::string& permId) const;
-    /** @brief µ±Ç°ÑÚÂëÊÇ·ñ°üº¬¸ÃÈ¨ÏŞÎ» */
+    /** @brief å½“å‰æ©ç æ˜¯å¦åŒ…å«è¯¥æƒé™ä½ */
     bool has(Perm p) const;
 
-    /** @brief Ğ£Ñé¿ÚÁîºó½øÈë£»Ê§°ÜĞ´ error */
+    /** @brief æ ¡éªŒå£ä»¤åè¿›å…¥ï¼›å¤±è´¥å†™ error */
     bool login(const std::string& loginName, const std::string& password, std::string* error);
-    /** @brief ²»Ğ£Ñé¿ÚÁî£¬Ö±½ÓÒÔ¸ÃÆôÓÃÓÃ»§½øÈë */
+    /** @brief ä¸æ ¡éªŒå£ä»¤ï¼Œç›´æ¥ä»¥è¯¥å¯ç”¨ç”¨æˆ·è¿›å…¥ */
     bool enterAs(const std::string& loginName);
-    /** @brief ¿ª·¢Ì¬½øÈë¹ÜÀíÔ±£¬²¢°Ñ½ÇÉ«È¨ÏŞ»Ö¸´³ö³§ */
+    /** @brief å¼€å‘æ€è¿›å…¥ç®¡ç†å‘˜ï¼Œå¹¶æŠŠè§’è‰²æƒé™æ¢å¤å‡ºå‚ */
     bool enterAdminForDev();
-    /** @brief Èı½ÇÉ«È¨ÏŞ»Ö¸´³ö³§²¢ÖØĞÂÌ×ÓÃ */
+    /** @brief ä¸‰è§’è‰²æƒé™æ¢å¤å‡ºå‚å¹¶é‡æ–°å¥—ç”¨ */
     void resetDevPerms();
     /**
-     * @brief Ğ£Ñé¿ÚÁîºóÁÙÊ±»»³É¸ÃÓÃ»§
-     * @param neededPerm ±ØĞë¾ß±¸µÄÈ¨ÏŞ±êÊ¶£»¿ÕÔòÖ»Ñé¿ÚÁî
+     * @brief æ ¡éªŒå£ä»¤åä¸´æ—¶æ¢æˆè¯¥ç”¨æˆ·
+     * @param neededPerm å¿…é¡»å…·å¤‡çš„æƒé™æ ‡è¯†ï¼›ç©ºåˆ™åªéªŒå£ä»¤
      */
     bool elevate(const std::string& loginName, const std::string& password,
                  const std::string& neededPerm, std::string* error);
-    /** @brief ½áÊøÌáÈ¨£¬»Øµ½ÌáÈ¨Ç°µÄÓÃ»§ */
+    /** @brief ç»“æŸææƒï¼Œå›åˆ°ææƒå‰çš„ç”¨æˆ· */
     void dropElevate();
     bool isElevated() const;
-    /** @brief °ÑÄÚ´æÓÃ»§¿âĞ´»ØÊı¾İ¿â */
+    /** @brief æŠŠå†…å­˜ç”¨æˆ·åº“å†™å›æ•°æ®åº“ */
     bool persistUsers();
-    /** @brief ÉèÖÃÔÊĞíÊ±£¬ÒÔ²Ù×÷Ô±ÕË»§½øÈë */
+    /** @brief è®¾ç½®å…è®¸æ—¶ï¼Œä»¥æ“ä½œå‘˜è´¦æˆ·è¿›å…¥ */
     bool autoLoginOperator();
-    /** @brief Çå³ıµ±Ç°ÓÃ»§²¢Í¨Öª½çÃæ */
+    /** @brief æ¸…é™¤å½“å‰ç”¨æˆ·å¹¶é€šçŸ¥ç•Œé¢ */
     void logout();
-    /** @brief °´½ÇÉ«´Ó¿âË¢ĞÂÑÚÂë£¬²¢²¢ÉÏ²»ÄÜ¹ØµôµÄÈ¨ÏŞ */
+    /** @brief æŒ‰è§’è‰²ä»åº“åˆ·æ–°æ©ç ï¼Œå¹¶å¹¶ä¸Šä¸èƒ½å…³æ‰çš„æƒé™ */
     void reloadPerms();
-    /** @brief ÓÃ¸ø¶¨ÕË»§Ìæ»»µ±Ç°ÓÃ»§£¨²»º¬¿ÚÁî¹şÏ££© */
+    /** @brief ç”¨ç»™å®šè´¦æˆ·æ›¿æ¢å½“å‰ç”¨æˆ·ï¼ˆä¸å«å£ä»¤å“ˆå¸Œï¼‰ */
     void touchUser(const UserAccount& u);
-    /** @brief °´ id ´ÓÓÃ»§¿âÖØĞÂÌ×ÓÃµ±Ç°ÓÃ»§ */
+    /** @brief æŒ‰ id ä»ç”¨æˆ·åº“é‡æ–°å¥—ç”¨å½“å‰ç”¨æˆ· */
     void refreshCurrentUser();
-    /** @brief Í¨Öª½çÃæË¢ĞÂµ±Ç°ÓÃ»§ */
+    /** @brief é€šçŸ¥ç•Œé¢åˆ·æ–°å½“å‰ç”¨æˆ· */
     void notifyChanged();
-    /** @brief Í¨Öª½çÃæÓïÑÔÒÑÇĞ»» */
+    /** @brief é€šçŸ¥ç•Œé¢è¯­è¨€å·²åˆ‡æ¢ */
     void notifyUiLocaleChanged();
 
 private:
-    /** @brief Ğ´Èëµ±Ç°ÓÃ»§¡¢Ë¢ĞÂÑÚÂë²¢»Øµ÷ */
+    /** @brief å†™å…¥å½“å‰ç”¨æˆ·ã€åˆ·æ–°æ©ç å¹¶å›è°ƒ */
     void applyUser(const UserAccount& u);
 
-    ISessionListener* m_listener; ///< ½çÃæ»Øµ÷£¬¿É¿Õ
-    AuthMgr m_users;            ///< ÄÚ´æÓÃ»§¿â
-    AppSettings m_settings;       ///< ±¾»úÉèÖÃ
-    UserAccount m_user;           ///< µ±Ç°µÇÂ¼ÓÃ»§
-    uint32_t m_perms;             ///< µ±Ç°È¨ÏŞÑÚÂë
-    UserAccount m_savedUser;      ///< ÌáÈ¨Ç°µÄÓÃ»§
-    uint32_t m_savedPerms;        ///< ÌáÈ¨Ç°µÄÑÚÂë
-    bool m_elevated;              ///< ÊÇ·ñ´¦ÓÚÌáÈ¨
+    ISessionListener* m_listener; ///< ç•Œé¢å›è°ƒï¼Œå¯ç©º
+    AuthMgr m_users;            ///< å†…å­˜ç”¨æˆ·åº“
+    AppSettings m_settings;       ///< æœ¬æœºè®¾ç½®
+    UserAccount m_user;           ///< å½“å‰ç™»å½•ç”¨æˆ·
+    uint32_t m_perms;             ///< å½“å‰æƒé™æ©ç 
+    UserAccount m_savedUser;      ///< ææƒå‰çš„ç”¨æˆ·
+    uint32_t m_savedPerms;        ///< ææƒå‰çš„æ©ç 
+    bool m_elevated;              ///< æ˜¯å¦å¤„äºææƒ
 };
 
 }

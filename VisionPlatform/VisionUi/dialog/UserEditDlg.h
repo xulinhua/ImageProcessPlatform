@@ -1,6 +1,6 @@
 /**
  * @file UserEditDlg.h
- * @brief UserEditDlgÍ·ÎÄ¼ş
+ * @brief UserEditDlgå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -24,34 +24,34 @@ class Session;
 
 /**
  * @class UserEditDlg
- * @brief Ìí¼Ó»ò±à¼­±¾µØÓÃ»§£¨µÇÂ¼Ãû¡¢ÏÔÊ¾Ãû¡¢½ÇÉ«¡¢¿ÚÁî¡¢ÆôÓÃ£©
+ * @brief æ·»åŠ æˆ–ç¼–è¾‘æœ¬åœ°ç”¨æˆ·ï¼ˆç™»å½•åã€æ˜¾ç¤ºåã€è§’è‰²ã€å£ä»¤ã€å¯ç”¨ï¼‰
  */
 class VISION_UI_API UserEditDlg : public QDialog {
     Q_OBJECT
 public:
     /**
-     * @brief ¹¹ÔìÓÃ»§±à¼­¶Ô»°¿ò
-     * @param loginName Îª¿ÕÔòÌí¼ÓĞÂÓÃ»§£»·Ç¿ÕÔò±à¼­¸ÃµÇÂ¼Ãû
+     * @brief æ„é€ ç”¨æˆ·ç¼–è¾‘å¯¹è¯æ¡†
+     * @param loginName ä¸ºç©ºåˆ™æ·»åŠ æ–°ç”¨æˆ·ï¼›éç©ºåˆ™ç¼–è¾‘è¯¥ç™»å½•å
      */
     UserEditDlg(Session* session, const QString& loginName, QWidget* parent = 0);
 
-    /** @brief ±íµ¥ÖĞµÄµÇÂ¼Ãû£¨È¥¿Õ°×²¢×ªĞ¡Ğ´£© */
+    /** @brief è¡¨å•ä¸­çš„ç™»å½•åï¼ˆå»ç©ºç™½å¹¶è½¬å°å†™ï¼‰ */
     QString loginName() const;
 
 private slots:
-    /** @brief Ğ£Ñé²¢Ğ´Èë AuthMgr£»¿ÚÁî¿ÉÁô¿Õ */
+    /** @brief æ ¡éªŒå¹¶å†™å…¥ AuthMgrï¼›å£ä»¤å¯ç•™ç©º */
     void onOk();
 
 private:
-    Session* m_session;      ///< »á»°£¨²»ÓµÓĞ£©
-    QString m_editLogin;    ///< ±à¼­Ä¿±êµÇÂ¼Ãû£¨ĞÂ½¨Ê±Îª¿Õ£©
-    bool m_isNew;           ///< ÊÇ·ñÌí¼ÓĞÂÓÃ»§
-    QLineEdit* m_login;    ///< µÇÂ¼Ãû
-    QLineEdit* m_display;   ///< ÏÔÊ¾Ãû
-    QComboBox* m_role;     ///< ½ÇÉ«
-    QLineEdit* m_pwd;     ///< ¿ÚÁî
-    QLineEdit* m_pwd2;    ///< È·ÈÏ¿ÚÁî
-    QCheckBox* m_enabled;  ///< ÊÇ·ñÆôÓÃ
+    Session* m_session;      ///< ä¼šè¯ï¼ˆä¸æ‹¥æœ‰ï¼‰
+    QString m_editLogin;    ///< ç¼–è¾‘ç›®æ ‡ç™»å½•åï¼ˆæ–°å»ºæ—¶ä¸ºç©ºï¼‰
+    bool m_isNew;           ///< æ˜¯å¦æ·»åŠ æ–°ç”¨æˆ·
+    QLineEdit* m_login;    ///< ç™»å½•å
+    QLineEdit* m_display;   ///< æ˜¾ç¤ºå
+    QComboBox* m_role;     ///< è§’è‰²
+    QLineEdit* m_pwd;     ///< å£ä»¤
+    QLineEdit* m_pwd2;    ///< ç¡®è®¤å£ä»¤
+    QCheckBox* m_enabled;  ///< æ˜¯å¦å¯ç”¨
 };
 
 }

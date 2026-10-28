@@ -1,6 +1,6 @@
 /**
  * @file TextureTool.cpp
- * @brief TextureToolÊµÏÖ
+ * @brief TextureToolå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -14,31 +14,31 @@
 #include <vector>
 
 namespace {
-// µ±Ç°°æ±¾¡£±ØĞëµÈÓÚ±ä¸ü±í×îºóÒ»ĞĞ
+// å½“å‰ç‰ˆæœ¬ã€‚å¿…é¡»ç­‰äºå˜æ›´è¡¨æœ€åä¸€è¡Œ
 const char kToolVersion[] = "1.0.0.0";
-// ±ä¸ü±í¡£Ö»×·¼Ó£¬²»É¾¾ÉĞĞ
+// å˜æ›´è¡¨ã€‚åªè¿½åŠ ï¼Œä¸åˆ æ—§è¡Œ
 const Vision::VerNoteRaw kVerNotes[] = {
-    { "1.0.0.0", "Ê×°æ" },
+    { "1.0.0.0", "é¦–ç‰ˆ" },
 };
 
-// ×¢²áÃû
+// æ³¨å†Œå
 const char kToolName[] = "detect.texture";
-// ½çÃæÏÔÊ¾Ãû
-const char kDisplayName[] = "ÎÆÀíÈ±Ïİ";
-// ¹¤¾ßËµÃ÷
-const char kDescription[] = "¹æÔòÎÆÀíÏÂÆÆËğÔàÎÛ£º´óºË±³¾°²î¼ÓĞÎÌ¬Ñ§";
+// ç•Œé¢æ˜¾ç¤ºå
+const char kDisplayName[] = "çº¹ç†ç¼ºé™·";
+// å·¥å…·è¯´æ˜
+const char kDescription[] = "è§„åˆ™çº¹ç†ä¸‹ç ´æŸè„æ±¡ï¼šå¤§æ ¸èƒŒæ™¯å·®åŠ å½¢æ€å­¦";
 
-// ²ÎÊıËµÃ÷
+// å‚æ•°è¯´æ˜
 std::vector<Vision::ParamField> fields()
 {
     std::vector<Vision::ParamField> f;
-    f.push_back(Vision::paramString("bgMethod", "±³¾°", "mean", Vision::paramChoices("mean", "median", "gauss")));
-    f.push_back(Vision::paramInt("kernelW", "ºË¿í", 31, true, 3, true, 255));
-    f.push_back(Vision::paramInt("kernelH", "ºË¸ß", 31, true, 3, true, 255));
-    f.push_back(Vision::paramDouble("residThresh", "²Ğ²îãĞÖµ", 18.0, true, 0.0, false, 0));
-    f.push_back(Vision::paramDouble("openR", "¿ªÔËËã", 1.5, true, 0.0, false, 0));
-    f.push_back(Vision::paramInt("minArea", "×îĞ¡Ãæ»ı", 30, true, 0, false, 0));
-    f.push_back(Vision::paramInt("maxArea", "×î´óÃæ»ı", 0, true, 0, false, 0));
+    f.push_back(Vision::paramString("bgMethod", "èƒŒæ™¯", "mean", Vision::paramChoices("mean", "median", "gauss")));
+    f.push_back(Vision::paramInt("kernelW", "æ ¸å®½", 31, true, 3, true, 255));
+    f.push_back(Vision::paramInt("kernelH", "æ ¸é«˜", 31, true, 3, true, 255));
+    f.push_back(Vision::paramDouble("residThresh", "æ®‹å·®é˜ˆå€¼", 18.0, true, 0.0, false, 0));
+    f.push_back(Vision::paramDouble("openR", "å¼€è¿ç®—", 1.5, true, 0.0, false, 0));
+    f.push_back(Vision::paramInt("minArea", "æœ€å°é¢ç§¯", 30, true, 0, false, 0));
+    f.push_back(Vision::paramInt("maxArea", "æœ€å¤§é¢ç§¯", 0, true, 0, false, 0));
     return f;
 }
 Vision::ToolCaps caps()
@@ -54,7 +54,7 @@ Vision::ToolCaps caps()
     return c;
 }
 
-// ÓÉ²ÎÊıËµÃ÷Éú³ÉÈ±Ê¡ ParamMap
+// ç”±å‚æ•°è¯´æ˜ç”Ÿæˆç¼ºçœ ParamMap
 Vision::ParamMap defaultsFrom(const std::vector<Vision::ParamField>& fields)
 {
     Vision::ParamMap m;
@@ -69,62 +69,62 @@ Vision::ParamMap defaultsFrom(const std::vector<Vision::ParamField>& fields)
 
 }
 
-// ×¢²áÃû
+// æ³¨å†Œå
 std::string Vision::TextureTool::toolName() const
 {
     return kToolName;
 }
 
-// ¹¤¾ß´óÀà
+// å·¥å…·å¤§ç±»
 Vision::ToolType Vision::TextureTool::type() const
 {
     return Vision::ToolType::Detect;
 }
 
-// ½çÃæÏÔÊ¾Ãû
+// ç•Œé¢æ˜¾ç¤ºå
 std::string Vision::TextureTool::displayName() const
 {
-    return Vision::acpToUtf8(kDisplayName);
+    return kDisplayName;
 }
 
-// ¹¤¾ß°æ±¾
+// å·¥å…·ç‰ˆæœ¬
 std::string Vision::TextureTool::version() const
 {
     return std::string(kToolVersion);
 }
 
-// °æ±¾±ä¸ü£¬Ö»×·¼Ó
+// ç‰ˆæœ¬å˜æ›´ï¼Œåªè¿½åŠ 
 std::vector<Vision::VerNote> Vision::TextureTool::versionNotes() const
 {
     return Vision::verNotesFrom(kVerNotes, static_cast<int>(sizeof(kVerNotes) / sizeof(kVerNotes[0])));
 }
 
 
-// ¹¤¾ßËµÃ÷
+// å·¥å…·è¯´æ˜
 std::string Vision::TextureTool::description() const
 {
-    return Vision::acpToUtf8(kDescription);
+    return kDescription;
 }
 
-// È±Ê¡²ÎÊı
+// ç¼ºçœå‚æ•°
 Vision::ParamMap Vision::TextureTool::defaultParams() const
 {
     return defaultsFrom(fields());
 }
 
-// ²ÎÊıËµÃ÷
+// å‚æ•°è¯´æ˜
 std::vector<Vision::ParamField> Vision::TextureTool::paramFields() const
 {
     return fields();
 }
 
-// »­²¼ÄÜÁ¦
+// ç”»å¸ƒèƒ½åŠ›
 Vision::ToolCaps Vision::TextureTool::capabilities() const
 {
     return caps();
 }
 
-// µ÷Ëã·¨²å¼şÖ´ĞĞ
+// è°ƒç®—æ³•æ’ä»¶æ‰§è¡Œ
 Vision::ToolOut Vision::TextureTool::execute(const Vision::ToolIn& in)
 {
     Vision::ToolOut out = Vision::runAlgToolBase(toolName(), in, false);
@@ -137,13 +137,13 @@ Vision::ToolOut Vision::TextureTool::execute(const Vision::ToolIn& in)
     return out;
 }
 
-// ¿ËÂ¡±¾ÊµÀı
+// å…‹éš†æœ¬å®ä¾‹
 Vision::ToolBase* Vision::TextureTool::clone() const
 {
     TextureTool* p = new TextureTool();
     p->copyInstanceDataFrom(*this);
     return p;
-}// ·µ»Ø±¾¹¤¾ß²ÎÊı¶ÔÏó
+}// è¿”å›æœ¬å·¥å…·å‚æ•°å¯¹è±¡
 
 const Vision::ToolParaBase* Vision::TextureTool::toolParam() const
 {

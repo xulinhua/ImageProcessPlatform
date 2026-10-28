@@ -1,6 +1,6 @@
 /**
  * @file ToolLibDlg.cpp
- * @brief ToolLibDlgÊµÏÖ
+ * @brief ToolLibDlgå®žçŽ°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -26,7 +26,7 @@ namespace {
 const int kNodeRole = Qt::UserRole;
 const int kIndexRole = Qt::UserRole + 1;
 
-// ¿ÕÏêÇé
+// ç©ºè¯¦æƒ…
 void clearLabels(QLabel* kind, QLabel* display, QLabel* name, QLabel* alg,
                  QLabel* ver, QLabel* file, QLabel* stamp, QLabel* desc)
 {
@@ -42,7 +42,7 @@ void clearLabels(QLabel* kind, QLabel* display, QLabel* name, QLabel* alg,
 
 }
 
-// ´ò¿ª¹¤¾ß¿â¹ÜÀí
+// æ‰“å¼€å·¥å…·åº“ç®¡ç†
 ToolLibDlg::ToolLibDlg(QWidget* parent)
     : QDialog(parent)
     , m_tree(nullptr)
@@ -56,14 +56,14 @@ ToolLibDlg::ToolLibDlg(QWidget* parent)
     , m_stamp(nullptr)
     , m_desc(nullptr)
 {
-    setWindowTitle(T("¹¤¾ß¿â¹ÜÀí"));
+    setWindowTitle(T("å·¥å…·åº“ç®¡ç†"));
     resize(980, 560);
     m_search = new QLineEdit(this);
-    m_search->setPlaceholderText(T("ËÑË÷ÏÔÊ¾Ãû¡¢×¢²áÃû»ò DLL"));
+    m_search->setPlaceholderText(T("æœç´¢æ˜¾ç¤ºåã€æ³¨å†Œåæˆ– DLL"));
     m_tree = new QTreeWidget(this);
     m_tree->setColumnCount(5);
     m_tree->setHeaderLabels(QStringList()
-        << T("Ãû³Æ") << T("ÀàÐÍ") << T("×¢²áÃû") << T("Ëã·¨¿â") << T("°æ±¾"));
+        << T("åç§°") << T("ç±»åž‹") << T("æ³¨å†Œå") << T("ç®—æ³•åº“") << T("ç‰ˆæœ¬"));
     m_tree->setRootIsDecorated(true);
     m_tree->setAlternatingRowColors(true);
     m_tree->header()->setStretchLastSection(true);
@@ -80,21 +80,21 @@ ToolLibDlg::ToolLibDlg(QWidget* parent)
     m_stamp = new QLabel(detail);
     m_desc = new QLabel(detail);
     m_desc->setWordWrap(true);
-    form->addRow(T("ÀàÐÍ"), m_kind);
-    form->addRow(T("ÏÔÊ¾Ãû"), m_display);
-    form->addRow(T("×¢²áÃû"), m_name);
-    form->addRow(T("Ëã·¨¿â"), m_alg);
-    form->addRow(T("°æ±¾"), m_ver);
-    form->addRow(T("À´Ô´"), m_file);
-    form->addRow(T("ÎÄ¼þÊ±¼ä"), m_stamp);
-    form->addRow(T("ËµÃ÷"), m_desc);
+    form->addRow(T("ç±»åž‹"), m_kind);
+    form->addRow(T("æ˜¾ç¤ºå"), m_display);
+    form->addRow(T("æ³¨å†Œå"), m_name);
+    form->addRow(T("ç®—æ³•åº“"), m_alg);
+    form->addRow(T("ç‰ˆæœ¬"), m_ver);
+    form->addRow(T("æ¥æº"), m_file);
+    form->addRow(T("æ–‡ä»¶æ—¶é—´"), m_stamp);
+    form->addRow(T("è¯´æ˜Ž"), m_desc);
     QSplitter* split = new QSplitter(this);
     split->addWidget(m_tree);
     split->addWidget(detail);
     split->setStretchFactor(0, 4);
     split->setStretchFactor(1, 2);
-    QPushButton* reloadBtn = new QPushButton(T("ÖØÐÂÉ¨Ãè"), this);
-    QPushButton* closeBtn = new QPushButton(T("¹Ø±Õ"), this);
+    QPushButton* reloadBtn = new QPushButton(T("é‡æ–°æ‰«æ"), this);
+    QPushButton* closeBtn = new QPushButton(T("å…³é—­"), this);
     connect(reloadBtn, SIGNAL(clicked()), this, SLOT(onReload()));
     connect(closeBtn, SIGNAL(clicked()), this, SLOT(accept()));
     connect(m_tree, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)), this, SLOT(onCurrentChanged()));
@@ -110,26 +110,26 @@ ToolLibDlg::ToolLibDlg(QWidget* parent)
     reloadLists();
 }
 
-// ÔÙÉ¨²å¼þÄ¿Â¼
+// å†æ‰«æ’ä»¶ç›®å½•
 void ToolLibDlg::onReload()
 {
     ToolLibMgr::instance().loadAll();
     reloadLists();
 }
 
-// Ñ¡ÖÐ½Úµã±ä»¯
+// é€‰ä¸­èŠ‚ç‚¹å˜åŒ–
 void ToolLibDlg::onCurrentChanged()
 {
     showNode(m_tree->currentItem());
 }
 
-// ËÑË÷¿ò±ä»¯
+// æœç´¢æ¡†å˜åŒ–
 void ToolLibDlg::onSearch(const QString&)
 {
     applyFilter();
 }
 
-// µÇ¼ÇÒ¶×ÓÊÇ·ñÃüÖÐËÑË÷
+// ç™»è®°å¶å­æ˜¯å¦å‘½ä¸­æœç´¢
 bool ToolLibDlg::leafHit(const ToolLibReg& row, const QString& key) const
 {
     if (key.isEmpty()) {
@@ -144,23 +144,23 @@ bool ToolLibDlg::leafHit(const ToolLibReg& row, const QString& key) const
     return qs(row.fileName).contains(key, Qt::CaseInsensitive);
 }
 
-// ÖØ¶ÁµÇ¼Ç²¢ÖØ½¨Ê÷±í
+// é‡è¯»ç™»è®°å¹¶é‡å»ºæ ‘è¡¨
 void ToolLibDlg::reloadLists()
 {
     m_regs = ToolLibMgr::instance().registrations();
     m_files = ToolLibMgr::instance().loaded();
     m_tree->clear();
-    QTreeWidgetItem* toolRoot = new QTreeWidgetItem(m_tree, QStringList(T("¹¤¾ß²å¼þ")));
+    QTreeWidgetItem* toolRoot = new QTreeWidgetItem(m_tree, QStringList(T("å·¥å…·æ’ä»¶")));
     toolRoot->setData(0, kNodeRole, QString("group"));
     toolRoot->setData(0, kIndexRole, QString("tool"));
-    QTreeWidgetItem* algoRoot = new QTreeWidgetItem(m_tree, QStringList(T("Ëã·¨²å¼þ")));
+    QTreeWidgetItem* algoRoot = new QTreeWidgetItem(m_tree, QStringList(T("ç®—æ³•æ’ä»¶")));
     algoRoot->setData(0, kNodeRole, QString("group"));
     algoRoot->setData(0, kIndexRole, QString("algo"));
     for (size_t i = 0; i < m_files.size(); ++i) {
         QTreeWidgetItem* parent = (m_files[i].kind == "algo") ? algoRoot : toolRoot;
         QTreeWidgetItem* dll = new QTreeWidgetItem(parent);
         dll->setText(0, qs(m_files[i].fileName));
-        dll->setText(1, (m_files[i].kind == "algo") ? T("Ëã·¨²å¼þ") : T("¹¤¾ß²å¼þ"));
+        dll->setText(1, (m_files[i].kind == "algo") ? T("ç®—æ³•æ’ä»¶") : T("å·¥å…·æ’ä»¶"));
         dll->setData(0, kNodeRole, QString("dll"));
         dll->setData(0, kIndexRole, static_cast<int>(i));
         for (size_t r = 0; r < m_regs.size(); ++r) {
@@ -170,7 +170,7 @@ void ToolLibDlg::reloadLists()
             const ToolLibReg& row = m_regs[r];
             QTreeWidgetItem* leaf = new QTreeWidgetItem(dll);
             leaf->setText(0, qs(row.displayName));
-            leaf->setText(1, (row.kind == "algo") ? T("Ëã·¨") : T("¹¤¾ß"));
+            leaf->setText(1, (row.kind == "algo") ? T("ç®—æ³•") : T("å·¥å…·"));
             leaf->setText(2, qs(row.toolName));
             leaf->setText(3, qs(row.algLib));
             leaf->setText(4, qs(row.version));
@@ -185,7 +185,7 @@ void ToolLibDlg::reloadLists()
     }
 }
 
-// °´ËÑË÷´ÊÏÔÒþ½Úµã
+// æŒ‰æœç´¢è¯æ˜¾éšèŠ‚ç‚¹
 void ToolLibDlg::applyFilter()
 {
     const QString key = m_search->text().trimmed();
@@ -224,7 +224,7 @@ void ToolLibDlg::applyFilter()
     }
 }
 
-// °´½ÚµãÖÖÀàÐ´ÏêÇé
+// æŒ‰èŠ‚ç‚¹ç§ç±»å†™è¯¦æƒ…
 void ToolLibDlg::showNode(QTreeWidgetItem* item)
 {
     clearLabels(m_kind, m_display, m_name, m_alg, m_ver, m_file, m_stamp, m_desc);
@@ -246,9 +246,9 @@ void ToolLibDlg::showNode(QTreeWidgetItem* item)
                 ++leaves;
             }
         }
-        m_kind->setText(kind == "algo" ? T("Ëã·¨²å¼þ") : T("¹¤¾ß²å¼þ"));
-        m_display->setText(T("Ò»×é²å¼þ"));
-        m_desc->setText(QString::number(dlls) + T(" ¸ö DLL£¬") + QString::number(leaves) + T(" ÌõµÇ¼Ç"));
+        m_kind->setText(kind == "algo" ? T("ç®—æ³•æ’ä»¶") : T("å·¥å…·æ’ä»¶"));
+        m_display->setText(T("ä¸€ç»„æ’ä»¶"));
+        m_desc->setText(QString::number(dlls) + T(" ä¸ª DLLï¼Œ") + QString::number(leaves) + T(" æ¡ç™»è®°"));
         return;
     }
     if (node == "dll") {
@@ -263,10 +263,10 @@ void ToolLibDlg::showNode(QTreeWidgetItem* item)
                 ++leaves;
             }
         }
-        m_kind->setText(file.kind == "algo" ? T("Ëã·¨²å¼þ") : T("¹¤¾ß²å¼þ"));
+        m_kind->setText(file.kind == "algo" ? T("ç®—æ³•æ’ä»¶") : T("å·¥å…·æ’ä»¶"));
         m_file->setText(qs(file.fileName));
         m_stamp->setText(qs(file.stamp));
-        m_desc->setText(QString::number(leaves) + T(" ÌõµÇ¼Ç"));
+        m_desc->setText(QString::number(leaves) + T(" æ¡ç™»è®°"));
         return;
     }
     const int regIndex = item->data(0, kIndexRole).toInt();
@@ -274,7 +274,7 @@ void ToolLibDlg::showNode(QTreeWidgetItem* item)
         return;
     }
     const ToolLibReg& row = m_regs[static_cast<size_t>(regIndex)];
-    m_kind->setText(row.kind == "algo" ? T("Ëã·¨") : T("¹¤¾ß"));
+    m_kind->setText(row.kind == "algo" ? T("ç®—æ³•") : T("å·¥å…·"));
     m_display->setText(qs(row.displayName));
     m_name->setText(qs(row.toolName));
     m_alg->setText(qs(row.algLib));

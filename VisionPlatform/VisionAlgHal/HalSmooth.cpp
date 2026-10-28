@@ -1,6 +1,6 @@
 /**
  * @file HalSmooth.cpp
- * @brief HalSmoothÊµÏÖ
+ * @brief HalSmoothå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -8,16 +8,16 @@
 
 #include "HalSmooth.h"
 #include "TextEncoding.h"
-#include "HalAlgoHelpers.h"
 #include "HalImageConvert.h"
+#include "HalObjectConvert.h"
 namespace Vision {
-// µÚi²½²ÎÊı¼ü
+// ç¬¬iæ­¥å‚æ•°é”®
 static std::string stepKey(int i, const char* suffix)
 {
     return std::string("pl_") + std::to_string(static_cast<long long>(i)) + "_" + suffix;
 }
 
-// Æ½»¬Ëã×Ó
+// å¹³æ»‘ç®—å­
 enum class SmoothOp {
     Mean = 0,
     Median,
@@ -25,7 +25,7 @@ enum class SmoothOp {
     Bilateral
 };
 
-// Æ½»¬¹ÜÏßÒ»²½
+// å¹³æ»‘ç®¡çº¿ä¸€æ­¥
 struct SmoothStep {
     SmoothOp op;
     int maskW;
@@ -41,7 +41,7 @@ struct SmoothStep {
     {}
 };
 
-// ÕûĞÍ×ªÆ½»¬Ëã×Ó
+// æ•´å‹è½¬å¹³æ»‘ç®—å­
 static SmoothOp smoothOpFromInt(int v)
 {
     switch (v) {
@@ -53,7 +53,7 @@ static SmoothOp smoothOpFromInt(int v)
     }
 }
 
-// ´Ó²ÎÊı½â¿ªÆ½»¬²½Öè
+// ä»å‚æ•°è§£å¼€å¹³æ»‘æ­¥éª¤
 static std::vector<SmoothStep> smoothStepsFromParams(const ParamMap& p)
 {
     std::vector<SmoothStep> out;
@@ -74,7 +74,7 @@ static std::vector<SmoothStep> smoothStepsFromParams(const ParamMap& p)
     return out;
 }
 
-// Æ½»¬Ò»²½
+// å¹³æ»‘ä¸€æ­¥
 static bool applySmoothOp(HalconCpp::HImage* img, const SmoothStep& st, std::string* err)
 {
     switch (st.op) {
@@ -104,17 +104,17 @@ static bool applySmoothOp(HalconCpp::HImage* img, const SmoothStep& st, std::str
     }
     default:
         if (err) {
-            *err = Vision::acpToUtf8("Î´ÖªÆ½»¬Ëã×Ó");
+            *err = "æœªçŸ¥å¹³æ»‘ç®—å­";
         }
         return false;
     }
 }
 
-// Æ½»¬¹ÜÏß
+// å¹³æ»‘ç®¡çº¿
 namespace {
 const char kVer_HalSmooth[] = "1.0.0.0";
 const Vision::VerNoteRaw kNotes_HalSmooth[] = {
-    { "1.0.0.0", "Ê×°æ" },
+    { "1.0.0.0", "é¦–ç‰ˆ" },
 };
 }
 
@@ -123,11 +123,25 @@ std::string HalSmooth::version() const
     return kVer_HalSmooth;
 }
 
-// °æ±¾±ä¸ü£¬Ö»×·¼Ó
+// ç‰ˆæœ¬å˜æ›´ï¼Œåªè¿½åŠ 
 std::vector<VerNote> HalSmooth::versionNotes() const
 {
     return verNotesFrom(kNotes_HalSmooth, static_cast<int>(sizeof(kNotes_HalSmooth) / sizeof(kNotes_HalSmooth[0])));
 }
+AlgToolOut HalSmooth::writeFullImage(const AlgToolIn& in, const HalconCpp::HImage& work, const std::string& okMsg) const
+{
+    AlgToolOut out;
+    const HalconCpp::HImage full = work.FullDomain();
+    std::string err;
+    HsCommData::HsImage* pImage = &out.image.image;
+    if (!hObjectToHsImage(full, inputImage(in).frameId, pImage, &err)) {
+        return AlgToolOut::fail(err);
+    }
+    out.ok = true;
+    out.message = okMsg;
+    return out;
+}
+
 AlgToolOut HalSmooth::run(const AlgToolIn& in)
 {
     try {
@@ -135,10 +149,15 @@ AlgToolOut HalSmooth::run(const AlgToolIn& in)
         HalconCpp::HImage work;
         std::string err;
         HalconCpp::HImage* pGray = &gray;
-        HalconCpp::HImage* pWork = &work;
-        if (!preparePreprocessWork(in, pGray, pWork, &err)) {
-            return algorToolFail(err);
+        int w = 0;
+        int h = 0;
+        if (!hsImageToGray(inputImage(in), pGray, &w, &h, &err)) {
+            return AlgToolOut::fail(err);
         }
+        const HalconCpp::HObject roi = toolRoisToHObject(plainRois(in.rois), w, h);
+        HalconCpp::HObject reduced;
+        HalconCpp::ReduceDomain(gray, roi, &reduced);
+        work = HalconCpp::HImage(reduced);
         std::vector<SmoothStep> steps = smoothStepsFromParams(in.run);
         if (steps.empty()) {
             SmoothStep one;
@@ -146,12 +165,12 @@ AlgToolOut HalSmooth::run(const AlgToolIn& in)
         }
         for (int i = 0; i < static_cast<int>(steps.size()); ++i) {
             if (!applySmoothOp(&work, steps[static_cast<size_t>(i)], &err)) {
-                return algorToolFail(err);
+                return AlgToolOut::fail(err);
             }
         }
-        return finishPreprocessWork(in, work, Vision::acpToUtf8("Í¼ÏñÆ½»¬Íê³É"));
+        return writeFullImage(in, work, "å›¾åƒå¹³æ»‘å®Œæˆ");
     } catch (const HalconCpp::HException& e) {
-        return algorToolFail(hExceptionText(e));
+        return AlgToolOut::fail(hExceptionText(e));
     }
 }
 

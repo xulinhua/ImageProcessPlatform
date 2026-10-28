@@ -1,214 +1,214 @@
 # HsImageCtrl
 
-»ùÓÚ Qt Widgets µÄÍ¼ÏñÏÔÊ¾Óë½»»¥¿â¡£Ğ­ÒéÈ«²¿À´×Ô [HsCommData](../HsCommData/README.md)£»**¶ÔÍâÖ»Ì¸Ğ­ÒéÀàĞÍ£¬²»±©Â¶ÄÚ²¿ `QGraphicsItem`**¡£
+åŸºäº Qt Widgets çš„å›¾åƒæ˜¾ç¤ºä¸äº¤äº’åº“ã€‚åè®®å…¨éƒ¨æ¥è‡ª [HsCommData](../HsCommData/README.md)ï¼›**å¯¹å¤–åªè°ˆåè®®ç±»å‹ï¼Œä¸æš´éœ²å†…éƒ¨ `QGraphicsItem`**ã€‚
 
-×ÜÍ·£º`include/HsCtrl/HsImageCtrl.h`£¨Ğ­Òé×ÜÍ· + ´°¿Ú + `ImageWidgetApi`£©¡£
+æ€»å¤´ï¼š`include/HsCtrl/HsImageCtrl.h`ï¼ˆåè®®æ€»å¤´ + çª—å£ + `ImageWidgetApi`ï¼‰ã€‚
 
-Éè¼ÆÎÄµµ£º[../docs/»æÖÆÓëÆÁ±Î·½°¸.md](../docs/»æÖÆÓëÆÁ±Î·½°¸.md)¡£
+è®¾è®¡æ–‡æ¡£ï¼š[../docs/ç»˜åˆ¶ä¸å±è”½æ–¹æ¡ˆ.md](../docs/ç»˜åˆ¶ä¸å±è”½æ–¹æ¡ˆ.md)ã€‚
 
 ---
 
-## 1. ¼Ü¹¹×ÜÀÀ
+## 1. æ¶æ„æ€»è§ˆ
 
 ```text
-ÒµÎñ / VisionPlatform / Demo
-        ©¦
-        ©¦  Ç¶Èë²¼¾ÖÓÅÏÈ
-        ¨‹
-©°©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤ image_widget::ImageWidgetApi ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©´
-©¦  ¹¤¾ßÌõ ¡¤ ĞÅÏ¢À¸ ¡¤ ³£ÓÃ×ª·¢ API                                      ©¦
-©¦  widget() ¡ú Íâ¿Ç QWidget                                            ©¦
-©¦  imageWindow() ¡ú ĞèÒªĞÅºÅ/¸ß¼¶ API Ê±È¡³öÄÚ²¿´°¿Ú                   ©¦
-©¸©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©Ğ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¼
-                             ©¦ ³ÖÓĞ
-                             ¨‹
-©°©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤ HsCtrl::HsImageWindow : QGraphicsView ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©´
-©¦  ¶ÔÍâ£ºsetImage / disp* / setOverlay / setDrawings / ¹¤¾ßÓë»á»°     ©¦
-©¦  ¶ÔÄÚ£ºPimpl£¨Private£©Çı¶¯³¡¾°Óë½»»¥×´Ì¬»ú                         ©¦
-©¸©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©Ğ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¼
-                             ©¦ ³¡¾°×ø±ê = Í¼ÏñÏñËØ 1:1
-                             ¨‹
-©°©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤ QGraphicsScene ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©´
-©¦  ImageItem          z¡Ö0     µ×Í¼£¨HsImage ¡ú ÏÔÊ¾»º³å£©              ©¦
-©¦  stackLayer         z¡Ö10    Stack£ºFrameOverlay ¡ú GraphicItem*     ©¦
-©¦  drawingLayer       z¡Ö20    Drawing£ºÓÃ»§ ROI GraphicItem*         ©¦
-©¦  £¨Ç°¾°Áí»­£©HUD / ÏñËØ¼ìÑé / drawInfo / »­±ÊÔ¤ÀÀ ¡ª ²»½ø³¡¾° Item   ©¦
-©¸©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¼
-                             ¡ø
-                             ©¦ Ö»¶ÁĞ­Òé
-                      HsCommData::Graphic / FrameOverlay / Style ¡­
+ä¸šåŠ¡ / VisionPlatform / Demo
+        â”‚
+        â”‚  åµŒå…¥å¸ƒå±€ä¼˜å…ˆ
+        â–¼
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ image_widget::ImageWidgetApi â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚  å·¥å…·æ¡ Â· ä¿¡æ¯æ  Â· å¸¸ç”¨è½¬å‘ API                                      â”‚
+â”‚  widget() â†’ å¤–å£³ QWidget                                            â”‚
+â”‚  imageWindow() â†’ éœ€è¦ä¿¡å·/é«˜çº§ API æ—¶å–å‡ºå†…éƒ¨çª—å£                   â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+                             â”‚ æŒæœ‰
+                             â–¼
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ HsCtrl::HsImageWindow : QGraphicsView â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚  å¯¹å¤–ï¼šsetImage / disp* / setOverlay / setDrawings / å·¥å…·ä¸ä¼šè¯     â”‚
+â”‚  å¯¹å†…ï¼šPimplï¼ˆPrivateï¼‰é©±åŠ¨åœºæ™¯ä¸äº¤äº’çŠ¶æ€æœº                         â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+                             â”‚ åœºæ™¯åæ ‡ = å›¾åƒåƒç´  1:1
+                             â–¼
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ QGraphicsScene â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚  ImageItem          zâ‰ˆ0     åº•å›¾ï¼ˆHsImage â†’ æ˜¾ç¤ºç¼“å†²ï¼‰              â”‚
+â”‚  stackLayer         zâ‰ˆ10    Stackï¼šFrameOverlay â†’ GraphicItem*     â”‚
+â”‚  drawingLayer       zâ‰ˆ20    Drawingï¼šç”¨æˆ· ROI GraphicItem*         â”‚
+â”‚  ï¼ˆå‰æ™¯å¦ç”»ï¼‰HUD / åƒç´ æ£€éªŒ / drawInfo / ç”»ç¬”é¢„è§ˆ â€” ä¸è¿›åœºæ™¯ Item   â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+                             â–²
+                             â”‚ åªè¯»åè®®
+                      HsCommData::Graphic / FrameOverlay / Style â€¦
 ```
 
-·Ö²ãÔ­Ôò£º
+åˆ†å±‚åŸåˆ™ï¼š
 
-| ²ã | Ö°Ôğ | ²»¸ºÔğ |
+| å±‚ | èŒè´£ | ä¸è´Ÿè´£ |
 |----|------|--------|
-| `ImageWidgetApi` | ²úÆ·Ç¶Èë¿Ç¡¢³£ÓÃ·½·¨×ª·¢ | ²»Áí¸ãÒ»Ì×Ğ­Òé |
-| `HsImageWindow` | ÊÓ¿Ú¡¢½»»¥¡¢µş²ãÔöÉ¾¡¢ĞÅºÅ | ²»ÊµÏÖËã·¨ |
-| `GraphicItem` | °ÑÒ»Ìõ `Graphic` »­³É¿ÉÃüÖĞÍ¼Ôª | ²»¸ÄĞ­Òé×Ö¶ÎÓïÒå |
-| HsCommData | ÀàĞÍÓë´æ´¢ | ²»ÒÀÀµ±¾ DLL |
+| `ImageWidgetApi` | äº§å“åµŒå…¥å£³ã€å¸¸ç”¨æ–¹æ³•è½¬å‘ | ä¸å¦æä¸€å¥—åè®® |
+| `HsImageWindow` | è§†å£ã€äº¤äº’ã€å å±‚å¢åˆ ã€ä¿¡å· | ä¸å®ç°ç®—æ³• |
+| `GraphicItem` | æŠŠä¸€æ¡ `Graphic` ç”»æˆå¯å‘½ä¸­å›¾å…ƒ | ä¸æ”¹åè®®å­—æ®µè¯­ä¹‰ |
+| HsCommData | ç±»å‹ä¸å­˜å‚¨ | ä¸ä¾èµ–æœ¬ DLL |
 
 ---
 
-## 2. Óë HsCommData µÄÊı¾İÁ÷
+## 2. ä¸ HsCommData çš„æ•°æ®æµ
 
 ```text
                     setImage / setCompressedImage / setImage(Mat)
-                                      ©¦
-                                      ¨‹
-                               HsImage£¨µ×Í¼£©
+                                      â”‚
+                                      â–¼
+                               HsImageï¼ˆåº•å›¾ï¼‰
                                frameId, WxH, pixels
-                                      ©¦
-          ©°©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©à©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©´
-          ©¦                           ©¦                           ©¦
-          ¨‹                           ¨‹                           ¨‹
-   ImageItem ÌùÍ¼              frameId ¶ÔÆë¼ì²é              ImageRefreshPolicy
-                                                      £¨»»Í¼ÊÇ·ñÇå Stack/ROI/×Ö£©
+                                      â”‚
+          â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+          â”‚                           â”‚                           â”‚
+          â–¼                           â–¼                           â–¼
+   ImageItem è´´å›¾              frameId å¯¹é½æ£€æŸ¥              ImageRefreshPolicy
+                                                      ï¼ˆæ¢å›¾æ˜¯å¦æ¸… Stack/ROI/å­—ï¼‰
 
-   setOverlay(FrameOverlay)          dispCircle / dispRegion / ¡­
-          ©¦                                    ©¦
-          ©¦ ÕûÖ¡Ìæ»»                             ©¦ ×·¼ÓÒ»Ìõ Graphic µ½µ±Ç°Ö¡
-          ©¸©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©Ğ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¼
-                           ¨‹
+   setOverlay(FrameOverlay)          dispCircle / dispRegion / â€¦
+          â”‚                                    â”‚
+          â”‚ æ•´å¸§æ›¿æ¢                             â”‚ è¿½åŠ ä¸€æ¡ Graphic åˆ°å½“å‰å¸§
+          â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+                           â–¼
                     Private::overlay
                     rebuildStack()
-                           ©¦
-                           ¨‹
-              stackLayer ÉÏµÄ GraphicItem ×Öµä£¨°´ Graphic.id£©
+                           â”‚
+                           â–¼
+              stackLayer ä¸Šçš„ GraphicItem å­—å…¸ï¼ˆæŒ‰ Graphic.idï¼‰
 
-   setDrawings / Êó±ê»æÖÆ / »æÖÆ»á»°
-          ©¦
-          ¨‹
-   drawingItems ×Öµä ¡ú drawingLayer
-          ©¦
-          ¨‹
+   setDrawings / é¼ æ ‡ç»˜åˆ¶ / ç»˜åˆ¶ä¼šè¯
+          â”‚
+          â–¼
+   drawingItems å­—å…¸ â†’ drawingLayer
+          â”‚
+          â–¼
    roiCommitted / roiSelected / drawSessionFinished
-   £¨ĞÅºÅÔØºÉÈÔÊÇ HsCommData::Graphic£©
+   ï¼ˆä¿¡å·è½½è·ä»æ˜¯ HsCommData::Graphicï¼‰
 ```
 
-### 2.1 Ğ­Òé×Ö¶ÎÔÚ¿Ø¼şÀïÔõÃ´ÓÃ
+### 2.1 åè®®å­—æ®µåœ¨æ§ä»¶é‡Œæ€ä¹ˆç”¨
 
-| HsCommData | ¿Ø¼şĞĞÎª |
+| HsCommData | æ§ä»¶è¡Œä¸º |
 |------------|----------|
-| `HsImage` | µ×Í¼Î¨Ò»Êı¾İÔ´£»²ÉÑù»Ò¶È/RGB¡¢ÏñËØ¼ìÑé¶¼¶ÁËü |
-| `FrameOverlay` | Stack µÄÈ¨Íş¿ìÕÕ£»`rebuildStack` Óë³¡¾°Í¬²½ |
-| `Graphic.role` | Stack ½ø `stackLayer`£»Drawing ½ø `drawingLayer`£¨Ğ´ÈëÊ±Ò²»áÇ¿ÖÆ¾ÀÕı£© |
-| `Graphic.kind` + ÔØºÉ | `GraphicItem` °´ kind »­¼¸ºÎ/Ê®×Ö/×Ö/ÑÚÂëµÈ |
-| `Graphic.geom`£¨`HsObject`£© | ROI Óë¶àÊı½á¹ûĞÎ×´£»Drawing Ö»ÓÃµÚ 0 Ôª |
-| `Graphic.style` | ±ÊÉ«Ïß¿í£»È±Ê¡ÓÃ `stackStyle` / `drawingStyle` |
-| `Graphic.frameId` | Óëµ×Í¼²»Ò»ÖÂÊ± Stack ²ã¿ÉÒş²Ø£¨Ö¡Î´¶ÔÆë£© |
-| `HsRegion` | ¶à±ßĞÎ±ÕºÏ¡¢»­±ÊÌá½»¡¢ãĞÖµÀà½á¹ûµÄ³£ÓÃÔØÌå |
-| `MaskP` | `KindMask` Õû·ùÕÖ£»Óë»­±ÊÉú³ÉµÄ Region **²»ÊÇ**Í¬Ò»Â·¾¶ |
+| `HsImage` | åº•å›¾å”¯ä¸€æ•°æ®æºï¼›é‡‡æ ·ç°åº¦/RGBã€åƒç´ æ£€éªŒéƒ½è¯»å®ƒ |
+| `FrameOverlay` | Stack çš„æƒå¨å¿«ç…§ï¼›`rebuildStack` ä¸åœºæ™¯åŒæ­¥ |
+| `Graphic.role` | Stack è¿› `stackLayer`ï¼›Drawing è¿› `drawingLayer`ï¼ˆå†™å…¥æ—¶ä¹Ÿä¼šå¼ºåˆ¶çº æ­£ï¼‰ |
+| `Graphic.kind` + è½½è· | `GraphicItem` æŒ‰ kind ç”»å‡ ä½•/åå­—/å­—/æ©ç ç­‰ |
+| `Graphic.geom`ï¼ˆ`HsObject`ï¼‰ | ROI ä¸å¤šæ•°ç»“æœå½¢çŠ¶ï¼›Drawing åªç”¨ç¬¬ 0 å…ƒ |
+| `Graphic.style` | ç¬”è‰²çº¿å®½ï¼›ç¼ºçœç”¨ `stackStyle` / `drawingStyle` |
+| `Graphic.frameId` | ä¸åº•å›¾ä¸ä¸€è‡´æ—¶ Stack å±‚å¯éšè—ï¼ˆå¸§æœªå¯¹é½ï¼‰ |
+| `HsRegion` | å¤šè¾¹å½¢é—­åˆã€ç”»ç¬”æäº¤ã€é˜ˆå€¼ç±»ç»“æœçš„å¸¸ç”¨è½½ä½“ |
+| `MaskP` | `KindMask` æ•´å¹…ç½©ï¼›ä¸ç”»ç¬”ç”Ÿæˆçš„ Region **ä¸æ˜¯**åŒä¸€è·¯å¾„ |
 
-### 2.2 Stack vs Drawing£¨Îñ±Ø·ÖÇå£©
+### 2.2 Stack vs Drawingï¼ˆåŠ¡å¿…åˆ†æ¸…ï¼‰
 
 ```text
-Stack£¨RoleStack£©              Drawing£¨RoleDrawing£©
-©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤              ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
-Ëã·¨/ÒµÎñ½á¹û                  ÓÃ»§½»»¥ ROI / ÎÄ±¾
-Í¨³£Ö»¶Á¡¢ÕûÖ¡Ìæ»»             ¿ÉÍÏÊÖ±ú¡¢¿É¶àÑ¡Á÷³Ì±à¼­
-FrameOverlay / disp*           setDrawings / Êó±ê¹¤¾ß / »á»°
-z = stackLayer                 z = drawingLayer£¨¸ü¸ß£©
-ÔËĞĞÌ¬ÈÔ¿ÉÏÔÊ¾                 ÔËĞĞÌ¬Ç¿ÖÆÒş²Ø
+Stackï¼ˆRoleStackï¼‰              Drawingï¼ˆRoleDrawingï¼‰
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€              â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+ç®—æ³•/ä¸šåŠ¡ç»“æœ                  ç”¨æˆ·äº¤äº’ ROI / æ–‡æœ¬
+é€šå¸¸åªè¯»ã€æ•´å¸§æ›¿æ¢             å¯æ‹–æ‰‹æŸ„ã€å¯å¤šé€‰æµç¨‹ç¼–è¾‘
+FrameOverlay / disp*           setDrawings / é¼ æ ‡å·¥å…· / ä¼šè¯
+z = stackLayer                 z = drawingLayerï¼ˆæ›´é«˜ï¼‰
+è¿è¡Œæ€ä»å¯æ˜¾ç¤º                 è¿è¡Œæ€å¼ºåˆ¶éšè—
 ```
 
-Í¬Ò»ÌõÂß¼­ĞÎ×´Á½±ß¶¼ÄÜ±í´ï£¨ÀıÈç¶¼ÊÇÔ²£©£¬²î±ğÔÚ **½ÇÉ«ÓëÉúÃüÖÜÆÚ**£º½á¹û¸úÖ¡×ß£»ROI ¸ú±à¼­»á»°×ß¡£
+åŒä¸€æ¡é€»è¾‘å½¢çŠ¶ä¸¤è¾¹éƒ½èƒ½è¡¨è¾¾ï¼ˆä¾‹å¦‚éƒ½æ˜¯åœ†ï¼‰ï¼Œå·®åˆ«åœ¨ **è§’è‰²ä¸ç”Ÿå‘½å‘¨æœŸ**ï¼šç»“æœè·Ÿå¸§èµ°ï¼›ROI è·Ÿç¼–è¾‘ä¼šè¯èµ°ã€‚
 
-### 2.3 ¹¤¾ßÃ¶¾Ù ¡ú Ğ­ÒéÀàĞÍ
+### 2.3 å·¥å…·æšä¸¾ â†’ åè®®ç±»å‹
 
-`DrawTool`£¨¿Ø¼ş£©Âäµ½ `Graphic` Ê±´óÖÂÈçÏÂ£º
+`DrawTool`ï¼ˆæ§ä»¶ï¼‰è½åˆ° `Graphic` æ—¶å¤§è‡´å¦‚ä¸‹ï¼š
 
-| DrawTool | ½á¹û Graphic | ¼¸ºÎÂäµã |
+| DrawTool | ç»“æœ Graphic | å‡ ä½•è½ç‚¹ |
 |----------|---------------|----------|
 | `ToolCircle` | `KindObject` | `ObjCircle` |
-| `ToolRect1` / `ToolRect2` / `ToolEllipse` / `ToolLine` | `KindObject` | ¶ÔÓ¦ Shape |
-| `ToolContour` | `KindObject` | `ObjContour`£¨ÕÛÏß£© |
-| `ToolPolygon` | `KindObject` | `ObjRegion`£¨±ÕºÏÌî³ÉĞĞ³Ì£© |
+| `ToolRect1` / `ToolRect2` / `ToolEllipse` / `ToolLine` | `KindObject` | å¯¹åº” Shape |
+| `ToolContour` | `KindObject` | `ObjContour`ï¼ˆæŠ˜çº¿ï¼‰ |
+| `ToolPolygon` | `KindObject` | `ObjRegion`ï¼ˆé—­åˆå¡«æˆè¡Œç¨‹ï¼‰ |
 | `ToolCross` | `KindCross` | `cross[0]` |
 | `ToolText` | `KindText` | `text[0]` |
-| `ToolBrush` | `KindObject` | È·ÈÏºó `ObjRegion`£¨½ö»á»°ÄÚ¿ÉÓÃ£© |
-| `ToolBrowse` | ¡ª | ²»Âä±Ê |
+| `ToolBrush` | `KindObject` | ç¡®è®¤å `ObjRegion`ï¼ˆä»…ä¼šè¯å†…å¯ç”¨ï¼‰ |
+| `ToolBrowse` | â€” | ä¸è½ç¬” |
 
-`setDrawTool`£º»»¹¤¾ß£¬¿ÉÁ¬Ğø»­£¨Drawing Object ·ç¸ñ£©¡£  
-`beginDrawSession(tool)`£º¶ÀÕ¼Ò»´Î£¬½áÊø·¢ `drawSessionFinished`£¨½Ó½ü Halcon `draw_*`£©¡£
+`setDrawTool`ï¼šæ¢å·¥å…·ï¼Œå¯è¿ç»­ç”»ï¼ˆDrawing Object é£æ ¼ï¼‰ã€‚  
+`beginDrawSession(tool)`ï¼šç‹¬å ä¸€æ¬¡ï¼Œç»“æŸå‘ `drawSessionFinished`ï¼ˆæ¥è¿‘ Halcon `draw_*`ï¼‰ã€‚
 
 ---
 
-## 3. ´°¿ÚÄÚ²¿½á¹¹£¨Pimpl£©
+## 3. çª—å£å†…éƒ¨ç»“æ„ï¼ˆPimplï¼‰
 
-`HsImageWindow::Private` ÊÇ×´Ì¬ÖĞÊà£¬Âß¼­·Ö×éÈçÏÂ£º
+`HsImageWindow::Private` æ˜¯çŠ¶æ€ä¸­æ¢ï¼Œé€»è¾‘åˆ†ç»„å¦‚ä¸‹ï¼š
 
 ```text
 Private
-©À©¤ ³¡¾°ÓëÍ¼Ôª
-©¦   scene ¡¤ imageItem ¡¤ stackLayer ¡¤ drawingLayer
-©¦   stackItems / drawingItems   // id ¡ú GraphicItem*
-©À©¤ Ğ­Òé»º´æ
-©¦   frame: HsImage
-©¦   overlay: shared_ptr<const FrameOverlay>
-©À©¤ ÊÓ¿Ú
-©¦   Viewport vp   // part£¨¿É¼û¾ØĞÎ£©+ imageSize£»Ëõ·Å=ÊÓ¿Ú±ä»»£¬²»¸Ä³¡¾°×ø±ê
-©À©¤ ½»»¥
-©¦   mode ¡¤ tool ¡¤ state£¨Browse / Pan / Draw / EditHandle£©
-©¦   activeId ¡¤ activeHandle ¡¤ rubberActive ¡¤ polyPts
-©¦   sessionActive / sessionDraft / brush* ¡­
-©À©¤ ±íÏÖ
-©¦   hudVisible ¡¤ pixelInspect ¡¤ penStyle ¡¤ overlayStyle
-©¦   imageDrawInfos / windowDrawInfos£¨Éè±¸×ø±êÎÄ×Ö£¬·Ç Graphic£©
-©¸©¤ ¿Ç
-    overlayBar ¡¤ ImageRefreshPolicy ¡¤ ViewportBackground ¡­
+â”œâ”€ åœºæ™¯ä¸å›¾å…ƒ
+â”‚   scene Â· imageItem Â· stackLayer Â· drawingLayer
+â”‚   stackItems / drawingItems   // id â†’ GraphicItem*
+â”œâ”€ åè®®ç¼“å­˜
+â”‚   frame: HsImage
+â”‚   overlay: shared_ptr<const FrameOverlay>
+â”œâ”€ è§†å£
+â”‚   Viewport vp   // partï¼ˆå¯è§çŸ©å½¢ï¼‰+ imageSizeï¼›ç¼©æ”¾=è§†å£å˜æ¢ï¼Œä¸æ”¹åœºæ™¯åæ ‡
+â”œâ”€ äº¤äº’
+â”‚   mode Â· tool Â· stateï¼ˆBrowse / Pan / Draw / EditHandleï¼‰
+â”‚   activeId Â· activeHandle Â· rubberActive Â· polyPts
+â”‚   sessionActive / sessionDraft / brush* â€¦
+â”œâ”€ è¡¨ç°
+â”‚   hudVisible Â· pixelInspect Â· penStyle Â· overlayStyle
+â”‚   imageDrawInfos / windowDrawInfosï¼ˆè®¾å¤‡åæ ‡æ–‡å­—ï¼Œé Graphicï¼‰
+â””â”€ å£³
+    overlayBar Â· ImageRefreshPolicy Â· ViewportBackground â€¦
 ```
 
-### 3.1 ×ø±êÓëËõ·Å
+### 3.1 åæ ‡ä¸ç¼©æ”¾
 
-- **³¡¾°×ø±ê = Í¼ÏñÏñËØ**£¬Ô²°ë¾¶¡¢ROI ¶¥µã¶¼ÒÔÍ¼ÏñÏñËØ¼Æ¡£
-- Ëõ·Å/Æ½ÒÆÖ»¸Ä `QGraphicsView` ±ä»»Óë `part`£¬**²»**°ÑÊ¸Á¿×ÖºÅÈû½ø³¡¾°£¨`drawInfo` / HUD ÔÚÉè±¸×ø±ê»­£¬±ÜÃâºı»ò¿´²»¼û£©¡£
-- `widgetToImage` / `imageToWidget` / `mapWidgetToImagePixel` ¹©Íâ²¿È¡ÑùÓëÂäµã¡£
+- **åœºæ™¯åæ ‡ = å›¾åƒåƒç´ **ï¼Œåœ†åŠå¾„ã€ROI é¡¶ç‚¹éƒ½ä»¥å›¾åƒåƒç´ è®¡ã€‚
+- ç¼©æ”¾/å¹³ç§»åªæ”¹ `QGraphicsView` å˜æ¢ä¸ `part`ï¼Œ**ä¸**æŠŠçŸ¢é‡å­—å·å¡è¿›åœºæ™¯ï¼ˆ`drawInfo` / HUD åœ¨è®¾å¤‡åæ ‡ç”»ï¼Œé¿å…ç³Šæˆ–çœ‹ä¸è§ï¼‰ã€‚
+- `widgetToImage` / `imageToWidget` / `mapWidgetToImagePixel` ä¾›å¤–éƒ¨å–æ ·ä¸è½ç‚¹ã€‚
 
-### 3.2 »»µ×Í¼²ßÂÔ
+### 3.2 æ¢åº•å›¾ç­–ç•¥
 
-`ImageRefreshPolicy`£¨Ä¬ÈÏÈ« `false` = È«±£Áô£©£º
+`ImageRefreshPolicy`ï¼ˆé»˜è®¤å…¨ `false` = å…¨ä¿ç•™ï¼‰ï¼š
 
-| ±êÖ¾ | true Ê± |
+| æ ‡å¿— | true æ—¶ |
 |------|---------|
-| `refreshStack` | Çå¿Õ Stack / overlay |
-| `refreshDrawing` | Çå¼¸ºÎ ROI£¨²»º¬ `KindText`£© |
-| `refreshText` | Çå `drawInfo` Óë Drawing ÎÄ×Ö |
+| `refreshStack` | æ¸…ç©º Stack / overlay |
+| `refreshDrawing` | æ¸…å‡ ä½• ROIï¼ˆä¸å« `KindText`ï¼‰ |
+| `refreshText` | æ¸… `drawInfo` ä¸ Drawing æ–‡å­— |
 
-Óë¡¸ÇåÍ¼µ«Áô ROI¡¹µÄ³£¼û²úÆ·ĞĞÎª¶ÔÆë£»ĞèÒª¸úÖ¡Çå¿ÕÊ±ÓÉÒµÎñÏÔÊ½´ò¿ª¡£
+ä¸ã€Œæ¸…å›¾ä½†ç•™ ROIã€çš„å¸¸è§äº§å“è¡Œä¸ºå¯¹é½ï¼›éœ€è¦è·Ÿå¸§æ¸…ç©ºæ—¶ç”±ä¸šåŠ¡æ˜¾å¼æ‰“å¼€ã€‚
 
-### 3.3 Éè¼ÆÌ¬ / ÔËĞĞÌ¬
+### 3.3 è®¾è®¡æ€ / è¿è¡Œæ€
 
-| `WindowMode` | ĞĞÎª |
+| `WindowMode` | è¡Œä¸º |
 |--------------|------|
-| `WindowDesign` | ¿ÉÇĞ»»¹¤¾ß¡¢»­ ROI¡¢ÍÏÊÖ±ú |
-| `WindowRuntime` | Ç¿ÖÆä¯ÀÀ£»Drawing ²ãÒş²Ø£»ÈÔ¿É¿´µ×Í¼Óë Stack |
+| `WindowDesign` | å¯åˆ‡æ¢å·¥å…·ã€ç”» ROIã€æ‹–æ‰‹æŸ„ |
+| `WindowRuntime` | å¼ºåˆ¶æµè§ˆï¼›Drawing å±‚éšè—ï¼›ä»å¯çœ‹åº•å›¾ä¸ Stack |
 
 ---
 
-## 4. Ä¿Â¼½á¹¹
+## 4. ç›®å½•ç»“æ„
 
 ```text
 HsImageCtrl/
   include/
     HsCtrl/
-      HsImageCtrl.h           # ×ÜÍ·
-      HsImageWindow.h         # ´°¿Ú API + ĞÅºÅ
-      HsImageWindowTypes.h    # Ä£Ê½/¹¤¾ß/»»Í¼²ßÂÔµÈÃ¶¾Ù
+      HsImageCtrl.h           # æ€»å¤´
+      HsImageWindow.h         # çª—å£ API + ä¿¡å·
+      HsImageWindowTypes.h    # æ¨¡å¼/å·¥å…·/æ¢å›¾ç­–ç•¥ç­‰æšä¸¾
       HsImgCtrlExport.h
     image_widget/
-      image_widget_api.hpp    # Ç¶Èë¿Ç
-  display/                    # HsImageWindow.cpp¡¢GraphicItem¡¢Í¼²ã¡­
+      image_widget_api.hpp    # åµŒå…¥å£³
+  display/                    # HsImageWindow.cppã€GraphicItemã€å›¾å±‚â€¦
   canvas/
-  protocol/                   # QImage ? HsImage µÈ×ª»»
+  protocol/                   # QImage ? HsImage ç­‰è½¬æ¢
   HsImageCtrl.vcxproj
 ```
 
 ---
 
-## 5. ¶ÔÍâ API µØÍ¼£¨°´ÓÃÍ¾£©
+## 5. å¯¹å¤– API åœ°å›¾ï¼ˆæŒ‰ç”¨é€”ï¼‰
 
-### 5.1 Ç¶Èë
+### 5.1 åµŒå…¥
 
 ```cpp
 #include <HsCtrl/HsImageCtrl.h>
@@ -216,87 +216,87 @@ HsImageCtrl/
 image_widget::ImageWidgetApi api(parent);
 layout->addWidget(api.widget());
 
-api.setImage(qimage);                    // ³£ÓÃ
+api.setImage(qimage);                    // å¸¸ç”¨
 HsCtrl::HsImageWindow* w = api.imageWindow();
-connect(w, &HsCtrl::HsImageWindow::roiCommitted, ¡­);
+connect(w, &HsCtrl::HsImageWindow::roiCommitted, â€¦);
 ```
 
-### 5.2 µ×Í¼
+### 5.2 åº•å›¾
 
 - `setImage` / `setImageRaw` / `setImage(cv::Mat)` / `setCompressedImage`
-- `clearImage`¡¢`hasImage`¡¢`currentImageSize`¡¢`currentFrameId`
+- `clearImage`ã€`hasImage`ã€`currentImageSize`ã€`currentFrameId`
 - `setImageRefreshPolicy`
 
-### 5.3 Stack£¨½á¹û£©
+### 5.3 Stackï¼ˆç»“æœï¼‰
 
-- ¿ì½İ£º`dispCircle` / `dispEllipse` / `dispRect1` / `dispRect2` / `dispLine` / `dispCross` / `dispArrow` / `dispRegion` / `dispContour`¡­
-- ÕûÖ¡£º`setOverlay(shared_ptr<FrameOverlay>)`¡¢`setOverlays(vector)`¡¢`clearWindow`
-- ÏÔÒş£º`setStackVisible` / `setOverlayVisible`£¨±ğÃû£©
+- å¿«æ·ï¼š`dispCircle` / `dispEllipse` / `dispRect1` / `dispRect2` / `dispLine` / `dispCross` / `dispArrow` / `dispRegion` / `dispContour`â€¦
+- æ•´å¸§ï¼š`setOverlay(shared_ptr<FrameOverlay>)`ã€`setOverlays(vector)`ã€`clearWindow`
+- æ˜¾éšï¼š`setStackVisible` / `setOverlayVisible`ï¼ˆåˆ«åï¼‰
 
-### 5.4 Drawing£¨ROI£©
+### 5.4 Drawingï¼ˆROIï¼‰
 
-- ÅúÁ¿£º`setDrawings` / `drawings` / `clearDrawings` / `setDrawing`
-- ÑùÊ½£º`setDrawingStyle` / `setPenColor` / `setPenWidth`
-- ¹¤¾ß£º`setDrawTool`¡¢`beginDrawSession` / `commitDrawSession` / `cancelDrawSession`
-- ĞÅºÅ£º`roiCommitted`¡¢`roiSelected`¡¢`drawSessionFinished`¡¢`textAnchorPicked`
+- æ‰¹é‡ï¼š`setDrawings` / `drawings` / `clearDrawings` / `setDrawing`
+- æ ·å¼ï¼š`setDrawingStyle` / `setPenColor` / `setPenWidth`
+- å·¥å…·ï¼š`setDrawTool`ã€`beginDrawSession` / `commitDrawSession` / `cancelDrawSession`
+- ä¿¡å·ï¼š`roiCommitted`ã€`roiSelected`ã€`drawSessionFinished`ã€`textAnchorPicked`
 
-### 5.5 µş¼ÓÎÄ×Ö£¨·Ç Graphic£©
+### 5.5 å åŠ æ–‡å­—ï¼ˆé Graphicï¼‰
 
-- `drawInfo` / `addDrawInfo` / `clearDrawInfo`£¨Í¼Ïñ×ø±ê»ò´°¿Ú×ø±ê£©
-- Óë Drawing µÄ `KindText` ²»Í¬£ºÇ°ÕßÊÇÊÓ¿ÚÇ°¾°ÌáÊ¾£¬ºóÕßÊÇ¿É½ø ROI ÁĞ±íµÄÍ¼Ôª¡£
+- `drawInfo` / `addDrawInfo` / `clearDrawInfo`ï¼ˆå›¾åƒåæ ‡æˆ–çª—å£åæ ‡ï¼‰
+- ä¸ Drawing çš„ `KindText` ä¸åŒï¼šå‰è€…æ˜¯è§†å£å‰æ™¯æç¤ºï¼Œåè€…æ˜¯å¯è¿› ROI åˆ—è¡¨çš„å›¾å…ƒã€‚
 
-### 5.6 ÊÓ¿ÚÓë¿Ç
+### 5.6 è§†å£ä¸å£³
 
 - `fitToWindow` / `zoomActualSize` / `zoomIn` / `zoomOut` / `part` / `setPart`
-- ¸¡¶¯¹¤¾ßÌõ¡¢ÊÓ¿Ú±³¾°¡¢HUD¡¢ÏñËØ¼ìÑé¡¢½ØÍ¼ `saveSnapshot` / `saveCurrentFrame`
+- æµ®åŠ¨å·¥å…·æ¡ã€è§†å£èƒŒæ™¯ã€HUDã€åƒç´ æ£€éªŒã€æˆªå›¾ `saveSnapshot` / `saveCurrentFrame`
 
 ---
 
-## 6. ½»»¥×´Ì¬»ú£¨¼òÍ¼£©
+## 6. äº¤äº’çŠ¶æ€æœºï¼ˆç®€å›¾ï¼‰
 
 ```text
         setDrawTool / beginDrawSession
-                    ©¦
-                    ¨‹
-              StateBrowse ?©¤©¤©¤©¤ Esc / È¡Ïû / »á»°½áÊø
-                 ©¦    ¡ø
-        ÖĞ¼üÍÏ    ©¦    ©¦ ËÉ¿ª
-                 ¨‹    ©¦
+                    â”‚
+                    â–¼
+              StateBrowse ?â”€â”€â”€â”€ Esc / å–æ¶ˆ / ä¼šè¯ç»“æŸ
+                 â”‚    â–²
+        ä¸­é”®æ‹–    â”‚    â”‚ æ¾å¼€
+                 â–¼    â”‚
               StatePan
-                 ©¦
-        Âä±Ê»­ ROI£¨·ÇÕÛÏß£©
-                 ¨‹
-              StateDraw ©¤©¤ËÉ¿ª©¤©¤?£¨·Ç»á»°£©commitGraphic
-                 ©¦                 £¨»á»°£©sessionDraft£¬¿ÉÔÙÍÏÊÖ±ú
-                 ©¦
-        µãÖĞÊÖ±ú/±¾Ìå
-                 ¨‹
-           StateEditHandle ©¤©¤ËÉ¿ª©¤©¤? roiCommitted£¨·Ç»á»°£©
+                 â”‚
+        è½ç¬”ç”» ROIï¼ˆéæŠ˜çº¿ï¼‰
+                 â–¼
+              StateDraw â”€â”€æ¾å¼€â”€â”€?ï¼ˆéä¼šè¯ï¼‰commitGraphic
+                 â”‚                 ï¼ˆä¼šè¯ï¼‰sessionDraftï¼Œå¯å†æ‹–æ‰‹æŸ„
+                 â”‚
+        ç‚¹ä¸­æ‰‹æŸ„/æœ¬ä½“
+                 â–¼
+           StateEditHandle â”€â”€æ¾å¼€â”€â”€? roiCommittedï¼ˆéä¼šè¯ï¼‰
 
-ÕÛÏß/¶à±ßĞÎ£º¶àµã ¡ú ÓÒ¼ü»ò Enter ½áÊø£»Backspace ÍËµã
-»­±Ê£º½ö»á»°£»×óÍ¿ÓÒ²Á£»È·ÈÏºó Region ½ø Drawing
+æŠ˜çº¿/å¤šè¾¹å½¢ï¼šå¤šç‚¹ â†’ å³é”®æˆ– Enter ç»“æŸï¼›Backspace é€€ç‚¹
+ç”»ç¬”ï¼šä»…ä¼šè¯ï¼›å·¦æ¶‚å³æ“¦ï¼›ç¡®è®¤å Region è¿› Drawing
 ```
 
-¸üÏ¸µÄ²úÆ·Ô¼Êø¼û `docs/»æÖÆÓëÆÁ±Î·½°¸.md`¡£
+æ›´ç»†çš„äº§å“çº¦æŸè§ `docs/ç»˜åˆ¶ä¸å±è”½æ–¹æ¡ˆ.md`ã€‚
 
 ---
 
-## 7. ÒÀÀµÓë¹¹½¨
+## 7. ä¾èµ–ä¸æ„å»º
 
-| ÒÀÀµ | ËµÃ÷ |
+| ä¾èµ– | è¯´æ˜ |
 |------|------|
-| HsCommData | ¹¤³ÌÒıÓÃ£»Á´½ÓÍ¬Êä³öÄ¿Â¼ `HsCommData.lib` |
-| Qt 5.9.9 Widgets | Ä¬ÈÏ `QTDIR` Ö¸Ïò msvc2015 / msvc2015_64 |
-| OpenCV£¨¿ÉÑ¡£© | ÓĞÍ·ÎÄ¼şÊ±ÆôÓÃ `setImage(cv::Mat)` |
+| HsCommData | å·¥ç¨‹å¼•ç”¨ï¼›é“¾æ¥åŒè¾“å‡ºç›®å½• `HsCommData.lib` |
+| Qt 5.15.2 Widgets | ç¯å¢ƒå˜é‡ `QTDIR` æŒ‡å‘ msvc2019_64ï¼ˆWin32 ä¸º msvc2019ï¼‰ |
+| OpenCVï¼ˆå¯é€‰ï¼‰ | æœ‰å¤´æ–‡ä»¶æ—¶å¯ç”¨ `setImage(cv::Mat)` |
 
-- ¹¤³Ìºê£º`HSCTRL_LIB`
-- Êä³ö£º`..\bin\<Platform>\<Configuration>\HsImageCtrl.dll|.lib`
-- MOC£º`..\tools\run_moc.bat` ´¦Àí `HsImageWindow.h`
-- Ô´Âë±àÂë£º**ÏµÍ³ ANSI/GBK**£¨ÓëÆ½Ì¨Ò»ÖÂ£©£¬²»¼Ó `/utf-8`
+- å·¥ç¨‹å®ï¼š`HSCTRL_LIB`
+- è¾“å‡ºï¼š`..\bin\<Platform>\<Configuration>\HsImageCtrl.dll|.lib`
+- MOCï¼š`..\tools\run_moc.bat` å¤„ç† `HsImageWindow.h`
+- æºç ç¼–ç ï¼šUTF-8ï¼ˆä¸å¹³å°ä¸€è‡´ï¼‰ï¼Œç¼–è¯‘é€‰é¡¹ `/utf-8`
 
 ---
 
-## 8. ½ÓÈë VisionPlatform
+## 8. æ¥å…¥ VisionPlatform
 
 ```text
 VisionPlatform\third_party\HsImageCtrl\
@@ -305,15 +305,15 @@ VisionPlatform\third_party\HsImageCtrl\
   lib\<P>\<C>\      # HsImageCtrl.lib
 ```
 
-Í¬Ê±±£Ö¤Í¬ÅäÖÃµÄ **HsCommData** Í·Óë DLL ÒÑÍ¬²½¡£Æ½Ì¨ UI Á´½Ó `HsImageCtrl.lib`£¬ÔËĞĞÊ±Á½¸ö DLL ¶¼ÒªÔÚ exe ÅÔ£¨»ò PATH£©¡£
+åŒæ—¶ä¿è¯åŒé…ç½®çš„ **HsCommData** å¤´ä¸ DLL å·²åŒæ­¥ã€‚å¹³å° UI é“¾æ¥ `HsImageCtrl.lib`ï¼Œè¿è¡Œæ—¶ä¸¤ä¸ª DLL éƒ½è¦åœ¨ exe æ—ï¼ˆæˆ– PATHï¼‰ã€‚
 
-ÍÆ¼öÇ¶ÈëÂ·¾¶£º²¼¾ÖÖ»ÄÃ `ImageWidgetApi::widget()`£»ĞèÒª ROI ĞÅºÅÊ±ÔÙ `imageWindow()`¡£
+æ¨èåµŒå…¥è·¯å¾„ï¼šå¸ƒå±€åªæ‹¿ `ImageWidgetApi::widget()`ï¼›éœ€è¦ ROI ä¿¡å·æ—¶å† `imageWindow()`ã€‚
 
 ---
 
-## 9. À©Õ¹Ê±×¢Òâ
+## 9. æ‰©å±•æ—¶æ³¨æ„
 
-1. **ĞÂĞÎ×´**£ºÏÈÔÚ HsCommData Ôö¼Ó Shape/`ObjectKind`/`Graphic` ÔØºÉ£¬ÔÙÔÚ `GraphicItem` »­ÓëÃüÖĞ£¬×îºó²Å¼Ó `DrawTool`¡£
-2. **²»Òª**ÈÃÒµÎñÖ±½Ó²Ù×÷ `QGraphicsItem`£»½ø³ö±ß½ç±£³Ö `Graphic` / `FrameOverlay`¡£
-3. Stack ¸ú `frameId`£»»»Í¼²ßÂÔÄ¬ÈÏ±£Áôµş²ã£¬±ÜÃâÎóÇåÏÖ³¡ ROI¡£
-4. Drawing µÄ `KindText` Óë `drawInfo` ÎÄ×ÖÊÇÁ½ÌõÏß£¬»»Í¼ `refreshText` / `refreshDrawing` ·Ö¿ª¿ØÖÆ¡£
+1. **æ–°å½¢çŠ¶**ï¼šå…ˆåœ¨ HsCommData å¢åŠ  Shape/`ObjectKind`/`Graphic` è½½è·ï¼Œå†åœ¨ `GraphicItem` ç”»ä¸å‘½ä¸­ï¼Œæœ€åæ‰åŠ  `DrawTool`ã€‚
+2. **ä¸è¦**è®©ä¸šåŠ¡ç›´æ¥æ“ä½œ `QGraphicsItem`ï¼›è¿›å‡ºè¾¹ç•Œä¿æŒ `Graphic` / `FrameOverlay`ã€‚
+3. Stack è·Ÿ `frameId`ï¼›æ¢å›¾ç­–ç•¥é»˜è®¤ä¿ç•™å å±‚ï¼Œé¿å…è¯¯æ¸…ç°åœº ROIã€‚
+4. Drawing çš„ `KindText` ä¸ `drawInfo` æ–‡å­—æ˜¯ä¸¤æ¡çº¿ï¼Œæ¢å›¾ `refreshText` / `refreshDrawing` åˆ†å¼€æ§åˆ¶ã€‚

@@ -1,6 +1,6 @@
 /**
  * @file ParamField.cpp
- * @brief ParamFieldÊµÏÖ
+ * @brief ParamFieldå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -10,7 +10,7 @@
 
 namespace Vision {
 
-// Æ´ÏÂÀ­Ñ¡Ïî£»¿ÕÖ¸ÕëÌø¹ı
+// æ‹¼ä¸‹æ‹‰é€‰é¡¹ï¼›ç©ºæŒ‡é’ˆè·³è¿‡
 std::vector<std::string> paramChoices(const char* a, const char* b, const char* c, const char* d)
 {
     std::vector<std::string> v;
@@ -29,7 +29,7 @@ std::vector<std::string> paramChoices(const char* a, const char* b, const char* 
     return v;
 }
 
-// ²¼¶ûÏî
+// å¸ƒå°”é¡¹
 ParamField paramBool(const char* key, const char* title, bool def)
 {
     ParamField f;
@@ -40,7 +40,7 @@ ParamField paramBool(const char* key, const char* title, bool def)
     return f;
 }
 
-// ÕûÊıÏî
+// æ•´æ•°é¡¹
 ParamField paramInt(const char* key, const char* title, int def, bool hasMin, double minV,
                            bool hasMax, double maxV)
 {
@@ -56,7 +56,7 @@ ParamField paramInt(const char* key, const char* title, int def, bool hasMin, do
     return f;
 }
 
-// ¸¡µãÏî
+// æµ®ç‚¹é¡¹
 ParamField paramDouble(const char* key, const char* title, double def, bool hasMin, double minV,
                               bool hasMax, double maxV)
 {
@@ -72,7 +72,7 @@ ParamField paramDouble(const char* key, const char* title, double def, bool hasM
     return f;
 }
 
-// ×Ö·û´®Ïî£»choices ·Ç¿ÕÔòÎªÏÂÀ­
+// å­—ç¬¦ä¸²é¡¹ï¼›choices éç©ºåˆ™ä¸ºä¸‹æ‹‰
 ParamField paramString(const char* key, const char* title, const std::string& def,
                               const std::vector<std::string>& choices)
 {
@@ -85,7 +85,7 @@ ParamField paramString(const char* key, const char* title, const std::string& de
     return f;
 }
 
-// Â·¾¶Ïî
+// è·¯å¾„é¡¹
 ParamField paramPath(const char* key, const char* title, const std::string& def)
 {
     ParamField f;
@@ -96,7 +96,7 @@ ParamField paramPath(const char* key, const char* title, const std::string& def)
     return f;
 }
 
-// Éè±¸Ïî£»½çÃæĞ´ ToolCfg.deviceId£¬²»½ø params
+// è®¾å¤‡é¡¹ï¼›ç•Œé¢å†™ ToolCfg.deviceIdï¼Œä¸è¿› params
 ParamField paramDevice(const char* key, const char* title)
 {
     ParamField f;

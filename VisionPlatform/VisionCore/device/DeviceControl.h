@@ -1,6 +1,6 @@
 /**
  * @file DeviceControl.h
- * @brief DeviceControlÍ·ÎÄ¼ş
+ * @brief DeviceControlå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -16,96 +16,96 @@
 
 namespace Vision {
 
-/** @class DeviceProbeInfo @brief ±éÀúµ½µÄÒ»ÌõÉè±¸ºòÑ¡£¨ÉĞÎ´µÇ¼ÇÌ¨ÕË£© */
+/** @class DeviceProbeInfo @brief éå†åˆ°çš„ä¸€æ¡è®¾å¤‡å€™é€‰ï¼ˆå°šæœªç™»è®°å°è´¦ï¼‰ */
 struct DeviceProbeInfo {
-    std::string key;   ///< ÎÈ¶¨¼ü£¨Èç COM3¡¢ÎÄ¼ş¼ĞÂ·¾¶¡¢¿¨ºÅ£©
-    std::string title; ///< ÏÔÊ¾Ãû
-    ParamMap params;   ///< ½¨ÒéĞ´Èë defaultParams µÄ³õÖµ
+    std::string key;   ///< ç¨³å®šé”®ï¼ˆå¦‚ COM3ã€æ–‡ä»¶å¤¹è·¯å¾„ã€å¡å·ï¼‰
+    std::string title; ///< æ˜¾ç¤ºå
+    ParamMap params;   ///< å»ºè®®å†™å…¥ defaultParams çš„åˆå€¼
 };
 
 /**
  * @class IDeviceControl
- * @brief Éè±¸¿ØÖÆ³éÏó£º±éÀúÓë¿ª±Õ£¨ÎŞ Qt£©
+ * @brief è®¾å¤‡æ§åˆ¶æŠ½è±¡ï¼šéå†ä¸å¼€é—­ï¼ˆæ—  Qtï¼‰
  */
 class VISIONCORE_API IDeviceControl {
 public:
     virtual ~IDeviceControl() {}
-    /** @brief ±éÀú±¾»ú/¿ÉÓÃÉè±¸ºòÑ¡ */
+    /** @brief éå†æœ¬æœº/å¯ç”¨è®¾å¤‡å€™é€‰ */
     virtual std::vector<DeviceProbeInfo> enumerate() = 0;
-    /** @brief ´ò¿ª£¨Ğ£Ñé²ÎÊı£©£»Ê§°ÜĞ´ lastError */
+    /** @brief æ‰“å¼€ï¼ˆæ ¡éªŒå‚æ•°ï¼‰ï¼›å¤±è´¥å†™ lastError */
     virtual bool open(const HardwareDevice& device) = 0;
-    /** @brief ¹Ø±Õ */
+    /** @brief å…³é—­ */
     virtual void close() = 0;
-    /** @brief ÊÇ·ñÒÑ´ò¿ª */
+    /** @brief æ˜¯å¦å·²æ‰“å¼€ */
     virtual bool isOpen() const = 0;
-    /** @brief ×î½ü´íÎó */
+    /** @brief æœ€è¿‘é”™è¯¯ */
     virtual std::string lastError() const = 0;
 };
 
-/** @class CamDeviceControl @brief Ïà»ú¿ØÖÆ£¨ÎÄ¼şÔ´Ğ£Ñé£»SDK Õ¼Î»£© */
+/** @class CamDeviceControl @brief ç›¸æœºæ§åˆ¶ï¼ˆæ–‡ä»¶æºæ ¡éªŒï¼›SDK å ä½ï¼‰ */
 class VISIONCORE_API CamDeviceControl : public IDeviceControl {
 public:
-    /** @brief ¹¹ÔìÎ´´ò¿ªµÄÏà»ú¿ØÖÆ */
+    /** @brief æ„é€ æœªæ‰“å¼€çš„ç›¸æœºæ§åˆ¶ */
     CamDeviceControl();
-    /** @brief Ã¶¾Ù samples Óë¸÷ÅÌ¸ùÄ¿Â¼£¬×÷ÎªÎÄ¼şÔ´ºòÑ¡ */
+    /** @brief æšä¸¾ samples ä¸å„ç›˜æ ¹ç›®å½•ï¼Œä½œä¸ºæ–‡ä»¶æºå€™é€‰ */
     std::vector<DeviceProbeInfo> enumerate();
-    /** @brief ´ò¿ªÎÄ¼şÔ´²¢Ğ£ÑéÄ¿Â¼£»ÕæÏà»úÔİ¾Ü¾ø */
+    /** @brief æ‰“å¼€æ–‡ä»¶æºå¹¶æ ¡éªŒç›®å½•ï¼›çœŸç›¸æœºæš‚æ‹’ç» */
     bool open(const HardwareDevice& device);
-    /** @brief ¹Ø±Õ²¢Çåµôµ±Ç°ÎÄ¼şÔ´Ä¿Â¼ */
+    /** @brief å…³é—­å¹¶æ¸…æ‰å½“å‰æ–‡ä»¶æºç›®å½• */
     void close();
-    /** @brief ÊÇ·ñÒÑ´ò¿ª */
+    /** @brief æ˜¯å¦å·²æ‰“å¼€ */
     bool isOpen() const;
-    /** @brief ×î½üÒ»´ÎÊ§°ÜÔ­Òò */
+    /** @brief æœ€è¿‘ä¸€æ¬¡å¤±è´¥åŸå›  */
     std::string lastError() const;
 
 private:
-    bool m_open;           ///< ´ò¿ª×´Ì¬
-    std::string m_error;   ///< ×î½ü´íÎó
-    std::string m_folder;  ///< µ±Ç°ÎÄ¼şÔ´Ä¿Â¼
+    bool m_open;           ///< æ‰“å¼€çŠ¶æ€
+    std::string m_error;   ///< æœ€è¿‘é”™è¯¯
+    std::string m_folder;  ///< å½“å‰æ–‡ä»¶æºç›®å½•
 };
 
-/** @class ControlCardDeviceControl @brief ¿ØÖÆ¿¨¿ØÖÆ£¨Ê×°æ¿Ç£© */
+/** @class ControlCardDeviceControl @brief æ§åˆ¶å¡æ§åˆ¶ï¼ˆé¦–ç‰ˆå£³ï¼‰ */
 class VISIONCORE_API ControlCardDeviceControl : public IDeviceControl {
 public:
-    /** @brief ¹¹ÔìÎ´´ò¿ªµÄ¿ØÖÆ¿¨¿ØÖÆ */
+    /** @brief æ„é€ æœªæ‰“å¼€çš„æ§åˆ¶å¡æ§åˆ¶ */
     ControlCardDeviceControl();
-    /** @brief ·µ»ØÕ¼Î»Ïî£¬²»×Ô¶¯µÇ¼Ç¿ØÖÆ¿¨ */
+    /** @brief è¿”å›å ä½é¡¹ï¼Œä¸è‡ªåŠ¨ç™»è®°æ§åˆ¶å¡ */
     std::vector<DeviceProbeInfo> enumerate();
-    /** @brief Ğ£ÑéÖÖÀàºó±ê¼Ç´ò¿ª£¨Çı¶¯Î´½ÓÈë£© */
+    /** @brief æ ¡éªŒç§ç±»åæ ‡è®°æ‰“å¼€ï¼ˆé©±åŠ¨æœªæ¥å…¥ï¼‰ */
     bool open(const HardwareDevice& device);
-    /** @brief ¹Ø±Õ¿ØÖÆ¿¨ */
+    /** @brief å…³é—­æ§åˆ¶å¡ */
     void close();
-    /** @brief ÊÇ·ñÒÑ´ò¿ª */
+    /** @brief æ˜¯å¦å·²æ‰“å¼€ */
     bool isOpen() const;
-    /** @brief ×î½üÒ»´ÎÊ§°ÜÔ­Òò */
+    /** @brief æœ€è¿‘ä¸€æ¬¡å¤±è´¥åŸå›  */
     std::string lastError() const;
 
 private:
-    bool m_open;         ///< ´ò¿ª×´Ì¬
-    std::string m_error; ///< ×î½ü´íÎó
+    bool m_open;         ///< æ‰“å¼€çŠ¶æ€
+    std::string m_error; ///< æœ€è¿‘é”™è¯¯
 };
 
-/** @class PlcDeviceControl @brief PLC ¿ØÖÆ£¨²ÎÊıĞ£Ñé£»Í¨Â·ÓÉ VisionComm Êµ²â£© */
+/** @class PlcDeviceControl @brief PLC æ§åˆ¶ï¼ˆå‚æ•°æ ¡éªŒï¼›é€šè·¯ç”± VisionComm å®æµ‹ï¼‰ */
 class VISIONCORE_API PlcDeviceControl : public IDeviceControl {
 public:
-    /** @brief ¹¹ÔìÎ´´ò¿ªµÄ PLC ¿ØÖÆ */
+    /** @brief æ„é€ æœªæ‰“å¼€çš„ PLC æ§åˆ¶ */
     PlcDeviceControl();
-    /** @brief ·µ»ØÕ¼Î»Ïî£¬ÌáÊ¾ÏÈÅäÖÃÍ¨ĞÅÍ¨µÀ */
+    /** @brief è¿”å›å ä½é¡¹ï¼Œæç¤ºå…ˆé…ç½®é€šä¿¡é€šé“ */
     std::vector<DeviceProbeInfo> enumerate();
-    /** @brief Ğ£ÑéÖÖÀà£¬²¢ÒªÇóÒÑ°ó¶¨Í¨ĞÅÍ¨µÀ */
+    /** @brief æ ¡éªŒç§ç±»ï¼Œå¹¶è¦æ±‚å·²ç»‘å®šé€šä¿¡é€šé“ */
     bool open(const HardwareDevice& device);
-    /** @brief ¹Ø±Õ PLC */
+    /** @brief å…³é—­ PLC */
     void close();
-    /** @brief ÊÇ·ñÒÑ´ò¿ª */
+    /** @brief æ˜¯å¦å·²æ‰“å¼€ */
     bool isOpen() const;
-    /** @brief ×î½üÒ»´ÎÊ§°ÜÔ­Òò */
+    /** @brief æœ€è¿‘ä¸€æ¬¡å¤±è´¥åŸå›  */
     std::string lastError() const;
-    /** @brief °ó¶¨µÄÍ¨ĞÅÍ¨µÀ id£¨params["commChannelId"]£© */
+    /** @brief ç»‘å®šçš„é€šä¿¡é€šé“ idï¼ˆparams["commChannelId"]ï¼‰ */
     static std::string channelIdOf(const HardwareDevice& device);
 
 private:
-    bool m_open;         ///< ´ò¿ª×´Ì¬
-    std::string m_error; ///< ×î½ü´íÎó
+    bool m_open;         ///< æ‰“å¼€çŠ¶æ€
+    std::string m_error; ///< æœ€è¿‘é”™è¯¯
 };
 
 }

@@ -1,6 +1,6 @@
 /**
  * @file RegisterGrabFile.h
- * @brief RegisterGrabFileÍ·ÎÄ¼ş
+ * @brief RegisterGrabFileå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -11,7 +11,7 @@
 
 namespace Vision {
 
-/** @brief µÇ¼ÇÏà»úÓëÍ¼ÏñÎÄ¼ş/ÎÄ¼ş¼Ğ²É¼¯¡£VisionApp::main Æô¶¯Ê±µ÷ÓÃ */
+/** @brief ç™»è®°ç›¸æœºä¸å›¾åƒæ–‡ä»¶/æ–‡ä»¶å¤¹é‡‡é›†ã€‚VisionApp::main å¯åŠ¨æ—¶è°ƒç”¨ */
 void registerGrabFile();
 
 }

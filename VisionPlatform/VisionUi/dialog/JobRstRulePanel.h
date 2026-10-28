@@ -1,6 +1,6 @@
 /**
  * @file JobRstRulePanel.h
- * @brief JobRstRulePanelÍ·ÎÄ¼ş
+ * @brief JobRstRulePanelå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -22,54 +22,54 @@ namespace Vision {
 
 /**
  * @class JobRstRulePanel
- * @brief JobCfg Êä³ö½á¹ûÅäÖÃ£ºÂß¼­ÅĞ¶Ï¾ØÕóÓë¡¸Á÷³Ì½á¹ûÈ¡×Ô¡¹
+ * @brief JobCfg è¾“å‡ºç»“æœé…ç½®ï¼šé€»è¾‘åˆ¤æ–­çŸ©é˜µä¸ã€Œæµç¨‹ç»“æœå–è‡ªã€
  */
 class VISION_UI_API JobRstRulePanel : public QWidget {
     Q_OBJECT
 public:
-    /** @brief Êä³ö½á¹ûÅäÖÃÃæ°å */
+    /** @brief è¾“å‡ºç»“æœé…ç½®é¢æ¿ */
     explicit JobRstRulePanel(QWidget* parent = 0);
 
-    /** @brief °ó¶¨µ±Ç°±à¼­ÖĞµÄ JobCfg£¨²»ÓµÓĞ£© */
+    /** @brief ç»‘å®šå½“å‰ç¼–è¾‘ä¸­çš„ JobCfgï¼ˆä¸æ‹¥æœ‰ï¼‰ */
     void setJob(JobCfg* job);
-    /** @brief ´Ó JobCfg Ë¢ĞÂ±í¸ñ */
+    /** @brief ä» JobCfg åˆ·æ–°è¡¨æ ¼ */
     void loadFromJob(const JobCfg* job);
-    /** @brief Ğ´»Ø JobCfg */
+    /** @brief å†™å› JobCfg */
     void flushToJob(JobCfg* job);
-    /** @brief ÊÇ·ñÔÊĞí±à¼­ */
+    /** @brief æ˜¯å¦å…è®¸ç¼–è¾‘ */
     void setEditable(bool editable);
-    /** @brief Ìî³ä¡¸Á÷³Ì½á¹ûÑ¡Ôñ¡¹ÏÂÀ­ */
+    /** @brief å¡«å……ã€Œæµç¨‹ç»“æœé€‰æ‹©ã€ä¸‹æ‹‰ */
     static void populateFromRuleCombo(QComboBox* combo, const JobCfg* job);
-    /** @brief ´ÓÏÂÀ­Ğ´»Ø resultFromRuleId */
+    /** @brief ä»ä¸‹æ‹‰å†™å› resultFromRuleId */
     static void applyFromRuleCombo(QComboBox* combo, JobCfg* job);
 
 signals:
-    /** @brief ¹æÔò»òÈ¡×ÔÏî±ä¸ü */
+    /** @brief è§„åˆ™æˆ–å–è‡ªé¡¹å˜æ›´ */
     void changed();
 
 private slots:
-    /** @brief ÈıÌ¬¸ñµ¥»÷Ñ­»· */
+    /** @brief ä¸‰æ€æ ¼å•å‡»å¾ªç¯ */
     void onTermClicked();
-    /** @brief °ó¶¨¹¤¾ß»òÃû³Æ±ä¸ü */
+    /** @brief ç»‘å®šå·¥å…·æˆ–åç§°å˜æ›´ */
     void onRuleMetaChanged();
-    /** @brief Ìí¼ÓÒ»ĞĞÂß¼­ÅĞ¶Ï */
+    /** @brief æ·»åŠ ä¸€è¡Œé€»è¾‘åˆ¤æ–­ */
     void onAddRule();
-    /** @brief É¾³ıÑ¡ÖĞĞĞ */
+    /** @brief åˆ é™¤é€‰ä¸­è¡Œ */
     void onRemoveRule();
 
 private:
-    /** @brief ÖØ½¨±íÍ·ÓëĞĞ */
+    /** @brief é‡å»ºè¡¨å¤´ä¸è¡Œ */
     void rebuildTable();
-    /** @brief ÉèÖÃÈıÌ¬ checkbox Íâ¹Û */
+    /** @brief è®¾ç½®ä¸‰æ€ checkbox å¤–è§‚ */
     static void applyTermVisual(QCheckBox* cb, int state);
-    /** @brief µ±Ç°ÁĞ¶ÔÓ¦µÄÀ´Ô´ kind Óë id */
+    /** @brief å½“å‰åˆ—å¯¹åº”çš„æ¥æº kind ä¸ id */
     bool columnSource(int col, int ruleRow, int* kind, ObjectId* sourceId) const;
 
-    JobCfg* m_editJob;           ///< µ±Ç°±à¼­ JobCfg£¨²»ÓµÓĞ£©
-    bool m_editable;          ///< ÊÇ·ñ¿É±à¼­
-    QTableWidget* m_table;  ///< Âß¼­¾ØÕó
-    QPushButton* m_addRule;   ///< Ìí¼ÓĞĞ
-    QPushButton* m_removeRule; ///< É¾³ıĞĞ
+    JobCfg* m_editJob;           ///< å½“å‰ç¼–è¾‘ JobCfgï¼ˆä¸æ‹¥æœ‰ï¼‰
+    bool m_editable;          ///< æ˜¯å¦å¯ç¼–è¾‘
+    QTableWidget* m_table;  ///< é€»è¾‘çŸ©é˜µ
+    QPushButton* m_addRule;   ///< æ·»åŠ è¡Œ
+    QPushButton* m_removeRule; ///< åˆ é™¤è¡Œ
 };
 
 }

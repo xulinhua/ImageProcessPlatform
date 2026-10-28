@@ -1,6 +1,6 @@
 /**
  * @file ToolIoPanel.cpp
- * @brief ToolIoPanelÊµÏÖ
+ * @brief ToolIoPanelå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -43,7 +43,7 @@ namespace Vision {
 
 namespace {
 
-// °´¿É¼ûĞĞÖØËãÊäÈëÒ³¹Ì¶¨¸ß¶È£¬±ÜÃâĞĞ¾à±»¿¨Æ¬³Å¿ª
+// æŒ‰å¯è§è¡Œé‡ç®—è¾“å…¥é¡µå›ºå®šé«˜åº¦ï¼Œé¿å…è¡Œè·è¢«å¡ç‰‡æ’‘å¼€
 static void syncLinkPageHeight(QWidget* page)
 {
     if (!page) {
@@ -61,11 +61,11 @@ static void syncLinkPageHeight(QWidget* page)
 }
 
 enum LinkComboRole {
-    RoleFromId = Qt::UserRole,     ///< ÉÏÓÎ¹¤¾ß id
-    RoleFromPort = Qt::UserRole + 1 ///<ÉÏÓÎ¶Ë¿Ú¼ü
+    RoleFromId = Qt::UserRole,     ///< ä¸Šæ¸¸å·¥å…· id
+    RoleFromPort = Qt::UserRole + 1 ///<ä¸Šæ¸¸ç«¯å£é”®
 };
 
-// ¹¤¾ßÊÇ·ñÉùÃ÷ÁËÖ¸¶¨·½ÏòµÄ¶Ë¿Ú
+// å·¥å…·æ˜¯å¦å£°æ˜äº†æŒ‡å®šæ–¹å‘çš„ç«¯å£
 static bool toolHasPort(ToolType type, PortDir dir, PortData data)
 {
     const std::vector<PortDesc> ports = defaultPortsForType(type);
@@ -85,8 +85,8 @@ static QWidget* makeLinkRow(QComboBox* combo, QLabel* hint, QLabel* camText)
     lay->setContentsMargins(0, 0, 0, 0);
     lay->setSpacing(4);
     lay->addWidget(combo, 1);
-    // ±£Áô wordWrap ÈÃ±êÇ©ÄÜºáÏòÑ¹Ëõ£¬²»¼·³ö¿¨Æ¬
-    // Í¬Ê±ËøËÀ 28px ¸ß£¬±ÜÃâÒ³¿íÎª 0 Ê± sizeHint °´Ò»ĞĞÒ»×Ö±©ÕÇ°Ñ´°¿Ú³Å¸ß
+    // ä¿ç•™ wordWrap è®©æ ‡ç­¾èƒ½æ¨ªå‘å‹ç¼©ï¼Œä¸æŒ¤å‡ºå¡ç‰‡
+    // åŒæ—¶é”æ­» 28px é«˜ï¼Œé¿å…é¡µå®½ä¸º 0 æ—¶ sizeHint æŒ‰ä¸€è¡Œä¸€å­—æš´æ¶¨æŠŠçª—å£æ’‘é«˜
     if (hint) {
         lay->addWidget(hint);
         hint->setObjectName(QLatin1String("hint"));
@@ -102,13 +102,13 @@ static QWidget* makeLinkRow(QComboBox* combo, QLabel* hint, QLabel* camText)
     return row;
 }
 
-// °ó¶¨ÊäÈëÊı¾İÀàĞÍ£¬¹©²ÛÀïÊ¶±ğÀ´Ô´
+// ç»‘å®šè¾“å…¥æ•°æ®ç±»å‹ï¼Œä¾›æ§½é‡Œè¯†åˆ«æ¥æº
 static void tagLinkCombo(QComboBox* combo, PortData data)
 {
     combo->setProperty("portData", static_cast<int>(data));
 }
 
-// È¡³öÏÂÀ­ÉÏ±ê¼ÇµÄÊäÈëÊı¾İÀàĞÍ
+// å–å‡ºä¸‹æ‹‰ä¸Šæ ‡è®°çš„è¾“å…¥æ•°æ®ç±»å‹
 static PortData linkComboPortData(const QComboBox* combo)
 {
     return static_cast<PortData>(combo->property("portData").toInt());
@@ -135,7 +135,7 @@ static QTableWidgetItem* roiCell(const QString& text, bool numeric)
     return it;
 }
 
-// Ò»Î»Ğ¡Êı£»¿Õµ¥Ôª¸ñ´« ok=false
+// ä¸€ä½å°æ•°ï¼›ç©ºå•å…ƒæ ¼ä¼  ok=false
 static QTableWidgetItem* roiNum(double v, bool ok)
 {
     if (!ok) {
@@ -150,7 +150,7 @@ int roiKindOf(const HsCommData::HsObject& r)
     return r.isInitialized() && !r.isEmpty() ? static_cast<int>(r.kind()) : -1;
 }
 
-// ´Ó¼¸ºÎÈ¡³ö±í¸ñÓÃµÄÖĞĞÄºÍ³ß´ç
+// ä»å‡ ä½•å–å‡ºè¡¨æ ¼ç”¨çš„ä¸­å¿ƒå’Œå°ºå¯¸
 static void roiNumbers(const HsCommData::HsObject& r, double* x, double* y, double* a, double* b, double* phi, int* npts)
 {
     double xx = 0, yy = 0, aa = 0, bb = 0, pp = 0;
@@ -223,22 +223,22 @@ QString formatRoiSize(const HsCommData::HsObject& r, int kind)
         return QString::fromUtf8("R=%1").arg(a, 0, 'f', 1);
     }
     if (kind == static_cast<int>(HsCommData::ObjRect1)) {
-        return QString::fromUtf8("%1 Ã— %2").arg(a, 0, 'f', 1).arg(b, 0, 'f', 1);
+        return QString::fromUtf8("%1 è„³ %2").arg(a, 0, 'f', 1).arg(b, 0, 'f', 1);
     }
     if (kind == static_cast<int>(HsCommData::ObjRect2) || kind == static_cast<int>(HsCommData::ObjEllipse)) {
-        return QString::fromUtf8("%1 Ã— %2").arg(a * 2.0, 0, 'f', 1).arg(b * 2.0, 0, 'f', 1);
+        return QString::fromUtf8("%1 è„³ %2").arg(a * 2.0, 0, 'f', 1).arg(b * 2.0, 0, 'f', 1);
     }
     if (kind == static_cast<int>(HsCommData::ObjLine)) {
         const double len = std::sqrt(a * a + b * b);
         return QString::fromUtf8("L=%1").arg(len, 0, 'f', 1);
     }
     if (kind == static_cast<int>(HsCommData::ObjContour)) {
-        return QString::fromLocal8Bit("¶¥µã=%1").arg(n);
+        return QString::fromUtf8("é¡¶ç‚¹=%1").arg(n);
     }
-    return QString::fromUtf8("%1 Ã— %2").arg(a, 0, 'f', 1).arg(b, 0, 'f', 1);
+    return QString::fromUtf8("%1 è„³ %2").arg(a, 0, 'f', 1).arg(b, 0, 'f', 1);
 }
 
-// È«²¿Í¬ÀàÔòÓÃ×¨ÁĞ±íÍ·£¬·ñÔòÓÃÍ¨ÓÃ A/B
+// å…¨éƒ¨åŒç±»åˆ™ç”¨ä¸“åˆ—è¡¨å¤´ï¼Œå¦åˆ™ç”¨é€šç”¨ A/B
 static int roiTableKind(const std::vector<HsCommData::HsObject>& rs)
 {
     if (rs.empty()) {
@@ -253,7 +253,7 @@ static int roiTableKind(const std::vector<HsCommData::HsObject>& rs)
     return k;
 }
 
-// Á¬½ÓÒ³Óë ROI Ò³
+// è¿æ¥é¡µä¸ ROI é¡µ
 ToolIoPanel::ToolIoPanel(QWidget* parent)
     : QWidget(parent)
     , m_linkPage(nullptr)
@@ -285,7 +285,7 @@ ToolIoPanel::ToolIoPanel(QWidget* parent)
     m_roiPage->setObjectName(QLatin1String("card"));
 
     QVBoxLayout* linkLay = new QVBoxLayout(m_linkPage);
-    // ¿¨Æ¬±ß¿òÓëÄÚ²¿¿Ø¼şÁô³öºôÎü¼äÏ¶
+    // å¡ç‰‡è¾¹æ¡†ä¸å†…éƒ¨æ§ä»¶ç•™å‡ºå‘¼å¸é—´éš™
     linkLay->setContentsMargins(12, 10, 12, 12);
     linkLay->setSpacing(6);
 
@@ -308,14 +308,14 @@ ToolIoPanel::ToolIoPanel(QWidget* parent)
     tagLinkCombo(m_regionCombo, PortData::Region);
     QWidget* regionRow = makeLinkRow(m_regionCombo, m_regionHint, 0);
 
-    m_imgRowLabel = new QLabel(T("Í¼Ïñ"), m_linkPage);
+    m_imgRowLabel = new QLabel(T("å›¾åƒ"), m_linkPage);
     addLinkField(linkLay, m_imgRowLabel, imgRow);
-    m_poseRowLabel = new QLabel(T("¶¨Î»Êı¾İ"), m_linkPage);
+    m_poseRowLabel = new QLabel(T("å®šä½æ•°æ®"), m_linkPage);
     addLinkField(linkLay, m_poseRowLabel, poseRow);
-    m_regionRowLabel = new QLabel(T("ÇøÓò"), m_linkPage);
+    m_regionRowLabel = new QLabel(T("åŒºåŸŸ"), m_linkPage);
     addLinkField(linkLay, m_regionRowLabel, regionRow);
     linkLay->setAlignment(Qt::AlignTop);
-    // ÊäÈëÒ³°´ÄÚÈİ¸ß¶È£¬¿Õ°×ÓÉÍâ²ã¿¨Æ¬ stretch ³Ôµô
+    // è¾“å…¥é¡µæŒ‰å†…å®¹é«˜åº¦ï¼Œç©ºç™½ç”±å¤–å±‚å¡ç‰‡ stretch åƒæ‰
     m_imgCombo->setFixedHeight(28);
     m_poseCombo->setFixedHeight(28);
     m_regionCombo->setFixedHeight(28);
@@ -327,7 +327,7 @@ ToolIoPanel::ToolIoPanel(QWidget* parent)
     connect(m_regionCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(onLinkComboChanged(int)));
 
     QVBoxLayout* roiLay = new QVBoxLayout(m_roiPage);
-    // ÓëÊäÈëÒ³±£³ÖÒ»ÖÂµÄÄÚ±ß¾à
+    // ä¸è¾“å…¥é¡µä¿æŒä¸€è‡´çš„å†…è¾¹è·
     roiLay->setContentsMargins(12, 10, 12, 12);
     roiLay->setSpacing(6);
 
@@ -335,7 +335,7 @@ ToolIoPanel::ToolIoPanel(QWidget* parent)
     m_roiTable->setObjectName(QLatin1String("toolDebugRoiTable"));
     m_roiTable->setColumnCount(5);
     QStringList hh;
-    hh << T("ROI ID") << T("ÀàĞÍ") << T("Î»ÖÃ") << T("³ß´ç") << QString();
+    hh << T("ROI ID") << T("ç±»å‹") << T("ä½ç½®") << T("å°ºå¯¸") << QString();
     m_roiTable->setHorizontalHeaderLabels(hh);
     m_roiTable->verticalHeader()->setVisible(false);
     m_roiTable->verticalHeader()->setFixedWidth(0);
@@ -348,13 +348,13 @@ ToolIoPanel::ToolIoPanel(QWidget* parent)
     m_roiTable->setMinimumHeight(72);
     m_roiTable->viewport()->installEventFilter(this);
 
-    m_btnAdd = new QPushButton(T("+ Ìí¼Ó ROI"), m_roiPage);
+    m_btnAdd = new QPushButton(T("+ æ·»åŠ  ROI"), m_roiPage);
     m_btnAdd->setObjectName(QLatin1String("toolDebugAddRoi"));
-    m_btnRedraw = new QPushButton(T("ÖØ»­ ROI"), m_roiPage);
+    m_btnRedraw = new QPushButton(T("é‡ç”» ROI"), m_roiPage);
     m_btnRedraw->setObjectName(QLatin1String("toolDebugAddRoi"));
-    m_btnClear = new QPushButton(T("Çå³ıÈ«²¿"), m_roiPage);
+    m_btnClear = new QPushButton(T("æ¸…é™¤å…¨éƒ¨"), m_roiPage);
     m_btnClear->setObjectName(QLatin1String("toolDebugClearRoi"));
-    m_btnDel = new QPushButton(T("É¾³ı"), m_roiPage);
+    m_btnDel = new QPushButton(T("åˆ é™¤"), m_roiPage);
     m_btnDel->setVisible(false);
     QHBoxLayout* btnLay = new QHBoxLayout();
     btnLay->setContentsMargins(0, 0, 0, 0);
@@ -374,7 +374,7 @@ ToolIoPanel::ToolIoPanel(QWidget* parent)
     connect(m_roiTable, SIGNAL(itemSelectionChanged()), this, SLOT(onRoiSelectionChanged()));
 }
 
-// Ö¸¶¨×ÓÒ³¸ù¿Ø¼ş
+// æŒ‡å®šå­é¡µæ ¹æ§ä»¶
 QWidget* ToolIoPanel::pageWidget(ToolIoPage page) const
 {
     if (page == ToolIoPage::Roi) {
@@ -383,7 +383,7 @@ QWidget* ToolIoPanel::pageWidget(ToolIoPage page) const
     return m_linkPage;
 }
 
-// °´ÏÂÊ±ÒÑÑ¡ÖĞµÄĞĞ£¬ÊÍ·ÅÊ±ÈÔÔÚÍ¬Ò»¸ñÔòÈ¡ÏûÑ¡ÖĞ
+// æŒ‰ä¸‹æ—¶å·²é€‰ä¸­çš„è¡Œï¼Œé‡Šæ”¾æ—¶ä»åœ¨åŒä¸€æ ¼åˆ™å–æ¶ˆé€‰ä¸­
 bool ToolIoPanel::eventFilter(QObject* watched, QEvent* event)
 {
     if (!m_roiTable || watched != m_roiTable->viewport()) {
@@ -417,11 +417,11 @@ bool ToolIoPanel::eventFilter(QObject* watched, QEvent* event)
     return QWidget::eventFilter(watched, event);
 }
 
-// Ìî³äÊäÈë¶Ë¿ÚºòÑ¡À´Ô´
+// å¡«å……è¾“å…¥ç«¯å£å€™é€‰æ¥æº
 void ToolIoPanel::fillLinkCombo(QComboBox* combo, const JobCfg& job, const ObjectId& toId, PortData data)
 {
     combo->clear();
-    combo->addItem(T("Î´Á¬½Ó"));
+    combo->addItem(T("æœªè¿æ¥"));
     combo->setItemData(0, QString(), RoleFromId);
     combo->setItemData(0, QString(), RoleFromPort);
 
@@ -469,8 +469,8 @@ void ToolIoPanel::selectCurrentLink(QComboBox* combo, const JobCfg& job, const O
     }
 }
 
-// Ë¢ĞÂµ¥¸öÊäÈë¶Ë¿ÚÏÂÀ­Óë×´Ì¬ĞĞ
-// Ë¢ĞÂµ¥¸öÊäÈë¶Ë¿ÚÏÂÀ­Óë×´Ì¬ĞĞ
+// åˆ·æ–°å•ä¸ªè¾“å…¥ç«¯å£ä¸‹æ‹‰ä¸çŠ¶æ€è¡Œ
+// åˆ·æ–°å•ä¸ªè¾“å…¥ç«¯å£ä¸‹æ‹‰ä¸çŠ¶æ€è¡Œ
 void ToolIoPanel::refreshLinkRow(QComboBox* combo, QLabel* hint, QLabel* camText,
                                  const JobCfg* jobConfig, const ToolCfg* tool, Job* job,
                                  PortData data, bool canEdit, bool showRow)
@@ -498,20 +498,20 @@ void ToolIoPanel::refreshLinkRow(QComboBox* combo, QLabel* hint, QLabel* camText
     if (camText) {
         camText->setVisible(camImageRow);
         if (camImageRow) {
-            QString line = T("±¾¹¤¾ßÎª²É¼¯Ô´");
+            QString line = T("æœ¬å·¥å…·ä¸ºé‡‡é›†æº");
             if (job && job->hasCache(tool->id)) {
                 const HsCommData::HsImage fb = job->cachedImage(tool->id);
-                line += QString::fromUtf8("  (%1Ã—%2)").arg(fb.width).arg(fb.height);
+                line += QString::fromUtf8("  (%1è„³%2)").arg(fb.width).arg(fb.height);
             } else {
-                line += QLatin1String("  ") + T("Î´ÔËĞĞ");
+                line += QLatin1String("  ") + T("æœªè¿è¡Œ");
             }
             const std::string lf = runtimeGet(tool->runtime, RuntimeKey::LastFile).toString();
             if (!lf.empty()) {
-                line += QLatin1String("\n") + T("µ±Ç°ÎÄ¼ş£º") + qs(lf);
+                line += QLatin1String("\n") + T("å½“å‰æ–‡ä»¶ï¼š") + qs(lf);
             } else {
                 const std::string p = tool->params.value("path").toString();
                 if (!p.empty()) {
-                    line += QLatin1String("\n") + T("Â·¾¶¸²¸Ç£º") + qs(p);
+                    line += QLatin1String("\n") + T("è·¯å¾„è¦†ç›–ï¼š") + qs(p);
                 }
             }
             camText->setText(line);
@@ -527,7 +527,7 @@ void ToolIoPanel::refreshLinkRow(QComboBox* combo, QLabel* hint, QLabel* camText
         selectCurrentLink(combo, *jobConfig, tool->id, portSlotIn(data));
     } else if (!camImageRow) {
         combo->clear();
-        combo->addItem(T("Î´Á¬½Ó"));
+        combo->addItem(T("æœªè¿æ¥"));
         combo->setCurrentIndex(0);
     }
     combo->setEnabled(canEdit && jobConfig && tool && !camImageRow);
@@ -545,9 +545,9 @@ void ToolIoPanel::refreshLinkRow(QComboBox* combo, QLabel* hint, QLabel* camText
         if (job) {
             const HsCommData::HsImage in = job->cachedInputImage(*jobConfig, tool->id);
             if (!in.isNull()) {
-                hint->setText(QString::fromUtf8("(%1Ã—%2)").arg(in.width).arg(in.height));
+                hint->setText(QString::fromUtf8("(%1è„³%2)").arg(in.width).arg(in.height));
             } else if (jobConfig->findLinkToPort(tool->id, portSlotIn(PortData::Image))) {
-                hint->setText(T("Î´ÔËĞĞ"));
+                hint->setText(T("æœªè¿è¡Œ"));
             }
         }
     } else if (data == PortData::Pose) {
@@ -559,7 +559,7 @@ void ToolIoPanel::refreshLinkRow(QComboBox* combo, QLabel* hint, QLabel* camText
                                   .arg(p.ty, 0, 'f', 2)
                                   .arg(p.ang(), 0, 'f', 4));
             } else if (jobConfig->findLinkToPort(tool->id, portSlotIn(PortData::Pose))) {
-                hint->setText(T("Î´ÔËĞĞ"));
+                hint->setText(T("æœªè¿è¡Œ"));
             }
         }
     } else if (data == PortData::Logic) {
@@ -571,17 +571,17 @@ void ToolIoPanel::refreshLinkRow(QComboBox* combo, QLabel* hint, QLabel* camText
                     : paramGet(v, ValueKey::Pass).toString();
                 hint->setText(QLatin1String("OK=") + qs(okv));
             } else if (jobConfig->findLinkToPort(tool->id, portSlotIn(PortData::Logic))) {
-                hint->setText(T("Î´ÔËĞĞ"));
+                hint->setText(T("æœªè¿è¡Œ"));
             }
         }
     } else if (data == PortData::Region) {
         if (jobConfig->findLinkToPort(tool->id, portSlotIn(PortData::Region)) && job
             && job->cachedInputImage(*jobConfig, tool->id).isNull()) {
-            hint->setText(T("Î´ÔËĞĞ"));
+            hint->setText(T("æœªè¿è¡Œ"));
         }
     }
 }
-// ÊäÈëÏÂÀ­Ñ¡ÖĞ±ä»¯
+// è¾“å…¥ä¸‹æ‹‰é€‰ä¸­å˜åŒ–
 void ToolIoPanel::onLinkComboChanged(int index)
 {
     Q_UNUSED(index);
@@ -598,7 +598,7 @@ void ToolIoPanel::onLinkComboChanged(int index)
     emit inputLinkChanged(static_cast<int>(data), fromId, fromPort);
 }
 
-// Ë¢ĞÂÊäÈëÁ¬Ïß¡¢Î»×Ë»º´æÓë ROI ÕªÒª
+// åˆ·æ–°è¾“å…¥è¿çº¿ã€ä½å§¿ç¼“å­˜ä¸ ROI æ‘˜è¦
 void ToolIoPanel::refresh(Solution* sol, ToolCfg* tool, Job* job, bool canEdit)
 {
     if (!tool) {
@@ -627,14 +627,14 @@ void ToolIoPanel::refresh(Solution* sol, ToolCfg* tool, Job* job, bool canEdit)
     if (isLogic) {
         tagLinkCombo(m_poseCombo, PortData::Logic);
         if (m_poseRowLabel) {
-            m_poseRowLabel->setText(T("ÊäÈëÂß¼­"));
+            m_poseRowLabel->setText(T("è¾“å…¥é€»è¾‘"));
         }
         refreshLinkRow(m_poseCombo, m_poseHint, 0, jobConfig, tool, job,
                        PortData::Logic, canEdit, true);
     } else {
         tagLinkCombo(m_poseCombo, PortData::Pose);
         if (m_poseRowLabel) {
-            m_poseRowLabel->setText(T("¶¨Î»Êı¾İ"));
+            m_poseRowLabel->setText(T("å®šä½æ•°æ®"));
         }
         const bool showPose = !isCam && toolHasPort(tool->type, PortDir::In, PortData::Pose);
         refreshLinkRow(m_poseCombo, m_poseHint, 0, jobConfig, tool, job,
@@ -666,12 +666,12 @@ void ToolIoPanel::refresh(Solution* sol, ToolCfg* tool, Job* job, bool canEdit)
     const bool roiOn = usesRoi && canEdit && tool;
     const bool hasRoi = usesRoi && !tool->effectiveRois().empty();
     if (m_btnAdd) {
-        m_btnAdd->setText(T("+ Ìí¼Ó ROI"));
-        m_btnAdd->setToolTip(T("½øÈë»æÖÆÄ£Ê½£¬ÔÚ¿Õ°×´¦Ìí¼Ó ROI"));
+        m_btnAdd->setText(T("+ æ·»åŠ  ROI"));
+        m_btnAdd->setToolTip(T("è¿›å…¥ç»˜åˆ¶æ¨¡å¼ï¼Œåœ¨ç©ºç™½å¤„æ·»åŠ  ROI"));
     }
     if (m_btnRedraw) {
         m_btnRedraw->setVisible(usesRoi && hasRoi && !usesMulti);
-        m_btnRedraw->setToolTip(T("½øÈë»æÖÆÄ£Ê½£¬ÔÚ¿Õ°×´¦ÖØ»­²¢Ìæ»»ÏÖÓĞ ROI"));
+        m_btnRedraw->setToolTip(T("è¿›å…¥ç»˜åˆ¶æ¨¡å¼ï¼Œåœ¨ç©ºç™½å¤„é‡ç”»å¹¶æ›¿æ¢ç°æœ‰ ROI"));
     }
     m_btnAdd->setEnabled(roiOn);
     if (m_btnRedraw) {
@@ -687,7 +687,7 @@ int ToolIoPanel::selectedRoiRow() const
     return m_roiTable ? m_roiTable->currentRow() : -1;
 }
 
-// È¡Ïû±í¸ñÑ¡ÖĞ
+// å–æ¶ˆè¡¨æ ¼é€‰ä¸­
 void ToolIoPanel::clearRoiSelection()
 {
     if (!m_roiTable) {
@@ -740,7 +740,7 @@ void ToolIoPanel::onRoiSelectionChanged()
     emit roiSelectionChanged(selectedRoiRow());
 }
 
-// É¾³ıÑ¡ÖĞĞĞ£»ÎŞÑ¡ÖĞÔòÉ¾Ä©¸ö
+// åˆ é™¤é€‰ä¸­è¡Œï¼›æ— é€‰ä¸­åˆ™åˆ æœ«ä¸ª
 void ToolIoPanel::onDeleteClicked()
 {
     const int row = m_roiTable ? m_roiTable->currentRow() : -1;
@@ -764,7 +764,7 @@ void ToolIoPanel::onDeleteRowClicked()
     }
 }
 
-// °´ÖÖÀàÉèÁĞ²¢ÌîĞĞ
+// æŒ‰ç§ç±»è®¾åˆ—å¹¶å¡«è¡Œ
 void ToolIoPanel::fillRoiTable(const std::vector<HsCommData::HsObject>& rs)
 {
     if (!m_roiTable) {
@@ -786,7 +786,7 @@ void ToolIoPanel::fillRoiTable(const std::vector<HsCommData::HsObject>& rs)
             kind = static_cast<int>(HsCommData::ObjRect1);
         }
         QStringList hh;
-        hh << T("ROI ID") << T("ÀàĞÍ") << T("Î»ÖÃ") << T("³ß´ç");
+        hh << T("ROI ID") << T("ç±»å‹") << T("ä½ç½®") << T("å°ºå¯¸");
         hh << QString();
         const int cols = hh.size();
         const int delCol = cols - 1;
@@ -805,8 +805,8 @@ void ToolIoPanel::fillRoiTable(const std::vector<HsCommData::HsObject>& rs)
             cellLay->setAlignment(Qt::AlignCenter);
             QToolButton* del = new QToolButton(cell);
             del->setObjectName(QLatin1String("toolDebugRoiDel"));
-            del->setText(QString::fromUtf8("Ã—"));
-            del->setToolTip(T("É¾³ı¸Ã ROI"));
+            del->setText(QString::fromUtf8("è„³"));
+            del->setToolTip(T("åˆ é™¤è¯¥ ROI"));
             del->setProperty("roiRow", i);
             del->setAutoRaise(true);
             connect(del, SIGNAL(clicked()), this, SLOT(onDeleteRowClicked()));
@@ -819,7 +819,7 @@ void ToolIoPanel::fillRoiTable(const std::vector<HsCommData::HsObject>& rs)
         }
     } else {
         QStringList hh;
-        hh << T("ĞòºÅ") << T("ÀàĞÍ") << T("X") << T("Y") << T("A") << T("B") << T("½Ç¶È");
+        hh << T("åºå·") << T("ç±»å‹") << T("X") << T("Y") << T("A") << T("B") << T("è§’åº¦");
         const int cols = hh.size();
         m_roiTable->setColumnCount(cols);
         m_roiTable->setHorizontalHeaderLabels(hh);
@@ -883,7 +883,7 @@ void overlayRoiDetails(HsCtrl::HsImageWindow* view, const ToolCfg* tool, int onl
     }
 }
 
-// µ÷ÊÔµ×Í¼£º²É¼¯ÓÃ»º´æÊä³ö£¬ÆäËûÓÃÉÏÓÎÊäÈë
+// è°ƒè¯•åº•å›¾ï¼šé‡‡é›†ç”¨ç¼“å­˜è¾“å‡ºï¼Œå…¶ä»–ç”¨ä¸Šæ¸¸è¾“å…¥
 HsCommData::HsImage debugBaseFrame(ToolCfg* tool, JobCfg* jobConfig, Job* job)
 {
     if (!tool || !job) {
@@ -901,7 +901,7 @@ HsCommData::HsImage debugBaseFrame(ToolCfg* tool, JobCfg* jobConfig, Job* job)
     return HsCommData::HsImage();
 }
 
-// °´Ñ¡ÖĞ ROI ÓëÊÇ·ñ¿É±à¼­Í¬²½ Drawing ½»»¥
+// æŒ‰é€‰ä¸­ ROI ä¸æ˜¯å¦å¯ç¼–è¾‘åŒæ­¥ Drawing äº¤äº’
 void syncDrawingInteraction(HsCtrl::HsImageWindow* view, bool editable,
                             int selectedIndex, bool hasDrawings)
 {

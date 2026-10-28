@@ -1,6 +1,6 @@
 /**
  * @file HalGeom.cpp
- * @brief HalGeomÊµÏÖ
+ * @brief HalGeomå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -30,7 +30,7 @@ using HalconCpp::GetRegionRuns;
 
 namespace Vision {
 
-// ÎŞĞ§»òÎ´Öª kind Ê±ÓÃÕû·ùÍ¼
+// æ— æ•ˆæˆ–æœªçŸ¥ kind æ—¶ç”¨æ•´å¹…å›¾
 static HObject fullImageRegion(int imgW, int imgH)
 {
     HObject r;
@@ -40,7 +40,7 @@ static HObject fullImageRegion(int imgW, int imgH)
     return r;
 }
 
-// Ïß¶ÎÀ©³ÉÌõ´øÇøÓò
+// çº¿æ®µæ‰©æˆæ¡å¸¦åŒºåŸŸ
 static HObject lineStripRegion(double x1, double y1, double x2, double y2, double dilateR)
 {
     HObject r;
@@ -53,7 +53,7 @@ static HObject lineStripRegion(double x1, double y1, double x2, double y2, doubl
     return r;
 }
 
-// ÇøÓòÊÇ·ñÎŞÃæ»ı£¨AreaCenter£¬Óë¾É¹¤³ÌÒ»ÖÂ£©
+// åŒºåŸŸæ˜¯å¦æ— é¢ç§¯ï¼ˆAreaCenterï¼Œä¸æ—§å·¥ç¨‹ä¸€è‡´ï¼‰
 bool hoIsEmpty(const HObject& r)
 {
     try {
@@ -75,7 +75,7 @@ bool hoIsEmpty(const HObject& r)
     }
 }
 
-// HsCommData::HsObject µ½ HObject¡£Halcon (row,col) = (y,x)
+// HsCommData::HsObject åˆ° HObjectã€‚Halcon (row,col) = (y,x)
 HObject roiToRegion(const HsCommData::HsObject& roi, int imgW, int imgH)
 {
     using namespace HsCommData;
@@ -153,7 +153,7 @@ HObject roiToRegion(const HsCommData::HsObject& roi, int imgW, int imgH)
 }
 
 
-// ¶à¿ò²¢³ÉÒ»Ö»ÇøÓò
+// å¤šæ¡†å¹¶æˆä¸€åªåŒºåŸŸ
 HObject roisToRegion(const std::vector<HsCommData::HsObject>& rois, int imgW, int imgH)
 {
     if (rois.empty()) {
@@ -178,7 +178,7 @@ HObject roisToRegion(const std::vector<HsCommData::HsObject>& rois, int imgW, in
     return acc;
 }
 
-// ÉÏÓÎÇøÓò²¢³ÉÒ»Ö» HObject£»¿ÕÔòÕûÍ¼£¨²»¶îÍâÔ¼Êø£©
+// ä¸Šæ¸¸åŒºåŸŸå¹¶æˆä¸€åª HObjectï¼›ç©ºåˆ™æ•´å›¾ï¼ˆä¸é¢å¤–çº¦æŸï¼‰
 HObject rleRegionsToHObject(const std::vector<HsCommData::HsObject>& regs, int imgW, int imgH)
 {
     if (regs.empty()) {
@@ -230,7 +230,7 @@ HObject rleRegionsToHObject(const std::vector<HsCommData::HsObject>& regs, int i
     return acc;
 }
 
-// ±¾µØ ROI ¡È ÉÏÓÎÇøÓò£¨¿Õ ROI ÁĞ±í±íÊ¾ÎŞ±¾µØÔ¼Êø£¬ÎğÓëÕû·ùÍ¼²¢¼¯£©
+// æœ¬åœ° ROI âˆª ä¸Šæ¸¸åŒºåŸŸï¼ˆç©º ROI åˆ—è¡¨è¡¨ç¤ºæ— æœ¬åœ°çº¦æŸï¼Œå‹¿ä¸æ•´å¹…å›¾å¹¶é›†ï¼‰
 HObject searchDomainFromAlgIn(const std::vector<HsCommData::HsObject>& rois,
                                 const std::vector<HsCommData::HsObject>& regions,
                                 int imgW, int imgH)
@@ -251,7 +251,7 @@ HObject searchDomainFromAlgIn(const std::vector<HsCommData::HsObject>& rois,
     return uni;
 }
 
-// GetRegionRuns Ğ´³ÉÇøÓò¶ÔÏó
+// GetRegionRuns å†™æˆåŒºåŸŸå¯¹è±¡
 HsCommData::HsObject regionObject(const HObject& r)
 {
     HsCommData::HsRegion reg;
@@ -289,7 +289,7 @@ HsCommData::HsObject regionObject(const HObject& r)
     return HsCommData::HsObject(reg);
 }
 
-// ½á¹ûÔ²
+// ç»“æœåœ†
 HsCommData::HsObject circleObject(double cx, double cy, double r)
 {
     HsCommData::CircleP c;
@@ -298,7 +298,7 @@ HsCommData::HsObject circleObject(double cx, double cy, double r)
     return HsCommData::HsObject(c);
 }
 
-// ½á¹ûÏß¶Î
+// ç»“æœçº¿æ®µ
 HsCommData::HsObject lineObject(double x1, double y1, double x2, double y2)
 {
     HsCommData::LineP ln;
@@ -307,7 +307,7 @@ HsCommData::HsObject lineObject(double x1, double y1, double x2, double y2)
     return HsCommData::HsObject(ln);
 }
 
-// Æ¥Åäµã£ºË®Æ½ÊúÖ±Ïß¶Î×é³ÉÊ®×Ö
+// åŒ¹é…ç‚¹ï¼šæ°´å¹³ç«–ç›´çº¿æ®µç»„æˆåå­—
 HsCommData::HsObject crossObject(double cx, double cy)
 {
     const double s = 8.0;
@@ -322,14 +322,14 @@ HsCommData::HsObject crossObject(double cx, double cy)
     return obj;
 }
 
-// Halcon Òì³£ÎÄ±¾
+// Halcon å¼‚å¸¸æ–‡æœ¬
 std::string hExceptionText(const HalconCpp::HException& e)
 {
     const char* t = e.ErrorMessage().Text();
     return t ? std::string(t) : std::string("Halcon error");
 }
 
-// Í³Ò»Ê§°Ü°ü
+// ç»Ÿä¸€å¤±è´¥åŒ…
 AlgToolOut algorToolFail(const std::string& msg)
 {
     AlgToolOut o;

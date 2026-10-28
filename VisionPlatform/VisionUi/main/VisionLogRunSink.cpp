@@ -1,6 +1,6 @@
 /**
  * @file VisionLogRunSink.cpp
- * @brief VisionLogRunSinkÊµÏÖ
+ * @brief VisionLogRunSinkå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -12,26 +12,26 @@
 
 namespace Vision {
 
-// Ä¬ÈÏ Info ÆğÂäÅÌ
+// é»˜è®¤ Info èµ·è½ç›˜
 VisionLogRunSink::VisionLogRunSink()
     : m_minLevel(RunLogInfo)
 {
 }
 
-// Ë¢ĞÂÉí·İ
+// åˆ·æ–°èº«ä»½
 void VisionLogRunSink::setIdentity(const std::string& user, const std::string& role)
 {
     m_user = user;
     m_role = role;
 }
 
-// ÂäÅÌÃÅ¼÷
+// è½ç›˜é—¨æ§›
 void VisionLogRunSink::setMinLevel(RunLogLevel minLevel)
 {
     m_minLevel = minLevel;
 }
 
-// Ğ´Èë VisionLog debug
+// å†™å…¥ VisionLog debug
 void VisionLogRunSink::onRunLog(const RunLogEvent& ev)
 {
     if (ev.level < m_minLevel) {

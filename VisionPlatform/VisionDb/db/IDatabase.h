@@ -1,6 +1,6 @@
 /**
  * @file IDatabase.h
- * @brief IDatabaseÍ·ÎÄ¼ş
+ * @brief IDatabaseå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -16,78 +16,78 @@ namespace Vision {
 
 /**
  * @class IDatabase
- * @brief Êı¾İ¿â³éÏó£º´ò¿ª¡¢ÊÂÎñ¡¢Ö´ĞĞ¡¢²éÑ¯¡¢·ÖÒ³¡£²»º¬ÒµÎñ±í¡£
+ * @brief æ•°æ®åº“æŠ½è±¡ï¼šæ‰“å¼€ã€äº‹åŠ¡ã€æ‰§è¡Œã€æŸ¥è¯¢ã€åˆ†é¡µã€‚ä¸å«ä¸šåŠ¡è¡¨ã€‚
  */
 class IDatabase {
 public:
     virtual ~IDatabase() {}
-    /** @brief ´ò¿ª»ò´´½¨¿âÎÄ¼ş */
+    /** @brief æ‰“å¼€æˆ–åˆ›å»ºåº“æ–‡ä»¶ */
     virtual bool open(const std::string& path, std::string* error) = 0;
-    /** @brief ¹Ø±ÕÁ¬½Ó */
+    /** @brief å…³é—­è¿æ¥ */
     virtual void close() = 0;
-    /** @brief ÊÇ·ñÒÑ´ò¿ª */
+    /** @brief æ˜¯å¦å·²æ‰“å¼€ */
     virtual bool isOpen() const = 0;
-    /** @brief Ö´ĞĞ²»·µ»ØĞĞµÄÓï¾ä */
+    /** @brief æ‰§è¡Œä¸è¿”å›è¡Œçš„è¯­å¥ */
     virtual bool exec(const std::string& sql, std::string* error) = 0;
-    /** @brief ´ø°ó¶¨²ÎÊıÖ´ĞĞ£¬²»·µ»ØĞĞ */
+    /** @brief å¸¦ç»‘å®šå‚æ•°æ‰§è¡Œï¼Œä¸è¿”å›è¡Œ */
     virtual bool exec(const std::string& sql, const std::vector<DbValue>& args, std::string* error) = 0;
-    /** @brief ²éÑ¯È«²¿½á¹ûĞĞ */
+    /** @brief æŸ¥è¯¢å…¨éƒ¨ç»“æœè¡Œ */
     virtual bool query(const std::string& sql, const std::vector<DbValue>& args,
                        std::vector<std::vector<DbValue> >* rows, std::string* error) = 0;
     /**
-     * @brief ÏÈ¼ÆÊı£¬ÔÙ¸øÊı¾İÓï¾ä×·¼ÓÅÅĞòºÍ·ÖÒ³
-     * @param countSql Í³¼Æ×ÜĞĞÊı
-     * @param dataSql È¡Êı¾İ£¬²»Òª×Ô´ø LIMIT
+     * @brief å…ˆè®¡æ•°ï¼Œå†ç»™æ•°æ®è¯­å¥è¿½åŠ æ’åºå’Œåˆ†é¡µ
+     * @param countSql ç»Ÿè®¡æ€»è¡Œæ•°
+     * @param dataSql å–æ•°æ®ï¼Œä¸è¦è‡ªå¸¦ LIMIT
      */
     virtual bool queryPage(const std::string& countSql, const std::string& dataSql,
                            const std::vector<DbValue>& args, const PageQuery& page,
                            PageRst* out, std::string* error) = 0;
-    /** @brief ¿ªÊ¼ÊÂÎñ */
+    /** @brief å¼€å§‹äº‹åŠ¡ */
     virtual bool begin(std::string* error) = 0;
-    /** @brief Ìá½»ÊÂÎñ */
+    /** @brief æäº¤äº‹åŠ¡ */
     virtual bool commit(std::string* error) = 0;
-    /** @brief »Ø¹öÊÂÎñ */
+    /** @brief å›æ»šäº‹åŠ¡ */
     virtual bool rollback(std::string* error) = 0;
-    /** @brief ×î½üÒ»´Î²åÈëµÄĞĞ id */
+    /** @brief æœ€è¿‘ä¸€æ¬¡æ’å…¥çš„è¡Œ id */
     virtual int64_t lastInsertId() const = 0;
-    /** @brief ÒıÇæ±êÊ¶£¬Èç sqlite */
+    /** @brief å¼•æ“æ ‡è¯†ï¼Œå¦‚ sqlite */
     virtual std::string engineId() const = 0;
 };
 
 /**
  * @class TableRouter
- * @brief Âß¼­±íÃûÓ³Éäµ½°´ÔÂÎïÀí±í£¬Èç result ¡ú result_202609
+ * @brief é€»è¾‘è¡¨åæ˜ å°„åˆ°æŒ‰æœˆç‰©ç†è¡¨ï¼Œå¦‚ result â†’ result_202609
  */
 class VISION_DB_API TableRouter {
 public:
-    /** @brief È¡ÁùÎ»ÄêÔÂ£»²»×ãÔòÓÃµ±Ç°ÔÂ */
+    /** @brief å–å…­ä½å¹´æœˆï¼›ä¸è¶³åˆ™ç”¨å½“å‰æœˆ */
     static std::string monthSuffix(const std::string& yyyymm);
-    /** @brief Âß¼­±íÃû¼Ó _YYYYMM */
+    /** @brief é€»è¾‘è¡¨ååŠ  _YYYYMM */
     static std::string physical(const std::string& logical, const std::string& yyyymm);
-    /** @brief µ±Ç°ÔÂµÄÎïÀí±íÃû */
+    /** @brief å½“å‰æœˆçš„ç‰©ç†è¡¨å */
     static std::string currentMonthPhysical(const std::string& logical);
 };
 
 /**
  * @class SchemaMigrator
- * @brief °´ schema_version Éı¼¶
+ * @brief æŒ‰ schema_version å‡çº§
  */
 class VISION_DB_API SchemaMigrator {
 public:
-    /** @brief °ó¶¨ÒªÉı¼¶µÄ¿â£¬²»½Ó¹ÜÆäÉúÃüÖÜÆÚ */
+    /** @brief ç»‘å®šè¦å‡çº§çš„åº“ï¼Œä¸æ¥ç®¡å…¶ç”Ÿå‘½å‘¨æœŸ */
     explicit SchemaMigrator(IDatabase* db);
     /**
-     * @brief ¶ÁÈ¡ schema °æ±¾
-     * @return Ê§°ÜÎª -1
+     * @brief è¯»å– schema ç‰ˆæœ¬
+     * @return å¤±è´¥ä¸º -1
      */
     int currentVersion(std::string* error);
-    /** @brief Ã»ÓĞ°æ±¾±íÔò´´½¨ */
+    /** @brief æ²¡æœ‰ç‰ˆæœ¬è¡¨åˆ™åˆ›å»º */
     bool ensureVersionTable(std::string* error);
-    /** @brief Ğ´Èëµ±Ç° schema °æ±¾ */
+    /** @brief å†™å…¥å½“å‰ schema ç‰ˆæœ¬ */
     bool setVersion(int v, std::string* error);
 
 private:
-    IDatabase* m_db; ///< ±»Éı¼¶µÄÁ¬½Ó£¬²»ÓµÓĞ
+    IDatabase* m_db; ///< è¢«å‡çº§çš„è¿æ¥ï¼Œä¸æ‹¥æœ‰
 };
 
 }

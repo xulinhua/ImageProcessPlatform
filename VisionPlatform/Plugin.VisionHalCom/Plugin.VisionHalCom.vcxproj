@@ -30,7 +30,7 @@
   <ItemDefinitionGroup>
     <ClCompile>
       <PreprocessorDefinitions>VISION_HALCOM_EXPORTS;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(HALCONROOT)\include;$(HALCONROOT)\include\halconcpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>VisionCommon.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -57,6 +57,6 @@
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <Target Name="CheckHalconSdk" BeforeTargets="ClCompile">
-    <Error Condition="'$(VisionHasHalcon)'!='true'" Text="HalconCpp.h not found. HALCONROOT=$(HALCONROOT)" />
+    <Error Condition="'$(VisionHasHalcon)'!='true'" Text="Halcon 17.12 未放到 $(HalconRoot)。需要 include\halconcpp\HalconCpp.h 以及 lib\$(HALCONARCH)\halconcpp.lib。" />
   </Target>
 </Project>

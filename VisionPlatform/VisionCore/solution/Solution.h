@@ -4,11 +4,11 @@
 
 /**
  * @file Solution.h
- * @brief Õû°üÊÓ¾õ·½°¸ Solution£¨*.vpsol ¸ù¶ÔÏó£©
+ * @brief æ•´åŒ…è§†è§‰æ–¹æ¡ˆ Solutionï¼ˆ*.vpsol æ ¹å¯¹è±¡ï¼‰
  *
- * Ïà¹ØÀàĞÍ¼û£º
- * - job/JobCfg.h¡¢station/StationCfg.h
- * - ToolCfg.h¡¢HardwareDevice.h
+ * ç›¸å…³ç±»å‹è§ï¼š
+ * - job/JobCfg.hã€station/StationCfg.h
+ * - ToolCfg.hã€HardwareDevice.h
  */
 
 #include "HardwareDevice.h"
@@ -21,64 +21,66 @@
 
 namespace Vision {
 
-/** @class Solution @brief Õû°üÊÓ¾õ·½°¸£¨*.vpsol ¸ù¶ÔÏó£© */
+/** @class Solution @brief æ•´åŒ…è§†è§‰æ–¹æ¡ˆï¼ˆ*.vpsol æ ¹å¯¹è±¡ï¼‰ */
 struct VISIONCORE_API Solution {
-    std::string name;                      ///< ·½°¸Ãû
-    std::string filePath;                  ///< ÎÄ¼şÂ·¾¶
-    std::string lastSavedById;             ///< ×îºó±£´æÓÃ»§ id
-    std::string lastSavedByName;           ///< ×îºó±£´æÓÃ»§Ãû
-    std::string lastSavedAt;               ///< ×îºó±£´æÊ±¼ä
-    std::string platformVersion;           ///< ±£´æÊ±Èí¼ş°æ±¾£¨×·ËİÓÃ£¬´ò¿ª²»Ğ£Ñé£©
-    std::vector<HardwareDevice> inventory; ///< Éè±¸Ì¨ÕË
-    std::vector<CommChannel> commChannels; ///< Í¨ĞÅÍ¨µÀÌ¨ÕË
-    std::vector<StationCfg> stations;   ///< ¹¤Õ¾ÁĞ±í
-    std::vector<CompositeDef> composites; ///< ÏîÄ¿×éºÏ¹¤¾ß
-    RuntimeStationLayout runtimeStationLayout; ///< ¶à¹¤Õ¾ÔËĞĞ»­Ãæ£º·ÖÒ³Ç©»òÆ´Ìù
-    bool dirty;                            ///< ÊÇ·ñÓĞÎ´±£´æĞŞ¸Ä
+    std::string name;                      ///< æ–¹æ¡ˆå
+    std::string filePath;                  ///< æ–‡ä»¶è·¯å¾„
+    std::string lastSavedById;             ///< æœ€åä¿å­˜ç”¨æˆ· id
+    std::string lastSavedByName;           ///< æœ€åä¿å­˜ç”¨æˆ·å
+    std::string lastSavedAt;               ///< æœ€åä¿å­˜æ—¶é—´
+    std::string platformVersion;           ///< ä¿å­˜æ—¶è½¯ä»¶ç‰ˆæœ¬ï¼ˆè¿½æº¯ç”¨ï¼Œæ‰“å¼€ä¸æ ¡éªŒï¼‰
+    std::vector<HardwareDevice> inventory; ///< è®¾å¤‡å°è´¦
+    std::vector<CommChannel> commChannels; ///< é€šä¿¡é€šé“å°è´¦
+    std::vector<StationCfg> stations;   ///< å·¥ç«™åˆ—è¡¨
+    std::vector<CompositeDef> composites; ///< é¡¹ç›®ç»„åˆå·¥å…·
+    RuntimeStationLayout runtimeStationLayout; ///< å¤šå·¥ç«™è¿è¡Œç”»é¢ï¼šåˆ†é¡µç­¾æˆ–æ‹¼è´´
+    bool dirty;                            ///< æ˜¯å¦æœ‰æœªä¿å­˜ä¿®æ”¹
+    bool haltAll;                          ///< åœå…¨éƒ¨ã€‚ä¸è¿›æ–¹æ¡ˆæ–‡ä»¶
 
     Solution()
         : runtimeStationLayout(RuntimeStationsTabs)
         , dirty(false)
+        , haltAll(false)
     {}
 
-    /** @brief °´ id ²éÕÒ¹¤Õ¾ */
+    /** @brief æŒ‰ id æŸ¥æ‰¾å·¥ç«™ */
     StationCfg* findStationConfig(const ObjectId& id);
-    /** @brief ÔÚÈ«²¿¹¤Õ¾µÄÁ÷³ÌÖĞ°´ id ²éÕÒ */
+    /** @brief åœ¨å…¨éƒ¨å·¥ç«™çš„æµç¨‹ä¸­æŒ‰ id æŸ¥æ‰¾ */
     JobCfg* findJobConfig(const ObjectId& id);
-    /** @brief ÔÚÈ«²¿Á÷³ÌÖĞ°´ id ²éÕÒ¹¤¾ß */
+    /** @brief åœ¨å…¨éƒ¨æµç¨‹ä¸­æŒ‰ id æŸ¥æ‰¾å·¥å…· */
     ToolCfg* findTool(const ObjectId& id);
-    /** @brief ÔÚÈ«²¿Á÷³ÌÖĞ°´ id ²éÕÒ¹¤¾ß£¨Ö»¶Á£© */
+    /** @brief åœ¨å…¨éƒ¨æµç¨‹ä¸­æŒ‰ id æŸ¥æ‰¾å·¥å…·ï¼ˆåªè¯»ï¼‰ */
     const ToolCfg* findTool(const ObjectId& id) const;
-    /** @brief °´ id ²éÕÒÓ²¼şÉè±¸ */
+    /** @brief æŒ‰ id æŸ¥æ‰¾ç¡¬ä»¶è®¾å¤‡ */
     HardwareDevice* findDevice(const ObjectId& id);
-    /** @brief °´ id ²éÕÒÓ²¼şÉè±¸£¨Ö»¶Á£© */
+    /** @brief æŒ‰ id æŸ¥æ‰¾ç¡¬ä»¶è®¾å¤‡ï¼ˆåªè¯»ï¼‰ */
     const HardwareDevice* findDevice(const ObjectId& id) const;
-    /** @brief °´ id ²éÕÒÍ¨ĞÅÍ¨µÀ */
+    /** @brief æŒ‰ id æŸ¥æ‰¾é€šä¿¡é€šé“ */
     CommChannel* findCommChannel(const ObjectId& id);
-    /** @brief °´ id ²éÕÒÍ¨ĞÅÍ¨µÀ£¨Ö»¶Á£© */
+    /** @brief æŒ‰ id æŸ¥æ‰¾é€šä¿¡é€šé“ï¼ˆåªè¯»ï¼‰ */
     const CommChannel* findCommChannel(const ObjectId& id) const;
-    /** @brief °´ id ²éÕÒ¹¤Õ¾£¨Ö»¶Á£© */
+    /** @brief æŒ‰ id æŸ¥æ‰¾å·¥ç«™ï¼ˆåªè¯»ï¼‰ */
     const StationCfg* findStationConfig(const ObjectId& id) const;
     /**
-     * @brief ÕÒ³ö¹¤¾ßËùÊôÁ÷³Ì
-     * @param stationOut ·Ç¿ÕÊ±Ğ´³öËùÊô¹¤Õ¾
+     * @brief æ‰¾å‡ºå·¥å…·æ‰€å±æµç¨‹
+     * @param stationOut éç©ºæ—¶å†™å‡ºæ‰€å±å·¥ç«™
      */
     JobCfg* findJobCfgOfTool(const ObjectId& toolId, StationCfg** stationOut = 0);
     /**
-     * @brief ²éÕÒÁ÷³ÌËùÊô¹¤Õ¾
-     * @param jobId Á÷³Ì id
-     * @return ËùÊô StationCfg£»ÕÒ²»µ½Îª 0
+     * @brief æŸ¥æ‰¾æµç¨‹æ‰€å±å·¥ç«™
+     * @param jobId æµç¨‹ id
+     * @return æ‰€å± StationCfgï¼›æ‰¾ä¸åˆ°ä¸º 0
      */
     StationCfg* findStationCfgOfJob(const ObjectId& jobId);
-    /** @brief µÚÒ»¸ö¹¤Õ¾£»Ã»ÓĞÔòÎª 0 */
+    /** @brief ç¬¬ä¸€ä¸ªå·¥ç«™ï¼›æ²¡æœ‰åˆ™ä¸º 0 */
     StationCfg* primaryStation();
-    /** @brief Ìá½»Á÷³Ì²İ¸å */
+    /** @brief æäº¤æµç¨‹è‰ç¨¿ */
     bool commitJob(const JobCfg& draft);
-    /** @brief Ìá½»¹¤Õ¾²İ¸å */
+    /** @brief æäº¤å·¥ç«™è‰ç¨¿ */
     bool commitStation(const StationCfg& draft);
-    /** @brief Ìá½»Éè±¸²İ¸å */
+    /** @brief æäº¤è®¾å¤‡è‰ç¨¿ */
     bool commitDevice(const HardwareDevice& draft);
-    /** @brief ĞÂ½¨¿Õ·½°¸ */
+    /** @brief æ–°å»ºç©ºæ–¹æ¡ˆ */
     static Solution makeEmpty();
 };
 

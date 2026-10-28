@@ -1,6 +1,6 @@
 /**
  * @file FileGrabber.h
- * @brief FileGrabberÍ·ÎÄ¼ş
+ * @brief FileGrabberå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -20,16 +20,16 @@ namespace Vision {
 
 /**
  * @class FileGrabber
- * @brief ´ÓÎÄ¼ş/Ä¿Â¼¶ÁÍ¼£¨stb_image£©¡£ÎŞ Qt¡¢ÎŞÏà»ú SDK¡¢²»º¬·½°¸ÀàĞÍ
+ * @brief ä»æ–‡ä»¶/ç›®å½•è¯»å›¾ï¼ˆstb_imageï¼‰ã€‚æ—  Qtã€æ— ç›¸æœº SDKã€ä¸å«æ–¹æ¡ˆç±»å‹
  */
 class VISION_GRAB_API FileGrabber {
 public:
-    /** @brief Ä¿Â¼ÏÂµÄÍ¼ÏñÎÄ¼şÁĞ±í£»path ÎªÎÄ¼şÔòÖ»º¬Ëü×Ô¼º */
+    /** @brief ç›®å½•ä¸‹çš„å›¾åƒæ–‡ä»¶åˆ—è¡¨ï¼›path ä¸ºæ–‡ä»¶åˆ™åªå«å®ƒè‡ªå·± */
     static std::vector<std::string> imageFiles(const std::string& path);
     /**
-     * @brief ¶ÁÒ»Ö¡¡£sourceMode Îª file Ê±¹Ì¶¨¸ÃÎÄ¼ş£¬·ñÔò°´Ä¿Â¼Ñ­»·
-     * @param runtime ½ø³ö£ºIndex¡¢GrabPath¡¢LastFile
-     * @param err Ê§°ÜÔ­Òò
+     * @brief è¯»ä¸€å¸§ã€‚sourceMode ä¸º file æ—¶å›ºå®šè¯¥æ–‡ä»¶ï¼Œå¦åˆ™æŒ‰ç›®å½•å¾ªç¯
+     * @param runtime è¿›å‡ºï¼šIndexã€GrabPathã€LastFile
+     * @param err å¤±è´¥åŸå› 
      */
     static HsCommData::HsImage grab(const std::string& path, const std::string& sourceMode,
                                     ParamMap* runtime, int64_t frameId, std::string* err);

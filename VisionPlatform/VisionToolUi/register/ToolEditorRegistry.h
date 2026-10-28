@@ -1,6 +1,6 @@
 /**
  * @file ToolEditorRegistry.h
- * @brief ToolEditorRegistryÍ·ÎÄ¼ş
+ * @brief ToolEditorRegistryå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -19,30 +19,30 @@ namespace Vision {
 
 class ToolEditorBase;
 
-/** @brief ¹¹ÔìÄ³ toolName µÄ²ÎÊıÒ³ */
+/** @brief æ„é€ æŸ toolName çš„å‚æ•°é¡µ */
 typedef ToolEditorBase* (*ToolEditorFactory)(QWidget* parent);
 
 /**
  * @class ToolEditorRegistry
- * @brief °´ toolName ½¨²ÎÊıÒ³£»Î´µÇ¼Ç×ßÍ¨ÓÃ¼üÖµÒ³
+ * @brief æŒ‰ toolName å»ºå‚æ•°é¡µï¼›æœªç™»è®°èµ°é€šç”¨é”®å€¼é¡µ
  */
 class VISION_TOOLUI_API ToolEditorRegistry {
 public:
-    /** @brief ½ø³ÌÄÚÎ¨Ò»µÇ¼Ç±í */
+    /** @brief è¿›ç¨‹å†…å”¯ä¸€ç™»è®°è¡¨ */
     static ToolEditorRegistry& instance();
-    /** @brief µÇ¼Ç¹¤³§ */
+    /** @brief ç™»è®°å·¥å‚ */
     void add(const std::string& toolName, ToolEditorFactory factory);
     /**
-     * @brief ĞÂ½¨±à¼­Æ÷£¬µ÷ÓÃ·½½Ó¹ÜËùÓĞÈ¨
+     * @brief æ–°å»ºç¼–è¾‘å™¨ï¼Œè°ƒç”¨æ–¹æ¥ç®¡æ‰€æœ‰æƒ
      */
     ToolEditorBase* create(const std::string& toolName, QWidget* parent);
 
 private:
     ToolEditorRegistry() {}
-    std::map<std::string, ToolEditorFactory> m_map; ///< toolName µ½¹¤³§
+    std::map<std::string, ToolEditorFactory> m_map; ///< toolName åˆ°å·¥å‚
 };
 
-/** @brief µÇ¼ÇÈ«²¿¹¤¾ß±à¼­Æ÷£¬ÔÚ main ÀïËã·¨µÇ¼ÇÖ®ºóµ÷ÓÃ */
+/** @brief ç™»è®°å…¨éƒ¨å·¥å…·ç¼–è¾‘å™¨ï¼Œåœ¨ main é‡Œç®—æ³•ç™»è®°ä¹‹åè°ƒç”¨ */
 VISION_TOOLUI_API void registerToolEditors();
 
 }

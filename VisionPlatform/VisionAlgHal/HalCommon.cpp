@@ -1,6 +1,6 @@
 /**
  * @file HalCommon.cpp
- * @brief HalCommonÊµÏÖ
+ * @brief HalCommonå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -24,12 +24,12 @@ using HalconCpp::ReduceDomain;
 
 namespace Vision {
 
-// ´ÓÊäÈëÈ¡»Ò¶ÈÓë³ß´ç
+// ä»è¾“å…¥å–ç°åº¦ä¸å°ºå¯¸
 bool loadGrayFromAlgIn(const AlgToolIn& in, HImage* gray, int* w, int* h, std::string* err)
 {
     if (!in.image || in.image->isNull()) {
         if (err) {
-            *err = Vision::acpToUtf8("ÎŞÊäÈëÍ¼");
+            *err = "æ— è¾“å…¥å›¾";
         }
         return false;
     }
@@ -44,7 +44,7 @@ bool loadGrayFromAlgIn(const AlgToolIn& in, HImage* gray, int* w, int* h, std::s
     return true;
 }
 
-// ĞÎÌ¬Ñ§¿ª±Õ
+// å½¢æ€å­¦å¼€é—­
 void morphRegion(const HObject& bin, double openR, double closeR, HObject* out)
 {
     *out = bin;
@@ -63,7 +63,7 @@ void morphRegion(const HObject& bin, double openR, double closeR, HObject* out)
     }
 }
 
-// Á¬Í¨ÓòÉ¸Ñ¡´ò°ü
+// è¿é€šåŸŸç­›é€‰æ‰“åŒ…
 AlgToolOut packConnectedBlobs(const HObject& bin, const AlgToolIn& in,
                                 double minArea, double maxArea, double minCirc, double maxCirc,
                                 const std::string& okMsg)
@@ -82,7 +82,7 @@ AlgToolOut packConnectedBlobs(const HObject& bin, const AlgToolIn& in,
     HTuple n;
     CountObj(sel, &n);
     if (n.Length() < 1 || n[0].L() < 1) {
-        out.message = Vision::acpToUtf8("Î´ÕÒµ½Á¬Í¨Óò");
+        out.message = "æœªæ‰¾åˆ°è¿é€šåŸŸ";
         return out;
     }
     HTuple rows;
@@ -101,7 +101,7 @@ AlgToolOut packConnectedBlobs(const HObject& bin, const AlgToolIn& in,
     return out;
 }
 
-// ROI ÄÚÔ¤´¦Àíµ×Í¼
+// ROI å†…é¢„å¤„ç†åº•å›¾
 bool preparePreprocessWork(const AlgToolIn& in, HImage* gray, HImage* work, std::string* err)
 {
     int w = 0;
@@ -116,7 +116,7 @@ bool preparePreprocessWork(const AlgToolIn& in, HImage* gray, HImage* work, std:
     return true;
 }
 
-// FullDomain Ğ´»Ø
+// FullDomain å†™å›
 AlgToolOut finishPreprocessWork(const AlgToolIn& in, const HImage& work, const std::string& okMsg)
 {
     AlgToolOut out;

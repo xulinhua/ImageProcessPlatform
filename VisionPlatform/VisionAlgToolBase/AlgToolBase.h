@@ -1,6 +1,6 @@
 /**
  * @file AlgToolBase.h
- * @brief AlgToolBaseÍ·ÎÄ¼ş
+ * @brief å›¾åƒç®—æ³•åŸºç±»
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -12,9 +12,11 @@
 #include "AlgLibKind.h"
 #include "AlgExport.h"
 #include "VisionVersion.h"
+#include "elapsed_timer.h"
 #include "ToolGeom.h"
 #include "ToolIo.h"
 #include "ToolParaBase.h"
+#include <HsCommData/HsError.h>
 #include <HsCommData/HsImage.h>
 #include <HsCommData/HsObject.h>
 #include <map>
@@ -25,115 +27,190 @@ namespace Vision {
 
 /**
  * @class AlgToolIn
- * @brief Í¼ÏñËã·¨ÊäÈë£ºÏñËØ¡¢¼¸ºÎ¡¢ÔËĞĞ²ÎÊı¡£²»º¬¶Ë¿Ú£¬²»º¬·½°¸
+ * @brief å›¾åƒç®—æ³•è¾“å…¥ï¼šåƒç´ ã€å‡ ä½•ã€è¿è¡Œå‚æ•°ã€‚ä¸è¿›ç«¯å£ï¼Œä¸å«æ–¹æ¡ˆ
  */
 struct AlgToolIn {
-    RunMode mode;                              ///< ±¾ÅÄÔËĞĞÄ£Ê½
-    PortImage image;                          ///< È±Ê¡Í¼¡£Í¬¿âÊ± native ¿ÉÓÅÏÈ
-    std::vector<PortImage> images;            ///< ÆäËüÍ¼Ïñ¿Ú
-    std::vector<PortRoi> rois;                ///< ±¾¹¤¾ßËÑË÷Çø£¬ÒÑ¸úËæÎ»×Ë
-    std::vector<HsCommData::Pose2> poses;               ///< ÉÏÓÎÎ»×Ë
-    std::vector<PortRegion> regions;          ///< Õı³£ÇøÓò
-    std::vector<PortRegion> masks;            ///< ÆÁ±ÎÇøÓò
-    std::vector<PortContour> contours;        ///< ÉÏÓÎÂÖÀª
-    const ToolParaBase* param;                  ///< ¹¤¾ß²ÎÊı¶ÔÏó£¬²»ÓµÓĞ
-    ParamMap run;                              ///< ÔËĞĞ²ÎÊı
-    std::vector<JudgeParam> judge;             ///< ÅĞ¶Ï²ÎÊı
-    std::string solutionDir;                   ///< ·½°¸Ä¿Â¼£»¿É¿Õ
-    std::string toolDataDir;                   ///< ¹¤¾ßÊı¾İÄ¿Â¼£»¿É¿Õ
-    AlgToolIn() : mode(RunMode::Auto), param(nullptr) {}
+    RunMode mode;                              ///< æœ¬æ‹è¿è¡Œæ¨¡å¼
+    PortImage image;                          ///< ç¼ºçœå›¾ã€‚åŒåº“æ—¶ native ä¼˜å…ˆ
+    std::vector<PortImage> images;            ///< å…¶å®ƒå›¾åƒ
+    std::vector<PortRoi> rois;                ///< æœ¬å·¥å…·æœç´¢åŒºï¼Œå·²è·Ÿéšä½å§¿
+    std::vector<HsCommData::Pose2> poses;               ///< ä¸Šæ¸¸ä½å§¿
+    std::vector<PortRegion> regions;          ///< æ­£å¸¸åŒºåŸŸ
+    std::vector<PortRegion> masks;            ///< å±è”½åŒºåŸŸ
+    std::vector<PortContour> contours;        ///< ä¸Šæ¸¸è½®å»“
+    const ToolParaBase* param;                  ///< å·¥å…·å‚æ•°å¯¹è±¡ï¼Œä¸æ‹¥æœ‰
+    ParamMap run;                              ///< è¿è¡Œå‚æ•°
+    std::vector<JudgeParam> judge;             ///< åˆ¤æ–­å‚æ•°
+    ParamMap teach;                            ///< ç¤ºæ•™å‚æ•°
+    const HsCommData::HsImage* imagePtr;       ///< å¤–éƒ¨æŒæœ‰çš„è¾“å…¥å›¾ï¼Œå¯ç©º
+    NativeRef imageNative;                     ///< åŒåº“åŸç”Ÿå›¾
+    std::string solutionDir;                   ///< æ–¹æ¡ˆç›®å½•ï¼Œå¯ç©º
+    std::string toolDataDir;                   ///< å·¥å…·æ•°æ®ç›®å½•ï¼Œå¯ç©º
+    std::vector<PortCloud> clouds;             ///< ç‚¹äº‘
+    std::vector<PortPose3> poses3;             ///< ä¸‰ç»´ä½å§¿
+    std::vector<PortShape3> shapes3;           ///< ä¸‰ç»´å½¢çŠ¶
+    AlgToolIn() : mode(RunMode::Auto), param(nullptr), imagePtr(nullptr) {}
 };
 
+/** @brief ä¸€é¡¹æ²¡é€šè¿‡çš„å…¬å·® */
+struct TolMiss {
+    std::string name; ///< å…¬å·®å
+    bool hasValue;    ///< æœ¬æ‹æœ‰æ²¡æœ‰è¿™ä¸ªæµ‹å€¼
+    double value;     ///< æµ‹å€¼
+    double minVal;    ///< ä¸‹é™
+    double maxVal;    ///< ä¸Šé™
+    TolMiss() : hasValue(false), value(0), minVal(0), maxVal(0) {}
+};
 
 /**
  * @class AlgToolOut
- * @brief Í¼ÏñËã·¨Êä³ö£ºÅĞ¶¨¡¢µş¼Ó¡¢ÊıÖµ¡¢Í¼
+ * @brief å›¾åƒç®—æ³•è¾“å‡ºï¼šåˆ¤å®šã€å åŠ ã€æ•°å€¼ã€å›¾
  */
 struct AlgToolOut {
-    bool ok;                                   ///< Ëã·¨ÅĞ¶¨
-    int errCode;                               ///< 0 ±íÊ¾Ã»ÓĞÔËĞĞÊ§°Ü
-    std::vector<HsCommData::HsObject> objects; ///< ½á¹û¼¸ºÎ¡£¾ÉËã·¨ÈÔÌîÕâÀï
-    ParamMap values;                           ///< ±¾ÅÄ²âÖµ
-    PortImage image;                          ///< È±Ê¡Êä³öÍ¼
-    std::vector<PortImage> images;            ///< ÆäËüÊä³öÍ¼
-    std::vector<NamedObject> portObjects;      ///< °´¿ÚÃû²ğ¿ªµÄ¼¸ºÎ£»¿É¿Õ
-    std::vector<HsCommData::Pose2> poses;               ///< Êä³öÎ»×Ë
-    std::string message;                       ///< ËµÃ÷
-    std::vector<ToolTrace> traces;             ///< ÈÕÖ¾ºÍµ÷ÊÔ¼ÇÂ¼
-    std::vector<ToolInfoItem> infos;           ///< ĞÅÏ¢¼ÇÂ¼£¬²»½ø¶ÔÍâ²âÖµ
-    AlgToolOut() : ok(false), errCode(0) {}
+    bool ok;                                   ///< ç®—æ³•åˆ¤å®š
+    int errCode;                               ///< 0 è¡¨ç¤ºæ²¡æœ‰è¿è¡Œå¤±è´¥
+    std::vector<HsCommData::HsObject> objects; ///< ç»“æœå‡ ä½•ã€‚æ—§ç®—æ³•ä»å¡«è¿™é‡Œ
+    ParamMap values;                           ///< æœ¬æ‹æµ‹é‡
+    PortImage image;                          ///< ç¼ºçœè¾“å‡ºå›¾
+    std::vector<PortImage> images;            ///< å…¶å®ƒè¾“å‡ºå›¾
+    std::vector<NamedObject> portObjects;      ///< æŒ‰å£åæ‹†å¼€çš„å‡ ä½•
+    std::vector<HsCommData::Pose2> poses;      ///< è¾“å‡ºä½å§¿
+    std::vector<char> poseOk;                  ///< ä¸ poses å¯¹é½ã€‚1 è¡¨ç¤ºé€šè¿‡
+    std::vector<TolMiss> tolMiss;              ///< æœªé€šè¿‡çš„å…¬å·®
+    HsCommData::Pose2 poseOrg;                 ///< åŸå§‹ä½å§¿
+    bool poseOrgOk;                            ///< åŸå§‹ä½å§¿æ˜¯å¦æœ‰æ•ˆ
+    bool runOk;                                ///< ç®—æ³•æœ¬èº«æ˜¯å¦è·‘é€š
+    bool judgeOk;                              ///< å…¬å·®æ˜¯å¦é€šè¿‡
+    double algMs;                              ///< ç®—æ³•è€—æ—¶ï¼Œæ¯«ç§’
+    std::string message;                       ///< è¯´æ˜
+    std::vector<ToolTrace> traces;             ///< æ—¥å¿—å’Œè°ƒè¯•è®°å½•
+    std::vector<ToolInfoItem> infos;           ///< ä¿¡æ¯è®°å½•ï¼Œä¸è¿›ç«¯å£æµ‹é‡
+    std::vector<PortCloud> clouds;             ///< è¾“å‡ºç‚¹äº‘
+    std::vector<PortPose3> poses3;             ///< è¾“å‡ºä¸‰ç»´ä½å§¿
+    std::vector<PortShape3> shapes3;           ///< è¾“å‡ºä¸‰ç»´å½¢çŠ¶
+    std::vector<PortTuple> tuples;             ///< è¾“å‡ºæ•°å€¼å…ƒç»„
+    std::vector<ResultLabel> labels;           ///< å›¾åƒæ–‡å­—ï¼Œä¸è¿›ç«¯å£
+    AlgToolOut() : ok(false), errCode(0), poseOrgOk(false), runOk(false), judgeOk(true), algMs(0) {}
+
+    /** @brief è¿è¡Œå¤±è´¥ï¼Œä¸å¸¦è¾“å‡ºå›¾ */
+    static AlgToolOut fail(const std::string& msg)
+    {
+        AlgToolOut o;
+        o.ok = false;
+        o.errCode = HS_ERR_OPERATOR;
+        o.message = msg;
+        return o;
+    }
 };
+
 /**
  * @class AlgToolBase
- * @brief Í¼ÏñËã·¨¡£°´ toolName ¹Òµ½ÒÑÓĞ¹¤¾ß¿ÇÉÏ
+ * @brief å›¾åƒç®—æ³•ã€‚æŒ‰ toolName æŒ‚åˆ°å·²æœ‰å·¥å…·å£³ä¸Š
  */
+inline const HsCommData::HsImage& inputImage(const AlgToolIn& in)
+{
+    static const HsCommData::HsImage kNone;
+    if (in.imagePtr != nullptr && !in.imagePtr->isNull()) {
+        return *in.imagePtr;
+    }
+    if (!in.image.image.isNull()) {
+        return in.image.image;
+    }
+    return kNone;
+}
+
 class VISION_ALGOR_API AlgToolBase {
 public:
     virtual ~AlgToolBase() {}
-    /** @brief ¹Òµ½ÄÄ¸ö¹¤¾ß¿Ç£¬Èç locate.find_circle */
+    /** @brief æŒ‚åˆ°å“ªä¸€ä¸ªå·¥å…·å£³ï¼Œå¦‚ locate.find_circle */
     virtual std::string toolName() const = 0;
-    /** @brief Ëã·¨¿â */
+    /** @brief æ³¨å†Œåã€‚é»˜è®¤è½¬åˆ° toolName */
+    virtual std::string tool_name() const;
+    /** @brief ç®—æ³•åº“ã€‚é»˜è®¤è½¬åˆ° algLib */
+    virtual AlgLibKind alg_lib() const;
+    /** @brief ç‰ˆæœ¬å˜æ›´ã€‚é»˜è®¤è½¬åˆ° versionNotes */
+    virtual std::vector<VerNote> version_notes() const;
+    /** @brief ç®—æ³•åº“ */
     virtual AlgLibKind algLib() const = 0;
     virtual std::string version() const { return std::string("1.0.0.0"); }
-    /** @brief °æ±¾±ä¸ü¡£Ö»×·¼Ó£¬²»É¾¾ÉĞĞ */
+    /** @brief ç‰ˆæœ¬å˜æ›´ã€‚åªè¿½åŠ ï¼Œä¸åˆ æ—§é¡¹ */
     virtual std::vector<VerNote> versionNotes() const;
-    /** @brief ÏñËØ¼ÆËã£¨Ğë¿ÉÖØÈë£© */
-    virtual AlgToolOut run(const AlgToolIn& in) = 0;
+    /** @brief åƒç´ è®¡ç®—ï¼Œé¡»å¯é‡å…¥ */
+    virtual int execute(const AlgToolIn& in, AlgToolOut* out) = 0;
+    /** @brief å…¬å·®ã€‚åˆ¤å®šæˆåŠŸåæŠŠæœ¬æ‹æµ‹å€¼è½¬æˆå…¬å·®ç»“æœ */
+    virtual int judge_tol(const AlgToolIn& in);
+    /** @brief ä¸€æ‹å¼€å§‹å‰çš„å‡†å¤‡ã€‚ç¼ºçœç©º */
+    virtual int shot_init(const AlgToolIn& in, AlgToolOut* out);
+    /** @brief ä¸€æ‹ç»“æŸåçš„æ”¶å°¾ã€‚ç¼ºçœç©º */
+    virtual int settle_result(const AlgToolIn& in, AlgToolOut* out);
+    int run(ExecMode mode, const AlgToolIn& in, AlgToolOut* out);
+    int fail(int code, const std::string& msg, AlgToolOut* out) const;
     /**
-     * @brief ¿ËÂ¡±¾ÊµÀı
-     * @return ĞÂ¶ÔÏó£¬ÓÉµ÷ÓÃ·½ destroy
+     * @brief å…‹éš†ä¸€ä»½å®ä¾‹
+     * @return æ–°å¯¹è±¡ï¼Œç”±è°ƒç”¨æ–¹ destroy
      */
     virtual AlgToolBase* clone() const = 0;
-    /** @brief ´Ó¹¤¾ßÊı¾İÄ¿Â¼×°Ñ§Ï°½á¹û¡£È±Ê¡¿Õ */
+    /** @brief ä»å·¥å…·æ•°æ®ç›®å½•è¯»å­¦ä¹ ç»“æœã€‚ç¼ºçœç©º */
     virtual void loadLearn(const std::string& toolDataDir);
-    /** @brief °ÑÑ§Ï°½á¹ûĞ´Èë¹¤¾ßÊı¾İÄ¿Â¼¡£½ö Learn Ê±µ÷ÓÃ¡£È±Ê¡¿Õ */
+    /** @brief æŠŠå­¦ä¹ ç»“æœå†™å…¥å·¥å…·æ•°æ®ç›®å½•ã€‚ä»… Learn æ—¶è°ƒç”¨ï¼Œç¼ºçœç©º */
     virtual void saveLearn(const std::string& toolDataDir);
-    /** @brief ¶ªµôÄÚ´æÀïµÄÑ§Ï°¾ä±ú¡£È±Ê¡¿Õ */
+    /** @brief ä¸¢æ‰å†…å­˜é‡Œçš„å­¦ä¹ å¥æŸ„ã€‚ç¼ºçœç©º */
     virtual void clearLearn();
-    /** @brief ÔÚ´´½¨±¾¶ÔÏóµÄÄ£¿éÄÚÊÍ·Å£¨Ä¬ÈÏ delete this£© */
+    /** @brief è°ƒè¯•åŠ¨ä½œã€‚æœªçŸ¥åŠ¨ä½œå¤±è´¥ */
+    virtual int action(const std::string& id, const AlgToolIn& in, AlgToolOut* out);
+    /** @brief æŒ‰æ•°æ®ç›®å½•è£…å…¥å·²ä¿å­˜çš„æ¨¡å‹ */
+    virtual void init(const std::string& toolDataDir);
+    /** @brief æŠŠå½“å‰æ¨¡å‹å†™å…¥æ•°æ®ç›®å½• */
+    virtual void save(const std::string& toolDataDir);
+    /** @brief ä¸¢æ‰å†…å­˜é‡Œçš„æ¨¡å‹ */
+    virtual void clear(const std::string& toolDataDir);
+    /** @brief æŒ‰åˆ†æ®µå†™æˆç®—æ³•æ—¥å¿—ï¼Œå¹¶æŠŠåˆè®¡æ¯«ç§’å†™å…¥ out->algMs */
+    void write_alg_steps(AlgToolOut* out, const std::vector<Section>& sections, double totalMs) const;
     virtual void destroy();
+protected:
+    SectionTimer run_timer_; ///< execute åˆ†æ®µè®¡æ—¶ã€‚æ¯æ¬¡ start å…ˆæ¸…ç©ºä¸Šä¸€æ‹
 };
 
 /**
  * @class AlgToolBaseRegistry
- * @brief £¨toolName, algLib£©¡ú Ô­ĞÍ¡£µ¥ÀıÔÚ±¾ DLL ÄÚ
+ * @brief (toolName, algLib) åˆ°åŸå‹ã€‚å•ä¾‹åœ¨æœ¬ DLL å†…
  */
 class VISION_ALGOR_API AlgToolBaseRegistry {
 public:
-    /** @brief ½ø³ÌÄÚµ¥Àı */
+    /** @brief è¿›ç¨‹å†…å•ä¾‹ */
     static AlgToolBaseRegistry& instance();
-    /** @brief °´ toolName+algLib µÇ¼Ç£¨½Ó¹ÜËùÓĞÈ¨£© */
+    /** @brief æŒ‰ toolName å’Œ algLib ç™»è®°ï¼Œæ¥ç®¡æ‰€æœ‰æƒ */
     void add(AlgToolBase* det);
-    /** @brief ¼æÈİ£ºµÈÍ¬ add */
+    /** @brief å…¼å®¹å…¥å£ï¼Œç­‰åŒ add */
     void set(AlgToolBase* det);
-    /** @brief ¾«È·È¡Ô­ĞÍ£»Î´µÇ¼Ç·µ»Ø 0 */
+    /** @brief ç²¾ç¡®å–åŸå‹ã€‚æœªç™»è®°è¿”å› 0 */
     AlgToolBase* get(const std::string& toolName, AlgLibKind algLib) const;
-    /** @brief Ö¸¶¨¿âÓÅÏÈ£¬Ã»ÓĞÔÙ°´ Hal¡¢CV¡¢ÆäÓàÒÑµÇ¼Ç */
+    /** @brief æŒ‡å®šåº“ä¼˜å…ˆï¼Œæ²¡æœ‰å†æŒ‰ Halã€CVã€å…¶ä½™å·²ç™»è®°çš„åº“ */
     AlgToolBase* getPreferred(const std::string& toolName, AlgLibKind prefer) const;
-    /** @brief °´ Hal¡¢CV µÄÄ¬ÈÏË³ĞòÈ¡ */
+    /** @brief æŒ‰ Halã€CV çš„é»˜è®¤é¡ºåºå– */
     AlgToolBase* get(const std::string& toolName) const;
-    /** @brief ¸Ã¹¤¾ßÒÑµÇ¼ÇµÄËã·¨¿â */
+    /** @brief è¯¥å·¥å…·å·²ç™»è®°çš„ç®—æ³•åº“ */
     std::vector<AlgLibKind> libs(const std::string& toolName) const;
-    /** @brief ÊÍ·ÅÒÑµÇ¼ÇµÄËã·¨Ô­ĞÍ */
+    /** @brief é‡Šæ”¾å·²ç™»è®°çš„ç®—æ³•åŸå‹ */
     ~AlgToolBaseRegistry();
 
 private:
     AlgToolBaseRegistry() {}
-    std::map<std::string, std::map<AlgLibKind, AlgToolBase*> > m_dets; ///< ±¾ÀàÓµÓĞ
+    std::map<std::string, std::map<AlgLibKind, AlgToolBase*> > m_dets; ///< æŒ‰å·¥å…·åå†æŒ‰åº“æŒæœ‰
 };
 
-/** @brief µÚÒ»¿é ROI£»¿ÕÁĞ±íÊ±·µ»Ø¾²Ì¬¿Õ ROI */
+/** @brief ç¬¬ä¸€å— ROIã€‚ç©ºåˆ—è¡¨æ—¶è¿”å›é™æ€ç©º ROI */
 VISION_ALGOR_API const HsCommData::HsObject& firstAlgRoi(const std::vector<HsCommData::HsObject>& rois);
 
-/** @brief µÚÒ»¿éÕı³£ËÑË÷Çø */
+/** @brief ç¬¬ä¸€å—æ­£å¸¸æœç´¢åŒº */
 VISION_ALGOR_API const HsCommData::HsObject& firstAlgRoi(const std::vector<PortRoi>& rois);
 
-/** @brief ×îºóÒ»¿éÎ»×Ë¡£¿ÕÔò·µ»Ø false */
+/** @brief æœ€åä¸€å—ä½å§¿ã€‚ç©ºåˆ™è¿”å› false */
 VISION_ALGOR_API bool primaryAlgPose(const std::vector<HsCommData::Pose2>& poses, HsCommData::Pose2* out);
 
 /**
- * @brief °´ toolName µ÷µ±Ç°Ëã·¨£¬ÌîÊäÈë²¢Ğ´ ToolOut
- * @param passImage ÕæÔòÊä³öÍ¼ÓÃËã·¨Í¼£¬¼ÙÔòÍ¸´«ÊäÈëÍ¼
+ * @brief æŒ‰ toolName è°ƒå½“å‰ç®—æ³•ï¼Œå¡«è¾“å…¥å¹¶å†™ ToolOut
+ * @param passImage ä¸ºçœŸæ—¶è¾“å‡ºå›¾ç”¨ç®—æ³•å›¾ï¼Œä¸ºå‡æ—¶é€ä¼ è¾“å…¥å›¾
  */
 VISION_ALGOR_API ToolOut runAlgToolBase(const std::string& toolName, const ToolIn& in, bool passImage);
 

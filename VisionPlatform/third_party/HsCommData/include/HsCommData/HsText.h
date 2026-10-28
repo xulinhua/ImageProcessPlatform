@@ -1,6 +1,6 @@
 /**
  * @file HsText.h
- * @brief HsTextÍ·ÎÄ¼þ
+ * @brief HsTextå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -21,10 +21,10 @@ namespace HsCommData {
  * @brief Overlay text. Anchor, content and font size stay together.
  */
 struct HSCOMMDATA_EXPORT HsText {
-    Point2d anchor;       ///< Ãªµã£¬Í¼Ïñ×ø±ê
-    std::string content; ///< ÕýÎÄ
+    Point2d anchor;       ///< é”šç‚¹ï¼Œå›¾åƒåæ ‡
+    std::string content; ///< æ­£æ–‡
 
-    HsText(); ///< ¿ÕÕýÎÄ
+    HsText(); ///< ç©ºæ­£æ–‡
 };
 
 }

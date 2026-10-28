@@ -1,6 +1,6 @@
 /**
  * @file VisionToolUiExport.h
- * @brief VisionToolUiExportͷ�ļ�
+ * @brief VisionToolUiExport头文件
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.

@@ -1,6 +1,6 @@
 /**
  * @file MeasureLayer.h
- * @brief MeasureLayerÍ·ÎÄ¼ş
+ * @brief MeasureLayerå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -14,7 +14,7 @@
 #include <HsCtrl/HsImageWindowTypes.h>
 #include <QHash>
 namespace HsCtrl {
-/** @class MeasureLayer @brief ²âÁ¿²ã£ºÁÙÊ±²âÁ¿Í¼ĞÎÓëÏÔÒş */
+/** @class MeasureLayer @brief æµ‹é‡å±‚ï¼šä¸´æ—¶æµ‹é‡å›¾å½¢ä¸æ˜¾éš */
 class MeasureLayer {
 public:
     MeasureLayer();

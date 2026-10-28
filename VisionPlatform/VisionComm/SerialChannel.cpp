@@ -1,6 +1,6 @@
 /**
  * @file SerialChannel.cpp
- * @brief SerialChannelÊµÏÖ
+ * @brief SerialChannelå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -15,7 +15,7 @@ namespace Vision {
 
 namespace {
 
-// COM10 ¼°ÒÔÉÏ²¹Éè±¸Â·¾¶Ç°×º£¬·ñÔò´ò²»¿ª
+// COM10 åŠä»¥ä¸Šè¡¥è®¾å¤‡è·¯å¾„å‰ç¼€ï¼Œå¦åˆ™æ‰“ä¸å¼€
 std::string portPath(const std::string& name)
 {
     if (name.size() >= 4 && name[0] == '\\') {
@@ -24,7 +24,7 @@ std::string portPath(const std::string& name)
     return std::string("\\\\.\\") + name;
 }
 
-// Ğ£ÑéÎ»ÎÄ±¾×ªÏµÍ³³£Á¿£»ÎŞ·¨Ê¶±ğÔòÎŞĞ£Ñé
+// æ ¡éªŒä½æ–‡æœ¬è½¬ç³»ç»Ÿå¸¸é‡ï¼›æ— æ³•è¯†åˆ«åˆ™æ— æ ¡éªŒ
 int parityFrom(const std::string& s)
 {
     if (s == "even") {
@@ -38,19 +38,19 @@ int parityFrom(const std::string& s)
 
 } // namespace
 
-// ¾ä±úÖÃÎªÎ´´ò¿ª
+// å¥æŸ„ç½®ä¸ºæœªæ‰“å¼€
 SerialChannel::SerialChannel()
     : m_handle(INVALID_HANDLE_VALUE)
 {
 }
 
-// Îö¹¹Ê±¹Ø±Õ´®¿Ú
+// ææ„æ—¶å…³é—­ä¸²å£
 SerialChannel::~SerialChannel()
 {
     close();
 }
 
-// ´Ó×¢²á±íÃ¶¾Ù±¾»ú´®¿ÚÃû
+// ä»æ³¨å†Œè¡¨æšä¸¾æœ¬æœºä¸²å£å
 std::vector<std::string> SerialChannel::listPorts()
 {
     std::vector<std::string> names;
@@ -76,13 +76,13 @@ std::vector<std::string> SerialChannel::listPorts()
     return names;
 }
 
-// °´¶Ë¿Ú¡¢²¨ÌØÂÊ¡¢Êı¾İÎ»¡¢Ğ£ÑéºÍÍ£Ö¹Î»´ò¿ª
+// æŒ‰ç«¯å£ã€æ³¢ç‰¹ç‡ã€æ•°æ®ä½ã€æ ¡éªŒå’Œåœæ­¢ä½æ‰“å¼€
 bool SerialChannel::open(const ParamMap& params, std::string* err)
 {
     close();
     const std::string port = params.value("port").toString();
     if (port.empty()) {
-        setCommErr(err, Vision::acpToUtf8("Î´ÌîĞ´´®¿Ú"));
+        setCommErr(err, "æœªå¡«å†™ä¸²å£");
         return false;
     }
     const int baud = params.value("baud").toInt(9600);
@@ -100,7 +100,7 @@ bool SerialChannel::open(const ParamMap& params, std::string* err)
     m_handle = CreateFileA(path.c_str(), GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, 0, 0);
     if (m_handle == INVALID_HANDLE_VALUE) {
         char buf[64];
-        sprintf_s(buf, "´®¿Ú´ò¿ªÊ§°Ü£¨%lu£©", GetLastError());
+        sprintf_s(buf, "ä¸²å£æ‰“å¼€å¤±è´¥ï¼ˆ%luï¼‰", GetLastError());
         setCommErr(err, buf);
         return false;
     }
@@ -109,7 +109,7 @@ bool SerialChannel::open(const ParamMap& params, std::string* err)
     std::memset(&dcb, 0, sizeof(dcb));
     dcb.DCBlength = sizeof(dcb);
     if (!GetCommState(m_handle, &dcb)) {
-        setCommErr(err, Vision::acpToUtf8("¶ÁÈ¡´®¿Ú×´Ì¬Ê§°Ü"));
+        setCommErr(err, "è¯»å–ä¸²å£çŠ¶æ€å¤±è´¥");
         close();
         return false;
     }
@@ -131,7 +131,7 @@ bool SerialChannel::open(const ParamMap& params, std::string* err)
     dcb.fRtsControl = RTS_CONTROL_ENABLE;
     dcb.fAbortOnError = FALSE;
     if (!SetCommState(m_handle, &dcb)) {
-        setCommErr(err, Vision::acpToUtf8("´®¿Ú²ÎÊıÉèÖÃÊ§°Ü"));
+        setCommErr(err, "ä¸²å£å‚æ•°è®¾ç½®å¤±è´¥");
         close();
         return false;
     }
@@ -141,7 +141,7 @@ bool SerialChannel::open(const ParamMap& params, std::string* err)
     return true;
 }
 
-// ¹Ø±Õ¾ä±ú
+// å…³é—­å¥æŸ„
 void SerialChannel::close()
 {
     if (m_handle != INVALID_HANDLE_VALUE) {
@@ -150,13 +150,13 @@ void SerialChannel::close()
     }
 }
 
-// ¾ä±úÊÇ·ñÓĞĞ§
+// å¥æŸ„æ˜¯å¦æœ‰æ•ˆ
 bool SerialChannel::isOpen() const
 {
     return m_handle != INVALID_HANDLE_VALUE;
 }
 
-// ÒÑ´ò¿ªÊ±·µ»ØÒ»¸ö¿Õ id µÄ¶Ô¶Ë
+// å·²æ‰“å¼€æ—¶è¿”å›ä¸€ä¸ªç©º id çš„å¯¹ç«¯
 std::vector<CommPeer> SerialChannel::peers() const
 {
     std::vector<CommPeer> list;
@@ -167,7 +167,7 @@ std::vector<CommPeer> SerialChannel::peers() const
     return list;
 }
 
-// °´ºÁÃëÉèÖÃ¶ÁĞ´³¬Ê±
+// æŒ‰æ¯«ç§’è®¾ç½®è¯»å†™è¶…æ—¶
 void SerialChannel::applyTimeouts(int timeoutMs)
 {
     if (m_handle == INVALID_HANDLE_VALUE) {
@@ -191,11 +191,11 @@ void SerialChannel::applyTimeouts(int timeoutMs)
     SetCommTimeouts(m_handle, &to);
 }
 
-// Ğ´³öÕû¶Î×Ö½Ú
+// å†™å‡ºæ•´æ®µå­—èŠ‚
 bool SerialChannel::write(const std::string&, const CommBytes& data, int timeoutMs, std::string* err)
 {
     if (!isOpen()) {
-        setCommErr(err, Vision::acpToUtf8("Í¨µÀÎ´´ò¿ª"));
+        setCommErr(err, "é€šé“æœªæ‰“å¼€");
         return false;
     }
     if (data.empty()) {
@@ -205,18 +205,18 @@ bool SerialChannel::write(const std::string&, const CommBytes& data, int timeout
     DWORD wrote = 0;
     const BOOL ok = WriteFile(m_handle, &data[0], static_cast<DWORD>(data.size()), &wrote, 0);
     if (!ok || wrote != data.size()) {
-        setCommErr(err, Vision::acpToUtf8("Ğ´Èë²»ÍêÕû"));
+        setCommErr(err, "å†™å…¥ä¸å®Œæ•´");
         return false;
     }
     return true;
 }
 
-// °´³¬Ê±¶ÁÒ»Åú
+// æŒ‰è¶…æ—¶è¯»ä¸€æ‰¹
 CommBytes SerialChannel::read(const std::string&, int maxBytes, int timeoutMs, std::string* err)
 {
     CommBytes out;
     if (!isOpen()) {
-        setCommErr(err, Vision::acpToUtf8("Í¨µÀÎ´´ò¿ª"));
+        setCommErr(err, "é€šé“æœªæ‰“å¼€");
         return out;
     }
     if (maxBytes <= 0) {
@@ -228,17 +228,17 @@ CommBytes SerialChannel::read(const std::string&, int maxBytes, int timeoutMs, s
     const BOOL ok = ReadFile(m_handle, &out[0], static_cast<DWORD>(maxBytes), &got, 0);
     if (!ok) {
         out.clear();
-        setCommErr(err, Vision::acpToUtf8("¶ÁÊ§°Ü"));
+        setCommErr(err, "è¯»å¤±è´¥");
         return out;
     }
     out.resize(got);
     if (got == 0 && timeoutMs > 0) {
-        setCommErr(err, Vision::acpToUtf8("¶Á³¬Ê±"));
+        setCommErr(err, "è¯»è¶…æ—¶");
     }
     return out;
 }
 
-// Çå¿Õ½ÓÊÕ»º³å
+// æ¸…ç©ºæ¥æ”¶ç¼“å†²
 void SerialChannel::drain(const std::string&)
 {
     if (isOpen()) {
@@ -246,13 +246,13 @@ void SerialChannel::drain(const std::string&)
     }
 }
 
-// ´®¿ÚÃ»ÓĞ¶à¿Í»§¶Ë£¬²»µÈ´ı½ÓÈë
+// ä¸²å£æ²¡æœ‰å¤šå®¢æˆ·ç«¯ï¼Œä¸ç­‰å¾…æ¥å…¥
 std::string SerialChannel::waitIncoming(int)
 {
     return std::string();
 }
 
-// ´«ÊäÀàĞÍ
+// ä¼ è¾“ç±»å‹
 CommTransport SerialChannel::transport() const
 {
     return TransportSerial;

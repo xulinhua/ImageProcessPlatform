@@ -1,6 +1,6 @@
 /**
  * @file HalCaliper.cpp
- * @brief HalCaliperÊµÏÖ
+ * @brief HalCaliperå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -8,7 +8,6 @@
 
 #include "HalCaliper.h"
 #include "TextEncoding.h"
-#include "HalAlgoHelpers.h"
 #include "HalImageConvert.h"
 #include "HalObjectConvert.h"
 #include "ParamKeys.h"
@@ -16,7 +15,7 @@
 
 namespace Vision {
 
-// ¿¨³ß ROI ×ª²âÁ¿¾ØĞÎ²ÎÊı
+// å¡å°º ROI è½¬æµ‹é‡çŸ©å½¢å‚æ•°
 static bool caliperRect(const HsCommData::HsObject& roi, double* row, double* col, double* phi,
                         double* l1, double* l2)
 {
@@ -65,11 +64,11 @@ static bool caliperRect(const HsCommData::HsObject& roi, double* row, double* co
     return false;
 }
 
-// ²â¿í»òÕÒ±ß
+// æµ‹å®½æˆ–æ‰¾è¾¹
 namespace {
 const char kVer_HalCaliper[] = "1.0.0.0";
 const Vision::VerNoteRaw kNotes_HalCaliper[] = {
-    { "1.0.0.0", "Ê×°æ" },
+    { "1.0.0.0", "é¦–ç‰ˆ" },
 };
 }
 
@@ -78,7 +77,7 @@ std::string HalCaliper::version() const
     return kVer_HalCaliper;
 }
 
-// °æ±¾±ä¸ü£¬Ö»×·¼Ó
+// ç‰ˆæœ¬å˜æ›´ï¼Œåªè¿½åŠ 
 std::vector<VerNote> HalCaliper::versionNotes() const
 {
     return verNotesFrom(kNotes_HalCaliper, static_cast<int>(sizeof(kNotes_HalCaliper) / sizeof(kNotes_HalCaliper[0])));
@@ -91,8 +90,8 @@ AlgToolOut HalCaliper::run(const AlgToolIn& in)
         int h = 0;
         std::string err;
         HalconCpp::HImage* pGray = &gray;
-        if (!loadGrayFromAlgIn(in, pGray, &w, &h, &err)) {
-            return algorToolFail(err);
+        if (!hsImageToGray(inputImage(in), pGray, &w, &h, &err)) {
+            return AlgToolOut::fail(err);
         }
         const std::string mode = in.run.value("mode").toString();
         const double sigma = in.run.value("sigma").toDouble(1.0);
@@ -108,7 +107,7 @@ AlgToolOut HalCaliper::run(const AlgToolIn& in)
         const std::vector<HsCommData::HsObject> rois = plainRois(in.rois);
         const int toolCount = in.run.value("searchCount").toInt(1);
         AlgToolOut out;
-        out.image.image = in.image.image;
+        out.image.image = inputImage(in);
         int found = 0;
         double lastWidth = 0;
         double lastX = 0;
@@ -167,7 +166,7 @@ AlgToolOut HalCaliper::run(const AlgToolIn& in)
             }
         }
         if (found <= 0) {
-            out.message = Vision::acpToUtf8("¿¨³ßÎ´²âµ½±ßÔµ");
+            out.message = "å¡å°ºæœªæµ‹åˆ°è¾¹ç¼˜";
             return out;
         }
         out.ok = true;
@@ -177,10 +176,10 @@ AlgToolOut HalCaliper::run(const AlgToolIn& in)
         paramSet(&out.values, ValueKey::Y, lastY);
         paramSet(&out.values, ValueKey::Angle, 0.0);
         paramSet(&out.values, ValueKey::Score, 1.0);
-        out.message = Vision::acpToUtf8("¿¨³ßÍê³É");
+        out.message = "å¡å°ºå®Œæˆ";
         return out;
     } catch (const HalconCpp::HException& e) {
-        return algorToolFail(hExceptionText(e));
+        return AlgToolOut::fail(hExceptionText(e));
     }
 }
 

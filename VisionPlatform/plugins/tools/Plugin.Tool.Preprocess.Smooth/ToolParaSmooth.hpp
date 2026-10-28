@@ -1,6 +1,6 @@
 /**
  * @file ToolParaSmooth.hpp
- * @brief ToolParaSmoothÍ·ÎÄ¼ş
+ * @brief ToolParaSmoothå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -16,21 +16,21 @@ namespace Vision {
 
 /**
  * @class ToolParaSmooth
- * @brief SmoothTool ÔËĞĞ²ÎÊı
+ * @brief SmoothTool è¿è¡Œå‚æ•°
  */
 class ToolParaSmooth : public ToolParaBase {
 public:
-    /** @brief Ñ§Ï°²ÎÊı£¬Ã»ÓĞÔòÎª¿Õ */
+    /** @brief å­¦ä¹ å‚æ•°ï¼Œæ²¡æœ‰åˆ™ä¸ºç©º */
     struct Learn {
     };
-    /** @brief ÔËĞĞ²ÎÊı */
+    /** @brief è¿è¡Œå‚æ•° */
     struct Run {
-        int pl_n;                   ///< ²½ÖèÊı
-        int pl_0_op;                ///< Ëã×Ó
-        int pl_0_w;                 ///< ÑÚÄ¤¿í
-        int pl_0_h;                 ///< ÑÚÄ¤¸ß
-        double pl_0_c0;             ///< »Ò¶ÈÓò
-        double pl_0_c1;             ///< ¿Õ¼äÓò
+        int pl_n;                   ///< æ­¥éª¤æ•°
+        int pl_0_op;                ///< ç®—å­
+        int pl_0_w;                 ///< æ©è†œå®½
+        int pl_0_h;                 ///< æ©è†œé«˜
+        double pl_0_c0;             ///< ç°åº¦åŸŸ
+        double pl_0_c1;             ///< ç©ºé—´åŸŸ
         Run()
             : pl_n(1)
             , pl_0_op(1)
@@ -41,10 +41,10 @@ public:
         {}
     };
 
-    Learn learn; ///< Ñ§Ï°²ÎÊı£¬Ã»ÓĞÔòÎª¿Õ
-    Run run;     ///< ÔËĞĞ²ÎÊı
+    Learn learn; ///< å­¦ä¹ å‚æ•°ï¼Œæ²¡æœ‰åˆ™ä¸ºç©º
+    Run run;     ///< è¿è¡Œå‚æ•°
 
-    /** @brief ´Ó ToolParam ÌîĞ´ */
+    /** @brief ä» ToolParam å¡«å†™ */
     void load(const ToolParam& src)
     {
         const ParamMap& m = src.run;

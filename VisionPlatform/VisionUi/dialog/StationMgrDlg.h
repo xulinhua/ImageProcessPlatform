@@ -1,6 +1,6 @@
 /**
  * @file StationMgrDlg.h
- * @brief StationMgrDlgÍ·ÎÄ¼ş
+ * @brief StationMgrDlgå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -25,86 +25,86 @@ struct Solution;
 
 /**
  * @class StationMgrDlg
- * @brief ¹¤Õ¾¹ÜÀí£ºÁĞ±í¡¢¸ÅÒª¡¢°ó¶¨Éè±¸ÕªÒª¡¢Í¨ĞÅÍ¨µÀ¡¢JobCfg ÕªÒª
+ * @brief å·¥ç«™ç®¡ç†ï¼šåˆ—è¡¨ã€æ¦‚è¦ã€ç»‘å®šè®¾å¤‡æ‘˜è¦ã€é€šä¿¡é€šé“ã€JobCfg æ‘˜è¦
  */
 class VISION_UI_API StationMgrDlg : public QDialog {
     Q_OBJECT
 public:
     /**
-     * @brief ¹¹Ôì¹¤Õ¾¹ÜÀí¶Ô»°¿ò
-     * @param solution µ±Ç°·½°¸£¨²»ÓµÓĞ£©
+     * @brief æ„é€ å·¥ç«™ç®¡ç†å¯¹è¯æ¡†
+     * @param solution å½“å‰æ–¹æ¡ˆï¼ˆä¸æ‹¥æœ‰ï¼‰
      */
     StationMgrDlg(Session* session, Solution* solution, QWidget* parent = 0);
 
 signals:
     /**
-     * @brief ÇëÇó´ò¿ª¹¤Õ¾ÅäÖÃ
-     * @param stationId ¹¤Õ¾ id
+     * @brief è¯·æ±‚æ‰“å¼€å·¥ç«™é…ç½®
+     * @param stationId å·¥ç«™ id
      */
     void openStationRequested(const QString& stationId);
     /**
-     * @brief ÇëÇó´ò¿ª JobCfg ÅäÖÃ
-     * @param jobId Á÷³Ì id
+     * @brief è¯·æ±‚æ‰“å¼€ JobCfg é…ç½®
+     * @param jobId æµç¨‹ id
      */
     void openJobRequested(const QString& jobId);
 
 private slots:
-    /** @brief Ìí¼Ó¿Õ¹¤Õ¾ */
+    /** @brief æ·»åŠ ç©ºå·¥ç«™ */
     void onAdd();
-    /** @brief É¾³ıµ±Ç°¹¤Õ¾£¨¼¶ÁªÆä JobCfg£© */
+    /** @brief åˆ é™¤å½“å‰å·¥ç«™ï¼ˆçº§è”å…¶ JobCfgï¼‰ */
     void onRemove();
-    /** @brief Ó¦ÓÃÍ¨ĞÅÑ¡Ôñ²¢·¢³ö openStationRequested */
+    /** @brief åº”ç”¨é€šä¿¡é€‰æ‹©å¹¶å‘å‡º openStationRequested */
     void onOpen();
-    /** @brief ´ò¿ªÑ¡ÖĞ£¨»òÊ×¸ö£©JobCfg */
+    /** @brief æ‰“å¼€é€‰ä¸­ï¼ˆæˆ–é¦–ä¸ªï¼‰JobCfg */
     void onOpenJob();
-    /** @brief ÁĞ±íÑ¡ÖĞ±ä»¯£¬Ë¢ĞÂÓÒ²àÏêÇé */
+    /** @brief åˆ—è¡¨é€‰ä¸­å˜åŒ–ï¼Œåˆ·æ–°å³ä¾§è¯¦æƒ… */
     void onSel();
-    /** @brief °ÑÍ¨ĞÅÍ¨µÀĞ´»Øµ±Ç°¹¤Õ¾ */
+    /** @brief æŠŠé€šä¿¡é€šé“å†™å›å½“å‰å·¥ç«™ */
     void onApply();
     /**
-     * @brief Ë«»÷ JobCfg ±í´ò¿ª¸ÃÁ÷³Ì
-     * @param row ĞĞºÅ
-     * @param col ÁĞºÅ£¨Î´Ê¹ÓÃ£©
+     * @brief åŒå‡» JobCfg è¡¨æ‰“å¼€è¯¥æµç¨‹
+     * @param row è¡Œå·
+     * @param col åˆ—å·ï¼ˆæœªä½¿ç”¨ï¼‰
      */
     void onJobDouble(int row, int col);
 
 private:
-    /** @brief ÖØÌî¹¤Õ¾ÁĞ±í²¢¾¡Á¿±£³ÖÑ¡ÖĞ */
+    /** @brief é‡å¡«å·¥ç«™åˆ—è¡¨å¹¶å°½é‡ä¿æŒé€‰ä¸­ */
     void refresh();
-    /** @brief °´µ±Ç°¹¤Õ¾Ìî³ä¸ÅÒª¡¢Éè±¸Ğ¾Æ¬¡¢Í¨ĞÅ¡¢JobCfg ±í */
+    /** @brief æŒ‰å½“å‰å·¥ç«™å¡«å……æ¦‚è¦ã€è®¾å¤‡èŠ¯ç‰‡ã€é€šä¿¡ã€JobCfg è¡¨ */
     void fillDetail();
-    /** @brief °Ñµ±Ç°Í¨ĞÅÑ¡ÔñĞ´Èë StationCfg::commChannelId */
+    /** @brief æŠŠå½“å‰é€šä¿¡é€‰æ‹©å†™å…¥ StationCfg::commChannelId */
     void applyComm();
     /**
-     * @brief Ñ¡ÖĞ¶ÔÓ¦Í¨ĞÅ°´Å¥£»ÕÒ²»µ½Ôò»ØÂäµ½µÚÒ»Ïî
-     * @param id Í¨µÀ id£¬¿Õ±íÊ¾¡¸ÎŞ¡¹
+     * @brief é€‰ä¸­å¯¹åº”é€šä¿¡æŒ‰é’®ï¼›æ‰¾ä¸åˆ°åˆ™å›è½åˆ°ç¬¬ä¸€é¡¹
+     * @param id é€šé“ idï¼Œç©ºè¡¨ç¤ºã€Œæ— ã€
      */
     void selectComm(const QString& id);
     /**
-     * @brief µ±Ç°Ñ¡ÖĞ¹¤Õ¾ id
-     * @return ÎŞÑ¡ÖĞÊ±Îª¿Õ
+     * @brief å½“å‰é€‰ä¸­å·¥ç«™ id
+     * @return æ— é€‰ä¸­æ—¶ä¸ºç©º
      */
     QString currentId() const;
     /**
-     * @brief µ±Ç°¹´Ñ¡µÄÍ¨ĞÅÍ¨µÀ id
-     * @return ¡¸ÎŞ¡¹Ê±Îª¿Õ
+     * @brief å½“å‰å‹¾é€‰çš„é€šä¿¡é€šé“ id
+     * @return ã€Œæ— ã€æ—¶ä¸ºç©º
      */
     QString currentCommId() const;
 
-    Session* m_session;         ///< »á»°£¨²»ÓµÓĞ£©
-    Solution* m_sol;           ///< µ±Ç°·½°¸£¨²»ÓµÓĞ£©
-    QListWidget* m_list;      ///< ¹¤Õ¾ÁĞ±í
-    QLabel* m_name;            ///< Ãû³Æ
-    QLabel* m_code;            ///< ¹¤Î»±àºÅ
-    QLabel* m_status;          ///< ×´Ì¬
-    QLabel* m_jobCount;       ///< JobCfg ÊıÁ¿
-    QLabel* m_devCount;        ///< °ó¶¨Éè±¸Êı
-    QLabel* m_arrange;        ///< Á÷³ÌÖ´ĞĞ·½Ê½
-    QHBoxLayout* m_chips;      ///< °ó¶¨Éè±¸ÀàĞÍĞ¾Æ¬
-    QButtonGroup* m_commGroup; ///< Í¨ĞÅÍ¨µÀ»¥³â×é
-    QHBoxLayout* m_commLay;    ///< Í¨ĞÅ°´Å¥ĞĞ
-    QTableWidget* m_jobs;      ///< ±¾¹¤Õ¾ JobCfg ÕªÒª
-    /** @brief °´·½°¸Í¨ĞÅÌ¨ÕËÖØ½¨Í¨µÀ°´Å¥ */
+    Session* m_session;         ///< ä¼šè¯ï¼ˆä¸æ‹¥æœ‰ï¼‰
+    Solution* m_sol;           ///< å½“å‰æ–¹æ¡ˆï¼ˆä¸æ‹¥æœ‰ï¼‰
+    QListWidget* m_list;      ///< å·¥ç«™åˆ—è¡¨
+    QLabel* m_name;            ///< åç§°
+    QLabel* m_code;            ///< å·¥ä½ç¼–å·
+    QLabel* m_status;          ///< çŠ¶æ€
+    QLabel* m_jobCount;       ///< JobCfg æ•°é‡
+    QLabel* m_devCount;        ///< ç»‘å®šè®¾å¤‡æ•°
+    QLabel* m_arrange;        ///< æµç¨‹æ‰§è¡Œæ–¹å¼
+    QHBoxLayout* m_chips;      ///< ç»‘å®šè®¾å¤‡ç±»å‹èŠ¯ç‰‡
+    QButtonGroup* m_commGroup; ///< é€šä¿¡é€šé“äº’æ–¥ç»„
+    QHBoxLayout* m_commLay;    ///< é€šä¿¡æŒ‰é’®è¡Œ
+    QTableWidget* m_jobs;      ///< æœ¬å·¥ç«™ JobCfg æ‘˜è¦
+    /** @brief æŒ‰æ–¹æ¡ˆé€šä¿¡å°è´¦é‡å»ºé€šé“æŒ‰é’® */
     void rebuildCommChoices();
 };
 

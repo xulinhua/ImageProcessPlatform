@@ -1,6 +1,6 @@
 /**
  * @file PluginHost.h
- * @brief PluginHostÍ·ÎÄ¼ş
+ * @brief PluginHostå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -16,108 +16,108 @@
 
 namespace Vision {
 
-class ToolBase;      // ¹¤¾ß²å¼ş»ùÀà£¨¶¨ÒåÔÚ VisionToolBase£©
-class AlgToolBase; // Ëã·¨²å¼ş»ùÀà£¨¶¨ÒåÔÚ VisionAlgToolBase£©
+class ToolBase;      // å·¥å…·æ’ä»¶åŸºç±»ï¼ˆå®šä¹‰åœ¨ VisionToolBaseï¼‰
+class AlgToolBase; // ç®—æ³•æ’ä»¶åŸºç±»ï¼ˆå®šä¹‰åœ¨ VisionAlgToolBaseï¼‰
 
 /**
  * @class IPluginHost
- * @brief ²å¼ş²à¿´µ½µÄËŞÖ÷½Ó¿Ú£ºµÇ¼Ç¹¤¾ß/Ëã·¨¡¢Ğ´¼ÓÔØÆÚÏµÍ³ÈÕÖ¾
+ * @brief æ’ä»¶ä¾§çœ‹åˆ°çš„å®¿ä¸»æ¥å£ï¼šç™»è®°å·¥å…·/ç®—æ³•ã€å†™åŠ è½½æœŸç³»ç»Ÿæ—¥å¿—
  *
- * ÓÉËŞÖ÷ÊµÏÖ²¢ÔÚ VisionPlugin_register Ê±´«Èë¡£²å¼şÖ»ÒÀÀµ±¾³éÏó£¬
- * ²»ÒÀÀµ VisionCore / ×¢²á±íÊµÏÖÏ¸½Ú¡£
+ * ç”±å®¿ä¸»å®ç°å¹¶åœ¨ VisionPlugin_register æ—¶ä¼ å…¥ã€‚æ’ä»¶åªä¾èµ–æœ¬æŠ½è±¡ï¼Œ
+ * ä¸ä¾èµ– VisionCore / æ³¨å†Œè¡¨å®ç°ç»†èŠ‚ã€‚
  */
 class IPluginHost {
 public:
     virtual ~IPluginHost() {}
 
     /**
-     * @brief µÇ¼ÇÒ»¸ö¹¤¾ßÔ­ĞÍ£¨µ±Ç°ÊµÏÖĞ´Èë ToolRegistry£»Job ¾­ create/clone È¡ÊµÀı£©
-     * @param tool ²å¼ş new ³öµÄÔ­ĞÍ£»¿ÕÖ¸ÕëºöÂÔ£»ËùÓĞÈ¨½»×¢²á±í
+     * @brief ç™»è®°ä¸€ä¸ªå·¥å…·åŸå‹ï¼ˆå½“å‰å®ç°å†™å…¥ ToolRegistryï¼›Job ç» create/clone å–å®ä¾‹ï¼‰
+     * @param tool æ’ä»¶ new å‡ºçš„åŸå‹ï¼›ç©ºæŒ‡é’ˆå¿½ç•¥ï¼›æ‰€æœ‰æƒäº¤æ³¨å†Œè¡¨
      */
     virtual void addTool(ToolBase* tool) = 0;
 
     /**
-     * @brief µÇ¼ÇÒ»¸öËã·¨£¨µ±Ç°ÊµÏÖĞ´Èë AlgToolBaseRegistry£©
-     * @param algor ²å¼ş new ³öµÄÊµÀı£»¿ÕÖ¸ÕëºöÂÔ£»ËùÓĞÈ¨½»×¢²á±í
+     * @brief ç™»è®°ä¸€ä¸ªç®—æ³•ï¼ˆå½“å‰å®ç°å†™å…¥ AlgToolBaseRegistryï¼‰
+     * @param algor æ’ä»¶ new å‡ºçš„å®ä¾‹ï¼›ç©ºæŒ‡é’ˆå¿½ç•¥ï¼›æ‰€æœ‰æƒäº¤æ³¨å†Œè¡¨
      */
     virtual void addAlg(AlgToolBase* algor) = 0;
 
     /**
-     * @brief Ğ´Ò»ÌõÏµÍ³ÈÕÖ¾£¨¼ÓÔØ/µÇ¼Ç¹ı³ÌÓÃ£©
-     * @param message UTF-8 ÎÄ±¾£»¿É¿Õ
+     * @brief å†™ä¸€æ¡ç³»ç»Ÿæ—¥å¿—ï¼ˆåŠ è½½/ç™»è®°è¿‡ç¨‹ç”¨ï¼‰
+     * @param message UTF-8 æ–‡æœ¬ï¼›å¯ç©º
      */
     virtual void logSystem(const char* message) = 0;
 };
 
 /**
  * @class PluginHost
- * @brief Ä¬ÈÏËŞÖ÷ÊµÏÖ£º½ÓÈë½ø³ÌÄÚ¹¤¾ß/Ëã·¨×¢²á±íÓë VisionLog
- * @note ½öËŞÖ÷½ø³ÌÊ¹ÓÃ£»²å¼ş DLL ²»Á´½Ó¡¢²»¹¹Ôì±¾Àà¡£
+ * @brief é»˜è®¤å®¿ä¸»å®ç°ï¼šæ¥å…¥è¿›ç¨‹å†…å·¥å…·/ç®—æ³•æ³¨å†Œè¡¨ä¸ VisionLog
+ * @note ä»…å®¿ä¸»è¿›ç¨‹ä½¿ç”¨ï¼›æ’ä»¶ DLL ä¸é“¾æ¥ã€ä¸æ„é€ æœ¬ç±»ã€‚
  */
 class VISION_PLUGINAPI_API PluginHost : public IPluginHost {
 public:
     /**
-     * @brief ½«¹¤¾ß½»¸ø ToolRegistry
-     * @param tool ¿É¿Õ
+     * @brief å°†å·¥å…·äº¤ç»™ ToolRegistry
+     * @param tool å¯ç©º
      */
     void addTool(ToolBase* tool);
 
     /**
-     * @brief ½«Ëã·¨½»¸ø AlgToolBaseRegistry£¨°´ toolName+algLib£©
-     * @param algor ¿É¿Õ
+     * @brief å°†ç®—æ³•äº¤ç»™ AlgToolBaseRegistryï¼ˆæŒ‰ toolName+algLibï¼‰
+     * @param algor å¯ç©º
      */
     void addAlg(AlgToolBase* algor);
 
     /**
-     * @brief Ğ´ÈëÏµÍ³ÈÕÖ¾·ÖÀà plugin_load
-     * @param message UTF-8£»¿ÕÔò¼Ç¿Õ´®
+     * @brief å†™å…¥ç³»ç»Ÿæ—¥å¿—åˆ†ç±» plugin_load
+     * @param message UTF-8ï¼›ç©ºåˆ™è®°ç©ºä¸²
      */
     void logSystem(const char* message);
 };
 
 /**
  * @class ToolLibItem
- * @brief ÒÑ¾­ÔØÈë½ø³ÌµÄÒ»Ö»²å¼ş DLL
+ * @brief å·²ç»è½½å…¥è¿›ç¨‹çš„ä¸€åªæ’ä»¶ DLL
  */
 struct VISION_PLUGINAPI_API ToolLibItem {
-    std::string fileName; ///< ÎÄ¼şÃû
-    std::string kind;     ///< tool »ò algo
-    std::string stamp;    ///< ÎÄ¼şÊ±¼ä
+    std::string fileName; ///< æ–‡ä»¶å
+    std::string kind;     ///< tool æˆ– algo
+    std::string stamp;    ///< æ–‡ä»¶æ—¶é—´
 };
 
 /**
  * @class ToolLibReg
- * @brief Ä³Ö» DLL µÇ¼ÇµÄÒ»Ìõ¹¤¾ß»òËã·¨
+ * @brief æŸåª DLL ç™»è®°çš„ä¸€æ¡å·¥å…·æˆ–ç®—æ³•
  */
 struct VISION_PLUGINAPI_API ToolLibReg {
-    std::string fileName;    ///< À´Ô´ DLL
-    std::string kind;        ///< tool »ò algo
-    std::string displayName; ///< ÏÔÊ¾Ãû
-    std::string toolName;    ///< ×¢²áÃû
-    std::string algLib;      ///< Ëã·¨¿âÏÔÊ¾Ãû£¬¹¤¾ßÎª¿Õ
-    std::string version;     ///< °æ±¾£¬Ëã·¨¿É¿Õ
-    std::vector<VerNote> notes; ///< ±ä¸ü±í¡£½çÃæ°´·½°¸ºÅµ½µ±Ç°ºÅ½ØÈ¡
-    std::string description; ///< ËµÃ÷
-    std::string stamp;       ///< DLL ÎÄ¼şÊ±¼ä
+    std::string fileName;    ///< æ¥æº DLL
+    std::string kind;        ///< tool æˆ– algo
+    std::string displayName; ///< æ˜¾ç¤ºå
+    std::string toolName;    ///< æ³¨å†Œå
+    std::string algLib;      ///< ç®—æ³•åº“æ˜¾ç¤ºåï¼Œå·¥å…·ä¸ºç©º
+    std::string version;     ///< ç‰ˆæœ¬ï¼Œç®—æ³•å¯ç©º
+    std::vector<VerNote> notes; ///< å˜æ›´è¡¨ã€‚ç•Œé¢æŒ‰æ–¹æ¡ˆå·åˆ°å½“å‰å·æˆªå–
+    std::string description; ///< è¯´æ˜
+    std::string stamp;       ///< DLL æ–‡ä»¶æ—¶é—´
 };
 
 /**
  * @class ToolLibMgr
- * @brief ¹¤¾ß¿â¹ÜÀí¡£½ø³ÌÄÚµ¥Àı£¬¸ºÔğÉ¨ÃèºÍÈÈ¼ÓÔØ²å¼ş
+ * @brief å·¥å…·åº“ç®¡ç†ã€‚è¿›ç¨‹å†…å•ä¾‹ï¼Œè´Ÿè´£æ‰«æå’Œçƒ­åŠ è½½æ’ä»¶
  */
 class VISION_PLUGINAPI_API ToolLibMgr : public IPluginHost {
 public:
-    /** @brief ½ø³ÌÄÚÎ¨Ò»ÊµÀı */
+    /** @brief è¿›ç¨‹å†…å”¯ä¸€å®ä¾‹ */
     static ToolLibMgr& instance();
 
     /**
-     * @brief É¨Ãè²å¼şÄ¿Â¼¡£ÒÑ¾­¼ÓÔØ¹ıµÄÎÄ¼şÌø¹ı£¬ĞÂ DLL Á¢¼´µÇ¼Ç
-     * @return Õâ´ÎĞÂ¼ÓÔØµÄ¸öÊı
+     * @brief æ‰«ææ’ä»¶ç›®å½•ã€‚å·²ç»åŠ è½½è¿‡çš„æ–‡ä»¶è·³è¿‡ï¼Œæ–° DLL ç«‹å³ç™»è®°
+     * @return è¿™æ¬¡æ–°åŠ è½½çš„ä¸ªæ•°
      */
     int loadAll();
-    /** @brief ÒÑÔØÈëµÄ²å¼ş */
+    /** @brief å·²è½½å…¥çš„æ’ä»¶ */
     std::vector<ToolLibItem> loaded() const;
-    /** @brief ÒÑµÇ¼ÇÏî£¬´øÉÏÀ´Ô´ DLL */
+    /** @brief å·²ç™»è®°é¡¹ï¼Œå¸¦ä¸Šæ¥æº DLL */
     std::vector<ToolLibReg> registrations() const;
 
     void addTool(ToolBase* tool);
@@ -130,17 +130,17 @@ private:
     ToolLibMgr& operator=(const ToolLibMgr&);
 
     struct Impl;
-    Impl* m_impl; ///< ÒÑ¼ÓÔØÎÄ¼ş±í
+    Impl* m_impl; ///< å·²åŠ è½½æ–‡ä»¶è¡¨
 };
 
 /**
- * @brief É¨Ãè²¢¼ÓÔØ¹¤¾ß¡¢Ëã·¨²å¼şÄ¿Â¼
- * @param host ËŞÖ÷ÊµÏÖ£»¿ÕÔòÖ±½Ó·µ»Ø 0
- * @return ³É¹¦Íê³É register µÄ DLL ¸öÊı£¨tools + algos ºÏ¼Æ£©
+ * @brief æ‰«æå¹¶åŠ è½½å·¥å…·ã€ç®—æ³•æ’ä»¶ç›®å½•
+ * @param host å®¿ä¸»å®ç°ï¼›ç©ºåˆ™ç›´æ¥è¿”å› 0
+ * @return æˆåŠŸå®Œæˆ register çš„ DLL ä¸ªæ•°ï¼ˆtools + algos åˆè®¡ï¼‰
  *
- * Ä¿Â¼À´×Ô AppPaths£ºplugins\\tools¡¢plugins\\algos¡£
- * Ã¿¸ö DLL Ğëµ¼³ö VisionPlugin_apiVersion£¨·µ»Ø 1£©Óë VisionPlugin_register¡£
- * ¼ÓÔØºó²» FreeLibrary£¬²å¼şÔÚ½ø³ÌÉúÃüÖÜÆÚÄÚ±£³Ö×¤Áô¡£
+ * ç›®å½•æ¥è‡ª AppPathsï¼šplugins\\toolsã€plugins\\algosã€‚
+ * æ¯ä¸ª DLL é¡»å¯¼å‡º VisionPlugin_apiVersionï¼ˆè¿”å› 1ï¼‰ä¸ VisionPlugin_registerã€‚
+ * åŠ è½½åä¸ FreeLibraryï¼Œæ’ä»¶åœ¨è¿›ç¨‹ç”Ÿå‘½å‘¨æœŸå†…ä¿æŒé©»ç•™ã€‚
  */
 VISION_PLUGINAPI_API int loadVisionPlugins(IPluginHost* host);
 

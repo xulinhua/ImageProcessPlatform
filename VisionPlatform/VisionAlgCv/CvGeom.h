@@ -1,6 +1,6 @@
 /**
  * @file CvGeom.h
- * @brief CvGeomÍ·ÎÄ¼ş
+ * @brief CvGeomå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -8,27 +8,27 @@
 
 #ifndef VISION_OPENCVGEOM_H
 #define VISION_OPENCVGEOM_H
-/** @brief ¼æÈİ¾ÉÍ·£º¼¸ºÎ×ª»»ÇëÓÃ CvObjectConvert.h£»±àÅÅ¸¨ÖúÇëÓÃ CvAlgoHelpers.h */
+/** @brief å…¼å®¹æ—§å¤´ï¼šå‡ ä½•è½¬æ¢è¯·ç”¨ CvObjectConvert.hï¼›ç¼–æ’è¾…åŠ©è¯·ç”¨ CvAlgoHelpers.h */
 #include "CvObjectConvert.h"
 #include "CvAlgoHelpers.h"
 
 namespace Vision {
-/** @deprecated ÇëÓÃ toolRoiToMask */
+/** @deprecated è¯·ç”¨ toolRoiToMask */
 inline cv::Mat roiToMask(const HsCommData::HsObject& roi, int imgW, int imgH)
 {
     return toolRoiToMask(roi, imgW, imgH);
 }
-/** @deprecated ÇëÓÃ toolRoisToMask */
+/** @deprecated è¯·ç”¨ toolRoisToMask */
 inline cv::Mat roisToMask(const std::vector<HsCommData::HsObject>& rois, int imgW, int imgH)
 {
     return toolRoisToMask(rois, imgW, imgH);
 }
-/** @deprecated ÇëÓÃ hsRegionsToMask */
+/** @deprecated è¯·ç”¨ hsRegionsToMask */
 inline cv::Mat rleRegionsToMask(const std::vector<HsCommData::HsObject>& regs, int imgW, int imgH)
 {
     return hsRegionsToMask(regs, imgW, imgH);
 }
-/** @deprecated ÇëÓÃ maskToRegionObject */
+/** @deprecated è¯·ç”¨ maskToRegionObject */
 inline HsCommData::HsObject regionObjectFromMask(const cv::Mat& mask)
 {
     return maskToRegionObject(mask);

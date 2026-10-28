@@ -1,6 +1,6 @@
 /**
  * @file ToolIo.cpp
- * @brief ToolIoÊµÏÖ
+ * @brief ToolIoå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -14,7 +14,7 @@ namespace Vision {
 
 namespace {
 
-// ¿ÚÃûÊÇ·ñ¶ÔµÃÉÏ¡£À´Ô´ÃûÎª¿ÕÊ±Ö»ÊÕÈ±Ê¡¿Ú
+// å£åæ˜¯å¦å¯¹å¾—ä¸Šã€‚æ¥æºåä¸ºç©ºæ—¶åªæ”¶ç¼ºçœå£
 bool portNameOk(const std::string& itemPort, const std::string& fromName)
 {
     if (fromName.empty()) {
@@ -23,13 +23,13 @@ bool portNameOk(const std::string& itemPort, const std::string& fromName)
     return itemPort == fromName;
 }
 
-// index Ğ¡ÓÚ 0 ÊÕÕû¿Ú£¬·ñÔòÖ»ÊÕ¶ÔÉÏµÄµÚ index ¸ö
+// index å°äº 0 æ”¶æ•´å£ï¼Œå¦åˆ™åªæ”¶å¯¹ä¸Šçš„ç¬¬ index ä¸ª
 bool indexOk(int index, int seen)
 {
     return index < 0 || seen == index;
 }
 
-// µ¥ÔªËØÍ¼±ê¶ÔÏóÊÕ½ø¶ÔÓ¦Êı×é
+// å•å…ƒç´ å›¾æ ‡å¯¹è±¡æ”¶è¿›å¯¹åº”æ•°ç»„
 void keepOne(ToolIo* io, const HsCommData::HsObject& obj)
 {
     if (!io || !obj.isInitialized() || obj.isEmpty()) {
@@ -59,7 +59,7 @@ void keepOne(ToolIo* io, const HsCommData::HsObject& obj)
 
 } // namespace
 
-// ÇøÓò¡¢ÂÖÀª¡¢ROI¡¢Î»×Ë×ªµş¼Ó£¬Ö»¸øÍ¼Ïñ´°
+// åŒºåŸŸã€è½®å»“ã€ROIã€ä½å§¿è½¬å åŠ ï¼Œåªç»™å›¾åƒçª—
 std::vector<HsCommData::Graphic> ToolIo::toGraphics() const
 {
     std::vector<HsCommData::Graphic> gfx;
@@ -112,7 +112,7 @@ std::vector<HsCommData::Graphic> ToolIo::toGraphics() const
     return gfx;
 }
 
-// °´ÖÖÀà²ğ½øÇøÓò¡¢ÂÖÀª¡¢ROI
+// æŒ‰ç§ç±»æ‹†è¿›åŒºåŸŸã€è½®å»“ã€ROI
 void ToolIo::appendObjects(const std::vector<HsCommData::HsObject>& objs)
 {
     for (size_t i = 0; i < objs.size(); ++i) {
@@ -131,7 +131,7 @@ void ToolIo::appendObjects(const std::vector<HsCommData::HsObject>& objs)
     }
 }
 
-// »æÖÆÍ¼ÔªÀïµÄ¼¸ºÎ²ğ½øÇøÓò¡¢ÂÖÀª¡¢ROI
+// ç»˜åˆ¶å›¾å…ƒé‡Œçš„å‡ ä½•æ‹†è¿›åŒºåŸŸã€è½®å»“ã€ROI
 void ToolIo::appendFromGraphics(const std::vector<HsCommData::Graphic>& gfx)
 {
     std::vector<HsCommData::HsObject> objs;
@@ -144,7 +144,7 @@ void ToolIo::appendFromGraphics(const std::vector<HsCommData::Graphic>& gfx)
     appendObjects(objs);
 }
 
-// °´Á¬Ïß´Ó src ÊÕÒ»Ïî»òÕû¿Ú£¬²¢¸ÄĞ´µ½Ä¿±ê¿ÚÃû
+// æŒ‰è¿çº¿ä» src æ”¶ä¸€é¡¹æˆ–æ•´å£ï¼Œå¹¶æ”¹å†™åˆ°ç›®æ ‡å£å
 void ToolIo::appendByType(const ToolIo& src, const PortSlot& fromPort, const PortSlot& toPort, int index, RegionUse use)
 {
     if (fromPort.data == PortData::Image) {
@@ -288,10 +288,73 @@ void ToolIo::appendByType(const ToolIo& src, const PortSlot& fromPort, const Por
                 return;
             }
         }
+        return;
+    }
+    if (fromPort.data == PortData::Cloud) {
+        int seen = 0;
+        for (int i = 0; i < static_cast<int>(src.clouds.size()); ++i) {
+            const PortCloud& one = src.clouds[static_cast<size_t>(i)];
+            if (!portNameOk(one.port, fromPort.name)) {
+                continue;
+            }
+            if (!indexOk(index, seen)) {
+                ++seen;
+                continue;
+            }
+            PortCloud n = one;
+            n.port = toPort.name;
+            clouds.push_back(n);
+            ++seen;
+            if (index >= 0) {
+                return;
+            }
+        }
+        return;
+    }
+    if (fromPort.data == PortData::Pose3) {
+        int seen = 0;
+        for (int i = 0; i < static_cast<int>(src.poses3.size()); ++i) {
+            const PortPose3& one = src.poses3[static_cast<size_t>(i)];
+            if (!portNameOk(one.port, fromPort.name)) {
+                continue;
+            }
+            if (!indexOk(index, seen)) {
+                ++seen;
+                continue;
+            }
+            PortPose3 n = one;
+            n.port = toPort.name;
+            poses3.push_back(n);
+            ++seen;
+            if (index >= 0) {
+                return;
+            }
+        }
+        return;
+    }
+    if (fromPort.data == PortData::Shape3) {
+        int seen = 0;
+        for (int i = 0; i < static_cast<int>(src.shapes3.size()); ++i) {
+            const PortShape3& one = src.shapes3[static_cast<size_t>(i)];
+            if (!portNameOk(one.port, fromPort.name)) {
+                continue;
+            }
+            if (!indexOk(index, seen)) {
+                ++seen;
+                continue;
+            }
+            PortShape3 n = one;
+            n.port = toPort.name;
+            shapes3.push_back(n);
+            ++seen;
+            if (index >= 0) {
+                return;
+            }
+        }
     }
 }
 
-// Ö»×·¼ÓÓë¶Ë¿ÚÀàĞÍ¶ÔÓ¦µÄÈ±Ê¡¿Ú
+// åªè¿½åŠ ä¸ç«¯å£ç±»å‹å¯¹åº”çš„ç¼ºçœå£
 void ToolIo::appendByType(const ToolIo& src, PortData kind)
 {
     PortSlot from(PortDir::Out, kind);
@@ -299,7 +362,7 @@ void ToolIo::appendByType(const ToolIo& src, PortData kind)
     appendByType(src, from, to, -1, RegionUse::Normal);
 }
 
-// image¡¢ok¡¢values¡¢objects Óë·ÖÀà io ¶ÔÆë
+// imageã€okã€valuesã€objects ä¸åˆ†ç±» io å¯¹é½
 void ToolOut::syncIo()
 {
     if (io.images.empty() && !image.isNull()) {
@@ -347,7 +410,7 @@ void ToolOut::syncIo()
 }
 
 
-// Õı³£ËÑË÷Çø£¬¶ªµôÆÁ±ÎºÍÎŞĞ§
+// æ­£å¸¸æœç´¢åŒºï¼Œä¸¢æ‰å±è”½å’Œæ— æ•ˆ
 std::vector<HsCommData::HsObject> plainRois(const std::vector<PortRoi>& items)
 {
     std::vector<HsCommData::HsObject> out;
@@ -360,7 +423,7 @@ std::vector<HsCommData::HsObject> plainRois(const std::vector<PortRoi>& items)
     return out;
 }
 
-// Õı³£ÇøÓò¶ÔÏó
+// æ­£å¸¸åŒºåŸŸå¯¹è±¡
 std::vector<HsCommData::HsObject> plainRegions(const std::vector<PortRegion>& items)
 {
     std::vector<HsCommData::HsObject> out;
@@ -373,7 +436,7 @@ std::vector<HsCommData::HsObject> plainRegions(const std::vector<PortRegion>& it
     return out;
 }
 
-// ÂÖÀª¶ÔÏó
+// è½®å»“å¯¹è±¡
 std::vector<HsCommData::HsObject> plainContours(const std::vector<PortContour>& items)
 {
     std::vector<HsCommData::HsObject> out;
@@ -383,7 +446,7 @@ std::vector<HsCommData::HsObject> plainContours(const std::vector<PortContour>& 
     return out;
 }
 
-// Î»×ËÁĞ±í
+// ä½å§¿åˆ—è¡¨
 std::vector<HsCommData::Pose2> plainPoses(const std::vector<PortPose>& items)
 {
     std::vector<HsCommData::Pose2> out;
@@ -393,19 +456,19 @@ std::vector<HsCommData::Pose2> plainPoses(const std::vector<PortPose>& items)
     return out;
 }
 
-// ¶Ë¿Ú¼ü
+// ç«¯å£é”®
 std::string PortDesc::key() const
 {
     return portKey(slot);
 }
 
-// ¶Ë¿Ú·½Ïò
+// ç«¯å£æ–¹å‘
 PortDir PortDesc::dir() const
 {
     return slot.dir;
 }
 
-// ¶Ë¿ÚÊı¾İÖÖÀà
+// ç«¯å£æ•°æ®ç§ç±»
 PortData PortDesc::data() const
 {
     return slot.data;

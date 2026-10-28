@@ -1,6 +1,6 @@
 /**
  * @file QtGeom.h
- * @brief QtGeomÍ·ÎÄ¼ş
+ * @brief QtGeomå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -22,43 +22,43 @@
 
 namespace HsCtrl {
 
-/** @brief HsCommData::Point2d ¡ú QPointF£¨ÏÔÊ¾²ã£© */
+/** @brief HsCommData::Point2d â†’ QPointFï¼ˆæ˜¾ç¤ºå±‚ï¼‰ */
 inline QPointF toQ(const HsCommData::Point2d& p)
 {
     return QPointF(p.x, p.y);
 }
 
-/** @brief QPointF ¡ú HsCommData::Point2d */
+/** @brief QPointF â†’ HsCommData::Point2d */
 inline HsCommData::Point2d fromQ(const QPointF& p)
 {
     return HsCommData::Point2d(p.x(), p.y());
 }
 
-/** @brief HsCommData::Box2 ¡ú QRectF */
+/** @brief HsCommData::Box2 â†’ QRectF */
 inline QRectF toQ(const HsCommData::Box2& b)
 {
     return QRectF(b.x, b.y, b.w, b.h);
 }
 
-/** @brief QRectF ¡ú HsCommData::Box2 */
+/** @brief QRectF â†’ HsCommData::Box2 */
 inline HsCommData::Box2 fromQ(const QRectF& r)
 {
     return HsCommData::Box2(r.x(), r.y(), r.width(), r.height());
 }
 
-/** @brief HsCommData::IRect ¡ú QRect */
+/** @brief HsCommData::IRect â†’ QRect */
 inline QRect toQ(const HsCommData::IRect& r)
 {
     return QRect(r.x, r.y, r.width, r.height);
 }
 
-/** @brief QRect ¡ú HsCommData::IRect */
+/** @brief QRect â†’ HsCommData::IRect */
 inline HsCommData::IRect fromQ(const QRect& r)
 {
     return HsCommData::IRect(r.x(), r.y(), r.width(), r.height());
 }
 
-/** @brief ÏßĞÍ ¡ú Qt »­±Ê¡£ÊµÏß¡¢ĞéÏß¡¢µãÏß¡¢µã»®Ïß */
+/** @brief çº¿å‹ â†’ Qt ç”»ç¬”ã€‚å®çº¿ã€è™šçº¿ã€ç‚¹çº¿ã€ç‚¹åˆ’çº¿ */
 inline Qt::PenStyle toQ(HsCommData::LineStyle line)
 {
     switch (line) {
@@ -74,13 +74,13 @@ inline Qt::PenStyle toQ(HsCommData::LineStyle line)
     }
 }
 
-/** @brief HsCommData::Color4 ¡ú QColor */
+/** @brief HsCommData::Color4 â†’ QColor */
 inline QColor toQ(const HsCommData::Color4& c)
 {
     return QColor(c.r, c.g, c.b, c.a);
 }
 
-/** @brief QColor ¡ú HsCommData::Color4 */
+/** @brief QColor â†’ HsCommData::Color4 */
 inline HsCommData::Color4 fromQ(const QColor& c)
 {
     return HsCommData::Color4(static_cast<unsigned char>(c.red()),
@@ -89,16 +89,16 @@ inline HsCommData::Color4 fromQ(const QColor& c)
                   static_cast<unsigned char>(c.alpha()));
 }
 
-/** @brief std::string ¡ú QString£¨±¾µØ´úÂëÒ³£© */
+/** @brief std::string â†’ QStringï¼ˆæœ¬åœ°ä»£ç é¡µï¼‰ */
 inline QString toQ(const std::string& s)
 {
     return QString::fromUtf8(s.data(), static_cast<int>(s.size()));
 }
 
-/** @brief QString ¡ú ±¾µØ´úÂëÒ³ std::string */
+/** @brief QString â†’ æœ¬åœ°ä»£ç é¡µ std::string */
 inline std::string fromQ(const QString& s)
 {
-    const QByteArray u = s.toLocal8Bit();
+    const QByteArray u = s.toUtf8();
     return std::string(u.constData(), static_cast<size_t>(u.size()));
 }
 

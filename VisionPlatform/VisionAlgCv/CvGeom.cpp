@@ -1,6 +1,6 @@
 /**
  * @file CvGeom.cpp
- * @brief CvGeomÊµÏÖ
+ * @brief CvGeomå®žçŽ°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.

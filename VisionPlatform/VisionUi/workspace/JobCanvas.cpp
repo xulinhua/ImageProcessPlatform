@@ -1,6 +1,6 @@
 /**
  * @file JobCanvas.cpp
- * @brief JobCanvasÊµÏÖ
+ * @brief JobCanvaså®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -47,12 +47,12 @@ static const qreal kPortPad = 4;
 static const qreal kBotPad = 6;
 static const qreal kPinR = 5;
 static const qreal kEmptyLeafH = kHeadH + kNameH + kPortPad + kPortH + kBotPad;
-static const qreal kVGap = 48; ///< ÊúÏò¼ä¾à
+static const qreal kVGap = 48; ///< ç«–å‘é—´è·
 static const qreal kHGap = 16;
 static const qreal kPad = 10;
 static const qreal kTitleH = 20;
 
-// Á¬ÏßµÍÓÚ½Úµã£¬¸ßÓÚË³ĞòÏß
+// è¿çº¿ä½äºèŠ‚ç‚¹ï¼Œé«˜äºé¡ºåºçº¿
 static const qreal kZOrderLine = -0.5;
 static const qreal kZGroupFrame = 0.5;
 static const qreal kZToolConfig = 1.0;
@@ -82,12 +82,12 @@ enum {
 
 /**
  * @class CanvasPort
- * @brief »­²¼ÉÏµÄÒ»¸ö¶Ë¿Ú
+ * @brief ç”»å¸ƒä¸Šçš„ä¸€ä¸ªç«¯å£
  */
 struct CanvasPort {
-    QString key;   ///< ¶Ë¿Ú¼ü
-    QString label; ///< ÏÔÊ¾Ãû
-    PortData data; ///< Êı¾İÀàĞÍ
+    QString key;   ///< ç«¯å£é”®
+    QString label; ///< æ˜¾ç¤ºå
+    PortData data; ///< æ•°æ®ç±»å‹
     CanvasPort() : data(PortData::Image) {}
     CanvasPort(const QString& k, const QString& l, PortData d)
         : key(k)
@@ -97,38 +97,38 @@ struct CanvasPort {
 };
 
 struct GroupSize {
-    qreal w; ///< ¿í
-    qreal h; ///< ¸ß
+    qreal w; ///< å®½
+    qreal h; ///< é«˜
     GroupSize() : w(kBoxW), h(kEmptyLeafH) {}
     GroupSize(qreal ww, qreal hh) : w(ww), h(hh) {}
 };
 
 /**
- * @brief Õë½ÅĞÎ×´£ºÔ²ÓÃÓÚROI£¬ÁâĞÎÓÃÓÚÆäÓà£¬·½¿éÓÃÓÚÎ»×Ë
+ * @brief é’ˆè„šå½¢çŠ¶ï¼šåœ†ç”¨äºROIï¼Œè±å½¢ç”¨äºå…¶ä½™ï¼Œæ–¹å—ç”¨äºä½å§¿
  */
 enum PinShapeKind {
-    PinShapeCircle = 0,  ///< Ô²£¬ÓÃÓÚROI
-    PinShapeDiamond,     ///< ÁâĞÎ
-    PinShapeSquare       ///< ·½¿é£¬ÓÃÓÚÎ»×Ë»òÊıÖµ
+    PinShapeCircle = 0,  ///< åœ†ï¼Œç”¨äºROI
+    PinShapeDiamond,     ///< è±å½¢
+    PinShapeSquare       ///< æ–¹å—ï¼Œç”¨äºä½å§¿æˆ–æ•°å€¼
 };
 
 struct PinLayout {
-    QHash<QString, QGraphicsItem*> item; ///< »­²¼¼üµ½Í¼Ôª
+    QHash<QString, QGraphicsItem*> item; ///< ç”»å¸ƒé”®åˆ°å›¾å…ƒ
 };
 
-// ÊÇ·ñÒ¶×Ó¹¤¾ß×é
+// æ˜¯å¦å¶å­å·¥å…·ç»„
 static bool canvasLeaf(const ToolGroup& g)
 {
     return !g.toolId.isNull() && g.children.empty();
 }
 
-// ×éÊÇ·ñÒª²ğ¿ª»­
+// ç»„æ˜¯å¦è¦æ‹†å¼€ç”»
 static bool canvasSplit(const ToolGroup& g)
 {
     return g.kind == GroupParallel || g.kind == GroupIf;
 }
 
-// ¹¤¾ßÀàĞÍ¶ÔÓ¦µÄ±êÌâÉ«
+// å·¥å…·ç±»å‹å¯¹åº”çš„æ ‡é¢˜è‰²
 static QColor headerColor(ToolType ty)
 {
     switch (ty) {
@@ -148,12 +148,22 @@ static QColor headerColor(ToolType ty)
         return QColor(0x2F, 0x54, 0xEB);
     case ToolType::Calib:
         return QColor(0x13, 0xC2, 0xC2);
+    case ToolType::Acquire3D:
+        return QColor(0x00, 0x96, 0x88);
+    case ToolType::Prepare3D:
+        return QColor(0x13, 0xC2, 0xC2);
+    case ToolType::Measure3D:
+        return QColor(0xFA, 0xAD, 0x14);
+    case ToolType::Align3D:
+        return QColor(0x18, 0x90, 0xFF);
+    case ToolType::Infer:
+        return QColor(0xEB, 0x2F, 0x96);
     default:
         return QColor(0x8C, 0x8C, 0x8C);
     }
 }
 
-// ¶Ë¿ÚÊı¾İÀàĞÍ¶ÔÓ¦µÄÑÕÉ«
+// ç«¯å£æ•°æ®ç±»å‹å¯¹åº”çš„é¢œè‰²
 static QColor pinColor(PortData d)
 {
     switch (d) {
@@ -167,12 +177,18 @@ static QColor pinColor(PortData d)
         return QColor(0x13, 0xC2, 0xC2);
     case PortData::Pose:
         return QColor(0x72, 0x2E, 0xD1);
+    case PortData::Cloud:
+        return QColor(0x00, 0x96, 0x88);
+    case PortData::Pose3:
+        return QColor(0x59, 0x7E, 0xF7);
+    case PortData::Shape3:
+        return QColor(0xFA, 0xAD, 0x14);
     default:
         return QColor(0xFF, 0xFF, 0xFF);
     }
 }
 
-// ¶Ë¿ÚÊı¾İÀàĞÍ¶ÔÓ¦µÄÕë½ÅĞÎ×´
+// ç«¯å£æ•°æ®ç±»å‹å¯¹åº”çš„é’ˆè„šå½¢çŠ¶
 static PinShapeKind pinShapeKind(PortData d)
 {
     switch (d) {
@@ -186,13 +202,13 @@ static PinShapeKind pinShapeKind(PortData d)
     }
 }
 
-// Õë½ÅÔÚ³¡¾°ÖĞµÄÖĞĞÄ
+// é’ˆè„šåœ¨åœºæ™¯ä¸­çš„ä¸­å¿ƒ
 static QPointF pinSceneCenter(QGraphicsItem* pin)
 {
     return pin ? pin->sceneBoundingRect().center() : QPointF();
 }
 
-// ´´½¨Ò»¸öÕë½ÅÍ¼Ôª
+// åˆ›å»ºä¸€ä¸ªé’ˆè„šå›¾å…ƒ
 static QGraphicsItem* makePinItem(QGraphicsItem* parent, qreal cx, qreal cy, PortData data)
 {
     const PinShapeKind shape = pinShapeKind(data);
@@ -230,14 +246,14 @@ static QGraphicsItem* makePinItem(QGraphicsItem* parent, qreal cx, qreal cy, Por
     return pin;
 }
 
-// ¶Ë¿ÚÀàĞÍ²»Æ¥ÅäÊ±µÄÌáÊ¾
+// ç«¯å£ç±»å‹ä¸åŒ¹é…æ—¶çš„æç¤º
 static QString typeMismatchTip(PortData from, PortData to)
 {
-    return T("ÀàĞÍ²»Æ¥Åä£º") + QString::fromUtf8(portDataTitle(from).c_str())
+    return T("ç±»å‹ä¸åŒ¹é…ï¼š") + QString::fromUtf8(portDataTitle(from).c_str())
         + QString::fromUtf8(" -> ") + QString::fromUtf8(portDataTitle(to).c_str());
 }
 
-// ÍÏÏßÑÕÉ«£¬ÀàĞÍ²»ºÏÓÃÁíÒ»É«
+// æ‹–çº¿é¢œè‰²ï¼Œç±»å‹ä¸åˆç”¨å¦ä¸€è‰²
 static QColor dragWireColor(PortData from, bool mismatch)
 {
     if (mismatch) {
@@ -249,7 +265,7 @@ static QColor dragWireColor(PortData from, bool mismatch)
     return pinColor(from);
 }
 
-// Õı½»ÕÛÏß¼ÓÔ²½Ç
+// æ­£äº¤æŠ˜çº¿åŠ åœ†è§’
 static void addRoundCorner(QPainterPath* path, const QPointF& from, const QPointF& corner,
                            const QPointF& to, qreal radius)
 {
@@ -276,7 +292,7 @@ static const qreal kWireStub = 26.0;
 static const qreal kWireClear = 16.0;
 static const qreal kWireMerge = 8.0;
 
-// Ïß¶ÎÊÇ·ñÅöµ½¾ØĞÎ
+// çº¿æ®µæ˜¯å¦ç¢°åˆ°çŸ©å½¢
 static bool segmentHitsRect(const QPointF& p1, const QPointF& p2, const QRectF& r)
 {
     if (r.isEmpty()) {
@@ -302,7 +318,7 @@ static bool segmentHitsRect(const QPointF& p1, const QPointF& p2, const QRectF& 
     return false;
 }
 
-// È¥µôÕı½»ÕÛÏßÉÏµÄ¶àÓàµã
+// å»æ‰æ­£äº¤æŠ˜çº¿ä¸Šçš„å¤šä½™ç‚¹
 static QVector<QPointF> simplifyOrthoPoints(const QVector<QPointF>& in)
 {
     QVector<QPointF> pts;
@@ -330,7 +346,7 @@ static QVector<QPointF> simplifyOrthoPoints(const QVector<QPointF>& in)
     return out;
 }
 
-// Õı½»µãÁĞ×ªÂ·¾¶
+// æ­£äº¤ç‚¹åˆ—è½¬è·¯å¾„
 static QPainterPath makeOrthoPath(const QVector<QPointF>& raw)
 {
     const QVector<QPointF> pts = simplifyOrthoPoints(raw);
@@ -354,7 +370,7 @@ static QPainterPath makeOrthoPath(const QVector<QPointF>& raw)
     return path;
 }
 
-// ÕÛÏßÓëÕÏ°­Ïà½»µÄ¿Û·Ö
+// æŠ˜çº¿ä¸éšœç¢ç›¸äº¤çš„æ‰£åˆ†
 static int scoreOrthoAgainstObstacles(const QVector<QPointF>& raw, const QVector<QRectF>& obstacles,
                                       const QRectF& srcBox, const QRectF& dstBox)
 {
@@ -365,7 +381,7 @@ static int scoreOrthoAgainstObstacles(const QVector<QPointF>& raw, const QVector
         const QPointF& p1 = pts[i];
         const QPointF& p2 = pts[i + 1];
         const qreal segLen = QLineF(p1, p2).length();
-        // Æğµã¶Ì¶ÎÊÇÒı³ö£¬²»µ±Åö×²
+        // èµ·ç‚¹çŸ­æ®µæ˜¯å¼•å‡ºï¼Œä¸å½“ç¢°æ’
         if (i == 0 && segLen <= kWireStub + 4.0) {
             continue;
         }
@@ -379,7 +395,7 @@ static int scoreOrthoAgainstObstacles(const QVector<QPointF>& raw, const QVector
             }
         }
     }
-    // ÖÕµãÒªÂäÔÚÄ¿±ê¿òÍâ
+    // ç»ˆç‚¹è¦è½åœ¨ç›®æ ‡æ¡†å¤–
     if (!dstBox.isEmpty() && pts.size() >= 2) {
         const QPointF& pre = pts[pts.size() - 2];
         if (pre.x() > dstBox.center().x()) {
@@ -390,7 +406,7 @@ static int scoreOrthoAgainstObstacles(const QVector<QPointF>& raw, const QVector
     return hits;
 }
 
-// Õı½»ÕÛÏß³¤¶È
+// æ­£äº¤æŠ˜çº¿é•¿åº¦
 static qreal orthoPathLength(const QVector<QPointF>& raw)
 {
     const QVector<QPointF> pts = simplifyOrthoPoints(raw);
@@ -401,7 +417,7 @@ static qreal orthoPathLength(const QVector<QPointF>& raw)
     return len;
 }
 
-// ÊÕ¼¯Á¬ÏßÒª¶ã¿ªµÄ½Úµã¿ò
+// æ”¶é›†è¿çº¿è¦èº²å¼€çš„èŠ‚ç‚¹æ¡†
 static QVector<QRectF> collectWireObstacles(const QHash<QString, QGraphicsItem*>& toolBoxes,
                                             const QHash<QString, QGraphicsItem*>& groupFrames,
                                             const QString& fromId, const QString& toId)
@@ -419,13 +435,13 @@ static QVector<QRectF> collectWireObstacles(const QHash<QString, QGraphicsItem*>
         if (!it.value()) {
             continue;
         }
-        // ½Úµã¿òÍâÀ©Ò»È¦
+        // èŠ‚ç‚¹æ¡†å¤–æ‰©ä¸€åœˆ
         out.push_back(it.value()->sceneBoundingRect().adjusted(-6, -6, 6, 6));
     }
     return out;
 }
 
-// Õı½»ÈÆ¿ª½Úµã¿ò
+// æ­£äº¤ç»•å¼€èŠ‚ç‚¹æ¡†
 static QVector<QPointF> routeOrthoAvoidObstacles(const QPointF& a, const QPointF& b,
                                                  const QVector<QRectF>& obstacles,
                                                  const QRectF& srcBox, const QRectF& dstBox)
@@ -464,42 +480,42 @@ static QVector<QPointF> routeOrthoAvoidObstacles(const QPointF& a, const QPointF
     if (!srcBox.isEmpty()) {
         rightX = qMax(rightX, srcBox.right() + clear);
         leftX = qMin(leftX, srcBox.left() - clear);
-        // ÉÏ·½Í¨Ïß²»ÒªÌù×¡Ô´¿ò
+        // ä¸Šæ–¹é€šçº¿ä¸è¦è´´ä½æºæ¡†
         if (aboveY > srcBox.top() - clear && aboveY < srcBox.bottom() + clear) {
             aboveY = srcBox.top() - clear;
         }
     }
 
     QVector<QVector<QPointF> > cands;
-    // ÓÒ²àÈÆÉÏ£ºÏÈÏòÓÒ£¬ÔÙ´ÓÉÏ½øÈë
+    // å³ä¾§ç»•ä¸Šï¼šå…ˆå‘å³ï¼Œå†ä»ä¸Šè¿›å…¥
     {
         QVector<QPointF> p;
         p << a << QPointF(rightX, a.y()) << QPointF(rightX, aboveY)
           << QPointF(enterX, aboveY) << QPointF(enterX, b.y()) << b;
         cands.push_back(p);
     }
-    // ÓÒ²àÈÆÏÂ£ºÏÈÏòÓÒ£¬ÔÙ´ÓÏÂ½øÈë
+    // å³ä¾§ç»•ä¸‹ï¼šå…ˆå‘å³ï¼Œå†ä»ä¸‹è¿›å…¥
     {
         QVector<QPointF> p;
         p << a << QPointF(rightX, a.y()) << QPointF(rightX, belowY)
           << QPointF(enterX, belowY) << QPointF(enterX, b.y()) << b;
         cands.push_back(p);
     }
-    // ´ÓÀë¿ªµãÈÆÉÏ
+    // ä»ç¦»å¼€ç‚¹ç»•ä¸Š
     {
         QVector<QPointF> p;
         p << a << QPointF(leaveX, a.y()) << QPointF(leaveX, aboveY)
           << QPointF(enterX, aboveY) << QPointF(enterX, b.y()) << b;
         cands.push_back(p);
     }
-    // ´ÓÀë¿ªµãÈÆÏÂ
+    // ä»ç¦»å¼€ç‚¹ç»•ä¸‹
     {
         QVector<QPointF> p;
         p << a << QPointF(leaveX, a.y()) << QPointF(leaveX, belowY)
           << QPointF(enterX, belowY) << QPointF(enterX, b.y()) << b;
         cands.push_back(p);
     }
-    // ÔÙÏò×óÈÆÉÏ
+    // å†å‘å·¦ç»•ä¸Š
     {
         QVector<QPointF> p;
         p << a << QPointF(leaveX, a.y()) << QPointF(leaveX, aboveY)
@@ -514,7 +530,7 @@ static QVector<QPointF> routeOrthoAvoidObstacles(const QPointF& a, const QPointF
           << QPointF(enterX, b.y()) << b;
         cands.push_back(p);
     }
-    // ÖĞ¼ä¸ß¶È×ßÒ»Ìõ C ĞÎ
+    // ä¸­é—´é«˜åº¦èµ°ä¸€æ¡ C å½¢
     {
         qreal midY = (a.y() + b.y()) * 0.5;
         if (qAbs(b.y() - a.y()) < 28.0) {
@@ -525,7 +541,7 @@ static QVector<QPointF> routeOrthoAvoidObstacles(const QPointF& a, const QPointF
           << QPointF(enterX, midY) << QPointF(enterX, b.y()) << b;
         cands.push_back(p);
     }
-    // ÔÙÊÔÁ½Ìõ¸üÔ¶µÄÈÆĞĞ
+    // å†è¯•ä¸¤æ¡æ›´è¿œçš„ç»•è¡Œ
 
     for (int k = 1; k <= 2; ++k) {
         const qreal rx = rightX + 40.0 * k;
@@ -554,20 +570,20 @@ static QVector<QPointF> routeOrthoAvoidObstacles(const QPointF& a, const QPointF
     return simplifyOrthoPoints(best);
 }
 
-// Íø¸ñÎü¸½£¨Á¬Ïß±à¼­£©
+// ç½‘æ ¼å¸é™„ï¼ˆè¿çº¿ç¼–è¾‘ï¼‰
 static qreal snapWireGrid(qreal v)
 {
     const qreal g = 8.0;
     return qRound(v / g) * g;
 }
 
-// ³¡¾°µãÍø¸ñÎü¸½
+// åœºæ™¯ç‚¹ç½‘æ ¼å¸é™„
 static QPointF snapWireGridPt(const QPointF& p)
 {
     return QPointF(snapWireGrid(p.x()), snapWireGrid(p.y()));
 }
 
-// RoutePoint ÁĞ±í×ª QPointF
+// RoutePoint åˆ—è¡¨è½¬ QPointF
 static QVector<QPointF> routeMidsToQ(const std::vector<RoutePoint>& mids)
 {
     QVector<QPointF> out;
@@ -578,7 +594,7 @@ static QVector<QPointF> routeMidsToQ(const std::vector<RoutePoint>& mids)
     return out;
 }
 
-// QPointF ÖĞ¼äµã×ª RoutePoint
+// QPointF ä¸­é—´ç‚¹è½¬ RoutePoint
 static std::vector<RoutePoint> routeMidsFromQ(const QVector<QPointF>& mids)
 {
     std::vector<RoutePoint> out;
@@ -589,7 +605,7 @@ static std::vector<RoutePoint> routeMidsFromQ(const QVector<QPointF>& mids)
     return out;
 }
 
-// ±£Ö¤Õı½»£º²»ÏàÁÚÕı½»Ê±²åÈëË®Æ½ÓÅÏÈ¹Õµã
+// ä¿è¯æ­£äº¤ï¼šä¸ç›¸é‚»æ­£äº¤æ—¶æ’å…¥æ°´å¹³ä¼˜å…ˆæ‹ç‚¹
 static QVector<QPointF> ensureOrthoChain(const QVector<QPointF>& in)
 {
     if (in.size() < 2) {
@@ -610,7 +626,7 @@ static QVector<QPointF> ensureOrthoChain(const QVector<QPointF>& in)
     return simplifyOrthoPoints(out);
 }
 
-// ÓÉÖĞ¼ä¹ÕµãÆ´³öÍêÕûÕÛÏß
+// ç”±ä¸­é—´æ‹ç‚¹æ‹¼å‡ºå®Œæ•´æŠ˜çº¿
 static QVector<QPointF> fullRouteFromMids(const QPointF& a, const QPointF& b,
                                           const QVector<QPointF>& mids)
 {
@@ -624,7 +640,7 @@ static QVector<QPointF> fullRouteFromMids(const QPointF& a, const QPointF& b,
     return ensureOrthoChain(pts);
 }
 
-// ´ÓÍêÕûÕÛÏßÈ¡³öÖĞ¼ä¹Õµã
+// ä»å®Œæ•´æŠ˜çº¿å–å‡ºä¸­é—´æ‹ç‚¹
 static QVector<QPointF> midsFromFullRoute(const QVector<QPointF>& full)
 {
     QVector<QPointF> pts = simplifyOrthoPoints(full);
@@ -638,7 +654,7 @@ static QVector<QPointF> midsFromFullRoute(const QVector<QPointF>& full)
     return mids;
 }
 
-// ÎŞÕÏ°­Ê±µÄÄ¬ÈÏ C ĞÎÖĞ¼äµã
+// æ— éšœç¢æ—¶çš„é»˜è®¤ C å½¢ä¸­é—´ç‚¹
 static QVector<QPointF> defaultWireMids(const QPointF& a, const QPointF& b)
 {
     const qreal stub = kWireStub;
@@ -653,13 +669,13 @@ static QVector<QPointF> defaultWireMids(const QPointF& a, const QPointF& b)
     return mids;
 }
 
-// ×Ô¶¯Õı½»ÕÛÏßÂ·¾¶£¨ÍÏÏßÏğÆ¤½î£©
+// è‡ªåŠ¨æ­£äº¤æŠ˜çº¿è·¯å¾„ï¼ˆæ‹–çº¿æ©¡çš®ç­‹ï¼‰
 static QPainterPath makeWirePathAuto(const QPointF& a, const QPointF& b)
 {
     return makeOrthoPath(fullRouteFromMids(a, b, defaultWireMids(a, b)));
 }
 
-// ¶Ëµã¼ÓÖĞ¼ä¹Õµã£¬ÍÏ¶¯¹ı³ÌÖĞ²»²åµã¡¢²»ºÏ²¢
+// ç«¯ç‚¹åŠ ä¸­é—´æ‹ç‚¹ï¼Œæ‹–åŠ¨è¿‡ç¨‹ä¸­ä¸æ’ç‚¹ã€ä¸åˆå¹¶
 static QVector<QPointF> rawFullFromMids(const QPointF& a, const QPointF& b,
                                         const QVector<QPointF>& mids)
 {
@@ -673,7 +689,7 @@ static QVector<QPointF> rawFullFromMids(const QPointF& a, const QPointF& b,
     return pts;
 }
 
-// °ÑÍêÕûÕÛÏßĞ´»ØÖĞ¼ä¹Õµã
+// æŠŠå®Œæ•´æŠ˜çº¿å†™å›ä¸­é—´æ‹ç‚¹
 static void writeMidsFromRaw(QVector<QPointF>* mids, const QVector<QPointF>& full)
 {
     if (!mids) {
@@ -688,14 +704,14 @@ static void writeMidsFromRaw(QVector<QPointF>* mids, const QVector<QPointF>& ful
     }
 }
 
-// °´ÏÂÊ±ÔÚ¶Ë¿Ú´¦²ğ¶Î£ºsource ²åÈë»áÅ²¶¯ºóÃæµÄ¶ÎÏÂ±ê
+// æŒ‰ä¸‹æ—¶åœ¨ç«¯å£å¤„æ‹†æ®µï¼šsource æ’å…¥ä¼šæŒªåŠ¨åé¢çš„æ®µä¸‹æ ‡
 struct PinStubSplit {
     int segIndex;
     int bumpAt;
     int bumpCount;
 };
 
-// Æ½ÒÆÒ»¶ÎÕı½»Ö±Ïß
+// å¹³ç§»ä¸€æ®µæ­£äº¤ç›´çº¿
 static void shiftStraightRun(QVector<QPointF>* full, int segIndex, bool horiz, qreal value,
                              int skipA, int skipB)
 {
@@ -734,7 +750,7 @@ static void shiftStraightRun(QVector<QPointF>* full, int segIndex, bool horiz, q
     }
 }
 
-// ÍÏÏßÊ±Ìø¹ıÁ½¶ËÒı³öµÄ¶Ì¶Î
+// æ‹–çº¿æ—¶è·³è¿‡ä¸¤ç«¯å¼•å‡ºçš„çŸ­æ®µ
 static void pinStubSkips(const QVector<QPointF>& full, int* skipA, int* skipB)
 {
     if (skipA) {
@@ -757,7 +773,7 @@ static void pinStubSkips(const QVector<QPointF>& full, int* skipA, int* skipB)
     }
 }
 
-// Îü¸½µ½ÏàÁÚÕı½»Ïß
+// å¸é™„åˆ°ç›¸é‚»æ­£äº¤çº¿
 static qreal magnetNeighbor(const QVector<QPointF>& full, int segIndex, bool horiz, qreal value)
 {
     const int last = full.size() - 1;
@@ -809,7 +825,7 @@ static qreal magnetNeighbor(const QVector<QPointF>& full, int segIndex, bool hor
     return best;
 }
 
-// Á½¶ËÏàÁÚÖĞ¼äÖ»Ê£ºÜ¶ÌµÄÒ»¶ÎÊ±£¬ÊÕ³ÉÍ¬Ò»Ìõ
+// ä¸¤ç«¯ç›¸é‚»ä¸­é—´åªå‰©å¾ˆçŸ­çš„ä¸€æ®µæ—¶ï¼Œæ”¶æˆåŒä¸€æ¡
 static void collapseShortJogs(QVector<QPointF>* full)
 {
     if (!full || full->size() < 4) {
@@ -839,7 +855,7 @@ static void collapseShortJogs(QVector<QPointF>* full)
     }
 }
 
-// ÍÏ¶¯Ê±²ğ¿ªÕë½ÅÒı³ö¶Î
+// æ‹–åŠ¨æ—¶æ‹†å¼€é’ˆè„šå¼•å‡ºæ®µ
 static PinStubSplit splitPinStubForDrag(QVector<QPointF>* mids, int segIndex,
                                         const QPointF& a, const QPointF& b)
 {
@@ -901,7 +917,7 @@ static PinStubSplit splitPinStubForDrag(QVector<QPointF>* mids, int segIndex,
     return r;
 }
 
-// ÍÏ¶¯¹Õµãºó¸üĞÂÖĞ¼äµã
+// æ‹–åŠ¨æ‹ç‚¹åæ›´æ–°ä¸­é—´ç‚¹
 static void applyVertexDrag(QVector<QPointF>* mids, const QVector<QPointF>& base,
                             int index, const QPointF& press, const QPointF& now,
                             const QPointF& a, const QPointF& b)
@@ -936,7 +952,7 @@ static void applyVertexDrag(QVector<QPointF>* mids, const QVector<QPointF>& base
     writeMidsFromRaw(mids, full);
 }
 
-// ÍÏÕû¶Î£ºÊú¶ÎÖ»¸Ä X£¬ºá¶ÎÖ»¸Ä Y¡£ÆäËü¶Î°´µ±Ç°¶ÎÎ»ÒÆ
+// æ‹–æ•´æ®µï¼šç«–æ®µåªæ”¹ Xï¼Œæ¨ªæ®µåªæ”¹ Yã€‚å…¶å®ƒæ®µæŒ‰å½“å‰æ®µä½ç§»
 static void applySegmentDrag(QVector<QPointF>* mids, const QVector<QPointF>& base,
                              int fullSegIndex, const QPointF& press, const QPointF& now,
                              const QPointF& a, const QPointF& b)
@@ -965,7 +981,7 @@ static void applySegmentDrag(QVector<QPointF>* mids, const QVector<QPointF>& bas
     Q_UNUSED(b);
     writeMidsFromRaw(mids, full);
 }
-// ÔÚÕûÌõÂ·¾¶Ä³¶ÎÖĞµã²åÈë¹Õµã
+// åœ¨æ•´æ¡è·¯å¾„æŸæ®µä¸­ç‚¹æ’å…¥æ‹ç‚¹
 static QVector<QPointF> insertMidOnSegment(const QVector<QPointF>& mids, int fullSegIndex,
                                            const QPointF& a, const QPointF& b, const QPointF& at)
 {
@@ -978,7 +994,7 @@ static QVector<QPointF> insertMidOnSegment(const QVector<QPointF>& mids, int ful
     return midsFromFullRoute(full);
 }
 
-// É¾³ıÒ»¸öÖĞ¼ä¹Õµã²¢¹²ÏßºÏ²¢
+// åˆ é™¤ä¸€ä¸ªä¸­é—´æ‹ç‚¹å¹¶å…±çº¿åˆå¹¶
 static QVector<QPointF> removeMidAt(const QVector<QPointF>& mids, int index,
                                     const QPointF& a, const QPointF& b)
 {
@@ -989,7 +1005,7 @@ static QVector<QPointF> removeMidAt(const QVector<QPointF>& mids, int index,
     next.remove(index);
     return midsFromFullRoute(rawFullFromMids(a, b, next));
 }
-// Á¬ÏßÑÕÉ«
+// è¿çº¿é¢œè‰²
 static QColor wireColor(PortData d)
 {
     if (d == PortData::Image) {
@@ -998,19 +1014,19 @@ static QColor wireColor(PortData d)
     return pinColor(d);
 }
 
-// ¶Ë¿ÚÀàĞÍµÄ¶Ì±êÇ©
+// ç«¯å£ç±»å‹çš„çŸ­æ ‡ç­¾
 static QString portKeyLabel(PortData data)
 {
     return QString::fromUtf8(portDataTitle(data).c_str());
 }
 
-// Õë½Å¼ü£º¹¤¾ß¡¢¶Ë¿Ú¡¢·½Ïò
+// é’ˆè„šé”®ï¼šå·¥å…·ã€ç«¯å£ã€æ–¹å‘
 static QString pinMapKey(const QString& toolId, const QString& port, int dir)
 {
     return toolId + QChar('\t') + port + QChar('\t') + QString::number(dir);
 }
 
-// ÊÕ¼¯¹¤¾ßµÄÊäÈëÊä³ö¶Ë¿Ú
+// æ”¶é›†å·¥å…·çš„è¾“å…¥è¾“å‡ºç«¯å£
 static void collectCanvasPorts(const ToolCfg* t, QVector<CanvasPort>* ins, QVector<CanvasPort>* outs)
 {
     ins->clear();
@@ -1028,7 +1044,7 @@ static void collectCanvasPorts(const ToolCfg* t, QVector<CanvasPort>* ins, QVect
     }
 }
 
-// Á¿¹¤¾ß½ÚµãµÄ¿í¸ß
+// é‡å·¥å…·èŠ‚ç‚¹çš„å®½é«˜
 static GroupSize measureToolBox(const ToolCfg* t)
 {
     QVector<CanvasPort> ins;
@@ -1046,7 +1062,7 @@ static GroupSize measureToolBox(const ToolCfg* t)
     return GroupSize(kBoxW, h);
 }
 
-// Á¿×é¿òµÄ¿í¸ß
+// é‡ç»„æ¡†çš„å®½é«˜
 static GroupSize measureGroup(const JobCfg& job, const ToolGroup& g)
 {
     if (canvasLeaf(g)) {
@@ -1088,7 +1104,7 @@ static GroupSize measureGroup(const JobCfg& job, const ToolGroup& g)
     return GroupSize(w, h);
 }
 
-// ÔÚ½ÚµãÉÏ¼ÓÒ»¸öÕë½Å
+// åœ¨èŠ‚ç‚¹ä¸ŠåŠ ä¸€ä¸ªé’ˆè„š
 static void addPin(QGraphicsRectItem* box, qreal cx, qreal cy, PortData data,
                    const QString& toolId, const QString& port, int dir, PinLayout* pins)
 {
@@ -1105,7 +1121,7 @@ static void addPin(QGraphicsRectItem* box, qreal cx, qreal cy, PortData data,
     }
 }
 
-// Í¼ÔªÔÚ³¡¾°ÖĞµÄ×óÉÏ½Ç
+// å›¾å…ƒåœ¨åœºæ™¯ä¸­çš„å·¦ä¸Šè§’
 static QPointF itemSceneTopLeft(QGraphicsItem* item)
 {
     QGraphicsRectItem* box = qgraphicsitem_cast<QGraphicsRectItem*>(item);
@@ -1115,7 +1131,7 @@ static QPointF itemSceneTopLeft(QGraphicsItem* item)
     return item ? item->scenePos() : QPointF();
 }
 
-// ÉèÖÃÍ¼ÔªÔÚ³¡¾°ÖĞµÄ×óÉÏ½Ç
+// è®¾ç½®å›¾å…ƒåœ¨åœºæ™¯ä¸­çš„å·¦ä¸Šè§’
 static void setItemSceneTopLeft(QGraphicsItem* item, const QPointF& sceneTL)
 {
     if (!item) {
@@ -1131,7 +1147,7 @@ static void setItemSceneTopLeft(QGraphicsItem* item, const QPointF& sceneTL)
     }
 }
 
-// ×é»ò¹¤¾ßµÄ»­²¼¼ü
+// ç»„æˆ–å·¥å…·çš„ç”»å¸ƒé”®
 static QString canvasNodeKey(const ToolGroup& g)
 {
     if (canvasLeaf(g)) {
@@ -1140,13 +1156,13 @@ static QString canvasNodeKey(const ToolGroup& g)
     return qs(g.id);
 }
 
-// ×ª³ÉÁ÷³Ì½Úµã¾ØĞÎ
+// è½¬æˆæµç¨‹èŠ‚ç‚¹çŸ©å½¢
 static QGraphicsRectItem* asFlowNode(QGraphicsItem* item)
 {
     return qgraphicsitem_cast<QGraphicsRectItem*>(item);
 }
 
-// ½Úµãµ×±ßÖĞµã
+// èŠ‚ç‚¹åº•è¾¹ä¸­ç‚¹
 static QPointF flowNodeBottom(QGraphicsItem* item)
 {
     QGraphicsRectItem* box = asFlowNode(item);
@@ -1157,7 +1173,7 @@ static QPointF flowNodeBottom(QGraphicsItem* item)
     return box->mapToScene(QPointF(r.center().x(), r.bottom()));
 }
 
-// ½Úµã¶¥±ßÖĞµã
+// èŠ‚ç‚¹é¡¶è¾¹ä¸­ç‚¹
 static QPointF flowNodeTop(QGraphicsItem* item)
 {
     QGraphicsRectItem* box = asFlowNode(item);
@@ -1168,7 +1184,7 @@ static QPointF flowNodeTop(QGraphicsItem* item)
     return box->mapToScene(QPointF(r.center().x(), r.top()));
 }
 
-// Ö´ĞĞË³ĞòĞéÏß¼ıÍ·Â·¾¶
+// æ‰§è¡Œé¡ºåºè™šçº¿ç®­å¤´è·¯å¾„
 static QPainterPath makeExecOrderPath(const QPointF& from, const QPointF& to)
 {
     QPainterPath path;
@@ -1177,7 +1193,7 @@ static QPainterPath makeExecOrderPath(const QPointF& from, const QPointF& to)
     if (len < 0.5) {
         return path;
     }
-    // ¼ıÍ·»­ÔÚÏß¶ÎÄ©¶Ë
+    // ç®­å¤´ç”»åœ¨çº¿æ®µæœ«ç«¯
     QLineF shaft = seg;
     if (len > 10.0) {
         shaft.setLength(len - 7.0);
@@ -1199,7 +1215,7 @@ static QPainterPath makeExecOrderPath(const QPointF& from, const QPointF& to)
     return path;
 }
 
-// »­Ò»ÌõÖ´ĞĞË³ĞòÏß
+// ç”»ä¸€æ¡æ‰§è¡Œé¡ºåºçº¿
 static void addExecOrderLine(QGraphicsScene* scene, QGraphicsItem* from, QGraphicsItem* to,
                              QVector<CanvasOrderRef>* out)
 {
@@ -1219,7 +1235,7 @@ static void addExecOrderLine(QGraphicsScene* scene, QGraphicsItem* from, QGraphi
     pen.setCapStyle(Qt::RoundCap);
     pen.setJoinStyle(Qt::MiterJoin);
     line->setPen(pen);
-    line->setBrush(orderGray); // Ë³ĞòÏßÓÃ»ÒÉ«Ìî¼ıÍ·
+    line->setBrush(orderGray); // é¡ºåºçº¿ç”¨ç°è‰²å¡«ç®­å¤´
     line->setZValue(kZOrderLine);
     line->setAcceptedMouseButtons(Qt::NoButton);
     if (out) {
@@ -1231,7 +1247,7 @@ static void addExecOrderLine(QGraphicsScene* scene, QGraphicsItem* from, QGraphi
     }
 }
 
-// °´Ë³Ğò°ÑÏàÁÚ½ÚµãÁ¬ÆğÀ´
+// æŒ‰é¡ºåºæŠŠç›¸é‚»èŠ‚ç‚¹è¿èµ·æ¥
 static void linkSequentialNodes(QGraphicsScene* scene, const QHash<QString, QGraphicsItem*>& nodes,
                                 const std::vector<ToolGroup>& siblings,
                                 QVector<CanvasOrderRef>* orderLines)
@@ -1249,7 +1265,7 @@ static void linkSequentialNodes(QGraphicsScene* scene, const QHash<QString, QGra
     }
 }
 
-// ×é¿òËõµ½°ü×¡×Ó½Úµã
+// ç»„æ¡†ç¼©åˆ°åŒ…ä½å­èŠ‚ç‚¹
 static void fitFrameToChildren(QGraphicsRectItem* frame)
 {
     if (!frame) {
@@ -1302,7 +1318,7 @@ static void fitFrameToChildren(QGraphicsRectItem* frame)
     }
 }
 
-// ÏòÉÏÕÒËùÊô×é¿ò
+// å‘ä¸Šæ‰¾æ‰€å±ç»„æ¡†
 static QGraphicsRectItem* parentGroupFrame(QGraphicsItem* it)
 {
     if (!it) {
@@ -1318,7 +1334,7 @@ static QGraphicsRectItem* parentGroupFrame(QGraphicsItem* it)
     return 0;
 }
 
-// ÊÕ¼¯×éÀïµÄ¹¤¾ß¿ò
+// æ”¶é›†ç»„é‡Œçš„å·¥å…·æ¡†
 static void collectGroupToolBoxes(QGraphicsItem* root, QVector<QGraphicsRectItem*>* boxes)
 {
     if (!root || !boxes) {
@@ -1336,7 +1352,7 @@ static void collectGroupToolBoxes(QGraphicsItem* root, QVector<QGraphicsRectItem
     }
 }
 
-// »­Ò»¸ö¹¤¾ß½Úµã
+// ç”»ä¸€ä¸ªå·¥å…·èŠ‚ç‚¹
 static QGraphicsRectItem* addToolConfig(QGraphicsScene* scene, qreal x, qreal y,
                         const ToolCfg* t, int index, const QString& id,
                         bool sel, PinLayout* pins, QGraphicsItem* parent)
@@ -1389,7 +1405,7 @@ static QGraphicsRectItem* addToolConfig(QGraphicsScene* scene, qreal x, qreal y,
     headLab->setPos(nx + 8, ny + 4);
     headLab->setCursor(Qt::OpenHandCursor);
 
-    const QString name = t ? qs(t->name) : T("Î´ÃüÃû");
+    const QString name = t ? qs(t->name) : T("æœªå‘½å");
     QGraphicsTextItem* nameLab = scene->addText(name);
     nameLab->setDefaultTextColor(disabled ? QColor(0xA0, 0xA0, 0xA0) : QColor(0x33, 0x33, 0x33));
     nameLab->setTextWidth(sz.w - 16);
@@ -1424,7 +1440,7 @@ static QGraphicsRectItem* addToolConfig(QGraphicsScene* scene, qreal x, qreal y,
     return box;
 }
 
-// »­Ò»¸ö×é¼°Æä×Ó½Úµã
+// ç”»ä¸€ä¸ªç»„åŠå…¶å­èŠ‚ç‚¹
 static void paintGroup(QGraphicsScene* scene, const JobCfg* job, const ToolGroup& g,
                        qreal x, qreal y, const QString& selectedId, PinLayout* pins,
                        QGraphicsItem* parent, QHash<QString, QGraphicsItem*>* nodes,
@@ -1487,22 +1503,22 @@ static void paintGroup(QGraphicsScene* scene, const JobCfg* job, const ToolGroup
     QColor titleColor(0x88, 0x88, 0x88);
     if (split) {
         if (isIf) {
-            titleText = T("Ìõ¼ş ");
+            titleText = T("æ¡ä»¶ ");
             if (g.condSourceId.isNull()) {
-                titleText += T("Î´Ö¸¶¨");
+                titleText += T("æœªæŒ‡å®š");
             } else {
                 const ToolCfg* src = job->findTool(g.condSourceId);
-                titleText += src ? qs(src->name) : T("Î´ÃüÃû");
+                titleText += src ? qs(src->name) : T("æœªå‘½å");
             }
             titleText += (g.condWant == CondThenOnNg) ? T("=NG") : T("=OK");
             titleColor = QColor(0xD4, 0x6B, 0x08);
         } else {
-            titleText = T("²¢ĞĞ ") + qs(g.name);
+            titleText = T("å¹¶è¡Œ ") + qs(g.name);
             titleColor = QColor(0x18, 0x90, 0xFF);
         }
     } else {
         if (g.kind == GroupLoop) {
-            titleText = T("Ñ­»· ") + qs(g.name);
+            titleText = T("å¾ªç¯ ") + qs(g.name);
             const int n = g.loopCount < 1 ? 1 : g.loopCount;
             titleText += QString::fromLatin1(" x%1").arg(n);
             titleColor = QColor(0x52, 0xC4, 0x1A);
@@ -1537,7 +1553,7 @@ static void paintGroup(QGraphicsScene* scene, const JobCfg* job, const ToolGroup
     fitFrameToChildren(frame);
 }
 
-// »­Êı¾İÁ¬Ïß
+// ç”»æ•°æ®è¿çº¿
 static void paintWires(QGraphicsScene* scene, const JobCfg& job, const PinLayout& pins,
                        int selectedLinkIndex, QVector<CanvasWireRef>* outWires,
                        const QHash<QString, QGraphicsItem*>& toolBoxes,
@@ -1599,7 +1615,7 @@ static void paintWires(QGraphicsScene* scene, const JobCfg& job, const PinLayout
     }
 }
 
-// Á÷³Ì»­²¼
+// æµç¨‹ç”»å¸ƒ
 JobCanvas::JobCanvas(QWidget* parent)
     : QGraphicsView(parent)
     , m_scene(new QGraphicsScene(this))
@@ -1645,7 +1661,7 @@ JobCanvas::JobCanvas(QWidget* parent)
     setDragMode(QGraphicsView::NoDrag);
 }
 
-// Ëõ·ÅÖÃ»Ø 100%
+// ç¼©æ”¾ç½®å› 100%
 void JobCanvas::resetZoom()
 {
     if (qAbs(m_zoom - 1.0) < 0.001) {
@@ -1655,7 +1671,7 @@ void JobCanvas::resetZoom()
     m_zoom = 1.0;
 }
 
-// °´Á÷³ÌÖØ»­»­²¼
+// æŒ‰æµç¨‹é‡ç”»ç”»å¸ƒ
 void JobCanvas::showJob(const JobCfg* job, const QString& selectedId, int selectedLinkIndex)
 {
     m_tempWire = 0;
@@ -1685,7 +1701,7 @@ void JobCanvas::showJob(const JobCfg* job, const QString& selectedId, int select
     m_selectedGroupId.clear();
     m_scene->clear();
     if (!job) {
-        QGraphicsTextItem* empty = m_scene->addText(T("Ñ¡ÖĞÁ÷³Ìºó\nÔÚ´ËÏÔÊ¾½Úµã"));
+        QGraphicsTextItem* empty = m_scene->addText(T("é€‰ä¸­æµç¨‹å\nåœ¨æ­¤æ˜¾ç¤ºèŠ‚ç‚¹"));
         empty->setDefaultTextColor(QColor(0x88, 0x88, 0x88));
         empty->setPos(24, 24);
         m_scene->setSceneRect(0, 0, 240, 200);
@@ -1696,7 +1712,7 @@ void JobCanvas::showJob(const JobCfg* job, const QString& selectedId, int select
     QHash<QString, QGraphicsItem*> nodes;
     QString jobTitle = qs(job->name);
     if (!job->enabled) {
-        jobTitle += T("£¨Î´ÆôÓÃ£©");
+        jobTitle += T("ï¼ˆæœªå¯ç”¨ï¼‰");
     }
     QGraphicsTextItem* title = m_scene->addText(jobTitle);
     title->setDefaultTextColor(job->enabled ? QColor(0x88, 0x88, 0x88) : QColor(0xA0, 0xA0, 0xA0));
@@ -1779,7 +1795,7 @@ void JobCanvas::showJob(const JobCfg* job, const QString& selectedId, int select
     m_pinItems = pins.item;
     updateWireHandles();
     QGraphicsTextItem* hint = m_scene->addText(
-        T("¹öÂÖËõ·Å£¬ÍÏ¶¯»­²¼Æ½ÒÆ¡£ÍÏ¹Õµã»òÏß¶Î¿É¸Ä×ßÏß£¬Ë«»÷Ïß¶Î¼Óµã£¬Ë«»÷¹ÕµãÉ¾³ı¡£"));
+        T("æ»šè½®ç¼©æ”¾ï¼Œæ‹–åŠ¨ç”»å¸ƒå¹³ç§»ã€‚æ‹–æ‹ç‚¹æˆ–çº¿æ®µå¯æ”¹èµ°çº¿ï¼ŒåŒå‡»çº¿æ®µåŠ ç‚¹ï¼ŒåŒå‡»æ‹ç‚¹åˆ é™¤ã€‚"));
     hint->setDefaultTextColor(QColor(0xBF, 0xBF, 0xBF));
     hint->setPos(12, y + 4);
     const QRectF br = m_scene->itemsBoundingRect().adjusted(-120, -48, 120, 48);
@@ -1788,7 +1804,7 @@ void JobCanvas::showJob(const JobCfg* job, const QString& selectedId, int select
     onVertScroll(verticalScrollBar()->value());
 }
 
-// ÃüÖĞ²âÊÔ£º¿Õ°×¡¢¹¤¾ß¡¢×é»òÁ¬Ïß
+// å‘½ä¸­æµ‹è¯•ï¼šç©ºç™½ã€å·¥å…·ã€ç»„æˆ–è¿çº¿
 bool JobCanvas::hitAt(const QPoint& viewPos, QString* id, int* kind, QString* port, int* dir) const
 {
     if (id) {
@@ -1854,7 +1870,7 @@ bool JobCanvas::hitAt(const QPoint& viewPos, QString* id, int* kind, QString* po
     return true;
 }
 
-// ÃüÖĞÕë½Å
+// å‘½ä¸­é’ˆè„š
 bool JobCanvas::hitPinAt(const QPoint& viewPos, QString* id, QString* port, int* dir) const
 {
     if (id) {
@@ -1897,7 +1913,7 @@ bool JobCanvas::hitPinAt(const QPoint& viewPos, QString* id, QString* port, int*
     return true;
 }
 
-// ÃüÖĞ¹¤¾ß¿ò
+// å‘½ä¸­å·¥å…·æ¡†
 QGraphicsItem* JobCanvas::toolBoxAt(const QPoint& viewPos) const
 {
     const QPointF sp = mapToScene(viewPos);
@@ -1922,7 +1938,7 @@ QGraphicsItem* JobCanvas::toolBoxAt(const QPoint& viewPos) const
     return best;
 }
 
-// ³¡¾°µãÊÇ·ñÂäÔÚ×éÄÚ¹¤¾ßÉÏ
+// åœºæ™¯ç‚¹æ˜¯å¦è½åœ¨ç»„å†…å·¥å…·ä¸Š
 bool JobCanvas::scenePointOnGroupTool(QGraphicsRectItem* frame, const QPointF& sp) const
 {
     if (!frame) {
@@ -1950,7 +1966,7 @@ bool JobCanvas::scenePointOnGroupTool(QGraphicsRectItem* frame, const QPointF& s
     return false;
 }
 
-// ÃüÖĞ×é¿ò
+// å‘½ä¸­ç»„æ¡†
 QGraphicsItem* JobCanvas::groupFrameAt(const QPoint& viewPos) const
 {
     if (toolBoxAt(viewPos)) {
@@ -1985,7 +2001,7 @@ QGraphicsItem* JobCanvas::groupFrameAt(const QPoint& viewPos) const
     return best;
 }
 
-// ÑØ¸¸×é°Ñ¿òÊÕ½ô
+// æ²¿çˆ¶ç»„æŠŠæ¡†æ”¶ç´§
 void JobCanvas::refitGroupChain(QGraphicsItem* item)
 {
     QGraphicsRectItem* g = parentGroupFrame(item);
@@ -1995,7 +2011,7 @@ void JobCanvas::refitGroupChain(QGraphicsItem* item)
     }
 }
 
-// È¡Á¬Ïßµ±Ç°ÖĞ¼ä¹Õµã£¨Ô¤ÀÀÑØÓÃ´æÅÌ£»·ñÔò´Ó×Ô¶¯Â·¾¶ÌáÈ¡£©
+// å–è¿çº¿å½“å‰ä¸­é—´æ‹ç‚¹ï¼ˆé¢„è§ˆæ²¿ç”¨å­˜ç›˜ï¼›å¦åˆ™ä»è‡ªåŠ¨è·¯å¾„æå–ï¼‰
 QVector<QPointF> JobCanvas::midPointsForLink(int linkIndex, const QPointF& a, const QPointF& b) const
 {
     if (m_previewRoute && linkIndex == m_previewLinkIndex) {
@@ -2024,7 +2040,7 @@ QVector<QPointF> JobCanvas::midPointsForLink(int linkIndex, const QPointF& a, co
     const QVector<QRectF> obs = collectWireObstacles(m_toolBoxes, m_groupFrames, fromId, toId);
     return midsFromFullRoute(routeOrthoAvoidObstacles(a, b, obs, srcBox, dstBox));
 }
-// °ÑĞ±×Å½Óµ½¶Ë¿ÚµÄÄÇÒ»¶ÎÀ­»ØºáÆ½£¬²»¸ÄËüµÄºáÏòÎ»ÖÃ
+// æŠŠæ–œç€æ¥åˆ°ç«¯å£çš„é‚£ä¸€æ®µæ‹‰å›æ¨ªå¹³ï¼Œä¸æ”¹å®ƒçš„æ¨ªå‘ä½ç½®
 static void repairPinAttachments(QVector<QPointF>* mids, const QPointF& a, const QPointF& b)
 {
     if (!mids || mids->isEmpty()) {
@@ -2071,7 +2087,7 @@ static void repairPinAttachments(QVector<QPointF>* mids, const QPointF& a, const
     }
 }
 
-// ÑØ¶Ì×®·½ÏòÆ½ÒÆÕâÒ»¶Î£¬¹Õµã°´¶Ì×®³¤¶È¸ú×ÅÆ½ÒÆ¡£Õû¶Î¹²ÏßÊ±Ö»¶¯×î½üµÄµã
+// æ²¿çŸ­æ¡©æ–¹å‘å¹³ç§»è¿™ä¸€æ®µï¼Œæ‹ç‚¹æŒ‰çŸ­æ¡©é•¿åº¦è·Ÿç€å¹³ç§»ã€‚æ•´æ®µå…±çº¿æ—¶åªåŠ¨æœ€è¿‘çš„ç‚¹
 static void followPinRun(QVector<QPointF>* mids, const QVector<QPointF>& base,
                          bool fromStart, bool horiz, qreal crossDelta, qreal alongDelta)
 {
@@ -2150,7 +2166,7 @@ static void followPinRun(QVector<QPointF>* mids, const QVector<QPointF>& base,
     }
 }
 
-// °´ÏÂÊ±¼ÇÏÂµ±Ç°ÏÔÊ¾µÄ¹Õµã£¬ÔÙ¿ªÔ¤ÀÀ£¬±ÜÃâ¶Áµ½¿ÕµÄ×Ô¶¯×ßÏß
+// æŒ‰ä¸‹æ—¶è®°ä¸‹å½“å‰æ˜¾ç¤ºçš„æ‹ç‚¹ï¼Œå†å¼€é¢„è§ˆï¼Œé¿å…è¯»åˆ°ç©ºçš„è‡ªåŠ¨èµ°çº¿
 void JobCanvas::beginCustomPreviewFromAuto(int linkIndex, const QPointF& a, const QPointF& b)
 {
     QVector<QPointF> mids = midPointsForLink(linkIndex, a, b);
@@ -2162,7 +2178,7 @@ void JobCanvas::beginCustomPreviewFromAuto(int linkIndex, const QPointF& a, cons
     m_previewLinkIndex = linkIndex;
     m_previewMids = mids;
 }
-// ÍÏ½Úµã¿ªÊ¼Ç°¼ÇÏÂ×Ô¶¨ÒåÕÛÏß£¬²¢°ÑÒÑ¾­Ğ±µôµÄ¶Ë¿Ú½Ó»ØºáÆ½
+// æ‹–èŠ‚ç‚¹å¼€å§‹å‰è®°ä¸‹è‡ªå®šä¹‰æŠ˜çº¿ï¼Œå¹¶æŠŠå·²ç»æ–œæ‰çš„ç«¯å£æ¥å›æ¨ªå¹³
 void JobCanvas::captureNodeWireSnaps()
 {
     m_nodeWireSnaps.clear();
@@ -2202,7 +2218,7 @@ void JobCanvas::captureNodeWireSnaps()
     }
 }
 
-// ½ÚµãÒÆ¶¯ºó£¬Ö»ÈÃ¶Ë¿ÚÅÔ±ßÄÇÒ»¶Î¸ú×Å×ß£¬ÆäÓà¹Õµã±£³Ö°´ÏÂÊ±µÄÎ»ÖÃ
+// èŠ‚ç‚¹ç§»åŠ¨åï¼Œåªè®©ç«¯å£æ—è¾¹é‚£ä¸€æ®µè·Ÿç€èµ°ï¼Œå…¶ä½™æ‹ç‚¹ä¿æŒæŒ‰ä¸‹æ—¶çš„ä½ç½®
 void JobCanvas::applyNodeWireSnaps()
 {
     if (!m_job || m_movingGroup || m_nodeWireSnaps.isEmpty()) {
@@ -2258,7 +2274,7 @@ void JobCanvas::applyNodeWireSnaps()
     }
 }
 
-// ¼ÆËãÒ»ÌõÁ¬ÏßÂ·¾¶£»¿ÉÑ¡·µ»ØÖĞ¼ä¹Õµã
+// è®¡ç®—ä¸€æ¡è¿çº¿è·¯å¾„ï¼›å¯é€‰è¿”å›ä¸­é—´æ‹ç‚¹
 QPainterPath JobCanvas::wirePathForLink(int linkIndex, const QPointF& a, const QPointF& b,
                                         QVector<QPointF>* outMids) const
 {
@@ -2294,7 +2310,7 @@ QPainterPath JobCanvas::wirePathForLink(int linkIndex, const QPointF& a, const Q
     const QVector<QRectF> obs = collectWireObstacles(m_toolBoxes, m_groupFrames, fromId, toId);
     return makeOrthoPath(routeOrthoAvoidObstacles(a, b, obs, srcBox, dstBox));
 }
-// ÊÕ¼¯Êó±êÏÂµÄÁ¬Ïß
+// æ”¶é›†é¼ æ ‡ä¸‹çš„è¿çº¿
 void JobCanvas::collectWireHitsAt(const QPoint& viewPos, QVector<int>* outIndices) const
 {
     if (!outIndices) {
@@ -2351,7 +2367,7 @@ void JobCanvas::collectWireHitsAt(const QPoint& viewPos, QVector<int>* outIndice
     }
 }
 
-// Ë¢ĞÂÑ¡ÖĞÁ¬ÏßµÄÍâ¹Û
+// åˆ·æ–°é€‰ä¸­è¿çº¿çš„å¤–è§‚
 void JobCanvas::refreshWireSelectionVisual()
 {
     for (int i = 0; i < m_wires.size(); ++i) {
@@ -2371,10 +2387,10 @@ void JobCanvas::refreshWireSelectionVisual()
     updateWireHandles();
 }
 
-// ¸üĞÂÑ¡ÖĞÁ¬ÏßµÄ¹ÕµãÊÖ±úÓë¶ÎÊÖ±ú
+// æ›´æ–°é€‰ä¸­è¿çº¿çš„æ‹ç‚¹æ‰‹æŸ„ä¸æ®µæ‰‹æŸ„
 void JobCanvas::updateWireHandles()
 {
-    // ÍÏ¶¯ÖĞ²»ÖØ½¨ÊÖ±ú£¬±ÜÃâÉ¾µôÕıÔÚ×¥µÄÍ¼ÔªºóÁ¬ÏßÂÒÅÜ
+    // æ‹–åŠ¨ä¸­ä¸é‡å»ºæ‰‹æŸ„ï¼Œé¿å…åˆ æ‰æ­£åœ¨æŠ“çš„å›¾å…ƒåè¿çº¿ä¹±è·‘
     if (m_draggingWireHandle) {
         return;
     }
@@ -2428,7 +2444,7 @@ void JobCanvas::updateWireHandles()
         h->setCursor(Qt::SizeAllCursor);
         m_wireVertexHandles.push_back(h);
     }
-    // Ñ¡ÖĞÏß¼Ó´Ö£¬Ìø¹ıÁ½¶ËÒı³ö¶Î
+    // é€‰ä¸­çº¿åŠ ç²—ï¼Œè·³è¿‡ä¸¤ç«¯å¼•å‡ºæ®µ
     for (int si = 0; si + 1 < full.size(); ++si) {
         const QPointF p0 = full[si];
         const QPointF p1 = full[si + 1];
@@ -2450,7 +2466,7 @@ void JobCanvas::updateWireHandles()
         m_wireSegHandles.push_back(h);
     }
 }
-// °´½ÚµãÎ»ÖÃ¸üĞÂÁ¬Ïß
+// æŒ‰èŠ‚ç‚¹ä½ç½®æ›´æ–°è¿çº¿
 void JobCanvas::updateWires()
 {
     if (!m_job) {
@@ -2473,7 +2489,7 @@ void JobCanvas::updateWires()
     updateWireHandles();
 }
 
-// ¸üĞÂÖ´ĞĞË³ĞòÏß
+// æ›´æ–°æ‰§è¡Œé¡ºåºçº¿
 void JobCanvas::updateOrderLines()
 {
     for (int i = 0; i < m_orderLines.size(); ++i) {
@@ -2492,7 +2508,7 @@ void JobCanvas::updateOrderLines()
     }
 }
 
-// ½ÚµãÍÏÍêºóĞ´»Ø×ø±ê
+// èŠ‚ç‚¹æ‹–å®Œåå†™å›åæ ‡
 void JobCanvas::finishNodeMove()
 {
     if (m_movingNode && m_moveItem && !m_moveId.isEmpty()) {
@@ -2524,7 +2540,7 @@ void JobCanvas::finishNodeMove()
     unsetCursor();
 }
 
-// Êó±ê°´ÏÂ
+// é¼ æ ‡æŒ‰ä¸‹
 void JobCanvas::mousePressEvent(QMouseEvent* e)
 {
     if (e->button() == Qt::MiddleButton) {
@@ -2607,7 +2623,7 @@ void JobCanvas::mousePressEvent(QMouseEvent* e)
     QString port;
     int dir = 0;
     hitAt(e->pos(), &id, &kind, &port, &dir);
-    // °´ÏÂµÄÊÇÕë½ÅÔò¿ªÊ¼ÍÏÏß
+    // æŒ‰ä¸‹çš„æ˜¯é’ˆè„šåˆ™å¼€å§‹æ‹–çº¿
     QString pinId;
     QString pinPort;
     int pinDir = 0;
@@ -2717,7 +2733,7 @@ void JobCanvas::mousePressEvent(QMouseEvent* e)
     QGraphicsView::mousePressEvent(e);
 }
 
-// Ë«»÷¹¤¾ß´ò¿ª½çÃæ£»Ë«»÷¹ÕµãÉ¾µã£»Ë«»÷Á¬Ïß¶Î¼Óµã
+// åŒå‡»å·¥å…·æ‰“å¼€ç•Œé¢ï¼›åŒå‡»æ‹ç‚¹åˆ ç‚¹ï¼›åŒå‡»è¿çº¿æ®µåŠ ç‚¹
 void JobCanvas::mouseDoubleClickEvent(QMouseEvent* e)
 {
     if (e->button() != Qt::LeftButton) {
@@ -2781,7 +2797,7 @@ void JobCanvas::mouseDoubleClickEvent(QMouseEvent* e)
             qreal bestDist = 1e18;
             for (int si = 0; si + 1 < full.size(); ++si) {
                 const QLineF seg(full[si], full[si + 1]);
-                // µãµ½Ïß¶ÎµÄ¾àÀë
+                // ç‚¹åˆ°çº¿æ®µçš„è·ç¦»
                 const qreal len2 = seg.dx() * seg.dx() + seg.dy() * seg.dy();
                 qreal t = 0;
                 if (len2 > 1e-6) {
@@ -2811,7 +2827,7 @@ void JobCanvas::mouseDoubleClickEvent(QMouseEvent* e)
     QGraphicsView::mouseDoubleClickEvent(e);
 }
 
-// Êó±êÒÆ¶¯
+// é¼ æ ‡ç§»åŠ¨
 void JobCanvas::mouseMoveEvent(QMouseEvent* e)
 {
     if (m_panning) {
@@ -2849,7 +2865,7 @@ void JobCanvas::mouseMoveEvent(QMouseEvent* e)
             applyVertexDrag(&m_previewMids, m_dragBaseMids, m_dragVertexIndex, m_dragPressScene, sp, a, b);
         }
         updateWires();
-        // ÍÏ¶¯ÒÑÓĞÊÖ±ú
+        // æ‹–åŠ¨å·²æœ‰æ‰‹æŸ„
         const qreal hr = 5.5;
         for (int hi = 0; hi < m_wireVertexHandles.size(); ++hi) {
             QGraphicsEllipseItem* h = m_wireVertexHandles[hi];
@@ -2914,7 +2930,7 @@ void JobCanvas::mouseMoveEvent(QMouseEvent* e)
         int dir = 0;
         hitPinAt(e->pos(), &toId, &toPort, &dir);
         bool mismatch = false;
-        // ËÉ¿ªÊ±ÈôÂäÔÚ¶Ë¿ÚÉÏÔòÁ¬Ïß
+        // æ¾å¼€æ—¶è‹¥è½åœ¨ç«¯å£ä¸Šåˆ™è¿çº¿
         if (dir == 0 && !toPort.isEmpty()) {
             const PortData td = portDataFromKey(ss(toPort));
             mismatch = (td != m_wireFromData);
@@ -2936,7 +2952,7 @@ void JobCanvas::mouseMoveEvent(QMouseEvent* e)
     QGraphicsView::mouseMoveEvent(e);
 }
 
-// Êó±êËÉ¿ª
+// é¼ æ ‡æ¾å¼€
 void JobCanvas::mouseReleaseEvent(QMouseEvent* e)
 {
     if (m_panning && (e->button() == Qt::MiddleButton || e->button() == Qt::LeftButton)) {
@@ -3014,7 +3030,7 @@ void JobCanvas::mouseReleaseEvent(QMouseEvent* e)
     QGraphicsView::mouseReleaseEvent(e);
 }
 
-// ¹öÂÖËõ·Å
+// æ»šè½®ç¼©æ”¾
 void JobCanvas::wheelEvent(QWheelEvent* e)
 {
     const qreal f = (e->delta() > 0) ? 1.12 : (1.0 / 1.12);
@@ -3028,7 +3044,7 @@ void JobCanvas::wheelEvent(QWheelEvent* e)
     e->accept();
 }
 
-// ÓÒ¼ü£ºÕë½Åµ±¹¤¾ß¡¢Á¬Ïß·¢ wire¡¢¿Õ°×Ò²¿Éµ¯²Ëµ¥
+// å³é”®ï¼šé’ˆè„šå½“å·¥å…·ã€è¿çº¿å‘ wireã€ç©ºç™½ä¹Ÿå¯å¼¹èœå•
 void JobCanvas::contextMenuEvent(QContextMenuEvent* e)
 {
     QString id;
@@ -3062,7 +3078,7 @@ void JobCanvas::contextMenuEvent(QContextMenuEvent* e)
     e->accept();
 }
 
-// 0 ¸´Î»Ëõ·Å£»Delete É¾³ıÑ¡ÖĞÁ¬Ïß×îºóÒ»¸ö¹Õµã£»ÎŞ¹ÕµãÔò»Ö¸´×Ô¶¯Â·ÓÉ
+// 0 å¤ä½ç¼©æ”¾ï¼›Delete åˆ é™¤é€‰ä¸­è¿çº¿æœ€åä¸€ä¸ªæ‹ç‚¹ï¼›æ— æ‹ç‚¹åˆ™æ¢å¤è‡ªåŠ¨è·¯ç”±
 void JobCanvas::keyPressEvent(QKeyEvent* e)
 {
     if (e->key() == Qt::Key_0 && !(e->modifiers() & Qt::ControlModifier)) {
@@ -3111,14 +3127,14 @@ void JobCanvas::keyPressEvent(QKeyEvent* e)
     QGraphicsView::keyPressEvent(e);
 }
 
-// ³ß´ç±ä»¯ºóÖØÅÅ¹ö¶¯Ìõ
+// å°ºå¯¸å˜åŒ–åé‡æ’æ»šåŠ¨æ¡
 void JobCanvas::resizeEvent(QResizeEvent* e)
 {
     QGraphicsView::resizeEvent(e);
     layoutLeftScrollBar();
 }
 
-// ´¹Ö±¹ö¶¯
+// å‚ç›´æ»šåŠ¨
 void JobCanvas::onVertScroll(int value)
 {
     if (m_blockScrollSync) {
@@ -3136,7 +3152,7 @@ void JobCanvas::onVertScroll(int value)
     m_blockScrollSync = false;
 }
 
-// ×ó²à¹ö¶¯
+// å·¦ä¾§æ»šåŠ¨
 void JobCanvas::onLeftScroll(int value)
 {
     if (m_blockScrollSync) {
@@ -3147,7 +3163,7 @@ void JobCanvas::onLeftScroll(int value)
     m_blockScrollSync = false;
 }
 
-// ²¼ÖÃ×ó²à¹ö¶¯Ìõ
+// å¸ƒç½®å·¦ä¾§æ»šåŠ¨æ¡
 void JobCanvas::layoutLeftScrollBar()
 {
     if (!m_vScrollLeft) {
@@ -3167,7 +3183,7 @@ void JobCanvas::layoutLeftScrollBar()
     }
 }
 
-// Ëõ·Å±ÈÀı
+// ç¼©æ”¾æ¯”ä¾‹
 qreal JobCanvas::zoomScale() const
 {
     return m_zoom;
@@ -3175,7 +3191,7 @@ qreal JobCanvas::zoomScale() const
 
 
 
-// ´ı¶¨Â·ÓÉµã
+// å¾…å®šè·¯ç”±ç‚¹
 QVector<QPointF> JobCanvas::pendingRoutePoints() const
 {
     return m_pendingRoutePoints;

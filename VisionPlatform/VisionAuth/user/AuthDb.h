@@ -1,6 +1,6 @@
 /**
  * @file AuthDb.h
- * @brief AuthDbÍ·ÎÄ¼ş
+ * @brief AuthDbå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -17,28 +17,28 @@ namespace Vision {
 
 /**
  * @class AuthDb
- * @brief ÓÃ»§Óë½ÇÉ«È¨ÏŞµÄ SQLite ²Ö´¢¡£ÎÄ±¾ÁĞÎª UTF-8
+ * @brief ç”¨æˆ·ä¸è§’è‰²æƒé™çš„ SQLite ä»“å‚¨ã€‚æ–‡æœ¬åˆ—ä¸º UTF-8
  */
 class AuthDb {
 public:
-    /** @brief ½ø³ÌÄÚÎ¨Ò»ÓÃ»§¿â */
+    /** @brief è¿›ç¨‹å†…å”¯ä¸€ç”¨æˆ·åº“ */
     static AuthDb& instance();
-    /** @brief ´ò¿ªÊı¾İ¿â²¢Éı¼¶±í½á¹¹ */
+    /** @brief æ‰“å¼€æ•°æ®åº“å¹¶å‡çº§è¡¨ç»“æ„ */
     bool open(std::string* error);
-    /** @brief ¹Ø±ÕÁ¬½Ó */
+    /** @brief å…³é—­è¿æ¥ */
     void close();
-    /** @brief ¶Á³öÈ«²¿ÓÃ»§µ½ÄÚ´æ¿â */
+    /** @brief è¯»å‡ºå…¨éƒ¨ç”¨æˆ·åˆ°å†…å­˜åº“ */
     bool loadUsers(AuthMgr* users, std::string* error);
-    /** @brief Çå¿ÕºóÕû±íĞ´»ØÓÃ»§ */
+    /** @brief æ¸…ç©ºåæ•´è¡¨å†™å›ç”¨æˆ· */
     bool saveUsers(const AuthMgr& users, std::string* error);
-    /** @brief ¶ÁÄ³½ÇÉ«µÄÈ¨ÏŞÑÚÂë */
+    /** @brief è¯»æŸè§’è‰²çš„æƒé™æ©ç  */
     bool loadRoleMask(UserRole role, uint32_t* mask, std::string* error);
-    /** @brief Ğ´Ä³½ÇÉ«µÄÈ¨ÏŞÑÚÂë */
+    /** @brief å†™æŸè§’è‰²çš„æƒé™æ©ç  */
     bool saveRoleMask(UserRole role, uint32_t mask, std::string* error);
 
 private:
     AuthDb() {}
-    /** @brief ´´½¨ÓÃ»§±íºÍ½ÇÉ«È¨ÏŞ±í */
+    /** @brief åˆ›å»ºç”¨æˆ·è¡¨å’Œè§’è‰²æƒé™è¡¨ */
     bool migrateSchema(std::string* error);
 };
 

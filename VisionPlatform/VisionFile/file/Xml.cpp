@@ -1,6 +1,6 @@
 /**
  * @file Xml.cpp
- * @brief XmlÊµÏÖ
+ * @brief Xmlå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -12,7 +12,7 @@ namespace Vision {
 
 namespace {
 
-// ×ÖÃæÁ¿³¤¶È
+// å­—é¢é‡é•¿åº¦
 size_t litLen(const char* s)
 {
     size_t n = 0;
@@ -24,19 +24,19 @@ size_t litLen(const char* s)
     }
     return n;
 }
-// Ãû×ÖÊ××Ö·û£º×ÖÄ¸¡¢ÏÂ»®Ïß¡¢Ã°ºÅ»ò·Ç ASCII
+// åå­—é¦–å­—ç¬¦ï¼šå­—æ¯ã€ä¸‹åˆ’çº¿ã€å†’å·æˆ–é ASCII
 bool isNameStart(unsigned char c)
 {
     return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == '_' || c == ':' || c >= 0x80;
 }
 
-// Ãû×ÖºóĞø×Ö·û£¬º¬Êı×Ö¡¢¼õºÅ¡¢µã
+// åå­—åç»­å­—ç¬¦ï¼Œå«æ•°å­—ã€å‡å·ã€ç‚¹
 bool isNameChar(unsigned char c)
 {
     return isNameStart(c) || (c >= '0' && c <= '9') || c == '-' || c == '.';
 }
 
-// È¥µôÎÄ±¾Á½¶Ë¿Õ°×
+// å»æ‰æ–‡æœ¬ä¸¤ç«¯ç©ºç™½
 void trimEnds(std::string* s)
 {
     size_t a = 0;
@@ -62,7 +62,7 @@ void trimEnds(std::string* s)
     }
 }
 
-// Ğ´³öÊ±×ªÒå & < >£¬ÊôĞÔÔÙ×ªÒåÒıºÅ
+// å†™å‡ºæ—¶è½¬ä¹‰ & < >ï¼Œå±æ€§å†è½¬ä¹‰å¼•å·
 void appendEscaped(std::string* o, const std::string& s, bool attr)
 {
     for (size_t i = 0; i < s.size(); ++i) {
@@ -86,7 +86,7 @@ struct XmlParser {
     size_t i;
     std::string* err;
 
-// ´ÓÎÄ±¾Æğµã½âÎö
+// ä»æ–‡æœ¬èµ·ç‚¹è§£æ
     XmlParser(const std::string& text, std::string* e)
         : t(text)
         , i(0)
@@ -94,7 +94,7 @@ struct XmlParser {
     {
     }
 
-// Ö»¼ÇµÚÒ»Ìõ´íÎó
+// åªè®°ç¬¬ä¸€æ¡é”™è¯¯
     void fail(const char* m)
     {
         if (err && err->empty()) {
@@ -102,7 +102,7 @@ struct XmlParser {
         }
     }
 
-// Ìø¹ı¿Õ°×
+// è·³è¿‡ç©ºç™½
     void skipWs()
     {
         while (i < t.size()) {
@@ -115,14 +115,14 @@ struct XmlParser {
         }
     }
 
-// µ±Ç°Î»ÖÃÊÇ·ñÒÔ×ÖÃæÁ¿¿ªÍ·
+// å½“å‰ä½ç½®æ˜¯å¦ä»¥å­—é¢é‡å¼€å¤´
     bool starts(const char* s) const
     {
         const size_t n = litLen(s);
         return i + n <= t.size() && t.compare(i, n, s) == 0;
     }
 
-// µ±Ç°Î»ÖÃÊÇ c ÔòÍÌµô
+// å½“å‰ä½ç½®æ˜¯ c åˆ™åæ‰
     bool eat(char c)
     {
         if (i < t.size() && t[i] == c) {
@@ -132,7 +132,7 @@ struct XmlParser {
         return false;
     }
 
-// Ìøµ½½áÊø±ê¼Ç²¢ÍÌµô£»ÕÒ²»µ½·µ»Ø false
+// è·³åˆ°ç»“æŸæ ‡è®°å¹¶åæ‰ï¼›æ‰¾ä¸åˆ°è¿”å› false
     bool skipUntil(const char* endMark)
     {
         const size_t n = litLen(endMark);
@@ -146,7 +146,7 @@ struct XmlParser {
         return false;
     }
 
-// Ìø¹ı×¢ÊÍ»ò´¦ÀíÖ¸Áî
+// è·³è¿‡æ³¨é‡Šæˆ–å¤„ç†æŒ‡ä»¤
     bool skipMisc()
     {
         if (starts("<!--")) {
@@ -168,7 +168,7 @@ struct XmlParser {
         return false;
     }
 
-// ¶ÁÔªËØÃû»òÊôĞÔÃû
+// è¯»å…ƒç´ åæˆ–å±æ€§å
     bool parseName(std::string* out)
     {
         if (i >= t.size() || !isNameStart(static_cast<unsigned char>(t[i]))) {
@@ -184,7 +184,7 @@ struct XmlParser {
         return true;
     }
 
-// ¶ÁÒ»¸ö×Ö·û»òÊµÌåÒıÓÃ
+// è¯»ä¸€ä¸ªå­—ç¬¦æˆ–å®ä½“å¼•ç”¨
     bool appendEntity(std::string* o)
     {
         if (i >= t.size()) {
@@ -271,7 +271,7 @@ struct XmlParser {
         return false;
     }
 
-// ¶ÁÒıºÅÀ¨ÆğµÄÊôĞÔÖµ
+// è¯»å¼•å·æ‹¬èµ·çš„å±æ€§å€¼
     bool parseQuoted(std::string* out)
     {
         if (i >= t.size() || (t[i] != '"' && t[i] != '\'')) {
@@ -299,7 +299,7 @@ struct XmlParser {
     bool parseElement(XmlValue* out);
 };
 
-// ½âÎöÒ»¸öÔªËØ£¬º¬ÊôĞÔºÍ×ÓÔªËØ
+// è§£æä¸€ä¸ªå…ƒç´ ï¼Œå«å±æ€§å’Œå­å…ƒç´ 
 bool XmlParser::parseElement(XmlValue* out)
 {
     skipWs();
@@ -383,7 +383,7 @@ bool XmlParser::parseElement(XmlValue* out)
     return false;
 }
 
-// µİ¹éĞ´³öÔªËØ
+// é€’å½’å†™å‡ºå…ƒç´ 
 void dump(const XmlValue& v, std::string* o, bool pretty, int indent)
 {
     if (pretty && indent > 0) {
@@ -423,30 +423,30 @@ void dump(const XmlValue& v, std::string* o, bool pretty, int indent)
 
 }
 
-// ¿ÕÔªËØ
+// ç©ºå…ƒç´ 
 XmlValue::XmlValue()
 {
 }
 
-// ÉèÖÃÔªËØÃû
+// è®¾ç½®å…ƒç´ å
 void XmlValue::setName(const std::string& elementName)
 {
     m_name = elementName;
 }
 
-// ÉèÖÃÔªËØÎÄ±¾
+// è®¾ç½®å…ƒç´ æ–‡æœ¬
 void XmlValue::setText(const std::string& text)
 {
     m_text = text;
 }
 
-// ÊÇ·ñÓĞ¸ÃÊôĞÔ
+// æ˜¯å¦æœ‰è¯¥å±æ€§
 bool XmlValue::hasAttr(const std::string& key) const
 {
     return m_attr.find(key) != m_attr.end();
 }
 
-// ¶ÁÊôĞÔ£»Ã»ÓĞÔò·µ»ØÄ¬ÈÏÖµ
+// è¯»å±æ€§ï¼›æ²¡æœ‰åˆ™è¿”å›é»˜è®¤å€¼
 std::string XmlValue::attr(const std::string& key, const std::string& def) const
 {
     std::map<std::string, std::string>::const_iterator it = m_attr.find(key);
@@ -456,19 +456,19 @@ std::string XmlValue::attr(const std::string& key, const std::string& def) const
     return it->second;
 }
 
-// Ğ´ÊôĞÔ
+// å†™å±æ€§
 void XmlValue::setAttr(const std::string& key, const std::string& value)
 {
     m_attr[key] = value;
 }
 
-// ×ÓÔªËØ¸öÊı
+// å­å…ƒç´ ä¸ªæ•°
 int XmlValue::childCount() const
 {
     return static_cast<int>(m_children.size());
 }
 
-// °´ÏÂ±êÈ¡×ÓÔªËØ£»Ô½½çÎª¿ÕÔªËØ
+// æŒ‰ä¸‹æ ‡å–å­å…ƒç´ ï¼›è¶Šç•Œä¸ºç©ºå…ƒç´ 
 XmlValue XmlValue::childAt(int index) const
 {
     if (index < 0 || index >= static_cast<int>(m_children.size())) {
@@ -477,7 +477,7 @@ XmlValue XmlValue::childAt(int index) const
     return m_children[static_cast<size_t>(index)];
 }
 
-// È¡µÚÒ»¸öÍ¬Ãû×ÓÔªËØ
+// å–ç¬¬ä¸€ä¸ªåŒåå­å…ƒç´ 
 XmlValue XmlValue::child(const std::string& elementName) const
 {
     for (size_t i = 0; i < m_children.size(); ++i) {
@@ -488,19 +488,19 @@ XmlValue XmlValue::child(const std::string& elementName) const
     return XmlValue();
 }
 
-// ÊÇ·ñÓĞÍ¬Ãû×ÓÔªËØ
+// æ˜¯å¦æœ‰åŒåå­å…ƒç´ 
 bool XmlValue::hasChild(const std::string& elementName) const
 {
     return !child(elementName).isEmpty();
 }
 
-// ×·¼Ó×ÓÔªËØ
+// è¿½åŠ å­å…ƒç´ 
 void XmlValue::appendChild(const XmlValue& child)
 {
     m_children.push_back(child);
 }
 
-// ½âÎöÎÄµµ¸ùÔªËØ£»¿É´ø BOM ºÍ XML ÉùÃ÷
+// è§£ææ–‡æ¡£æ ¹å…ƒç´ ï¼›å¯å¸¦ BOM å’Œ XML å£°æ˜
 XmlValue XmlValue::parse(const std::string& text, std::string* error)
 {
     if (error) {
@@ -530,7 +530,7 @@ XmlValue XmlValue::parse(const std::string& text, std::string* error)
     return v;
 }
 
-// ĞòÁĞ»¯£»¿ÕÔªËØ·µ»Ø¿Õ´®
+// åºåˆ—åŒ–ï¼›ç©ºå…ƒç´ è¿”å›ç©ºä¸²
 std::string XmlValue::stringify(const XmlValue& v, bool pretty)
 {
     if (v.isEmpty()) {
@@ -547,25 +547,25 @@ std::string XmlValue::stringify(const XmlValue& v, bool pretty)
     return o;
 }
 
-// ÊÇ·ñÎª¿Õ
+// æ˜¯å¦ä¸ºç©º
 bool XmlValue::isEmpty() const
 {
     return m_name.empty();
 }
 
-// ½ÚµãÃû
+// èŠ‚ç‚¹å
 const std::string& XmlValue::name() const
 {
     return m_name;
 }
 
-// ÎÄ±¾
+// æ–‡æœ¬
 const std::string& XmlValue::text() const
 {
     return m_text;
 }
 
-// ÊôĞÔ±í
+// å±æ€§è¡¨
 const std::map<std::string, std::string>& XmlValue::attrs() const
 {
     return m_attr;

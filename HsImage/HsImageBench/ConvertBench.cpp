@@ -1,6 +1,6 @@
 /**
  * @file ConvertBench.cpp
- * @brief ConvertBenchÊµÏÖ
+ * @brief ConvertBenchå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -23,11 +23,11 @@ using namespace HalconCpp;
 
 namespace {
 
-// Ô¼ 500 ÍòÏñËØ£º2448*2048 = 5013504
+// çº¦ 500 ä¸‡åƒç´ ï¼š2448*2048 = 5013504
 const int kDefaultW = 2448;
 const int kDefaultH = 2048;
 
-// ¼ÆÊ±£¬ºÁÃë
+// è®¡æ—¶ï¼Œæ¯«ç§’
 double elapsedMs(QElapsedTimer& t)
 {
     return static_cast<double>(t.nsecsElapsed()) / 1000000.0;
@@ -35,7 +35,7 @@ double elapsedMs(QElapsedTimer& t)
 
 } // namespace
 
-// ±¾»ú¹¹½¨ÊÇ·ñ´ø Halcon
+// æœ¬æœºæ„å»ºæ˜¯å¦å¸¦ Halcon
 bool convertBenchHasHalcon()
 {
 #ifdef HSIMAGE_HAS_HALCON
@@ -45,7 +45,7 @@ bool convertBenchHasHalcon()
 #endif
 }
 
-// ±¾»ú¹¹½¨ÊÇ·ñ´ø OpenCV
+// æœ¬æœºæ„å»ºæ˜¯å¦å¸¦ OpenCV
 bool convertBenchHasOpenCv()
 {
 #ifdef HSIMAGE_HAS_OPENCV
@@ -55,7 +55,7 @@ bool convertBenchHasOpenCv()
 #endif
 }
 
-// Éú³É»Ò¶È²âÊÔÍ¼£ºÆåÅÌ¿é¼Ó½¥±ä£¬±ÜÃâÈ«ºÚ
+// ç”Ÿæˆç°åº¦æµ‹è¯•å›¾ï¼šæ£‹ç›˜å—åŠ æ¸å˜ï¼Œé¿å…å…¨é»‘
 QImage makeBenchGrayImage(int width, int height)
 {
     if (width <= 0) {
@@ -77,7 +77,7 @@ QImage makeBenchGrayImage(int width, int height)
     return img;
 }
 
-// Éú³É²ÊÉ«²âÊÔÍ¼£¬RGB ÈıÍ¨µÀ¸÷ÓĞ¹æÂÉ
+// ç”Ÿæˆå½©è‰²æµ‹è¯•å›¾ï¼ŒRGB ä¸‰é€šé“å„æœ‰è§„å¾‹
 QImage makeBenchColorImage(int width, int height)
 {
     if (width <= 0) {
@@ -101,7 +101,7 @@ QImage makeBenchColorImage(int width, int height)
 
 #ifdef HSIMAGE_HAS_OPENCV
 
-// QImage ×ª Mat¡£»Ò¶ÈÖ±¿½£¬²ÊÉ«»»³É BGR ÔÙ½ø OpenCV
+// QImage è½¬ Matã€‚ç°åº¦ç›´æ‹·ï¼Œå½©è‰²æ¢æˆ BGR å†è¿› OpenCV
 cv::Mat qImageToMat(const QImage& img)
 {
     if (img.isNull()) {
@@ -131,7 +131,7 @@ cv::Mat qImageToMat(const QImage& img)
     return m;
 }
 
-// Mat ×ª QImage
+// Mat è½¬ QImage
 QImage matToQImage(const cv::Mat& mat)
 {
     if (mat.empty()) {
@@ -165,9 +165,9 @@ QImage matToQImage(const cv::Mat& mat)
 
 #ifdef HSIMAGE_HAS_HALCON
 
-// ---------- »Ò¶È£ºGenImage1 + memcpy ----------
+// ---------- ç°åº¦ï¼šGenImage1 + memcpy ----------
 
-// »Ò¶È QImage ×ª HObject¡£ÏÈÍ³Ò»³É»Ò¶È»º³å£¬ÔÙ°´ĞĞ¿½½øÈ¥
+// ç°åº¦ QImage è½¬ HObjectã€‚å…ˆç»Ÿä¸€æˆç°åº¦ç¼“å†²ï¼Œå†æŒ‰è¡Œæ‹·è¿›å»
 static bool grayQImageToHObject(const QImage& src, HObject* out, QString* err)
 {
     if (!out) {
@@ -178,7 +178,7 @@ static bool grayQImageToHObject(const QImage& src, HObject* out, QString* err)
         : src.convertToFormat(QImage::Format_Grayscale8);
     if (g.isNull()) {
         if (err) {
-            *err = QString::fromLocal8Bit("Í¼ÏñÎª¿Õ");
+            *err = QString::fromUtf8("å›¾åƒä¸ºç©º");
         }
         return false;
     }
@@ -193,7 +193,7 @@ static bool grayQImageToHObject(const QImage& src, HObject* out, QString* err)
         void* ptr = tmp.GetImagePointer1(&type, &gw, &gh);
         if (!ptr || gw != w || gh != h) {
             if (err) {
-                *err = QString::fromLocal8Bit("GenImageConst Ê§°Ü");
+                *err = QString::fromUtf8("GenImageConst å¤±è´¥");
             }
             return false;
         }
@@ -205,13 +205,13 @@ static bool grayQImageToHObject(const QImage& src, HObject* out, QString* err)
         return true;
     } catch (const HException& e) {
         if (err) {
-            *err = QString::fromLocal8Bit(e.ErrorMessage().Text());
+            *err = QString::fromUtf8(e.ErrorMessage().Text());
         }
         return false;
     }
 }
 
-// HObject »Ò¶È×ª QImage£¨memcpy£©
+// HObject ç°åº¦è½¬ QImageï¼ˆmemcpyï¼‰
 static bool grayHObjectToQImage(const HObject& himg, QImage* out, QString* err)
 {
     if (!out) {
@@ -222,7 +222,7 @@ static bool grayHObjectToQImage(const HObject& himg, QImage* out, QString* err)
         CountChannels(himg, &ch);
         if (ch.I() != 1) {
             if (err) {
-                *err = QString::fromLocal8Bit("²»ÊÇµ¥Í¨µÀÍ¼Ïñ");
+                *err = QString::fromUtf8("ä¸æ˜¯å•é€šé“å›¾åƒ");
             }
             return false;
         }
@@ -244,15 +244,15 @@ static bool grayHObjectToQImage(const HObject& himg, QImage* out, QString* err)
         return true;
     } catch (const HException& e) {
         if (err) {
-            *err = QString::fromLocal8Bit(e.ErrorMessage().Text());
+            *err = QString::fromUtf8(e.ErrorMessage().Text());
         }
         return false;
     }
 }
 
-// ---------- ²ÊÉ«·½°¸1£ºPointer3 + for£¬Íù·µ¶¼ÓÃ for Öğµã ----------
+// ---------- å½©è‰²æ–¹æ¡ˆ1ï¼šPointer3 + forï¼Œå¾€è¿”éƒ½ç”¨ for é€ç‚¹ ----------
 
-// H µ½²ÊÉ« RGB£¬GetImagePointer3 + for
+// H åˆ°å½©è‰² RGBï¼ŒGetImagePointer3 + for
 static bool colorForLoopFromH(const HObject& himg, QImage* out, QString* err)
 {
     try {
@@ -260,7 +260,7 @@ static bool colorForLoopFromH(const HObject& himg, QImage* out, QString* err)
         CountChannels(himg, &ch);
         if (ch.I() < 3) {
             if (err) {
-                *err = QString::fromLocal8Bit("²»ÊÇÈıÍ¨µÀÍ¼Ïñ");
+                *err = QString::fromUtf8("ä¸æ˜¯ä¸‰é€šé“å›¾åƒ");
             }
             return false;
         }
@@ -294,17 +294,17 @@ static bool colorForLoopFromH(const HObject& himg, QImage* out, QString* err)
         return true;
     } catch (const HException& e) {
         if (err) {
-            *err = QString::fromLocal8Bit(e.ErrorMessage().Text());
+            *err = QString::fromUtf8(e.ErrorMessage().Text());
         }
         return false;
     }
 }
 
-// ---------- ²ÊÉ«·½°¸2£ºInterleave£¬±ÜÃâÖğµã ----------
+// ---------- å½©è‰²æ–¹æ¡ˆ2ï¼šInterleaveï¼Œé¿å…é€ç‚¹ ----------
 
 #ifdef HSIMAGE_HAS_OPENCV
 
-// Mat ×ª Halcon£¬¶ÔÆë¹¤³Ì ConvertMat2Halcon¡£
+// Mat è½¬ Halconï¼Œå¯¹é½å·¥ç¨‹ ConvertMat2Halconã€‚
 static void convertMat2Halcon(cv::Mat* pMatImg, HObject* pHObject)
 {
     if (pMatImg == 0 || pHObject == 0) {
@@ -323,7 +323,7 @@ static void convertMat2Halcon(cv::Mat* pMatImg, HObject* pHObject)
     }
 }
 
-// Halcon ×ª Mat£¬¶ÔÆë¹¤³Ì ConvertHalcon2Mat¡£²ÊÉ«²»×ß RegionFeatures¡£
+// Halcon è½¬ Matï¼Œå¯¹é½å·¥ç¨‹ ConvertHalcon2Matã€‚å½©è‰²ä¸èµ° RegionFeaturesã€‚
 static void convertHalcon2Mat(HObject stHalconImg, cv::Mat* pMatImg)
 {
     if (pMatImg == 0 || !stHalconImg.IsInitialized()) {
@@ -350,15 +350,15 @@ static void convertHalcon2Mat(HObject stHalconImg, cv::Mat* pMatImg)
         HTuple heightT;
         HTuple w;
         HTuple h;
-        // ÏÈÈ¡ÏñËØ¿í¸ß¡£Interleave ºó Pointer1 µÄ Width ÊÇĞĞ×Ö½Ú£¬²»ÄÜµ±ÏñËØ¿í¡£
+        // å…ˆå–åƒç´ å®½é«˜ã€‚Interleave å Pointer1 çš„ Width æ˜¯è¡Œå­—èŠ‚ï¼Œä¸èƒ½å½“åƒç´ å®½ã€‚
         GetImageSize(stHalconImg, &w, &h);
         const int width = w.I();
         const int height = h.I();
-        // ½»Ö¯³É BGR ÔÙ½»¸ø OpenCV Mat Ê¹ÓÃ¡£²»Òª¶ÔÃ¿¸öÏñËØĞ´ for Ñ­»·¡£
+        // äº¤ç»‡æˆ BGR å†äº¤ç»™ OpenCV Mat ä½¿ç”¨ã€‚ä¸è¦å¯¹æ¯ä¸ªåƒç´ å†™ for å¾ªç¯ã€‚
         InterleaveChannels(stHalconImg, &img, "bgr", "match", 0);
         GetImagePointer1(img, &ptr, &type, &strideT, &heightT);
         *pMatImg = cv::Mat(height, width, CV_8UC3);
-        // "match" ÈÃĞĞ½ô´Õ£¬ºóÃæ memcpy ²ÅÊÇÕû¿é¡£
+        // "match" è®©è¡Œç´§å‡‘ï¼Œåé¢ memcpy æ‰æ˜¯æ•´å—ã€‚
         memcpy(pMatImg->data, reinterpret_cast<void*>(ptr.L()),
                static_cast<size_t>(width) * static_cast<size_t>(height) * 3);
         (void)strideT;
@@ -368,7 +368,7 @@ static void convertHalcon2Mat(HObject stHalconImg, cv::Mat* pMatImg)
 
 #endif // HSIMAGE_HAS_OPENCV
 
-// QImage RGB888 -> GenImageInterleaved("rgb")¡£ĞĞ²»½ô´ÕÊ±ÏÈÊÕ³ÉÁ¬Ğø»º³å¡£
+// QImage RGB888 -> GenImageInterleaved("rgb")ã€‚è¡Œä¸ç´§å‡‘æ—¶å…ˆæ”¶æˆè¿ç»­ç¼“å†²ã€‚
 static bool colorInterleaveToH(const QImage& srcRgb, HObject* out, std::vector<unsigned char>* keepAlive,
                                QString* err, bool deepCopy)
 {
@@ -377,7 +377,7 @@ static bool colorInterleaveToH(const QImage& srcRgb, HObject* out, std::vector<u
         : srcRgb.convertToFormat(QImage::Format_RGB888);
     if (rgb.isNull() || !out || !keepAlive) {
         if (err) {
-            *err = QString::fromLocal8Bit("ÊäÈëÎŞĞ§");
+            *err = QString::fromUtf8("è¾“å…¥æ— æ•ˆ");
         }
         return false;
     }
@@ -386,11 +386,11 @@ static bool colorInterleaveToH(const QImage& srcRgb, HObject* out, std::vector<u
         const int h = rgb.height();
         const unsigned char* pixelPtr = nullptr;
         if (rgb.bytesPerLine() == w * 3) {
-            // ĞĞ×Ö½ÚµÈÓÚ¿í³Ë 3 Ê±Ö±½ÓÓÃ QImage »º³å£¬²»Áí¿½
+            // è¡Œå­—èŠ‚ç­‰äºå®½ä¹˜ 3 æ—¶ç›´æ¥ç”¨ QImage ç¼“å†²ï¼Œä¸å¦æ‹·
             pixelPtr = rgb.constBits();
             keepAlive->clear();
         } else {
-            // ÓĞ¶ÔÆëÌî³äÊ± memcpy ÊÕ³ÉÁ¬Ğø£¬²»½»»» R/B
+            // æœ‰å¯¹é½å¡«å……æ—¶ memcpy æ”¶æˆè¿ç»­ï¼Œä¸äº¤æ¢ R/B
             keepAlive->resize(static_cast<size_t>(w) * static_cast<size_t>(h) * 3);
             for (int y = 0; y < h; ++y) {
                 memcpy(&(*keepAlive)[static_cast<size_t>(y) * static_cast<size_t>(w) * 3],
@@ -412,7 +412,7 @@ static bool colorInterleaveToH(const QImage& srcRgb, HObject* out, std::vector<u
         return true;
     } catch (const HException& e) {
         if (err) {
-            *err = QString::fromLocal8Bit(e.ErrorMessage().Text());
+            *err = QString::fromUtf8(e.ErrorMessage().Text());
         }
         return false;
     }
@@ -425,11 +425,11 @@ static bool colorInterleaveFromH(const HObject& himg, QImage* out, QString* err)
         CountChannels(himg, &channel);
         if (channel.I() < 3) {
             if (err) {
-                *err = QString::fromLocal8Bit("²»ÊÇÈıÍ¨µÀÍ¼Ïñ");
+                *err = QString::fromUtf8("ä¸æ˜¯ä¸‰é€šé“å›¾åƒ");
             }
             return false;
         }
-        // ÏÈÈ¡ÏñËØ¿í¸ß¡£Interleave ºó Pointer1 µÄ Width ÊÇ stride£¬²»ÄÜÓÃËü³Ë 3 µ±ÏñËØÊı
+        // å…ˆå–åƒç´ å®½é«˜ã€‚Interleave å Pointer1 çš„ Width æ˜¯ strideï¼Œä¸èƒ½ç”¨å®ƒä¹˜ 3 å½“åƒç´ æ•°
         HTuple pixelW;
         HTuple pixelH;
         GetImageSize(himg, &pixelW, &pixelH);
@@ -446,7 +446,7 @@ static bool colorInterleaveFromH(const HObject& himg, QImage* out, QString* err)
 
         QImage qimg(width, height, QImage::Format_RGB888);
         const size_t nbytes = static_cast<size_t>(width) * static_cast<size_t>(height) * 3;
-        // "match" + RGB888 ĞĞ½ô´ÕÊ±Õû¿é memcpy£¬·ñÔò°´ĞĞ¿½
+        // "match" + RGB888 è¡Œç´§å‡‘æ—¶æ•´å— memcpyï¼Œå¦åˆ™æŒ‰è¡Œæ‹·
         if (qimg.bytesPerLine() == width * 3 && strideT.I() == width * 3) {
             memcpy(qimg.bits(), reinterpret_cast<void*>(ptr.L()), nbytes);
         } else {
@@ -461,15 +461,15 @@ static bool colorInterleaveFromH(const HObject& himg, QImage* out, QString* err)
         return true;
     } catch (const HException& e) {
         if (err) {
-            *err = QString::fromLocal8Bit(e.ErrorMessage().Text());
+            *err = QString::fromUtf8(e.ErrorMessage().Text());
         }
         return false;
     }
 }
 
-// ---------- ²ÊÉ«·½°¸3£º²ğ³ÉÈıÆ½ÃæÔÙ GenImage3£¬»ØÀ´ Decompose3 + for Æ´»Ø ----------
+// ---------- å½©è‰²æ–¹æ¡ˆ3ï¼šæ‹†æˆä¸‰å¹³é¢å† GenImage3ï¼Œå›æ¥ Decompose3 + for æ‹¼å› ----------
 
-// °Ñ RGB ²ğ³ÉÈı¸öÆ½Ãæ£¨µ÷ÓÃ·½³ÖÓĞ»º³å£©
+// æŠŠ RGB æ‹†æˆä¸‰ä¸ªå¹³é¢ï¼ˆè°ƒç”¨æ–¹æŒæœ‰ç¼“å†²ï¼‰
 static bool splitRgbToPlanes(const QImage& srcRgb, std::vector<unsigned char>* r,
                              std::vector<unsigned char>* g, std::vector<unsigned char>* b, QString* err)
 {
@@ -478,7 +478,7 @@ static bool splitRgbToPlanes(const QImage& srcRgb, std::vector<unsigned char>* r
         : srcRgb.convertToFormat(QImage::Format_RGB888);
     if (rgb.isNull() || !r || !g || !b) {
         if (err) {
-            *err = QString::fromLocal8Bit("Í¼ÏñÎª¿Õ");
+            *err = QString::fromUtf8("å›¾åƒä¸ºç©º");
         }
         return false;
     }
@@ -502,13 +502,13 @@ static bool splitRgbToPlanes(const QImage& srcRgb, std::vector<unsigned char>* r
     return true;
 }
 
-// ÈıÆ½ÃæÖ¸ÕëËÍ½ø GenImage3£¨µ÷ÓÃ·½³ÖÓĞÆ½Ãæ£©
+// ä¸‰å¹³é¢æŒ‡é’ˆé€è¿› GenImage3ï¼ˆè°ƒç”¨æ–¹æŒæœ‰å¹³é¢ï¼‰
 static bool colorGenImage3ToH(int w, int h, unsigned char* r, unsigned char* g, unsigned char* b,
                               HObject* out, QString* err)
 {
     if (!out || !r || !g || !b || w <= 0 || h <= 0) {
         if (err) {
-            *err = QString::fromLocal8Bit("ÊäÈëÎŞĞ§");
+            *err = QString::fromUtf8("è¾“å…¥æ— æ•ˆ");
         }
         return false;
     }
@@ -520,7 +520,7 @@ static bool colorGenImage3ToH(int w, int h, unsigned char* r, unsigned char* g, 
         return true;
     } catch (const HException& e) {
         if (err) {
-            *err = QString::fromLocal8Bit(e.ErrorMessage().Text());
+            *err = QString::fromUtf8(e.ErrorMessage().Text());
         }
         return false;
     }
@@ -563,7 +563,7 @@ static bool colorDecompose3FromH(const HObject& himg, QImage* out, QString* err)
         return true;
     } catch (const HException& e) {
         if (err) {
-            *err = QString::fromLocal8Bit(e.ErrorMessage().Text());
+            *err = QString::fromUtf8(e.ErrorMessage().Text());
         }
         return false;
     }
@@ -576,11 +576,11 @@ ConvertBenchRst benchGrayRoundTrip(const QImage& src, bool toHalconOnly)
 {
     ConvertBenchRst r;
 #ifndef HSIMAGE_HAS_HALCON
-    r.error = QString::fromLocal8Bit("Î´ÆôÓÃ Halcon");
+    r.error = QString::fromUtf8("æœªå¯ç”¨ Halcon");
     return r;
 #else
     if (src.isNull()) {
-        r.error = QString::fromLocal8Bit("Í¼ÏñÎª¿Õ");
+        r.error = QString::fromUtf8("å›¾åƒä¸ºç©º");
         return r;
     }
     QString err;
@@ -607,26 +607,26 @@ ConvertBenchRst benchGrayRoundTrip(const QImage& src, bool toHalconOnly)
 
     r.ms = r.msToH + (r.msFromH > 0.0 ? r.msFromH : 0.0);
     r.ok = true;
-    r.detail = QString::fromLocal8Bit("»Ò¶È Pointer1+memcpy  %1x%2")
+    r.detail = QString::fromUtf8("ç°åº¦ Pointer1+memcpy  %1x%2")
                    .arg(src.width())
                    .arg(src.height());
     return r;
 #endif
 }
 
-// ²ÊÉ«Íù·µ¼ÆÊ±
-// - ·½°¸1 ²ğ/ºÏÍ¨µÀ¶¼×ßÖğµã for£»·½°¸2 ÓÃ InterleaveChannels£»·½°¸3 ÓÃ Decompose3 Æ´»Ø
-// - ½ø Halcon ÓÃ GenImageInterleaved¡¢GenImage3¡¢Compose3¡¢GetImagePointer*
-// - ¼ÆÊ±²»º¬ GenImageConst£¬Ò²²»º¬ CopyImage ÄÇÖÖ°Ñ RGB888 ¿½³É×ÔÓĞ»º³å
+// å½©è‰²å¾€è¿”è®¡æ—¶
+// - æ–¹æ¡ˆ1 æ‹†/åˆé€šé“éƒ½èµ°é€ç‚¹ forï¼›æ–¹æ¡ˆ2 ç”¨ InterleaveChannelsï¼›æ–¹æ¡ˆ3 ç”¨ Decompose3 æ‹¼å›
+// - è¿› Halcon ç”¨ GenImageInterleavedã€GenImage3ã€Compose3ã€GetImagePointer*
+// - è®¡æ—¶ä¸å« GenImageConstï¼Œä¹Ÿä¸å« CopyImage é‚£ç§æŠŠ RGB888 æ‹·æˆè‡ªæœ‰ç¼“å†²
 ConvertBenchRst benchColorConvert(const QImage& src, ColorConvertMethod method, bool toHalconOnly)
 {
     ConvertBenchRst r;
 #ifndef HSIMAGE_HAS_HALCON
-    r.error = QString::fromLocal8Bit("Î´ÆôÓÃ Halcon");
+    r.error = QString::fromUtf8("æœªå¯ç”¨ Halcon");
     return r;
 #else
     if (src.isNull()) {
-        r.error = QString::fromLocal8Bit("Í¼ÏñÎª¿Õ");
+        r.error = QString::fromUtf8("å›¾åƒä¸ºç©º");
         return r;
     }
     QString err;
@@ -645,12 +645,12 @@ ConvertBenchRst benchColorConvert(const QImage& src, ColorConvertMethod method, 
 
     try {
         if (method == ColorMethodForLoop) {
-            // ·½°¸1£ºÖğµã²ğÍ¨µÀĞ´ÈëÔÙ Compose3£¬»ØÀ´Í¬ÑùÖğµãÆ´
+            // æ–¹æ¡ˆ1ï¼šé€ç‚¹æ‹†é€šé“å†™å…¥å† Compose3ï¼Œå›æ¥åŒæ ·é€ç‚¹æ‹¼
             const QImage rgb = (src.format() == QImage::Format_RGB888)
                 ? src
                 : src.convertToFormat(QImage::Format_RGB888);
             if (rgb.isNull()) {
-                r.error = QString::fromLocal8Bit("Í¼ÏñÎª¿Õ");
+                r.error = QString::fromUtf8("å›¾åƒä¸ºç©º");
                 return r;
             }
             const int width = rgb.width();
@@ -668,7 +668,7 @@ ConvertBenchRst benchColorConvert(const QImage& src, ColorConvertMethod method, 
             unsigned char* pg = static_cast<unsigned char*>(hg.GetImagePointer1(&type, &gw, &gh));
             unsigned char* pb = static_cast<unsigned char*>(hb.GetImagePointer1(&type, &gw, &gh));
             if (!pr || !pg || !pb || gw != width || gh != height) {
-                r.error = QString::fromLocal8Bit("GenImageConst Ê§°Ü");
+                r.error = QString::fromUtf8("GenImageConst å¤±è´¥");
                 return r;
             }
             t.start();
@@ -695,12 +695,12 @@ ConvertBenchRst benchColorConvert(const QImage& src, ColorConvertMethod method, 
                 r.outImage = back;
             }
         } else if (method == ColorMethodInterleave) {
-            // ·½°¸2£ºĞĞ½ô´ÕÊ±Ö±½Ó½»Ö¯£¬·ñÔòÏÈÊÕ³ÉÁ¬Ğø»º³å
+            // æ–¹æ¡ˆ2ï¼šè¡Œç´§å‡‘æ—¶ç›´æ¥äº¤ç»‡ï¼Œå¦åˆ™å…ˆæ”¶æˆè¿ç»­ç¼“å†²
             const QImage rgb = (src.format() == QImage::Format_RGB888)
                 ? src
                 : src.convertToFormat(QImage::Format_RGB888);
             if (rgb.isNull()) {
-                r.error = QString::fromLocal8Bit("Í¼ÏñÎª¿Õ");
+                r.error = QString::fromUtf8("å›¾åƒä¸ºç©º");
                 return r;
             }
             const int width = rgb.width();
@@ -740,7 +740,7 @@ ConvertBenchRst benchColorConvert(const QImage& src, ColorConvertMethod method, 
                 HTuple channel;
                 CountChannels(himg, &channel);
                 if (channel.I() < 3) {
-                    r.error = QString::fromLocal8Bit("²»ÊÇÈıÍ¨µÀÍ¼Ïñ");
+                    r.error = QString::fromUtf8("ä¸æ˜¯ä¸‰é€šé“å›¾åƒ");
                     return r;
                 }
                 HTuple pixelW;
@@ -765,7 +765,7 @@ ConvertBenchRst benchColorConvert(const QImage& src, ColorConvertMethod method, 
                 const unsigned char* srcPtr = reinterpret_cast<unsigned char*>(ptr.L());
                 const int stride = strideT.I();
 
-                // Ö»°üÒ»²ã²»¿½±´£¬±ØĞë±£Ö¤ interleaved »î¹ıÕâ´Î H->buf
+                // åªåŒ…ä¸€å±‚ä¸æ‹·è´ï¼Œå¿…é¡»ä¿è¯ interleaved æ´»è¿‡è¿™æ¬¡ H->buf
                 t.start();
                 {
                     QImage wrapped(srcPtr, pw, ph, stride, QImage::Format_RGB888);
@@ -773,7 +773,7 @@ ConvertBenchRst benchColorConvert(const QImage& src, ColorConvertMethod method, 
                 }
                 msWrap = elapsedMs(t);
 
-                // ·ÖÅä QImage ×Ô¼ºµÄ»º³å¡£Õâ¶Î²»¼ÆÈë H µ½»º³åµÄÊ±¼ä
+                // åˆ†é… QImage è‡ªå·±çš„ç¼“å†²ã€‚è¿™æ®µä¸è®¡å…¥ H åˆ°ç¼“å†²çš„æ—¶é—´
                 t.start();
                 QImage qimg(pw, ph, QImage::Format_RGB888);
                 msAllocQ = elapsedMs(t);
@@ -791,7 +791,7 @@ ConvertBenchRst benchColorConvert(const QImage& src, ColorConvertMethod method, 
                 }
                 msMemcpy = elapsedMs(t);
 
-                // H µ½»º³åÖ»¼Ó½»Ö¯¡¢È¡Ö¸ÕëºÍ memcpy£¬²»º¬·ÖÅä QImage
+                // H åˆ°ç¼“å†²åªåŠ äº¤ç»‡ã€å–æŒ‡é’ˆå’Œ memcpyï¼Œä¸å«åˆ†é… QImage
                 r.msFromH = msInterleave + msPointer1 + msMemcpy;
                 back = qimg;
                 r.outImage = back;
@@ -815,12 +815,12 @@ ConvertBenchRst benchColorConvert(const QImage& src, ColorConvertMethod method, 
             r.stages = st;
         } else if (method == ColorMethodOpenCvMerge) {
 #ifdef HSIMAGE_HAS_OPENCV
-            // ·½°¸4£ºOpenCV split/merge¡£½øÈ¥ÖğĞĞ¿½½ø Mat£¬merge ³öÀ´ÔÙÖğĞĞĞ´»Ø
+            // æ–¹æ¡ˆ4ï¼šOpenCV split/mergeã€‚è¿›å»é€è¡Œæ‹·è¿› Matï¼Œmerge å‡ºæ¥å†é€è¡Œå†™å›
             const QImage rgb = (src.format() == QImage::Format_RGB888)
                 ? src
                 : src.convertToFormat(QImage::Format_RGB888);
             if (rgb.isNull()) {
-                r.error = QString::fromLocal8Bit("Í¼ÏñÎª¿Õ");
+                r.error = QString::fromUtf8("å›¾åƒä¸ºç©º");
                 return r;
             }
             const int width = rgb.width();
@@ -833,7 +833,7 @@ ConvertBenchRst benchColorConvert(const QImage& src, ColorConvertMethod method, 
             t.start();
             cv::split(mat, planes);
             if (planes.size() != 3) {
-                r.error = QString::fromLocal8Bit("cv::split Ê§°Ü");
+                r.error = QString::fromUtf8("cv::split å¤±è´¥");
                 return r;
             }
             GenImage3(&himg, "byte", width, height, reinterpret_cast<Hlong>(planes[0].data),
@@ -872,11 +872,11 @@ ConvertBenchRst benchColorConvert(const QImage& src, ColorConvertMethod method, 
                 r.outImage = back;
             }
 #else
-            r.error = QString::fromLocal8Bit("Î´ÆôÓÃ OpenCV£¬²»ÄÜ²â split/merge");
+            r.error = QString::fromUtf8("æœªå¯ç”¨ OpenCVï¼Œä¸èƒ½æµ‹ split/merge");
             return r;
 #endif
         } else {
-            // ·½°¸3£º²ğÆ½Ãæ + GenImage3 / Decompose3 + ÖğµãÆ´¡£Æ½Ãæ»º³åÓÉ±¾º¯Êı³ÖÓĞ
+            // æ–¹æ¡ˆ3ï¼šæ‹†å¹³é¢ + GenImage3 / Decompose3 + é€ç‚¹æ‹¼ã€‚å¹³é¢ç¼“å†²ç”±æœ¬å‡½æ•°æŒæœ‰
             std::vector<unsigned char> keepR;
             std::vector<unsigned char> keepG;
             std::vector<unsigned char> keepB;
@@ -884,7 +884,7 @@ ConvertBenchRst benchColorConvert(const QImage& src, ColorConvertMethod method, 
                 ? src
                 : src.convertToFormat(QImage::Format_RGB888);
             if (rgb.isNull()) {
-                r.error = QString::fromLocal8Bit("Í¼ÏñÎª¿Õ");
+                r.error = QString::fromUtf8("å›¾åƒä¸ºç©º");
                 return r;
             }
             const int width = rgb.width();
@@ -911,13 +911,13 @@ ConvertBenchRst benchColorConvert(const QImage& src, ColorConvertMethod method, 
         }
         r.ms = r.msToH + (r.msFromH > 0.0 ? r.msFromH : 0.0);
         r.ok = true;
-        r.detail = QString::fromLocal8Bit("²ÊÉ«[%1]  %2x%3")
+        r.detail = QString::fromUtf8("å½©è‰²[%1]  %2x%3")
                        .arg(QString::fromLatin1(methodName))
                        .arg(src.width())
                        .arg(src.height());
         return r;
     } catch (const HException& e) {
-        r.error = QString::fromLocal8Bit(e.ErrorMessage().Text());
+        r.error = QString::fromUtf8(e.ErrorMessage().Text());
         return r;
     }
 #endif

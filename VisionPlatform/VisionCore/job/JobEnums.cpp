@@ -1,6 +1,6 @@
 /**
  * @file JobEnums.cpp
- * @brief JobEnumsÊµÏÖ
+ * @brief JobEnumså®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -11,42 +11,133 @@
 
 namespace Vision {
 
-// ´¥·¢·½Ê½ÏÔÊ¾Ãû
-std::string triggerTitle(TriggerMode t)
+// æ‰§è¡Œæ–¹å¼
+std::string execWayTitle(ExecWay way)
 {
-    switch (t) {
-    case TriggerSoft:        return Translate::tr("Èí¼ş´¥·¢");
-    case TriggerHardwareIo:  return Translate::tr("Ó²¼ş´¥·¢");
-    case TriggerUpstreamJob: return Translate::tr("ÉÏÓÎÍê³É");
-    case TriggerLoop:        return Translate::tr("Ñ­»·");
-    default:                 return Translate::tr("Èí¼ş´¥·¢");
+    switch (way) {
+    case ExecCalled:     return Translate::tr("è¢«è°ƒç”¨");
+    case ExecStopped:    return Translate::tr("åœæ­¢");
+    case ExecLoadOnce:   return Translate::tr("åŠ è½½æ—¶ä¸€æ¬¡");
+    case ExecUnloadOnce: return Translate::tr("å¸è½½æ—¶ä¸€æ¬¡");
+    case ExecActive:
+    default:             return Translate::tr("ä¸»åŠ¨æ‰§è¡Œ");
     }
 }
 
-// Ê§°Ü²ßÂÔÏÔÊ¾Ãû
+const char* execWayName(ExecWay way)
+{
+    switch (way) {
+    case ExecCalled:     return "called";
+    case ExecStopped:    return "stopped";
+    case ExecLoadOnce:   return "loadOnce";
+    case ExecUnloadOnce: return "unloadOnce";
+    case ExecActive:
+    default:             return "active";
+    }
+}
+
+ExecWay execWayFromName(const std::string& name)
+{
+    if (name == "called") return ExecCalled;
+    if (name == "stopped") return ExecStopped;
+    if (name == "loadOnce") return ExecLoadOnce;
+    if (name == "unloadOnce") return ExecUnloadOnce;
+    return ExecActive;
+}
+
+ExecWay execWayFromLegacyTrigger(int trigger)
+{
+    if (trigger == 3) {
+        return ExecActive;
+    }
+    if (trigger >= 0 && trigger <= 2) {
+        return ExecCalled;
+    }
+    return ExecActive;
+}
+
+const char* failPolicyName(FailPolicy policy)
+{
+    switch (policy) {
+    case FailContinue: return "continue";
+    case FailStopAll:  return "stopAll";
+    case FailSkip:     return "skip";
+    case FailStopStation:
+    default:           return "stopStation";
+    }
+}
+
+FailPolicy failPolicyFromName(const std::string& name)
+{
+    if (name == "continue") return FailContinue;
+    if (name == "stopAll") return FailStopAll;
+    if (name == "skip") return FailSkip;
+    return FailStopStation;
+}
+
+FailPolicy failPolicyFromLegacy(int value)
+{
+    if (value == 1) return FailSkip;
+    if (value == 2) return FailContinue;
+    return FailStopStation;
+}
+
+GroupKind groupKindFromLegacy(int value)
+{
+    if (value == 1) return GroupParallel;
+    if (value == 2) return GroupIf;
+    if (value == 3) return GroupLoop;
+    if (value == 0) return GroupSequence;
+    return GroupKindUndefined;
+}
+
+const char* groupKindName(GroupKind kind)
+{
+    switch (kind) {
+    case GroupIf:       return "if";
+    case GroupLoop:     return "loop";
+    case GroupParallel: return "parallel";
+    case GroupSubJob:   return "subJob";
+    case GroupSequence: return "sequence";
+    default:            return "";
+    }
+}
+
+GroupKind groupKindFromName(const std::string& name)
+{
+    if (name == "sequence") return GroupSequence;
+    if (name == "if") return GroupIf;
+    if (name == "loop") return GroupLoop;
+    if (name == "parallel") return GroupParallel;
+    if (name == "subJob") return GroupSubJob;
+    return GroupKindUndefined;
+}
+
+// å¤±è´¥ç­–ç•¥æ˜¾ç¤ºå
 std::string failPolicyTitle(FailPolicy p)
 {
     switch (p) {
-    case FailStopStation: return Translate::tr("Í£¹¤Õ¾");
-    case FailSkip:        return Translate::tr("Ìø¹ı");
-    case FailNgContinue:  return Translate::tr("NG Ê±¼ÌĞø");
-    default:              return Translate::tr("Í£¹¤Õ¾");
+    case FailContinue:    return Translate::tr("ç»§ç»­");
+    case FailStopStation: return Translate::tr("åœå·¥ç«™");
+    case FailStopAll:     return Translate::tr("åœå…¨éƒ¨");
+    case FailSkip:        return Translate::tr("è·³è¿‡");
+    default:              return Translate::tr("åœå·¥ç«™");
     }
 }
-
-// ¹¤¾ß×éÓïÒåÏÔÊ¾Ãû
+// å·¥å…·ç»„è¯­ä¹‰æ˜¾ç¤ºå
 std::string groupKindTitle(GroupKind k)
 {
     switch (k) {
-    case GroupSequence: return Translate::tr("Ë³Ğò");
-    case GroupParallel: return Translate::tr("²¢ĞĞ");
-    case GroupIf:       return Translate::tr("Ìõ¼ş");
-    case GroupLoop:     return Translate::tr("Ñ­»·");
-    default:            return Translate::tr("Ë³Ğò");
+    case GroupSequence: return Translate::tr("é¡ºåº");
+    case GroupIf:       return Translate::tr("æ¡ä»¶");
+    case GroupLoop:     return Translate::tr("å¾ªç¯");
+    case GroupParallel: return Translate::tr("å¹¶è¡Œ");
+    case GroupSubJob:   return Translate::tr("å­æµç¨‹");
+    default:            return Translate::tr("é¡ºåº");
     }
 }
 
-// ´ÓÕûĞÍ½âÎö×éÓïÒå
+// ä»æ•´å‹è§£æç»„è¯­ä¹‰
 GroupKind groupKindFromInt(int v)
 {
     if (v < 0 || v >= static_cast<int>(GroupKindMax)) {
@@ -55,24 +146,24 @@ GroupKind groupKindFromInt(int v)
     return static_cast<GroupKind>(v);
 }
 
-// ½á¹û¹æÔòÈıÌ¬ÏÔÊ¾Ãû
+// ç»“æœè§„åˆ™ä¸‰æ€æ˜¾ç¤ºå
 std::string resultTermStateTitle(RstTermState s)
 {
     switch (s) {
-    case RstTermIgnore:    return Translate::tr("ºöÂÔ");
-    case RstTermRequireOk: return Translate::tr("Òª OK");
-    case RstTermRequireNg: return Translate::tr("Òª NG");
-    default:                  return Translate::tr("ºöÂÔ");
+    case RstTermIgnore:    return Translate::tr("å¿½ç•¥");
+    case RstTermRequireOk: return Translate::tr("è¦ OK");
+    case RstTermRequireNg: return Translate::tr("è¦ NG");
+    default:                  return Translate::tr("å¿½ç•¥");
     }
 }
 
-// ½á¹û¹æÔòÀ´Ô´ÏÔÊ¾Ãû
+// ç»“æœè§„åˆ™æ¥æºæ˜¾ç¤ºå
 std::string resultTermKindTitle(RstTermKind k)
 {
     switch (k) {
-    case RstTermTool: return Translate::tr("¹¤¾ß");
-    case RstTermRule: return Translate::tr("¹æÔò");
-    default:             return Translate::tr("¹¤¾ß");
+    case RstTermTool: return Translate::tr("å·¥å…·");
+    case RstTermRule: return Translate::tr("è§„åˆ™");
+    default:             return Translate::tr("å·¥å…·");
     }
 }
 

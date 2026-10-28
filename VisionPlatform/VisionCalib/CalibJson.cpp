@@ -1,6 +1,6 @@
 /**
  * @file CalibJson.cpp
- * @brief CalibJsonÊµÏÖ
+ * @brief CalibJsonå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -17,7 +17,7 @@ namespace Vision {
 
 namespace {
 
-// 9 ¸öÊıĞ´³É JSON Êı×é
+// 9 ä¸ªæ•°å†™æˆ JSON æ•°ç»„
 JsonValue arr9(const double* m)
 {
     JsonValue j;
@@ -28,7 +28,7 @@ JsonValue arr9(const double* m)
     return j;
 }
 
-// ´Ó¶ÔÏó×Ö¶Î¶Á 9 ¸öÊı£»³¤¶È²»¶Ô·µ»Ø false
+// ä»å¯¹è±¡å­—æ®µè¯» 9 ä¸ªæ•°ï¼›é•¿åº¦ä¸å¯¹è¿”å› false
 bool read9(const JsonValue& j, const std::string& key, double* m)
 {
     const JsonValue a = j.value(key);
@@ -43,7 +43,7 @@ bool read9(const JsonValue& j, const std::string& key, double* m)
 
 }
 
-// ¶ÁÕû¸öÎÄ±¾ÎÄ¼ş
+// è¯»æ•´ä¸ªæ–‡æœ¬æ–‡ä»¶
 bool calibReadText(const std::string& path, std::string* text)
 {
     if (!text || path.empty()) {
@@ -64,7 +64,7 @@ bool calibReadText(const std::string& path, std::string* text)
     return true;
 }
 
-// Ğ´ÎÄ±¾ÎÄ¼ş£»ÏÈ±£Ö¤¸¸Ä¿Â¼´æÔÚ
+// å†™æ–‡æœ¬æ–‡ä»¶ï¼›å…ˆä¿è¯çˆ¶ç›®å½•å­˜åœ¨
 bool calibWriteText(const std::string& path, const std::string& text)
 {
     if (path.empty()) {
@@ -84,7 +84,7 @@ bool calibWriteText(const std::string& path, const std::string& text)
     return n == text.size();
 }
 
-// ±ê¶¨²ÎÊıĞ´³É JSON ¶ÔÏó
+// æ ‡å®šå‚æ•°å†™æˆ JSON å¯¹è±¡
 JsonValue paramToJson(const std::string& name, int imageWidth, int imageHeight, const CalibParam& p)
 {
     JsonValue j;
@@ -106,7 +106,7 @@ JsonValue paramToJson(const std::string& name, int imageWidth, int imageHeight, 
     return j;
 }
 
-// ´Ó JSON ¶ÔÏóÌî±ê¶¨²ÎÊı
+// ä» JSON å¯¹è±¡å¡«æ ‡å®šå‚æ•°
 bool paramFromJson(const JsonValue& j, std::string* name, int* imageWidth, int* imageHeight, CalibParam* p)
 {
     if (!p || !j.isObject()) {
@@ -135,7 +135,7 @@ bool paramFromJson(const JsonValue& j, std::string* name, int* imageWidth, int* 
     return true;
 }
 
-// Ïà»úÄ£ĞÍĞ´³É JSON ¶ÔÏó
+// ç›¸æœºæ¨¡å‹å†™æˆ JSON å¯¹è±¡
 JsonValue cameraToJson(const CamModel& m)
 {
     JsonValue j;
@@ -162,7 +162,7 @@ JsonValue cameraToJson(const CamModel& m)
     return j;
 }
 
-// ´Ó JSON ¶ÔÏóÌîÏà»úÄ£ĞÍ£»È± fx ÊÓÎª²»ÊÇÏà»úÄ£ĞÍ
+// ä» JSON å¯¹è±¡å¡«ç›¸æœºæ¨¡å‹ï¼›ç¼º fx è§†ä¸ºä¸æ˜¯ç›¸æœºæ¨¡å‹
 bool cameraFromJson(const JsonValue& j, CamModel* m)
 {
     if (!m || !j.isObject() || !j.contains("fx")) {
@@ -192,7 +192,7 @@ bool cameraFromJson(const JsonValue& j, CamModel* m)
     return true;
 }
 
-// Æ½ÃæÓ³ÉäĞ´³É JSON ¶ÔÏó
+// å¹³é¢æ˜ å°„å†™æˆ JSON å¯¹è±¡
 JsonValue planeToJson(const PlaneMap& m)
 {
     JsonValue j;
@@ -223,7 +223,7 @@ JsonValue planeToJson(const PlaneMap& m)
     return j;
 }
 
-// ´Ó JSON ¶ÔÏóÌîÆ½ÃæÓ³Éä£»Á½¸ö 3x3 ¾ØÕó¶¼±ØĞëÔÚ
+// ä» JSON å¯¹è±¡å¡«å¹³é¢æ˜ å°„ï¼›ä¸¤ä¸ª 3x3 çŸ©é˜µéƒ½å¿…é¡»åœ¨
 bool planeFromJson(const JsonValue& j, PlaneMap* m)
 {
     if (!m || !j.isObject() || !j.contains("imageToWorld")) {
@@ -264,7 +264,7 @@ bool planeFromJson(const JsonValue& j, PlaneMap* m)
     return true;
 }
 
-// Ğı×ªÖĞĞÄĞ´³É JSON ¶ÔÏó
+// æ—‹è½¬ä¸­å¿ƒå†™æˆ JSON å¯¹è±¡
 JsonValue rotateToJson(const RotateCenter& m)
 {
     JsonValue j;
@@ -295,7 +295,7 @@ JsonValue rotateToJson(const RotateCenter& m)
     return j;
 }
 
-// ´Ó JSON ¶ÔÏóÌîĞı×ªÖĞĞÄ£»È±°ë¾¶ÊÓÎª²»ÊÇĞı×ªÖĞĞÄ
+// ä» JSON å¯¹è±¡å¡«æ—‹è½¬ä¸­å¿ƒï¼›ç¼ºåŠå¾„è§†ä¸ºä¸æ˜¯æ—‹è½¬ä¸­å¿ƒ
 bool rotateFromJson(const JsonValue& j, RotateCenter* m)
 {
     if (!m || !j.isObject() || !j.contains("radius")) {

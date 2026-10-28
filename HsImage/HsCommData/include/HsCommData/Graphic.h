@@ -1,6 +1,6 @@
 /**
  * @file Graphic.h
- * @brief GraphicÍ·ÎÄ¼ş
+ * @brief Graphicå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -24,61 +24,61 @@
 
 namespace HsCommData {
 
-/** @brief »æÖÆÖÖÀà¡£¼¸ºÎÖ»Õ¼ KindObject£¬¾ßÌåÔ²»òÂÖÀª¿´ geom */
+/** @brief ç»˜åˆ¶ç§ç±»ã€‚å‡ ä½•åªå  KindObjectï¼Œå…·ä½“åœ†æˆ–è½®å»“çœ‹ geom */
 enum GraphicKind {
-    KindUndefined = -1, ///< Î´¶¨Òå
-    KindObject = 0, ///< ¼¸ºÎÔÚ geom Àï£¬ÖÖÀà¿ÉÒÔ²»Í¬
-    KindPoint,      ///< µã
-    KindCross,      ///< Ê®×Ö
-    KindText,       ///< ÎÄ±¾
-    KindTextBadge,  ///< ·ÖÀà»ÕÕÂ£¬ÃªµãÔÚ text
-    KindMask,       ///< »Ò¶ÈÑÚÂë
-    KindKeypoints,  ///< ¹Ø¼üµã£¬¼¸ºÎÊÇÂÖÀª
-    KindSkeleton,   ///< ¹Ç¼Ü£¬¼¸ºÎÊÇÂÖÀª£¬³É¶ÔÎª±ß
-    KindArrow,       ///< ¼ıÍ·£¬¼¸ºÎÔÚ arrow
-    KindMax ///< ¸öÊı£¬²»ÊÇºÏ·¨Öµ
+    KindUndefined = -1, ///< æœªå®šä¹‰
+    KindObject = 0, ///< å‡ ä½•åœ¨ geom é‡Œï¼Œç§ç±»å¯ä»¥ä¸åŒ
+    KindPoint,      ///< ç‚¹
+    KindCross,      ///< åå­—
+    KindText,       ///< æ–‡æœ¬
+    KindTextBadge,  ///< åˆ†ç±»å¾½ç« ï¼Œé”šç‚¹åœ¨ text
+    KindMask,       ///< ç°åº¦æ©ç 
+    KindKeypoints,  ///< å…³é”®ç‚¹ï¼Œå‡ ä½•æ˜¯è½®å»“
+    KindSkeleton,   ///< éª¨æ¶ï¼Œå‡ ä½•æ˜¯è½®å»“ï¼Œæˆå¯¹ä¸ºè¾¹
+    KindArrow,       ///< ç®­å¤´ï¼Œå‡ ä½•åœ¨ arrow
+    KindMax ///< ä¸ªæ•°ï¼Œä¸æ˜¯åˆæ³•å€¼
 };
 
-/** @brief Stack ÊÇ½á¹ûµş¼Ó£¬Ö»¶Á£»Drawing ÊÇ¿ÉÍÏµÄ ROI */
+/** @brief Stack æ˜¯ç»“æœå åŠ ï¼Œåªè¯»ï¼›Drawing æ˜¯å¯æ‹–çš„ ROI */
 enum GraphicRole {
-    RoleStack = 0, ///< ½á¹ûµş¼Ó
-    RoleDrawing    ///< ½»»¥ ROI
+    RoleStack = 0, ///< ç»“æœå åŠ 
+    RoleDrawing    ///< äº¤äº’ ROI
 };
 
 /**
  * @class Graphic
- * @brief Ò»Ìõµş¼Ó»ò ROI¡£±¾Àà²»¸ºÔğÍùÆÁÄ»ÉÏ»­
+ * @brief ä¸€æ¡å åŠ æˆ– ROIã€‚æœ¬ç±»ä¸è´Ÿè´£å¾€å±å¹•ä¸Šç”»
  */
 class HSCOMMDATA_EXPORT Graphic {
 public:
-    std::string id;          ///< Î¨Ò» id
-    std::string layerId;     ///< Í¼²ã id£¨Ô¤Áô£©
-    GraphicKind kind;        ///< »æÖÆÖÖÀà
-    GraphicRole role;        ///< Stack »ò Drawing
-    GeomStyle   geomStyle;   ///< ¼¸ºÎ¡¢Ê®×Ö¡¢¼ıÍ·¡¢µã
-    TextStyle   textStyle;   ///< ÎÄ×Ö
-    int64_t     frameId;     ///< ËùÊôÖ¡£¬ĞëÓëµ×Í¼Ò»ÖÂ
-    Box2        boundsImage; ///< Í¼Ïñ×ø±ê°üÎ§ºĞ
-    bool        visible;     ///< ÊÇ·ñ²ÎÓë»æÖÆ
-    HsObject    geom;        ///< KindObject / ¹Ø¼üµã / ¹Ç¼Ü¡£Stack ¿É·Å¶à¸ö£¬ÖÖÀà¿ÉÒÔ²»Í¬£»Drawing Ö»ÓÃµÚ 0 ¸ö
-    std::vector<HsCross> cross; ///< KindCross¡£Stack ¿É·Å¶à¸ö£»Drawing Ö»ÓÃµÚ 0 ¸ö
-    std::vector<HsArrow> arrow; ///< KindArrow¡£Stack ¿É·Å¶à¸ö£»Drawing Ö»ÓÃµÚ 0 ¸ö
-    std::vector<HsText>  text;  ///< KindText / KindTextBadge¡£Stack ¿É·Å¶à¸ö£»Drawing Ö»ÓÃµÚ 0 ¸ö
-    std::vector<Point2d>  point; ///< KindPoint Î»ÖÃ¡£Stack ¿É·Å¶à¸ö£»Drawing Ö»ÓÃµÚ 0 ¸ö
-    double markerSize;          ///< KindPoint °ë¿í£¨ÏñËØ£©£¬ÕûÅú¹²ÓÃ
+    std::string id;          ///< å”¯ä¸€ id
+    std::string layerId;     ///< å›¾å±‚ idï¼ˆé¢„ç•™ï¼‰
+    GraphicKind kind;        ///< ç»˜åˆ¶ç§ç±»
+    GraphicRole role;        ///< Stack æˆ– Drawing
+    GeomStyle   geomStyle;   ///< å‡ ä½•ã€åå­—ã€ç®­å¤´ã€ç‚¹
+    TextStyle   textStyle;   ///< æ–‡å­—
+    int64_t     frameId;     ///< æ‰€å±å¸§ï¼Œé¡»ä¸åº•å›¾ä¸€è‡´
+    Box2        boundsImage; ///< å›¾åƒåæ ‡åŒ…å›´ç›’
+    bool        visible;     ///< æ˜¯å¦å‚ä¸ç»˜åˆ¶
+    HsObject    geom;        ///< KindObject / å…³é”®ç‚¹ / éª¨æ¶ã€‚Stack å¯æ”¾å¤šä¸ªï¼Œç§ç±»å¯ä»¥ä¸åŒï¼›Drawing åªç”¨ç¬¬ 0 ä¸ª
+    std::vector<HsCross> cross; ///< KindCrossã€‚Stack å¯æ”¾å¤šä¸ªï¼›Drawing åªç”¨ç¬¬ 0 ä¸ª
+    std::vector<HsArrow> arrow; ///< KindArrowã€‚Stack å¯æ”¾å¤šä¸ªï¼›Drawing åªç”¨ç¬¬ 0 ä¸ª
+    std::vector<HsText>  text;  ///< KindText / KindTextBadgeã€‚Stack å¯æ”¾å¤šä¸ªï¼›Drawing åªç”¨ç¬¬ 0 ä¸ª
+    std::vector<Point2d>  point; ///< KindPoint ä½ç½®ã€‚Stack å¯æ”¾å¤šä¸ªï¼›Drawing åªç”¨ç¬¬ 0 ä¸ª
+    double markerSize;          ///< KindPoint åŠå®½ï¼ˆåƒç´ ï¼‰ï¼Œæ•´æ‰¹å…±ç”¨
     MaskP     mask;      ///< KindMask
-    std::vector<int> keypointVis;          ///< KindKeypoints£ºÓë pts ¶ÔÆë£¬1 ÕÚµ²¿ÕĞÄ£¬2 ¿É¼ûÊµĞÄ
-    std::vector<unsigned char> edgeDashed; ///< KindSkeleton£ºÖğ±ß 1 ÎªĞéÏß
+    std::vector<int> keypointVis;          ///< KindKeypointsï¼šä¸ pts å¯¹é½ï¼Œ1 é®æŒ¡ç©ºå¿ƒï¼Œ2 å¯è§å®å¿ƒ
+    std::vector<unsigned char> edgeDashed; ///< KindSkeletonï¼šé€è¾¹ 1 ä¸ºè™šçº¿
 
-    Graphic(); ///< Ä¬ÈÏÔ²¡¢Stack¡¢¿É¼û
+    Graphic(); ///< é»˜è®¤åœ†ã€Stackã€å¯è§
 
     /**
-     * @brief °üÎ§ºĞºÍ»æÖÆÒªÉ¨¹ıµÄ¸öÊı
-     * Drawing Ö»ÓÃµÚ 0 ¸ö£¬ÈİÆ÷¿ÕÔòÎª 0¡£KindObject¡¢¹Ø¼üµã¡¢¹Ç¼ÜÔÚ Stack ÉÏÎª geom µÄ¸öÊı¡£µã¡¢Ê®×Ö¡¢¼ıÍ·¡¢ÎÄ×ÖÔÚ Stack ÉÏÎª¸÷×ÔÈİÆ÷µÄ¸öÊı¡£ÑÚÄ¤Îª 1
+     * @brief åŒ…å›´ç›’å’Œç»˜åˆ¶è¦æ‰«è¿‡çš„ä¸ªæ•°
+     * Drawing åªç”¨ç¬¬ 0 ä¸ªï¼Œå®¹å™¨ç©ºåˆ™ä¸º 0ã€‚KindObjectã€å…³é”®ç‚¹ã€éª¨æ¶åœ¨ Stack ä¸Šä¸º geom çš„ä¸ªæ•°ã€‚ç‚¹ã€åå­—ã€ç®­å¤´ã€æ–‡å­—åœ¨ Stack ä¸Šä¸ºå„è‡ªå®¹å™¨çš„ä¸ªæ•°ã€‚æ©è†œä¸º 1
      */
     int geomSpan() const;
 
-    /** @brief °´ kind ÖØËã boundsImage¡£Stack È¡Ã¿¸öÔªËØ×Ô¼ºÖÖÀàµÄ²¢¼¯ */
+    /** @brief æŒ‰ kind é‡ç®— boundsImageã€‚Stack å–æ¯ä¸ªå…ƒç´ è‡ªå·±ç§ç±»çš„å¹¶é›† */
     void updateBounds();
 };
 

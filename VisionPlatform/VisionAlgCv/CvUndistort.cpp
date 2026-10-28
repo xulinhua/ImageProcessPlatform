@@ -1,6 +1,6 @@
 /**
  * @file CvUndistort.cpp
- * @brief CvUndistortÊµÏÖ
+ * @brief CvUndistortå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -48,11 +48,11 @@ std::map<std::string, MapCache> g_maps;
 
 }
 
-// °´ÄÚ²ÎÈ¥»û±ä£¬Ä£ĞÍÊ±¼ä²»±äÔò¸´ÓÃÓ³Éä±í
+// æŒ‰å†…å‚å»ç•¸å˜ï¼Œæ¨¡å‹æ—¶é—´ä¸å˜åˆ™å¤ç”¨æ˜ å°„è¡¨
 namespace {
 const char kVer_CvUndistort[] = "1.0.0.0";
 const Vision::VerNoteRaw kNotes_CvUndistort[] = {
-    { "1.0.0.0", "Ê×°æ" },
+    { "1.0.0.0", "é¦–ç‰ˆ" },
 };
 }
 
@@ -61,7 +61,7 @@ std::string Vision::CvUndistort::version() const
     return kVer_CvUndistort;
 }
 
-// °æ±¾±ä¸ü£¬Ö»×·¼Ó
+// ç‰ˆæœ¬å˜æ›´ï¼Œåªè¿½åŠ 
 std::vector<Vision::VerNote> Vision::CvUndistort::versionNotes() const
 {
     return Vision::verNotesFrom(kNotes_CvUndistort, static_cast<int>(sizeof(kNotes_CvUndistort) / sizeof(kNotes_CvUndistort[0])));
@@ -69,14 +69,14 @@ std::vector<Vision::VerNote> Vision::CvUndistort::versionNotes() const
 Vision::AlgToolOut Vision::CvUndistort::run(const Vision::AlgToolIn& in)
 {
     AlgToolOut out;
-    if (in.image.image.isNull()) {
+    if (inputImage(in).isNull()) {
         out.message = U(L"\u6ca1\u6709\u8f93\u5165\u56fe");
         return out;
     }
     cv::Mat src;
     cv::Mat* srcPtr = &src;
     std::string err;
-    if (!hsImageToMat(in.image.image, srcPtr, &err)) {
+    if (!hsImageToMat(inputImage(in), srcPtr, &err)) {
         out.message = err;
         return out;
     }
@@ -109,7 +109,7 @@ Vision::AlgToolOut Vision::CvUndistort::run(const Vision::AlgToolIn& in)
     cv::remap(src, dst, map1, map2, cv::INTER_LINEAR);
     HsCommData::HsImage image;
     HsCommData::HsImage* imagePtr = &image;
-    if (!matToHsImage(dst, in.image.image.frameId, imagePtr, &err)) {
+    if (!matToHsImage(dst, inputImage(in).frameId, imagePtr, &err)) {
         out.message = err;
         return out;
     }

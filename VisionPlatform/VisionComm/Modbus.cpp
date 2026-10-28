@@ -1,6 +1,6 @@
 /**
  * @file Modbus.cpp
- * @brief ModbusÊµÏÖ
+ * @brief Modbuså®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -16,20 +16,20 @@ namespace Vision {
 
 namespace {
 
-// °´´ó¶Ë×·¼ÓÒ»¸ö 16 Î»Öµ
+// æŒ‰å¤§ç«¯è¿½åŠ ä¸€ä¸ª 16 ä½å€¼
 void append16(CommBytes* b, int v)
 {
     b->push_back(static_cast<unsigned char>((v >> 8) & 0xFF));
     b->push_back(static_cast<unsigned char>(v & 0xFF));
 }
 
-// °´´ó¶Ë¶ÁÒ»¸ö 16 Î»Öµ
+// æŒ‰å¤§ç«¯è¯»ä¸€ä¸ª 16 ä½å€¼
 int read16(const unsigned char* p)
 {
     return (static_cast<int>(p[0]) << 8) | static_cast<int>(p[1]);
 }
 
-// ¼ÆËã MODBUS RTU µÄ CRC
+// è®¡ç®— MODBUS RTU çš„ CRC
 uint16_t crc16(const unsigned char* data, int n)
 {
     uint16_t crc = 0xFFFF;
@@ -46,17 +46,17 @@ uint16_t crc16(const unsigned char* data, int n)
     return crc;
 }
 
-// µØÖ·ºÍÊıÁ¿ÊÇ·ñÂäÔÚºÏ·¨·¶Î§
+// åœ°å€å’Œæ•°é‡æ˜¯å¦è½åœ¨åˆæ³•èŒƒå›´
 bool rangeOk(int address, int count, int maxCount, std::string* err)
 {
     if (address < 0 || count <= 0 || count > maxCount || address > 65535 || count > 65536 - address) {
-        setCommErr(err, Vision::acpToUtf8("²ÎÊıÎŞĞ§"));
+        setCommErr(err, "å‚æ•°æ— æ•ˆ");
         return false;
     }
     return true;
 }
 
-// ¸ø PDU Ì×ÉÏ MBAP »ò RTU Ö¡Í·ºÍĞ£Ñé
+// ç»™ PDU å¥—ä¸Š MBAP æˆ– RTU å¸§å¤´å’Œæ ¡éªŒ
 CommBytes buildAdu(bool tcp, uint16_t tid, int slave, const CommBytes& pdu)
 {
     CommBytes out;
@@ -76,7 +76,7 @@ CommBytes buildAdu(bool tcp, uint16_t tid, int slave, const CommBytes& pdu)
     return out;
 }
 
-// ¶Áµ½Ò»ÕûÖ¡£»TCP °´³¤¶È£¬RTU ÖÁÉÙ 4 ×Ö½Ú
+// è¯»åˆ°ä¸€æ•´å¸§ï¼›TCP æŒ‰é•¿åº¦ï¼ŒRTU è‡³å°‘ 4 å­—èŠ‚
 bool readUntil(ICommChannel* ch, const std::string& peerId, bool tcp, int timeoutMs, CommBytes* frame, std::string* err)
 {
     frame->clear();
@@ -91,7 +91,7 @@ bool readUntil(ICommChannel* ch, const std::string& peerId, bool tcp, int timeou
             if (!acc.empty()) {
                 break;
             }
-            setCommErr(err, readErr.empty() ? "¶Á³¬Ê±" : readErr);
+            setCommErr(err, readErr.empty() ? "è¯»è¶…æ—¶" : readErr);
             return false;
         }
         acc.insert(acc.end(), part.begin(), part.end());
@@ -107,7 +107,7 @@ bool readUntil(ICommChannel* ch, const std::string& peerId, bool tcp, int timeou
         }
         const int len = read16(&acc[4]);
         if (len < 2 || len > 260) {
-            setCommErr(err, Vision::acpToUtf8("MODBUS-TCP ³¤¶ÈÎŞĞ§"));
+            setCommErr(err, "MODBUS-TCP é•¿åº¦æ— æ•ˆ");
             return false;
         }
         if (static_cast<int>(acc.size()) >= 6 + len) {
@@ -115,16 +115,16 @@ bool readUntil(ICommChannel* ch, const std::string& peerId, bool tcp, int timeou
             return true;
         }
     }
-    setCommErr(err, Vision::acpToUtf8("¶Á³¬Ê±"));
+    setCommErr(err, "è¯»è¶…æ—¶");
     return false;
 }
 
-// ·¢Ò»Ö¡²¢ÊÕ»Ø¹¦ÄÜÂëÆ¥ÅäµÄ PDU
+// å‘ä¸€å¸§å¹¶æ”¶å›åŠŸèƒ½ç åŒ¹é…çš„ PDU
 bool transact(ICommChannel* ch, const std::string& peerId, bool tcp, uint16_t tid, int slave,
               const CommBytes& pdu, CommBytes* respPdu, std::string* err)
 {
     if (!ch || !ch->isOpen()) {
-        setCommErr(err, Vision::acpToUtf8("Í¨µÀÎ´´ò¿ª"));
+        setCommErr(err, "é€šé“æœªæ‰“å¼€");
         return false;
     }
     ch->drain(peerId);
@@ -139,63 +139,63 @@ bool transact(ICommChannel* ch, const std::string& peerId, bool tcp, uint16_t ti
     CommBytes body;
     if (tcp) {
         if (frame.size() < 8) {
-            setCommErr(err, Vision::acpToUtf8("MODBUS-TCP ÏìÓ¦¹ı¶Ì"));
+            setCommErr(err, "MODBUS-TCP å“åº”è¿‡çŸ­");
             return false;
         }
         const int gotTid = read16(&frame[0]);
         if (gotTid != tid) {
-            setCommErr(err, Vision::acpToUtf8("ÊÂÎñºÅ²»Æ¥Åä"));
+            setCommErr(err, "äº‹åŠ¡å·ä¸åŒ¹é…");
             return false;
         }
         body.assign(frame.begin() + 7, frame.end());
     } else {
         if (frame.size() < 4) {
-            setCommErr(err, Vision::acpToUtf8("MODBUS-RTU ÏìÓ¦¹ı¶Ì"));
+            setCommErr(err, "MODBUS-RTU å“åº”è¿‡çŸ­");
             return false;
         }
         const uint16_t c = crc16(&frame[0], static_cast<int>(frame.size()) - 2);
         const uint16_t got = static_cast<uint16_t>(frame[frame.size() - 2]
                                                     | (static_cast<uint16_t>(frame[frame.size() - 1]) << 8));
         if (c != got) {
-            setCommErr(err, Vision::acpToUtf8("CRC Ğ£ÑéÊ§°Ü"));
+            setCommErr(err, "CRC æ ¡éªŒå¤±è´¥");
             return false;
         }
         if (frame[0] != static_cast<unsigned char>(slave & 0xFF)) {
-            setCommErr(err, Vision::acpToUtf8("´ÓÕ¾ºÅ²»Æ¥Åä"));
+            setCommErr(err, "ä»ç«™å·ä¸åŒ¹é…");
             return false;
         }
         body.assign(frame.begin() + 1, frame.end() - 2);
     }
     if (body.empty()) {
-        setCommErr(err, Vision::acpToUtf8("Ó¦´ğÎª¿Õ"));
+        setCommErr(err, "åº”ç­”ä¸ºç©º");
         return false;
     }
     const unsigned char fc = pdu[0];
     if (body[0] == static_cast<unsigned char>(fc | 0x80)) {
         const int code = body.size() > 1 ? body[1] : 0;
         char buf[64];
-        sprintf_s(buf, "MODBUS Òì³£Âë %d", code);
+        sprintf_s(buf, "MODBUS å¼‚å¸¸ç  %d", code);
         setCommErr(err, buf);
         return false;
     }
     if (body[0] != fc) {
-        setCommErr(err, Vision::acpToUtf8("¹¦ÄÜÂë²»Æ¥Åä"));
+        setCommErr(err, "åŠŸèƒ½ç ä¸åŒ¹é…");
         return false;
     }
     *respPdu = body;
     return true;
 }
 
-// ´Ó¶ÁÎ»Ó¦´ğÀï²ğ³öÃ¿Ò»Î»
+// ä»è¯»ä½åº”ç­”é‡Œæ‹†å‡ºæ¯ä¸€ä½
 bool parseBits(const CommBytes& pdu, int count, std::vector<unsigned char>* bits, std::string* err)
 {
     if (pdu.size() < 2) {
-        setCommErr(err, Vision::acpToUtf8("Êı¾İ³¤¶È²»×ã"));
+        setCommErr(err, "æ•°æ®é•¿åº¦ä¸è¶³");
         return false;
     }
     const int byteCount = pdu[1];
     if (static_cast<int>(pdu.size()) < 2 + byteCount) {
-        setCommErr(err, Vision::acpToUtf8("Êı¾İ³¤¶È²»×ã"));
+        setCommErr(err, "æ•°æ®é•¿åº¦ä¸è¶³");
         return false;
     }
     bits->clear();
@@ -206,16 +206,16 @@ bool parseBits(const CommBytes& pdu, int count, std::vector<unsigned char>* bits
     return true;
 }
 
-// ´Ó¶Á¼Ä´æÆ÷Ó¦´ğÀï²ğ³ö¸÷¼Ä´æÆ÷
+// ä»è¯»å¯„å­˜å™¨åº”ç­”é‡Œæ‹†å‡ºå„å¯„å­˜å™¨
 bool parseRegs(const CommBytes& pdu, int count, std::vector<uint16_t>* regs, std::string* err)
 {
     if (pdu.size() < 2) {
-        setCommErr(err, Vision::acpToUtf8("Êı¾İ³¤¶È²»×ã"));
+        setCommErr(err, "æ•°æ®é•¿åº¦ä¸è¶³");
         return false;
     }
     const int byteCount = pdu[1];
     if (byteCount < count * 2 || static_cast<int>(pdu.size()) < 2 + byteCount) {
-        setCommErr(err, Vision::acpToUtf8("Êı¾İ³¤¶È²»×ã"));
+        setCommErr(err, "æ•°æ®é•¿åº¦ä¸è¶³");
         return false;
     }
     regs->clear();
@@ -227,14 +227,14 @@ bool parseRegs(const CommBytes& pdu, int count, std::vector<uint16_t>* regs, std
 
 } // namespace
 
-// Ö÷Õ¾¶ÁÏßÈ¦»òÀëÉ¢ÊäÈë
+// ä¸»ç«™è¯»çº¿åœˆæˆ–ç¦»æ•£è¾“å…¥
 bool modbusMasterReadBits(ICommChannel* ch, const std::string& peerId, bool tcp, uint16_t tid,
                           int slave, int fc, int address, int count,
                           std::vector<unsigned char>* bits, std::string* err)
 {
     if (!bits || !rangeOk(address, count, 2000, err)) {
         if (!bits) {
-            setCommErr(err, Vision::acpToUtf8("²ÎÊıÎŞĞ§"));
+            setCommErr(err, "å‚æ•°æ— æ•ˆ");
         }
         return false;
     }
@@ -249,14 +249,14 @@ bool modbusMasterReadBits(ICommChannel* ch, const std::string& peerId, bool tcp,
     return parseBits(resp, count, bits, err);
 }
 
-// Ö÷Õ¾¶Á±£³Ö¼Ä´æÆ÷»òÊäÈë¼Ä´æÆ÷
+// ä¸»ç«™è¯»ä¿æŒå¯„å­˜å™¨æˆ–è¾“å…¥å¯„å­˜å™¨
 bool modbusMasterReadRegs(ICommChannel* ch, const std::string& peerId, bool tcp, uint16_t tid,
                           int slave, int fc, int address, int count,
                           std::vector<uint16_t>* regs, std::string* err)
 {
     if (!regs || !rangeOk(address, count, 125, err)) {
         if (!regs) {
-            setCommErr(err, Vision::acpToUtf8("²ÎÊıÎŞĞ§"));
+            setCommErr(err, "å‚æ•°æ— æ•ˆ");
         }
         return false;
     }
@@ -271,7 +271,7 @@ bool modbusMasterReadRegs(ICommChannel* ch, const std::string& peerId, bool tcp,
     return parseRegs(resp, count, regs, err);
 }
 
-// Ö÷Õ¾Ğ´ÏßÈ¦£¬µ¥¸ö»òÁ¬Ğø¶à¸ö
+// ä¸»ç«™å†™çº¿åœˆï¼Œå•ä¸ªæˆ–è¿ç»­å¤šä¸ª
 bool modbusMasterWriteBits(ICommChannel* ch, const std::string& peerId, bool tcp, uint16_t tid,
                            int slave, int address, const std::vector<unsigned char>& bits, std::string* err)
 {
@@ -305,7 +305,7 @@ bool modbusMasterWriteBits(ICommChannel* ch, const std::string& peerId, bool tcp
     return transact(ch, peerId, tcp, tid, slave, pdu, &resp, err);
 }
 
-// Ö÷Õ¾Ğ´¼Ä´æÆ÷£¬µ¥¸ö»òÁ¬Ğø¶à¸ö
+// ä¸»ç«™å†™å¯„å­˜å™¨ï¼Œå•ä¸ªæˆ–è¿ç»­å¤šä¸ª
 bool modbusMasterWriteRegs(ICommChannel* ch, const std::string& peerId, bool tcp, uint16_t tid,
                            int slave, int address, const std::vector<uint16_t>& regs, std::string* err)
 {
@@ -331,7 +331,7 @@ bool modbusMasterWriteRegs(ICommChannel* ch, const std::string& peerId, bool tcp
     return transact(ch, peerId, tcp, tid, slave, pdu, &resp, err);
 }
 
-// ·ÖÅäËÄ¿éÓ³Ïñ
+// åˆ†é…å››å—æ˜ åƒ
 ModbusSlave::ModbusSlave()
     : m_ch(nullptr)
     , m_slaveId(1)
@@ -343,13 +343,13 @@ ModbusSlave::ModbusSlave()
     m_input.assign(kMapSize, 0);
 }
 
-// Îö¹¹Ê±Í£Ö¹Ó¦´ğÏß³Ì
+// ææ„æ—¶åœæ­¢åº”ç­”çº¿ç¨‹
 ModbusSlave::~ModbusSlave()
 {
     stop();
 }
 
-// ¹Òµ½Í¨µÀÉÏ²¢¿ªÊ¼ÊÕÇëÇó
+// æŒ‚åˆ°é€šé“ä¸Šå¹¶å¼€å§‹æ”¶è¯·æ±‚
 void ModbusSlave::start(ICommChannel* channel, int slaveId)
 {
     stop();
@@ -359,7 +359,7 @@ void ModbusSlave::start(ICommChannel* channel, int slaveId)
     m_thread = std::thread(&ModbusSlave::loop, this);
 }
 
-// Í£Ïß³Ì²¢Ğ¶ÏÂÍ¨µÀ
+// åœçº¿ç¨‹å¹¶å¸ä¸‹é€šé“
 void ModbusSlave::stop()
 {
     m_run = false;
@@ -370,15 +370,15 @@ void ModbusSlave::stop()
     m_rx.clear();
 }
 
-// ¶Á±¾»úÏßÈ¦»òÀëÉ¢ÊäÈëÓ³Ïñ
+// è¯»æœ¬æœºçº¿åœˆæˆ–ç¦»æ•£è¾“å…¥æ˜ åƒ
 bool ModbusSlave::readBits(ModbusTable table, int address, int count, std::vector<unsigned char>* bits, std::string* err)
 {
     if (!bits || (table != ModbusCoil && table != ModbusDiscrete) || !rangeOk(address, count, 2000, err)) {
-        setCommErr(err, Vision::acpToUtf8("²ÎÊıÎŞĞ§"));
+        setCommErr(err, "å‚æ•°æ— æ•ˆ");
         return false;
     }
     if (address + count > kMapSize) {
-        setCommErr(err, Vision::acpToUtf8("µØÖ·³¬³ö´ÓÕ¾Ó³Ïñ"));
+        setCommErr(err, "åœ°å€è¶…å‡ºä»ç«™æ˜ åƒ");
         return false;
     }
     const std::vector<unsigned char>& src = (table == ModbusCoil) ? m_coils : m_discrete;
@@ -387,15 +387,15 @@ bool ModbusSlave::readBits(ModbusTable table, int address, int count, std::vecto
     return true;
 }
 
-// ¶Á±¾»ú±£³Ö»òÊäÈë¼Ä´æÆ÷Ó³Ïñ
+// è¯»æœ¬æœºä¿æŒæˆ–è¾“å…¥å¯„å­˜å™¨æ˜ åƒ
 bool ModbusSlave::readRegs(ModbusTable table, int address, int count, std::vector<uint16_t>* regs, std::string* err)
 {
     if (!regs || (table != ModbusHolding && table != ModbusInput) || !rangeOk(address, count, 125, err)) {
-        setCommErr(err, Vision::acpToUtf8("²ÎÊıÎŞĞ§"));
+        setCommErr(err, "å‚æ•°æ— æ•ˆ");
         return false;
     }
     if (address + count > kMapSize) {
-        setCommErr(err, Vision::acpToUtf8("µØÖ·³¬³ö´ÓÕ¾Ó³Ïñ"));
+        setCommErr(err, "åœ°å€è¶…å‡ºä»ç«™æ˜ åƒ");
         return false;
     }
     const std::vector<uint16_t>& src = (table == ModbusHolding) ? m_holding : m_input;
@@ -404,16 +404,16 @@ bool ModbusSlave::readRegs(ModbusTable table, int address, int count, std::vecto
     return true;
 }
 
-// Ğ´±¾»úÏßÈ¦»òÀëÉ¢ÊäÈëÓ³Ïñ
+// å†™æœ¬æœºçº¿åœˆæˆ–ç¦»æ•£è¾“å…¥æ˜ åƒ
 bool ModbusSlave::writeBits(ModbusTable table, int address, const std::vector<unsigned char>& bits, std::string* err)
 {
     const int count = static_cast<int>(bits.size());
     if ((table != ModbusCoil && table != ModbusDiscrete) || !rangeOk(address, count, 2000, err)) {
-        setCommErr(err, Vision::acpToUtf8("²ÎÊıÎŞĞ§"));
+        setCommErr(err, "å‚æ•°æ— æ•ˆ");
         return false;
     }
     if (address + count > kMapSize) {
-        setCommErr(err, Vision::acpToUtf8("µØÖ·³¬³ö´ÓÕ¾Ó³Ïñ"));
+        setCommErr(err, "åœ°å€è¶…å‡ºä»ç«™æ˜ åƒ");
         return false;
     }
     std::vector<unsigned char>& dst = (table == ModbusCoil) ? m_coils : m_discrete;
@@ -424,16 +424,16 @@ bool ModbusSlave::writeBits(ModbusTable table, int address, const std::vector<un
     return true;
 }
 
-// Ğ´±¾»ú±£³Ö»òÊäÈë¼Ä´æÆ÷Ó³Ïñ
+// å†™æœ¬æœºä¿æŒæˆ–è¾“å…¥å¯„å­˜å™¨æ˜ åƒ
 bool ModbusSlave::writeRegs(ModbusTable table, int address, const std::vector<uint16_t>& regs, std::string* err)
 {
     const int count = static_cast<int>(regs.size());
     if ((table != ModbusHolding && table != ModbusInput) || !rangeOk(address, count, 123, err)) {
-        setCommErr(err, Vision::acpToUtf8("²ÎÊıÎŞĞ§"));
+        setCommErr(err, "å‚æ•°æ— æ•ˆ");
         return false;
     }
     if (address + count > kMapSize) {
-        setCommErr(err, Vision::acpToUtf8("µØÖ·³¬³ö´ÓÕ¾Ó³Ïñ"));
+        setCommErr(err, "åœ°å€è¶…å‡ºä»ç«™æ˜ åƒ");
         return false;
     }
     std::vector<uint16_t>& dst = (table == ModbusHolding) ? m_holding : m_input;
@@ -444,7 +444,7 @@ bool ModbusSlave::writeRegs(ModbusTable table, int address, const std::vector<ui
     return true;
 }
 
-// °´¹¦ÄÜÂë¸ÄÓ³Ïñ²¢×éÓ¦´ğ£»¹ã²¥²»»Ø°ü
+// æŒ‰åŠŸèƒ½ç æ”¹æ˜ åƒå¹¶ç»„åº”ç­”ï¼›å¹¿æ’­ä¸å›åŒ…
 CommBytes ModbusSlave::reply(const CommBytes& unitAndPdu)
 {
     if (unitAndPdu.size() < 2) {
@@ -628,7 +628,7 @@ CommBytes ModbusSlave::reply(const CommBytes& unitAndPdu)
     return broadcast ? CommBytes() : resp;
 }
 
-// ²ğ MBAP ºó½»¸øÓ¦´ğ£¬ÔÙÌ×»ØÊÂÎñºÅ
+// æ‹† MBAP åäº¤ç»™åº”ç­”ï¼Œå†å¥—å›äº‹åŠ¡å·
 CommBytes ModbusSlave::onTcp(const CommBytes& frame)
 {
     if (frame.size() < 8) {
@@ -648,7 +648,7 @@ CommBytes ModbusSlave::onTcp(const CommBytes& frame)
     return out;
 }
 
-// Ğ£Ñé CRC ºó½»¸øÓ¦´ğ£¬ÔÙ²¹ CRC
+// æ ¡éªŒ CRC åäº¤ç»™åº”ç­”ï¼Œå†è¡¥ CRC
 CommBytes ModbusSlave::onRtu(const CommBytes& frame)
 {
     if (frame.size() < 4) {
@@ -671,7 +671,7 @@ CommBytes ModbusSlave::onRtu(const CommBytes& frame)
     return body;
 }
 
-// Ñ­»·ÊÕÇëÇó²¢»Ø°ü£¬Ö±µ½Í£Ö¹
+// å¾ªç¯æ”¶è¯·æ±‚å¹¶å›åŒ…ï¼Œç›´åˆ°åœæ­¢
 void ModbusSlave::loop()
 {
     while (m_run) {

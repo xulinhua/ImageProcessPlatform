@@ -1,6 +1,6 @@
 /**
  * @file MainWindow.h
- * @brief MainWindowÍ·ÎÄ¼ş
+ * @brief MainWindowå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -33,244 +33,244 @@ class QComboBox;
 
 /**
  * @class MainWindow
- * @brief Demo ¿Ç£º×ó¹¤¾ß£¬ÖĞ ImageWidgetApi£¬ÓÒÁ½ÁĞ²ÎÊı¡£½çÃæÈ« C++ ²¼¾Ö
+ * @brief Demo å£³ï¼šå·¦å·¥å…·ï¼Œä¸­ ImageWidgetApiï¼Œå³ä¸¤åˆ—å‚æ•°ã€‚ç•Œé¢å…¨ C++ å¸ƒå±€
  */
 class MainWindow : public QMainWindow {
     Q_OBJECT
 public:
     explicit MainWindow(QWidget* parent = 0);
-    /** @brief ÏÈÊÍ·Å ImageWidgetApi£¬ÔÙ½»¸ø Qt ²ğ×Ó¿Ø¼ş */
+    /** @brief å…ˆé‡Šæ”¾ ImageWidgetApiï¼Œå†äº¤ç»™ Qt æ‹†å­æ§ä»¶ */
     ~MainWindow();
 
 private slots:
-    /** @brief ´ò¿ªµ¥ÕÅÍ¼Ïñ²¢ÉèÎªµ×Í¼ */
+    /** @brief æ‰“å¼€å•å¼ å›¾åƒå¹¶è®¾ä¸ºåº•å›¾ */
     void openImage();
-    /** @brief ´ò¿ªÎÄ¼ş¼Ğ£¬°´ÎÄ¼şÃûÅÅĞòä¯ÀÀ */
+    /** @brief æ‰“å¼€æ–‡ä»¶å¤¹ï¼ŒæŒ‰æ–‡ä»¶åæ’åºæµè§ˆ */
     void openFolder();
-    /** @brief ÎÄ¼ş¼ĞÉÏÒ»ÕÅ */
+    /** @brief æ–‡ä»¶å¤¹ä¸Šä¸€å¼  */
     void showPrevImage();
-    /** @brief ÎÄ¼ş¼ĞÏÂÒ»ÕÅ */
+    /** @brief æ–‡ä»¶å¤¹ä¸‹ä¸€å¼  */
     void showNextImage();
-    /** @brief ±£´æÊÓ¿Ú¿ìÕÕ£¨º¬µş¼Ó£¬²»º¬¹¤¾ßÌõ£© */
+    /** @brief ä¿å­˜è§†å£å¿«ç…§ï¼ˆå«å åŠ ï¼Œä¸å«å·¥å…·æ¡ï¼‰ */
     void saveSnapshot();
-    /** @brief µ¼³öµ±Ç°Ô­Í¼ÏñËØ */
+    /** @brief å¯¼å‡ºå½“å‰åŸå›¾åƒç´  */
     void exportOriginal();
-    /** @brief Õû·ùÍ¼ÊÊÓ¦´°¿Ú */
+    /** @brief æ•´å¹…å›¾é€‚åº”çª—å£ */
     void fitView();
-    /** @brief 1:1 ÏÔÊ¾ */
+    /** @brief 1:1 æ˜¾ç¤º */
     void zoom1to1();
-    /** @brief Çå¿Õ Stack */
+    /** @brief æ¸…ç©º Stack */
     void clearOverlay();
-    /** @brief Çå¿Õ Drawing */
+    /** @brief æ¸…ç©º Drawing */
     void clearDrawings();
-    /** @brief Ğ´ÈëÒ»×éÊ¾Àı Stack Í¼Ôª */
+    /** @brief å†™å…¥ä¸€ç»„ç¤ºä¾‹ Stack å›¾å…ƒ */
     void mockOverlay();
-    /** @brief Ä£ÄâÊµÊ±Ë¢ Overlay */
+    /** @brief æ¨¡æ‹Ÿå®æ—¶åˆ· Overlay */
     void toggleLive(bool on);
-    /** @brief ÇĞ»»»æÖÆ¹¤¾ß */
+    /** @brief åˆ‡æ¢ç»˜åˆ¶å·¥å…· */
     void onToolId(int id);
-    /** @brief ½øÈë»æÖÆ»á»° */
+    /** @brief è¿›å…¥ç»˜åˆ¶ä¼šè¯ */
     void onSessionCircle();
-    /** @brief ½øÈë»æÖÆ»á»° */
+    /** @brief è¿›å…¥ç»˜åˆ¶ä¼šè¯ */
     void onSessionRect();
-    /** @brief ½øÈë»æÖÆ»á»° */
+    /** @brief è¿›å…¥ç»˜åˆ¶ä¼šè¯ */
     void onSessionPolygon();
-    /** @brief ½øÈëÆÁ±ÎÍ¿Ä¨»á»° */
+    /** @brief è¿›å…¥å±è”½æ¶‚æŠ¹ä¼šè¯ */
     void onSessionBrush();
-    /** @brief Ìá½»»æÖÆ»á»° */
+    /** @brief æäº¤ç»˜åˆ¶ä¼šè¯ */
     void onSessionCommit();
-    /** @brief È¡Ïû»æÖÆ»á»° */
+    /** @brief å–æ¶ˆç»˜åˆ¶ä¼šè¯ */
     void onSessionCancel();
-    /** @brief »­±Ê°ë¾¶£¨Í¼ÏñÏñËØ£¬Ò»Î»Ğ¡Êı£© */
+    /** @brief ç”»ç¬”åŠå¾„ï¼ˆå›¾åƒåƒç´ ï¼Œä¸€ä½å°æ•°ï¼‰ */
     void onBrushRadius(double radius);
-    /** @brief »æÖÆ»á»°½áÊø */
+    /** @brief ç»˜åˆ¶ä¼šè¯ç»“æŸ */
     void onDrawSessionFinished(const HsCommData::Graphic& g, bool accepted);
-    /** @brief ÉèÖÃ»­±ÊÏß¿í */
+    /** @brief è®¾ç½®ç”»ç¬”çº¿å®½ */
     void onWidthChanged(int w);
-    /** @brief Ô¤Éè»­±ÊÑÕÉ« */
+    /** @brief é¢„è®¾ç”»ç¬”é¢œè‰² */
     void onColorId(int id);
-    /** @brief ×Ô¶¨Òå»­±ÊÑÕÉ« */
+    /** @brief è‡ªå®šä¹‰ç”»ç¬”é¢œè‰² */
     void onPickColor();
-    /** @brief Ãè±ß / Ìî³äÇĞ»» */
+    /** @brief æè¾¹ / å¡«å……åˆ‡æ¢ */
     void onDrawModeChanged();
-    /** @brief µ×Í¼²ãÏÔÒş */
+    /** @brief åº•å›¾å±‚æ˜¾éš */
     void onLayerImage(bool on);
-    /** @brief Stack ²ãÏÔÒş */
+    /** @brief Stack å±‚æ˜¾éš */
     void onLayerStack(bool on);
-    /** @brief Drawing ²ãÏÔÒş */
+    /** @brief Drawing å±‚æ˜¾éš */
     void onLayerDrawing(bool on);
-    /** @brief HUD ÏÔÒş */
+    /** @brief HUD æ˜¾éš */
     void onLayerHud(bool on);
-    /** @brief ÏñËØ¼ì²é¿ª¹Ø */
+    /** @brief åƒç´ æ£€æŸ¥å¼€å…³ */
     void onPixelInspect(bool on);
-    /** @brief ¸¡¶¯¹¤¾ßÌõÏÔÒş */
+    /** @brief æµ®åŠ¨å·¥å…·æ¡æ˜¾éš */
     void onToolbarVisible(bool on);
-    /** @brief °´¹´Ñ¡Ë¢ĞÂ¹¤¾ßÌõÉÏµÄ²âÁ¿°´Å¥ */
+    /** @brief æŒ‰å‹¾é€‰åˆ·æ–°å·¥å…·æ¡ä¸Šçš„æµ‹é‡æŒ‰é’® */
     void applyShownMeasureTools();
-    /** @brief ÇĞ»»²âÊÔÓÃµÄÏñËØ±ÈÀı */
+    /** @brief åˆ‡æ¢æµ‹è¯•ç”¨çš„åƒç´ æ¯”ä¾‹ */
     void onCalibPreset(int index);
-    /** @brief ÓÃÃæ°åÉÏµÄ±ÈÀıºÍµ¥Î»Ğ´Èë±ê¶¨ */
+    /** @brief ç”¨é¢æ¿ä¸Šçš„æ¯”ä¾‹å’Œå•ä½å†™å…¥æ ‡å®š */
     void applyCalibFromUi();
-    /** @brief °ÑÒÑ²â½á¹ûĞ´µ½½á¹û¿ò */
+    /** @brief æŠŠå·²æµ‹ç»“æœå†™åˆ°ç»“æœæ¡† */
     void refreshMeasureLog();
-    /** @brief ¹¤¾ßÌõÍ£¿¿½Ç */
+    /** @brief å·¥å…·æ¡åœé è§’ */
     void onToolbarCorner(int index);
-    /** @brief ¹¤¾ßÌõ´¹Ö±/Ë®Æ½ */
+    /** @brief å·¥å…·æ¡å‚ç›´/æ°´å¹³ */
     void onToolbarOrientation();
-    /** @brief ¹¤¾ßÌõÆ¤·ô */
+    /** @brief å·¥å…·æ¡çš®è‚¤ */
     void onToolbarSkin(int index);
-    /** @brief ÊÓ¿Ú±³¾°·ç¸ñ */
+    /** @brief è§†å£èƒŒæ™¯é£æ ¼ */
     void onViewportBackground(int index);
-    /** @brief ÊÓ¿Ú×Ô¶¨ÒåÉ« */
+    /** @brief è§†å£è‡ªå®šä¹‰è‰² */
     void onViewportColor();
-    /** @brief ½øÈëÒ»´Î»æÖÆ»á»°²¢Í¬²½¹¤¾ß°´Å¥ */
+    /** @brief è¿›å…¥ä¸€æ¬¡ç»˜åˆ¶ä¼šè¯å¹¶åŒæ­¥å·¥å…·æŒ‰é’® */
     void beginSession(HsCtrl::DrawTool tool);
-    /** @brief °ÑË¢ĞÂ²ßÂÔĞ´µ½´°¿Ú */
+    /** @brief æŠŠåˆ·æ–°ç­–ç•¥å†™åˆ°çª—å£ */
     void applyRefreshPolicyFromUi();
-    /** @brief Ñ¡ÖĞ ROI ºó£¬Ë¢ĞÂÓÒ²à¼¸ºÎ */
+    /** @brief é€‰ä¸­ ROI åï¼Œåˆ·æ–°å³ä¾§å‡ ä½• */
     void onRoiSelected(const HsCommData::Graphic& g);
-    /** @brief ROI ËÉÊÖÌá½» */
+    /** @brief ROI æ¾æ‰‹æäº¤ */
     void onRoiCommitted(const HsCommData::Graphic& g);
-    /** @brief È·ÈÏµ±Ç°Ñ¡ÖĞ ROI£¨Õ¼Î»£© */
+    /** @brief ç¡®è®¤å½“å‰é€‰ä¸­ ROIï¼ˆå ä½ï¼‰ */
     void onConfirm();
-    /** @brief °ÑÓÒ²àÎÄ×Ö/×ø±ê·Åµ½´°¿Ú */
+    /** @brief æŠŠå³ä¾§æ–‡å­—/åæ ‡æ”¾åˆ°çª—å£ */
     void onPlaceText();
-    /** @brief ÎÄ±¾¹¤¾ßµãÏÂ£¬»ØÌî×ø±ê */
+    /** @brief æ–‡æœ¬å·¥å…·ç‚¹ä¸‹ï¼Œå›å¡«åæ ‡ */
     void onTextAnchorPicked(const QPointF& imagePt, const QPointF& widgetPt);
-    /** @brief °ÑÎÄ±¾Ãæ°åÍ¬²½µ½´°¿Ú¹¤¾ß×´Ì¬ */
+    /** @brief æŠŠæ–‡æœ¬é¢æ¿åŒæ­¥åˆ°çª—å£å·¥å…·çŠ¶æ€ */
     void syncTextToolToView();
-    /** @brief ÎªËã·¨²âÊÔ¼ÓÔØÍ¼Ïñ */
+    /** @brief ä¸ºç®—æ³•æµ‹è¯•åŠ è½½å›¾åƒ */
     void loadAlgoImage();
-    /** @brief ÓÃµ±Ç°µ×Í¼×öËã·¨ÊäÈë */
+    /** @brief ç”¨å½“å‰åº•å›¾åšç®—æ³•è¾“å…¥ */
     void useCurrentImage();
-    /** @brief ãĞÖµ»¬Ìõ±ä»¯²¢Ë¢ĞÂ Overlay */
+    /** @brief é˜ˆå€¼æ»‘æ¡å˜åŒ–å¹¶åˆ·æ–° Overlay */
     void onThresholdChanged(int v);
-    /** @brief Ñ¹Á¦²âÊÔ£º¶¨Ê±·´¸´Ë¢ãĞÖµ */
+    /** @brief å‹åŠ›æµ‹è¯•ï¼šå®šæ—¶åå¤åˆ·é˜ˆå€¼ */
     void onAlgoStress(bool on);
-    /** @brief ÅÜÒ»´ÎãĞÖµ²¢ setOverlay */
+    /** @brief è·‘ä¸€æ¬¡é˜ˆå€¼å¹¶ setOverlay */
     void runAlgoRefresh();
-    /** @brief µş¼ÓÉ«Ô¤Éè */
+    /** @brief å åŠ è‰²é¢„è®¾ */
     void onAlgoColorId(int id);
-    /** @brief µş¼ÓÉ«×Ô¶¨Òå */
+    /** @brief å åŠ è‰²è‡ªå®šä¹‰ */
     void onAlgoPickColor();
-    /** @brief µş¼ÓÌî³äÍ¸Ã÷¶È */
+    /** @brief å åŠ å¡«å……é€æ˜åº¦ */
     void onAlgoOpacityChanged(int pct);
 
 private:
-    /** @brief ×é×°²Ëµ¥ÓëÈıÀ¸²¼¾Ö */
+    /** @brief ç»„è£…èœå•ä¸ä¸‰æ å¸ƒå±€ */
     void buildUi();
-    /** @brief Ç³É«¿ÇÑùÊ½ */
+    /** @brief æµ…è‰²å£³æ ·å¼ */
     void applyShellStyle();
-    /** @brief ¼ÓÔØÄÚÖÃÑİÊ¾Í¼ */
+    /** @brief åŠ è½½å†…ç½®æ¼”ç¤ºå›¾ */
     void loadGeneratedImage();
-    /** @brief °Ñ Demo ³ÖÓĞµÄ QImage ÒÔ»º³åĞÎÊ½ËÍ½ø¿Ø¼ş */
+    /** @brief æŠŠ Demo æŒæœ‰çš„ QImage ä»¥ç¼“å†²å½¢å¼é€è¿›æ§ä»¶ */
     void pushSourceToView();
-    /** @brief °Ñ×ó²à»­±ÊĞ´µ½´°¿Ú */
+    /** @brief æŠŠå·¦ä¾§ç”»ç¬”å†™åˆ°çª—å£ */
     void applyPenToView();
-    /** @brief ¸üĞÂ¹¤¾ßÀ¸ËµÃ÷ÎÄ×Ö */
+    /** @brief æ›´æ–°å·¥å…·æ è¯´æ˜æ–‡å­— */
     void updateToolCaption();
-    /** @brief °Ñ HsCommData::Graphic ¼¸ºÎĞ´µ½ÓÒ²àÎÄ±¾ */
+    /** @brief æŠŠ HsCommData::Graphic å‡ ä½•å†™åˆ°å³ä¾§æ–‡æœ¬ */
     void showRoiGeom(const HsCommData::Graphic& g);
-    /** @brief Ñ¡ÖĞÎÄ±¾ ROI Ê±»ØÌîÎÄ×ÖÃæ°å */
+    /** @brief é€‰ä¸­æ–‡æœ¬ ROI æ—¶å›å¡«æ–‡å­—é¢æ¿ */
     void fillTextUi(const HsCommData::Graphic& g);
     /**
-     * @brief ÉèÖÃµş¼ÓÑÕÉ«°´Å¥Íâ¹Û
-     * @param checkedBorder Ñ¡ÖĞÊ±»­±ß¿ò
+     * @brief è®¾ç½®å åŠ é¢œè‰²æŒ‰é’®å¤–è§‚
+     * @param checkedBorder é€‰ä¸­æ—¶ç”»è¾¹æ¡†
      */
     void styleAlgoColorButton(QToolButton* btn, const QColor& c, bool checkedBorder);
-    /** @brief µ±Ç°µş¼ÓÌî³äÉ«£¨º¬Í¸Ã÷¶È»¬Ìõ£© */
+    /** @brief å½“å‰å åŠ å¡«å……è‰²ï¼ˆå«é€æ˜åº¦æ»‘æ¡ï¼‰ */
     QColor algoFillColor() const;
     /**
-     * @brief °ó¶¨Ëã·¨ÊäÈëÍ¼
-     * @param showInView true Ê±Í¬Ê±ÉèÎªµ×Í¼
+     * @brief ç»‘å®šç®—æ³•è¾“å…¥å›¾
+     * @param showInView true æ—¶åŒæ—¶è®¾ä¸ºåº•å›¾
      */
     bool bindAlgoImage(const QImage& img, bool showInView);
-    /** @brief ×ó²à¹¤¾ßÌõ°´Å¥ */
+    /** @brief å·¦ä¾§å·¥å…·æ¡æŒ‰é’® */
     QToolButton* addToolButton(QWidget* parent, const QIcon& icon, const QString& text, bool checkable);
     /**
-     * @brief ¼ÓÔØÖ¸¶¨Â·¾¶Îªµ×Í¼£¨×ß´°¿ÚË¢ĞÂ²ßÂÔ£©
-     * @return ½âÂë³É¹¦
+     * @brief åŠ è½½æŒ‡å®šè·¯å¾„ä¸ºåº•å›¾ï¼ˆèµ°çª—å£åˆ·æ–°ç­–ç•¥ï¼‰
+     * @return è§£ç æˆåŠŸ
      */
     bool loadImagePath(const QString& path);
-    /** @brief Ë¢ĞÂÎÄ¼ş¼ĞĞòºÅÓëÉÏÒ»ÕÅ/ÏÂÒ»ÕÅÊ¹ÄÜ */
+    /** @brief åˆ·æ–°æ–‡ä»¶å¤¹åºå·ä¸ä¸Šä¸€å¼ /ä¸‹ä¸€å¼ ä½¿èƒ½ */
     void updateFolderNav();
 
-    image_widget::ImageWidgetApi* m_api; ///< ¶ÔÍâÍ¼Ïñ¿Ø¼ş
-    HsCtrl::HsImageWindow* m_view; ///< »­²¼£¬µÈÓÚ m_api->imageWindow()
-    QLabel* m_toolCaption;          ///< µ±Ç°¹¤¾ßËµÃ÷
-    QButtonGroup* m_toolGroup;      ///< »æÖÆ¹¤¾ß»¥³â
-    QButtonGroup* m_colorGroup;     ///< »­±ÊÔ¤ÉèÉ«
-    QToolButton* m_colorBtns[4];    ///< ËÄ¸öÔ¤ÉèÉ«°´Å¥
-    QSpinBox* m_widthSpin;          ///< Ïß¿í
-    QComboBox* m_lineCombo;         ///< ÊµÏß¡¢ĞéÏß¡¢µãÏß¡¢µã»®Ïß
-    QRadioButton* m_strokeRadio;    ///< Ãè±ß
-    QRadioButton* m_fillRadio;      ///< Ìî³ä
-    QLineEdit* m_typeEdit;          ///< Ñ¡ÖĞÍ¼Ôª kind
-    QLineEdit* m_roleEdit;          ///< Ñ¡ÖĞÍ¼Ôª role
-    QPlainTextEdit* m_roiGeom;      ///< Ñ¡ÖĞ¼¸ºÎÎÄ±¾
-    QLineEdit* m_textEdit;          ///< ÒªÏÔÊ¾µÄÎÄ×Ö
-    QDoubleSpinBox* m_textXSpin;    ///< ÎÄ±¾ X
-    QDoubleSpinBox* m_textYSpin;    ///< ÎÄ±¾ Y
-    QSpinBox* m_textFontSpin;       ///< ÎÄ±¾×ÖºÅ
-    QRadioButton* m_textImageRadio; ///< Í¼Ïñ×ø±ê
-    QRadioButton* m_textWindowRadio; ///< ´°¿Ú×ø±ê
-    bool m_textUiBusy;              ///< »ØÌîÃæ°åÊ±²»´¥·¢·ÅÖÃ
-    QCheckBox* m_layerImage;        ///< µ×Í¼ÏÔÒş
-    QCheckBox* m_layerStack;        ///< Stack ÏÔÒş
-    QCheckBox* m_layerDrawing;      ///< Drawing ÏÔÒş
-    QCheckBox* m_layerHud;          ///< HUD ÏÔÒş
-    QCheckBox* m_pixelInspect;      ///< ÏñËØ¼ìÑé
-    QCheckBox* m_toolbarVisible;    ///< ¸¡¶¯¹¤¾ßÌõÏÔÒş
-    QCheckBox* m_measDist;          ///< ¹¤¾ßÌõÊÇ·ñÏÔÊ¾¾àÀë
-    QCheckBox* m_measAngle;         ///< ¹¤¾ßÌõÊÇ·ñÏÔÊ¾¼Ğ½Ç
-    QCheckBox* m_measRadius;        ///< ¹¤¾ßÌõÊÇ·ñÏÔÊ¾Ô²
-    QCheckBox* m_measRect;          ///< ¹¤¾ßÌõÊÇ·ñÏÔÊ¾¾ØĞÎ
-    QCheckBox* m_measEllipse;       ///< ¹¤¾ßÌõÊÇ·ñÏÔÊ¾ÍÖÔ²
+    image_widget::ImageWidgetApi* m_api; ///< å¯¹å¤–å›¾åƒæ§ä»¶
+    HsCtrl::HsImageWindow* m_view; ///< ç”»å¸ƒï¼Œç­‰äº m_api->imageWindow()
+    QLabel* m_toolCaption;          ///< å½“å‰å·¥å…·è¯´æ˜
+    QButtonGroup* m_toolGroup;      ///< ç»˜åˆ¶å·¥å…·äº’æ–¥
+    QButtonGroup* m_colorGroup;     ///< ç”»ç¬”é¢„è®¾è‰²
+    QToolButton* m_colorBtns[4];    ///< å››ä¸ªé¢„è®¾è‰²æŒ‰é’®
+    QSpinBox* m_widthSpin;          ///< çº¿å®½
+    QComboBox* m_lineCombo;         ///< å®çº¿ã€è™šçº¿ã€ç‚¹çº¿ã€ç‚¹åˆ’çº¿
+    QRadioButton* m_strokeRadio;    ///< æè¾¹
+    QRadioButton* m_fillRadio;      ///< å¡«å……
+    QLineEdit* m_typeEdit;          ///< é€‰ä¸­å›¾å…ƒ kind
+    QLineEdit* m_roleEdit;          ///< é€‰ä¸­å›¾å…ƒ role
+    QPlainTextEdit* m_roiGeom;      ///< é€‰ä¸­å‡ ä½•æ–‡æœ¬
+    QLineEdit* m_textEdit;          ///< è¦æ˜¾ç¤ºçš„æ–‡å­—
+    QDoubleSpinBox* m_textXSpin;    ///< æ–‡æœ¬ X
+    QDoubleSpinBox* m_textYSpin;    ///< æ–‡æœ¬ Y
+    QSpinBox* m_textFontSpin;       ///< æ–‡æœ¬å­—å·
+    QRadioButton* m_textImageRadio; ///< å›¾åƒåæ ‡
+    QRadioButton* m_textWindowRadio; ///< çª—å£åæ ‡
+    bool m_textUiBusy;              ///< å›å¡«é¢æ¿æ—¶ä¸è§¦å‘æ”¾ç½®
+    QCheckBox* m_layerImage;        ///< åº•å›¾æ˜¾éš
+    QCheckBox* m_layerStack;        ///< Stack æ˜¾éš
+    QCheckBox* m_layerDrawing;      ///< Drawing æ˜¾éš
+    QCheckBox* m_layerHud;          ///< HUD æ˜¾éš
+    QCheckBox* m_pixelInspect;      ///< åƒç´ æ£€éªŒ
+    QCheckBox* m_toolbarVisible;    ///< æµ®åŠ¨å·¥å…·æ¡æ˜¾éš
+    QCheckBox* m_measDist;          ///< å·¥å…·æ¡æ˜¯å¦æ˜¾ç¤ºè·ç¦»
+    QCheckBox* m_measAngle;         ///< å·¥å…·æ¡æ˜¯å¦æ˜¾ç¤ºå¤¹è§’
+    QCheckBox* m_measRadius;        ///< å·¥å…·æ¡æ˜¯å¦æ˜¾ç¤ºåœ†
+    QCheckBox* m_measRect;          ///< å·¥å…·æ¡æ˜¯å¦æ˜¾ç¤ºçŸ©å½¢
+    QCheckBox* m_measEllipse;       ///< å·¥å…·æ¡æ˜¯å¦æ˜¾ç¤ºæ¤­åœ†
     QComboBox* m_calibPreset;
-    QComboBox* m_calibUnit;          ///< ±ê¶¨µ¥Î»
-    QDoubleSpinBox* m_calibX;        ///< ÁĞ·½ÏòÃ¿ÏñËØ
-    QDoubleSpinBox* m_calibY;        ///< ĞĞ·½ÏòÃ¿ÏñËØ
-    QCheckBox* m_showPx;             ///< ½á¹ûÏÔÊ¾ÏñËØ
-    QCheckBox* m_showMm;             ///< ½á¹ûÏÔÊ¾ºÁÃ×
-    QCheckBox* m_showUm;             ///< ½á¹ûÏÔÊ¾Î¢Ã×
-    QCheckBox* m_showPulse;          ///< ½á¹ûÏÔÊ¾Âö³å
-    QPlainTextEdit* m_measureLog;    ///< ²âÁ¿½á¹û
-    bool m_calibBusy;                ///< »ØÌî±ê¶¨¿Ø¼şÊ±²»ÖØ¸´Ğ´Èë
-    QComboBox* m_toolbarCorner;     ///< ¹¤¾ßÌõÍ£¿¿½Ç
-    QRadioButton* m_toolbarVertical; ///< ¹¤¾ßÌõÊúÅÅ
-    QRadioButton* m_toolbarHorizontal; ///< ¹¤¾ßÌõºáÅÅ
-    QComboBox* m_toolbarSkin;       ///< ¹¤¾ßÌõÆ¤·ô
-    QComboBox* m_viewportBg;        ///< ÊÓ¿Ú±³¾°·ç¸ñ
-    QToolButton* m_viewportColorBtn; ///< ÊÓ¿Ú×Ô¶¨ÒåÉ«
-    QCheckBox* m_refreshStack;      ///< »»µ×Í¼Ê±Çå Stack
-    QCheckBox* m_refreshDrawing;    ///< »»µ×Í¼Ê±Çå Drawing ROI
-    QCheckBox* m_refreshText;       ///< »»µ×Í¼Ê±Çå drawInfo
-    QLabel* m_imagePathLabel;       ///< µ±Ç°ÎÄ¼şÃû / ĞòºÅ
-    QPushButton* m_prevImageBtn;    ///< ÎÄ¼ş¼ĞÉÏÒ»ÕÅ
-    QPushButton* m_nextImageBtn;    ///< ÎÄ¼ş¼ĞÏÂÒ»ÕÅ
-    QSlider* m_thSlider;            ///< ãĞÖµ
-    QSpinBox* m_thSpin;             ///< ãĞÖµÊıÖµ
-    QLabel* m_algoStats;            ///< Ëã·¨ºÄÊ± / FPS
-    QCheckBox* m_algoLive;          ///< ãĞÖµ»¬¸ËÊµÊ±ÌáÈ¡
-    QCheckBox* m_algoStress;        ///< Ñ¹Á¦²âÊÔ
-    QButtonGroup* m_algoColorGroup; ///< µş¼ÓÉ«Ô¤Éè
-    QToolButton* m_algoColorBtns[4]; ///< µş¼ÓËÄÉ«°´Å¥
-    QToolButton* m_algoPickBtn;     ///< µş¼Ó×Ô¶¨ÒåÉ«
-    QSlider* m_algoOpacitySlider;   ///< Ìî³äÍ¸Ã÷¶È
-    QSpinBox* m_algoOpacitySpin;    ///< Í¸Ã÷¶È°Ù·Ö±È
-    QTimer* m_liveTimer;            ///< Ä£ÄâÊµÊ± Overlay
-    QTimer* m_algoTimer;            ///< Ñ¹Á¦²âÊÔ¶¨Ê±Æ÷
-    QElapsedTimer m_algoHzClock;    ///< Ëã·¨ÍÆËÍÆµÂÊ¼ÆÊ±
-    int m_algoPushCount;            ///< ±¾ÃëÄÚÍÆËÍ´ÎÊı
-    double m_algoPushHz;            ///< Ëã·¨ÍÆËÍ Hz
-    bool m_algoBusy;                ///< ·ÀÖ¹ÖØÈëË¢ĞÂ
-    qint64 m_frameSeq;              ///< Demo µ×Í¼Ö¡ºÅ
-    QImage m_sourceImage;           ///< Demo ×Ô¼º³ÖÓĞµÄµ×Í¼¸±±¾£¨²»´Ó¿Ø¼ş»Ø¶Á»º´æ£©
-    QColor m_penColor;              ///< µ±Ç°»­±ÊÉ«
-    QColor m_customColor;           ///< ×Ô¶¨Òå»­±ÊÉ«
-    QColor m_algoColor;             ///< µş¼ÓÉ«
-    QStringList m_folderFiles;      ///< µ±Ç°ÎÄ¼ş¼ĞÍ¼ÏñÁĞ±í
-    int m_folderIndex;              ///< µ±Ç°ÎÄ¼şÏÂ±ê
+    QComboBox* m_calibUnit;          ///< æ ‡å®šå•ä½
+    QDoubleSpinBox* m_calibX;        ///< åˆ—æ–¹å‘æ¯åƒç´ 
+    QDoubleSpinBox* m_calibY;        ///< è¡Œæ–¹å‘æ¯åƒç´ 
+    QCheckBox* m_showPx;             ///< ç»“æœæ˜¾ç¤ºåƒç´ 
+    QCheckBox* m_showMm;             ///< ç»“æœæ˜¾ç¤ºæ¯«ç±³
+    QCheckBox* m_showUm;             ///< ç»“æœæ˜¾ç¤ºå¾®ç±³
+    QCheckBox* m_showPulse;          ///< ç»“æœæ˜¾ç¤ºè„‰å†²
+    QPlainTextEdit* m_measureLog;    ///< æµ‹é‡ç»“æœ
+    bool m_calibBusy;                ///< å›å¡«æ ‡å®šæ§ä»¶æ—¶ä¸é‡å¤å†™å…¥
+    QComboBox* m_toolbarCorner;     ///< å·¥å…·æ¡åœé è§’
+    QRadioButton* m_toolbarVertical; ///< å·¥å…·æ¡ç«–æ’
+    QRadioButton* m_toolbarHorizontal; ///< å·¥å…·æ¡æ¨ªæ’
+    QComboBox* m_toolbarSkin;       ///< å·¥å…·æ¡çš®è‚¤
+    QComboBox* m_viewportBg;        ///< è§†å£èƒŒæ™¯é£æ ¼
+    QToolButton* m_viewportColorBtn; ///< è§†å£è‡ªå®šä¹‰è‰²
+    QCheckBox* m_refreshStack;      ///< æ¢åº•å›¾æ—¶æ¸… Stack
+    QCheckBox* m_refreshDrawing;    ///< æ¢åº•å›¾æ—¶æ¸… Drawing ROI
+    QCheckBox* m_refreshText;       ///< æ¢åº•å›¾æ—¶æ¸… drawInfo
+    QLabel* m_imagePathLabel;       ///< å½“å‰æ–‡ä»¶å / åºå·
+    QPushButton* m_prevImageBtn;    ///< æ–‡ä»¶å¤¹ä¸Šä¸€å¼ 
+    QPushButton* m_nextImageBtn;    ///< æ–‡ä»¶å¤¹ä¸‹ä¸€å¼ 
+    QSlider* m_thSlider;            ///< é˜ˆå€¼
+    QSpinBox* m_thSpin;             ///< é˜ˆå€¼æ•°å€¼
+    QLabel* m_algoStats;            ///< ç®—æ³•è€—æ—¶ / FPS
+    QCheckBox* m_algoLive;          ///< é˜ˆå€¼æ»‘æ†å®æ—¶æå–
+    QCheckBox* m_algoStress;        ///< å‹åŠ›æµ‹è¯•
+    QButtonGroup* m_algoColorGroup; ///< å åŠ è‰²é¢„è®¾
+    QToolButton* m_algoColorBtns[4]; ///< å åŠ å››è‰²æŒ‰é’®
+    QToolButton* m_algoPickBtn;     ///< å åŠ è‡ªå®šä¹‰è‰²
+    QSlider* m_algoOpacitySlider;   ///< å¡«å……é€æ˜åº¦
+    QSpinBox* m_algoOpacitySpin;    ///< é€æ˜åº¦ç™¾åˆ†æ¯”
+    QTimer* m_liveTimer;            ///< æ¨¡æ‹Ÿå®æ—¶ Overlay
+    QTimer* m_algoTimer;            ///< å‹åŠ›æµ‹è¯•å®šæ—¶å™¨
+    QElapsedTimer m_algoHzClock;    ///< ç®—æ³•æ¨é€é¢‘ç‡è®¡æ—¶
+    int m_algoPushCount;            ///< æœ¬ç§’å†…æ¨é€æ¬¡æ•°
+    double m_algoPushHz;            ///< ç®—æ³•æ¨é€ Hz
+    bool m_algoBusy;                ///< é˜²æ­¢é‡å…¥åˆ·æ–°
+    qint64 m_frameSeq;              ///< Demo åº•å›¾å¸§å·
+    QImage m_sourceImage;           ///< Demo è‡ªå·±æŒæœ‰çš„åº•å›¾å‰¯æœ¬ï¼ˆä¸ä»æ§ä»¶å›è¯»ç¼“å­˜ï¼‰
+    QColor m_penColor;              ///< å½“å‰ç”»ç¬”è‰²
+    QColor m_customColor;           ///< è‡ªå®šä¹‰ç”»ç¬”è‰²
+    QColor m_algoColor;             ///< å åŠ è‰²
+    QStringList m_folderFiles;      ///< å½“å‰æ–‡ä»¶å¤¹å›¾åƒåˆ—è¡¨
+    int m_folderIndex;              ///< å½“å‰æ–‡ä»¶ä¸‹æ ‡
 };
 
 #endif

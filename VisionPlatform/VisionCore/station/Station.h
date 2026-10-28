@@ -1,6 +1,6 @@
 /**
  * @file Station.h
- * @brief StationÍ·ÎÄ¼ş
+ * @brief Stationå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -23,16 +23,16 @@ class ThreadPool;
 
 /**
  * @class StationRunRst
- * @brief ÅÜÍêÒ»¸ö¹¤Õ¾ÖÜÆÚµÄ»ã×Ü£¨ÎŞ Qt£©
+ * @brief è·‘å®Œä¸€æ‹å·¥ç«™å‘¨æœŸçš„æ±‡æ€»ï¼ˆæ—  Qtï¼‰
  */
 struct StationRunRst {
-    bool ok;                                ///< È«²¿Á÷³Ì³É¹¦
-    int cycleMs;                            ///< ÖÜÆÚ£¨ºÁÃë£©
-    int jobsRun;                            ///< Êµ¼ÊÅÜµÄÁ÷³ÌÊı
-    std::string summary;                    ///< ÕªÒªÎÄ±¾
-    HsCommData::HsImage image;             ///< Ä©Ö¡Êä³öÍ¼
-    std::vector<HsCommData::HsObject> objects; ///< Ä©Ö¡½á¹û¼¸ºÎ
-    HsCommData::HsImage source;            ///< Ä©Ö¡Ô´Í¼
+    bool ok;                                ///< å…¨éƒ¨æµç¨‹æˆåŠŸ
+    int cycleMs;                            ///< å‘¨æœŸï¼ˆæ¯«ç§’ï¼‰
+    int jobsRun;                            ///< å®é™…è·‘çš„æµç¨‹æ•°
+    std::string summary;                    ///< æ‘˜è¦æ–‡æœ¬
+    HsCommData::HsImage image;             ///< æœ¬å¸§è¾“å‡ºå›¾
+    std::vector<HsCommData::HsObject> objects; ///< æœ¬å¸§ç»“æœå‡ ä½•
+    HsCommData::HsImage source;            ///< æœ¬å¸§æºå›¾
     StationRunRst()
         : ok(false)
         , cycleMs(0)
@@ -42,13 +42,13 @@ struct StationRunRst {
 
 /**
  * @class StationRuntime
- * @brief ¹¤Õ¾ÔËĞĞÌ¬£¨²»½øÅä·½ JSON£©
+ * @brief å·¥ç«™è¿è¡Œæ€ï¼ˆä¸è¿›é…æ–¹ JSONï¼‰
  */
 struct StationRuntime {
-    bool running;              ///< ÊÇ·ñ´¦ÓÚÑ­»·ÔËĞĞ
-    bool lastOk;               ///< ÉÏÒ»ÖÜÆÚ OK
-    int lastCycleMs;           ///< ÉÏÒ»ÖÜÆÚºÄÊ±
-    std::string lastSummary;   ///< ÉÏÒ»ÖÜÆÚÕªÒª
+    bool running;              ///< æ˜¯å¦å¤„äºå¾ªç¯è¿è¡Œ
+    bool lastOk;               ///< ä¸Šä¸€å‘¨æœŸ OK
+    int lastCycleMs;           ///< ä¸Šä¸€å‘¨æœŸè€—æ—¶
+    std::string lastSummary;   ///< ä¸Šä¸€å‘¨æœŸæ‘˜è¦
     StationRuntime()
         : running(false)
         , lastOk(false)
@@ -58,89 +58,93 @@ struct StationRuntime {
 
 /**
  * @class Station
- * @brief ¹¤Õ¾×ÛºÏÌå£ºÅäÖÃ + ÔËĞĞÌ¬ + ¹ÜÀí/Ö´ĞĞ
- * @note config ²»ÓµÓĞ£»ÏÂÊô Job ÓÉ±¾Àà´´½¨ÓëÊÍ·Å
- * @note ²»³ÖÓĞ/²»·ÃÎÊÉÏ¼¶·½°¸×ÛºÏÌå£»tick(Solution*) ÓÉµ÷ÓÃ·½×¢Èë
+ * @brief å·¥ç«™ç»¼åˆä½“ï¼šé…ç½® + è¿è¡Œæ€ + ç®¡ç†/æ‰§è¡Œ
+ * @note config ä¸æ‹¥æœ‰ï¼›ä¸‹å± Job ç”±æœ¬ç±»åˆ›å»ºä¸é‡Šæ”¾
+ * @note ä¸æŒæœ‰ã€ä¸è®¿é—®ä¸Šçº§æ–¹æ¡ˆï¼›tick(Solution*) ç”±è°ƒç”¨æ–¹æ³¨å…¥
  */
 class VISIONCORE_API Station {
 public:
-    /************************************************** ÅäÖÃ **************************************************/
+    /************************************************** é…ç½® **************************************************/
     /**
-     * @brief °ó¶¨¹¤Õ¾ÅäÖÃ²¢´´½¨ÏÂÊôÁ÷³ÌÊµÀı
-     * @param config ·½°¸ÄÚ StationCfg£¬²»ÓµÓĞ
+     * @brief ç»‘å®šå·¥ç«™é…ç½®å¹¶åˆ›å»ºä¸‹å±æµç¨‹å®ä¾‹
+     * @param config æ–¹æ¡ˆå†… StationCfgï¼Œä¸æ‹¥æœ‰
      */
     explicit Station(StationCfg* config);
-    /** @brief ÊÍ·ÅÏÂÊôÁ÷³Ì */
+    /** @brief é‡Šæ”¾ä¸‹å±æµç¨‹ */
     ~Station();
 
-    /** @brief µ±Ç°ÅäÖÃ */
+    /** @brief å½“å‰é…ç½® */
     StationCfg* config() const;
-    /** @brief ÔËĞĞÌ¬ */
+    /** @brief è¿è¡Œæ€ */
     StationRuntime& runtime();
-    /** @brief ÔËĞĞÌ¬£¨Ö»¶Á£© */
+    /** @brief è¿è¡Œæ€ï¼ˆåªè¯»ï¼‰ */
     const StationRuntime& runtime() const;
-    /** @brief ÉèÖÃÈÕÖ¾¼àÌı£¨×ª·¢¸ø¸÷ Job£©£¬²»ÓµÓĞ£»½¨Òé´«Èë RunLogHub */
+    /** @brief è®¾ç½®æ—¥å¿—ç›‘å¬ï¼ˆè½¬å‘ç»™å„ Jobï¼‰ï¼Œä¸æ‹¥æœ‰ï¼›å»ºè®®ä¼ å…¥ RunLogHub */
     void setListener(IRunListener* listener);
 
-    /************************************************** Á÷³Ì **************************************************/
-    /** @brief °´ÅäÖÃÖØ½¨ÏÂÊô Job£¨ÔöÉ¾¸ÄÁ÷³Ìºóµ÷ÓÃ£© */
+    /************************************************** æµç¨‹ **************************************************/
+    /** @brief æŒ‰é…æ–¹é‡å»ºä¸‹å± Jobï¼ˆå¢åˆ æ”¹æµç¨‹åè°ƒç”¨ï¼‰ */
     void rebuildJobs();
     /**
-     * @brief ÖØĞÂ°ó¶¨ÅäÖÃÖ¸Õë²¢ÖØ½¨ Job£¨stations À©Èİ»òÁ÷³ÌÔöÉ¾ºóµ÷ÓÃ£©
-     * @param config ·½°¸ÄÚ StationCfg£¬²»ÓµÓĞ
+     * @brief é‡æ–°ç»‘å®šé…ç½®æŒ‡é’ˆå¹¶é‡å»º Jobï¼ˆstations æ‰©å®¹æˆ–æµç¨‹å¢åˆ åè°ƒç”¨ï¼‰
+     * @param config æ–¹æ¡ˆå†… StationCfgï¼Œä¸æ‹¥æœ‰
      */
     void rebindConfig(StationCfg* config);
-    /** @brief ²éÕÒÁ÷³ÌÊµÀı */
+    /** @brief æŸ¥æ‰¾æµç¨‹å®ä¾‹ */
     Job* findJob(const ObjectId& id) const;
-    /** @brief ²éÕÒ°üº¬¸Ã¹¤¾ßµÄÁ÷³ÌÊµÀı */
+    /** @brief æŸ¥æ‰¾åŒ…å«è¯¥å·¥å…·çš„æµç¨‹å®ä¾‹ */
     Job* findJobOfTool(const ObjectId& toolId) const;
-    /** @brief Á÷³ÌÊµÀı¸öÊı */
+    /** @brief æµç¨‹å®ä¾‹ä¸ªæ•° */
     int jobCount() const;
-    /** @brief °´ÏÂ±êÈ¡Á÷³Ì */
+    /** @brief æŒ‰ä¸‹æ ‡å–æµç¨‹ */
     Job* jobAt(int index) const;
 
-    /************************************************** ÔËĞĞ **************************************************/
-    /** @brief ±ê¼Ç¿ªÊ¼Ñ­»· */
+    /************************************************** è¿è¡Œ **************************************************/
+    /** @brief æ ‡è®°å¼€å§‹å¾ªç¯ */
     void start();
-    /** @brief ±ê¼ÇÍ£Ö¹Ñ­»· */
+    /** @brief æ ‡è®°åœæ­¢å¾ªç¯ */
     void stop();
-    /** @brief ÊÇ·ñÑ­»·ÖĞ */
+    /** @brief æ˜¯å¦å¾ªç¯ä¸­ */
     bool isRunning() const;
-    /** @brief ÅÜÒ»ÂÖÆôÓÃÖĞµÄÁ÷³Ì£¨Ô­ Engine::runStation£©£»´®ĞĞÔÚ±¾Ïß³Ì */
+    /** @brief è·‘ä¸€è½®å¯ç”¨ä¸­çš„æµç¨‹ï¼›ä¸²è¡Œåœ¨æœ¬çº¿ç¨‹ */
     StationRunRst tick(Solution* sol);
     /**
-     * @brief ÅÜÒ»ÂÖ£»²¢ĞĞÊ±ÓÃ pool µ÷¶È¸÷ Job£¨pool Îª¿ÕÔòÍË»Ø´®ĞĞÓïÒå£©
-     * @param sol ·½°¸
-     * @param pool C++ Ïß³Ì³Ø£»ScheduleParallel Ê±Ê¹ÓÃ
+     * @brief è·‘ä¸€è½®ã€‚å¹¶è¡Œæ—¶ç”± pool è°ƒåº¦å„ Jobï¼Œpool ä¸ºç©ºåˆ™é€€å›ä¸²è¡Œ
+     * @param sol æ–¹æ¡ˆ
+     * @param pool C++ çº¿ç¨‹æ± ï¼›ScheduleParallel æ—¶ä½¿ç”¨
+     * @param includeCalled ä¸ºçœŸæ—¶ä¹Ÿè·‘è¢«è°ƒç”¨æ‰æ‰§è¡Œçš„æµç¨‹
      */
-    StationRunRst tick(Solution* sol, ThreadPool* pool);
-    /** @brief Çå¿ÕÈ«²¿ÏÂÊôÁ÷³ÌÔËĞĞÌ¬Óë×ÜÏß */
+    StationRunRst tick(Solution* sol, ThreadPool* pool, bool includeCalled = false);
+    /** @brief åªè·‘æŒ‡å®šæµç¨‹ã€‚å…¨ç«™å·²åœæ—¶ä»å¯æ‰§è¡Œè¿™ä¸€æ¡ */
+    StationRunRst run(ExecMode mode, const ObjectId& jobId, Solution* sol);
+    /** @brief å¸æ–¹æ¡ˆæ—¶è·‘ä¸€æ¬¡å¸æ–™æµç¨‹ */
+    void runUnloadOnce(Solution* sol);
+    /** @brief æ¸…ç©ºå…¨éƒ¨ä¸‹å±æµç¨‹è¿è¡Œæ€ä¸æ€»çº¿ */
     void clearAllRuntimes();
 
-    /************************************************** ³ÉÔ± **************************************************/
-    ParamMap bus; ///< ¹¤Õ¾¼¶×ÜÏß²ÎÊı£¨Ô¤Áô£©
+    /************************************************** æˆå‘˜ **************************************************/
+    ParamMap bus; ///< å·¥ç«™çº§æ€»çº¿å‚æ•°ï¼ˆä¿ç•™ï¼‰
 
 private:
-    /************************************************** ÈÕÖ¾ **************************************************/
-    /** @brief Ğ´ÈÕÖ¾£¨Info£© */
+    /************************************************** æ—¥å¿— **************************************************/
+    /** @brief å†™æ—¥å¿—ï¼ˆInfoï¼‰ */
     void log(const std::string& line);
-    /** @brief Ğ´½á¹¹»¯ÈÕÖ¾ */
+    /** @brief å†™ç»“æ„åŒ–æ—¥å¿— */
     void log(RunLogLevel level, const std::string& message);
 
-    /************************************************** Á÷³Ì **************************************************/
-    /** @brief ÖØ½¨ÏÂÊô Job£¨µ÷ÓÃ·½ÒÑ³Ö m_mutex£© */
+    /************************************************** æµç¨‹ **************************************************/
+    /** @brief é‡å»ºä¸‹å± Jobï¼ˆè°ƒç”¨æ–¹å·²æŒ m_mutexï¼‰ */
     void rebuildJobsUnlocked();
 
-    /************************************************** ³ÉÔ± **************************************************/
-    mutable std::recursive_mutex m_mutex;  ///< ±£»¤ config/jobs Óë tick£¨¿ÉÖØÈë£¬¹© tick¡úlog£©
-    StationCfg* m_config;                  ///< ÅäÖÃ£¬²»ÓµÓĞ
-    StationRuntime m_runtime;              ///< ¹¤Õ¾ÔËĞĞÌ¬
-    std::vector<Job*> m_jobs;              ///< ÏÂÊôÁ÷³Ì£¨ÓµÓĞ£©
-    IRunListener* m_listener;              ///< ÈÕÖ¾£¨³£Îª RunLogHub£©
+    /************************************************** æˆå‘˜ **************************************************/
+    mutable std::recursive_mutex m_mutex;  ///< ä¿æŠ¤ config/jobs ä¸ tickï¼ˆå¯é‡å…¥ï¼Œä¾› tick é‡Œæ‰“æ—¥å¿—ï¼‰
+    StationCfg* m_config;                  ///< é…ç½®ï¼Œä¸æ‹¥æœ‰
+    StationRuntime m_runtime;              ///< å·¥ç«™è¿è¡Œæ€
+    std::vector<Job*> m_jobs;              ///< ä¸‹å±æµç¨‹ï¼Œç”±æœ¬ç±»æ‹¥æœ‰
+    std::vector<std::string> m_loadOnce;   ///< å·²ç»è·‘è¿‡ä¸€æ¬¡çš„å¸æ–™æµç¨‹ id
+    IRunListener* m_listener;              ///< æ—¥å¿—ï¼ˆå¸¸ä¸º RunLogHubï¼‰
 };
 
 }
 
 #endif
-
-

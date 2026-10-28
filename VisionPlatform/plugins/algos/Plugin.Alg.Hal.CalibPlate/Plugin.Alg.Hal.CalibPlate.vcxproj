@@ -30,7 +30,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir)VisionPluginAPI;$(SolutionDir)VisionAlgHal;$(SolutionDir)Plugin.VisionHalCom;$(HALCONROOT)\include;$(HALCONROOT)\include\halconcpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)VisionPluginAPI;$(SolutionDir)VisionAlgHal;$(SolutionDir)Plugin.VisionHalCom;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>halcon.lib;halconcpp.lib;VisionAlgToolBase.lib;Plugin.VisionHalCom.lib;VisionCommon.lib;%(AdditionalDependencies)</AdditionalDependencies>

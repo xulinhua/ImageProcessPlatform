@@ -1,6 +1,6 @@
 /**
  * @file AlgExport.h
- * @brief AlgExportͷ�ļ�
+ * @brief AlgExport头文件
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.

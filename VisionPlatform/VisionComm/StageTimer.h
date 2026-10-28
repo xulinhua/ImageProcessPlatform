@@ -1,6 +1,6 @@
 /**
  * @file StageTimer.h
- * @brief StageTimerÍ·ÎÄ¼ş
+ * @brief StageTimerå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -17,83 +17,83 @@
 namespace Vision {
 
 /**
- * @brief Ò»¶ÎÒÑ¾­½áÊøµÄ¼ÆÊ±
+ * @brief ä¸€æ®µå·²ç»ç»“æŸçš„è®¡æ—¶
  */
 struct StageSpan {
-    std::string name; ///< ½×¶ÎÃû
-    double ms;        ///< ±¾¶ÎºÁÃë
-    int64_t us;       ///< ±¾¶ÎÎ¢Ãë
+    std::string name; ///< é˜¶æ®µå
+    double ms;        ///< æœ¬æ®µæ¯«ç§’
+    int64_t us;       ///< æœ¬æ®µå¾®ç§’
     StageSpan();
 };
 
 /**
  * @class StageTimer
- * @brief ¸ß¾«¶È¶à¶Î¼ÆÊ±¡£ÓÃ QPC£¬¿ÉÍ¬Ê±¿ª¶à¶Î£¬Ò²¿É´®ĞĞÇĞ¶Î
+ * @brief é«˜ç²¾åº¦å¤šæ®µè®¡æ—¶ã€‚ç”¨ QPCï¼Œå¯åŒæ—¶å¼€å¤šæ®µï¼Œä¹Ÿå¯ä¸²è¡Œåˆ‡æ®µ
  */
 class VISION_COMM_API StageTimer {
 public:
     StageTimer();
 
-    /** @brief Çå¿ÕÒÑ½áÊøÆ¬¶Î£¬²¢¶ªµô»¹Ã»½áÊøµÄ¶Î */
+    /** @brief æ¸…ç©ºå·²ç»“æŸç‰‡æ®µï¼Œå¹¶ä¸¢æ‰è¿˜æ²¡ç»“æŸçš„æ®µ */
     void clear();
     /**
-     * @brief ¿ªÊ¼Ò»¶Î
-     * @param name ½×¶ÎÃû¡£Í¬ÃûÈÔ¿ª×ÅÔòÏÈ½áÊøÔÙÖØ¿ª
+     * @brief å¼€å§‹ä¸€æ®µ
+     * @param name é˜¶æ®µåã€‚åŒåä»å¼€ç€åˆ™å…ˆç»“æŸå†é‡å¼€
      */
     void begin(const std::string& name);
     /**
-     * @brief ½áÊøÒ»¶Î
-     * @param name ½×¶ÎÃû¡£¿Õ´®Ôò½áÊø×î½ü¿ªÊ¼µÄÒ»¶Î
+     * @brief ç»“æŸä¸€æ®µ
+     * @param name é˜¶æ®µåã€‚ç©ºä¸²åˆ™ç»“æŸæœ€è¿‘å¼€å§‹çš„ä¸€æ®µ
      */
     void end(const std::string& name = std::string());
     /**
-     * @brief ½áÊø×î½üÒ»¶Î²¢¿ªÊ¼ÏÂÒ»¶Î
-     * @param name ĞÂ½×¶ÎÃû
+     * @brief ç»“æŸæœ€è¿‘ä¸€æ®µå¹¶å¼€å§‹ä¸‹ä¸€æ®µ
+     * @param name æ–°é˜¶æ®µå
      */
     void lap(const std::string& name);
 
     /**
-     * @brief Ä³½×¶Î×î½üÒ»´ÎºÄÊ±
-     * @return ºÁÃë¡£Ã»ÓĞÒÑ½áÊøµÄ¸Ã½×¶ÎÔò -1
+     * @brief æŸé˜¶æ®µæœ€è¿‘ä¸€æ¬¡è€—æ—¶
+     * @return æ¯«ç§’ã€‚æ²¡æœ‰å·²ç»“æŸçš„è¯¥é˜¶æ®µåˆ™ -1
      */
     double ms(const std::string& name) const;
     /**
-     * @brief Ä³½×¶Î×î½üÒ»´ÎºÄÊ±
-     * @return Î¢Ãë¡£Ã»ÓĞÒÑ½áÊøµÄ¸Ã½×¶ÎÔò -1
+     * @brief æŸé˜¶æ®µæœ€è¿‘ä¸€æ¬¡è€—æ—¶
+     * @return å¾®ç§’ã€‚æ²¡æœ‰å·²ç»“æŸçš„è¯¥é˜¶æ®µåˆ™ -1
      */
     int64_t us(const std::string& name) const;
-    /** @brief ÒÑ½áÊøÆ¬¶ÎºÄÊ±Ö®ºÍ£¬ºÁÃë */
+    /** @brief å·²ç»“æŸç‰‡æ®µè€—æ—¶ä¹‹å’Œï¼Œæ¯«ç§’ */
     double totalMs() const;
     /**
-     * @brief Ä³Ò»½×¶ÎµÄÒ»ĞĞÎÄ±¾
-     * @return Ã»ÓĞ¸Ã½×¶ÎÔò¿Õ´®
+     * @brief æŸä¸€é˜¶æ®µçš„ä¸€è¡Œæ–‡æœ¬
+     * @return æ²¡æœ‰è¯¥é˜¶æ®µåˆ™ç©ºä¸²
      */
     std::string report(const std::string& name) const;
-    /** @brief È«²¿Æ¬¶Î»ã×Ü£¬Ä©ĞĞÊÇºÏ¼Æ */
+    /** @brief å…¨éƒ¨ç‰‡æ®µæ±‡æ€»ï¼Œæœ«è¡Œæ˜¯åˆè®¡ */
     std::string summary() const;
-    /** @brief ÒÑ½áÊøÆ¬¶Î£¬°´½áÊøË³Ğò */
+    /** @brief å·²ç»“æŸç‰‡æ®µï¼ŒæŒ‰ç»“æŸé¡ºåº */
     const std::vector<StageSpan>& spans() const;
 
 private:
     /**
-     * @brief ÉĞÎ´½áÊøµÄÒ»¶Î
+     * @brief å°šæœªç»“æŸçš„ä¸€æ®µ
      */
     struct OpenSpan {
-        std::string name; ///< ½×¶ÎÃû
-        int64_t tick;     ///< ¿ªÊ¼Ê±µÄ QPC ¼ÆÊı
+        std::string name; ///< é˜¶æ®µå
+        int64_t tick;     ///< å¼€å§‹æ—¶çš„ QPC è®¡æ•°
         OpenSpan();
     };
 
-    std::vector<OpenSpan> m_open;   ///< Î´½áÊøµÄ¶Î
-    std::vector<StageSpan> m_spans; ///< ÒÑ½áÊøµÄ¶Î
+    std::vector<OpenSpan> m_open;   ///< æœªç»“æŸçš„æ®µ
+    std::vector<StageSpan> m_spans; ///< å·²ç»“æŸçš„æ®µ
 
-    /** @brief µ±Ç° QPC ¼ÆÊı¡£²»¿ÉÓÃÔò 0 */
+    /** @brief å½“å‰ QPC è®¡æ•°ã€‚ä¸å¯ç”¨åˆ™ 0 */
     static int64_t tick();
-    /** @brief ¼ÆÊı²î»»³ÉºÁÃëºÍÎ¢Ãë */
+    /** @brief è®¡æ•°å·®æ¢æˆæ¯«ç§’å’Œå¾®ç§’ */
     static void ticksTo(int64_t dt, double* ms, int64_t* us);
-    /** @brief Î´½áÊø¶ÎÀïÍ¬ÃûµÄÏÂ±ê¡£Ã»ÓĞÔò -1 */
+    /** @brief æœªç»“æŸæ®µé‡ŒåŒåçš„ä¸‹æ ‡ã€‚æ²¡æœ‰åˆ™ -1 */
     int findOpen(const std::string& name) const;
-    /** @brief °´ÏÂ±ê½áÊøÒ»¶Î */
+    /** @brief æŒ‰ä¸‹æ ‡ç»“æŸä¸€æ®µ */
     void closeAt(int index);
 };
 

@@ -1,6 +1,6 @@
 /**
  * @file RegisterGrabFile.cpp
- * @brief RegisterGrabFileÊµÏÖ
+ * @brief RegisterGrabFileå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -11,7 +11,7 @@
 
 namespace Vision {
 
-// ×¢²áÏà»úÓëÎÄ¼ş/ÎÄ¼ş¼Ğ²É¼¯
+// æ³¨å†Œç›¸æœºä¸æ–‡ä»¶/æ–‡ä»¶å¤¹é‡‡é›†
 void registerGrabFile()
 {
     ToolRegistry::instance().add(new CameraDeviceTool());

@@ -1,6 +1,6 @@
 /**
  * @file HalTexture.cpp
- * @brief HalTexture µœ÷
+ * @brief HalTextureÂÆûÁé∞
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -8,13 +8,13 @@
 
 #include "HalTexture.h"
 #include "TextEncoding.h"
-#include "HalAlgoHelpers.h"
 #include "HalImageConvert.h"
 #include "HalObjectConvert.h"
 #include "HalOps.h"
 
 using HalconCpp::HObject;
 using HalconCpp::HImage;
+using HalconCpp::HTuple;
 using HalconCpp::HException;
 using HalconCpp::ReduceDomain;
 using HalconCpp::Threshold;
@@ -25,11 +25,11 @@ using HalconCpp::GrayClosingRect;
 
 namespace Vision {
 
-// ¥Û∫À±≥æ∞≤Ó
+// Â§ßÊ†∏ËÉåÊôØÂ∑Æ
 namespace {
 const char kVer_HalTexture[] = "1.0.0.0";
 const Vision::VerNoteRaw kNotes_HalTexture[] = {
-    { "1.0.0.0", " ◊∞Ê" },
+    { "1.0.0.0", "È¶ñÁâà" },
 };
 }
 
@@ -38,11 +38,43 @@ std::string HalTexture::version() const
     return kVer_HalTexture;
 }
 
-// ∞Ê±æ±‰∏¸£¨÷ª◊∑º”
+// ÁâàÊú¨ÂèòÊõ¥ÔºåÂè™ËøΩÂä†
 std::vector<VerNote> HalTexture::versionNotes() const
 {
     return verNotesFrom(kNotes_HalTexture, static_cast<int>(sizeof(kNotes_HalTexture) / sizeof(kNotes_HalTexture[0])));
 }
+AlgToolOut HalTexture::packRegions(const HObject& bin, const AlgToolIn& in,
+                                   double minArea, double maxArea, const std::string& okMsg) const
+{
+    HObject conn;
+    HalconCpp::Connection(bin, &conn);
+    HObject sel;
+    const double areaMax = maxArea > 0.0 ? maxArea : 1.0e12;
+    HalconCpp::SelectShape(conn, &sel, "area", "and", minArea, areaMax);
+    AlgToolOut out;
+    out.image.image = inputImage(in);
+    HTuple n;
+    HalconCpp::CountObj(sel, &n);
+    if (n.Length() < 1 || n[0].L() < 1) {
+        out.message = "Êú™ÊâæÂà∞ËøûÈÄöÂüü";
+        return out;
+    }
+    HTuple rows;
+    HTuple cols;
+    HTuple areas;
+    HalconCpp::AreaCenter(sel, &areas, &rows, &cols);
+    double sumA = 0;
+    for (Hlong i = 0; i < areas.Length(); ++i) {
+        sumA += areas[i].D();
+    }
+    out.ok = true;
+    out.values.insert("count", static_cast<int>(n[0].L()));
+    out.values.insert("area", sumA);
+    out.objects.push_back(hObjectToRegionObject(sel));
+    out.message = okMsg;
+    return out;
+}
+
 AlgToolOut HalTexture::run(const AlgToolIn& in)
 {
     try {
@@ -51,8 +83,8 @@ AlgToolOut HalTexture::run(const AlgToolIn& in)
         int h = 0;
         std::string err;
         HalconCpp::HImage* pGray = &gray;
-        if (!loadGrayFromAlgIn(in, pGray, &w, &h, &err)) {
-            return algorToolFail(err);
+        if (!hsImageToGray(inputImage(in), pGray, &w, &h, &err)) {
+            return AlgToolOut::fail(err);
         }
         const HObject roi = toolRoisToHObject(plainRois(in.rois), w, h);
         HObject local;
@@ -82,13 +114,12 @@ AlgToolOut HalTexture::run(const AlgToolIn& in)
         HObject morphed;
         HalconCpp::HObject* pMorphed = &morphed;
         morphOpenClose(bin, in.run.value("openR").toDouble(1.5), 0.0, pMorphed);
-        return packConnectedBlobs(morphed, in,
-                                  in.run.value("minArea").toDouble(30.0),
-                                  in.run.value("maxArea").toDouble(0.0),
-                                  0.0, 1.0,
-                                  Vision::acpToUtf8("Œ∆¿Ì»±œ›ÕÍ≥…"));
+        return packRegions(morphed, in,
+                           in.run.value("minArea").toDouble(30.0),
+                           in.run.value("maxArea").toDouble(0.0),
+                                  "Á∫πÁêÜÁº∫Èô∑ÂÆåÊàê");
     } catch (const HException& e) {
-        return algorToolFail(hExceptionText(e));
+        return AlgToolOut::fail(hExceptionText(e));
     }
 }
 

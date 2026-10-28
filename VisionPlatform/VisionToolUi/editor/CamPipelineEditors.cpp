@@ -1,6 +1,6 @@
 /**
  * @file CamPipelineEditors.cpp
- * @brief CamPipelineEditorsÊµÏÖ
+ * @brief CamPipelineEditorså®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -30,13 +30,13 @@
 #include <QVBoxLayout>
 
 namespace Vision {
-// µÚi²½²ÎÊı¼ü
+// ç¬¬iæ­¥å‚æ•°é”®
 static std::string stepKey(int i, const char* suffix)
 {
     return std::string("pl_") + std::to_string(static_cast<long long>(i)) + "_" + suffix;
 }
 
-// ÔöÇ¿Ëã×Ó
+// å¢å¼ºç®—å­
 enum class EnhanceOp {
     EquHisto = 0,
     Emphasize,
@@ -45,7 +45,7 @@ enum class EnhanceOp {
     Invert
 };
 
-// ÔöÇ¿¹ÜÏßÒ»²½
+// å¢å¼ºç®¡çº¿ä¸€æ­¥
 struct EnhanceStep {
     EnhanceOp op;
     int maskW;
@@ -63,7 +63,7 @@ struct EnhanceStep {
     {}
 };
 
-// ÕûĞÍ×ªÔöÇ¿Ëã×Ó
+// æ•´å‹è½¬å¢å¼ºç®—å­
 static EnhanceOp enhanceOpFromInt(int v)
 {
     switch (v) {
@@ -76,7 +76,7 @@ static EnhanceOp enhanceOpFromInt(int v)
     }
 }
 
-// ´Ó²ÎÊı½â¿ªÔöÇ¿²½Öè
+// ä»å‚æ•°è§£å¼€å¢å¼ºæ­¥éª¤
 static std::vector<EnhanceStep> enhanceStepsFromParams(const ParamMap& p)
 {
     std::vector<EnhanceStep> out;
@@ -98,7 +98,7 @@ static std::vector<EnhanceStep> enhanceStepsFromParams(const ParamMap& p)
     return out;
 }
 
-// Æ½»¬Ëã×Ó
+// å¹³æ»‘ç®—å­
 enum class SmoothOp {
     Mean = 0,
     Median,
@@ -106,7 +106,7 @@ enum class SmoothOp {
     Bilateral
 };
 
-// Æ½»¬¹ÜÏßÒ»²½
+// å¹³æ»‘ç®¡çº¿ä¸€æ­¥
 struct SmoothStep {
     SmoothOp op;
     int maskW;
@@ -122,7 +122,7 @@ struct SmoothStep {
     {}
 };
 
-// ÕûĞÍ×ªÆ½»¬Ëã×Ó
+// æ•´å‹è½¬å¹³æ»‘ç®—å­
 static SmoothOp smoothOpFromInt(int v)
 {
     switch (v) {
@@ -134,7 +134,7 @@ static SmoothOp smoothOpFromInt(int v)
     }
 }
 
-// ´Ó²ÎÊı½â¿ªÆ½»¬²½Öè
+// ä»å‚æ•°è§£å¼€å¹³æ»‘æ­¥éª¤
 static std::vector<SmoothStep> smoothStepsFromParams(const ParamMap& p)
 {
     std::vector<SmoothStep> out;
@@ -155,46 +155,46 @@ static std::vector<SmoothStep> smoothStepsFromParams(const ParamMap& p)
     return out;
 }
 
-// Æ½»¬Ò»²½
+// å¹³æ»‘ä¸€æ­¥
 
-// Ëã×ÓĞ´³ÉÕûĞÍ
+// ç®—å­å†™æˆæ•´å‹
 static int enhanceOpToInt(EnhanceOp op)
 {
     return static_cast<int>(op);
 }
 
-// Ëã×ÓĞ´³ÉÕûĞÍ
+// ç®—å­å†™æˆæ•´å‹
 static int smoothOpToInt(SmoothOp op)
 {
     return static_cast<int>(op);
 }
 
-// Ëã×ÓÏÔÊ¾Ãû
+// ç®—å­æ˜¾ç¤ºå
 static std::string enhanceOpTitle(EnhanceOp op)
 {
     switch (op) {
-    case EnhanceOp::EquHisto: return Translate::tr("Ö±·½Í¼¾ùºâ");
-    case EnhanceOp::Emphasize: return Translate::tr("Ç¿µ÷");
-    case EnhanceOp::Illuminate: return Translate::tr("ÕÕ¶È");
-    case EnhanceOp::Scale: return Translate::tr("»Ò¶ÈËõ·Å");
-    case EnhanceOp::Invert: return Translate::tr("·´É«");
-    default: return Translate::tr("Ö±·½Í¼¾ùºâ");
+    case EnhanceOp::EquHisto: return Translate::tr("ç›´æ–¹å›¾å‡è¡¡");
+    case EnhanceOp::Emphasize: return Translate::tr("å¼ºè°ƒ");
+    case EnhanceOp::Illuminate: return Translate::tr("ç…§åº¦");
+    case EnhanceOp::Scale: return Translate::tr("ç°åº¦ç¼©æ”¾");
+    case EnhanceOp::Invert: return Translate::tr("åè‰²");
+    default: return Translate::tr("ç›´æ–¹å›¾å‡è¡¡");
     }
 }
 
-// Ëã×ÓÏÔÊ¾Ãû
+// ç®—å­æ˜¾ç¤ºå
 static std::string smoothOpTitle(SmoothOp op)
 {
     switch (op) {
-    case SmoothOp::Mean: return Translate::tr("¾ùÖµ");
-    case SmoothOp::Median: return Translate::tr("ÖĞÖµ");
-    case SmoothOp::Gauss: return Translate::tr("¸ßË¹");
-    case SmoothOp::Bilateral: return Translate::tr("Ë«±ß");
-    default: return Translate::tr("ÖĞÖµ");
+    case SmoothOp::Mean: return Translate::tr("å‡å€¼");
+    case SmoothOp::Median: return Translate::tr("ä¸­å€¼");
+    case SmoothOp::Gauss: return Translate::tr("é«˜æ–¯");
+    case SmoothOp::Bilateral: return Translate::tr("åŒè¾¹");
+    default: return Translate::tr("ä¸­å€¼");
     }
 }
 
-// °Ñ²½ÖèĞ´»Ø²ÎÊı
+// æŠŠæ­¥éª¤å†™å›å‚æ•°
 static void clearPipelineParams(ParamMap* p)
 {
     if (!p) {
@@ -209,7 +209,7 @@ static void clearPipelineParams(ParamMap* p)
     }
 }
 
-// °Ñ²½ÖèĞ´»Ø²ÎÊı
+// æŠŠæ­¥éª¤å†™å›å‚æ•°
 static void enhanceStepsToParams(const std::vector<EnhanceStep>& steps, ParamMap* p)
 {
     if (!p) {
@@ -228,7 +228,7 @@ static void enhanceStepsToParams(const std::vector<EnhanceStep>& steps, ParamMap
     }
 }
 
-// °Ñ²½ÖèĞ´»Ø²ÎÊı
+// æŠŠæ­¥éª¤å†™å›å‚æ•°
 static void smoothStepsToParams(const std::vector<SmoothStep>& steps, ParamMap* p)
 {
     if (!p) {
@@ -246,7 +246,7 @@ static void smoothStepsToParams(const std::vector<SmoothStep>& steps, ParamMap* 
     }
 }
 
-// ½¨Ò»¸öÁ½ÏîÏÂÀ­£¬ÏÔÊ¾ÎÄ°¸Óë´æÅÌÖµ³É¶Ô
+// å»ºä¸€ä¸ªä¸¤é¡¹ä¸‹æ‹‰ï¼Œæ˜¾ç¤ºæ–‡æ¡ˆä¸å­˜ç›˜å€¼æˆå¯¹
 static QComboBox* combo(QWidget* parent, const char* a, const char* av, const char* b, const char* bv)
 {
     QComboBox* c = mkParamCombo(parent);
@@ -255,26 +255,26 @@ static QComboBox* combo(QWidget* parent, const char* a, const char* av, const ch
     return c;
 }
 
-// °´´æÅÌÖµÑ¡ÖĞÏÂÀ­Ïî£¬ÕÒ²»µ½ÔòµÚÒ»Ïî
+// æŒ‰å­˜ç›˜å€¼é€‰ä¸­ä¸‹æ‹‰é¡¹ï¼Œæ‰¾ä¸åˆ°åˆ™ç¬¬ä¸€é¡¹
 static void setCombo(QComboBox* c, const QString& v)
 {
     const int i = c->findData(v);
     c->setCurrentIndex(i >= 0 ? i : 0);
 }
 
-// µ±Ç°ÏÂÀ­ÏîµÄ´æÅÌÖµ
+// å½“å‰ä¸‹æ‹‰é¡¹çš„å­˜ç›˜å€¼
 static QString comboVal(QComboBox* c)
 {
     return c->currentData().toString();
 }
 
-// ½¨²ÎÊıÓÃ¸¡µãĞıÅ¥
+// å»ºå‚æ•°ç”¨æµ®ç‚¹æ—‹é’®
 static QDoubleSpinBox* dspin(QWidget* parent, double lo, double hi, int dec, double step)
 {
     return mkParamDSpin(parent, lo, hi, dec, step);
 }
 
-// ---------- Ïà»ú ----------
+// ---------- ç›¸æœº ----------
 class CameraEditor : public ToolEditorBase {
 public:
     CameraEditor(QWidget* parent, bool fileMode)
@@ -284,10 +284,10 @@ public:
         m_dev = mkParamCombo(this);
         m_path = new QLineEdit(this);
         m_path->setObjectName(QLatin1String("toolDebugParamLine"));
-        m_mode = combo(this, "ÎÄ¼ş¼ĞÑ­»·", "folder", "µ¥¸öÍ¼Ïñ", "file");
+        m_mode = combo(this, "æ–‡ä»¶å¤¹å¾ªç¯", "folder", "å•ä¸ªå›¾åƒ", "file");
         m_exp = mkParamSpin(this, 1, 10000000);
         m_gain = dspin(this, 0, 48, 1, 0.5);
-        QPushButton* browse = new QPushButton(T("ä¯ÀÀ¡­"), this);
+        QPushButton* browse = new QPushButton(T("æµè§ˆâ€¦"), this);
         browse->setFixedHeight(28);
         connect(browse, &QPushButton::clicked, this, &CameraEditor::onBrowse);
         QWidget* pathWrap = new QWidget(this);
@@ -298,12 +298,12 @@ public:
         pathLay->addWidget(browse);
         pathWrap->setFixedHeight(28);
         QVBoxLayout* lay = mkParamStack(this, 10);
-        addParamStackItem(lay, mkParamCell(this, T("ÒıÓÃÉè±¸"), m_dev));
+        addParamStackItem(lay, mkParamCell(this, T("å¼•ç”¨è®¾å¤‡"), m_dev));
         if (fileMode) {
-            addParamStackItem(lay, mkParamCell(this, T("À´Ô´"), m_mode));
+            addParamStackItem(lay, mkParamCell(this, T("æ¥æº"), m_mode));
         }
-        addParamStackItem(lay, mkParamCell(this, T("Â·¾¶¸²¸Ç"), pathWrap));
-        addParamStackItem(lay, mkParamRow2(this, T("ÆØ¹â us"), m_exp, T("ÔöÒæ dB"), m_gain));
+        addParamStackItem(lay, mkParamCell(this, T("è·¯å¾„è¦†ç›–"), pathWrap));
+        addParamStackItem(lay, mkParamRow2(this, T("æ›å…‰ us"), m_exp, T("å¢ç›Š dB"), m_gain));
         m_mode->setVisible(fileMode);
         connect(m_dev, SIGNAL(currentIndexChanged(int)), this, SLOT(onEdited()));
         connect(m_path, SIGNAL(editingFinished()), this, SLOT(onEdited()));
@@ -324,7 +324,7 @@ protected:
                 }
                 QString label = qs(d.name);
                 if (d.cameraBackend == CameraBackendFile) {
-                    label += T(" [ÎÄ¼şÔ´]");
+                    label += T(" [æ–‡ä»¶æº]");
                 }
                 m_dev->addItem(label, qs(d.id));
             }
@@ -353,7 +353,7 @@ protected:
         if (m_file) {
             m_tool->params.insert("sourceMode", newMode);
         }
-        // Â·¾¶»òÀ´Ô´·½Ê½±äÁË£¬´ÓµÚÒ»ÕÅÖØĞÂÑ­»·
+        // è·¯å¾„æˆ–æ¥æºæ–¹å¼å˜äº†ï¼Œä»ç¬¬ä¸€å¼ é‡æ–°å¾ªç¯
         if (newPath != oldPath || newMode != oldMode) {
             m_tool->params.insert("index", 0);
             m_tool->params.raw().erase("grabPath");
@@ -369,10 +369,10 @@ private:
         QString p;
         const bool single = m_file && comboVal(m_mode) == QLatin1String("file");
         if (single) {
-            p = QFileDialog::getOpenFileName(this, T("µ¥¸öÍ¼Ïñ"), QString(),
-                                             T("Í¼Ïñ (*.png *.bmp *.jpg *.jpeg *.tif);;ËùÓĞÎÄ¼ş (*.*)"));
+            p = QFileDialog::getOpenFileName(this, T("å•ä¸ªå›¾åƒ"), QString(),
+                                             T("å›¾åƒ (*.png *.bmp *.jpg *.jpeg *.tif);;æ‰€æœ‰æ–‡ä»¶ (*.*)"));
         } else {
-            p = QFileDialog::getExistingDirectory(this, T("Í¼ÏñÎÄ¼ş¼Ğ"));
+            p = QFileDialog::getExistingDirectory(this, T("å›¾åƒæ–‡ä»¶å¤¹"));
         }
         if (!p.isEmpty()) {
             m_path->setText(p);
@@ -387,18 +387,18 @@ private:
     QDoubleSpinBox* m_gain;
 };
 
-// Ïà»úÉè±¸²É¼¯²ÎÊıÒ³
+// ç›¸æœºè®¾å¤‡é‡‡é›†å‚æ•°é¡µ
 ToolEditorBase* createCamDeviceEditor(QWidget* parent)
 {
     return new CameraEditor(parent, false);
 }
-// ÎÄ¼şÔ´²É¼¯²ÎÊıÒ³
+// æ–‡ä»¶æºé‡‡é›†å‚æ•°é¡µ
 ToolEditorBase* createCameraFileEditor(QWidget* parent)
 {
     return new CameraEditor(parent, true);
 }
 
-// ---------- ÔöÇ¿/Æ½»¬¹ÜÏß ----------
+// ---------- å¢å¼º/å¹³æ»‘ç®¡çº¿ ----------
 namespace {
 
 enum StepVarRole {
@@ -410,7 +410,7 @@ enum StepVarRole {
     StepVarFlag
 };
 
-// ÔöÇ¿²½ÖèĞ´Èë QVariantList
+// å¢å¼ºæ­¥éª¤å†™å…¥ QVariantList
 QVariantList enhanceStepToVariant(const EnhanceStep& st)
 {
     QVariantList v;
@@ -418,7 +418,7 @@ QVariantList enhanceStepToVariant(const EnhanceStep& st)
     return v;
 }
 
-// QVariantList ¶ÁÔöÇ¿²½Öè
+// QVariantList è¯»å¢å¼ºæ­¥éª¤
 EnhanceStep enhanceStepFromVariant(const QVariant& data)
 {
     const QVariantList v = data.toList();
@@ -434,7 +434,7 @@ EnhanceStep enhanceStepFromVariant(const QVariant& data)
     return st;
 }
 
-// Æ½»¬²½ÖèĞ´Èë QVariantList
+// å¹³æ»‘æ­¥éª¤å†™å…¥ QVariantList
 QVariantList smoothStepToVariant(const SmoothStep& st)
 {
     QVariantList v;
@@ -442,7 +442,7 @@ QVariantList smoothStepToVariant(const SmoothStep& st)
     return v;
 }
 
-// QVariantList ¶ÁÆ½»¬²½Öè
+// QVariantList è¯»å¹³æ»‘æ­¥éª¤
 SmoothStep smoothStepFromVariant(const QVariant& data)
 {
     const QVariantList v = data.toList();
@@ -468,32 +468,32 @@ public:
         m_list = new QListWidget(this);
         m_op = new QComboBox(this);
         if (enhance) {
-            m_op->addItem(T("Ö±·½Í¼¾ùºâ"), enhanceOpToInt(EnhanceOp::EquHisto));
-            m_op->addItem(T("Ç¿µ÷"), enhanceOpToInt(EnhanceOp::Emphasize));
-            m_op->addItem(T("ÕÕ¶È"), enhanceOpToInt(EnhanceOp::Illuminate));
-            m_op->addItem(T("»Ò¶ÈËõ·Å"), enhanceOpToInt(EnhanceOp::Scale));
-            m_op->addItem(T("·´É«"), enhanceOpToInt(EnhanceOp::Invert));
+            m_op->addItem(T("ç›´æ–¹å›¾å‡è¡¡"), enhanceOpToInt(EnhanceOp::EquHisto));
+            m_op->addItem(T("å¼ºè°ƒ"), enhanceOpToInt(EnhanceOp::Emphasize));
+            m_op->addItem(T("ç…§åº¦"), enhanceOpToInt(EnhanceOp::Illuminate));
+            m_op->addItem(T("ç°åº¦ç¼©æ”¾"), enhanceOpToInt(EnhanceOp::Scale));
+            m_op->addItem(T("åè‰²"), enhanceOpToInt(EnhanceOp::Invert));
         } else {
-            m_op->addItem(T("¾ùÖµ"), smoothOpToInt(SmoothOp::Mean));
-            m_op->addItem(T("ÖĞÖµ"), smoothOpToInt(SmoothOp::Median));
-            m_op->addItem(T("¸ßË¹"), smoothOpToInt(SmoothOp::Gauss));
-            m_op->addItem(T("Ë«±ß"), smoothOpToInt(SmoothOp::Bilateral));
+            m_op->addItem(T("å‡å€¼"), smoothOpToInt(SmoothOp::Mean));
+            m_op->addItem(T("ä¸­å€¼"), smoothOpToInt(SmoothOp::Median));
+            m_op->addItem(T("é«˜æ–¯"), smoothOpToInt(SmoothOp::Gauss));
+            m_op->addItem(T("åŒè¾¹"), smoothOpToInt(SmoothOp::Bilateral));
         }
-        QPushButton* add = new QPushButton(T("Ìí¼Ó²½Öè"), this);
-        QPushButton* del = new QPushButton(T("É¾³ı²½Öè"), this);
-        QPushButton* up = new QPushButton(T("ÉÏÒÆ"), this);
-        QPushButton* dn = new QPushButton(T("ÏÂÒÆ"), this);
+        QPushButton* add = new QPushButton(T("æ·»åŠ æ­¥éª¤"), this);
+        QPushButton* del = new QPushButton(T("åˆ é™¤æ­¥éª¤"), this);
+        QPushButton* up = new QPushButton(T("ä¸Šç§»"), this);
+        QPushButton* dn = new QPushButton(T("ä¸‹ç§»"), this);
         m_w = new QSpinBox(this);
         m_w->setRange(1, 501);
         m_h = new QSpinBox(this);
         m_h->setRange(1, 501);
         m_factor = dspin(this, 0.01, 20, 2, 0.1);
         QFormLayout* args = new QFormLayout();
-        args->addRow(T("¿í/ºË"), m_w);
-        args->addRow(T("¸ß"), m_h);
-        args->addRow(T("ÏµÊı"), m_factor);
+        args->addRow(T("å®½/æ ¸"), m_w);
+        args->addRow(T("é«˜"), m_h);
+        args->addRow(T("ç³»æ•°"), m_factor);
         QVBoxLayout* lay = new QVBoxLayout(this);
-        lay->addWidget(new QLabel(T("¿Éµş¼Ó²½Öè£¬Ë³Ğò¼´Ö´ĞĞË³Ğò"), this));
+        lay->addWidget(new QLabel(T("å¯å åŠ æ­¥éª¤ï¼Œé¡ºåºå³æ‰§è¡Œé¡ºåº"), this));
         lay->addWidget(m_list, 1);
         QHBoxLayout* row = new QHBoxLayout();
         row->addWidget(m_op);
@@ -798,12 +798,12 @@ private:
     QDoubleSpinBox* m_factor;
 };
 
-// ÔöÇ¿Ô¤´¦Àí²ÎÊıÒ³
+// å¢å¼ºé¢„å¤„ç†å‚æ•°é¡µ
 ToolEditorBase* createEnhanceEditor(QWidget* parent)
 {
     return new PipelineEditor(parent, true);
 }
-// Æ½»¬Ô¤´¦Àí²ÎÊıÒ³
+// å¹³æ»‘é¢„å¤„ç†å‚æ•°é¡µ
 ToolEditorBase* createSmoothEditor(QWidget* parent)
 {
     return new PipelineEditor(parent, false);

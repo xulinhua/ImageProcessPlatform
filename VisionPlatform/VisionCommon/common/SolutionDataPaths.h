@@ -1,6 +1,6 @@
 /**
  * @file SolutionDataPaths.h
- * @brief SolutionDataPathsÍ·ÎÄ¼ş
+ * @brief SolutionDataPathså¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -15,41 +15,41 @@
 
 namespace Vision {
 
-/** @brief Â·¾¶Æ´½Ó£¨Windows ·´Ğ±¸Ü£»Â·¾¶´®Îª UTF-8£© */
+/** @brief è·¯å¾„æ‹¼æ¥ï¼ˆWindows åæ–œæ ï¼›è·¯å¾„ä¸²ä¸º UTF-8ï¼‰ */
 VISION_COMMON_API std::string pathJoin(const std::string& a, const std::string& b);
-/** @brief È¡Ä¿Â¼²¿·Ö£»ÎŞ·Ö¸ô·û·µ»Ø¿Õ */
+/** @brief å–ç›®å½•éƒ¨åˆ†ï¼›æ— åˆ†éš”ç¬¦è¿”å›ç©º */
 VISION_COMMON_API std::string pathDirName(const std::string& filePath);
-/** @brief ÎŞÀ©Õ¹ÎÄ¼şÃû£¨MyLine.vpsol ¡ú MyLine£© */
+/** @brief æ— æ‰©å±•æ–‡ä»¶åï¼ˆMyLine.vpsol â†’ MyLineï¼‰ */
 VISION_COMMON_API std::string pathFileStem(const std::string& filePath);
-/** @brief ÎÄ¼şÊÇ·ñ´æÔÚ£¨UTF-8 Â·¾¶£© */
+/** @brief æ–‡ä»¶æ˜¯å¦å­˜åœ¨ï¼ˆUTF-8 è·¯å¾„ï¼‰ */
 VISION_COMMON_API bool pathFileExists(const std::string& filePath);
 /**
- * @brief ·½°¸ÅÔÂ·Êı¾İ¸ù£ºÓë .vpsol Í¬Ä¿Â¼Í¬Ãû .vpdata
- * @param vpsolPath ·½°¸ÎÄ¼şÈ«Â·¾¶£¨UTF-8£©£»¿ÕÔò·µ»Ø¿Õ
+ * @brief æ–¹æ¡ˆæ—è·¯æ•°æ®æ ¹ï¼šä¸ .vpsol åŒç›®å½•åŒå .vpdata
+ * @param vpsolPath æ–¹æ¡ˆæ–‡ä»¶å…¨è·¯å¾„ï¼ˆUTF-8ï¼‰ï¼›ç©ºåˆ™è¿”å›ç©º
  */
 VISION_COMMON_API std::string solutionDataRootFromFile(const std::string& vpsolPath);
 /**
- * @brief µ¥¹¤¾ßÊı¾İÄ¿Â¼£ºvpdata/stations/{sid}/jobs/{jid}/tools/{tid}
- * @param vpsolPath ·½°¸ .vpsol È«Â·¾¶£¨UTF-8£©£»¿ÕÔò·µ»Ø¿Õ
+ * @brief å•å·¥å…·æ•°æ®ç›®å½•ï¼švpdata/stations/{sid}/jobs/{jid}/tools/{tid}
+ * @param vpsolPath æ–¹æ¡ˆ .vpsol å…¨è·¯å¾„ï¼ˆUTF-8ï¼‰ï¼›ç©ºåˆ™è¿”å›ç©º
  */
 VISION_COMMON_API std::string toolDataDir(const std::string& vpsolPath,
                         const ObjectId& stationId,
                         const ObjectId& jobId,
                         const ObjectId& toolId);
-/** @brief µİ¹é´´½¨Ä¿Â¼£¨º¬¶à¼¶£»UTF-8 Â·¾¶£© */
+/** @brief é€’å½’åˆ›å»ºç›®å½•ï¼ˆå«å¤šçº§ï¼›UTF-8 è·¯å¾„ï¼‰ */
 VISION_COMMON_API bool ensureDirectoryTree(const std::string& absPath);
 /**
- * @brief µİ¹é¿½±´Ä¿Â¼£¨Áí´æ·½°¸Ê±Í¬²½ vpdata£©
- * @param src Ô´Ä¿Â¼£¨UTF-8£©
- * @param dst Ä¿±êÄ¿Â¼£¨UTF-8£©
+ * @brief é€’å½’æ‹·è´ç›®å½•ï¼ˆå¦å­˜æ–¹æ¡ˆæ—¶åŒæ­¥ vpdataï¼‰
+ * @param src æºç›®å½•ï¼ˆUTF-8ï¼‰
+ * @param dst ç›®æ ‡ç›®å½•ï¼ˆUTF-8ï¼‰
  */
 VISION_COMMON_API bool copyDirectoryRecursive(const std::string& src, const std::string& dst);
-/** @brief É¾³ıÎÄ¼ş£»²»´æÔÚÒ²Ëã³É¹¦ */
+/** @brief åˆ é™¤æ–‡ä»¶ï¼›ä¸å­˜åœ¨ä¹Ÿç®—æˆåŠŸ */
 VISION_COMMON_API bool removeFileIfExists(const std::string& filePath);
 /**
- * @brief ¹¤¾ßÏà¶ÔÎÄ¼ş ¡ú ¾ø¶ÔÂ·¾¶
+ * @brief å·¥å…·ç›¸å¯¹æ–‡ä»¶ â†’ ç»å¯¹è·¯å¾„
  * @param dataDir toolDataDir
- * @param relativeName Èç model.ncm£»ÒÑÊÇ¾ø¶ÔÂ·¾¶ÔòÔ­Ñù·µ»Ø
+ * @param relativeName å¦‚ model.ncmï¼›å·²æ˜¯ç»å¯¹è·¯å¾„åˆ™åŸæ ·è¿”å›
  */
 VISION_COMMON_API std::string resolveToolAssetPath(const std::string& dataDir, const std::string& relativeName);
 

@@ -1,6 +1,6 @@
 /**
  * @file HsSystem.cpp
- * @brief HsSystemÊµÏÖ
+ * @brief HsSystemå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -13,7 +13,7 @@ namespace HsCommData {
 
 namespace {
 
-// Ã¶¾ÙÏîÈ¡ÖµÊÇ·ñÂäÔÚ¸ÃÃ¶¾ÙÀï
+// æšä¸¾é¡¹å–å€¼æ˜¯å¦è½åœ¨è¯¥æšä¸¾é‡Œ
 bool enumOk(HsSystem::Param param, int value)
 {
     switch (param) {
@@ -39,15 +39,15 @@ bool enumOk(HsSystem::Param param, int value)
     return false;
 }
 
-// ²ÎÊıºÍÈ¡Öµ¶Ô²»ÉÏ
+// å‚æ•°å’Œå–å€¼å¯¹ä¸ä¸Š
 void failSystem()
 {
-    throw HsException("set_system", "²ÎÊı»òÈ¡Öµ²»·û", HS_ERR_TYPE);
+    throw HsException("set_system", "å‚æ•°æˆ–å–å€¼ä¸ç¬¦", HS_ERR_TYPE);
 }
 
 }
 
-// ¶ÔÍâÄ¬ÈÏ£º¶È¡¢ÄæÊ±Õë
+// å¯¹å¤–é»˜è®¤ï¼šåº¦ã€é€†æ—¶é’ˆ
 HsSystem::HsSystem()
 {
     angleUnit = AngleUnit::UnitDegree;
@@ -62,14 +62,14 @@ HsSystem::HsSystem()
     exceptionCallback = nullptr;
 }
 
-// È«½ø³ÌÎ¨Ò»Ò»·İ
+// å…¨è¿›ç¨‹å”¯ä¸€ä¸€ä»½
 HsSystem& HsSystem::instance()
 {
     static HsSystem system;
     return system;
 }
 
-// ÓÃÕûÊı¸ÄÃ¶¾ÙÏî
+// ç”¨æ•´æ•°æ”¹æšä¸¾é¡¹
 void set_system(HsSystem::Param param, int value)
 {
     if (param == HsSystem::ParamTol || !enumOk(param, value)) {
@@ -106,7 +106,7 @@ void set_system(HsSystem::Param param, int value)
     }
 }
 
-// ¸Ä±È½ÏÈİ²î
+// æ”¹æ¯”è¾ƒå®¹å·®
 void set_system(HsSystem::Param param, double value)
 {
     if (param != HsSystem::ParamTol || value < 0.0) {
@@ -115,11 +115,11 @@ void set_system(HsSystem::Param param, double value)
     HsSystem::instance().tol = value;
 }
 
-// ¶Á³öÃ¶¾ÙÏî
+// è¯»å‡ºæšä¸¾é¡¹
 void get_system(HsSystem::Param param, int* value)
 {
     if (!value || param == HsSystem::ParamTol) {
-        throw HsException("get_system", "²ÎÊı»òÈ¡Öµ²»·û", HS_ERR_TYPE);
+        throw HsException("get_system", "å‚æ•°æˆ–å–å€¼ä¸ç¬¦", HS_ERR_TYPE);
     }
     const HsSystem& system = HsSystem::instance();
     switch (param) {
@@ -152,22 +152,22 @@ void get_system(HsSystem::Param param, int* value)
     }
 }
 
-// ¶Á³ö±È½ÏÈİ²î
+// è¯»å‡ºæ¯”è¾ƒå®¹å·®
 void get_system(HsSystem::Param param, double* value)
 {
     if (!value || param != HsSystem::ParamTol) {
-        throw HsException("get_system", "²ÎÊı»òÈ¡Öµ²»·û", HS_ERR_TYPE);
+        throw HsException("get_system", "å‚æ•°æˆ–å–å€¼ä¸ç¬¦", HS_ERR_TYPE);
     }
     *value = HsSystem::instance().tol;
 }
 
-// ÉèÖÃÒì³£»Øµ÷
+// è®¾ç½®å¼‚å¸¸å›è°ƒ
 void set_system(HsSystem::ExceptionCallback callback)
 {
     HsSystem::instance().exceptionCallback = callback;
 }
 
-// ¶Á³öÒì³£»Øµ÷
+// è¯»å‡ºå¼‚å¸¸å›è°ƒ
 HsSystem::ExceptionCallback get_exception_callback()
 {
     return HsSystem::instance().exceptionCallback;

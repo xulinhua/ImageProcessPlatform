@@ -1,6 +1,6 @@
 /**
  * @file DeviceMgrDlg.cpp
- * @brief DeviceMgrDlgÊµÏÖ
+ * @brief DeviceMgrDlgå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -28,22 +28,22 @@
 
 namespace Vision {
 
-// Éè±¸¹ÜÀí£ºÈıÀàÒ³Ç© + ±éÀú/¹ÜÀí
+// è®¾å¤‡ç®¡ç†ï¼šä¸‰ç±»é¡µç­¾ + éå†/ç®¡ç†
 DeviceMgrDlg::DeviceMgrDlg(Session* session, Solution* solution, QWidget* parent)
     : QDialog(parent)
     , m_session(session)
     , m_sol(solution)
     , m_testBtn(nullptr)
 {
-    setWindowTitle(T("Éè±¸¹ÜÀí"));
+    setWindowTitle(T("è®¾å¤‡ç®¡ç†"));
     resize(1000, 600);
     enableDialogResize(this);
 
     m_kindTabs = new QTabWidget(this);
-    m_kindTabs->addTab(new QWidget(m_kindTabs), T("Ïà»ú"));
-    m_kindTabs->addTab(new QWidget(m_kindTabs), T("ÎÄ¼ş¼Ğ"));
-    m_kindTabs->addTab(new QWidget(m_kindTabs), T("Í¼Ïñ"));
-    m_kindTabs->addTab(new QWidget(m_kindTabs), T("¿ØÖÆ¿¨"));
+    m_kindTabs->addTab(new QWidget(m_kindTabs), T("ç›¸æœº"));
+    m_kindTabs->addTab(new QWidget(m_kindTabs), T("æ–‡ä»¶å¤¹"));
+    m_kindTabs->addTab(new QWidget(m_kindTabs), T("å›¾åƒ"));
+    m_kindTabs->addTab(new QWidget(m_kindTabs), T("æ§åˆ¶å¡"));
     m_kindTabs->addTab(new QWidget(m_kindTabs), T("PLC"));
     connect(m_kindTabs, SIGNAL(currentChanged(int)), this, SLOT(onKindTabChanged(int)));
 
@@ -56,12 +56,12 @@ DeviceMgrDlg::DeviceMgrDlg(Session* session, Solution* solution, QWidget* parent
     m_preview->setDrawTool(HsCtrl::ToolBrowse);
     m_preview->setMinimumSize(280, 200);
 
-    QPushButton* scanBtn = new QPushButton(T("ÖØĞÂ±éÀú"), this);
-    QPushButton* regBtn = new QPushButton(T("µÇ¼ÇÑ¡ÖĞ"), this);
-    QPushButton* addBtn = new QPushButton(T("ÊÖ¶¯µÇ¼Ç"), this);
-    QPushButton* delBtn = new QPushButton(T("É¾³ı"), this);
-    QPushButton* openBtn = new QPushButton(T("½øÈëÅäÖÃ"), this);
-    m_testBtn = new QPushButton(T("Á¬½Ó²âÊÔ"), this);
+    QPushButton* scanBtn = new QPushButton(T("é‡æ–°éå†"), this);
+    QPushButton* regBtn = new QPushButton(T("ç™»è®°é€‰ä¸­"), this);
+    QPushButton* addBtn = new QPushButton(T("æ‰‹åŠ¨ç™»è®°"), this);
+    QPushButton* delBtn = new QPushButton(T("åˆ é™¤"), this);
+    QPushButton* openBtn = new QPushButton(T("è¿›å…¥é…ç½®"), this);
+    m_testBtn = new QPushButton(T("è¿æ¥æµ‹è¯•"), this);
     setButtonRole(openBtn, "primary");
     const bool can = session->has(PermEditDevice);
     scanBtn->setEnabled(can);
@@ -79,10 +79,10 @@ DeviceMgrDlg::DeviceMgrDlg(Session* session, Solution* solution, QWidget* parent
     connect(m_managedList, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(onOpen()));
 
     QVBoxLayout* probeLay = new QVBoxLayout();
-    QLabel* pTitle = new QLabel(T("±éÀú"), this);
+    QLabel* pTitle = new QLabel(T("éå†"), this);
     pTitle->setObjectName(QLatin1String("section"));
     probeLay->addWidget(pTitle);
-    probeLay->addWidget(new QLabel(T("·¢ÏÖ±¾»úºòÑ¡£¬¿ÉµÇ¼Çµ½Ì¨ÕË"), this));
+    probeLay->addWidget(new QLabel(T("å‘ç°æœ¬æœºå€™é€‰ï¼Œå¯ç™»è®°åˆ°å°è´¦"), this));
     probeLay->addWidget(m_probeList, 1);
     QHBoxLayout* pb = new QHBoxLayout();
     pb->addWidget(scanBtn);
@@ -90,7 +90,7 @@ DeviceMgrDlg::DeviceMgrDlg(Session* session, Solution* solution, QWidget* parent
     probeLay->addLayout(pb);
 
     QVBoxLayout* mgrLay = new QVBoxLayout();
-    QLabel* mTitle = new QLabel(T("¹ÜÀí"), this);
+    QLabel* mTitle = new QLabel(T("ç®¡ç†"), this);
     mTitle->setObjectName(QLatin1String("section"));
     mgrLay->addWidget(mTitle);
     mgrLay->addWidget(m_managedList, 1);
@@ -100,7 +100,7 @@ DeviceMgrDlg::DeviceMgrDlg(Session* session, Solution* solution, QWidget* parent
     mgrLay->addLayout(mb);
 
     QVBoxLayout* right = new QVBoxLayout();
-    QLabel* aTitle = new QLabel(T("ÊôĞÔ"), this);
+    QLabel* aTitle = new QLabel(T("å±æ€§"), this);
     aTitle->setObjectName(QLatin1String("section"));
     right->addWidget(aTitle);
     right->addWidget(m_summary);
@@ -121,7 +121,7 @@ DeviceMgrDlg::DeviceMgrDlg(Session* session, Solution* solution, QWidget* parent
     onKindTabChanged(0);
 }
 
-// µ±Ç°Ò³Ç©¶ÔÓ¦µÄÉè±¸ÖÖÀà
+// å½“å‰é¡µç­¾å¯¹åº”çš„è®¾å¤‡ç§ç±»
 DeviceKind DeviceMgrDlg::currentKind() const
 {
     switch (m_kindTabs->currentIndex()) {
@@ -167,7 +167,7 @@ void DeviceMgrDlg::refreshProbe()
     }
 }
 
-// °´µ±Ç°ÖÖÀàÖØÌîÌ¨ÕË
+// æŒ‰å½“å‰ç§ç±»é‡å¡«å°è´¦
 void DeviceMgrDlg::refreshManaged()
 {
     m_managedList->clear();
@@ -189,40 +189,40 @@ void DeviceMgrDlg::refreshManaged()
     onManagedSel();
 }
 
-// Ì¨ÕËµ±Ç°Ñ¡ÖĞÉè±¸ id
+// å°è´¦å½“å‰é€‰ä¸­è®¾å¤‡ id
 QString DeviceMgrDlg::currentManagedId() const
 {
     QListWidgetItem* it = m_managedList->currentItem();
     return it ? it->data(Qt::UserRole).toString() : QString();
 }
 
-// Ñ¡ÖĞÌ¨ÕËÏîºóË¢ĞÂÕªÒª
+// é€‰ä¸­å°è´¦é¡¹ååˆ·æ–°æ‘˜è¦
 void DeviceMgrDlg::onManagedSel()
 {
     const HardwareDevice* d = m_sol->findDevice(oid(currentManagedId()));
     if (!d) {
-        m_summary->setText(T("ÇëÑ¡ÔñÌ¨ÕËÖĞµÄÉè±¸¡£"));
+        m_summary->setText(T("è¯·é€‰æ‹©å°è´¦ä¸­çš„è®¾å¤‡ã€‚"));
         return;
     }
-    QString text = T("Éè±¸£º") + qs(d->name)
-                   + T("\nÀàĞÍ£º") + QString::fromUtf8(deviceKindTitle(d->kind).c_str());
+    QString text = T("è®¾å¤‡ï¼š") + qs(d->name)
+                   + T("\nç±»å‹ï¼š") + QString::fromUtf8(deviceKindTitle(d->kind).c_str());
     if (d->kind == DeviceCamera) {
-        text += T("\nºó¶Ë£º") + QString::fromUtf8(cameraBackendTitle(d->cameraBackend).c_str());
+        text += T("\nåç«¯ï¼š") + QString::fromUtf8(cameraBackendTitle(d->cameraBackend).c_str());
     } else if (d->kind == DeviceFolder) {
-        text += QLatin1String("\n") + T("Ä¿Â¼") + QString(QChar(0xFF1A)) + qs(d->defaultParams.value("folder").toString());
+        text += QLatin1String("\n") + T("ç›®å½•") + QString(QChar(0xFF1A)) + qs(d->defaultParams.value("folder").toString());
     } else if (d->kind == DeviceImage) {
-        text += QLatin1String("\n") + T("ÒÑ¼ÇÂ¼") + QString(QChar(0xFF1A)) + qs(d->defaultParams.value("images").toString());
+        text += QLatin1String("\n") + T("å·²è®°å½•") + QString(QChar(0xFF1A)) + qs(d->defaultParams.value("images").toString());
     } else if (d->kind == DeviceControlCard) {
-        text += T("\n³§ÉÌ£º") + qs(d->defaultParams.value("vendor").toString());
-        text += T("\nµØÖ·£º") + qs(d->defaultParams.value("address").toString());
+        text += T("\nå‚å•†ï¼š") + qs(d->defaultParams.value("vendor").toString());
+        text += T("\nåœ°å€ï¼š") + qs(d->defaultParams.value("address").toString());
     } else {
-        text += T("\nÍ¨ĞÅÍ¨µÀ£º") + qs(d->defaultParams.value("commChannelId").toString());
-        text += T("\n´ÓÕ¾£º") + QString::number(d->defaultParams.value("slaveId").toInt(1));
+        text += T("\né€šä¿¡é€šé“ï¼š") + qs(d->defaultParams.value("commChannelId").toString());
+        text += T("\nä»ç«™ï¼š") + QString::number(d->defaultParams.value("slaveId").toInt(1));
     }
     m_summary->setText(text);
 }
 
-// °Ñ±éÀúÏîµÇ¼Ç½øÌ¨ÕË£»Õ¼Î»Ïî¸Ä×ßÊÖ¹¤Ìí¼Ó
+// æŠŠéå†é¡¹ç™»è®°è¿›å°è´¦ï¼›å ä½é¡¹æ”¹èµ°æ‰‹å·¥æ·»åŠ 
 void DeviceMgrDlg::onRegisterProbe()
 {
     QListWidgetItem* it = m_probeList->currentItem();
@@ -253,7 +253,7 @@ void DeviceMgrDlg::onRegisterProbe()
     refreshManaged();
 }
 
-// ÊÖ¹¤¼ÓÒ»Ì¨²¢´ò¿ªÅäÖÃ
+// æ‰‹å·¥åŠ ä¸€å°å¹¶æ‰“å¼€é…ç½®
 void DeviceMgrDlg::onAddManual()
 {
     HardwareDevice d;
@@ -261,15 +261,15 @@ void DeviceMgrDlg::onAddManual()
     d.kind = currentKind();
     if (d.kind == DeviceCamera) {
         d.cameraBackend = CameraBackendSdk;
-        d.name = Translate::format("Ïà»ú{0}", std::to_string(static_cast<int>(m_sol->inventory.size()) + 1));
+        d.name = Translate::format("ç›¸æœº{0}", std::to_string(static_cast<int>(m_sol->inventory.size()) + 1));
     } else if (d.kind == DeviceFolder) {
         d.cameraBackend = CameraBackendFile;
-        d.name = Translate::format("ÎÄ¼ş¼Ğ{0}", std::to_string(static_cast<int>(m_sol->inventory.size()) + 1));
+        d.name = Translate::format("æ–‡ä»¶å¤¹{0}", std::to_string(static_cast<int>(m_sol->inventory.size()) + 1));
         d.defaultParams.insert("folder", AppPaths::exeDir() + "/samples");
     } else if (d.kind == DeviceImage) {
-        d.name = Translate::format("Í¼Ïñ{0}", std::to_string(static_cast<int>(m_sol->inventory.size()) + 1));
+        d.name = Translate::format("å›¾åƒ{0}", std::to_string(static_cast<int>(m_sol->inventory.size()) + 1));
     } else if (d.kind == DeviceControlCard) {
-        d.name = Translate::format("¿ØÖÆ¿¨{0}", std::to_string(static_cast<int>(m_sol->inventory.size()) + 1));
+        d.name = Translate::format("æ§åˆ¶å¡{0}", std::to_string(static_cast<int>(m_sol->inventory.size()) + 1));
     } else {
         d.name = Translate::format("PLC{0}", std::to_string(static_cast<int>(m_sol->inventory.size()) + 1));
         d.defaultParams.insert("slaveId", 1);
@@ -280,14 +280,14 @@ void DeviceMgrDlg::onAddManual()
     emit openDeviceRequested(qs(d.id));
 }
 
-// È·ÈÏºó´ÓÌ¨ÕËÒÆ³ıµ±Ç°Éè±¸
+// ç¡®è®¤åä»å°è´¦ç§»é™¤å½“å‰è®¾å¤‡
 void DeviceMgrDlg::onRemove()
 {
     const QString id = currentManagedId();
     if (id.isEmpty()) {
         return;
     }
-    if (QMessageBox::question(this, T("É¾³ı"), T("´ÓÌ¨ÕËÒÆ³ı¸ÃÉè±¸£¿")) != QMessageBox::Yes) {
+    if (QMessageBox::question(this, T("åˆ é™¤"), T("ä»å°è´¦ç§»é™¤è¯¥è®¾å¤‡ï¼Ÿ")) != QMessageBox::Yes) {
         return;
     }
     for (size_t i = 0; i < m_sol->inventory.size(); ++i) {
@@ -300,7 +300,7 @@ void DeviceMgrDlg::onRemove()
     refreshManaged();
 }
 
-// ÇëÇó´ò¿ªµ±Ç°Ì¨ÕËÉè±¸µÄÅäÖÃ
+// è¯·æ±‚æ‰“å¼€å½“å‰å°è´¦è®¾å¤‡çš„é…ç½®
 void DeviceMgrDlg::onOpen()
 {
     const QString id = currentManagedId();
@@ -309,7 +309,7 @@ void DeviceMgrDlg::onOpen()
     }
 }
 
-// ÊÔ´ò¿ªÔÙ¹Ø±Õ£¬ÌáÊ¾³É°Ü
+// è¯•æ‰“å¼€å†å…³é—­ï¼Œæç¤ºæˆè´¥
 void DeviceMgrDlg::onTestOpen()
 {
     const HardwareDevice* d = m_sol->findDevice(oid(currentManagedId()));
@@ -319,9 +319,9 @@ void DeviceMgrDlg::onTestOpen()
     if (d->kind == DeviceFolder) {
         const QString folder = qs(d->defaultParams.value("folder").toString());
         if (folder.isEmpty()) {
-            QMessageBox::warning(this, T("Á¬½Ó²âÊÔ"), T("»¹Ã»ÓĞÎÄ¼ş¼ĞÂ·¾¶"));
+            QMessageBox::warning(this, T("è¿æ¥æµ‹è¯•"), T("è¿˜æ²¡æœ‰æ–‡ä»¶å¤¹è·¯å¾„"));
         } else {
-            QMessageBox::information(this, T("Á¬½Ó²âÊÔ"), T("Ä¿Â¼") + QString(QChar(0xFF1A)) + folder);
+            QMessageBox::information(this, T("è¿æ¥æµ‹è¯•"), T("ç›®å½•") + QString(QChar(0xFF1A)) + folder);
         }
         return;
     }
@@ -338,9 +338,9 @@ void DeviceMgrDlg::onTestOpen()
         }
         if (!cur.empty()) { ++count; }
         if (count == 0) {
-            QMessageBox::warning(this, T("Á¬½Ó²âÊÔ"), T("»¹Ã»ÓĞ¼ÇÂ¼Í¼Ïñ"));
+            QMessageBox::warning(this, T("è¿æ¥æµ‹è¯•"), T("è¿˜æ²¡æœ‰è®°å½•å›¾åƒ"));
         } else {
-            QMessageBox::information(this, T("Á¬½Ó²âÊÔ"), T("ÒÑ¼ÇÂ¼") + QString::number(count) + T("ÕÅ"));
+            QMessageBox::information(this, T("è¿æ¥æµ‹è¯•"), T("å·²è®°å½•") + QString::number(count) + T("å¼ "));
         }
         return;
     }
@@ -353,10 +353,10 @@ void DeviceMgrDlg::onTestOpen()
         ctrl = &m_plcCtrl;
     }
     if (ctrl->open(*d)) {
-        QMessageBox::information(this, T("Á¬½Ó²âÊÔ"), T("´ò¿ª³É¹¦¡£"));
+        QMessageBox::information(this, T("è¿æ¥æµ‹è¯•"), T("æ‰“å¼€æˆåŠŸã€‚"));
         ctrl->close();
     } else {
-        QMessageBox::warning(this, T("Á¬½Ó²âÊÔ"), qs(ctrl->lastError()));
+        QMessageBox::warning(this, T("è¿æ¥æµ‹è¯•"), qs(ctrl->lastError()));
     }
 }
 

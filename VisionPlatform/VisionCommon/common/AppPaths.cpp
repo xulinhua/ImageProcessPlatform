@@ -1,6 +1,6 @@
 /**
  * @file AppPaths.cpp
- * @brief AppPathsÊµÏÖ
+ * @brief AppPathså®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -16,7 +16,7 @@ namespace Vision {
 
 static std::string g_exeDir;
 
-// È·±£¸ùÄ¿Â¼¡¢ÈÕÖ¾¡¢·½°¸Ä¿Â¼´æÔÚ
+// ç¡®ä¿æ ¹ç›®å½•ã€æ—¥å¿—ã€æ–¹æ¡ˆç›®å½•å­˜åœ¨
 static std::string joinPath(const std::string& a, const std::string& b)
 {
     if (a.empty()) {
@@ -29,19 +29,19 @@ static std::string joinPath(const std::string& a, const std::string& b)
     return a + "\\" + b;
 }
 
-// È·±£¸ùÄ¿Â¼¡¢ÈÕÖ¾¡¢·½°¸Ä¿Â¼´æÔÚ
+// ç¡®ä¿æ ¹ç›®å½•ã€æ—¥å¿—ã€æ–¹æ¡ˆç›®å½•å­˜åœ¨
 static void mkdirOne(const std::string& p)
 {
     CreateDirectoryW(utf8ToWide(p).c_str(), 0);
 }
 
-// ·µ»ØÒÑÉèÖÃµÄ exe Ä¿Â¼£»Î´ÉèÖÃÔò´Óµ±Ç°Ä£¿é¿íÂ·¾¶½ØÈ¡
+// è¿”å›å·²è®¾ç½®çš„ exe ç›®å½•ï¼›æœªè®¾ç½®åˆ™ä»å½“å‰æ¨¡å—å®½è·¯å¾„æˆªå–
 void AppPaths::setExeDir(const std::string& dir)
 {
     g_exeDir = dir;
 }
 
-// ·µ»ØÒÑÉèÖÃµÄ exe Ä¿Â¼£»Î´ÉèÖÃÔò´Óµ±Ç°Ä£¿é¿íÂ·¾¶½ØÈ¡
+// è¿”å›å·²è®¾ç½®çš„ exe ç›®å½•ï¼›æœªè®¾ç½®åˆ™ä»å½“å‰æ¨¡å—å®½è·¯å¾„æˆªå–
 std::string AppPaths::exeDir()
 {
     if (!g_exeDir.empty()) {
@@ -60,25 +60,25 @@ std::string AppPaths::exeDir()
     return s.substr(0, slash);
 }
 
-// Êı¾İ¸ù¹Ì¶¨Îª exe\data£¨ÄÚ²¿Ïà¶Ô logs/solutions ²»±ä£©
+// æ•°æ®æ ¹å›ºå®šä¸º exe\dataï¼ˆå†…éƒ¨ç›¸å¯¹ logs/solutions ä¸å˜ï¼‰
 std::string AppPaths::rootDir()
 {
     return joinPath(exeDir(), "data");
 }
 
-// Óë rootDir ÏàÍ¬
+// ä¸ rootDir ç›¸åŒ
 std::string AppPaths::dataDir()
 {
     return rootDir();
 }
 
-// È·±£¸ùÄ¿Â¼¡¢ÈÕÖ¾¡¢·½°¸Ä¿Â¼´æÔÚ
+// ç¡®ä¿æ ¹ç›®å½•ã€æ—¥å¿—ã€æ–¹æ¡ˆç›®å½•å­˜åœ¨
 std::string AppPaths::logsDir()
 {
     return joinPath(rootDir(), "logs");
 }
 
-// È·±£¸ùÄ¿Â¼¡¢ÈÕÖ¾¡¢·½°¸Ä¿Â¼´æÔÚ
+// ç¡®ä¿æ ¹ç›®å½•ã€æ—¥å¿—ã€æ–¹æ¡ˆç›®å½•å­˜åœ¨
 std::string AppPaths::solutionsDir()
 {
     return joinPath(rootDir(), "solutions");
@@ -89,37 +89,37 @@ std::string AppPaths::compositesDir()
     return joinPath(rootDir(), "composites");
 }
 
-// ±¾»úÉèÖÃ JSON Â·¾¶
+// æœ¬æœºè®¾ç½® JSON è·¯å¾„
 std::string AppPaths::settingsFile()
 {
     return joinPath(rootDir(), "settings.json");
 }
 
-// SQLite Êı¾İ¿âÂ·¾¶
+// SQLite æ•°æ®åº“è·¯å¾„
 std::string AppPaths::databaseFile()
 {
     return joinPath(rootDir(), "vision.db");
 }
 
-// ²å¼ş¸ùÄ¿Â¼
+// æ’ä»¶æ ¹ç›®å½•
 std::string AppPaths::pluginsDir()
 {
     return joinPath(exeDir(), "plugins");
 }
 
-// ¹¤¾ß²å¼şÄ¿Â¼
+// å·¥å…·æ’ä»¶ç›®å½•
 std::string AppPaths::pluginsToolsDir()
 {
     return joinPath(pluginsDir(), "tools");
 }
 
-// Ëã·¨²å¼şÄ¿Â¼
+// ç®—æ³•æ’ä»¶ç›®å½•
 std::string AppPaths::pluginsAlgosDir()
 {
     return joinPath(pluginsDir(), "algos");
 }
 
-// ´´½¨Êı¾İ¡¢ÈÕÖ¾¡¢·½°¸ºÍ²å¼şÄ¿Â¼
+// åˆ›å»ºæ•°æ®ã€æ—¥å¿—ã€æ–¹æ¡ˆå’Œæ’ä»¶ç›®å½•
 void AppPaths::ensureDirs()
 {
     mkdirOne(rootDir());

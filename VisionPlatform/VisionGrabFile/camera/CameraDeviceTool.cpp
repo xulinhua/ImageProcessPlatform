@@ -1,6 +1,6 @@
 /**
  * @file CameraDeviceTool.cpp
- * @brief CameraDeviceToolÊµÏÖ
+ * @brief CameraDeviceToolå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -12,7 +12,7 @@
 
 namespace Vision {
 
-// ÆØ¹âÔöÒæÕ¼Î»£¬ÕæÏà»ú SDK ½ÓÈëºóÊ¹ÓÃ
+// æ›å…‰å¢ç›Šå ä½ï¼ŒçœŸç›¸æœº SDK æ¥å…¥åä½¿ç”¨
 ParamMap CameraDeviceTool::defaultParams() const
 {
     ParamMap p;
@@ -22,27 +22,27 @@ ParamMap CameraDeviceTool::defaultParams() const
     return p;
 }
 
-// ÏÈ×ßÎÄ¼şÔ´Éè±¸£»Î´½ÓÏà»ú SDK Ê±¸ø³öÃ÷È·Ô­Òò£¨index/lastFile ÎªÔËĞĞÌ¬£¬²»±ê·½°¸ dirty£©
+// å…ˆèµ°æ–‡ä»¶æºè®¾å¤‡ï¼›æœªæ¥ç›¸æœº SDK æ—¶ç»™å‡ºæ˜ç¡®åŸå› ï¼ˆindex/lastFile ä¸ºè¿è¡Œæ€ï¼Œä¸æ ‡æ–¹æ¡ˆ dirtyï¼‰
 ToolOut CameraDeviceTool::execute(ToolContext& ctx)
 {
     ToolOut out;
     if (!ctx.sol || !ctx.tool) {
-        out.message = std::string(Translate::tr("ÉÏÏÂÎÄÎŞĞ§"));
+        out.message = std::string(Translate::tr("ä¸Šä¸‹æ–‡æ— æ•ˆ"));
         return out;
     }
     HardwareDevice* dev = ctx.sol->findDevice(ctx.tool->deviceId);
     if (!dev) {
-        out.message = std::string(Translate::tr("Î´°ó¶¨²É¼¯Éè±¸¡£ÇëÔÚ¹¤¾ß²ÎÊıÀïÑ¡ÔñÉè±¸¡£"));
+        out.message = std::string(Translate::tr("æœªç»‘å®šé‡‡é›†è®¾å¤‡ã€‚è¯·åœ¨å·¥å…·å‚æ•°é‡Œé€‰æ‹©è®¾å¤‡ã€‚"));
         return out;
     }
     if (dev->kind != DeviceCamera) {
-        out.message = std::string(Translate::tr("°ó¶¨Éè±¸²»ÊÇÏà»ú¡£"));
+        out.message = std::string(Translate::tr("ç»‘å®šè®¾å¤‡ä¸æ˜¯ç›¸æœºã€‚"));
         return out;
     }
     std::string err;
     const int64_t fid = ctx.frameSeq ? ++(*ctx.frameSeq) : 1;
     if (dev->cameraBackend != CameraBackendFile) {
-        out.message = std::string(Translate::tr("Ïà»ú SDK Î´½ÓÈë¡£Çë°Ñ¸Ã¹¤¾ß¸Ä°óÎÄ¼şÔ´Éè±¸£¬»òÊ¹ÓÃ¡¸Í¼ÏñÎÄ¼ş/ÎÄ¼ş¼Ğ¡¹¡£"));
+        out.message = std::string(Translate::tr("ç›¸æœº SDK æœªæ¥å…¥ã€‚è¯·æŠŠè¯¥å·¥å…·æ”¹ç»‘æ–‡ä»¶æºè®¾å¤‡ï¼Œæˆ–ä½¿ç”¨ã€Œå›¾åƒæ–‡ä»¶/æ–‡ä»¶å¤¹ã€ã€‚"));
         return out;
     }
     const HsCommData::HsImage fb = FileGrabber::grab(ctx.tool, dev, fid, &err);

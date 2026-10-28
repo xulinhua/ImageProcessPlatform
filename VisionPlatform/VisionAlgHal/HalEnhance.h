@@ -1,6 +1,6 @@
 /**
  * @file HalEnhance.h
- * @brief HalEnhanceÍ·ÎÄ¼ş
+ * @brief HalEnhanceå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -10,23 +10,41 @@
 #define VISION_HALCONENHANCE_H
 
 #include "AlgToolBase.h"
+#include "HalconCpp.h"
 
 namespace Vision {
 
 /**
  * @class HalEnhance
- * @brief Í¼ÏñÔöÇ¿Á÷Ë®£¨Halcon£©
+ * @brief å›¾åƒå¢å¼ºæµæ°´ï¼ˆHalconï¼‰
  */
 class HalEnhance : public AlgToolBase {
 public:
     std::string toolName() const { return "preprocess.enhance"; }
-    AlgLibKind algLib() const { return AlgLibHal; }
+    AlgLibKind algLib() const { return AlgLibHal; }
     std::string version() const;
-    /** @brief °æ±¾±ä¸ü£¬Ö»×·¼Ó */
+    /** @brief ç‰ˆæœ¬å˜æ›´ï¼Œåªè¿½åŠ  */
     std::vector<VerNote> versionNotes() const;
-    /** @brief °´²½Öè×öÍ¼ÏñÔöÇ¿ */
+    /** @brief æŒ‰æ­¥éª¤åšå›¾åƒå¢å¼º */
+    int execute(const AlgToolIn& in, AlgToolOut* out) override {
+        if (!out) {
+            return HS_ERR_NULL;
+        }
+        *out = run(in);
+        if (out->ok) {
+            out->errCode = HS_OK;
+            return HS_OK;
+        }
+        if (out->errCode == HS_OK || out->errCode == 1) {
+            out->errCode = HS_ERR_OPERATOR;
+        }
+        return out->errCode;
+    }
     AlgToolOut run(const AlgToolIn& in);
     AlgToolBase* clone() const { return new HalEnhance(); }
+
+private:
+    AlgToolOut writeFullImage(const AlgToolIn& in, const HalconCpp::HImage& work, const std::string& okMsg) const;
 };
 
 }

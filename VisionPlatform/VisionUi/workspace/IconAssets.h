@@ -1,6 +1,6 @@
 /**
  * @file IconAssets.h
- * @brief IconAssetsÍ·ÎÄ¼ş
+ * @brief IconAssetså¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -17,18 +17,18 @@
 namespace Vision {
 
 /**
- * @brief ´Ó exe/icons/ ¼ÓÔØÊ¸Á¿/Î»Í¼Í¼±ê
- * @param relativePath Ïà¶ÔÂ·¾¶£¬Èç tools/camera.svg¡¢ui/save.svg
- * @param px äÖÈ¾±ß³¤£¨ÏñËØ£©
- * @return Ê§°ÜÊ±·µ»Ø¿Õ QIcon
+ * @brief ä» exe/icons/ åŠ è½½çŸ¢é‡/ä½å›¾å›¾æ ‡
+ * @param relativePath ç›¸å¯¹è·¯å¾„ï¼Œå¦‚ tools/camera.svgã€ui/save.svg
+ * @param px æ¸²æŸ“è¾¹é•¿ï¼ˆåƒç´ ï¼‰
+ * @return å¤±è´¥æ—¶è¿”å›ç©º QIcon
  */
 VISION_UI_API QIcon loadVisionIcon(const QString& relativePath, int px = 24);
 
 /**
- * @brief ÔÚÖ¸¶¨µ×É«Ô²½Ç¾ØĞÎÉÏµş»æÍ¼±ê£¨¹¤¾ß¿â·ÖÀàÓÃ£©
- * @param icon Ç°¾°Í¼±ê
- * @param bg ±³¾°É«
- * @param px Êä³ö±ß³¤
+ * @brief åœ¨æŒ‡å®šåº•è‰²åœ†è§’çŸ©å½¢ä¸Šå ç»˜å›¾æ ‡ï¼ˆå·¥å…·åº“åˆ†ç±»ç”¨ï¼‰
+ * @param icon å‰æ™¯å›¾æ ‡
+ * @param bg èƒŒæ™¯è‰²
+ * @param px è¾“å‡ºè¾¹é•¿
  */
 VISION_UI_API QIcon badgeVisionIcon(const QIcon& icon, const QColor& bg, int px = 24);
 

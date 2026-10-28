@@ -1,6 +1,6 @@
 /**
  * @file StepEditors.cpp
- * @brief ÂË²¨ºÍ°ßµãµÄ¶à²½Öè²ÎÊýÒ³£¬Ã¿²½¿ÉÑ¡°ó¶¨ÇøÓò
+ * @brief æ»¤æ³¢å’Œæ–‘ç‚¹çš„å¤šæ­¥éª¤å‚æ•°é¡µï¼Œæ¯æ­¥å¯é€‰ç»‘å®šåŒºåŸŸ
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -75,48 +75,48 @@ public:
         m_list = new QListWidget(this);
         lay->addWidget(m_list, 1);
         QHBoxLayout* buttons = new QHBoxLayout();
-        QPushButton* add = new QPushButton(T("Ìí¼Ó²½Öè"), this);
-        QPushButton* remove = new QPushButton(T("É¾³ý²½Öè"), this);
+        QPushButton* add = new QPushButton(T("æ·»åŠ æ­¥éª¤"), this);
+        QPushButton* remove = new QPushButton(T("åˆ é™¤æ­¥éª¤"), this);
         buttons->addWidget(add);
         buttons->addWidget(remove);
         lay->addLayout(buttons);
 
         QFormLayout* form = new QFormLayout();
         if (m_filter) {
-            m_op = addCombo(form, "Ëã×Ó", filterOps(), 15);
-            m_w = addSpin(form, "ÑÚÄ¤¿í", 1, 101);
-            m_h = addSpin(form, "ÑÚÄ¤¸ß", 1, 101);
-            m_c0 = addDSpin(form, "²ÎÊý1");
-            m_c1 = addDSpin(form, "²ÎÊý2");
-            m_scale = new QCheckBox(T("À­Éìµ½×î´ó"), this);
+            m_op = addCombo(form, "ç®—å­", filterOps(), 15);
+            m_w = addSpin(form, "æŽ©è†œå®½", 1, 101);
+            m_h = addSpin(form, "æŽ©è†œé«˜", 1, 101);
+            m_c0 = addDSpin(form, "å‚æ•°1");
+            m_c1 = addDSpin(form, "å‚æ•°2");
+            m_scale = new QCheckBox(T("æ‹‰ä¼¸åˆ°æœ€å¤§"), this);
             form->addRow(QString(), m_scale);
             connect(m_scale, SIGNAL(stateChanged(int)), this, SLOT(onEdited()));
-            m_shape = addCombo(form, "ÑÚÄ¤ÐÎ×´", shapeOps(), 3);
+            m_shape = addCombo(form, "æŽ©è†œå½¢çŠ¶", shapeOps(), 3);
         } else {
-            m_type = addCombo(form, "²½ÖèÀàÐÍ", blobTypes(), 3);
-            m_mode = addCombo(form, "ãÐÖµ·½Ê½", threshModes(), 3);
-            m_absMin = addSpin(form, "¾ø¶ÔÏÂÏÞ", 0, 255);
-            m_absMax = addSpin(form, "¾ø¶ÔÉÏÏÞ", 0, 255);
-            m_rel = addDSpin(form, "Ïà¶ÔÆ«ÒÆ");
-            m_dyn = addDSpin(form, "¶¯Ì¬Æ«ÒÆ");
-            m_kernel = addSpin(form, "¶¯Ì¬ºË", 3, 255);
-            m_dark = new QCheckBox(T("°µÄ¿±ê"), this);
+            m_type = addCombo(form, "æ­¥éª¤ç±»åž‹", blobTypes(), 3);
+            m_mode = addCombo(form, "é˜ˆå€¼æ–¹å¼", threshModes(), 3);
+            m_absMin = addSpin(form, "ç»å¯¹ä¸‹é™", 0, 255);
+            m_absMax = addSpin(form, "ç»å¯¹ä¸Šé™", 0, 255);
+            m_rel = addDSpin(form, "ç›¸å¯¹åç§»");
+            m_dyn = addDSpin(form, "åŠ¨æ€åç§»");
+            m_kernel = addSpin(form, "åŠ¨æ€æ ¸", 3, 255);
+            m_dark = new QCheckBox(T("æš—ç›®æ ‡"), this);
             form->addRow(QString(), m_dark);
             connect(m_dark, SIGNAL(stateChanged(int)), this, SLOT(onEdited()));
-            m_morph = addCombo(form, "ÐÎÌ¬Ñ§", morphOps(), 4);
-            m_radius = addDSpin(form, "°ë¾¶");
-            m_feat = addCombo(form, "É¸Ñ¡ÌØÕ÷", featOps(), 2);
-            m_min = addDSpin(form, "ÌØÕ÷ÏÂÏÞ");
-            m_max = addDSpin(form, "ÌØÕ÷ÉÏÏÞ");
+            m_morph = addCombo(form, "å½¢æ€å­¦", morphOps(), 4);
+            m_radius = addDSpin(form, "åŠå¾„");
+            m_feat = addCombo(form, "ç­›é€‰ç‰¹å¾", featOps(), 2);
+            m_min = addDSpin(form, "ç‰¹å¾ä¸‹é™");
+            m_max = addDSpin(form, "ç‰¹å¾ä¸Šé™");
         }
-        m_roi = addSpin(form, "°ó¶¨ÇøÓò", -1, 49);
+        m_roi = addSpin(form, "ç»‘å®šåŒºåŸŸ", -1, 49);
         lay->addLayout(form);
         if (!m_filter) {
             QFormLayout* judge = new QFormLayout();
-            m_okMinCount = addSpin(judge, "ÊýÁ¿ÏÂÏÞ", 0, 1000000000);
-            m_okMaxCount = addSpin(judge, "ÊýÁ¿ÉÏÏÞ", 0, 1000000000);
-            m_okMinArea = addDSpin(judge, "Ãæ»ýÏÂÏÞ");
-            m_okMaxArea = addDSpin(judge, "Ãæ»ýÉÏÏÞ");
+            m_okMinCount = addSpin(judge, "æ•°é‡ä¸‹é™", 0, 1000000000);
+            m_okMaxCount = addSpin(judge, "æ•°é‡ä¸Šé™", 0, 1000000000);
+            m_okMinArea = addDSpin(judge, "é¢ç§¯ä¸‹é™");
+            m_okMaxArea = addDSpin(judge, "é¢ç§¯ä¸Šé™");
             lay->addLayout(judge);
         }
 
@@ -389,7 +389,7 @@ private:
         m_block = true;
         m_list->clear();
         for (int i = 0; i < static_cast<int>(m_steps.size()); ++i) {
-            m_list->addItem(T("²½Öè") + QString::number(i + 1) + QLatin1String("  ") + qs(stepTitle(m_steps[static_cast<size_t>(i)])));
+            m_list->addItem(T("æ­¥éª¤") + QString::number(i + 1) + QLatin1String("  ") + qs(stepTitle(m_steps[static_cast<size_t>(i)])));
         }
         if (select < 0) {
             select = 0;

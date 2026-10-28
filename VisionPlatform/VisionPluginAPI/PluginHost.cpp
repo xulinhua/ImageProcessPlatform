@@ -1,6 +1,6 @@
 /**
  * @file PluginHost.cpp
- * @brief PluginHostÊµÏÖ
+ * @brief PluginHostå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -20,7 +20,7 @@
 
 namespace Vision {
 
-// ½«¹¤¾ßÊµÀıĞ´Èë½ø³ÌÄÚ ToolRegistry£¨¿ÕÖ¸ÕëºöÂÔ£©
+// å°†å·¥å…·å®ä¾‹å†™å…¥è¿›ç¨‹å†… ToolRegistryï¼ˆç©ºæŒ‡é’ˆå¿½ç•¥ï¼‰
 void PluginHost::addTool(ToolBase* tool)
 {
     if (tool) {
@@ -28,7 +28,7 @@ void PluginHost::addTool(ToolBase* tool)
     }
 }
 
-// ½«Ëã·¨ÊµÀıĞ´Èë AlgToolBaseRegistry£¨¿ÕÖ¸ÕëºöÂÔ£©
+// å°†ç®—æ³•å®ä¾‹å†™å…¥ AlgToolBaseRegistryï¼ˆç©ºæŒ‡é’ˆå¿½ç•¥ï¼‰
 void PluginHost::addAlg(AlgToolBase* algor)
 {
     if (algor) {
@@ -36,16 +36,16 @@ void PluginHost::addAlg(AlgToolBase* algor)
     }
 }
 
-// ¼ÓÔØÆÚÏµÍ³ÈÕÖ¾£¬·ÖÀà¹Ì¶¨Îª plugin_load
+// åŠ è½½æœŸç³»ç»Ÿæ—¥å¿—ï¼Œåˆ†ç±»å›ºå®šä¸º plugin_load
 void PluginHost::logSystem(const char* message)
 {
     LogMgr::writeSystem(LogLevelInfo, "plugin_load", message ? message : "");
 }
 
-typedef int (*FnApiVersion)();              ///< ²å¼ş£ºVisionPlugin_apiVersion
-typedef void (*FnRegister)(IPluginHost*);   ///< ²å¼ş£ºVisionPlugin_register
+typedef int (*FnApiVersion)();              ///< æ’ä»¶ï¼šVisionPlugin_apiVersion
+typedef void (*FnRegister)(IPluginHost*);   ///< æ’ä»¶ï¼šVisionPlugin_register
 
-// °Ñ FILETIME ×ª³É±¾µØ¿É¶ÁÊ±¼ä´®£¬¹©µÇ¼Ç¡¸²å¼şÎÄ¼şÊ±¼ä´Á¡¹
+// æŠŠ FILETIME è½¬æˆæœ¬åœ°å¯è¯»æ—¶é—´ä¸²ï¼Œä¾›ç™»è®°ã€Œæ’ä»¶æ–‡ä»¶æ—¶é—´æˆ³ã€
 std::string fileTimeStamp(const FILETIME& ft)
 {
     SYSTEMTIME utc;
@@ -69,7 +69,7 @@ std::string fileTimeStamp(const FILETIME& ft)
 
 namespace {
 
-// Ã¶¾ÙÄ¿Â¼ÏÂ *.dll£ºĞ£Ñé apiVersion==1 ºóµ÷ÓÃ register£»³É¹¦¼ÓÔØµÄ²»Ğ¶ÔØ
+// æšä¸¾ç›®å½•ä¸‹ *.dllï¼šæ ¡éªŒ apiVersion==1 åè°ƒç”¨ registerï¼›æˆåŠŸåŠ è½½çš„ä¸å¸è½½
 int loadDir(const std::string& dir, IPluginHost* host)
 {
     int n = 0;
@@ -84,7 +84,7 @@ int loadDir(const std::string& dir, IPluginHost* host)
             continue;
         }
         const std::string name = wideToUtf8(fd.cFileName);
-        // Ö»¼ÓÔØµ±Ç°ÃüÃûµÄ²å¼ş£¬Ìø¹ıÄ¿Â¼Àï²ĞÁôµÄ¾ÉÎÄ¼ş£¬±ÜÃâÖØ¸´µÇ¼ÇÊ±°´ĞÂ»ùÀàÊÍ·Å¾É¶ÔÏó
+        // åªåŠ è½½å½“å‰å‘½åçš„æ’ä»¶ï¼Œè·³è¿‡ç›®å½•é‡Œæ®‹ç•™çš„æ—§æ–‡ä»¶ï¼Œé¿å…é‡å¤ç™»è®°æ—¶æŒ‰æ–°åŸºç±»é‡Šæ”¾æ—§å¯¹è±¡
         if (name.size() < 7 || name.compare(0, 7, "Plugin.") != 0) {
             continue;
         }
@@ -96,12 +96,12 @@ int loadDir(const std::string& dir, IPluginHost* host)
         }
         FnApiVersion ver = reinterpret_cast<FnApiVersion>(GetProcAddress(mod, "VisionPlugin_apiVersion"));
         FnRegister reg = reinterpret_cast<FnRegister>(GetProcAddress(mod, "VisionPlugin_register"));
-        // È±·ûºÅ»ò°æ±¾²»ÊÇ 1£ºÌø¹ı£¨Ä£¿éÈÔÁôÔÚ½ø³ÌÖĞ£¬±ÜÃâ·´¸´¼ÓÔØ£©
+        // ç¼ºç¬¦å·æˆ–ç‰ˆæœ¬ä¸æ˜¯ 1ï¼šè·³è¿‡ï¼ˆæ¨¡å—ä»ç•™åœ¨è¿›ç¨‹ä¸­ï¼Œé¿å…åå¤åŠ è½½ï¼‰
         if (!ver || !reg || ver() != 1) {
             LogMgr::writeSystem(LogLevelWarn, "plugin_load", name + " api mismatch");
             continue;
         }
-        // µÇ¼ÇÆÚÄÚ°Ñ DLL ÎÄ¼şÊ±¼äĞ´Èë×¢²á±í²à£¬±ãÓÚ°æ±¾¶Ô»°¿òÕ¹Ê¾
+        // ç™»è®°æœŸå†…æŠŠ DLL æ–‡ä»¶æ—¶é—´å†™å…¥æ³¨å†Œè¡¨ä¾§ï¼Œä¾¿äºç‰ˆæœ¬å¯¹è¯æ¡†å±•ç¤º
         const std::string stamp = fileTimeStamp(fd.ftLastWriteTime);
         ToolRegistry::instance().setIncomingPluginStamp(stamp);
         reg(host);
@@ -115,7 +115,7 @@ int loadDir(const std::string& dir, IPluginHost* host)
 
 } // namespace
 
-// ÏÈ±£Ö¤Ä¿Â¼´æÔÚ£¬ÔÙÉ¨ tools¡¢algos Á½¸ö²å¼şÄ¿Â¼²¢ºÏ¼Æ³É¹¦Êı
+// å…ˆä¿è¯ç›®å½•å­˜åœ¨ï¼Œå†æ‰« toolsã€algos ä¸¤ä¸ªæ’ä»¶ç›®å½•å¹¶åˆè®¡æˆåŠŸæ•°
 int loadVisionPlugins(IPluginHost* host)
 {
     if (!host) {
@@ -125,11 +125,11 @@ int loadVisionPlugins(IPluginHost* host)
 }
 
 struct ToolLibMgr::Impl {
-    std::map<std::string, ToolLibItem> items; ///< ÒÑ¼ÓÔØ DLL
-    std::vector<ToolLibReg> regs;             ///< µÇ¼ÇÏî
-    std::string loadingFile;                  ///< ÕıÔÚ register µÄ DLL
-    std::string loadingKind;                  ///< tool »ò algo
-    std::string loadingStamp;                 ///< ¸Ã DLL ÎÄ¼şÊ±¼ä
+    std::map<std::string, ToolLibItem> items; ///< å·²åŠ è½½ DLL
+    std::vector<ToolLibReg> regs;             ///< ç™»è®°é¡¹
+    std::string loadingFile;                  ///< æ­£åœ¨ register çš„ DLL
+    std::string loadingKind;                  ///< tool æˆ– algo
+    std::string loadingStamp;                 ///< è¯¥ DLL æ–‡ä»¶æ—¶é—´
 };
 
 ToolLibMgr& ToolLibMgr::instance()
@@ -198,7 +198,7 @@ std::vector<ToolLibItem> ToolLibMgr::loaded() const
     return out;
 }
 
-// ÒÑµÇ¼ÇÏî
+// å·²ç™»è®°é¡¹
 std::vector<ToolLibReg> ToolLibMgr::registrations() const
 {
     if (!m_impl) {

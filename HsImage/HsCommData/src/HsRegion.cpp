@@ -1,6 +1,6 @@
 /**
  * @file HsRegion.cpp
- * @brief HsRegionÊµÏÖ
+ * @brief HsRegionå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -17,7 +17,7 @@
 
 namespace HsCommData {
 
-// ¿ÕÏÒ£ºce < cb£¬³¤¶ÈÎª 0
+// ç©ºå¼¦ï¼šce < cbï¼Œé•¿åº¦ä¸º 0
 Chord::Chord()
     : row(0)
     , cb(0)
@@ -25,7 +25,7 @@ Chord::Chord()
 {
 }
 
-// Ö¸¶¨ĞĞÓë±ÕÇø¼äÁĞ
+// æŒ‡å®šè¡Œä¸é—­åŒºé—´åˆ—
 Chord::Chord(int32_t r, int32_t b, int32_t e)
     : row(r)
     , cb(b)
@@ -33,7 +33,7 @@ Chord::Chord(int32_t r, int32_t b, int32_t e)
 {
 }
 
-// ÏñËØ¸öÊı£»ce < cb Ê±Îª 0
+// åƒç´ ä¸ªæ•°ï¼›ce < cb æ—¶ä¸º 0
 int32_t Chord::length() const
 {
     if (ce < cb) {
@@ -42,7 +42,7 @@ int32_t Chord::length() const
     return ce - cb + 1;
 }
 
-// ¿ÕÇøÓò£¬·Ç²¹¼¯
+// ç©ºåŒºåŸŸï¼Œéè¡¥é›†
 HsRegion::HsRegion()
     : isCompl(false)
     , m_runs(nullptr)
@@ -51,7 +51,7 @@ HsRegion::HsRegion()
 {
 }
 
-// Éî¿½£º±êÖ¾ºÍÍâ½Ó¿òÖğ×Ö¶Î£¬ÏÒ°´ÌõÊı·ÖÅäºóÕû¶Î¸´ÖÆ
+// æ·±æ‹·ï¼šæ ‡å¿—å’Œå¤–æ¥æ¡†é€å­—æ®µï¼Œå¼¦æŒ‰æ¡æ•°åˆ†é…åæ•´æ®µå¤åˆ¶
 HsRegion::HsRegion(const HsRegion& other)
     : isCompl(other.isCompl)
     , bounds(other.bounds)
@@ -62,7 +62,7 @@ HsRegion::HsRegion(const HsRegion& other)
     copyRuns(other.m_runs, other.m_runCount);
 }
 
-// Éî¿½¸³Öµ£º±êÖ¾ºÍÍâ½Ó¿òÖğ×Ö¶Î£¬ÏÒ°´ÌõÊı·ÖÅäºóÕû¶Î¸´ÖÆ
+// æ·±æ‹·èµ‹å€¼ï¼šæ ‡å¿—å’Œå¤–æ¥æ¡†é€å­—æ®µï¼Œå¼¦æŒ‰æ¡æ•°åˆ†é…åæ•´æ®µå¤åˆ¶
 HsRegion& HsRegion::operator=(const HsRegion& other)
 {
     if (this != &other) {
@@ -72,37 +72,37 @@ HsRegion& HsRegion::operator=(const HsRegion& other)
     }
     return *this;
 }
-// ÊÍ·ÅÏÒ»º³å
+// é‡Šæ”¾å¼¦ç¼“å†²
 HsRegion::~HsRegion()
 {
     releaseRuns();
 }
-// ÏÒÊı
+// å¼¦æ•°
 size_t HsRegion::runCount() const
 {
     return m_runCount;
 }
 
-// Ã»ÓĞÏÒ
+// æ²¡æœ‰å¼¦
 bool HsRegion::runsEmpty() const
 {
     return m_runCount == 0;
 }
 
-// µÚ i ÌõÏÒ
+// ç¬¬ i æ¡å¼¦
 Chord& HsRegion::runAt(size_t i)
 {
     return m_runs[i];
 }
 
-// µÚ i ÌõÏÒ
+// ç¬¬ i æ¡å¼¦
 const Chord& HsRegion::runAt(size_t i) const
 {
     return m_runs[i];
 }
 
 
-// ×·¼ÓÒ»Ìõ
+// è¿½åŠ ä¸€æ¡
 void HsRegion::pushRun(const Chord& chord)
 {
     ensureRuns(m_runCount + 1);
@@ -110,7 +110,7 @@ void HsRegion::pushRun(const Chord& chord)
     ++m_runCount;
 }
 
-// ¸ÄÌõÊı¡£±ä³¤µÄĞÂÏÒÎª¿ÕÏÒ
+// æ”¹æ¡æ•°ã€‚å˜é•¿çš„æ–°å¼¦ä¸ºç©ºå¼¦
 void HsRegion::resizeRuns(size_t n)
 {
     if (n > m_runCount) {
@@ -124,19 +124,19 @@ void HsRegion::resizeRuns(size_t n)
     m_runCount = n;
 }
 
-// Ô¤ÁôÈİÁ¿£¬²»¸Ä±äÌõÊı
+// é¢„ç•™å®¹é‡ï¼Œä¸æ”¹å˜æ¡æ•°
 void HsRegion::reserveRuns(size_t n)
 {
     ensureRuns(n);
 }
 
-// ÌõÊıÇåÁã£¬ÈİÁ¿±£Áô
+// æ¡æ•°æ¸…é›¶ï¼Œå®¹é‡ä¿ç•™
 void HsRegion::clearRuns()
 {
     m_runCount = 0;
 }
 
-// °ÑÁíÒ»¸öÇøÓòµÄÏÒÕû¶Î½Óµ½Ä©Î²
+// æŠŠå¦ä¸€ä¸ªåŒºåŸŸçš„å¼¦æ•´æ®µæ¥åˆ°æœ«å°¾
 void HsRegion::appendRuns(const HsRegion& src)
 {
     if (src.m_runCount == 0) {
@@ -155,7 +155,7 @@ void HsRegion::appendRuns(const HsRegion& src)
     m_runCount = base + src.m_runCount;
 }
 
-// °´ÌõÊı·ÖÅä£¬²»ÖğÌõ¹¹Ôì
+// æŒ‰æ¡æ•°åˆ†é…ï¼Œä¸é€æ¡æ„é€ 
 void HsRegion::allocRuns(size_t n)
 {
     if (n > m_runCap) {
@@ -170,7 +170,7 @@ void HsRegion::allocRuns(size_t n)
     m_runCount = n;
 }
 
-// ÈİÁ¿²»×ãÊ±»»Ò»¿é¸ü´óµÄ»º³å£¬¾ÉÏÒÕû¶Î°á¹ıÈ¥
+// å®¹é‡ä¸è¶³æ—¶æ¢ä¸€å—æ›´å¤§çš„ç¼“å†²ï¼Œæ—§å¼¦æ•´æ®µæ¬è¿‡å»
 void HsRegion::ensureRuns(size_t need)
 {
     if (need <= m_runCap) {
@@ -192,7 +192,7 @@ void HsRegion::ensureRuns(size_t need)
     m_runCap = cap;
 }
 
-// ÊÍ·ÅÏÒ»º³å
+// é‡Šæ”¾å¼¦ç¼“å†²
 void HsRegion::releaseRuns()
 {
     if (m_runs) {
@@ -203,7 +203,7 @@ void HsRegion::releaseRuns()
     m_runCap = 0;
 }
 
-// °´ÌõÊıÕû¶Î¸´ÖÆ
+// æŒ‰æ¡æ•°æ•´æ®µå¤åˆ¶
 void HsRegion::copyRuns(const Chord* src, size_t n)
 {
     allocRuns(n);
@@ -212,13 +212,13 @@ void HsRegion::copyRuns(const Chord* src, size_t n)
     }
 }
 
-// ÎŞÏÒÔòÎª¿Õ
+// æ— å¼¦åˆ™ä¸ºç©º
 bool HsRegion::isEmpty() const
 {
     return m_runCount == 0;
 }
 
-// Ç°¾°ÏñËØ¸öÊı
+// å‰æ™¯åƒç´ ä¸ªæ•°
 int64_t HsRegion::area() const
 {
     int64_t a = 0;
@@ -228,7 +228,7 @@ int64_t HsRegion::area() const
     return a;
 }
 
-// ¶ş·Öµ½¸ÃĞĞºóÉ¨ÏÒ£¬ÅĞ¶ÏµãÊÇ·ñÔÚÇøÓòÄÚ
+// äºŒåˆ†åˆ°è¯¥è¡Œåæ‰«å¼¦ï¼Œåˆ¤æ–­ç‚¹æ˜¯å¦åœ¨åŒºåŸŸå†…
 bool HsRegion::contains(int row, int col) const
 {
     int lo = 0;
@@ -249,7 +249,7 @@ bool HsRegion::contains(int row, int col) const
     return isCompl;
 }
 
-// ÓÉÖá¶ÔÆë¾ØĞÎÖğĞĞÉú³ÉÏÒ
+// ç”±è½´å¯¹é½çŸ©å½¢é€è¡Œç”Ÿæˆå¼¦
 HsRegion HsRegion::genRegion(const IRect& r)
 {
     HsRegion out;
@@ -264,7 +264,7 @@ HsRegion HsRegion::genRegion(const IRect& r)
     return out;
 }
 
-// ±ÕºÏ¶à±ßĞÎÉ¨Ãè×ª»»ÎªĞĞ³Ì
+// é—­åˆå¤šè¾¹å½¢æ‰«æè½¬æ¢ä¸ºè¡Œç¨‹
 HsRegion HsRegion::genRegion(const std::vector<Point2d>& pts)
 {
     HsRegion out;
@@ -295,7 +295,7 @@ HsRegion HsRegion::genRegion(const std::vector<Point2d>& pts)
     std::vector<double> xs;
     xs.reserve(static_cast<size_t>(n));
 
-    // ÖğĞĞÓë±ßÇó½»£¬ÆæÊı¹æÔòÌîÏÒ
+    // é€è¡Œä¸è¾¹æ±‚äº¤ï¼Œå¥‡æ•°è§„åˆ™å¡«å¼¦
     for (int y = y0; y <= y1; ++y) {
         const double ys = static_cast<double>(y) + 0.5;
         xs.clear();
@@ -360,7 +360,7 @@ HsRegion HsRegion::boundary() const
         }
         chords.swap(merged);
     }
-    // ¶ËµãÒÔ¼°ÉÏÏÂÃ»ÓĞ±»¸Ç×¡µÄÁĞ²ÅÊÇ±ß¡£°´ÏÒ×öÇø¼ä²î£¬²»ÖğÏñËØÉ¨
+    // ç«¯ç‚¹ä»¥åŠä¸Šä¸‹æ²¡æœ‰è¢«ç›–ä½çš„åˆ—æ‰æ˜¯è¾¹ã€‚æŒ‰å¼¦åšåŒºé—´å·®ï¼Œä¸é€åƒç´ æ‰«
     struct Span {
         int32_t cb;
         int32_t ce;

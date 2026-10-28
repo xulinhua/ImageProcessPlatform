@@ -1,6 +1,6 @@
 /**
  * @file ParamKeys.h
- * @brief ParamKeysÍ·ÎÄ¼þ
+ * @brief ParamKeyså¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -15,70 +15,70 @@
 
 namespace Vision {
 
-/** @brief Ëã·¨Êä³ö values ÖÐµÄ±ê×¼¼ü */
+/** @brief ç®—æ³•è¾“å‡º values ä¸­çš„æ ‡å‡†é”® */
 enum class ValueKey {
-    X = 0,     ///< ÁÐ / Ô²ÐÄ x
-    Y,         ///< ÐÐ / Ô²ÐÄ y
-    Cx,        ///< Ô²ÐÄÁÐ£¨±ðÃû£©
-    Cy,        ///< Ô²ÐÄÐÐ£¨±ðÃû£©
-    Angle,     ///< ½Ç¶È£¨»¡¶È£©
-    Score,     ///< Æ¥Åä·ÖÊý
-    Ok,        ///< ÅÐ¶¨ OK
-    Pass,      ///< ÅÐ¶¨Í¨¹ý£¨±ðÃû£©
-    R          ///< °ë¾¶
+    X = 0,     ///< åˆ— / åœ†å¿ƒ x
+    Y,         ///< è¡Œ / åœ†å¿ƒ y
+    Cx,        ///< åœ†å¿ƒåˆ—ï¼ˆåˆ«åï¼‰
+    Cy,        ///< åœ†å¿ƒè¡Œï¼ˆåˆ«åï¼‰
+    Angle,     ///< è§’åº¦ï¼ˆå¼§åº¦ï¼‰
+    Score,     ///< åŒ¹é…åˆ†æ•°
+    Ok,        ///< åˆ¤å®š OK
+    Pass,      ///< åˆ¤å®šé€šè¿‡ï¼ˆåˆ«åï¼‰
+    R          ///< åŠå¾„
 };
 
-/** @brief ¹¤¾ßÔËÐÐÌ¬ runtime ÖÐµÄ±ê×¼¼ü */
+/** @brief å·¥å…·è¿è¡Œæ€ runtime ä¸­çš„æ ‡å‡†é”® */
 enum class RuntimeKey {
-    Index = 0,     ///< ÎÄ¼þÁÐ±íË÷Òý
-    LastFile,      ///< ÉÏ´Î×¥È¡ÎÄ¼þÂ·¾¶
-    GrabPath,      ///< ×¥È¡Ä¿Â¼
-    LastX,         ///< ÉÏ´Î½á¹û x
-    LastY,         ///< ÉÏ´Î½á¹û y
-    LastA,         ///< ÉÏ´Î½á¹û½Ç¶È
-    LastScore,     ///< ÉÏ´Î½á¹û·ÖÊý
-    PathChanged    ///< Â·¾¶ÊÇ·ñ±ä¸ü
+    Index = 0,     ///< æ–‡ä»¶åˆ—è¡¨ç´¢å¼•
+    LastFile,      ///< ä¸Šæ¬¡æŠ“å–æ–‡ä»¶è·¯å¾„
+    GrabPath,      ///< æŠ“å–ç›®å½•
+    LastX,         ///< ä¸Šæ¬¡ç»“æžœ x
+    LastY,         ///< ä¸Šæ¬¡ç»“æžœ y
+    LastA,         ///< ä¸Šæ¬¡ç»“æžœè§’åº¦
+    LastScore,     ///< ä¸Šæ¬¡ç»“æžœåˆ†æ•°
+    PathChanged    ///< è·¯å¾„æ˜¯å¦å˜æ›´
 };
 
-/** @brief Ê¾½Ì/¸úËæ params ÖÐµÄ±ê×¼¼ü */
+/** @brief ç¤ºæ•™/è·Ÿéš params ä¸­çš„æ ‡å‡†é”® */
 enum class TeachKey {
-    RefX = 0, ///< Ê¾½ÌÎ»×Ë x
-    RefY,     ///< Ê¾½ÌÎ»×Ë y
-    RefA      ///< Ê¾½ÌÎ»×Ë½Ç¶È
+    RefX = 0, ///< ç¤ºæ•™ä½å§¿ x
+    RefY,     ///< ç¤ºæ•™ä½å§¿ y
+    RefA      ///< ç¤ºæ•™ä½å§¿è§’åº¦
 };
 
-/** @brief ValueKey ÐòÁÐ»¯Ãû */
+/** @brief ValueKey åºåˆ—åŒ–å */
 VISION_COMMON_API const char* valueKeyName(ValueKey k);
-/** @brief ´ÓÐòÁÐ»¯Ãû½âÎö ValueKey£»Î´Öª·µ»Ø false */
+/** @brief ä»Žåºåˆ—åŒ–åè§£æž ValueKeyï¼›æœªçŸ¥è¿”å›ž false */
 VISION_COMMON_API bool valueKeyFromName(const std::string& s, ValueKey* out);
-/** @brief RuntimeKey ÐòÁÐ»¯Ãû */
+/** @brief RuntimeKey åºåˆ—åŒ–å */
 VISION_COMMON_API const char* runtimeKeyName(RuntimeKey k);
-/** @brief ´ÓÐòÁÐ»¯Ãû½âÎö RuntimeKey£»Î´Öª·µ»Ø false */
+/** @brief ä»Žåºåˆ—åŒ–åè§£æž RuntimeKeyï¼›æœªçŸ¥è¿”å›ž false */
 VISION_COMMON_API bool runtimeKeyFromName(const std::string& s, RuntimeKey* out);
-/** @brief TeachKey ÐòÁÐ»¯Ãû */
+/** @brief TeachKey åºåˆ—åŒ–å */
 VISION_COMMON_API const char* teachKeyName(TeachKey k);
-/** @brief ´ÓÐòÁÐ»¯Ãû½âÎö TeachKey£»Î´Öª·µ»Ø false */
+/** @brief ä»Žåºåˆ—åŒ–åè§£æž TeachKeyï¼›æœªçŸ¥è¿”å›ž false */
 VISION_COMMON_API bool teachKeyFromName(const std::string& s, TeachKey* out);
 
-/** @brief ParamMap ÊÇ·ñº¬ ValueKey */
+/** @brief ParamMap æ˜¯å¦å« ValueKey */
 VISION_COMMON_API bool paramHas(const ParamMap& m, ValueKey k);
-/** @brief ¶ÁÈ¡ ValueKey£»È±¼ü·µ»Ø def */
+/** @brief è¯»å– ValueKeyï¼›ç¼ºé”®è¿”å›ž def */
 VISION_COMMON_API ParamValue paramGet(const ParamMap& m, ValueKey k, const ParamValue& def = ParamValue());
-/** @brief Ð´Èë ValueKey */
+/** @brief å†™å…¥ ValueKey */
 VISION_COMMON_API void paramSet(ParamMap* m, ValueKey k, const ParamValue& v);
 
-/** @brief ParamMap ÊÇ·ñº¬ RuntimeKey */
+/** @brief ParamMap æ˜¯å¦å« RuntimeKey */
 VISION_COMMON_API bool runtimeHas(const ParamMap& m, RuntimeKey k);
-/** @brief ¶ÁÈ¡ RuntimeKey */
+/** @brief è¯»å– RuntimeKey */
 VISION_COMMON_API ParamValue runtimeGet(const ParamMap& m, RuntimeKey k, const ParamValue& def = ParamValue());
-/** @brief Ð´Èë RuntimeKey */
+/** @brief å†™å…¥ RuntimeKey */
 VISION_COMMON_API void runtimeSet(ParamMap* m, RuntimeKey k, const ParamValue& v);
 
-/** @brief ParamMap ÊÇ·ñº¬ TeachKey */
+/** @brief ParamMap æ˜¯å¦å« TeachKey */
 VISION_COMMON_API bool teachHas(const ParamMap& m, TeachKey k);
-/** @brief ¶ÁÈ¡ TeachKey */
+/** @brief è¯»å– TeachKey */
 VISION_COMMON_API ParamValue teachGet(const ParamMap& m, TeachKey k, const ParamValue& def = ParamValue());
-/** @brief Ð´Èë TeachKey */
+/** @brief å†™å…¥ TeachKey */
 VISION_COMMON_API void teachSet(ParamMap* m, TeachKey k, const ParamValue& v);
 
 }

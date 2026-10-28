@@ -1,6 +1,6 @@
 /**
  * @file ToolGeom.h
- * @brief ToolGeomÍ·ÎÄ¼ş
+ * @brief ToolGeomå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -19,71 +19,79 @@
 #include <HsCommData/HsObject.h>
 #include <HsCommData/HsRegion.h>
 #include <cstdint>
+#include <map>
 #include <string>
 #include <vector>
 
 namespace Vision {
 
-/** @brief Ò»Ìõ ROI µÄÀàĞÍ¡£ËÄÕß»¥³â£¬Ã¿ÌõÖ»ÄÜÊÇÆäÖĞÒ»ÖÖ */
+/** @brief ä¸€æ¡ ROI çš„ç±»å‹ã€‚å››è€…äº’æ–¥ï¼Œæ¯æ¡åªèƒ½æ˜¯å…¶ä¸­ä¸€ç§ */
 enum class RoiItemKind {
-    Undefined = -1, ///< Î´¶¨Òå
-    DrawRoi = 0, ///< »æÖÆ ROI£ºÔ²¡¢¾ØĞÎµÈ±ê×¼Í¼ĞÎ£¬¼¸ºÎĞ´ÔÚ shape Àï
-    DrawRegion,  ///< »æÖÆ region£ºÊÖ»æÇøÓò£¬¼¸ºÎĞ´ÔÚ shape Àï
-    RefRoi,      ///< ÒıÓÃ ROI£º±£´æÆäËû¹¤¾ßµÄ±ê×¼Í¼ĞÎÊä³ö
-    RefRegion,    ///< ÒıÓÃ region£º±£´æÆäËû¹¤¾ßµÄÇøÓòÊä³ö
-    Max ///< ¸öÊı£¬²»ÊÇºÏ·¨Öµ
+    Undefined = -1, ///< æœªå®šä¹‰
+    DrawRoi = 0, ///< ç»˜åˆ¶ ROIï¼šåœ†ã€çŸ©å½¢ç­‰æ ‡å‡†å›¾å½¢ï¼Œå‡ ä½•å†™åœ¨ shape é‡Œ
+    DrawRegion,  ///< ç»˜åˆ¶ regionï¼šæ‰‹ç»˜åŒºåŸŸï¼Œå‡ ä½•å†™åœ¨ shape é‡Œ
+    RefRoi,      ///< å¼•ç”¨ ROIï¼šä¿å­˜å…¶ä»–å·¥å…·çš„æ ‡å‡†å›¾å½¢è¾“å‡º
+    RefRegion,    ///< å¼•ç”¨ regionï¼šä¿å­˜å…¶ä»–å·¥å…·çš„åŒºåŸŸè¾“å‡º
+    Max ///< ä¸ªæ•°ï¼Œä¸æ˜¯åˆæ³•å€¼
 };
 
-/** @brief ÔËĞĞÊ±ÕâÌõ ROI È±ÁËÔõÃ´´¦Àí */
+/** @brief è¿è¡Œæ—¶è¿™æ¡ ROI ç¼ºäº†æ€ä¹ˆå¤„ç† */
 enum class RoiPresence {
-    Required = 0, ///< ±ØĞëÓĞ¡£ÒıÓÃ²»µ½»ò¼¸ºÎÎª¿Õ£¬±¾´Î¹¤¾ßÊ§°Ü
-    Optional      ///< ¿ÉÓĞ¿ÉÎŞ¡£Ã»ÓĞ¾ÍÌø¹ıÕâÒ»Ìõ
+    Required = 0, ///< å¿…é¡»æœ‰ã€‚å¼•ç”¨ä¸åˆ°æˆ–å‡ ä½•ä¸ºç©ºï¼Œæœ¬æ¬¡å·¥å…·å¤±è´¥
+    Optional      ///< å¯æœ‰å¯æ— ã€‚æ²¡æœ‰å°±è·³è¿‡è¿™ä¸€æ¡
 };
 
-/** @brief Ò»´ÎÖ´ĞĞ°´ÄÄÖÖ·½Ê½ÓÃÑ§Ï°½á¹û */
+/** @brief å·¥ç«™ã€æµç¨‹ã€å·¥å…·ã€ç®—æ³•å…±ç”¨çš„ä¸€æ¬¡è°ƒåº¦ */
+enum class ExecMode {
+    Auto = 0, ///< å¾ªç¯ã€‚æ­£å¼å‚æ•°
+    Manual,   ///< è¿è¡Œä¸€æ¬¡
+    Step      ///< å•æ­¥ã€‚åªè·‘æŒ‡å®šçš„ä¸€ä¸ªå·¥å…·
+};
+
+/** @brief ä¸€æ¬¡æ‰§è¡ŒæŒ‰å“ªç§æ–¹å¼ç”¨å­¦ä¹ ç»“æœ */
 enum class RunMode {
-    Auto = 0, ///< ¶ÁÅäÖÃÀïµÄÑ§Ï°²ÎÊıºÍÄ£°å
-    Test,     ///< ÊÔÅÜ£¬²»¸ÄÑ§Ï°²ÎÊı£¬²»Ğ´Ä£°å
-    Learn     ///< ÔÊĞí¸üĞÂÑ§Ï°²ÎÊı²¢Ğ´Ä£°å
+    Auto = 0, ///< è¯»é…ç½®é‡Œçš„å­¦ä¹ å‚æ•°å’Œæ¨¡æ¿
+    Test,     ///< è¯•è·‘ï¼Œä¸æ”¹å­¦ä¹ å‚æ•°ï¼Œä¸å†™æ¨¡æ¿
+    Learn     ///< å…è®¸æ›´æ–°å­¦ä¹ å‚æ•°å¹¶å†™æ¨¡æ¿
 };
 
-/** @class PortLogic @brief Âß¼­½á¹û£ºOK »ò NG */
+/** @class PortLogic @brief é€»è¾‘ç»“æœï¼šOK æˆ– NG */
 struct PortLogic {
-    bool ok;             ///< true Îª OK£¬false Îª NG
-    bool valid;          ///< ÊÇ·ñÓĞĞ§
-    std::string message; ///< ËµÃ÷
+    bool ok;             ///< true ä¸º OKï¼Œfalse ä¸º NG
+    bool valid;          ///< æ˜¯å¦æœ‰æ•ˆ
+    std::string message; ///< è¯´æ˜
     PortLogic() : ok(false), valid(false) {}
 };
 
-/** @brief Ò»ÖÖÔÊĞí»æÖÆµÄĞÎ×´ */
+/** @brief ä¸€ç§å…è®¸ç»˜åˆ¶çš„å½¢çŠ¶ */
 struct RoiShapeRule {
-    HsCommData::ObjectKind kind; ///< ¼¸ºÎÖÖÀà¡£ĞÂĞÎ×´Ö»ÔÚ ObjectKind Ä©Î²×·¼Ó
-    int maxCount;                ///< ¸ÃÖÖÀà×î¶à¼¸¿é¡£0 ±íÊ¾²»µ¥¶ÀÏŞÖÆ
+    HsCommData::ObjectKind kind; ///< å‡ ä½•ç§ç±»ã€‚æ–°å½¢çŠ¶åªåœ¨ ObjectKind æœ«å°¾è¿½åŠ 
+    int maxCount;                ///< è¯¥ç§ç±»æœ€å¤šå‡ å—ã€‚0 è¡¨ç¤ºä¸å•ç‹¬é™åˆ¶
     RoiShapeRule() : kind(HsCommData::ObjEmpty), maxCount(0) {}
     RoiShapeRule(HsCommData::ObjectKind k, int n) : kind(k), maxCount(n) {}
 };
 
-/** @class RoiSlotRule @brief Ò»Àà ROI ·ÖÇø£º¼ü¡¢½çÃæÃû¡¢ÌõÊıºÍÔÊĞíµÄÀàĞÍ */
+/** @class RoiSlotRule @brief ä¸€ç±» ROI åˆ†åŒºï¼šé”®ã€ç•Œé¢åã€æ¡æ•°å’Œå…è®¸çš„ç±»å‹ */
 struct RoiSlotRule {
-    std::string slot;                   ///< ·ÖÇø¼ü¡£½çÃæÏÔÊ¾ÓÃ title
-    std::string title;                  ///< ½çÃæÃû
-    int maxCount;                       ///< ¸Ã·ÖÇø×î¶à¼¸Ìõ¡£0 ±íÊ¾²»ÏŞÖÆ
-    std::vector<RoiShapeRule> shapes;   ///< ÔÊĞí»æÖÆµÄĞÎ×´¡£¿Õ±íÊ¾Õâ¸ö·ÖÇø²»ÄÜÊÖ»­
-    std::vector<RoiItemKind> itemKinds; ///< ¸Ã·ÖÇøÔÊĞíµÄÀàĞÍ£¬È¡ËÄÖÖµÄ×Ó¼¯
+    std::string slot;                   ///< åˆ†åŒºé”®ã€‚ç•Œé¢æ˜¾ç¤ºç”¨ title
+    std::string title;                  ///< ç•Œé¢å
+    int maxCount;                       ///< è¯¥åˆ†åŒºæœ€å¤šå‡ æ¡ã€‚0 è¡¨ç¤ºä¸é™åˆ¶
+    std::vector<RoiShapeRule> shapes;   ///< å…è®¸ç»˜åˆ¶çš„å½¢çŠ¶ã€‚ç©ºè¡¨ç¤ºè¿™ä¸ªåˆ†åŒºä¸èƒ½æ‰‹ç”»
+    std::vector<RoiItemKind> itemKinds; ///< è¯¥åˆ†åŒºå…è®¸çš„ç±»å‹ï¼Œå–å››ç§çš„å­é›†
     RoiSlotRule() : maxCount(0) {}
 };
 
-/** @class ToolRoiItem @brief Ò»ÌõËÑË÷Çø»ò¼ì²âÇø¡£»æÖÆºÍÒıÓÃÍ¬Ò»½á¹¹ */
+/** @class ToolRoiItem @brief ä¸€æ¡æœç´¢åŒºæˆ–æ£€æµ‹åŒºã€‚ç»˜åˆ¶å’Œå¼•ç”¨åŒä¸€ç»“æ„ */
 struct ToolRoiItem {
-    std::string slot;              ///< ·ÖÇø¼ü£¬¶ÔÓ¦ RoiSlotRule.slot
-    bool enabled;                  ///< ±¾ÅÄÊÇ·ñÆôÓÃ
-    RoiPresence presence;          ///< ±ØĞëÓĞ£¬»ò¿ÉÓĞ¿ÉÎŞ
-    RoiItemKind kind;              ///< ËÄÑ¡Ò»£º»æÖÆ ROI¡¢»æÖÆ region¡¢ÒıÓÃ ROI¡¢ÒıÓÃ region
-    HsCommData::HsObject shape;    ///< DrawRoi / DrawRegion Ê±µÄ¼¸ºÎ
-    ObjectId refToolId;            ///< RefRoi / RefRegion Ê±£¬±»ÒıÓÃµÄ¹¤¾ß
-    int refIndex;                  ///< ÒıÓÃ¸ÃÊä³öµÄµÚ¼¸¿é¡£-1 ±íÊ¾Õû¿Ú
-    bool followPose;               ///< ÊÇ·ñÓÃÄ³¸ö¹¤¾ßµÄÎ»×Ë×ö·ÂÉä
-    ObjectId poseToolId;           ///< followPose Ê±£¬Ìá¹©Î»×ËµÄ¹¤¾ß¡£Ã¿Ìõ×Ô¼ºÖ¸¶¨
+    std::string slot;              ///< åˆ†åŒºé”®ï¼Œå¯¹åº” RoiSlotRule.slot
+    bool enabled;                  ///< æœ¬æ‹æ˜¯å¦å¯ç”¨
+    RoiPresence presence;          ///< å¿…é¡»æœ‰ï¼Œæˆ–å¯æœ‰å¯æ— 
+    RoiItemKind kind;              ///< å››é€‰ä¸€ï¼šç»˜åˆ¶ ROIã€ç»˜åˆ¶ regionã€å¼•ç”¨ ROIã€å¼•ç”¨ region
+    HsCommData::HsObject shape;    ///< DrawRoi / DrawRegion æ—¶çš„å‡ ä½•
+    ObjectId refToolId;            ///< RefRoi / RefRegion æ—¶ï¼Œè¢«å¼•ç”¨çš„å·¥å…·
+    int refIndex;                  ///< å¼•ç”¨è¯¥è¾“å‡ºçš„ç¬¬å‡ å—ã€‚-1 è¡¨ç¤ºæ•´å£
+    bool followPose;               ///< æ˜¯å¦ç”¨æŸä¸ªå·¥å…·çš„ä½å§¿åšä»¿å°„
+    ObjectId poseToolId;           ///< followPose æ—¶ï¼Œæä¾›ä½å§¿çš„å·¥å…·ã€‚æ¯æ¡è‡ªå·±æŒ‡å®š
     ToolRoiItem()
         : enabled(true)
         , presence(RoiPresence::Required)
@@ -93,16 +101,16 @@ struct ToolRoiItem {
     {}
 };
 
-/** @class ResolvedRoi @brief ÔËĞĞÊ±½âÎöºóµÄÒ»¿é¼¸ºÎ */
+/** @class ResolvedRoi @brief è¿è¡Œæ—¶è§£æåçš„ä¸€å—å‡ ä½• */
 struct ResolvedRoi {
-    std::string slot;           ///< ·ÖÇø¼ü£¬¶ÔÓ¦ RoiSlotRule.slot
-    HsCommData::HsObject shape; ///< ÒÑ½âÎö¡¢ÒÑ°´¸ÃÌõÎ»×Ë·ÂÉä
+    std::string slot;           ///< åˆ†åŒºé”®ï¼Œå¯¹åº” RoiSlotRule.slot
+    HsCommData::HsObject shape; ///< å·²è§£æã€å·²æŒ‰è¯¥æ¡ä½å§¿ä»¿å°„
 };
 
-/** @class ToolCaps @brief ¹¤¾ß»­²¼ÄÜÁ¦¡£ÓÉ¹¤¾ß DLL ÌîĞ´£¬Æ½Ì¨²»°´Ãû×Ö²Â²â */
+/** @class ToolCaps @brief å·¥å…·ç”»å¸ƒèƒ½åŠ›ã€‚ç”±å·¥å…· DLL å¡«å†™ï¼Œå¹³å°ä¸æŒ‰åå­—çŒœæµ‹ */
 struct ToolCaps {
-    bool usesRoi;                    ///< ±¾¹¤¾ßÒª²»ÒªÔÚÍ¼ÉÏ»­ËÑË÷Çø
-    std::vector<RoiSlotRule> slotRules;  ///< ·ÖÇø¡£¿Õ±íÇÒ usesRoi Îª¼Ù±íÊ¾²»»­
+    bool usesRoi;                    ///< æœ¬å·¥å…·è¦ä¸è¦åœ¨å›¾ä¸Šç”»æœç´¢åŒº
+    std::vector<RoiSlotRule> slotRules;  ///< åˆ†åŒºã€‚ç©ºè¡¨ä¸” usesRoi ä¸ºå‡è¡¨ç¤ºä¸ç”»
     ToolCaps() : usesRoi(true) {}
     VISION_COMMON_API bool usesMultiRoi() const;
 
@@ -112,29 +120,50 @@ struct ToolCaps {
 
 };
 
-/** @class JudgeParam @brief Ğ´ÈëÅäÖÃµÄÒ»ÏîÅĞ¶Ï£ºÃû³Æ¡¢·Ö×é¡¢ÉÏÏÂÏŞ */
+/** @class JudgeParam @brief å†™å…¥é…ç½®çš„ä¸€é¡¹åˆ¤æ–­ï¼šåç§°ã€åˆ†ç»„ã€ä¸Šä¸‹é™ */
 struct JudgeParam {
-    std::string name;   ///< Óë±¾ÅÄ²âÖµµÄ¼üÏàÍ¬
-    std::string group;  ///< ·Ö×é£»¿É¿Õ
-    double minVal;      ///< ÏÂÏŞ
-    double maxVal;      ///< ÉÏÏŞ
-    bool enable;        ///< ÊÇ·ñ²ÎÓë×ÜÅĞ¶¨
-    std::string unit;   ///< µ¥Î»£»¿É¿Õ
+    std::string name;   ///< ä¸æœ¬æ‹æµ‹å€¼çš„é”®ç›¸åŒ
+    std::string group;  ///< åˆ†ç»„ï¼›å¯ç©º
+    double minVal;      ///< ä¸‹é™
+    double maxVal;      ///< ä¸Šé™
+    bool enable;        ///< æ˜¯å¦å‚ä¸æ€»åˆ¤å®š
+    std::string unit;   ///< å•ä½ï¼›å¯ç©º
     JudgeParam() : minVal(0), maxVal(0), enable(true) {}
 };
 
 /**
  * @class ToolParam
- * @brief Ğ´Èë·½°¸µÄ¹¤¾ß²ÎÊı£ºÑ§Ï°¡¢ÔËĞĞ¡¢ÅĞ¶ÏÈı¿é
+ * @brief å†™å…¥æ–¹æ¡ˆçš„å·¥å…·å‚æ•°ï¼šå­¦ä¹ ã€è¿è¡Œã€åˆ¤æ–­ä¸‰å—
  */
+/** @brief ç¤ºæ•™æ–‡ä»¶ã€‚æ–¹æ¡ˆé‡Œåªå­˜ç›¸å¯¹è·¯å¾„å’Œå†…å®¹æŒ‡çº¹ */
+struct TeachRef {
+    std::string relPath;      ///< ç›¸å¯¹æ–¹æ¡ˆæ–‡ä»¶çš„è·¯å¾„
+    std::string fingerprint;  ///< å†…å®¹æŒ‡çº¹
+    TeachRef() {}
+    bool valid() const { return !relPath.empty(); }
+};
+
+/** @brief ä¸€é¡¹æ˜¾ç¤ºé…ç½® */
+struct DisplayCfg {
+    bool text;     ///< æ–‡å­—é¡¹
+    bool enabled;  ///< æ˜¯å¦æ˜¾ç¤º
+    int alpha;     ///< é€æ˜åº¦ï¼Œ0 åˆ° 100
+    int anchor;    ///< 0 å›¾åƒè§’ï¼Œ1 ç»“æœç‚¹ï¼Œ2 å›¾å½¢æ—
+    DisplayCfg() : text(false), enabled(true), alpha(100), anchor(0) {}
+};
+
 struct ToolParam {
-    ParamMap learn;                  ///< Ñ§Ï°²ÎÊı¡£Learn Ä£Ê½Ğ´»Ø
-    ParamMap run;                    ///< ÔËĞĞ²ÎÊı¡£Åä·½½çÃæĞ´
-    std::vector<JudgeParam> judge;   ///< ÅĞ¶Ï²ÎÊı
-    AlgLibKind algLib;             ///< Ëã·¨¿â
-    ObjectId deviceId;               ///< °ó¶¨Éè±¸£¨²É¼¯Àà£©
-    std::vector<HsCommData::HsObject> rois;       ///< ½çÃæ»æÖÆµÄËÑË÷Çø
-    std::vector<ToolRoiItem> roiItems; ///< ËÑË÷Çø¼ÇÂ¼¡£»æÖÆºÍÒıÓÃÍ¬Ò»½á¹¹£¬ÂäÅÌµÄÊÇÀ´Ô´
+    ParamMap learn;                  ///< ç¤ºæ•™å‚æ•°æ˜æ–‡ã€‚å¯¹åº” teachCfg
+    ParamMap run;                    ///< è¿è¡Œå‚æ•°ã€‚é…æ–¹ç•Œé¢å†™
+    std::vector<JudgeParam> judge;   ///< åˆ¤æ–­å‚æ•°
+    TeachRef teachPar;               ///< ç¤ºæ•™æ–‡ä»¶å¼•ç”¨
+    std::map<std::string, std::string> statCfg; ///< ç»Ÿè®¡ï¼šenable|min|max
+    std::map<std::string, DisplayCfg> displayCfg; ///< æ˜¾ç¤ºé…ç½®
+    std::string backendOverride;     ///< åç«¯è¦†ç›–ã€‚ç©ºè¡¨ç¤ºè·Ÿå…¨å±€
+    AlgLibKind algLib;             ///< ç®—æ³•åº“
+    ObjectId deviceId;               ///< ç»‘å®šè®¾å¤‡ï¼ˆé‡‡é›†ç±»ï¼‰
+    std::vector<HsCommData::HsObject> rois;       ///< ç•Œé¢ç»˜åˆ¶çš„æœç´¢åŒº
+    std::vector<ToolRoiItem> roiItems; ///< æœç´¢åŒºè®°å½•ã€‚ç»˜åˆ¶å’Œå¼•ç”¨åŒä¸€ç»“æ„ï¼Œè½ç›˜çš„æ˜¯æ¥æº
     std::string paraVersion;
     std::string algVersion;
     ToolParam()
@@ -143,17 +172,17 @@ struct ToolParam {
     {}
 };
 
-/** @brief ¼¸ºÎÊÇÇøÓò */
+/** @brief å‡ ä½•æ˜¯åŒºåŸŸ */
 VISION_COMMON_API bool graphicIsRegion(const HsCommData::Graphic& g);
-/** @brief ¼¸ºÎÊÇÂÖÀª£¨²»º¬¹Ø¼üµã¡¢¹Ç¼Ü£© */
+/** @brief å‡ ä½•æ˜¯è½®å»“ï¼ˆä¸å«å…³é”®ç‚¹ã€éª¨æ¶ï¼‰ */
 VISION_COMMON_API bool graphicIsContour(const HsCommData::Graphic& g);
-/** @brief ËÑË÷Çø×ªÎª¿ÉÍÏ»æÖÆÍ¼Ôª */
+/** @brief æœç´¢åŒºè½¬ä¸ºå¯æ‹–ç»˜åˆ¶å›¾å…ƒ */
 VISION_COMMON_API HsCommData::Graphic roiToDrawing(const HsCommData::HsObject& roi);
-/** @brief »æÖÆÍ¼Ôª×ªÎªËÑË÷Çø¡£¼ıÍ·¡¢Ê®×Ö¡¢µã¡¢ÎÄ×Ö·µ»ØÎŞĞ§ */
+/** @brief ç»˜åˆ¶å›¾å…ƒè½¬ä¸ºæœç´¢åŒºã€‚ç®­å¤´ã€åå­—ã€ç‚¹ã€æ–‡å­—è¿”å›æ— æ•ˆ */
 VISION_COMMON_API HsCommData::HsObject drawingToRoi(const HsCommData::Graphic& g);
 /**
- * @brief ¾É´æÅÌ×Ö¶Î×ª HsObject¡£¼ıÍ·¡¢Ê®×Ö¡¢µã¡¢ÎÄ×Ö·µ»ØÎŞĞ§
- * kind£º0 Ô² 1 ÍÖÔ² 2 Öá¶ÔÆë¾ØĞÎ 3 Ğı×ª¾ØĞÎ 4 Ö±Ïß 9 ÂÖÀª 10 ÇøÓò
+ * @brief æ—§å­˜ç›˜å­—æ®µè½¬ HsObjectã€‚ç®­å¤´ã€åå­—ã€ç‚¹ã€æ–‡å­—è¿”å›æ— æ•ˆ
+ * kindï¼š0 åœ† 1 æ¤­åœ† 2 è½´å¯¹é½çŸ©å½¢ 3 æ—‹è½¬çŸ©å½¢ 4 ç›´çº¿ 9 è½®å»“ 10 åŒºåŸŸ
  */
 VISION_COMMON_API HsCommData::HsObject toolRoiFromLegacy(int kind, double x, double y, double a, double b, double phi,
                           const std::vector<double>& polyX, const std::vector<double>& polyY,
@@ -161,18 +190,18 @@ VISION_COMMON_API HsCommData::HsObject toolRoiFromLegacy(int kind, double x, dou
                           const std::vector<std::int32_t>& runRow,
                           const std::vector<std::int32_t>& runCb,
                           const std::vector<std::int32_t>& runCe);
-/** @brief ÊıÖµÀïÓĞ x¡¢y Ê±Ğ´³ÉÆ½ÃæÎ»×Ë¡£½Ç¶È°´ÏµÍ³ÉèÖÃ×ªÈë¡£Ã»ÓĞÔò·µ»Ø false */
+/** @brief æ•°å€¼é‡Œæœ‰ xã€y æ—¶å†™æˆå¹³é¢ä½å§¿ã€‚è§’åº¦æŒ‰ç³»ç»Ÿè®¾ç½®è½¬å…¥ã€‚æ²¡æœ‰åˆ™è¿”å› false */
 VISION_COMMON_API bool poseFromValues(const ParamMap& v, HsCommData::Pose2* pose);
-/** @brief Æ½ÃæÎ»×ËĞ´ÈëÊıÖµ¡£½Ç¶È°´ÏµÍ³ÉèÖÃ×ª³ö¡£²»Ğ´·ÖÊı */
+/** @brief å¹³é¢ä½å§¿å†™å…¥æ•°å€¼ã€‚è§’åº¦æŒ‰ç³»ç»Ÿè®¾ç½®è½¬å‡ºã€‚ä¸å†™åˆ†æ•° */
 VISION_COMMON_API void poseToValues(ParamMap* v, const HsCommData::Pose2& pose);
 /**
- * @brief °´Ê¾½ÌÎ»×ËÓëµ±Ç°Î»×Ë±ä»» ROI¡£ÏÈ clone ÔÙ¸Ä
- * @param rois ¾ÍµØĞŞ¸Ä
+ * @brief æŒ‰ç¤ºæ•™ä½å§¿ä¸å½“å‰ä½å§¿å˜æ¢ ROIã€‚å…ˆ clone å†æ”¹
+ * @param rois å°±åœ°ä¿®æ”¹
  */
 VISION_COMMON_API void applyPoseToRois(std::vector<HsCommData::HsObject>* rois, const ParamMap& params, const HsCommData::Pose2& pose);
-/** @brief Ò»¸öÍ¼±ê¶ÔÏó×ª³ÉÍ¼Ïñ´°ÓÃµÄµş¼Ó¡£Ö»ÔÚÏÔÊ¾Ê±µ÷ÓÃ */
+/** @brief ä¸€ä¸ªå›¾æ ‡å¯¹è±¡è½¬æˆå›¾åƒçª—ç”¨çš„å åŠ ã€‚åªåœ¨æ˜¾ç¤ºæ—¶è°ƒç”¨ */
 VISION_COMMON_API HsCommData::Graphic objectToGraphic(const HsCommData::HsObject& obj);
-/** @brief Ò»ÅúÍ¼±ê¶ÔÏó×ª³ÉÍ¼Ïñ´°µş¼Ó */
+/** @brief ä¸€æ‰¹å›¾æ ‡å¯¹è±¡è½¬æˆå›¾åƒçª—å åŠ  */
 VISION_COMMON_API std::vector<HsCommData::Graphic> objectsToGraphics(const std::vector<HsCommData::HsObject>& objs);
 
 }

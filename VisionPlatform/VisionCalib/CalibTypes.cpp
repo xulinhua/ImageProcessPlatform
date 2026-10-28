@@ -1,6 +1,6 @@
 /**
  * @file CalibTypes.cpp
- * @brief CalibTypesÊµÏÖ
+ * @brief CalibTypeså®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -10,7 +10,7 @@
 
 namespace Vision {
 
-// Ä¬ÈÏ±ê¶¨²ÎÊı
+// é»˜è®¤æ ‡å®šå‚æ•°
 CalibParam::CalibParam()
     : plateKind(CalibPlateKindUndefined)
     , rows(0)
@@ -25,7 +25,7 @@ CalibParam::CalibParam()
     , minRotateAngles(3)
 {}
 
-// ¿ÕµÄÏà»úÄ£ĞÍ
+// ç©ºçš„ç›¸æœºæ¨¡å‹
 CamModel::CamModel()
     : present(false)
     , status(CalibDraft)
@@ -48,7 +48,7 @@ CamModel::CamModel()
     , count(0)
 {}
 
-// Ä¬ÈÏ²ÎÓëÄâºÏµÄµã¶Ô
+// é»˜è®¤å‚ä¸æ‹Ÿåˆçš„ç‚¹å¯¹
 PlaneSample::PlaneSample()
     : imageX(0.0)
     , imageY(0.0)
@@ -57,7 +57,7 @@ PlaneSample::PlaneSample()
     , used(true)
 {}
 
-// µ¥Î»¾ØÕóµÄ¿ÕÆ½ÃæÓ³Éä
+// å•ä½çŸ©é˜µçš„ç©ºå¹³é¢æ˜ å°„
 PlaneMap::PlaneMap()
     : present(false)
     , status(CalibDraft)
@@ -75,14 +75,14 @@ PlaneMap::PlaneMap()
     worldToImage[0] = worldToImage[4] = worldToImage[8] = 1.0;
 }
 
-// ¿ÕµÄĞı×ªÑù±¾
+// ç©ºçš„æ—‹è½¬æ ·æœ¬
 RotateSample::RotateSample()
     : angleDeg(0.0)
     , imageX(0.0)
     , imageY(0.0)
 {}
 
-// ¿ÕµÄĞı×ªÖĞĞÄ
+// ç©ºçš„æ—‹è½¬ä¸­å¿ƒ
 RotateCenter::RotateCenter()
     : present(false)
     , status(CalibDraft)
@@ -97,17 +97,17 @@ RotateCenter::RotateCenter()
     , radius(0.0)
 {}
 
-// ¿ÕµÄÈı·İ½á¹û
+// ç©ºçš„ä¸‰ä»½ç»“æœ
 CalibRst::CalibRst()
 {}
 
-// ¿ÕµÄÀúÊ·ÌõÄ¿
+// ç©ºçš„å†å²æ¡ç›®
 CalibHistItem::CalibHistItem()
     : kind(CalibKindUndefined)
     , status(CalibExpired)
 {}
 
-// ÁãÎ»×Ë
+// é›¶ä½å§¿
 CalibPose::CalibPose()
     : x(0.0)
     , y(0.0)

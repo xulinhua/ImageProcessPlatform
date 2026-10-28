@@ -1,6 +1,6 @@
 /**
  * @file MainWindow.cpp
- * @brief MainWindowÊµÏÖ
+ * @brief MainWindowå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -36,6 +36,7 @@
 #include "RecheckWorkspace.h"
 #include "RuntimeViewDlg.h"
 #include "RuntimeWorkspace.h"
+#include "SharedFrames.h"
 #include "StationRuntimePanel.h"
 #include "StationDlg.h"
 #include "StationMgrDlg.h"
@@ -78,13 +79,13 @@ namespace Vision {
 
 namespace {
 
-// È¡µ±Ç°µÇÂ¼Ãû£¬Î´µÇÂ¼Îª¿Õ
+// å–å½“å‰ç™»å½•åï¼Œæœªç™»å½•ä¸ºç©º
 std::string sessionUser(const Session* s)
 {
     return (s && s->isLoggedIn()) ? s->user().loginName : std::string();
 }
 
-// È¡µ±Ç°½ÇÉ«ÕûĞÍ¼ü£¬Î´µÇÂ¼Îª¿Õ
+// å–å½“å‰è§’è‰²æ•´å‹é”®ï¼Œæœªç™»å½•ä¸ºç©º
 std::string sessionRole(const Session* s)
 {
     if (!s || !s->isLoggedIn()) {
@@ -95,16 +96,16 @@ std::string sessionRole(const Session* s)
     return std::string(buf);
 }
 
-/** @brief ÖÜÆÚË¢ÆÁ°ü£ºÏß³Ì³ØÔ¤×ª»»ËõÂÔÍ¼ºó Queued µ½ UI */
+/** @brief å‘¨æœŸåˆ·å±åŒ…ï¼šçº¿ç¨‹æ± é¢„è½¬æ¢ç¼©ç•¥å›¾å Queued åˆ° UI */
 struct CycleUiPayload {
-    ObjectId stationId;                 ///< À´Ô´¹¤Õ¾
-    StationRunRst result;            ///< ×î½üÒ»ÅÄ»ã×Ü
-    int dTotal;                         ///< ²úÁ¿ÔöÁ¿
-    int dPass;                          ///< OK ÔöÁ¿
-    int dFail;                          ///< NG ÔöÁ¿
-    bool addHist;                       ///< ÊÇ·ñ×·¼ÓÀúÊ·
-    QImage histThumb;                   ///< Ô¤Éú³ÉËõÂÔÍ¼£¨Òì²½£©
-    QVector<HsCommData::Graphic> overlay;  ///< Ô¤×ª»»µş²ã
+    ObjectId stationId;                 ///< æ¥æºå·¥ç«™
+    StationRunRst result;            ///< æœ€è¿‘ä¸€æ‹æ±‡æ€»
+    int dTotal;                         ///< äº§é‡å¢é‡
+    int dPass;                          ///< OK å¢é‡
+    int dFail;                          ///< NG å¢é‡
+    bool addHist;                       ///< æ˜¯å¦è¿½åŠ å†å²
+    QImage histThumb;                   ///< é¢„ç”Ÿæˆç¼©ç•¥å›¾ï¼ˆå¼‚æ­¥ï¼‰
+    QVector<HsCommData::Graphic> overlay;  ///< é¢„è½¬æ¢å å±‚
     CycleUiPayload()
         : dTotal(0)
         , dPass(0)
@@ -115,7 +116,7 @@ struct CycleUiPayload {
 
 } // namespace
 
-// Ö÷´°¿Ú£º²Ëµ¥/¹¤¾ßÌõ¡¢Éè¼Æ/ÔËĞĞÇĞ»»¡¢·½°¸Óëµ÷¶È
+// ä¸»çª—å£ï¼šèœå•/å·¥å…·æ¡ã€è®¾è®¡/è¿è¡Œåˆ‡æ¢ã€æ–¹æ¡ˆä¸è°ƒåº¦
 MainWindow::MainWindow(Session* session, QWidget* parent)
     : QMainWindow(parent)
     , m_session(session)
@@ -123,7 +124,11 @@ MainWindow::MainWindow(Session* session, QWidget* parent)
     , m_station(nullptr)
     , m_boundStationId()
     , m_running(false)
+    , m_residentTray(false)
+    , m_serviceRun(false)
+    , m_forceQuit(false)
     , m_shuttingDown(false)
+    , m_previewTimer(0)
     , m_designBusy(0)
     , m_mainTb(nullptr)
 {
@@ -136,14 +141,14 @@ MainWindow::MainWindow(Session* session, QWidget* parent)
     setCompositeFinder(&CompositeMgr::findRaw);
     CompositeMgr::instance().setOpenSolution(&m_sol);
 
-    // ¶¥²¿Éè¼Æ/ÔËĞĞÒ³Ç©
+    // é¡¶éƒ¨è®¾è®¡/è¿è¡Œé¡µç­¾
     QWidget* tabBar = new QWidget(this);
     QHBoxLayout* tabLay = new QHBoxLayout(tabBar);
     tabLay->setContentsMargins(8, 0, 8, 0);
     tabLay->setSpacing(0);
-    m_tabDesign = new QPushButton(T("Éè¼Æ"), tabBar);
-    m_tabRuntime = new QPushButton(T("ÔËĞĞ"), tabBar);
-    m_tabRecheck = new QPushButton(T("¸´¼ì"), tabBar);
+    m_tabDesign = new QPushButton(T("è®¾è®¡"), tabBar);
+    m_tabRuntime = new QPushButton(T("è¿è¡Œ"), tabBar);
+    m_tabRecheck = new QPushButton(T("å¤æ£€"), tabBar);
     m_tabDesign->setObjectName(QLatin1String("modeTab"));
     m_tabRuntime->setObjectName(QLatin1String("modeTab"));
     m_tabRecheck->setObjectName(QLatin1String("modeTab"));
@@ -207,21 +212,21 @@ MainWindow::MainWindow(Session* session, QWidget* parent)
 
     buildMenus();
 
-    m_mainTb = addToolBar(T("Ö÷¹¤¾ßÌõ"));
+    m_mainTb = addToolBar(T("ä¸»å·¥å…·æ¡"));
     m_mainTb->setMovable(false);
     m_mainTb->setIconSize(QSize(20, 20));
     m_mainTb->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    m_actNew = m_mainTb->addAction(uiIcon(UiIconNew), T("ĞÂ½¨"), this, SLOT(newSolution()));
+    m_actNew = m_mainTb->addAction(uiIcon(UiIconNew), T("æ–°å»º"), this, SLOT(newSolution()));
     m_tbNew = m_actNew;
-    m_tbOpen = m_mainTb->addAction(uiIcon(UiIconOpen), T("´ò¿ª"), this, SLOT(openSolution()));
-    m_actSave = m_mainTb->addAction(uiIcon(UiIconSave), T("±£´æ"), this, SLOT(saveSolutionFile()));
+    m_tbOpen = m_mainTb->addAction(uiIcon(UiIconOpen), T("æ‰“å¼€"), this, SLOT(openSolution()));
+    m_actSave = m_mainTb->addAction(uiIcon(UiIconSave), T("ä¿å­˜"), this, SLOT(saveSolutionFile()));
     m_tbSave = m_actSave;
     m_tbSep1 = m_mainTb->addSeparator();
-    m_tbNewStation = m_mainTb->addAction(uiIcon(UiIconNewStation), T("ĞÂ½¨¹¤Õ¾"), this, SLOT(newStation()));
-    m_tbNewJob = m_mainTb->addAction(uiIcon(UiIconNewJob), T("ĞÂ½¨Á÷³Ì"), this, SLOT(newJob()));
-    m_tbStart = m_mainTb->addAction(uiIcon(UiIconStart), T("¿ªÊ¼"), this, SLOT(startStation()));
-    m_tbStop = m_mainTb->addAction(uiIcon(UiIconStop), T("Í£Ö¹"), this, SLOT(stopStation()));
-    m_tbReset = m_mainTb->addAction(uiIcon(UiIconReset), T("ÇåÁã"), this, SLOT(resetCount()));
+    m_tbNewStation = m_mainTb->addAction(uiIcon(UiIconNewStation), T("æ–°å»ºå·¥ç«™"), this, SLOT(newStation()));
+    m_tbNewJob = m_mainTb->addAction(uiIcon(UiIconNewJob), T("æ–°å»ºæµç¨‹"), this, SLOT(newJob()));
+    m_tbStart = m_mainTb->addAction(uiIcon(UiIconStart), T("å¼€å§‹"), this, SLOT(startStation()));
+    m_tbStop = m_mainTb->addAction(uiIcon(UiIconStop), T("åœæ­¢"), this, SLOT(stopStation()));
+    m_tbReset = m_mainTb->addAction(uiIcon(UiIconReset), T("æ¸…é›¶"), this, SLOT(resetCount()));
 
     m_solLabel = new QLabel(this);
     m_stLabel = new QLabel(this);
@@ -236,7 +241,7 @@ MainWindow::MainWindow(Session* session, QWidget* parent)
     if (!m_sol.stations.empty()) {
         m_runtime->setStationName(qs(m_sol.stations[0].name));
     }
-    // °´±¾»úÉèÖÃµÄÆô¶¯Ä¬ÈÏÄ£Ê½½øÈë£¨ÎŞÉè¼ÆÈ¨ÏŞÔò»ØÂäÔËĞĞÌ¬£©
+    // æŒ‰æœ¬æœºè®¾ç½®çš„å¯åŠ¨é»˜è®¤æ¨¡å¼è¿›å…¥ï¼ˆæ— è®¾è®¡æƒé™åˆ™å›è½è¿è¡Œæ€ï¼‰
     {
         AppMode boot = ModeDesign;
         if (m_session->settings().startupMode == StartupModeRuntime) {
@@ -256,12 +261,12 @@ MainWindow::MainWindow(Session* session, QWidget* parent)
     m_binder.bindAction(m_actSave, PermEditSolution);
     m_binder.bindAction(m_actRuntimeView, PermEditSolution);
     onUserChanged();
-    m_design->appendLog(T("¾ÍĞ÷¡£Ä¬ÈÏÎÄ¼şÔ´Ö¸Ïò³ÌĞòÄ¿Â¼ samples£»Ò²¿ÉÔÚÉè±¸Àï¸ÄÎÄ¼ş¼Ğ¡£"));
+    m_design->appendLog(T("å°±ç»ªã€‚é»˜è®¤æ–‡ä»¶æºæŒ‡å‘ç¨‹åºç›®å½• samplesï¼›ä¹Ÿå¯åœ¨è®¾å¤‡é‡Œæ”¹æ–‡ä»¶å¤¹ã€‚"));
     rebuildStation();
     tryLastSolution();
 }
 
-// Ğ¶µô»á»°/¹¤Õ¾¼àÌı²¢ÊÍ·Å¹¤Õ¾
+// å¸æ‰ä¼šè¯/å·¥ç«™ç›‘å¬å¹¶é‡Šæ”¾å·¥ç«™
 MainWindow::~MainWindow()
 {
     shutdownRuntime();
@@ -274,7 +279,7 @@ MainWindow::~MainWindow()
     }
 }
 
-// ÍË³öÇ°£ºÍ£Ïß³Ì ¡ú ÅÅ¿Õ³Ø ¡ú Ğ¶¼àÌı£¨ÏÈÓÚÏú»Ù·½°¸/¹¤Õ¾£©
+// é€€å‡ºå‰ï¼šåœçº¿ç¨‹ â†’ æ’ç©ºæ±  â†’ å¸ç›‘å¬ï¼ˆå…ˆäºé”€æ¯æ–¹æ¡ˆ/å·¥ç«™ï¼‰
 void MainWindow::shutdownRuntime()
 {
     if (m_shuttingDown) {
@@ -297,7 +302,7 @@ void MainWindow::shutdownRuntime()
         m_station->setListener(0);
     }
     ThreadPool::shared().drainForShutdown();
-    // ³ÔµôÒÑÅÅ¶ÓµÄ Queued ²Û£¬±ÜÃâ¹Ø´°ºóÈÔ»Øµ÷
+    // åƒæ‰å·²æ’é˜Ÿçš„ Queued æ§½ï¼Œé¿å…å…³çª—åä»å›è°ƒ
     QCoreApplication::sendPostedEvents(this, QEvent::MetaCall);
     QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
     m_runLogHub.removeSink(this);
@@ -307,7 +312,7 @@ void MainWindow::shutdownRuntime()
     }
 }
 
-// ÔËĞĞÈÕÖ¾£ºÅÅ¶Óµ½ UI£»½çÃæÖ»ÏÔÊ¾ÕıÎÄ£¬ÂäÅÌÈÔÓÃÍêÕûĞĞ
+// è¿è¡Œæ—¥å¿—ï¼šæ’é˜Ÿåˆ° UIï¼›ç•Œé¢åªæ˜¾ç¤ºæ­£æ–‡ï¼Œè½ç›˜ä»ç”¨å®Œæ•´è¡Œ
 void MainWindow::onRunLog(const RunLogEvent& ev)
 {
     if (m_shuttingDown) {
@@ -330,82 +335,82 @@ void MainWindow::onRunLog(const RunLogEvent& ev)
                               Q_ARG(QString, level), Q_ARG(QString, message));
 }
 
-// ÓÃ»§±ä»¯ºóË¢ĞÂ¶¯×÷£»ÎŞÉè¼ÆÈ¨ÏŞÔòÇĞµ½ÔËĞĞÌ¬
+// ç”¨æˆ·å˜åŒ–ååˆ·æ–°åŠ¨ä½œï¼›æ— è®¾è®¡æƒé™åˆ™åˆ‡åˆ°è¿è¡Œæ€
 // rebuild menus (ctor + locale hot-switch)
 void MainWindow::buildMenus()
 {
     menuBar()->clear();
-    // ·½°¸ / ¹¤Õ¾ / Éè±¸ / Í¨ĞÅ / ÊÓÍ¼ / ÔËĞĞ / ÉèÖÃ / ÏµÍ³ / °ïÖú
-    QMenu* mSol = menuBar()->addMenu(T("·½°¸"));
-    mSol->addAction(T("ĞÂ½¨"), this, SLOT(newSolution()), QKeySequence::New);
-    mSol->addAction(T("´ò¿ª¡­"), this, SLOT(openSolution()), QKeySequence::Open);
-    mSol->addAction(T("±£´æ"), this, SLOT(saveSolutionFile()), QKeySequence::Save);
-    mSol->addAction(T("Áí´æÎª¡­"), this, SLOT(saveSolutionAs()));
+    // æ–¹æ¡ˆ / å·¥ç«™ / è®¾å¤‡ / é€šä¿¡ / è§†å›¾ / è¿è¡Œ / è®¾ç½® / ç³»ç»Ÿ / å¸®åŠ©
+    QMenu* mSol = menuBar()->addMenu(T("æ–¹æ¡ˆ"));
+    mSol->addAction(T("æ–°å»º"), this, SLOT(newSolution()), QKeySequence::New);
+    mSol->addAction(T("æ‰“å¼€â€¦"), this, SLOT(openSolution()), QKeySequence::Open);
+    mSol->addAction(T("ä¿å­˜"), this, SLOT(saveSolutionFile()), QKeySequence::Save);
+    mSol->addAction(T("å¦å­˜ä¸ºâ€¦"), this, SLOT(saveSolutionAs()));
     mSol->addSeparator();
-    mSol->addAction(T("´ò¿ªÍ¼Ïñ¡­"), this, SLOT(openImage()));
+    mSol->addAction(T("æ‰“å¼€å›¾åƒâ€¦"), this, SLOT(openImage()));
     mSol->addSeparator();
-    mSol->addAction(T("ÍË³ö"), qApp, SLOT(quit()));
+    mSol->addAction(T("é€€å‡º"), qApp, SLOT(quit()));
 
-    QMenu* mSt = menuBar()->addMenu(T("¹¤Õ¾"));
-    mSt->addAction(T("¹¤Õ¾¹ÜÀí¡­"), this, SLOT(openStations()));
+    QMenu* mSt = menuBar()->addMenu(T("å·¥ç«™"));
+    mSt->addAction(T("å·¥ç«™ç®¡ç†â€¦"), this, SLOT(openStations()));
 
-    QMenu* mDev = menuBar()->addMenu(T("Éè±¸"));
-    mDev->addAction(T("Éè±¸¹ÜÀí¡­"), this, SLOT(openDevices()));
-    mDev->addAction(T("±ê¶¨¹ÜÀí..."), this, SLOT(openCalib()));
-    mDev->addAction(T("¹¤¾ß¿â¹ÜÀí..."), this, SLOT(openToolLib()));
+    QMenu* mDev = menuBar()->addMenu(T("è®¾å¤‡"));
+    mDev->addAction(T("è®¾å¤‡ç®¡ç†â€¦"), this, SLOT(openDevices()));
+    mDev->addAction(T("æ ‡å®šç®¡ç†..."), this, SLOT(openCalib()));
+    mDev->addAction(T("å·¥å…·åº“ç®¡ç†..."), this, SLOT(openToolLib()));
 
-    QMenu* mComm = menuBar()->addMenu(T("Í¨ĞÅ"));
-    mComm->addAction(T("Í¨ĞÅ¹ÜÀí¡­"), this, SLOT(openComm()));
+    QMenu* mComm = menuBar()->addMenu(T("é€šä¿¡"));
+    mComm->addAction(T("é€šä¿¡ç®¡ç†â€¦"), this, SLOT(openComm()));
 
-    QMenu* mView = menuBar()->addMenu(T("ÊÓÍ¼"));
-    m_actRuntimeView = mView->addAction(T("»­ÃæÅäÖÃ¡­"), this, SLOT(openRuntimeView()));
+    QMenu* mView = menuBar()->addMenu(T("è§†å›¾"));
+    m_actRuntimeView = mView->addAction(T("ç”»é¢é…ç½®â€¦"), this, SLOT(openRuntimeView()));
 
-    QMenu* mRun = menuBar()->addMenu(T("ÔËĞĞ"));
-    mRun->addAction(T("Éè¼Æ"), this, SLOT(switchDesign()));
-    mRun->addAction(T("ÔËĞĞ"), this, SLOT(switchRuntime()));
-    mRun->addAction(T("¸´¼ì"), this, SLOT(switchRecheck()));
+    QMenu* mRun = menuBar()->addMenu(T("è¿è¡Œ"));
+    mRun->addAction(T("è®¾è®¡"), this, SLOT(switchDesign()));
+    mRun->addAction(T("è¿è¡Œ"), this, SLOT(switchRuntime()));
+    mRun->addAction(T("å¤æ£€"), this, SLOT(switchRecheck()));
     mRun->addSeparator();
-    mRun->addAction(T("¿ªÊ¼"), this, SLOT(startStation()));
-    mRun->addAction(T("Í£Ö¹"), this, SLOT(stopStation()));
-    mRun->addAction(T("ÇåÁã"), this, SLOT(resetCount()));
+    mRun->addAction(T("å¼€å§‹"), this, SLOT(startStation()));
+    mRun->addAction(T("åœæ­¢"), this, SLOT(stopStation()));
+    mRun->addAction(T("æ¸…é›¶"), this, SLOT(resetCount()));
 
-    QMenu* mSet = menuBar()->addMenu(T("ÉèÖÃ"));
-    m_actSettings = mSet->addAction(T("ÉèÖÃ¡­"), this, SLOT(openAppSettings()));
+    QMenu* mSet = menuBar()->addMenu(T("è®¾ç½®"));
+    m_actSettings = mSet->addAction(T("è®¾ç½®â€¦"), this, SLOT(openAppSettings()));
 
-    QMenu* mSys = menuBar()->addMenu(T("ÏµÍ³"));
-    m_actUsers = mSys->addAction(T("ÓÃ»§¹ÜÀí¡­"), this, SLOT(openUsers()));
-    m_actPerms = mSys->addAction(T("¿Ø¼şÈ¨ÏŞ¡­"), this, SLOT(openPerms()));
-    m_actLogs = mSys->addAction(T("ÈÕÖ¾¹Ü¿Ø¡­"), this, SLOT(openLogs()));
-    mSys->addAction(T("²ÎÊı°æ±¾¡­"), this, SLOT(openParaAdapt()));
-    mSys->addAction(T("×éºÏ¹¤¾ß¡­"), this, SLOT(openComposites()));
+    QMenu* mSys = menuBar()->addMenu(T("ç³»ç»Ÿ"));
+    m_actUsers = mSys->addAction(T("ç”¨æˆ·ç®¡ç†â€¦"), this, SLOT(openUsers()));
+    m_actPerms = mSys->addAction(T("æ§ä»¶æƒé™â€¦"), this, SLOT(openPerms()));
+    m_actLogs = mSys->addAction(T("æ—¥å¿—ç®¡æ§â€¦"), this, SLOT(openLogs()));
+    mSys->addAction(T("å‚æ•°ç‰ˆæœ¬â€¦"), this, SLOT(openParaAdapt()));
+    mSys->addAction(T("ç»„åˆå·¥å…·â€¦"), this, SLOT(openComposites()));
     mSys->addSeparator();
-    mSys->addAction(T("ĞŞ¸Ä¿ÚÁî¡­"), this, SLOT(changePwd()));
-    mSys->addAction(T("×¢Ïú"), this, SLOT(logout()));
+    mSys->addAction(T("ä¿®æ”¹å£ä»¤â€¦"), this, SLOT(changePwd()));
+    mSys->addAction(T("æ³¨é”€"), this, SLOT(logout()));
 
-    QMenu* mHelp = menuBar()->addMenu(T("°ïÖú"));
-    mHelp->addAction(T("°æ±¾¹ÜÀí¡­"), this, SLOT(openVersionManager()));
-    mHelp->addAction(T("¹ØÓÚ"), this, SLOT(about()));
+    QMenu* mHelp = menuBar()->addMenu(T("å¸®åŠ©"));
+    mHelp->addAction(T("ç‰ˆæœ¬ç®¡ç†â€¦"), this, SLOT(openVersionManager()));
+    mHelp->addAction(T("å…³äº"), this, SLOT(about()));
 
-    // Ö÷¹¤¾ßÌõ£º·½°¸¡¢¹¤Õ¾Éè±¸¡¢ÔËĞĞ¿ØÖÆ£¨Í¼±ê + ÎÄ×Ö£©
+    // ä¸»å·¥å…·æ¡ï¼šæ–¹æ¡ˆã€å·¥ç«™è®¾å¤‡ã€è¿è¡Œæ§åˆ¶ï¼ˆå›¾æ ‡ + æ–‡å­—ï¼‰
 }
 
-// Ë¢ĞÂ¾²Ì¬½çÃæÎÄ°¸
+// åˆ·æ–°é™æ€ç•Œé¢æ–‡æ¡ˆ
 void MainWindow::retranslateUi()
 {
-    m_tabDesign->setText(T("Éè¼Æ"));
-    m_tabRuntime->setText(T("ÔËĞĞ"));
-    m_tabRecheck->setText(T("¸´¼ì"));
+    m_tabDesign->setText(T("è®¾è®¡"));
+    m_tabRuntime->setText(T("è¿è¡Œ"));
+    m_tabRecheck->setText(T("å¤æ£€"));
     if (m_mainTb) {
-        m_mainTb->setWindowTitle(T("Ö÷¹¤¾ßÌõ"));
+        m_mainTb->setWindowTitle(T("ä¸»å·¥å…·æ¡"));
     }
-    if (m_actNew) { m_actNew->setText(T("ĞÂ½¨")); }
-    if (m_tbOpen) { m_tbOpen->setText(T("´ò¿ª")); }
-    if (m_actSave) { m_actSave->setText(T("±£´æ")); }
-    if (m_tbNewStation) { m_tbNewStation->setText(T("ĞÂ½¨¹¤Õ¾")); }
-    if (m_tbNewJob) { m_tbNewJob->setText(T("ĞÂ½¨Á÷³Ì")); }
-    if (m_tbStart) { m_tbStart->setText(T("¿ªÊ¼")); }
-    if (m_tbStop) { m_tbStop->setText(T("Í£Ö¹")); }
-    if (m_tbReset) { m_tbReset->setText(T("ÇåÁã")); }
+    if (m_actNew) { m_actNew->setText(T("æ–°å»º")); }
+    if (m_tbOpen) { m_tbOpen->setText(T("æ‰“å¼€")); }
+    if (m_actSave) { m_actSave->setText(T("ä¿å­˜")); }
+    if (m_tbNewStation) { m_tbNewStation->setText(T("æ–°å»ºå·¥ç«™")); }
+    if (m_tbNewJob) { m_tbNewJob->setText(T("æ–°å»ºæµç¨‹")); }
+    if (m_tbStart) { m_tbStart->setText(T("å¼€å§‹")); }
+    if (m_tbStop) { m_tbStop->setText(T("åœæ­¢")); }
+    if (m_tbReset) { m_tbReset->setText(T("æ¸…é›¶")); }
     buildMenus();
     m_binder.bindAction(m_actRuntimeView, PermEditSolution);
     updateTitle();
@@ -421,7 +426,7 @@ void MainWindow::onUiLocaleChanged()
     retranslateUi();
 }
 
-// ÓÃ»§±ä»¯ºóË¢ĞÂ¶¯×÷£»ÎŞÉè¼ÆÈ¨ÏŞÔòÇĞµ½ÔËĞĞÌ¬
+// ç”¨æˆ·å˜åŒ–ååˆ·æ–°åŠ¨ä½œï¼›æ— è®¾è®¡æƒé™åˆ™åˆ‡åˆ°è¿è¡Œæ€
 void MainWindow::onUserChanged()
 {
     m_runLogFile.setIdentity(sessionUser(m_session), sessionRole(m_session));
@@ -432,7 +437,7 @@ void MainWindow::onUserChanged()
     }
 }
 
-// ¿ª·¢½×¶Î£ºÈ±È¨ÏŞÊ±×Ô¶¯ÌáÈ¨Îª¹ÜÀíÔ±²¢»Ö¸´³ö³§È¨ÏŞ
+// å¼€å‘é˜¶æ®µï¼šç¼ºæƒé™æ—¶è‡ªåŠ¨ææƒä¸ºç®¡ç†å‘˜å¹¶æ¢å¤å‡ºå‚æƒé™
 bool MainWindow::ensurePerm(Perm perm, const QString& deniedText)
 {
     if (m_session->has(perm)) {
@@ -450,13 +455,13 @@ bool MainWindow::ensurePerm(Perm perm, const QString& deniedText)
     return true;
 }
 
-// ½øÈëÉè¼ÆÌ¬ËùĞèÈ¨ÏŞ
+// è¿›å…¥è®¾è®¡æ€æ‰€éœ€æƒé™
 bool MainWindow::ensureDesignAccess()
 {
-    return ensurePerm(PermEnterDesign, T("µ±Ç°ÓÃ»§²»ÄÜ½øÈëÉè¼ÆÌ¬¡£"));
+    return ensurePerm(PermEnterDesign, T("å½“å‰ç”¨æˆ·ä¸èƒ½è¿›å…¥è®¾è®¡æ€ã€‚"));
 }
 
-// ÇĞ»»ÖĞÑëÒ³²¢°´Ä£Ê½ÏÔÒş¹¤¾ßÌõ°´Å¥
+// åˆ‡æ¢ä¸­å¤®é¡µå¹¶æŒ‰æ¨¡å¼æ˜¾éšå·¥å…·æ¡æŒ‰é’®
 void MainWindow::applyMode(AppMode mode)
 {
     m_mode = mode;
@@ -492,7 +497,7 @@ void MainWindow::applyMode(AppMode mode)
     updateTitle();
 }
 
-// ÇĞµ½Éè¼ÆÌ¬£¨ĞèÈ¨ÏŞ£©
+// åˆ‡åˆ°è®¾è®¡æ€ï¼ˆéœ€æƒé™ï¼‰
 void MainWindow::switchDesign()
 {
     if (!ensureDesignAccess()) {
@@ -501,24 +506,24 @@ void MainWindow::switchDesign()
     applyMode(ModeDesign);
 }
 
-// ÇĞµ½ÔËĞĞÌ¬
+// åˆ‡åˆ°è¿è¡Œæ€
 void MainWindow::switchRuntime()
 {
     applyMode(ModeRuntime);
 }
 
-// ÇĞµ½¸´¼ìÌ¬£¨Ğèµ÷ÊÔÔËĞĞÈ¨ÏŞ£©
+// åˆ‡åˆ°å¤æ£€æ€ï¼ˆéœ€è°ƒè¯•è¿è¡Œæƒé™ï¼‰
 void MainWindow::switchRecheck()
 {
     if (!m_session->has(PermRunJobDebug)) {
-        QMessageBox::warning(this, T("È¨ÏŞ"), T("µ±Ç°ÓÃ»§²»ÄÜ½øÈë¸´¼ì¡£"));
+        QMessageBox::warning(this, T("æƒé™"), T("å½“å‰ç”¨æˆ·ä¸èƒ½è¿›å…¥å¤æ£€ã€‚"));
         applyMode(m_mode);
         return;
     }
     applyMode(ModeRecheck);
 }
 
-// ¸´¼ìÅúÅÜÇ°°ó¶¨¹¤Õ¾ÊµÀı
+// å¤æ£€æ‰¹è·‘å‰ç»‘å®šå·¥ç«™å®ä¾‹
 void MainWindow::onRecheckPrepareStation(const QString& stationId)
 {
     ensureStationRuntime(m_sol.findStationConfig(oid(stationId)));
@@ -527,7 +532,7 @@ void MainWindow::onRecheckPrepareStation(const QString& stationId)
     }
 }
 
-// ¸´¼ìÌø×ªÉè¼Æµ÷ÊÔ
+// å¤æ£€è·³è½¬è®¾è®¡è°ƒè¯•
 void MainWindow::onRecheckOpenDebug(const QString& jobId, const QString& toolId,
                                     const QString& imagePath)
 {
@@ -543,30 +548,30 @@ void MainWindow::onRecheckOpenDebug(const QString& jobId, const QString& toolId,
     }
 }
 
-// Ë¢ĞÂ±êÌâÀ¸¡¢×´Ì¬À¸ÓëÔËĞĞÇø¹¤Õ¾/·½°¸Ãû
+// åˆ·æ–°æ ‡é¢˜æ ã€çŠ¶æ€æ ä¸è¿è¡ŒåŒºå·¥ç«™/æ–¹æ¡ˆå
 void MainWindow::updateTitle()
 {
-    QString mode = T("Éè¼Æ");
+    QString mode = T("è®¾è®¡");
     if (m_mode == ModeRuntime) {
-        mode = T("ÔËĞĞ");
+        mode = T("è¿è¡Œ");
     } else if (m_mode == ModeRecheck) {
-        mode = T("¸´¼ì");
+        mode = T("å¤æ£€");
     }
     QString st = m_sol.stations.empty() ? QLatin1String("-") : qs(m_sol.stations[0].name);
     QString user = m_session->isLoggedIn()
                    ? (qs(m_session->user().displayName) + QLatin1String(" / ") + QString::fromUtf8(roleTitle(m_session->role()).c_str()))
-                   : T("Î´µÇÂ¼");
-    setWindowTitle(T("Í¨ÓÃÊÓ¾õÆ½Ì¨  -  ") + mode + QLatin1String("  -  ") + qs(m_sol.name) + QLatin1String("  -  ") + st);
-    m_userLabel->setText(T("ÓÃ»§: ") + user);
-    m_solLabel->setText(T("·½°¸: ") + qs(m_sol.name));
-    m_stLabel->setText(T("¹¤Õ¾: ") + st);
+                   : T("æœªç™»å½•");
+    setWindowTitle(T("é€šç”¨è§†è§‰å¹³å°  -  ") + mode + QLatin1String("  -  ") + qs(m_sol.name) + QLatin1String("  -  ") + st);
+    m_userLabel->setText(T("ç”¨æˆ·: ") + user);
+    m_solLabel->setText(T("æ–¹æ¡ˆ: ") + qs(m_sol.name));
+    m_stLabel->setText(T("å·¥ç«™: ") + st);
     m_runtime->setStationName(st);
     m_runtime->setSolutionName(qs(m_sol.name));
-    // Ö»±£Ö¤ËŞÖ÷´æÔÚ£¬½ûÖ¹Ã¿´Î¸Ä±êÌâ¶¼ÖØ½¨Ãæ°å£¨·ñÔòÍ£Ö¹ºó»­Ãæ/²úÁ¿±»Çå£©
+    // åªä¿è¯å®¿ä¸»å­˜åœ¨ï¼Œç¦æ­¢æ¯æ¬¡æ”¹æ ‡é¢˜éƒ½é‡å»ºé¢æ¿ï¼ˆå¦åˆ™åœæ­¢åç”»é¢/äº§é‡è¢«æ¸…ï¼‰
     m_runtime->ensureHost(&m_sol);
 }
 
-// °´»á»°È¨ÏŞÆôÓÃ²Ëµ¥Óë¹¤¾ßÌõ¶¯×÷
+// æŒ‰ä¼šè¯æƒé™å¯ç”¨èœå•ä¸å·¥å…·æ¡åŠ¨ä½œ
 void MainWindow::updateActions()
 {
     m_tabDesign->setEnabled(true);
@@ -587,17 +592,17 @@ void MainWindow::updateActions()
     m_runtime->setConfigureEnabled(m_session->has(PermEditSolution));
 }
 
-// ×´Ì¬À¸Ê±ÖÓ
+// çŠ¶æ€æ æ—¶é’Ÿ
 void MainWindow::onClock()
 {
     m_clockLabel->setText(QDateTime::currentDateTime().toString(QLatin1String("yyyy-MM-dd hh:mm:ss")));
 }
 
-// È·ÈÏ±£´æºó»»³É¿Õ·½°¸
+// ç¡®è®¤ä¿å­˜åæ¢æˆç©ºæ–¹æ¡ˆ
 void MainWindow::newSolution()
 {
     if (!m_session->has(PermEditSolution)) {
-        QMessageBox::warning(this, T("È¨ÏŞ"), T("Ã»ÓĞ¸ÄÅä·½È¨ÏŞ¡£"));
+        QMessageBox::warning(this, T("æƒé™"), T("æ²¡æœ‰æ”¹é…æ–¹æƒé™ã€‚"));
         return;
     }
     if (!confirmSave()) {
@@ -607,7 +612,7 @@ void MainWindow::newSolution()
     applyLoadedSolution();
 }
 
-// ·½°¸¶ÁÈëºóË¢Ê÷ÓëÔËĞĞ´°
+// æ–¹æ¡ˆè¯»å…¥ååˆ·æ ‘ä¸è¿è¡Œçª—
 void MainWindow::applyLoadedSolution()
 {
     CalibMgr::instance().load(pathDirName(m_sol.filePath), 0);
@@ -625,16 +630,16 @@ void MainWindow::applyLoadedSolution()
     capturePersistBase();
 }
 
-// °´Ö÷¹¤Õ¾ÅäÖÃÖØ½¨ Station£¬²¢ÏÂ·¢¸øÉè¼Æ/ÔËĞĞÇø
+// æŒ‰ä¸»å·¥ç«™é…ç½®é‡å»º Stationï¼Œå¹¶ä¸‹å‘ç»™è®¾è®¡/è¿è¡ŒåŒº
 void MainWindow::rebuildStation()
 {
     ensureStationRuntime(m_sol.primaryStation());
 }
 
-// È·±£Éè¼Æ/¸´¼ìÔËĞĞÊµÀı°ó¶¨µ½Ö¸¶¨¹¤Õ¾£¨ÇĞ»»¹¤Õ¾»òË¢ĞÂÆä Job ÁĞ±í£©
+// ç¡®ä¿è®¾è®¡/å¤æ£€è¿è¡Œå®ä¾‹ç»‘å®šåˆ°æŒ‡å®šå·¥ç«™ï¼ˆåˆ‡æ¢å·¥ç«™æˆ–åˆ·æ–°å…¶ Job åˆ—è¡¨ï¼‰
 void MainWindow::ensureStationRuntime(StationCfg* config)
 {
-    // ÏÈÍ£ÔËĞĞÌ¬¶à¹¤Õ¾Ñ­»·²¢ÅÅ¿ÕÏß³Ì³Ø£¬½ûÖ¹ tick/ÊÔÅÜÓë rebuild ²¢·¢
+    // å…ˆåœè¿è¡Œæ€å¤šå·¥ç«™å¾ªç¯å¹¶æ’ç©ºçº¿ç¨‹æ± ï¼Œç¦æ­¢ tick/è¯•è·‘ä¸ rebuild å¹¶å‘
     const bool wasLive = isRuntimeLive();
     clearLiveStations();
     m_running = false;
@@ -665,7 +670,7 @@ void MainWindow::ensureStationRuntime(StationCfg* config)
 
     const QString id = qs(config->id);
     if (m_station && m_boundStationId == id) {
-        // ÒÑÍ£Ñ­»·ÇÒ³Ø¿ÕÏĞ£ºÖØ°óÖ¸Õë²¢ÖØ½¨ Job£¨¸²¸Ç stations À©ÈİÓëÁ÷³ÌÔöÉ¾£©
+        // å·²åœå¾ªç¯ä¸”æ± ç©ºé—²ï¼šé‡ç»‘æŒ‡é’ˆå¹¶é‡å»º Jobï¼ˆè¦†ç›– stations æ‰©å®¹ä¸æµç¨‹å¢åˆ ï¼‰
         m_station->rebindConfig(config);
     } else {
         if (m_station) {
@@ -689,7 +694,7 @@ void MainWindow::ensureStationRuntime(StationCfg* config)
     }
 }
 
-// ÊÇ·ñÓĞÔËĞĞÌ¬Ñ­»·ÔÚÅÜ
+// æ˜¯å¦æœ‰è¿è¡Œæ€å¾ªç¯åœ¨è·‘
 bool MainWindow::isRuntimeLive() const
 {
     if (m_running) {
@@ -703,10 +708,10 @@ bool MainWindow::isRuntimeLive() const
     return false;
 }
 
-// Í£Ö¹²¢ÊÍ·ÅÈ«²¿ÔËĞĞÌ¬¹¤Õ¾²Û£¨ÏÈ°Ñ²úÁ¿Ğ´ÈëÀÛ¼Æ±í£©
+// åœæ­¢å¹¶é‡Šæ”¾å…¨éƒ¨è¿è¡Œæ€å·¥ç«™æ§½ï¼ˆå…ˆæŠŠäº§é‡å†™å…¥ç´¯è®¡è¡¨ï¼‰
 void MainWindow::clearLiveStations()
 {
-    // ÏÈÈ«²¿ÖÃÍ££¬±ÜÃâ join Ê±¼ì²âÏß³Ì»¹ÔÚÍù¹²Ïí³ØÈû UI Ô¤×ª»»
+    // å…ˆå…¨éƒ¨ç½®åœï¼Œé¿å… join æ—¶æ£€æµ‹çº¿ç¨‹è¿˜åœ¨å¾€å…±äº«æ± å¡ UI é¢„è½¬æ¢
     for (size_t i = 0; i < m_live.size(); ++i) {
         if (m_live[i]) {
             storeProdFromSlot(m_live[i]);
@@ -735,7 +740,7 @@ void MainWindow::clearLiveStations()
     m_live.clear();
 }
 
-// ´ÓÀÛ¼Æ±í»Ö¸´²ÛÄÚ²úÁ¿
+// ä»ç´¯è®¡è¡¨æ¢å¤æ§½å†…äº§é‡
 void MainWindow::restoreProdToSlot(LiveStationSlot* slot)
 {
     if (!slot) {
@@ -751,7 +756,7 @@ void MainWindow::restoreProdToSlot(LiveStationSlot* slot)
     slot->fail = it.value().fail;
 }
 
-// °Ñ²ÛÄÚ²úÁ¿Ğ´»ØÀÛ¼Æ±í
+// æŠŠæ§½å†…äº§é‡å†™å›ç´¯è®¡è¡¨
 void MainWindow::storeProdFromSlot(const LiveStationSlot* slot)
 {
     if (!slot || slot->stationId.isNull()) {
@@ -763,13 +768,13 @@ void MainWindow::storeProdFromSlot(const LiveStationSlot* slot)
     a.fail = slot->fail;
 }
 
-// ÇåÁãÀÛ¼Æ²úÁ¿
+// æ¸…é›¶ç´¯è®¡äº§é‡
 void MainWindow::clearProdAccum()
 {
     m_prodAccum.clear();
 }
 
-// °Ñ live ÊµÀıÖØĞÂ¹Òµ½ÔËĞĞ¿ÇÃæ°å
+// æŠŠ live å®ä¾‹é‡æ–°æŒ‚åˆ°è¿è¡Œå£³é¢æ¿
 void MainWindow::rebindLivePanels()
 {
     if (!m_runtime) {
@@ -783,7 +788,7 @@ void MainWindow::rebindLivePanels()
     }
 }
 
-// ³É¹¦´ò¿ª»ò±£´æºó¼ÇÏÂÂ·¾¶
+// æˆåŠŸæ‰“å¼€æˆ–ä¿å­˜åè®°ä¸‹è·¯å¾„
 void MainWindow::rememberSolutionPath()
 {
     if (!m_session || m_sol.filePath.empty()) {
@@ -793,7 +798,7 @@ void MainWindow::rememberSolutionPath()
     VisionCfgMgr::saveSettings(m_session->settings());
 }
 
-// Æô¶¯Ê±³¢ÊÔÉÏ´Î·½°¸£»Ê§°ÜÌáÊ¾£¬Ö÷´°ÕÕ³£´ò¿ª
+// å¯åŠ¨æ—¶å°è¯•ä¸Šæ¬¡æ–¹æ¡ˆï¼›å¤±è´¥æç¤ºï¼Œä¸»çª—ç…§å¸¸æ‰“å¼€
 void MainWindow::tryLastSolution()
 {
     const std::string p = m_session->settings().lastSolutionPath;
@@ -807,16 +812,16 @@ void MainWindow::tryLastSolution()
         return;
     }
     QMessageBox box(this);
-    box.setWindowTitle(T("ÉÏ´Î·½°¸"));
-    box.setText(T("ÎŞ·¨´ò¿ªÉÏ´Î·½°¸£º") + qs(p) + QLatin1String("\n") + qs(err)
-                + QLatin1String("\n") + T("Èí¼ş½«¼ÌĞø´ò¿ª¡£"));
-    QPushButton* blank = box.addButton(T("¿Õ°×·½°¸"), QMessageBox::AcceptRole);
-    QPushButton* pick = box.addButton(T("ÁíÑ¡ÎÄ¼ş"), QMessageBox::ActionRole);
-    box.addButton(T("ºöÂÔ"), QMessageBox::RejectRole);
+    box.setWindowTitle(T("ä¸Šæ¬¡æ–¹æ¡ˆ"));
+    box.setText(T("æ— æ³•æ‰“å¼€ä¸Šæ¬¡æ–¹æ¡ˆï¼š") + qs(p) + QLatin1String("\n") + qs(err)
+                + QLatin1String("\n") + T("è½¯ä»¶å°†ç»§ç»­æ‰“å¼€ã€‚"));
+    QPushButton* blank = box.addButton(T("ç©ºç™½æ–¹æ¡ˆ"), QMessageBox::AcceptRole);
+    QPushButton* pick = box.addButton(T("å¦é€‰æ–‡ä»¶"), QMessageBox::ActionRole);
+    box.addButton(T("å¿½ç•¥"), QMessageBox::RejectRole);
     box.exec();
     if (box.clickedButton() == pick) {
-        const QString np = QFileDialog::getOpenFileName(this, T("´ò¿ª·½°¸"), qs(AppPaths::solutionsDir()),
-                                                       T("·½°¸ (*.vpsol);;ËùÓĞÎÄ¼ş (*.*)"));
+        const QString np = QFileDialog::getOpenFileName(this, T("æ‰“å¼€æ–¹æ¡ˆ"), qs(AppPaths::solutionsDir()),
+                                                       T("æ–¹æ¡ˆ (*.vpsol);;æ‰€æœ‰æ–‡ä»¶ (*.*)"));
         if (!np.isEmpty()) {
             std::string e2;
             if (VisionCfgMgr::loadSolution(ss(np), &m_sol, &e2)) {
@@ -824,7 +829,7 @@ void MainWindow::tryLastSolution()
                 applyLoadedSolution();
                 return;
             }
-            QMessageBox::warning(this, T("´ò¿ªÊ§°Ü"), qs(e2));
+            QMessageBox::warning(this, T("æ‰“å¼€å¤±è´¥"), qs(e2));
         }
     }
     m_sol = Solution::makeEmpty();
@@ -835,24 +840,24 @@ void MainWindow::tryLastSolution()
     applyLoadedSolution();
 }
 
-// ´ò¿ª·½°¸ÎÄ¼ş²¢Ë¢ĞÂÉè¼ÆÊ÷
+// æ‰“å¼€æ–¹æ¡ˆæ–‡ä»¶å¹¶åˆ·æ–°è®¾è®¡æ ‘
 void MainWindow::openSolution()
 {
     if (!m_session->has(PermRuntimeSwitchSolution) && m_mode == ModeRuntime) {
-        QMessageBox::warning(this, T("È¨ÏŞ"), T("µ±Ç°ÓÃ»§²»ÄÜÇĞ»»·½°¸¡£"));
+        QMessageBox::warning(this, T("æƒé™"), T("å½“å‰ç”¨æˆ·ä¸èƒ½åˆ‡æ¢æ–¹æ¡ˆã€‚"));
         return;
     }
     if (!confirmSave()) {
         return;
     }
-    const QString p = QFileDialog::getOpenFileName(this, T("´ò¿ª·½°¸"), qs(AppPaths::solutionsDir()),
-                                                   T("·½°¸ (*.vpsol);;ËùÓĞÎÄ¼ş (*.*)"));
+    const QString p = QFileDialog::getOpenFileName(this, T("æ‰“å¼€æ–¹æ¡ˆ"), qs(AppPaths::solutionsDir()),
+                                                   T("æ–¹æ¡ˆ (*.vpsol);;æ‰€æœ‰æ–‡ä»¶ (*.*)"));
     if (p.isEmpty()) {
         return;
     }
     std::string err;
     if (!VisionCfgMgr::loadSolution(ss(p), &m_sol, &err)) {
-        QMessageBox::warning(this, T("´ò¿ªÊ§°Ü"), qs(err));
+        QMessageBox::warning(this, T("æ‰“å¼€å¤±è´¥"), qs(err));
         return;
     }
     auditLog("load_solution", m_session->user().loginName, ss(p));
@@ -860,20 +865,20 @@ void MainWindow::openSolution()
     applyLoadedSolution();
 }
 
-// ¼ÇÏÂµ±Ç°¿É´æÅÌÄÚÈİ£¬×÷ÎªÎ´¸Ä¶¯»ùÏß
+// è®°ä¸‹å½“å‰å¯å­˜ç›˜å†…å®¹ï¼Œä½œä¸ºæœªæ”¹åŠ¨åŸºçº¿
 void MainWindow::capturePersistBase()
 {
     m_persistBase = VisionCfgMgr::persistFingerprint(m_sol);
     m_sol.dirty = false;
 }
 
-// ÓÃ¿É´æÅÌÄÚÈİ¶ÔÕÕ»ùÏß£¬Ë¢ĞÂ dirty
+// ç”¨å¯å­˜ç›˜å†…å®¹å¯¹ç…§åŸºçº¿ï¼Œåˆ·æ–° dirty
 void MainWindow::syncDirty()
 {
     m_sol.dirty = VisionCfgMgr::persistFingerprint(m_sol) != m_persistBase;
 }
 
-// ¼ÇÂ¼±£´æÕßÓëÊ±¼ä£¬Çå³ıÔà±ê¼Ç²¢Ğ´Éó¼Æ
+// è®°å½•ä¿å­˜è€…ä¸æ—¶é—´ï¼Œæ¸…é™¤è„æ ‡è®°å¹¶å†™å®¡è®¡
 void MainWindow::markSaved()
 {
     m_sol.lastSavedById = m_session->user().id;
@@ -883,11 +888,11 @@ void MainWindow::markSaved()
     auditLog("save_solution", m_session->user().loginName, m_sol.filePath);
 }
 
-// ±£´æµ½ÒÑÓĞÂ·¾¶£¬ÎŞÂ·¾¶ÔòÁí´æ
+// ä¿å­˜åˆ°å·²æœ‰è·¯å¾„ï¼Œæ— è·¯å¾„åˆ™å¦å­˜
 void MainWindow::saveSolutionFile()
 {
     if (!m_session->has(PermEditSolution)) {
-        QMessageBox::warning(this, T("È¨ÏŞ"), T("Ã»ÓĞ±£´æÅä·½È¨ÏŞ¡£"));
+        QMessageBox::warning(this, T("æƒé™"), T("æ²¡æœ‰ä¿å­˜é…æ–¹æƒé™ã€‚"));
         return;
     }
     if (m_sol.filePath.empty()) {
@@ -897,7 +902,7 @@ void MainWindow::saveSolutionFile()
     std::string err;
     markSaved();
     if (!VisionCfgMgr::saveSolution(m_sol, &err)) {
-        QMessageBox::warning(this, T("±£´æÊ§°Ü"), qs(err));
+        QMessageBox::warning(this, T("ä¿å­˜å¤±è´¥"), qs(err));
         syncDirty();
         return;
     }
@@ -908,17 +913,17 @@ void MainWindow::saveSolutionFile()
     }
     rememberSolutionPath();
     capturePersistBase();
-    m_design->appendLog(T("ÒÑ±£´æ ") + qs(m_sol.filePath));
+    m_design->appendLog(T("å·²ä¿å­˜ ") + qs(m_sol.filePath));
 }
 
-// ÁíÑ¡Â·¾¶ºó±£´æ£¬²¢¾¡Á¿¿½±´¾É vpdata
+// å¦é€‰è·¯å¾„åä¿å­˜ï¼Œå¹¶å°½é‡æ‹·è´æ—§ vpdata
 void MainWindow::saveSolutionAs()
 {
     if (!m_session->has(PermEditSolution)) {
         return;
     }
-    const QString p = QFileDialog::getSaveFileName(this, T("Áí´æ·½°¸"), qs(AppPaths::solutionsDir()) + QLatin1String("/solution.vpsol"),
-                                                   T("·½°¸ (*.vpsol)"));
+    const QString p = QFileDialog::getSaveFileName(this, T("å¦å­˜æ–¹æ¡ˆ"), qs(AppPaths::solutionsDir()) + QLatin1String("/solution.vpsol"),
+                                                   T("æ–¹æ¡ˆ (*.vpsol)"));
     if (p.isEmpty()) {
         return;
     }
@@ -932,19 +937,19 @@ void MainWindow::saveSolutionAs()
     const std::string newData = solutionDataRootFromFile(m_sol.filePath);
     if (!oldData.empty() && !newData.empty() && oldData != newData) {
         if (!copyDirectoryRecursive(oldData, newData)) {
-            m_design->appendLog(T("¾¯¸æ£º¹¤¾ßÊı¾İÄ¿Â¼¿½±´Î´ÍêÈ«³É¹¦"));
+            m_design->appendLog(T("è­¦å‘Šï¼šå·¥å…·æ•°æ®ç›®å½•æ‹·è´æœªå®Œå…¨æˆåŠŸ"));
         }
     }
 }
 
-// Ôà·½°¸Ñ¯ÎÊÊÇ·ñ±£´æ£¬È¡ÏûÔòÖĞÖ¹ºóĞø²Ù×÷
+// è„æ–¹æ¡ˆè¯¢é—®æ˜¯å¦ä¿å­˜ï¼Œå–æ¶ˆåˆ™ä¸­æ­¢åç»­æ“ä½œ
 bool MainWindow::confirmSave()
 {
     syncDirty();
     if (!m_sol.dirty) {
         return true;
     }
-    const int r = QMessageBox::question(this, T("Î´±£´æ"), T("·½°¸ÒÑĞŞ¸Ä£¬ÊÇ·ñ±£´æ£¿"),
+    const int r = QMessageBox::question(this, T("æœªä¿å­˜"), T("æ–¹æ¡ˆå·²ä¿®æ”¹ï¼Œæ˜¯å¦ä¿å­˜ï¼Ÿ"),
                                         QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
     if (r == QMessageBox::Cancel) {
         return false;
@@ -956,38 +961,38 @@ bool MainWindow::confirmSave()
     return true;
 }
 
-// ´ò¿ªÍ¼Ïñµ½µ±Ç°Ä£Ê½µÄÍ¼Ïñ´°
+// æ‰“å¼€å›¾åƒåˆ°å½“å‰æ¨¡å¼çš„å›¾åƒçª—
 void MainWindow::openImage()
 {
-    const QString p = QFileDialog::getOpenFileName(this, T("´ò¿ªÍ¼Ïñ"), QString(),
-                                                   T("Í¼Ïñ (*.png *.bmp *.jpg *.jpeg *.tif);;ËùÓĞÎÄ¼ş (*.*)"));
+    const QString p = QFileDialog::getOpenFileName(this, T("æ‰“å¼€å›¾åƒ"), QString(),
+                                                   T("å›¾åƒ (*.png *.bmp *.jpg *.jpeg *.tif);;æ‰€æœ‰æ–‡ä»¶ (*.*)"));
     if (p.isEmpty()) {
         return;
     }
     QImage img(p);
     if (img.isNull()) {
-        QMessageBox::warning(this, T("Í¼Ïñ"), T("ÎŞ·¨´ò¿ª¡£"));
+        QMessageBox::warning(this, T("å›¾åƒ"), T("æ— æ³•æ‰“å¼€ã€‚"));
         return;
     }
     HsCtrl::HsImageWindow* w = (m_mode == ModeRuntime) ? m_runtime->imageWindow() : m_design->imageWindow();
     applyFrame(w, fromQImage(img, 1));
     w->fitToWindow();
-    m_design->appendLog(T("´ò¿ªÍ¼Ïñ ") + p);
+    m_design->appendLog(T("æ‰“å¼€å›¾åƒ ") + p);
 }
 
-// Éè¼ÆÌ¬¿ì½İĞÂ½¨¹¤Õ¾
+// è®¾è®¡æ€å¿«æ·æ–°å»ºå·¥ç«™
 void MainWindow::newStation()
 {
     if (!ensureDesignAccess()) {
         return;
     }
     if (!m_session->has(PermEditSolution)) {
-        QMessageBox::warning(this, T("È¨ÏŞ"), T("µ±Ç°ÓÃ»§²»ÄÜ±à¼­·½°¸¡£"));
+        QMessageBox::warning(this, T("æƒé™"), T("å½“å‰ç”¨æˆ·ä¸èƒ½ç¼–è¾‘æ–¹æ¡ˆã€‚"));
         return;
     }
     StationCfg st;
     st.id = ObjectId::create();
-    st.name = std::string(Translate::tr("ĞÂ¹¤Õ¾"));
+    st.name = std::string(Translate::tr("æ–°å·¥ç«™"));
     char codeBuf[32];
     sprintf_s(codeBuf, "ST-%02d", static_cast<int>(m_sol.stations.size()) + 1);
     st.stationCode = std::string(codeBuf);
@@ -999,18 +1004,18 @@ void MainWindow::newStation()
     }
     updateTitle();
     if (m_design) {
-        m_design->appendLog(T("ÒÑĞÂ½¨¹¤Õ¾ ") + qs(st.name));
+        m_design->appendLog(T("å·²æ–°å»ºå·¥ç«™ ") + qs(st.name));
     }
 }
 
-// Éè¼ÆÌ¬¿ì½İĞÂ½¨Á÷³Ì£¨¹Òµ½µ±Ç°¹¤Õ¾£©
+// è®¾è®¡æ€å¿«æ·æ–°å»ºæµç¨‹ï¼ˆæŒ‚åˆ°å½“å‰å·¥ç«™ï¼‰
 void MainWindow::newJob()
 {
     if (!ensureDesignAccess()) {
         return;
     }
     if (!m_session->has(PermEditSolution)) {
-        QMessageBox::warning(this, T("È¨ÏŞ"), T("µ±Ç°ÓÃ»§²»ÄÜ±à¼­·½°¸¡£"));
+        QMessageBox::warning(this, T("æƒé™"), T("å½“å‰ç”¨æˆ·ä¸èƒ½ç¼–è¾‘æ–¹æ¡ˆã€‚"));
         return;
     }
     QString sid;
@@ -1022,7 +1027,7 @@ void MainWindow::newJob()
         st = m_sol.primaryStation();
     }
     if (!st) {
-        QMessageBox::information(this, T("ĞÂ½¨Á÷³Ì"), T("ÇëÏÈĞÂ½¨¹¤Õ¾¡£"));
+        QMessageBox::information(this, T("æ–°å»ºæµç¨‹"), T("è¯·å…ˆæ–°å»ºå·¥ç«™ã€‚"));
         return;
     }
     JobCfg j;
@@ -1032,7 +1037,7 @@ void MainWindow::newJob()
     sprintf_s(jobBuf, "JobCfg%d", j.order);
     j.name = std::string(jobBuf);
     j.root.id = ObjectId::create();
-    j.trigger = TriggerLoop;
+    j.execMode = ExecActive;
     j.root.kind = GroupSequence;
     st->jobs.push_back(j);
     m_sol.dirty = true;
@@ -1042,11 +1047,11 @@ void MainWindow::newJob()
     }
     updateTitle();
     if (m_design) {
-        m_design->appendLog(T("ÒÑĞÂ½¨Á÷³Ì ") + qs(j.name));
+        m_design->appendLog(T("å·²æ–°å»ºæµç¨‹ ") + qs(j.name));
     }
 }
 
-// ´ò¿ª¹¤Õ¾¹ÜÀí¶Ô»°¿ò
+// æ‰“å¼€å·¥ç«™ç®¡ç†å¯¹è¯æ¡†
 void MainWindow::openStations()
 {
     if (m_mode == ModeDesign && !ensureDesignAccess()) {
@@ -1056,7 +1061,7 @@ void MainWindow::openStations()
     connect(&dlg, SIGNAL(openStationRequested(QString)), this, SLOT(onStation(QString)));
     connect(&dlg, SIGNAL(openJobRequested(QString)), this, SLOT(onJob(QString)));
     dlg.exec();
-    // ÓÅÏÈ±£³ÖÉè¼ÆÇøµ±Ç°Á÷³ÌËùÊô¹¤Õ¾£¬·ñÔò»ØÂäÖ÷¹¤Õ¾
+    // ä¼˜å…ˆä¿æŒè®¾è®¡åŒºå½“å‰æµç¨‹æ‰€å±å·¥ç«™ï¼Œå¦åˆ™å›è½ä¸»å·¥ç«™
     StationCfg* prefer = nullptr;
     if (m_design && !m_design->currentJobId().isEmpty()) {
         prefer = m_sol.findStationCfgOfJob(oid(m_design->currentJobId()));
@@ -1069,11 +1074,11 @@ void MainWindow::openStations()
     updateTitle();
 }
 
-// ´ò¿ªÉè±¸¹ÜÀí¶Ô»°¿ò
+// æ‰“å¼€è®¾å¤‡ç®¡ç†å¯¹è¯æ¡†
 
-// ´ò¿ª±ê¶¨¹ÜÀí
+// æ‰“å¼€æ ‡å®šç®¡ç†
 
-// ´ò¿ª¹¤¾ß¿â¹ÜÀí
+// æ‰“å¼€å·¥å…·åº“ç®¡ç†
 void MainWindow::openToolLib()
 {
     ToolLibDlg dlg(this);
@@ -1084,7 +1089,7 @@ void MainWindow::openToolLib()
 }
 void MainWindow::openCalib()
 {
-    if (!ensurePerm(PermEditSolution, T("µ±Ç°ÓÃ»§²»ÄÜ±à¼­±ê¶¨¡£"))) {
+    if (!ensurePerm(PermEditSolution, T("å½“å‰ç”¨æˆ·ä¸èƒ½ç¼–è¾‘æ ‡å®šã€‚"))) {
         return;
     }
     CalibMgr::instance().setSolutionDir(pathDirName(m_sol.filePath));
@@ -1102,7 +1107,7 @@ void MainWindow::openDevices()
     m_design->reloadTree();
 }
 
-// ´ò¿ªÍ¨ĞÅ¹ÜÀí¶Ô»°¿ò
+// æ‰“å¼€é€šä¿¡ç®¡ç†å¯¹è¯æ¡†
 void MainWindow::openComm()
 {
     if (m_mode == ModeDesign && !ensureDesignAccess()) {
@@ -1112,31 +1117,31 @@ void MainWindow::openComm()
     dlg.exec();
 }
 
-// ´ò¿ª¹¤Õ¾ÅäÖÃ
+// æ‰“å¼€å·¥ç«™é…ç½®
 void MainWindow::onStation(const QString& id)
 {
     openStationDlg(id);
 }
 
-// ´ò¿ªÉè±¸ÅäÖÃ
+// æ‰“å¼€è®¾å¤‡é…ç½®
 void MainWindow::onDevice(const QString& id)
 {
     openDeviceDlg(id);
 }
 
-// ´ò¿ªÁ÷³ÌÅäÖÃ
+// æ‰“å¼€æµç¨‹é…ç½®
 void MainWindow::onJob(const QString& id)
 {
     showJobDlg(id);
 }
 
-// Ñ¡ÖĞ¹¤¾ßÊ±ÈôÓĞ»º´æ½á¹ûÔòÏÔÊ¾
+// é€‰ä¸­å·¥å…·æ—¶è‹¥æœ‰ç¼“å­˜ç»“æœåˆ™æ˜¾ç¤º
 void MainWindow::onTool(const QString&)
 {
     m_design->syncToolView(true);
 }
 
-// µ¯³ö¹¤Õ¾ÅäÖÃ¶Ô»°¿ò
+// å¼¹å‡ºå·¥ç«™é…ç½®å¯¹è¯æ¡†
 void MainWindow::openStationDlg(const QString& id)
 {
     StationDlg dlg(m_session, &m_sol, id, this);
@@ -1147,7 +1152,7 @@ void MainWindow::openStationDlg(const QString& id)
     updateTitle();
 }
 
-// µ¯³öÉè±¸ÅäÖÃ¶Ô»°¿ò
+// å¼¹å‡ºè®¾å¤‡é…ç½®å¯¹è¯æ¡†
 void MainWindow::openDeviceDlg(const QString& id)
 {
     DeviceDlg dlg(m_session, &m_sol, id, this);
@@ -1155,7 +1160,7 @@ void MainWindow::openDeviceDlg(const QString& id)
     m_design->reloadTree();
 }
 
-// µ¯³öÁ÷³ÌÅäÖÃ¶Ô»°¿ò
+// å¼¹å‡ºæµç¨‹é…ç½®å¯¹è¯æ¡†
 void MainWindow::showJobDlg(const QString& jobId)
 {
     JobCfg* config = m_sol.findJobConfig(oid(jobId));
@@ -1174,10 +1179,10 @@ void MainWindow::showJobDlg(const QString& jobId)
     m_design->reloadTree();
 }
 
-// ÓÃ»§¹ÜÀí£¨Ğè¹ÜÀíÓÃ»§È¨ÏŞ£©
+// ç”¨æˆ·ç®¡ç†ï¼ˆéœ€ç®¡ç†ç”¨æˆ·æƒé™ï¼‰
 void MainWindow::openUsers()
 {
-    if (!ensurePerm(PermManageUsers, T("½öÓĞÓÃ»§¹ÜÀíÈ¨ÏŞµÄÕË»§¿É´ò¿ª¡£"))) {
+    if (!ensurePerm(PermManageUsers, T("ä»…æœ‰ç”¨æˆ·ç®¡ç†æƒé™çš„è´¦æˆ·å¯æ‰“å¼€ã€‚"))) {
         return;
     }
     UserMgrDlg dlg(m_session, this);
@@ -1185,10 +1190,10 @@ void MainWindow::openUsers()
     onUserChanged();
 }
 
-// ¿Ø¼şÈ¨ÏŞ£¨ĞèÏµÍ³ÉèÖÃÈ¨ÏŞ£©
+// æ§ä»¶æƒé™ï¼ˆéœ€ç³»ç»Ÿè®¾ç½®æƒé™ï¼‰
 void MainWindow::openPerms()
 {
-    if (!ensurePerm(PermEditAppSettings, T("½ö¹ÜÀíÔ±¿É¸Ä¿Ø¼şÈ¨ÏŞ¡£"))) {
+    if (!ensurePerm(PermEditAppSettings, T("ä»…ç®¡ç†å‘˜å¯æ”¹æ§ä»¶æƒé™ã€‚"))) {
         return;
     }
     PermDlg dlg(m_session, this);
@@ -1196,22 +1201,22 @@ void MainWindow::openPerms()
     onUserChanged();
 }
 
-// ´ò¿ª±¾»úÉèÖÃÖĞĞÄ£¨ÎŞ±à¼­È¨Ò²¿É²é¿´Â·¾¶/¹ØÓÚ£©
+// æ‰“å¼€æœ¬æœºè®¾ç½®ä¸­å¿ƒï¼ˆæ— ç¼–è¾‘æƒä¹Ÿå¯æŸ¥çœ‹è·¯å¾„/å…³äºï¼‰
 void MainWindow::openAppSettings()
 {
     SettingsDlg dlg(m_session, this);
     dlg.exec();
 }
 
-// ÅäÖÃÔËĞĞÖ÷½çÃæ£º·½°¸¼¶¶à¹¤Õ¾²¼¾Ö + ¸÷¹¤Õ¾´°¸ñ
+// é…ç½®è¿è¡Œä¸»ç•Œé¢ï¼šæ–¹æ¡ˆçº§å¤šå·¥ç«™å¸ƒå±€ + å„å·¥ç«™çª—æ ¼
 void MainWindow::openRuntimeView()
 {
-    if (!ensurePerm(PermEditSolution, T("µ±Ç°ÓÃ»§²»ÄÜ¸ÄÔËĞĞ»­Ãæ¡£"))) {
+    if (!ensurePerm(PermEditSolution, T("å½“å‰ç”¨æˆ·ä¸èƒ½æ”¹è¿è¡Œç”»é¢ã€‚"))) {
         return;
     }
     StationCfg* st = m_sol.primaryStation();
     if (!st) {
-        QMessageBox::warning(this, T("»­ÃæÅäÖÃ"), T("ÇëÏÈÌí¼Ó¹¤Õ¾¡£"));
+        QMessageBox::warning(this, T("ç”»é¢é…ç½®"), T("è¯·å…ˆæ·»åŠ å·¥ç«™ã€‚"));
         return;
     }
     if (m_station && !m_boundStationId.isEmpty()) {
@@ -1227,7 +1232,7 @@ void MainWindow::openRuntimeView()
     syncDirty();
     m_runtime->bindContext(&m_sol, st, m_station);
     rebindLivePanels();
-    // »­ÃæÅäÖÃ»áÖØ½¨Ãæ°å£º°ÑÀÛ¼Æ²úÁ¿Ë¢»Ø
+    // ç”»é¢é…ç½®ä¼šé‡å»ºé¢æ¿ï¼šæŠŠç´¯è®¡äº§é‡åˆ·å›
     for (size_t i = 0; i < m_sol.stations.size(); ++i) {
         const ObjectId id = m_sol.stations[i].id;
         StationRuntimePanel* panel = m_runtime->panelFor(id);
@@ -1239,17 +1244,17 @@ void MainWindow::openRuntimeView()
     }
 }
 
-// ÈÕÖ¾¹Ü¿Ø£º²é¿´Ğè ViewLogs£¬É¾³ıÔÚ¶Ô»°¿òÄÚÔÙÅĞ ManageLogs
+// æ—¥å¿—ç®¡æ§ï¼šæŸ¥çœ‹éœ€ ViewLogsï¼Œåˆ é™¤åœ¨å¯¹è¯æ¡†å†…å†åˆ¤ ManageLogs
 void MainWindow::openLogs()
 {
-    if (!ensurePerm(PermViewLogs, T("µ±Ç°ÓÃ»§²»ÄÜ²é¿´ÈÕÖ¾¡£"))) {
+    if (!ensurePerm(PermViewLogs, T("å½“å‰ç”¨æˆ·ä¸èƒ½æŸ¥çœ‹æ—¥å¿—ã€‚"))) {
         return;
     }
     LogDlg dlg(m_session, this);
     dlg.exec();
 }
 
-// µ±Ç°ÓÃ»§¸Ä¿ÚÁî
+// å½“å‰ç”¨æˆ·æ”¹å£ä»¤
 void MainWindow::changePwd()
 {
     if (!m_session->isLoggedIn()) {
@@ -1259,7 +1264,7 @@ void MainWindow::changePwd()
     dlg.exec();
 }
 
-// ×¢Ïúºó¿ª·¢½×¶ÎÖ±½Ó»Øµ½¹ÜÀíÔ±
+// æ³¨é”€åå¼€å‘é˜¶æ®µç›´æ¥å›åˆ°ç®¡ç†å‘˜
 void MainWindow::logout()
 {
     m_session->logout();
@@ -1267,14 +1272,14 @@ void MainWindow::logout()
     applyMode(m_session->has(PermEnterDesign) ? ModeDesign : ModeRuntime);
 }
 
-// ¹ØÓÚ¶Ô»°¿ò
+// å…³äºå¯¹è¯æ¡†
 void MainWindow::about()
 {
     AboutDlg dlg(this);
     dlg.exec();
 }
 
-// ´ò¿ª°æ±¾ĞÅÏ¢
+// æ‰“å¼€ç‰ˆæœ¬ä¿¡æ¯
 void MainWindow::openVersionManager()
 {
     VersionDlg dlg(this);
@@ -1296,7 +1301,7 @@ void MainWindow::openComposites()
     m_design->reloadToolLib();
 }
 
-// °Ñ¹¤¾ßÊä³öËÍµ½Éè¼Æ´°£¬¿ÉÑ¡Í¬²½ÔËĞĞ´°
+// æŠŠå·¥å…·è¾“å‡ºé€åˆ°è®¾è®¡çª—ï¼Œå¯é€‰åŒæ­¥è¿è¡Œçª—
 void MainWindow::applyToolOut(const QString& toolId, const ToolOut& out, bool toRuntime)
 {
     m_design->showToolResult(toolId, out.image, qg(out.objects), &out);
@@ -1305,25 +1310,25 @@ void MainWindow::applyToolOut(const QString& toolId, const ToolOut& out, bool to
     }
 }
 
-// µ÷ÊÔÔËĞĞµ±Ç°Ñ¡ÖĞ¹¤¾ß£¨Ïß³Ì³Ø£¬²»¶Â UI£©
+// è°ƒè¯•è¿è¡Œå½“å‰é€‰ä¸­å·¥å…·ï¼ˆçº¿ç¨‹æ± ï¼Œä¸å µ UIï¼‰
 void MainWindow::runThisTool()
 {
     if (!m_session->has(PermRunJobDebug)) {
-        QMessageBox::warning(this, T("È¨ÏŞ"), T("µ±Ç°ÓÃ»§²»ÄÜµ÷ÊÔÔËĞĞ¡£"));
+        QMessageBox::warning(this, T("æƒé™"), T("å½“å‰ç”¨æˆ·ä¸èƒ½è°ƒè¯•è¿è¡Œã€‚"));
         return;
     }
     if (m_running || isRuntimeLive()) {
-        QMessageBox::warning(this, T("ÔËĞĞ"), T("¹¤Õ¾Ñ­»·ÖĞ£¬ÇëÏÈÍ£Ö¹ÔÙµ÷ÊÔ¡£"));
+        QMessageBox::warning(this, T("è¿è¡Œ"), T("å·¥ç«™å¾ªç¯ä¸­ï¼Œè¯·å…ˆåœæ­¢å†è°ƒè¯•ã€‚"));
         return;
     }
     const QString id = m_design->currentToolId();
     if (id.isEmpty()) {
-        QMessageBox::information(this, T("ÔËĞĞ"), T("ÇëÏÈÔÚ×ÊÔ´Ê÷Ñ¡ÖĞÒ»¸ö¹¤¾ß¡£"));
+        QMessageBox::information(this, T("è¿è¡Œ"), T("è¯·å…ˆåœ¨èµ„æºæ ‘é€‰ä¸­ä¸€ä¸ªå·¥å…·ã€‚"));
         return;
     }
     if (DraftRegistry::toolDraftBlocksFormalRun(oid(id))) {
-        QMessageBox::warning(this, T("ÔËĞĞ"),
-                             T("¸Ã¹¤¾ßÓĞÎ´±£´æµÄ²ÎÊıĞŞ¸Ä£¬ÇëÏÈÔÚµ÷ÊÔ´°¿ÚÖĞ±£´æºóÔÙÔËĞĞ¡£"));
+        QMessageBox::warning(this, T("è¿è¡Œ"),
+                             T("è¯¥å·¥å…·æœ‰æœªä¿å­˜çš„å‚æ•°ä¿®æ”¹ï¼Œè¯·å…ˆåœ¨è°ƒè¯•çª—å£ä¸­ä¿å­˜åå†è¿è¡Œã€‚"));
         return;
     }
     StationCfg* st = nullptr;
@@ -1331,11 +1336,11 @@ void MainWindow::runThisTool()
     ensureStationRuntime(st);
     Job* job = m_station ? m_station->findJobOfTool(oid(id)) : nullptr;
     if (!job) {
-        QMessageBox::warning(this, T("ÔËĞĞ"), T("ÕÒ²»µ½¸Ã¹¤¾ßËùÊôÁ÷³Ì¡£"));
+        QMessageBox::warning(this, T("è¿è¡Œ"), T("æ‰¾ä¸åˆ°è¯¥å·¥å…·æ‰€å±æµç¨‹ã€‚"));
         return;
     }
     if (job->isRunning()) {
-        QMessageBox::information(this, T("ÔËĞĞ"), T("¸ÃÁ÷³ÌÕıÔÚÖ´ĞĞ£¬ÇëÉÔºò¡£"));
+        QMessageBox::information(this, T("è¿è¡Œ"), T("è¯¥æµç¨‹æ­£åœ¨æ‰§è¡Œï¼Œè¯·ç¨å€™ã€‚"));
         return;
     }
     const ObjectId toolOid = oid(id);
@@ -1349,15 +1354,15 @@ void MainWindow::runThisTool()
     });
 }
 
-// µ÷ÊÔÔËĞĞµ±Ç°Á÷³Ì£¨Ö»¶Á formal£¬×èÖ¹Î´±£´æ draft£©
+// è°ƒè¯•è¿è¡Œå½“å‰æµç¨‹ï¼ˆåªè¯» formalï¼Œé˜»æ­¢æœªä¿å­˜ draftï¼‰
 void MainWindow::runThisJob()
 {
     if (!m_session->has(PermRunJobDebug)) {
-        QMessageBox::warning(this, T("È¨ÏŞ"), T("µ±Ç°ÓÃ»§²»ÄÜµ÷ÊÔÔËĞĞ¡£"));
+        QMessageBox::warning(this, T("æƒé™"), T("å½“å‰ç”¨æˆ·ä¸èƒ½è°ƒè¯•è¿è¡Œã€‚"));
         return;
     }
     if (m_running || isRuntimeLive()) {
-        QMessageBox::warning(this, T("ÔËĞĞ"), T("¹¤Õ¾Ñ­»·ÖĞ£¬ÇëÏÈÍ£Ö¹ÔÙµ÷ÊÔ¡£"));
+        QMessageBox::warning(this, T("è¿è¡Œ"), T("å·¥ç«™å¾ªç¯ä¸­ï¼Œè¯·å…ˆåœæ­¢å†è°ƒè¯•ã€‚"));
         return;
     }
     QString id = m_design->currentJobId();
@@ -1365,32 +1370,32 @@ void MainWindow::runThisJob()
         id = qs(m_sol.primaryStation()->jobs[0].id);
     }
     if (!id.isEmpty() && DraftRegistry::anyToolInJobBlocked(&m_sol, oid(id))) {
-        QMessageBox::warning(this, T("ÔËĞĞ"),
-                             T("¸ÃÁ÷³Ì»òÆä¹¤¾ßÓĞÎ´±£´æµÄĞŞ¸Ä£¬ÇëÏÈÔÚÁ÷³Ì/¹¤Õ¾ÅäÖÃÖĞ±£´æºóÔÙÔËĞĞ¡£"));
+        QMessageBox::warning(this, T("è¿è¡Œ"),
+                             T("è¯¥æµç¨‹æˆ–å…¶å·¥å…·æœ‰æœªä¿å­˜çš„ä¿®æ”¹ï¼Œè¯·å…ˆåœ¨æµç¨‹/å·¥ç«™é…ç½®ä¸­ä¿å­˜åå†è¿è¡Œã€‚"));
         return;
     }
     runJobById(id);
 }
 
-// °´ ID Òì²½ÔËĞĞÁ÷³Ì
+// æŒ‰ ID å¼‚æ­¥è¿è¡Œæµç¨‹
 void MainWindow::runJobById(const QString& jobId)
 {
     if (jobId.isEmpty()) {
-        QMessageBox::information(this, T("ÔËĞĞ"), T("Ã»ÓĞ¿ÉÔËĞĞµÄÁ÷³Ì¡£"));
+        QMessageBox::information(this, T("è¿è¡Œ"), T("æ²¡æœ‰å¯è¿è¡Œçš„æµç¨‹ã€‚"));
         return;
     }
     if (m_running || isRuntimeLive()) {
-        QMessageBox::warning(this, T("ÔËĞĞ"), T("¹¤Õ¾Ñ­»·ÖĞ£¬ÇëÏÈÍ£Ö¹ÔÙµ÷ÊÔ¡£"));
+        QMessageBox::warning(this, T("è¿è¡Œ"), T("å·¥ç«™å¾ªç¯ä¸­ï¼Œè¯·å…ˆåœæ­¢å†è°ƒè¯•ã€‚"));
         return;
     }
     ensureStationRuntime(m_sol.findStationCfgOfJob(oid(jobId)));
     Job* job = m_station ? m_station->findJob(oid(jobId)) : nullptr;
     if (!job) {
-        QMessageBox::warning(this, T("ÔËĞĞ"), T("ÕÒ²»µ½¸ÃÁ÷³ÌÔËĞĞÊµÀı¡£"));
+        QMessageBox::warning(this, T("è¿è¡Œ"), T("æ‰¾ä¸åˆ°è¯¥æµç¨‹è¿è¡Œå®ä¾‹ã€‚"));
         return;
     }
     if (job->isRunning()) {
-        QMessageBox::information(this, T("ÔËĞĞ"), T("¸ÃÁ÷³ÌÕıÔÚÖ´ĞĞ£¬ÇëÉÔºò¡£"));
+        QMessageBox::information(this, T("è¿è¡Œ"), T("è¯¥æµç¨‹æ­£åœ¨æ‰§è¡Œï¼Œè¯·ç¨å€™ã€‚"));
         return;
     }
     Solution* sol = &m_sol;
@@ -1403,7 +1408,7 @@ void MainWindow::runJobById(const QString& jobId)
     });
 }
 
-// Éè¼ÆÌ¬¹¤¾ßÅÜÍê
+// è®¾è®¡æ€å·¥å…·è·‘å®Œ
 void MainWindow::onDesignToolFinished(const QString& toolId, void* outPtr)
 {
     ToolOut* out = static_cast<ToolOut*>(outPtr);
@@ -1429,7 +1434,7 @@ void MainWindow::onDesignToolFinished(const QString& toolId, void* outPtr)
     }
 }
 
-// Éè¼ÆÌ¬Á÷³ÌÅÜÍê
+// è®¾è®¡æ€æµç¨‹è·‘å®Œ
 void MainWindow::onDesignJobFinished(const QString& jobId, void* outPtr)
 {
     ToolOut* out = static_cast<ToolOut*>(outPtr);
@@ -1456,7 +1461,7 @@ void MainWindow::onDesignJobFinished(const QString& jobId, void* outPtr)
     }
 }
 
-// ÒıÇæÈÕÖ¾Ğ´ÈëÉè¼ÆÇø
+// å¼•æ“æ—¥å¿—å†™å…¥è®¾è®¡åŒº
 void MainWindow::onEngineLog(const QString& line)
 {
     if (m_shuttingDown || !m_design) {
@@ -1465,7 +1470,7 @@ void MainWindow::onEngineLog(const QString& line)
     m_design->appendLog(line);
 }
 
-// ÔËĞĞÈÕÖ¾£º¼¶±ğÓëÏûÏ¢·ÖÁĞ
+// è¿è¡Œæ—¥å¿—ï¼šçº§åˆ«ä¸æ¶ˆæ¯åˆ†åˆ—
 void MainWindow::onEngineRunLog(const QString& level, const QString& message)
 {
     if (m_shuttingDown || !m_design) {
@@ -1474,7 +1479,7 @@ void MainWindow::onEngineRunLog(const QString& level, const QString& message)
     m_design->appendLog(level, message);
 }
 
-// ¹¤Õ¾Ñ­»·Ïß³Ì ¡ú UI£¨user Îª LiveStationSlot*£©
+// å·¥ç«™å¾ªç¯çº¿ç¨‹ â†’ UIï¼ˆuser ä¸º LiveStationSlot*ï¼‰
 void MainWindow::stationCycleThunk(void* user, const StationRunRst& result)
 {
     LiveStationSlot* slot = static_cast<LiveStationSlot*>(user);
@@ -1491,7 +1496,7 @@ void MainWindow::stationCycleThunk(void* user, const StationRunRst& result)
             ++slot->pendingFail;
         }
     }
-    // ºÏ²¢Ë¢ÆÁ£»Ô¤×ª»»ÔÚ±¾¹¤Õ¾Ïß³Ì×ö£¬²»Õ¼¼ì²âÓÃ¹²ÏíÏß³Ì³Ø£¨±ÜÃâÍ£»ú join ËÀËø£©
+    // åˆå¹¶åˆ·å±ï¼›é¢„è½¬æ¢åœ¨æœ¬å·¥ç«™çº¿ç¨‹åšï¼Œä¸å æ£€æµ‹ç”¨å…±äº«çº¿ç¨‹æ± ï¼ˆé¿å…åœæœº join æ­»é”ï¼‰
     if (!slot->uiQueued.exchange(true)) {
         MainWindow* w = slot->window;
         CycleUiPayload* heap = new CycleUiPayload();
@@ -1524,28 +1529,38 @@ void MainWindow::stationCycleThunk(void* user, const StationRunRst& result)
                                   Q_ARG(void*, heap));
     }
 }
-// Æô¶¯¸÷¹¤Õ¾Ñ­»·²¢½øÈëÔËĞĞÒ³
+// å¯åŠ¨å„å·¥ç«™å¾ªç¯å¹¶è¿›å…¥è¿è¡Œé¡µ
 void MainWindow::startStation()
 {
     if (!m_session->has(PermRuntimeStartStop)) {
-        QMessageBox::warning(this, T("È¨ÏŞ"), T("µ±Ç°ÓÃ»§²»ÄÜ¿ªÊ¼/Í£Ö¹¡£"));
+        QMessageBox::warning(this, T("æƒé™"), T("å½“å‰ç”¨æˆ·ä¸èƒ½å¼€å§‹/åœæ­¢ã€‚"));
         return;
     }
     if (isRuntimeLive()) {
         return;
     }
+    if (m_serviceRun) {
+        SharedFrames::instance().writeCommand(IpcCmdStartOwned, 0);
+        applyMode(ModeRuntime);
+        m_running = true;
+        if (m_runtime) {
+            m_runtime->setLive(true);
+            m_runtime->setLoopRunning(true);
+        }
+        return;
+    }
     if (m_designBusy > 0) {
-        QMessageBox::warning(this, T("ÔËĞĞ"), T("Éè¼Æµ÷ÊÔÈÔÔÚÖ´ĞĞ£¬ÇëÉÔºò¡£"));
+        QMessageBox::warning(this, T("è¿è¡Œ"), T("è®¾è®¡è°ƒè¯•ä»åœ¨æ‰§è¡Œï¼Œè¯·ç¨å€™ã€‚"));
         return;
     }
     if (m_sol.stations.empty()) {
-        QMessageBox::warning(this, T("ÔËĞĞ"), T("·½°¸ÀïÃ»ÓĞ¹¤Õ¾¡£"));
+        QMessageBox::warning(this, T("è¿è¡Œ"), T("æ–¹æ¡ˆé‡Œæ²¡æœ‰å·¥ç«™ã€‚"));
         return;
     }
     clearLiveStations();
     ThreadPool::shared().waitIdle();
     applyMode(ModeRuntime);
-    // ²»ÖØ½¨ÔËĞĞÃæ°å£¬±ÜÃâÍ£Ö¹ºóÔÙ¿ªÇå¿Õ»­ÃæÓë²úÁ¿
+    // ä¸é‡å»ºè¿è¡Œé¢æ¿ï¼Œé¿å…åœæ­¢åå†å¼€æ¸…ç©ºç”»é¢ä¸äº§é‡
     m_runtime->ensureHost(&m_sol);
 
     for (size_t i = 0; i < m_sol.stations.size(); ++i) {
@@ -1573,11 +1588,20 @@ void MainWindow::startStation()
     m_runtime->setLoopRunning(true);
 }
 
-// Í£Ö¹È«²¿¹¤Õ¾Ñ­»·£¨±£Áô»­ÃæÓë²úÁ¿£¬ÇåÁã²Å¸´Î»£©
+// åœæ­¢å…¨éƒ¨å·¥ç«™å¾ªç¯ï¼ˆä¿ç•™ç”»é¢ä¸äº§é‡ï¼Œæ¸…é›¶æ‰å¤ä½ï¼‰
 void MainWindow::stopStation()
 {
     if (!m_session->has(PermRuntimeStartStop)) {
-        QMessageBox::warning(this, T("È¨ÏŞ"), T("µ±Ç°ÓÃ»§²»ÄÜ¿ªÊ¼/Í£Ö¹¡£"));
+        QMessageBox::warning(this, T("æƒé™"), T("å½“å‰ç”¨æˆ·ä¸èƒ½å¼€å§‹/åœæ­¢ã€‚"));
+        return;
+    }
+    if (m_serviceRun) {
+        SharedFrames::instance().writeCommand(IpcCmdStopOwned, 0);
+        m_running = false;
+        if (m_runtime) {
+            m_runtime->setLive(false);
+            m_runtime->setLoopRunning(false);
+        }
         return;
     }
     const bool was = isRuntimeLive();
@@ -1586,7 +1610,7 @@ void MainWindow::stopStation()
         m_runtime->setLive(false);
         m_runtime->setLoopRunning(false);
     }
-    // Á¢¿Ì´ò¶ÏÑ­»·²¢¶ªµôÅÅ¶ÓÖĞµÄ UI Ô¤×ª»»£¬ÔÙ join£¨²úÁ¿Ğ´ÈëÀÛ¼Æ±í£©
+    // ç«‹åˆ»æ‰“æ–­å¾ªç¯å¹¶ä¸¢æ‰æ’é˜Ÿä¸­çš„ UI é¢„è½¬æ¢ï¼Œå† joinï¼ˆäº§é‡å†™å…¥ç´¯è®¡è¡¨ï¼‰
     for (size_t i = 0; i < m_live.size(); ++i) {
         if (m_live[i]) {
             m_live[i]->loop.requestStop();
@@ -1600,11 +1624,11 @@ void MainWindow::stopStation()
     }
     if (was) {
         auditLog("stop_station", sessionUser(m_session), std::string());
-        m_design->appendLog(T("Í£Ö¹¡£"));
+        m_design->appendLog(T("åœæ­¢ã€‚"));
     }
 }
 
-// Èí¼ş´¥·¢£º»½ĞÑËùÓĞµÈ´¥·¢µÄ¹¤Õ¾Ñ­»·£¨¸÷ÅÜÒ»ÂÖ£©
+// è½¯ä»¶è§¦å‘ï¼šå”¤é†’æ‰€æœ‰ç­‰è§¦å‘çš„å·¥ç«™å¾ªç¯ï¼ˆå„è·‘ä¸€è½®ï¼‰
 void MainWindow::pulseSoftTrigger()
 {
     if (!isRuntimeLive()) {
@@ -1617,7 +1641,7 @@ void MainWindow::pulseSoftTrigger()
     }
 }
 
-// ÔËĞĞÌ¬ÖÜÆÚ½á¹ûÉÏÆÁ£¨°´¹¤Õ¾·Ö·¢£©
+// è¿è¡Œæ€å‘¨æœŸç»“æœä¸Šå±ï¼ˆæŒ‰å·¥ç«™åˆ†å‘ï¼‰
 void MainWindow::onStationCycleFinished(void* resultPtr)
 {
     CycleUiPayload* payload = static_cast<CycleUiPayload*>(resultPtr);
@@ -1689,7 +1713,7 @@ void MainWindow::onStationCycleFinished(void* resultPtr)
             slot->uiQueued.store(false);
         }
     }
-    // ÓÃ singleShot ÈÃ³öÊÂ¼şÑ­»·£¬±£Ö¤¡¸Í£Ö¹¡¹µã»÷ÄÜ²å¶Ó´¦Àí
+    // ç”¨ singleShot è®©å‡ºäº‹ä»¶å¾ªç¯ï¼Œä¿è¯ã€Œåœæ­¢ã€ç‚¹å‡»èƒ½æ’é˜Ÿå¤„ç†
     if (again && m_running) {
         const ObjectId sid = slot->stationId;
         QTimer::singleShot(0, this, [this, sid]() {
@@ -1734,11 +1758,11 @@ void MainWindow::onStationCycleFinished(void* resultPtr)
         });
     }
 }
-// ÇåÁã²úÁ¿ÓëÔËĞĞÀúÊ·
+// æ¸…é›¶äº§é‡ä¸è¿è¡Œå†å²
 void MainWindow::resetCount()
 {
     if (!m_session->has(PermRuntimeResetCount)) {
-        QMessageBox::warning(this, T("È¨ÏŞ"), T("µ±Ç°ÓÃ»§²»ÄÜÇåÁã¡£"));
+        QMessageBox::warning(this, T("æƒé™"), T("å½“å‰ç”¨æˆ·ä¸èƒ½æ¸…é›¶ã€‚"));
         return;
     }
     for (size_t i = 0; i < m_live.size(); ++i) {
@@ -1753,12 +1777,98 @@ void MainWindow::resetCount()
     auditLog("reset_count", m_session->user().loginName, std::string());
 }
 
-// ¹Ø±ÕÇ°£ºÏÈÍ£Ïß³Ì/ÅÅ¿Õ³Ø£¬ÔÙÑ¯ÎÊ±£´æ
+void MainWindow::setResidentTray(bool on)
+{
+    m_residentTray = on;
+}
+
+void MainWindow::setServiceRun(bool on)
+{
+    m_serviceRun = on;
+    if (on && !m_previewTimer) {
+        m_previewTimer = new QTimer(this);
+        connect(m_previewTimer, SIGNAL(timeout()), this, SLOT(pullSharedPreview()));
+        m_previewTimer->start(66);
+    }
+}
+
+void MainWindow::setForceQuit(bool on)
+{
+    m_forceQuit = on;
+}
+
+void MainWindow::showRuntimePage()
+{
+    applyMode(ModeRuntime);
+}
+
+void MainWindow::pullSharedPreview()
+{
+    if (!m_serviceRun || !m_runtime) {
+        return;
+    }
+    SharedFrames& frames = SharedFrames::instance();
+    if (!isVisible()) {
+        frames.setSubscribe(false);
+        return;
+    }
+    frames.setSubscribe(true);
+    const QList<StationRuntimePanel*> panels = m_runtime->panels();
+    const int localN = frames.localCount();
+    const int remoteN = frames.remoteCount();
+    for (int i = 0; i < panels.size(); ++i) {
+        StationRuntimePanel* panel = panels.at(i);
+        if (!panel || panel->stationId().isNull()) {
+            continue;
+        }
+        const std::string sid = panel->stationId().toString();
+        IpcPreview preview;
+        bool got = false;
+        for (int k = 0; k < localN; ++k) {
+            IpcPreview one;
+            if (frames.readLocal(k, &one) && one.stationId == sid) {
+                preview = one;
+                got = true;
+            }
+        }
+        if (!got) {
+            for (int k = 0; k < remoteN; ++k) {
+                IpcPreview one;
+                if (frames.readRemote(k, &one) && one.stationId == sid) {
+                    preview = one;
+                    got = true;
+                }
+            }
+        }
+        if (!got || preview.jpeg.empty()) {
+            continue;
+        }
+        QImage img;
+        if (!img.loadFromData(preview.jpeg.data(), static_cast<int>(preview.jpeg.size()), "JPEG")) {
+            continue;
+        }
+        img = img.convertToFormat(QImage::Format_RGB888);
+        const HsCommData::HsImage hs = HsCommData::HsImage::fromRaw(
+            img.constBits(), img.width(), img.height(), img.bytesPerLine(), "rgb8", 0);
+        QVector<HsCommData::Graphic> overlay;
+        panel->setRunImages(hs, hs, overlay);
+        panel->setCounts(preview.total, preview.pass, preview.fail, preview.cycleMs);
+        panel->setLastOk(preview.ok);
+    }
+}
+
+// å…³é—­å‰ï¼šæ‰˜ç›˜æ¨¡å¼åªè—çª—å£ã€‚çœŸæ­£é€€å‡ºæ‰åœçº¿ç¨‹å¹¶è¯¢é—®ä¿å­˜
 void MainWindow::closeEvent(QCloseEvent* e)
 {
+    if (m_residentTray && !m_forceQuit) {
+        SharedFrames::instance().setSubscribe(false);
+        hide();
+        e->ignore();
+        return;
+    }
     shutdownRuntime();
     if (!confirmSave()) {
-        // ÓÃ»§È¡ÏûÍË³ö£º»Ö¸´½ÓÊÜĞÂÈÎÎñ£¨¹¤Õ¾Ñ­»·ĞèÊÖ¶¯ÔÙ¿ª£©
+        // ç”¨æˆ·å–æ¶ˆé€€å‡ºï¼šæ¢å¤æ¥å—æ–°ä»»åŠ¡ï¼ˆå·¥ç«™å¾ªç¯éœ€æ‰‹åŠ¨å†å¼€ï¼‰
         m_shuttingDown = false;
         ThreadPool::shared().setAccepting(true);
         m_runLogHub.addSink(this);

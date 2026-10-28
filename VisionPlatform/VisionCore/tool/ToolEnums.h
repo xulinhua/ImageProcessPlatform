@@ -1,6 +1,6 @@
 /**
  * @file ToolEnums.h
- * @brief ToolEnumsÍ·ÎÄ¼ş
+ * @brief ToolEnumså¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -15,50 +15,66 @@
 
 namespace Vision {
 
-/** @brief ¹¤¾ßÏä·Ö×é£¨ÀàĞÍ²å¼ş´óÀà£¬²»ÊÇ¾ßÌå¹¤¾ßÊµÀı£© */
+/** @brief å·¥å…·ç®±åˆ†ç»„ï¼ˆç±»å‹æ’ä»¶å¤§ç±»ï¼Œä¸æ˜¯å…·ä½“å·¥å…·å®ä¾‹ï¼‰ */
 enum class ToolType {
-    Undefined = -1, ///< Î´¶¨Òå
-    Acquire = 0,     ///< ²É¼¯
-    Preprocess,     ///< Ô¤´¦Àí
-    Locate,         ///< ¶¨Î»
-    Detect,         ///< ¼ì²â
-    Logic,          ///< Âß¼­
-    Comm,           ///< Í¨ĞÅ
-    RstProcess,  ///< ½á¹û´¦Àí
-    Calib,           ///< ±ê¶¨
-    Max ///< ¸öÊı£¬²»ÊÇºÏ·¨Öµ
+    Undefined = -1, ///< æœªå®šä¹‰
+    Acquire = 0,     ///< é‡‡é›†
+    Preprocess,     ///< é¢„å¤„ç†
+    Locate,         ///< å®šä½
+    Detect,         ///< æ£€æµ‹
+    Logic,          ///< é€»è¾‘
+    Comm,           ///< é€šä¿¡
+    RstProcess,  ///< ç»“æœå¤„ç†
+    Calib,           ///< æ ‡å®š
+    Acquire3D,      ///< ä¸‰ç»´é‡‡é›†ã€‚ç‚¹äº‘ã€ä¸‰ç»´ä½å§¿ã€ä¸‰ç»´å½¢çŠ¶
+    Prepare3D,      ///< ç‚¹äº‘é¢„å¤„ç†
+    Measure3D,      ///< ä¸‰ç»´æµ‹é‡
+    Align3D,        ///< ä¸‰ç»´é…å‡†
+    Infer,          ///< æ·±åº¦å­¦ä¹ æ¨ç†
+    Max ///< ä¸ªæ•°ï¼Œä¸æ˜¯åˆæ³•å€¼
 };
 
-/** @brief ×ª´æÅÌ/ÏÂ±êÓÃµÄÕûÊı */
+/** @brief è½¬å­˜ç›˜/ä¸‹æ ‡ç”¨çš„æ•´æ•° */
 VISION_TOOL_API int toolTypeToInt(ToolType t);
-/** @brief ¹¤¾ßÀàĞÍÖÖÊı */
+/** @brief å·¥å…·ç±»å‹ç§æ•° */
 VISION_TOOL_API int toolTypeCount();
-/** @brief ÕûÊı×ªÀàĞÍ£»Ô½½ç»Ø²É¼¯ */
+/** @brief æ•´æ•°è½¬ç±»å‹ï¼›è¶Šç•Œå›é‡‡é›† */
 VISION_TOOL_API ToolType toolTypeFromInt(int v);
-/** @brief ¹¤¾ß¿âÕ¹Ê¾Ë³Ğò */
+/** @brief å·¥å…·åº“å±•ç¤ºé¡ºåº */
 VISION_TOOL_API ToolType toolTypeDisplayAt(int i);
-/** @brief ¹¤¾ßÀàĞÍ½çÃæÏÔÊ¾Ãû */
+/** @brief å·¥å…·åº“å±•ç¤ºé¡ºåºçš„é•¿åº¦ã€‚ç©ºå¤§ç±»ä¸åœ¨é‡Œé¢ */
+VISION_TOOL_API int toolTypeDisplayCount();
+/** @brief å·¥å…·ç±»å‹ç•Œé¢æ˜¾ç¤ºå */
 VISION_TOOL_API std::string toolTypeTitle(ToolType t);
-/** @brief ¶Ë¿ÚÊı¾İÀàĞÍ½çÃæÏÔÊ¾Ãû */
+/** @brief ç«¯å£æ•°æ®ç±»å‹ç•Œé¢æ˜¾ç¤ºå */
 VISION_TOOL_API std::string portDataTitle(PortData d);
 
-/** @brief µ×Í¼ºòÑ¡£º²É¼¯¡¢Ô¤´¦ÀíºÍ±ê¶¨£¨ÓĞ¶ÀÁ¢Êä³öÍ¼Ïñ£© */
+/** @brief åº•å›¾å€™é€‰ï¼šé‡‡é›†ã€é¢„å¤„ç†å’Œæ ‡å®šï¼ˆæœ‰ç‹¬ç«‹è¾“å‡ºå›¾åƒï¼‰ */
 inline bool toolTypeIsImageSource(ToolType t)
 {
     return t == ToolType::Acquire || t == ToolType::Preprocess || t == ToolType::Calib;
 }
 
-/** @brief µş¼ÓºòÑ¡£º¶¨Î»¡¢¼ì²â¡¢½á¹û´¦Àí */
-inline bool toolTypeIsOverlaySource(ToolType t)
+/** @brief ä¸‰ç»´é‡‡é›†ã€‚ä¸èµ°å›¾åƒç›¸æœºçš„è®¾å¤‡è·¯å¾„å’Œå¸§å· */
+inline bool toolTypeIsAcquire3D(ToolType t)
 {
-    return t == ToolType::Locate || t == ToolType::Detect || t == ToolType::RstProcess;
+    return t == ToolType::Acquire3D;
 }
 
-/** @brief ¹¤¾ßÀàĞÍÊÇ·ñ²ÎÓë OK/NG ½á¹û¾ØÕóÁĞ */
+/** @brief å åŠ å€™é€‰ï¼šå®šä½ã€æ£€æµ‹ã€ç»“æœå¤„ç† */
+inline bool toolTypeIsOverlaySource(ToolType t)
+{
+    return t == ToolType::Locate || t == ToolType::Detect || t == ToolType::RstProcess
+        || t == ToolType::Infer;
+}
+
+/** @brief å·¥å…·ç±»å‹æ˜¯å¦å‚ä¸ OK/NG ç»“æœçŸ©é˜µåˆ— */
 inline bool toolTypeProducesOkNg(ToolType t)
 {
     return t == ToolType::Locate || t == ToolType::Detect
-        || t == ToolType::RstProcess || t == ToolType::Logic;
+        || t == ToolType::RstProcess || t == ToolType::Logic
+        || t == ToolType::Measure3D || t == ToolType::Align3D
+        || t == ToolType::Infer;
 }
 
 }

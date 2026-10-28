@@ -1,6 +1,6 @@
 /**
  * @file SolutionDataPaths.cpp
- * @brief SolutionDataPathsÊµÏÖ
+ * @brief SolutionDataPathså®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -14,7 +14,7 @@
 
 namespace Vision {
 
-// Æ´½ÓÁ½¶ÎÂ·¾¶£¨Â·¾¶´®Ô¼¶¨Îª UTF-8£©
+// æ‹¼æ¥ä¸¤æ®µè·¯å¾„ï¼ˆè·¯å¾„ä¸²çº¦å®šä¸º UTF-8ï¼‰
 std::string pathJoin(const std::string& a, const std::string& b)
 {
     if (a.empty()) {
@@ -30,7 +30,7 @@ std::string pathJoin(const std::string& a, const std::string& b)
     return a + "\\" + b;
 }
 
-// Ä¿Â¼²¿·Ö
+// ç›®å½•éƒ¨åˆ†
 std::string pathDirName(const std::string& filePath)
 {
     const size_t slash = filePath.find_last_of("\\/");
@@ -40,7 +40,7 @@ std::string pathDirName(const std::string& filePath)
     return filePath.substr(0, slash);
 }
 
-// ÎŞÀ©Õ¹ÃûÎÄ¼şÃû
+// æ— æ‰©å±•åæ–‡ä»¶å
 std::string pathFileStem(const std::string& filePath)
 {
     std::string name = filePath;
@@ -55,7 +55,7 @@ std::string pathFileStem(const std::string& filePath)
     return name;
 }
 
-// ÎÄ¼şÊÇ·ñ´æÔÚ£¨UTF-8 Â·¾¶£©
+// æ–‡ä»¶æ˜¯å¦å­˜åœ¨ï¼ˆUTF-8 è·¯å¾„ï¼‰
 bool pathFileExists(const std::string& filePath)
 {
     if (filePath.empty()) {
@@ -66,7 +66,7 @@ bool pathFileExists(const std::string& filePath)
         && (attr & FILE_ATTRIBUTE_DIRECTORY) == 0;
 }
 
-// Ä¿Â¼ÊÇ·ñ´æÔÚ£¨UTF-8 Â·¾¶£©
+// ç›®å½•æ˜¯å¦å­˜åœ¨ï¼ˆUTF-8 è·¯å¾„ï¼‰
 static bool dirExists(const std::string& path)
 {
     if (path.empty()) {
@@ -77,7 +77,7 @@ static bool dirExists(const std::string& path)
         && (attr & FILE_ATTRIBUTE_DIRECTORY) != 0;
 }
 
-// MyLine.vpsol ¡ú MyLine.vpdata
+// MyLine.vpsol â†’ MyLine.vpdata
 std::string solutionDataRootFromFile(const std::string& vpsolPath)
 {
     if (vpsolPath.empty()) {
@@ -91,7 +91,7 @@ std::string solutionDataRootFromFile(const std::string& vpsolPath)
     return pathJoin(dir, stem + ".vpdata");
 }
 
-// µ¥¹¤¾ßÄ¿Â¼
+// å•å·¥å…·ç›®å½•
 std::string toolDataDir(const std::string& vpsolPath,
                         const ObjectId& stationId,
                         const ObjectId& jobId,
@@ -110,7 +110,7 @@ std::string toolDataDir(const std::string& vpsolPath,
     return p;
 }
 
-// µİ¹é½¨Ä¿Â¼£¨UTF-8 Â·¾¶ ¡ú CreateDirectoryW£©
+// é€’å½’å»ºç›®å½•ï¼ˆUTF-8 è·¯å¾„ â†’ CreateDirectoryWï¼‰
 bool ensureDirectoryTree(const std::string& absPath)
 {
     if (absPath.empty()) {
@@ -131,13 +131,13 @@ bool ensureDirectoryTree(const std::string& absPath)
     return dirExists(absPath);
 }
 
-// ¿½±´µ¥ÎÄ¼ş
+// æ‹·è´å•æ–‡ä»¶
 static bool copyOneFile(const std::string& src, const std::string& dst)
 {
     return CopyFileW(utf8ToWide(src).c_str(), utf8ToWide(dst).c_str(), FALSE) != 0;
 }
 
-// µİ¹é¿½±´
+// é€’å½’æ‹·è´
 bool copyDirectoryRecursive(const std::string& src, const std::string& dst)
 {
     if (!dirExists(src)) {
@@ -176,7 +176,7 @@ bool copyDirectoryRecursive(const std::string& src, const std::string& dst)
     return ok;
 }
 
-// É¾ÎÄ¼ş
+// åˆ æ–‡ä»¶
 bool removeFileIfExists(const std::string& filePath)
 {
     if (!pathFileExists(filePath)) {
@@ -185,7 +185,7 @@ bool removeFileIfExists(const std::string& filePath)
     return DeleteFileW(utf8ToWide(filePath).c_str()) != 0;
 }
 
-// Ïà¶ÔÃû½âÎö
+// ç›¸å¯¹åè§£æ
 std::string resolveToolAssetPath(const std::string& dataDir, const std::string& relativeName)
 {
     if (relativeName.empty()) {

@@ -1,6 +1,6 @@
 /**
  * @file HsContour.h
- * @brief HsContourÍ·ÎÄ¼ş
+ * @brief HsContourå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -17,74 +17,74 @@ namespace HsCommData {
 
 /**
  * @class HsContour
- * @brief Ò»ÌõÂÖÀª¡£µãÎªÍ¼Ïñ×ø±ê£¬¿ÉÑÇÏñËØ¡£½Ç¶ÈºÍÏìÓ¦¿ÉÑ¡£¬¿ÕÔòÃ»ÓĞ
+ * @brief ä¸€æ¡è½®å»“ã€‚ç‚¹ä¸ºå›¾åƒåæ ‡ï¼Œå¯äºšåƒç´ ã€‚è§’åº¦å’Œå“åº”å¯é€‰ï¼Œç©ºåˆ™æ²¡æœ‰
  */
 struct HSCOMMDATA_EXPORT HsContour {
-    bool closed;             ///< true Ê±Ê×Î²ÏàÁ¬
-    std::vector<float> angle;    ///< Ã¿µãÇĞÏò½Ç£¬ÄÚ²¿»¡¶È¡£Õı·½Ïò´Ó +x ×ªÏò +y¡£¿Õ±íÊ¾Ã»ÓĞ¡£¶ÔÍâÓÃ angAt
-    std::vector<float> response; ///< Ã¿µã±ßÔµÏìÓ¦¡£¿Õ±íÊ¾Ã»ÓĞ
+    bool closed;             ///< true æ—¶é¦–å°¾ç›¸è¿
+    std::vector<float> angle;    ///< æ¯ç‚¹åˆ‡å‘è§’ï¼Œå†…éƒ¨å¼§åº¦ã€‚æ­£æ–¹å‘ä» +x è½¬å‘ +yã€‚ç©ºè¡¨ç¤ºæ²¡æœ‰ã€‚å¯¹å¤–ç”¨ angAt
+    std::vector<float> response; ///< æ¯ç‚¹è¾¹ç¼˜å“åº”ã€‚ç©ºè¡¨ç¤ºæ²¡æœ‰
 
-    HsContour(); ///< Ä¬ÈÏ¿ªÕÛÏß
-    /** @brief µãÁĞ°´¸öÊıÕû¶Î¸´ÖÆ¡£±ÕºÏ±êÖ¾ºÍÊôĞÔÒ»²¢¿½±´ */
+    HsContour(); ///< é»˜è®¤å¼€æŠ˜çº¿
+    /** @brief ç‚¹åˆ—æŒ‰ä¸ªæ•°æ•´æ®µå¤åˆ¶ã€‚é—­åˆæ ‡å¿—å’Œå±æ€§ä¸€å¹¶æ‹·è´ */
     HsContour(const HsContour& other);
-    /** @brief µãÁĞ°´¸öÊıÕû¶Î¸´ÖÆ¡£±ÕºÏ±êÖ¾ºÍÊôĞÔÒ»²¢¿½±´ */
+    /** @brief ç‚¹åˆ—æŒ‰ä¸ªæ•°æ•´æ®µå¤åˆ¶ã€‚é—­åˆæ ‡å¿—å’Œå±æ€§ä¸€å¹¶æ‹·è´ */
     HsContour& operator=(const HsContour& other);
-    /** @brief ÊÍ·Åµã»º³å */
+    /** @brief é‡Šæ”¾ç‚¹ç¼“å†² */
     ~HsContour();
-    /** @brief µãÊı */
+    /** @brief ç‚¹æ•° */
     size_t ptCount() const;
-    /** @brief Ã»ÓĞµã */
+    /** @brief æ²¡æœ‰ç‚¹ */
     bool ptsEmpty() const;
-    /** @brief µÚ i ¸öµã */
+    /** @brief ç¬¬ i ä¸ªç‚¹ */
     Point2d& ptAt(size_t i);
-    /** @brief µÚ i ¸öµã */
+    /** @brief ç¬¬ i ä¸ªç‚¹ */
     const Point2d& ptAt(size_t i) const;
-    /** @brief µÚÒ»¸öµã¡£¿ÕÂÖÀª½»¸øÏµÍ³Òì³£´¦Àí */
+    /** @brief ç¬¬ä¸€ä¸ªç‚¹ã€‚ç©ºè½®å»“äº¤ç»™ç³»ç»Ÿå¼‚å¸¸å¤„ç† */
     Point2d& ptFront();
-    /** @brief µÚÒ»¸öµã¡£¿ÕÂÖÀª½»¸øÏµÍ³Òì³£´¦Àí */
+    /** @brief ç¬¬ä¸€ä¸ªç‚¹ã€‚ç©ºè½®å»“äº¤ç»™ç³»ç»Ÿå¼‚å¸¸å¤„ç† */
     const Point2d& ptFront() const;
-    /** @brief ×îºóÒ»¸öµã¡£¿ÕÂÖÀª½»¸øÏµÍ³Òì³£´¦Àí */
+    /** @brief æœ€åä¸€ä¸ªç‚¹ã€‚ç©ºè½®å»“äº¤ç»™ç³»ç»Ÿå¼‚å¸¸å¤„ç† */
     Point2d& ptBack();
-    /** @brief ×îºóÒ»¸öµã¡£¿ÕÂÖÀª½»¸øÏµÍ³Òì³£´¦Àí */
+    /** @brief æœ€åä¸€ä¸ªç‚¹ã€‚ç©ºè½®å»“äº¤ç»™ç³»ç»Ÿå¼‚å¸¸å¤„ç† */
     const Point2d& ptBack() const;
-    /** @brief ×·¼ÓÒ»¸öµã */
+    /** @brief è¿½åŠ ä¸€ä¸ªç‚¹ */
     void pushPt(const Point2d& point);
-    /** @brief ¸ÄµãÊı¡£±ä³¤µÄĞÂµãÎªÔ­µã */
+    /** @brief æ”¹ç‚¹æ•°ã€‚å˜é•¿çš„æ–°ç‚¹ä¸ºåŸç‚¹ */
     void resizePts(size_t n);
-    /** @brief ÓÃÏòÁ¿Õû¶ÎÌîÈë */
+    /** @brief ç”¨å‘é‡æ•´æ®µå¡«å…¥ */
     void setPts(const std::vector<Point2d>& src);
 
-    /** @brief ÎŞ¶¥µãÔòÎª¿Õ */
+    /** @brief æ— é¡¶ç‚¹åˆ™ä¸ºç©º */
     bool isEmpty() const;
-    /** @brief ¶¥µã°üÎ§ºĞ */
+    /** @brief é¡¶ç‚¹åŒ…å›´ç›’ */
     Box2 bounds() const;
-    /** @brief ÄÚ²¿×ª½Ç£¬»¡¶È¡£Ô½½çÅ× HsException */
+    /** @brief å†…éƒ¨è½¬è§’ï¼Œå¼§åº¦ã€‚è¶Šç•ŒæŠ› HsException */
     double angRadAt(int index) const;
-    /** @brief Ğ´ÈëÄÚ²¿»¡¶È */
+    /** @brief å†™å…¥å†…éƒ¨å¼§åº¦ */
     void setAngRadAt(int index, double rad);
-    /** @brief ×ª½ÇµÄ¶ÈÊı£¬Õı·½ÏòÓëÄÚ²¿ÏàÍ¬ */
+    /** @brief è½¬è§’çš„åº¦æ•°ï¼Œæ­£æ–¹å‘ä¸å†…éƒ¨ç›¸åŒ */
     double angDegAt(int index) const;
-    /** @brief °´¶ÈÊıĞ´Èë£¬Õı·½ÏòÓëÄÚ²¿ÏàÍ¬ */
+    /** @brief æŒ‰åº¦æ•°å†™å…¥ï¼Œæ­£æ–¹å‘ä¸å†…éƒ¨ç›¸åŒ */
     void setAngDegAt(int index, double deg);
-    /** @brief °´ÏµÍ³½Ç¶Èµ¥Î»ºÍÕı·½Ïò¶ÁÈ¡ */
+    /** @brief æŒ‰ç³»ç»Ÿè§’åº¦å•ä½å’Œæ­£æ–¹å‘è¯»å– */
     double angAt(int index) const;
-    /** @brief °´ÏµÍ³½Ç¶Èµ¥Î»ºÍÕı·½ÏòĞ´Èë */
+    /** @brief æŒ‰ç³»ç»Ÿè§’åº¦å•ä½å’Œæ­£æ–¹å‘å†™å…¥ */
     void setAngAt(int index, double external);
-    /** @brief ½Ç¶È»òÏìÓ¦·Ç¿ÕÊ±£¬³¤¶È±ØĞëÓëµãÊıÏàÍ¬ */
+    /** @brief è§’åº¦æˆ–å“åº”éç©ºæ—¶ï¼Œé•¿åº¦å¿…é¡»ä¸ç‚¹æ•°ç›¸åŒ */
     bool attribsOk() const;
 private:
-    /** @brief °´¸öÊı·ÖÅä£¬²»Öğµã¹¹Ôì */
+    /** @brief æŒ‰ä¸ªæ•°åˆ†é…ï¼Œä¸é€ç‚¹æ„é€  */
     void allocPts(size_t n);
-    /** @brief ÈİÁ¿²»×ãÊ±»»Ò»¿é¸ü´óµÄ»º³å£¬¾ÉµãÕû¶Î°á¹ıÈ¥ */
+    /** @brief å®¹é‡ä¸è¶³æ—¶æ¢ä¸€å—æ›´å¤§çš„ç¼“å†²ï¼Œæ—§ç‚¹æ•´æ®µæ¬è¿‡å» */
     void ensurePts(size_t need);
-    /** @brief ÊÍ·Åµã»º³å */
+    /** @brief é‡Šæ”¾ç‚¹ç¼“å†² */
     void releasePts();
-    /** @brief °´¸öÊıÕû¶Î¸´ÖÆ */
+    /** @brief æŒ‰ä¸ªæ•°æ•´æ®µå¤åˆ¶ */
     void copyPts(const Point2d* src, size_t n);
 
-    Point2d* m_pts;     ///< µã»º³å
-    size_t m_ptCount;  ///< ¸öÊı
-    size_t m_ptCap;    ///< ÈİÁ¿
+    Point2d* m_pts;     ///< ç‚¹ç¼“å†²
+    size_t m_ptCount;  ///< ä¸ªæ•°
+    size_t m_ptCap;    ///< å®¹é‡
 };
 
 }

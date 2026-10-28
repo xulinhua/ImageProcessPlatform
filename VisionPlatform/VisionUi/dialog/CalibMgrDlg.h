@@ -1,6 +1,6 @@
 /**
  * @file CalibMgrDlg.h
- * @brief CalibMgrDlgÍ·ÎÄ¼ş
+ * @brief CalibMgrDlgå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -28,63 +28,63 @@ struct Solution;
 
 /**
  * @class CalibMgrDlg
- * @brief ±ê¶¨¹ÜÀí£º°´Ïà»ú¸Ä²ÎÊı¡¢¿´ÉúĞ§½á¹û¡¢µ¼Èëµã±í»ò½á¹û
+ * @brief æ ‡å®šç®¡ç†ï¼šæŒ‰ç›¸æœºæ”¹å‚æ•°ã€çœ‹ç”Ÿæ•ˆç»“æœã€å¯¼å…¥ç‚¹è¡¨æˆ–ç»“æœ
  */
 class VISION_UI_API CalibMgrDlg : public QDialog {
     Q_OBJECT
 public:
-    /** @brief ·½°¸²»ÓµÓĞ£¬Ö»ÓÃÀ´ÁĞÌ¨ÕËÀïµÄÏà»ú */
+    /** @brief æ–¹æ¡ˆä¸æ‹¥æœ‰ï¼Œåªç”¨æ¥åˆ—å°è´¦é‡Œçš„ç›¸æœº */
     CalibMgrDlg(Solution* solution, QWidget* parent = 0);
 
 private slots:
-    /** @brief ÇĞ»»Ïà»ú²¢Ë¢ĞÂÓÒ²à */
+    /** @brief åˆ‡æ¢ç›¸æœºå¹¶åˆ·æ–°å³ä¾§ */
     void onCameraChanged();
-    /** @brief °Ñ±íµ¥Ğ´Èëµ±Ç°Ïà»ú */
+    /** @brief æŠŠè¡¨å•å†™å…¥å½“å‰ç›¸æœº */
     void onSaveParam();
-    /** @brief µ¼ÈëÀëÏßµã±í */
+    /** @brief å¯¼å…¥ç¦»çº¿ç‚¹è¡¨ */
     void onImportTable();
-    /** @brief µ¼ÈëÒÑËãºÃµÄ½á¹ûÎÄ¼ş */
+    /** @brief å¯¼å…¥å·²ç®—å¥½çš„ç»“æœæ–‡ä»¶ */
     void onImportResult();
-    /** @brief Ìí¼ÓÒ»Â·»¹Ã»½øÌ¨ÕËµÄÁÙÊ±Ïà»ú */
+    /** @brief æ·»åŠ ä¸€è·¯è¿˜æ²¡è¿›å°è´¦çš„ä¸´æ—¶ç›¸æœº */
     void onAddCamera();
-    /** @brief °ÑÁÙÊ±Ïà»ú°óµ½Ì¨ÕËÏà»ú */
+    /** @brief æŠŠä¸´æ—¶ç›¸æœºç»‘åˆ°å°è´¦ç›¸æœº */
     void onBindCamera();
-    /** @brief ÇĞ»»±ê¶¨·½Ê½£¬Ö»ÏÔÊ¾ÕâÒ»·½Ê½µÄ²ÎÊı */
+    /** @brief åˆ‡æ¢æ ‡å®šæ–¹å¼ï¼Œåªæ˜¾ç¤ºè¿™ä¸€æ–¹å¼çš„å‚æ•° */
     void onKindChanged();
 
 private:
-    /** @brief ÖØĞÂÁĞ³öÌ¨ÕËÏà»úºÍÒÑÓĞ±ê¶¨ */
+    /** @brief é‡æ–°åˆ—å‡ºå°è´¦ç›¸æœºå’Œå·²æœ‰æ ‡å®š */
     void reloadCameras(const QString& selectId);
-    /** @brief °Ñµ±Ç°Ïà»úµÄ²ÎÊıÌî½ø±íµ¥ */
+    /** @brief æŠŠå½“å‰ç›¸æœºçš„å‚æ•°å¡«è¿›è¡¨å• */
     void loadForm();
-    /** @brief ÏÔÊ¾ÉúĞ§½á¹ûºÍÀúÊ· */
+    /** @brief æ˜¾ç¤ºç”Ÿæ•ˆç»“æœå’Œå†å² */
     void showResult();
-    /** @brief µ±Ç°Ñ¡ÖĞµÄÏà»ú id */
+    /** @brief å½“å‰é€‰ä¸­çš„ç›¸æœº id */
     QString currentId() const;
 
-    Solution* m_solution;              ///< µ±Ç°·½°¸
-    QString m_currentId;               ///< ÕıÔÚ±à¼­µÄÏà»ú
-    bool m_loading;                    ///< ÕıÔÚË¢ĞÂ±íµ¥£¬ºöÂÔĞÅºÅ
-    QListWidget* m_list;               ///< Ïà»úÁĞ±í
-    QComboBox* m_bindTarget;           ///< Òª°ó¶¨µ½µÄÌ¨ÕËÏà»ú
-    QPushButton* m_bindBtn;            ///< °ó¶¨°´Å¥
-    QComboBox* m_kind;                 ///< ±ê¶¨·½Ê½
-    QStackedWidget* m_pages;           ///< ÈıÖÖ·½Ê½µÄ²ÎÊıÒ³
-    QPushButton* m_tableBtn;           ///< µ¼Èëµã±í
-    QComboBox* m_plate;                ///< °åĞÍ
-    QSpinBox* m_rows;                  ///< ĞĞÊı
-    QSpinBox* m_cols;                  ///< ÁĞÊı
-    QDoubleSpinBox* m_spacing;         ///< ¼ä¾à
-    QDoubleSpinBox* m_thickness;       ///< °åºñ
-    QComboBox* m_fit;                  ///< ¾ÅµãÄâºÏ
-    QDoubleSpinBox* m_resPx;           ///< ÏñËØ²Ğ²îÉÏÏŞ
-    QDoubleSpinBox* m_resMm;           ///< ºÁÃ×²Ğ²îÉÏÏŞ
-    QDoubleSpinBox* m_angle;           ///< Ê¾½Ì½Ç
-    QSpinBox* m_minImages;             ///< ±ê¶¨°å×îÉÙÕÅÊı
-    QSpinBox* m_minAngles;             ///< Ğı×ª×îÉÙ½Ç¶È
-    QSpinBox* m_width;                 ///< Í¼Ïñ¿í
-    QSpinBox* m_height;                ///< Í¼Ïñ¸ß
-    QPlainTextEdit* m_result;          ///< ÉúĞ§½á¹û
+    Solution* m_solution;              ///< å½“å‰æ–¹æ¡ˆ
+    QString m_currentId;               ///< æ­£åœ¨ç¼–è¾‘çš„ç›¸æœº
+    bool m_loading;                    ///< æ­£åœ¨åˆ·æ–°è¡¨å•ï¼Œå¿½ç•¥ä¿¡å·
+    QListWidget* m_list;               ///< ç›¸æœºåˆ—è¡¨
+    QComboBox* m_bindTarget;           ///< è¦ç»‘å®šåˆ°çš„å°è´¦ç›¸æœº
+    QPushButton* m_bindBtn;            ///< ç»‘å®šæŒ‰é’®
+    QComboBox* m_kind;                 ///< æ ‡å®šæ–¹å¼
+    QStackedWidget* m_pages;           ///< ä¸‰ç§æ–¹å¼çš„å‚æ•°é¡µ
+    QPushButton* m_tableBtn;           ///< å¯¼å…¥ç‚¹è¡¨
+    QComboBox* m_plate;                ///< æ¿å‹
+    QSpinBox* m_rows;                  ///< è¡Œæ•°
+    QSpinBox* m_cols;                  ///< åˆ—æ•°
+    QDoubleSpinBox* m_spacing;         ///< é—´è·
+    QDoubleSpinBox* m_thickness;       ///< æ¿åš
+    QComboBox* m_fit;                  ///< ä¹ç‚¹æ‹Ÿåˆ
+    QDoubleSpinBox* m_resPx;           ///< åƒç´ æ®‹å·®ä¸Šé™
+    QDoubleSpinBox* m_resMm;           ///< æ¯«ç±³æ®‹å·®ä¸Šé™
+    QDoubleSpinBox* m_angle;           ///< ç¤ºæ•™è§’
+    QSpinBox* m_minImages;             ///< æ ‡å®šæ¿æœ€å°‘å¼ æ•°
+    QSpinBox* m_minAngles;             ///< æ—‹è½¬æœ€å°‘è§’åº¦
+    QSpinBox* m_width;                 ///< å›¾åƒå®½
+    QSpinBox* m_height;                ///< å›¾åƒé«˜
+    QPlainTextEdit* m_result;          ///< ç”Ÿæ•ˆç»“æœ
 };
 
 }

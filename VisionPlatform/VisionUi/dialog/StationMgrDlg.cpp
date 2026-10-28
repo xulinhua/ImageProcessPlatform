@@ -1,6 +1,6 @@
 /**
  * @file StationMgrDlg.cpp
- * @brief StationMgrDlgÊµÏÖ
+ * @brief StationMgrDlgå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -36,7 +36,7 @@
 
 namespace Vision {
 
-// ¸ÅÒª¿¨Æ¬£º±êÇ© + ´ÖÌåÖµ
+// æ¦‚è¦å¡ç‰‡ï¼šæ ‡ç­¾ + ç²—ä½“å€¼
 static QFrame* kvCell(QWidget* parent, const
 QString& key, QLabel** value)
 {
@@ -53,7 +53,7 @@ QString& key, QLabel** value)
     return f;
 }
 
-// °ó¶¨Éè±¸ÕªÒªÓÃµÄ²ÊÉ«±êÇ©
+// ç»‘å®šè®¾å¤‡æ‘˜è¦ç”¨çš„å½©è‰²æ ‡ç­¾
 static QLabel* deviceChip(QWidget* parent, const QString& text)
 {
     QLabel* lab = new QLabel(text, parent);
@@ -65,7 +65,7 @@ static QLabel* deviceChip(QWidget* parent, const QString& text)
     return lab;
 }
 
-// Í¨ĞÅÍ¨µÀµ¥Ñ¡°´Å¥£¬commId ´æÔÚÊôĞÔÀï
+// é€šä¿¡é€šé“å•é€‰æŒ‰é’®ï¼ŒcommId å­˜åœ¨å±æ€§é‡Œ
 static QPushButton* commChoice(QWidget* parent, const QString& text, const QString& id)
 {
     QPushButton* b = new QPushButton(text, parent);
@@ -74,21 +74,21 @@ static QPushButton* commChoice(QWidget* parent, const QString& text, const QStri
     return b;
 }
 
-// ¹¤Õ¾¹ÜÀí£º×ó²àÁĞ±í + ÓÒ²à¸ÅÒª/Éè±¸/Í¨ĞÅ/Á÷³Ì
+// å·¥ç«™ç®¡ç†ï¼šå·¦ä¾§åˆ—è¡¨ + å³ä¾§æ¦‚è¦/è®¾å¤‡/é€šä¿¡/æµç¨‹
 StationMgrDlg::StationMgrDlg(Session* session, Solution* solution, QWidget* parent)
     : QDialog(parent)
     , m_session(session)
     , m_sol(solution)
 {
-    setWindowTitle(T("Í¨ÓÃÊÓ¾õÆ½Ì¨ - ¹¤Õ¾¹ÜÀí"));
+    setWindowTitle(T("é€šç”¨è§†è§‰å¹³å° - å·¥ç«™ç®¡ç†"));
     resize(1080, 640);
 
     m_list = new QListWidget(this);
     connect(m_list, SIGNAL(itemSelectionChanged()), this, SLOT(onSel()));
     connect(m_list, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(onOpen()));
 
-    QPushButton* addBtn = new QPushButton(T("Ìí¼Ó¹¤Õ¾"), this);
-    QPushButton* delBtn = new QPushButton(T("É¾³ı"), this);
+    QPushButton* addBtn = new QPushButton(T("æ·»åŠ å·¥ç«™"), this);
+    QPushButton* delBtn = new QPushButton(T("åˆ é™¤"), this);
     connect(addBtn, SIGNAL(clicked()), this, SLOT(onAdd()));
     connect(delBtn, SIGNAL(clicked()), this, SLOT(onRemove()));
     const bool canEdit = m_session->has(PermEditSolution);
@@ -98,7 +98,7 @@ StationMgrDlg::StationMgrDlg(Session* session, Solution* solution, QWidget* pare
     QFrame* leftCard = makeCard(this);
     leftCard->setMinimumWidth(220);
     QVBoxLayout* left = new QVBoxLayout(leftCard);
-    QLabel* listTitle = new QLabel(T("¹¤Õ¾ÁĞ±í"), this);
+    QLabel* listTitle = new QLabel(T("å·¥ç«™åˆ—è¡¨"), this);
     listTitle->setObjectName(QLatin1String("section"));
     left->addWidget(listTitle);
     left->addWidget(m_list, 1);
@@ -108,12 +108,12 @@ StationMgrDlg::StationMgrDlg(Session* session, Solution* solution, QWidget* pare
     left->addLayout(lb);
 
     QHBoxLayout* kv = new QHBoxLayout();
-    kv->addWidget(kvCell(this, T("Ãû³Æ"), &m_name), 1);
-    kv->addWidget(kvCell(this, T("¹¤Î»±àºÅ"), &m_code), 1);
-    kv->addWidget(kvCell(this, T("×´Ì¬"), &m_status), 1);
-    kv->addWidget(kvCell(this, T("Á÷³ÌÊıÁ¿"), &m_jobCount), 1);
-    kv->addWidget(kvCell(this, T("°ó¶¨Éè±¸Êı"), &m_devCount), 1);
-    kv->addWidget(kvCell(this, T("Ö´ĞĞ·½Ê½"), &m_arrange), 1);
+    kv->addWidget(kvCell(this, T("åç§°"), &m_name), 1);
+    kv->addWidget(kvCell(this, T("å·¥ä½ç¼–å·"), &m_code), 1);
+    kv->addWidget(kvCell(this, T("çŠ¶æ€"), &m_status), 1);
+    kv->addWidget(kvCell(this, T("æµç¨‹æ•°é‡"), &m_jobCount), 1);
+    kv->addWidget(kvCell(this, T("ç»‘å®šè®¾å¤‡æ•°"), &m_devCount), 1);
+    kv->addWidget(kvCell(this, T("æ‰§è¡Œæ–¹å¼"), &m_arrange), 1);
 
     QWidget* chipHost = new QWidget(this);
     m_chips = new QHBoxLayout(chipHost);
@@ -123,15 +123,15 @@ StationMgrDlg::StationMgrDlg(Session* session, Solution* solution, QWidget* pare
     m_commGroup = new QButtonGroup(this);
     m_commGroup->setExclusive(true);
 
-    QGroupBox* overview = new QGroupBox(T("¹¤Õ¾¸ÅÒª"), this);
+    QGroupBox* overview = new QGroupBox(T("å·¥ç«™æ¦‚è¦"), this);
     QVBoxLayout* ov = new QVBoxLayout(overview);
     ov->addLayout(kv);
 
-    QGroupBox* bound = new QGroupBox(T("°ó¶¨Éè±¸ÕªÒª"), this);
+    QGroupBox* bound = new QGroupBox(T("ç»‘å®šè®¾å¤‡æ‘˜è¦"), this);
     QVBoxLayout* bv = new QVBoxLayout(bound);
     bv->addWidget(chipHost);
 
-    QGroupBox* comm = new QGroupBox(T("Í¨ĞÅ"), this);
+    QGroupBox* comm = new QGroupBox(T("é€šä¿¡"), this);
     QVBoxLayout* cvOuter = new QVBoxLayout(comm);
     QWidget* commHost = new QWidget(comm);
     m_commLay = new QHBoxLayout(commHost);
@@ -142,7 +142,7 @@ StationMgrDlg::StationMgrDlg(Session* session, Solution* solution, QWidget* pare
     m_jobs = new QTableWidget(this);
     m_jobs->setColumnCount(4);
     QStringList hh;
-    hh << T("Ãû³Æ") << T("´¥·¢") << T("Ê¹ÄÜ") << T("Ë³Ğò");
+    hh << T("åç§°") << T("è§¦å‘") << T("ä½¿èƒ½") << T("é¡ºåº");
     m_jobs->setHorizontalHeaderLabels(hh);
     m_jobs->horizontalHeader()->setStretchLastSection(true);
     m_jobs->verticalHeader()->setVisible(false);
@@ -151,13 +151,13 @@ StationMgrDlg::StationMgrDlg(Session* session, Solution* solution, QWidget* pare
     m_jobs->setAlternatingRowColors(true);
     connect(m_jobs, SIGNAL(cellDoubleClicked(int,int)), this, SLOT(onJobDouble(int,int)));
 
-    QPushButton* openBtn = new QPushButton(T("½øÈë¹¤Õ¾ÅäÖÃ"), this);
-    QPushButton* jobBtn = new QPushButton(T("´ò¿ªÁ÷³Ì"), this);
+    QPushButton* openBtn = new QPushButton(T("è¿›å…¥å·¥ç«™é…ç½®"), this);
+    QPushButton* jobBtn = new QPushButton(T("æ‰“å¼€æµç¨‹"), this);
     setButtonRole(openBtn, "primary");
     connect(openBtn, SIGNAL(clicked()), this, SLOT(onOpen()));
     connect(jobBtn, SIGNAL(clicked()), this, SLOT(onOpenJob()));
 
-    QGroupBox* jobs = new QGroupBox(T("±¾¹¤Õ¾Á÷³ÌÕªÒª"), this);
+    QGroupBox* jobs = new QGroupBox(T("æœ¬å·¥ç«™æµç¨‹æ‘˜è¦"), this);
     QVBoxLayout* jv = new QVBoxLayout(jobs);
     jv->addWidget(m_jobs);
 
@@ -168,9 +168,9 @@ StationMgrDlg::StationMgrDlg(Session* session, Solution* solution, QWidget* pare
 
     QDialogButtonBox* box = new QDialogButtonBox(
         QDialogButtonBox::Ok | QDialogButtonBox::Cancel | QDialogButtonBox::Apply, this);
-    box->button(QDialogButtonBox::Ok)->setText(T("È·¶¨"));
-    box->button(QDialogButtonBox::Cancel)->setText(T("È¡Ïû"));
-    box->button(QDialogButtonBox::Apply)->setText(T("Ó¦ÓÃ"));
+    box->button(QDialogButtonBox::Ok)->setText(T("ç¡®å®š"));
+    box->button(QDialogButtonBox::Cancel)->setText(T("å–æ¶ˆ"));
+    box->button(QDialogButtonBox::Apply)->setText(T("åº”ç”¨"));
     setButtonRole(box->button(QDialogButtonBox::Ok), "primary");
     connect(box, SIGNAL(accepted()), this, SLOT(accept()));
     connect(box, SIGNAL(rejected()), this, SLOT(reject()));
@@ -198,7 +198,7 @@ StationMgrDlg::StationMgrDlg(Session* session, Solution* solution, QWidget* pare
     refresh();
 }
 
-// Ë¢ĞÂ¹¤Õ¾ÁĞ±í²¢¾¡Á¿±£³ÖÔ­Ñ¡ÖĞÏî
+// åˆ·æ–°å·¥ç«™åˆ—è¡¨å¹¶å°½é‡ä¿æŒåŸé€‰ä¸­é¡¹
 void StationMgrDlg::refresh()
 {
     const QString keep = currentId();
@@ -222,23 +222,23 @@ void StationMgrDlg::refresh()
     fillDetail();
 }
 
-// µ±Ç°Ñ¡ÖĞ¹¤Õ¾ ID
+// å½“å‰é€‰ä¸­å·¥ç«™ ID
 QString StationMgrDlg::currentId() const
 {
     QListWidgetItem* it = m_list->currentItem();
     return it ? it->data(Qt::UserRole).toString() : QString();
 }
 
-// Ñ¡ÖĞ±ä»¯Ê±Ë¢ĞÂÓÒ²àÏêÇé
+// é€‰ä¸­å˜åŒ–æ—¶åˆ·æ–°å³ä¾§è¯¦æƒ…
 void StationMgrDlg::onSel()
 {
     fillDetail();
 }
 
-// Ìî³ä¸ÅÒª¡¢Éè±¸Ğ¾Æ¬¡¢Í¨ĞÅÑ¡ÔñÓëÁ÷³Ì±í
+// å¡«å……æ¦‚è¦ã€è®¾å¤‡èŠ¯ç‰‡ã€é€šä¿¡é€‰æ‹©ä¸æµç¨‹è¡¨
 void StationMgrDlg::fillDetail()
 {
-    // Á¢¼´É¾µô¾ÉĞ¾Æ¬£»deleteLater »áÓëĞÂ¿Ø¼şµşÔÚÍ¬Ò»Î»ÖÃ
+    // ç«‹å³åˆ æ‰æ—§èŠ¯ç‰‡ï¼›deleteLater ä¼šä¸æ–°æ§ä»¶å åœ¨åŒä¸€ä½ç½®
     QWidget* chipParent = m_chips->parentWidget();
     while (QLayoutItem* it = m_chips->takeAt(0)) {
         if (QWidget* w = it->widget()) {
@@ -265,13 +265,13 @@ void StationMgrDlg::fillDetail()
 
     m_name->setText(qs(st->name));
     m_code->setText(qs(st->stationCode));
-    m_status->setText(T("¡ñ ÒÑÅäÖÃ"));
+    m_status->setText(T("â— å·²é…ç½®"));
     m_status->setStyleSheet(QLatin1String("color:#52C41A; font-size:15px; font-weight:bold;"));
     m_jobCount->setText(QString::number(st->jobs.size()));
     m_devCount->setText(QString::number(st->boundDevices.size()));
     m_arrange->setText(QString::fromUtf8(scheduleTitle(st->jobSchedule).c_str()));
 
-    // °´Éè±¸ÖÖÀàÍ³¼Æ²¢Éú³ÉÕªÒªĞ¾Æ¬
+    // æŒ‰è®¾å¤‡ç§ç±»ç»Ÿè®¡å¹¶ç”Ÿæˆæ‘˜è¦èŠ¯ç‰‡
     int cam = 0, folderN = 0, imageN = 0, card = 0, plc = 0;
     for (int i = 0; i < st->boundDevices.size(); ++i) {
         const HardwareDevice* d = m_sol->findDevice(st->boundDevices[i].deviceId);
@@ -291,22 +291,22 @@ void StationMgrDlg::fillDetail()
         }
     }
     if (cam > 0) {
-        m_chips->addWidget(deviceChip(chipParent, T("Ïà»ú (") + QString::number(cam) + QLatin1Char(')')));
+        m_chips->addWidget(deviceChip(chipParent, T("ç›¸æœº (") + QString::number(cam) + QLatin1Char(')')));
     }
     if (card > 0) {
-        m_chips->addWidget(deviceChip(chipParent, T("¿ØÖÆ¿¨ (") + QString::number(card) + QLatin1Char(')')));
+        m_chips->addWidget(deviceChip(chipParent, T("æ§åˆ¶å¡ (") + QString::number(card) + QLatin1Char(')')));
     }
     if (plc > 0) {
         m_chips->addWidget(deviceChip(chipParent, T("PLC (") + QString::number(plc) + QLatin1Char(')')));
     }
     if (folderN > 0) {
-        m_chips->addWidget(deviceChip(chipParent, T("ÎÄ¼ş¼Ğ (") + QString::number(folderN) + QLatin1Char(')')));
+        m_chips->addWidget(deviceChip(chipParent, T("æ–‡ä»¶å¤¹ (") + QString::number(folderN) + QLatin1Char(')')));
     }
     if (imageN > 0) {
-        m_chips->addWidget(deviceChip(chipParent, T("Í¼Ïñ (") + QString::number(imageN) + QLatin1Char(')')));
+        m_chips->addWidget(deviceChip(chipParent, T("å›¾åƒ (") + QString::number(imageN) + QLatin1Char(')')));
     }
     if (cam + folderN + imageN + card + plc == 0) {
-        QLabel* empty = new QLabel(T("Î´°ó¶¨Éè±¸"), chipParent);
+        QLabel* empty = new QLabel(T("æœªç»‘å®šè®¾å¤‡"), chipParent);
         empty->setObjectName(QLatin1String("hint"));
         m_chips->addWidget(empty);
     }
@@ -315,7 +315,7 @@ void StationMgrDlg::fillDetail()
     rebuildCommChoices();
     selectComm(qs(st->commChannelId));
 
-    // ±¾¹¤Õ¾Á÷³ÌÕªÒª±í
+    // æœ¬å·¥ç«™æµç¨‹æ‘˜è¦è¡¨
     m_jobs->setRowCount(0);
     for (int i = 0; i < st->jobs.size(); ++i) {
         const JobCfg& j = st->jobs[i];
@@ -324,18 +324,18 @@ void StationMgrDlg::fillDetail()
         QTableWidgetItem* name = new QTableWidgetItem(qs(j.name));
         name->setData(Qt::UserRole, qs(j.id));
         m_jobs->setItem(r, 0, name);
-        m_jobs->setItem(r, 1, new QTableWidgetItem(QString::fromUtf8(triggerTitle(j.trigger).c_str())));
-        m_jobs->setItem(r, 2, new QTableWidgetItem(j.enabled ? T("¿ª") : T("¹Ø")));
+        m_jobs->setItem(r, 1, new QTableWidgetItem(QString::fromUtf8(execWayTitle(j.execMode).c_str())));
+        m_jobs->setItem(r, 2, new QTableWidgetItem(j.enabled ? T("å¼€") : T("å…³")));
         m_jobs->setItem(r, 3, new QTableWidgetItem(QString::number(j.order)));
     }
 }
 
-// °´·½°¸Í¨ĞÅÌ¨ÕËÖØ½¨Í¨µÀ°´Å¥
+// æŒ‰æ–¹æ¡ˆé€šä¿¡å°è´¦é‡å»ºé€šé“æŒ‰é’®
 void StationMgrDlg::rebuildCommChoices()
 {
     const bool canEdit = m_session->has(PermEditSolution);
     const QString keep = currentCommId();
-    // Á¢¼´É¾³ı£»deleteLater »áÓëĞÂ°´Å¥¶ÌÔİµşÔÚ¾É¼¸ºÎÎ»ÖÃ£¨¼û°ó¶¨Éè±¸Ğ¾Æ¬Í¬¿îÎÊÌâ£©
+    // ç«‹å³åˆ é™¤ï¼›deleteLater ä¼šä¸æ–°æŒ‰é’®çŸ­æš‚å åœ¨æ—§å‡ ä½•ä½ç½®ï¼ˆè§ç»‘å®šè®¾å¤‡èŠ¯ç‰‡åŒæ¬¾é—®é¢˜ï¼‰
     QWidget* host = m_commLay->parentWidget();
     if (!host) {
         host = this;
@@ -357,7 +357,7 @@ void StationMgrDlg::rebuildCommChoices()
             old[i] = nullptr;
         }
     }
-    QPushButton* cNone = commChoice(host, T("ÎŞ"), QString());
+    QPushButton* cNone = commChoice(host, T("æ— "), QString());
     cNone->setEnabled(canEdit);
     m_commGroup->addButton(cNone);
     m_commLay->addWidget(cNone);
@@ -372,14 +372,14 @@ void StationMgrDlg::rebuildCommChoices()
     selectComm(keep);
 }
 
-// µ±Ç°¹´Ñ¡µÄÍ¨ĞÅÍ¨µÀ ID
+// å½“å‰å‹¾é€‰çš„é€šä¿¡é€šé“ ID
 QString StationMgrDlg::currentCommId() const
 {
     QAbstractButton* b = m_commGroup->checkedButton();
     return b ? b->property("commId").toString() : QString();
 }
 
-// °´Í¨µÀ ID ¹´Ñ¡Í¨ĞÅ°´Å¥£¬ÕÒ²»µ½Ôò»ØÍËµÚÒ»Ïî
+// æŒ‰é€šé“ ID å‹¾é€‰é€šä¿¡æŒ‰é’®ï¼Œæ‰¾ä¸åˆ°åˆ™å›é€€ç¬¬ä¸€é¡¹
 void StationMgrDlg::selectComm(const QString& id)
 {
     const QList<QAbstractButton*> bs = m_commGroup->buttons();
@@ -398,7 +398,7 @@ void StationMgrDlg::selectComm(const QString& id)
     }
 }
 
-// °ÑÍ¨ĞÅÑ¡ÔñĞ´»Øµ±Ç°¹¤Õ¾
+// æŠŠé€šä¿¡é€‰æ‹©å†™å›å½“å‰å·¥ç«™
 void StationMgrDlg::applyComm()
 {
     StationCfg* st = m_sol->findStationConfig(oid(currentId()));
@@ -413,18 +413,18 @@ void StationMgrDlg::applyComm()
     m_sol->dirty = true;
 }
 
-// Ó¦ÓÃ°´Å¥£ºÖ»Ğ´»ØÍ¨ĞÅÍ¨µÀ
+// åº”ç”¨æŒ‰é’®ï¼šåªå†™å›é€šä¿¡é€šé“
 void StationMgrDlg::onApply()
 {
     applyComm();
 }
 
-// ×·¼ÓÒ»¸ö´øÄ¬ÈÏ±àºÅµÄĞÂ¹¤Õ¾
+// è¿½åŠ ä¸€ä¸ªå¸¦é»˜è®¤ç¼–å·çš„æ–°å·¥ç«™
 void StationMgrDlg::onAdd()
 {
     StationCfg st;
     st.id = ObjectId::create();
-    st.name = std::string(Translate::tr("ĞÂ¹¤Õ¾"));
+    st.name = std::string(Translate::tr("æ–°å·¥ç«™"));
     char codeBuf[32];
     sprintf(codeBuf, "ST-%02d", static_cast<int>(m_sol->stations.size()) + 1);
     st.stationCode = std::string(codeBuf);
@@ -434,14 +434,14 @@ void StationMgrDlg::onAdd()
     m_list->setCurrentRow(m_list->count() - 1);
 }
 
-// É¾³ı¹¤Õ¾¼°ÆäÁ÷³Ì
+// åˆ é™¤å·¥ç«™åŠå…¶æµç¨‹
 void StationMgrDlg::onRemove()
 {
     const QString id = currentId();
     if (id.isEmpty()) {
         return;
     }
-    if (QMessageBox::question(this, T("É¾³ı"), T("É¾³ı¹¤Õ¾½«¼¶ÁªÆä JobCfg£¬È·ÈÏ£¿")) != QMessageBox::Yes) {
+    if (QMessageBox::question(this, T("åˆ é™¤"), T("åˆ é™¤å·¥ç«™å°†çº§è”å…¶ JobCfgï¼Œç¡®è®¤ï¼Ÿ")) != QMessageBox::Yes) {
         return;
     }
     for (int i = 0; i < m_sol->stations.size(); ++i) {
@@ -454,7 +454,7 @@ void StationMgrDlg::onRemove()
     refresh();
 }
 
-// ÏÈ±£´æÍ¨ĞÅÔÙ´ò¿ª¹¤Õ¾ÅäÖÃ
+// å…ˆä¿å­˜é€šä¿¡å†æ‰“å¼€å·¥ç«™é…ç½®
 void StationMgrDlg::onOpen()
 {
     applyComm();
@@ -464,7 +464,7 @@ void StationMgrDlg::onOpen()
     }
 }
 
-// ´ò¿ªÑ¡ÖĞÁ÷³Ì£¬ÎŞÑ¡ÖĞÔò´ò¿ª¸Ã¹¤Õ¾µÚÒ»¸ö
+// æ‰“å¼€é€‰ä¸­æµç¨‹ï¼Œæ— é€‰ä¸­åˆ™æ‰“å¼€è¯¥å·¥ç«™ç¬¬ä¸€ä¸ª
 void StationMgrDlg::onOpenJob()
 {
     applyComm();
@@ -478,7 +478,7 @@ void StationMgrDlg::onOpenJob()
     }
 }
 
-// Ë«»÷Á÷³Ì±íĞĞ´ò¿ª¸ÃÁ÷³Ì
+// åŒå‡»æµç¨‹è¡¨è¡Œæ‰“å¼€è¯¥æµç¨‹
 void StationMgrDlg::onJobDouble(int row, int)
 {
     if (row < 0 || !m_jobs->item(row, 0)) {

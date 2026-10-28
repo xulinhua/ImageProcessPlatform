@@ -1,6 +1,6 @@
 /**
  * @file HsRegion.h
- * @brief HsRegionÍ·ÎÄ¼ş
+ * @brief HsRegionå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -18,86 +18,86 @@ namespace HsCommData {
 
 /**
  * @class Chord
- * @brief Ò»ĞĞÓÎ³Ì¡£row ÉÏ±ÕÇø¼ä [cb, ce] ÎªÇøÓòÄÚÏñËØ£¬0-based
+ * @brief ä¸€è¡Œæ¸¸ç¨‹ã€‚row ä¸Šé—­åŒºé—´ [cb, ce] ä¸ºåŒºåŸŸå†…åƒç´ ï¼Œ0-based
  */
 struct HSCOMMDATA_EXPORT Chord {
-    int32_t row; ///< ĞĞºÅ
-    int32_t cb;  ///< ÆğÊ¼ÁĞ£¬º¬¶Ëµã
-    int32_t ce;  ///< ½áÊøÁĞ£¬º¬¶Ëµã
+    int32_t row; ///< è¡Œå·
+    int32_t cb;  ///< èµ·å§‹åˆ—ï¼Œå«ç«¯ç‚¹
+    int32_t ce;  ///< ç»“æŸåˆ—ï¼Œå«ç«¯ç‚¹
 
-    Chord(); ///< È«Áã
-    Chord(int32_t row, int32_t cb, int32_t ce); ///< Ö¸¶¨ĞĞÓë±ÕÇø¼ä
+    Chord(); ///< å…¨é›¶
+    Chord(int32_t row, int32_t cb, int32_t ce); ///< æŒ‡å®šè¡Œä¸é—­åŒºé—´
 
-    /** @brief ÁĞÊı¡£ce < cb Ê±Îª 0 */
+    /** @brief åˆ—æ•°ã€‚ce < cb æ—¶ä¸º 0 */
     int32_t length() const;
 };
 
 /**
  * @class HsRegion
- * @brief ĞĞ³Ì±àÂëÇøÓò¡£¿ÉÓë path/pixmap »¥×ª
+ * @brief è¡Œç¨‹ç¼–ç åŒºåŸŸã€‚å¯ä¸ path/pixmap äº’è½¬
  */
 class HSCOMMDATA_EXPORT HsRegion {
 public:
-    bool isCompl;            ///< true ±íÊ¾²¹ÇøÓò
-    IRect bounds;            ///< Íâ½Ó¿ò¡£Óë run ±£³ÖÒ»ÖÂ
+    bool isCompl;            ///< true è¡¨ç¤ºè¡¥åŒºåŸŸ
+    IRect bounds;            ///< å¤–æ¥æ¡†ã€‚ä¸ run ä¿æŒä¸€è‡´
 
-    HsRegion(); ///< ¿ÕÇøÓò
-    /** @brief Éî¿½ÓÎ³Ì¡£²¹±êÖ¾Ò»²¢¿½±´ */
+    HsRegion(); ///< ç©ºåŒºåŸŸ
+    /** @brief æ·±æ‹·æ¸¸ç¨‹ã€‚è¡¥æ ‡å¿—ä¸€å¹¶æ‹·è´ */
     HsRegion(const HsRegion& other);
-    /** @brief Éî¿½¸³Öµ¡£²¹±êÖ¾Ò»²¢¿½±´ */
+    /** @brief æ·±æ‹·èµ‹å€¼ã€‚è¡¥æ ‡å¿—ä¸€å¹¶æ‹·è´ */
     HsRegion& operator=(const HsRegion& other);
-    /** @brief ÊÍ·ÅÏÒ»º³å */
+    /** @brief é‡Šæ”¾å¼¦ç¼“å†² */
     ~HsRegion();
-    /** @brief ÌõÊı */
+    /** @brief æ¡æ•° */
     size_t runCount() const;
-    /** @brief Ã»ÓĞÏÒ */
+    /** @brief æ²¡æœ‰å¼¦ */
     bool runsEmpty() const;
-    /** @brief µÚ i Ìõ */
+    /** @brief ç¬¬ i æ¡ */
     Chord& runAt(size_t i);
-    /** @brief µÚ i Ìõ */
+    /** @brief ç¬¬ i æ¡ */
     const Chord& runAt(size_t i) const;
-    /** @brief ×·¼ÓÒ»Ìõ */
+    /** @brief è¿½åŠ ä¸€æ¡ */
     void pushRun(const Chord& chord);
-    /** @brief ¸ÄÌõÊı¡£±ä³¤µÄĞÂÏÒÎª¿ÕÏÒ */
+    /** @brief æ”¹æ¡æ•°ã€‚å˜é•¿çš„æ–°å¼¦ä¸ºç©ºå¼¦ */
     void resizeRuns(size_t n);
-    /** @brief Ô¤ÁôÈİÁ¿£¬²»¸Ä±äÌõÊı */
+    /** @brief é¢„ç•™å®¹é‡ï¼Œä¸æ”¹å˜æ¡æ•° */
     void reserveRuns(size_t n);
-    /** @brief ÌõÊıÇåÁã£¬ÈİÁ¿±£Áô */
+    /** @brief æ¡æ•°æ¸…é›¶ï¼Œå®¹é‡ä¿ç•™ */
     void clearRuns();
-    /** @brief °Ñ src µÄÏÒÕû¶Î½Óµ½Ä©Î² */
+    /** @brief æŠŠ src çš„å¼¦æ•´æ®µæ¥åˆ°æœ«å°¾ */
     void appendRuns(const HsRegion& src);
 
-    /** @brief ÎŞÓÎ³ÌÇÒ·Ç²¹ */
+    /** @brief æ— æ¸¸ç¨‹ä¸”éè¡¥ */
     bool isEmpty() const;
-    /** @brief Ç°¾°ÏñËØ¸öÊı */
+    /** @brief å‰æ™¯åƒç´ ä¸ªæ•° */
     int64_t area() const;
     /**
-     * @brief µãÊÇ·ñÔÚÇøÓòÄÚ
-     * @param row ĞĞ
-     * @param col ÁĞ
+     * @brief ç‚¹æ˜¯å¦åœ¨åŒºåŸŸå†…
+     * @param row è¡Œ
+     * @param col åˆ—
      */
     bool contains(int row, int col) const;
 
-    /** @brief ÇøÓòÄÚÓëÇøÓòÍâÏàÁÚµÄÏñËØ¡£ÍâÈ¦ºÍ¿×¶´¶¼ÔÚ£¬½á¹ûÈÔÊÇÇøÓò */
+    /** @brief åŒºåŸŸå†…ä¸åŒºåŸŸå¤–ç›¸é‚»çš„åƒç´ ã€‚å¤–åœˆå’Œå­”æ´éƒ½åœ¨ï¼Œç»“æœä»æ˜¯åŒºåŸŸ */
     HsRegion boundary() const;
 
-    /** @brief ÓÉÖá¶ÔÆë¾ØĞÎÉú³ÉÇøÓò¡£²»º¬²¹±êÖ¾ */
+    /** @brief ç”±è½´å¯¹é½çŸ©å½¢ç”ŸæˆåŒºåŸŸã€‚ä¸å«è¡¥æ ‡å¿— */
     static HsRegion genRegion(const IRect& r);
-    /** @brief ÓÉ¶à±ßĞÎ¶¥µãÉú³ÉÇøÓò¡£ÖÁÉÙ 3 µã£¬°´Ìî³ä¹æÔò */
+    /** @brief ç”±å¤šè¾¹å½¢é¡¶ç‚¹ç”ŸæˆåŒºåŸŸã€‚è‡³å°‘ 3 ç‚¹ï¼ŒæŒ‰å¡«å……è§„åˆ™ */
     static HsRegion genRegion(const std::vector<Point2d>& pts);
 private:
-    /** @brief °´ÌõÊı·ÖÅä£¬²»ÖğÌõ¹¹Ôì */
+    /** @brief æŒ‰æ¡æ•°åˆ†é…ï¼Œä¸é€æ¡æ„é€  */
     void allocRuns(size_t n);
-    /** @brief ÈİÁ¿²»×ãÊ±»»Ò»¿é¸ü´óµÄ»º³å£¬¾ÉÏÒÕû¶Î°á¹ıÈ¥ */
+    /** @brief å®¹é‡ä¸è¶³æ—¶æ¢ä¸€å—æ›´å¤§çš„ç¼“å†²ï¼Œæ—§å¼¦æ•´æ®µæ¬è¿‡å» */
     void ensureRuns(size_t need);
-    /** @brief ÊÍ·ÅÏÒ»º³å */
+    /** @brief é‡Šæ”¾å¼¦ç¼“å†² */
     void releaseRuns();
-    /** @brief °´ÌõÊıÕû¶Î¸´ÖÆ */
+    /** @brief æŒ‰æ¡æ•°æ•´æ®µå¤åˆ¶ */
     void copyRuns(const Chord* src, size_t n);
 
-    Chord* m_runs;     ///< ÏÒ»º³å
-    size_t m_runCount; ///< ÌõÊı
-    size_t m_runCap;   ///< ÈİÁ¿
+    Chord* m_runs;     ///< å¼¦ç¼“å†²
+    size_t m_runCount; ///< æ¡æ•°
+    size_t m_runCap;   ///< å®¹é‡
 };
 
 }

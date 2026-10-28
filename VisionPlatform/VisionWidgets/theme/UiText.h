@@ -1,6 +1,6 @@
 /**
  * @file UiText.h
- * @brief UiTextÍ·ÎÄ¼ş
+ * @brief UiTextå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -21,22 +21,22 @@
 #include <QString>
 
 /**
- * @brief ½çÃæÎÄ±¾£º×ß VisionLang¡£Ô´ÓïÑÔ¼üÎª¼òÌåÖĞÎÄ
- * @param key Óë Translate::tr ÏàÍ¬µÄÔ´ÎÄ×Ö
+ * @brief ç•Œé¢æ–‡æœ¬ï¼šèµ° VisionLangã€‚æºè¯­è¨€é”®ä¸ºç®€ä½“ä¸­æ–‡
+ * @param key ä¸ Translate::tr ç›¸åŒçš„æºæ–‡å­—
  */
 inline QString T(const char* key)
 {
     return QString::fromUtf8(Vision::Translate::tr(key).c_str());
 }
 
-/** @brief ´øÒ»¸öÕ¼Î»·ûµÄ½çÃæ¾ä×Ó¡£¼üÀïĞ´ {0} */
+/** @brief å¸¦ä¸€ä¸ªå ä½ç¬¦çš„ç•Œé¢å¥å­ã€‚é”®é‡Œå†™ {0} */
 inline QString Tf(const char* key, const QString& a0)
 {
     const QByteArray bytes = a0.toUtf8();
     return QString::fromUtf8(Vision::Translate::format(key, std::string(bytes.constData(), static_cast<size_t>(bytes.size()))).c_str());
 }
 
-/** @brief °ó¶¨Ô´ÓïÑÔ¼ü£¬¹©ÓïÑÔÈÈÇĞ»»ºóÖØË¢ */
+/** @brief ç»‘å®šæºè¯­è¨€é”®ï¼Œä¾›è¯­è¨€çƒ­åˆ‡æ¢åé‡åˆ· */
 inline void bindTrKey(QObject* o, const char* key)
 {
     if (o && key) {
@@ -44,36 +44,36 @@ inline void bindTrKey(QObject* o, const char* key)
     }
 }
 
-/** @brief °´ÒÑ°ó¶¨µÄ vpTr ¼üË¢ĞÂ¿Ø¼ş/¶¯×÷ÎÄ°¸ */
+/** @brief æŒ‰å·²ç»‘å®šçš„ vpTr é”®åˆ·æ–°æ§ä»¶/åŠ¨ä½œæ–‡æ¡ˆ */
     VISION_WIDGETS_API void applyTrKey(QObject* o);
 
 
-/** @brief µİ¹éË¢ĞÂ±¾¶ÔÏóÊ÷ÖĞ°ó¶¨ÁË vpTr µÄÎÄ°¸ */
+/** @brief é€’å½’åˆ·æ–°æœ¬å¯¹è±¡æ ‘ä¸­ç»‘å®šäº† vpTr çš„æ–‡æ¡ˆ */
     VISION_WIDGETS_API void retranslateBound(QObject* root);
 
 
-/** @brief ÉèÖÃÎÄ°¸²¢°ó¶¨Ô´¼ü */
+/** @brief è®¾ç½®æ–‡æ¡ˆå¹¶ç»‘å®šæºé”® */
 inline void setTrText(QLabel* w, const char* key)
 {
     bindTrKey(w, key);
     w->setText(T(key));
 }
 
-/** @brief ÉèÖÃ°´Å¥ÎÄ°¸²¢°ó¶¨Ô´¼ü */
+/** @brief è®¾ç½®æŒ‰é’®æ–‡æ¡ˆå¹¶ç»‘å®šæºé”® */
 inline void setTrText(QAbstractButton* w, const char* key)
 {
     bindTrKey(w, key);
     w->setText(T(key));
 }
 
-/** @brief ÉèÖÃ¶¯×÷ÎÄ°¸²¢°ó¶¨Ô´¼ü */
+/** @brief è®¾ç½®åŠ¨ä½œæ–‡æ¡ˆå¹¶ç»‘å®šæºé”® */
 inline void setTrText(QAction* w, const char* key)
 {
     bindTrKey(w, key);
     w->setText(T(key));
 }
 
-/** @brief ÉèÖÃ·Ö×é±êÌâ²¢°ó¶¨Ô´¼ü */
+/** @brief è®¾ç½®åˆ†ç»„æ ‡é¢˜å¹¶ç»‘å®šæºé”® */
 inline void setTrText(QGroupBox* w, const char* key)
 {
     bindTrKey(w, key);

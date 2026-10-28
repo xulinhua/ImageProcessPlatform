@@ -1,6 +1,6 @@
 /**
  * @file JobFlowCanvasPanel.h
- * @brief JobFlowCanvasPanelÍ·ÎÄ¼ş
+ * @brief JobFlowCanvasPanelå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -25,100 +25,100 @@ struct Solution;
 
 /**
  * @class JobFlowCanvasPanel
- * @brief Á÷³Ì»­²¼Ãæ°å£ºJobCanvas + ÌáÊ¾ + Á¬Ïß/¶ÏÏß/½Úµã×ø±êĞ´»Ø£¨Ö÷Ò³ÓëÁ÷³Ì±à¼­¹²ÓÃ£©
+ * @brief æµç¨‹ç”»å¸ƒé¢æ¿ï¼šJobCanvas + æç¤º + è¿çº¿/æ–­çº¿/èŠ‚ç‚¹åæ ‡å†™å›ï¼ˆä¸»é¡µä¸æµç¨‹ç¼–è¾‘å…±ç”¨ï¼‰
  */
 class VISION_UI_API JobFlowCanvasPanel : public QWidget {
     Q_OBJECT
 public:
-    /** @brief ¹¹ÔìÁ÷³Ì»­²¼Ãæ°å£»»á»°Óë·½°¸²»ÓµÓĞ */
+    /** @brief æ„é€ æµç¨‹ç”»å¸ƒé¢æ¿ï¼›ä¼šè¯ä¸æ–¹æ¡ˆä¸æ‹¥æœ‰ */
     JobFlowCanvasPanel(Session* session, Solution* solution, QWidget* parent = 0);
 
-    /** @brief µ×²ã»­²¼ÊÓÍ¼ */
+    /** @brief åº•å±‚ç”»å¸ƒè§†å›¾ */
     JobCanvas* canvas() const;
-    /** @brief ÊÇ·ñÔÊĞí¸ÄÁ¬ÏßÓëÍÏ½Úµã */
+    /** @brief æ˜¯å¦å…è®¸æ”¹è¿çº¿ä¸æ‹–èŠ‚ç‚¹ */
     void setEditable(bool editable);
-    /** @brief draft Ä£Ê½£ºĞ´»Ø JobCfg ²İ¸å£¬²»ÖÃ Solution::dirty */
+    /** @brief draft æ¨¡å¼ï¼šå†™å› JobCfg è‰ç¨¿ï¼Œä¸ç½® Solution::dirty */
     void setDraftMode(bool draft);
     /**
-     * @brief °ó¶¨µ±Ç° JobCfg£¨showJob Ê±Ò²»á¸üĞÂ£©
-     * @param job ²»ÓµÓĞ£»¿ÕÔòºóĞø°´ jobId / fallbackToolId ½âÎö
+     * @brief ç»‘å®šå½“å‰ JobCfgï¼ˆshowJob æ—¶ä¹Ÿä¼šæ›´æ–°ï¼‰
+     * @param job ä¸æ‹¥æœ‰ï¼›ç©ºåˆ™åç»­æŒ‰ jobId / fallbackToolId è§£æ
      */
     void bindJob(JobCfg* job);
-    /** @brief ¹Ì¶¨ JobCfg id£¨Á÷³Ì±à¼­¶Ô»°¿ò£© */
+    /** @brief å›ºå®š JobCfg idï¼ˆæµç¨‹ç¼–è¾‘å¯¹è¯æ¡†ï¼‰ */
     void setJobId(const QString& jobId);
-    /** @brief ÕÒ²»µ½ jobId Ê±ÓÃ¹¤¾ß·´²é JobCfg£¨Éè¼ÆÖ÷Ò³£© */
+    /** @brief æ‰¾ä¸åˆ° jobId æ—¶ç”¨å·¥å…·åæŸ¥ JobCfgï¼ˆè®¾è®¡ä¸»é¡µï¼‰ */
     void setFallbackToolId(const QString& toolId);
-    /** @brief ÉèÖÃ¶¥²¿ÌáÊ¾ÎÄ°¸£»¿ÕÔòÒş²Ø */
+    /** @brief è®¾ç½®é¡¶éƒ¨æç¤ºæ–‡æ¡ˆï¼›ç©ºåˆ™éšè— */
     void setHintText(const QString& text);
     /**
-     * @brief Ë¢ĞÂ»­²¼
-     * @param selectedId ¸ßÁÁ¹¤¾ß»ò×é id
+     * @brief åˆ·æ–°ç”»å¸ƒ
+     * @param selectedId é«˜äº®å·¥å…·æˆ–ç»„ id
      */
     void showJob(const QString& selectedId = QString());
-    /** @brief Ëõ·ÅÖÃ»Ø 100% */
+    /** @brief ç¼©æ”¾ç½®å› 100% */
     void resetZoom();
-    /** @brief ¶Ï¿ªÖ¸¶¨ÏÂ±êµÄÊı¾İÁ¬Ïß */
+    /** @brief æ–­å¼€æŒ‡å®šä¸‹æ ‡çš„æ•°æ®è¿çº¿ */
     void unlinkLink(int linkIndex);
-    /** @brief »Ö¸´Ö¸¶¨Á¬Ïß×Ô¶¯Â·ÓÉ */
+    /** @brief æ¢å¤æŒ‡å®šè¿çº¿è‡ªåŠ¨è·¯ç”± */
     void resetLinkRoute(int linkIndex);
 
 signals:
-    /** @brief µãÁË¹¤¾ß½Úµã */
+    /** @brief ç‚¹äº†å·¥å…·èŠ‚ç‚¹ */
     void toolClicked(const QString& toolId);
-    /** @brief Ë«»÷¹¤¾ß½Úµã */
+    /** @brief åŒå‡»å·¥å…·èŠ‚ç‚¹ */
     void toolDoubleClicked(const QString& toolId);
-    /** @brief µãÁËÁ÷³Ì×é */
+    /** @brief ç‚¹äº†æµç¨‹ç»„ */
     void groupClicked(const QString& groupId);
     /**
-     * @brief ÓÒ¼ü²Ëµ¥
-     * @param id ¹¤¾ß/×é id£»Á¬ÏßÊ±Îª links ÏÂ±ê×Ö·û´®
+     * @brief å³é”®èœå•
+     * @param id å·¥å…·/ç»„ idï¼›è¿çº¿æ—¶ä¸º links ä¸‹æ ‡å­—ç¬¦ä¸²
      */
     void canvasMenuRequested(const QString& id, int kind, const QPoint& globalPos);
-    /** @brief Êı¾İÁ¬Ïß»ò¶ÏÏßÒÑĞ´»Ø·½°¸ */
+    /** @brief æ•°æ®è¿çº¿æˆ–æ–­çº¿å·²å†™å›æ–¹æ¡ˆ */
     void linksChanged();
     /**
-     * @brief ÓÃ»§ÍÏÍê¹¤¾ß½Úµã
-     * @param toolId ¹¤¾ß id
-     * @param x ³¡¾°×óÉÏ½Ç X
-     * @param y ³¡¾°×óÉÏ½Ç Y
+     * @brief ç”¨æˆ·æ‹–å®Œå·¥å…·èŠ‚ç‚¹
+     * @param toolId å·¥å…· id
+     * @param x åœºæ™¯å·¦ä¸Šè§’ X
+     * @param y åœºæ™¯å·¦ä¸Šè§’ Y
      */
     void nodeMoved(const QString& toolId, qreal x, qreal y);
 
 private slots:
-    /** @brief »­²¼ÍÏ¶Ë¿ÚÁ¬Ïß */
+    /** @brief ç”»å¸ƒæ‹–ç«¯å£è¿çº¿ */
     void onLinkPorts(const QString& fromId, const QString& fromPort,
                      const QString& toId, const QString& toPort);
-    /** @brief »­²¼¶Ï¿ªÊı¾İÏß */
+    /** @brief ç”»å¸ƒæ–­å¼€æ•°æ®çº¿ */
     void onUnlink(int linkIndex);
-    /** @brief »­²¼ÍÏÍê²¢ĞĞ/Ìõ¼ş×é×ø±ê */
+    /** @brief ç”»å¸ƒæ‹–å®Œå¹¶è¡Œ/æ¡ä»¶ç»„åæ ‡ */
     void onGroupMoved(const QString& groupId, qreal x, qreal y);
-    /** @brief »­²¼ÍÏÍê¹¤¾ß×ø±ê */
+    /** @brief ç”»å¸ƒæ‹–å®Œå·¥å…·åæ ‡ */
     void onNodeMoved(const QString& toolId, qreal x, qreal y);
-    /** @brief »­²¼µãÁË¹¤¾ß£¬Çå³ıÁ¬ÏßÑ¡ÖĞ */
+    /** @brief ç”»å¸ƒç‚¹äº†å·¥å…·ï¼Œæ¸…é™¤è¿çº¿é€‰ä¸­ */
     void onToolClickedClearWire(const QString& toolId);
-    /** @brief »­²¼µãÁËÁ¬Ïß */
+    /** @brief ç”»å¸ƒç‚¹äº†è¿çº¿ */
     void onWireClicked(int linkIndex);
-    /** @brief ÓÃ»§¸ÄÍêÁ¬ÏßÕÛÏß */
+    /** @brief ç”¨æˆ·æ”¹å®Œè¿çº¿æŠ˜çº¿ */
     void onLinkRouteChanged(int linkIndex);
-    /** @brief »Ö¸´Á¬Ïß×Ô¶¯Â·ÓÉ */
+    /** @brief æ¢å¤è¿çº¿è‡ªåŠ¨è·¯ç”± */
     void onLinkRouteReset(int linkIndex);
 
 private:
-    /** @brief ½âÎöµ±Ç° JobCfg */
+    /** @brief è§£æå½“å‰ JobCfg */
     JobCfg* resolveJob() const;
-    /** @brief ÊÇ·ñÓĞ·½°¸±à¼­È¨ÏŞÇÒÔÊĞí±à¼­ */
+    /** @brief æ˜¯å¦æœ‰æ–¹æ¡ˆç¼–è¾‘æƒé™ä¸”å…è®¸ç¼–è¾‘ */
     bool canEditLinks() const;
 
-    Session* m_session;       ///< »á»°£¨²»ÓµÓĞ£©
-    Solution* m_sol;          ///< ·½°¸£¨²»ÓµÓĞ£©
-    JobCfg* m_job;               ///< µ±Ç° JobCfg£¨²»ÓµÓĞ£©
-    QString m_jobId;          ///< ¹Ì¶¨ JobCfg id
-    QString m_fallbackToolId; ///< ·´²é JobCfg µÄ¹¤¾ß id
-    bool m_editable;          ///< ÊÇ·ñÔÊĞí¸ÄÁ¬Ïß
-    bool m_draftMode;         ///< ÊÇ·ñ JobCfg ²İ¸åÄ£Ê½
-    int m_selectedLinkIndex;  ///< µ±Ç°Ñ¡ÖĞµÄÁ¬ÏßË÷Òı£»-1 ÎŞ
-    QLabel* m_hint;           ///< ²Ù×÷ÌáÊ¾
-    JobCanvas* m_canvas;      ///< Á÷³Ì»­²¼
+    Session* m_session;       ///< ä¼šè¯ï¼ˆä¸æ‹¥æœ‰ï¼‰
+    Solution* m_sol;          ///< æ–¹æ¡ˆï¼ˆä¸æ‹¥æœ‰ï¼‰
+    JobCfg* m_job;               ///< å½“å‰ JobCfgï¼ˆä¸æ‹¥æœ‰ï¼‰
+    QString m_jobId;          ///< å›ºå®š JobCfg id
+    QString m_fallbackToolId; ///< åæŸ¥ JobCfg çš„å·¥å…· id
+    bool m_editable;          ///< æ˜¯å¦å…è®¸æ”¹è¿çº¿
+    bool m_draftMode;         ///< æ˜¯å¦ JobCfg è‰ç¨¿æ¨¡å¼
+    int m_selectedLinkIndex;  ///< å½“å‰é€‰ä¸­çš„è¿çº¿ç´¢å¼•ï¼›-1 æ— 
+    QLabel* m_hint;           ///< æ“ä½œæç¤º
+    JobCanvas* m_canvas;      ///< æµç¨‹ç”»å¸ƒ
 };
 
 }

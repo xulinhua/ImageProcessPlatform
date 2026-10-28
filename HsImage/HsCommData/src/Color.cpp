@@ -1,6 +1,6 @@
 /**
  * @file Color.cpp
- * @brief ColorÊµÏÖ
+ * @brief Colorå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -10,7 +10,7 @@
 
 namespace HsCommData {
 
-// È« 0 ±íÊ¾Î´ÉèÖÃ
+// å…¨ 0 è¡¨ç¤ºæœªè®¾ç½®
 Color4::Color4()
     : r(0)
     , g(0)
@@ -19,7 +19,7 @@ Color4::Color4()
 {
 }
 
-// Ö¸¶¨¸÷Í¨µÀ£¬alpha È±Ê¡²»Í¸Ã÷
+// æŒ‡å®šå„é€šé“ï¼Œalpha ç¼ºçœä¸é€æ˜
 Color4::Color4(unsigned char r_, unsigned char g_, unsigned char b_, unsigned char a_)
     : r(r_)
     , g(g_)
@@ -28,7 +28,7 @@ Color4::Color4(unsigned char r_, unsigned char g_, unsigned char b_, unsigned ch
 {
 }
 
-// È«Í¨µÀÎª 0 ¼´Î´ÉèÖÃ
+// å…¨é€šé“ä¸º 0 å³æœªè®¾ç½®
 bool Color4::isUnset() const
 {
     return r == 0 && g == 0 && b == 0 && a == 0;

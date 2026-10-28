@@ -41,190 +41,190 @@ struct ToolOut;
 
 /**
  * @class ToolDebugHost
- * @brief ÏêÏ¸µ÷ÊÔ£ºËÄ¹¬¸ñ£¨Í¼Ïñ/ÊäÈë/ROI/²ÎÊı£©+ µ×À¸£¬draft ±à¼­
+ * @brief è¯¦ç»†è°ƒè¯•ï¼šå››å®«æ ¼ï¼ˆå›¾åƒ/è¾“å…¥/ROI/å‚æ•°ï¼‰+ åº•æ ï¼Œdraft ç¼–è¾‘
  */
 class VISION_TOOLUI_API ToolDebugHost : public QDialog {
     Q_OBJECT
 public:
     ToolDebugHost(ToolCfg* tool, Session* session, Solution* sol, Job* job,
                   QWidget* parent = 0);
-    /** @brief ÏÔÊ¾±¾¹¤¾ßÔËĞĞÍ¼Óëµş¼Ó */
+    /** @brief æ˜¾ç¤ºæœ¬å·¥å…·è¿è¡Œå›¾ä¸å åŠ  */
     void showResult(const HsCommData::HsImage& fb, const QVector<HsCommData::Graphic>& overlay,
                     const QVector<HsCommData::Graphic>& drawings, bool replaceBase = true);
     /**
-     * @brief °´¹¤¾ßÊäÈëÓëÔËĞĞ½á¹ûË¢ĞÂÍ¼Ïñ´°
-     * @param runOut ·Ç¿Õ±íÊ¾¸ÕÅÜÍê£»µ×Í¼ÎªÊäÈëÍ¼£¬µş¼ÓÎª±¾¹¤¾ßÊä³ö
+     * @brief æŒ‰å·¥å…·è¾“å…¥ä¸è¿è¡Œç»“æœåˆ·æ–°å›¾åƒçª—
+     * @param runOut éç©ºè¡¨ç¤ºåˆšè·‘å®Œï¼›åº•å›¾ä¸ºè¾“å…¥å›¾ï¼Œå åŠ ä¸ºæœ¬å·¥å…·è¾“å‡º
      */
     void refreshView(const ToolOut* runOut = 0);
-    /** @brief °´µ±Ç°¹¤¾ßË¢ĞÂÊäÈëÕªÒª */
+    /** @brief æŒ‰å½“å‰å·¥å…·åˆ·æ–°è¾“å…¥æ‘˜è¦ */
     void refreshIo();
-    /** @brief ½ö°´ draft Ë¢ĞÂÍ¼ÉÏ ROI£¬²»¸Äµ×Í¼Óëµş¼Ó */
+    /** @brief ä»…æŒ‰ draft åˆ·æ–°å›¾ä¸Š ROIï¼Œä¸æ”¹åº•å›¾ä¸å åŠ  */
     void reloadDrawings();
-    /** @brief °Ñ²ÎÊıÒ³Ğ´»Ø draft£¨ÔËĞĞÇ°µ÷ÓÃ£© */
+    /** @brief æŠŠå‚æ•°é¡µå†™å› draftï¼ˆè¿è¡Œå‰è°ƒç”¨ï¼‰ */
     void applyParams();
-    /** @brief Ò³ÄÚÊÔÅÜÓÃµÄ¹¤¾ß draft ÊÓÍ¼ */
+    /** @brief é¡µå†…è¯•è·‘ç”¨çš„å·¥å…· draft è§†å›¾ */
     const ToolCfg* draftTool() const;
-    /** @brief ±£´æÊ±ÊÇ·ñ±ê¼Ç Solution::dirty£¨JobCfg ÄÚµ÷ÊÔÎª false£© */
+    /** @brief ä¿å­˜æ—¶æ˜¯å¦æ ‡è®° Solution::dirtyï¼ˆJobCfg å†…è°ƒè¯•ä¸º falseï¼‰ */
     void setSolutionCommit(bool commit);
     /**
-     * @brief ½¨Òé³ß´ç¹Ì¶¨Îª´ò¿ª³ß´ç
-     * @return 1120x720 ÓëÆÁÄ»¿ÉÓÃÇøÈ¡Ğ¡
+     * @brief å»ºè®®å°ºå¯¸å›ºå®šä¸ºæ‰“å¼€å°ºå¯¸
+     * @return 1120x720 ä¸å±å¹•å¯ç”¨åŒºå–å°
      */
     QSize sizeHint() const;
-    /** @brief ×îĞ¡½¨Òé³ß´ç£¬²»¸ú²¼¾ÖÄÚÈİ×ß */
+    /** @brief æœ€å°å»ºè®®å°ºå¯¸ï¼Œä¸è·Ÿå¸ƒå±€å†…å®¹èµ° */
     QSize minimumSizeHint() const;
     /**
-     * @brief ¸´¼ìÌø×ª£ºÇ¿ÖÆ draft/ÊÔÅÜÓÃµ¥ÎÄ¼şÍ¼Â·¾¶£¨²»Ğ´ formal£©
-     * @param imagePath Í¼ÏñÈ«Â·¾¶
+     * @brief å¤æ£€è·³è½¬ï¼šå¼ºåˆ¶ draft/è¯•è·‘ç”¨å•æ–‡ä»¶å›¾è·¯å¾„ï¼ˆä¸å†™ formalï¼‰
+     * @param imagePath å›¾åƒå…¨è·¯å¾„
      */
     void applyForcedImageFile(const std::string& imagePath);
 
 signals:
-    /** @brief ÊÔÅÜÍê³É£¨¹©¸¸´°Ë¢ĞÂ£© */
+    /** @brief è¯•è·‘å®Œæˆï¼ˆä¾›çˆ¶çª—åˆ·æ–°ï¼‰ */
     void testRunFinished(const ToolOut& out);
-    /** @brief ROI ÒÑĞ´»Ø draft */
+    /** @brief ROI å·²å†™å› draft */
     void roiChanged();
-    /** @brief draft ÒÑÌá½»µ½ formal */
+    /** @brief draft å·²æäº¤åˆ° formal */
     void draftSaved();
-    /** @brief ÊäÈëÁ¬ÏßÒÑ¸Ä£¨Ë¢ĞÂ»­²¼£© */
+    /** @brief è¾“å…¥è¿çº¿å·²æ”¹ï¼ˆåˆ·æ–°ç”»å¸ƒï¼‰ */
     void linksChanged();
 
 protected:
-    /** @brief ¹Ø±ÕÇ°È·ÈÏÊÇ·ñ¶ªÆúÎ´±£´æ draft */
+    /** @brief å…³é—­å‰ç¡®è®¤æ˜¯å¦ä¸¢å¼ƒæœªä¿å­˜ draft */
     void closeEvent(QCloseEvent* event);
-    /** @brief Ê×´ÎÏÔÊ¾ºóÖØËã²ÎÊıÒ³¸ß¶È²¢°Ñ´°¿ÚÊÕµ½Ô¤Éè³ß´ç */
+    /** @brief é¦–æ¬¡æ˜¾ç¤ºåé‡ç®—å‚æ•°é¡µé«˜åº¦å¹¶æŠŠçª—å£æ”¶åˆ°é¢„è®¾å°ºå¯¸ */
     void showEvent(QShowEvent* event);
-    /** @brief ÍÏ¶¯»òËõ·ÅÊ±°Ñ»æÖÆĞ¡´°ÁôÔÚÍ¼ÏñÉÏ·½ */
+    /** @brief æ‹–åŠ¨æˆ–ç¼©æ”¾æ—¶æŠŠç»˜åˆ¶å°çª—ç•™åœ¨å›¾åƒä¸Šæ–¹ */
     void moveEvent(QMoveEvent* event);
     void resizeEvent(QResizeEvent* event);
-    /** @brief Ctrl+Z ³·Ïú ROI ĞŞ¸Ä */
+    /** @brief Ctrl+Z æ’¤é”€ ROI ä¿®æ”¹ */
     void keyPressEvent(QKeyEvent* event);
 
 private slots:
-    /** @brief Ò³ÄÚÊÔÅÜ±¾¹¤¾ß */
+    /** @brief é¡µå†…è¯•è·‘æœ¬å·¥å…· */
     void onRun();
-    /** @brief Òì²½ÊÔÅÜÍê³É£¨outPtr Îª¶ÑÉÏ ToolOut*£© */
+    /** @brief å¼‚æ­¥è¯•è·‘å®Œæˆï¼ˆoutPtr ä¸ºå †ä¸Š ToolOut*ï¼‰ */
     void onAsyncRunDone(void* outPtr);
-    /** @brief Ìá½» draft µ½ formal */
+    /** @brief æäº¤ draft åˆ° formal */
     void onSave();
-    /** @brief ¹Ø±Õ²¢¶ªÆú draft */
+    /** @brief å…³é—­å¹¶ä¸¢å¼ƒ draft */
     void onCancel();
-    /** @brief ÇĞ»»»æÖÆ¹¤¾ß */
+    /** @brief åˆ‡æ¢ç»˜åˆ¶å·¥å…· */
     void onDrawTool(int id);
-    /** @brief Í¼ÉÏ»­ÍêÒ»±Ê ROI */
+    /** @brief å›¾ä¸Šç”»å®Œä¸€ç¬” ROI */
     void onRoi(const HsCommData::Graphic& g);
-    /** @brief Çå¿Õ ROI */
+    /** @brief æ¸…ç©º ROI */
     void onClearRoi();
-    /** @brief É¾³ı×îºóÒ»¸ö ROI */
+    /** @brief åˆ é™¤æœ€åä¸€ä¸ª ROI */
     void onDelLastRoi();
-    /** @brief É¾³ıÖ¸¶¨ĞĞ ROI */
+    /** @brief åˆ é™¤æŒ‡å®šè¡Œ ROI */
     void onRemoveRoi(int index);
-    /** @brief ±íÖĞÑ¡ÖĞ ROI ĞĞ±ä»¯ */
+    /** @brief è¡¨ä¸­é€‰ä¸­ ROI è¡Œå˜åŒ– */
     void onRoiSelectionChanged(int index);
-    /** @brief ¡¸»æÖÆÄ£Ê½¡¹¹´Ñ¡±ä»¯ */
+    /** @brief ã€Œç»˜åˆ¶æ¨¡å¼ã€å‹¾é€‰å˜åŒ– */
     void onDrawModeChanged();
-    /** @brief ²ÎÊıÒ³¸Ä¶¯£¨ÎÄ¼şÔ´Â·¾¶µÈ£© */
+    /** @brief å‚æ•°é¡µæ”¹åŠ¨ï¼ˆæ–‡ä»¶æºè·¯å¾„ç­‰ï¼‰ */
     void onEditorEdited();
-    /** @brief ÊäÈëÏÂÀ­±ä¸üÁ¬Ïß */
+    /** @brief è¾“å…¥ä¸‹æ‹‰å˜æ›´è¿çº¿ */
     void onInputLinkChanged(int portData, const QString& fromId, const QString& fromPort);
-    /** @brief µã¡¸ĞÂÔö ROI¡¹½øÈë»æÖÆ */
+    /** @brief ç‚¹ã€Œæ–°å¢ ROIã€è¿›å…¥ç»˜åˆ¶ */
     void onAddRoi();
-    /** @brief Í¼ÉÏÑ¡ÖĞ ROI ±ä»¯£¬Í¬²½±í¸ñ */
+    /** @brief å›¾ä¸Šé€‰ä¸­ ROI å˜åŒ–ï¼ŒåŒæ­¥è¡¨æ ¼ */
     void onDrawingSelected(const HsCommData::Graphic& g);
 
 private:
-    /** @brief ´ò¿ª³ß´ç£º1120x720 ÓëÆÁÄ»¿ÉÓÃÇøÈ¡Ğ¡ */
+    /** @brief æ‰“å¼€å°ºå¯¸ï¼š1120x720 ä¸å±å¹•å¯ç”¨åŒºå–å° */
     static QSize preferredDebugSize(const QWidget* ref);
-    /** @brief °Ñ´°¿Ú³ß´çÓëÎ»ÖÃÊÕ½øÆÁÄ»¿ÉÓÃÇø */
+    /** @brief æŠŠçª—å£å°ºå¯¸ä¸ä½ç½®æ”¶è¿›å±å¹•å¯ç”¨åŒº */
     void clampToScreen();
-    /** @brief »æÖÆÄ£Ê½¿ª/¹ØÊ±ÏÔÒş¹¤¾ßÌõ */
+    /** @brief ç»˜åˆ¶æ¨¡å¼å¼€/å…³æ—¶æ˜¾éšå·¥å…·æ¡ */
     void updateDrawBarVisibility();
-    /** @brief °´¹¤¾ßÀàĞÍÓëÒÑÓĞ ROI Ñ¡Ä¬ÈÏĞÎ×´¹¤¾ß */
+    /** @brief æŒ‰å·¥å…·ç±»å‹ä¸å·²æœ‰ ROI é€‰é»˜è®¤å½¢çŠ¶å·¥å…· */
     int defaultDrawToolId() const;
-    /** @brief ¹¤¾ßÍÆ¼öµÄ»æÖÆ¹¤¾ß id */
+    /** @brief å·¥å…·æ¨èçš„ç»˜åˆ¶å·¥å…· id */
     int preferredDrawToolId() const;
-    /** @brief °Ñ draft ROI Ë¢µ½Í¼ÉÏ£»refreshTable Îª false Ê±Ö»ÇĞÏÔÊ¾ĞĞ£¬²»ÖØ½¨±í */
+    /** @brief æŠŠ draft ROI åˆ·åˆ°å›¾ä¸Šï¼›refreshTable ä¸º false æ—¶åªåˆ‡æ˜¾ç¤ºè¡Œï¼Œä¸é‡å»ºè¡¨ */
     void applyDrawings(bool refreshTable = true);
-    /** @brief ¼Ç×¡Ğ¡´°Ìá½»Ê±µÄ»­±Ê */
+    /** @brief è®°ä½å°çª—æäº¤æ—¶çš„ç”»ç¬” */
     void rememberDrawStyle(int index, const HsCommData::Style& style);
-    /** @brief °´Ñ¡ÖĞĞĞÓë»æÖÆÄ£Ê½Í¬²½ Drawing ²ã */
+    /** @brief æŒ‰é€‰ä¸­è¡Œä¸ç»˜åˆ¶æ¨¡å¼åŒæ­¥ Drawing å±‚ */
     void syncDrawingInteractionView();
-    /** @brief ÊÇ·ñ¹´Ñ¡Á¬Ğø»æÖÆ */
+    /** @brief æ˜¯å¦å‹¾é€‰è¿ç»­ç»˜åˆ¶ */
     bool isDrawMode() const;
-    /** @brief ¸üĞÂ draft Ôà±ê¼ÇÓë±êÌâ */
+    /** @brief æ›´æ–° draft è„æ ‡è®°ä¸æ ‡é¢˜ */
     void markDraftDirty();
-    /** @brief Ë¢ĞÂ´°¿Ú±êÌâ£¨º¬Î´±£´æÌáÊ¾£© */
+    /** @brief åˆ·æ–°çª—å£æ ‡é¢˜ï¼ˆå«æœªä¿å­˜æç¤ºï¼‰ */
     void updateWindowTitle();
-    /** @brief ±£´æ draft µ½ formal£¬²»¹Ø´° */
+    /** @brief ä¿å­˜ draft åˆ° formalï¼Œä¸å…³çª— */
     bool trySave();
     /**
-     * @brief ¹Ø´°Ç°ÈıÑ¡Ò»£ºÈ¡Ïû=0£¬²»±£´æ=1£¬ÒÑ±£´æ=2
+     * @brief å…³çª—å‰ä¸‰é€‰ä¸€ï¼šå–æ¶ˆ=0ï¼Œä¸ä¿å­˜=1ï¼Œå·²ä¿å­˜=2
      */
     int askCloseAction();
-    /** @brief Ìá½» draft µ½ formal */
+    /** @brief æäº¤ draft åˆ° formal */
     void commitDraft();
-    /** @brief ĞŞ¸Ä ROI Ç°Ñ¹Õ»£¬¹©³·Ïú */
+    /** @brief ä¿®æ”¹ ROI å‰å‹æ ˆï¼Œä¾›æ’¤é”€ */
     void pushRoiUndo();
-    /** @brief ³·ÏúÉÏÒ»±Ê ROI ĞŞ¸Ä */
+    /** @brief æ’¤é”€ä¸Šä¸€ç¬” ROI ä¿®æ”¹ */
     void undoRoi();
-    /** @brief ROI ÖÖÀàÓë¹¤¾ß²»Æ¥ÅäÊ±ÌáÊ¾ */
+    /** @brief ROI ç§ç±»ä¸å·¥å…·ä¸åŒ¹é…æ—¶æç¤º */
     void warnRoiKindMismatch();
-    /** @brief É¾³ı ROI Ç°È·ÈÏ */
+    /** @brief åˆ é™¤ ROI å‰ç¡®è®¤ */
     bool confirmRoiDelete(const QString& message) const;
-    /** @brief °´¹¤¾ßÄÜÁ¦ÖØÅÅËÄ¹¬¸ñ£¨È± ROI/²ÎÊıÊ±ºóĞøÄ£¿éÇ°ÒÆ£© */
+    /** @brief æŒ‰å·¥å…·èƒ½åŠ›é‡æ’å››å®«æ ¼ï¼ˆç¼º ROI/å‚æ•°æ—¶åç»­æ¨¡å—å‰ç§»ï¼‰ */
     void rebuildQuadLayout();
-    /** @brief °´¹¤¾ßÄÜÁ¦ÏÔÒş ROI ¿¨Æ¬ */
+    /** @brief æŒ‰å·¥å…·èƒ½åŠ›æ˜¾éš ROI å¡ç‰‡ */
     void updateRoiCardVisibility();
-    /** @brief °´¹¤¾ßÍÆ¼ö ROI ÖÖÀàÏÔÒşĞÎ×´°´Å¥ */
+    /** @brief æŒ‰å·¥å…·æ¨è ROI ç§ç±»æ˜¾éšå½¢çŠ¶æŒ‰é’® */
     void updateDrawShapeTools();
-    /** @brief ×·¼ÓÒ»ĞĞµ÷ÊÔÈÕÖ¾£¨´øÊ±¼ä´Á£© */
+    /** @brief è¿½åŠ ä¸€è¡Œè°ƒè¯•æ—¥å¿—ï¼ˆå¸¦æ—¶é—´æˆ³ï¼‰ */
     void appendDebugLog(const QString& line);
-    /** @brief °Ñ»æÖÆĞ¡´°°Úµ½Í¼ÏñÉÏ·½ */
+    /** @brief æŠŠç»˜åˆ¶å°çª—æ‘†åˆ°å›¾åƒä¸Šæ–¹ */
     void placeDrawPad();
 
     /**
      * @class RoiSnapshot
-     * @brief Ò»±Ê ROI ³·Ïú¼ÇÂ¼
+     * @brief ä¸€ç¬” ROI æ’¤é”€è®°å½•
      */
     struct RoiSnapshot {
-        std::vector<HsCommData::HsObject> rois; ///< ROI ÁĞ±í¿ìÕÕ
-        std::vector<HsCommData::Style> drawStyles; ///< Ğ¡´°´ò¿ªÊ±¸ÃÌõµÄ»­±Ê
-        std::vector<char> drawStyleOn; ///< 1 ±íÊ¾¸ÃÌõ¼Ç×¡ÁË»­±Ê
+        std::vector<HsCommData::HsObject> rois; ///< ROI åˆ—è¡¨å¿«ç…§
+        std::vector<HsCommData::Style> drawStyles; ///< å°çª—æ‰“å¼€æ—¶è¯¥æ¡çš„ç”»ç¬”
+        std::vector<char> drawStyleOn; ///< 1 è¡¨ç¤ºè¯¥æ¡è®°ä½äº†ç”»ç¬”
     };
 
-    HsCtrl::HsImageWindow* m_view; ///< µ÷ÊÔÍ¼
-    image_widget::ImageDrawPad* m_drawPad; ///< Í¼ÏñÅÔ±ßµÄ»æÖÆÌõ£¬×ÔÉíÊÇ¹¤¾ß´°
-    std::vector<HsCommData::Style> m_drawStyles; ///< Ğ¡´°´ò¿ªÆÚ¼ä¸÷Ìõ ROI µÄ»­±Ê
-    std::vector<char> m_drawStyleOn; ///< 1 ±íÊ¾¸ÃÏÂ±ê¼Ç×¡ÁË»­±Ê
-    ToolEditorBase* m_editor;       ///< Ëã·¨²ÎÊıÒ³
-    ToolIoPanel* m_io;              ///< Á¬½ÓÓë ROI Êı¾İ
-    QWidget* m_quadPanel;           ///< ËÄ¹¬¸ñÈİÆ÷
-    QGridLayout* m_quadGrid;        ///< ËÄ¹¬¸ñ²¼¾Ö
-    QFrame* m_imageWrap;            ///< Í¼ÏñÇø
-    QFrame* m_linkCard;             ///< ÊäÈë¿¨Æ¬
-    QFrame* m_roiCard;              ///< ROI ¿¨Æ¬
-    QFrame* m_paramCard;            ///< ²ÎÊı¿¨Æ¬
-    QWidget* m_quadEmpty[2];        ///< ¿ÕÈ±¹¬¸ñÕ¼Î»
-    QPlainTextEdit* m_log;          ///< µ×À¸ÊÔÅÜÓë²Ù×÷ÈÕÖ¾
+    HsCtrl::HsImageWindow* m_view; ///< è°ƒè¯•å›¾
+    image_widget::ImageDrawPad* m_drawPad; ///< å›¾åƒæ—è¾¹çš„ç»˜åˆ¶æ¡ï¼Œè‡ªèº«æ˜¯å·¥å…·çª—
+    std::vector<HsCommData::Style> m_drawStyles; ///< å°çª—æ‰“å¼€æœŸé—´å„æ¡ ROI çš„ç”»ç¬”
+    std::vector<char> m_drawStyleOn; ///< 1 è¡¨ç¤ºè¯¥ä¸‹æ ‡è®°ä½äº†ç”»ç¬”
+    ToolEditorBase* m_editor;       ///< ç®—æ³•å‚æ•°é¡µ
+    ToolIoPanel* m_io;              ///< è¿æ¥ä¸ ROI æ•°æ®
+    QWidget* m_quadPanel;           ///< å››å®«æ ¼å®¹å™¨
+    QGridLayout* m_quadGrid;        ///< å››å®«æ ¼å¸ƒå±€
+    QFrame* m_imageWrap;            ///< å›¾åƒåŒº
+    QFrame* m_linkCard;             ///< è¾“å…¥å¡ç‰‡
+    QFrame* m_roiCard;              ///< ROI å¡ç‰‡
+    QFrame* m_paramCard;            ///< å‚æ•°å¡ç‰‡
+    QWidget* m_quadEmpty[2];        ///< ç©ºç¼ºå®«æ ¼å ä½
+    QPlainTextEdit* m_log;          ///< åº•æ è¯•è·‘ä¸æ“ä½œæ—¥å¿—
     ToolCfg* m_formalTool;
-    ObjectId m_boundId; ///< ´ò¿ªÊ±¸´ÖÆµÄ¹¤¾ß id£¬¹Ø´°²»ÔÙ¶Á¿ÉÄÜÒÑÊ§Ğ§µÄÅäÖÃ          ///< ·½°¸ÄÚÕıÊ½¹¤¾ß£¬²»ÓµÓĞ
-    ToolCfg m_draftView;            ///< ±¾»á»° draft
-    ToolRecipe m_formalSnapshot;    ///< Open Ê± formal Åä·½¿ìÕÕ
-    ToolCfg* m_tool;                ///< Ö¸Ïò m_draftView£¬¹©±à¼­Âß¼­¸´ÓÃ
-    Session* m_session;             ///< »á»°£¬²»ÓµÓĞ
-    Solution* m_sol;                ///< ·½°¸£¬²»ÓµÓĞ
-    Job* m_job;                     ///< ËùÊôÁ÷³ÌÔËĞĞÊµÀı£¬²»ÓµÓĞ
-    bool m_commitToSolution;        ///< Save ÊÇ·ñÖÃ Solution::dirty
-    QButtonGroup* m_drawTools;      ///< ä¯ÀÀÓëĞÎ×´¹¤¾ß»¥³â×é
-    QWidget* m_drawBar;             ///< ĞÎ×´°´Å¥ÈİÆ÷
-    QFrame* m_drawPanel;            ///< ĞÎ×´¹¤¾ßÇø£¨»æÖÆÄ£Ê½¿ªÊ±ÏÔÊ¾£©
-    QWidget* m_drawModeWrap;        ///< »æÖÆÄ£Ê½ĞĞ£¨ÎŞ ROI ÄÜÁ¦Ê±Òş²Ø£©
-    QCheckBox* m_chkDrawMode;       ///< Á¬Ğø»æÖÆ£º»­Íê²»ÇĞ»Øä¯ÀÀ
-    bool m_pendingNewRoi;           ///< µãĞÂÔö/ÖØ»­ºó´ı»­ĞÂ ROI
+    ObjectId m_boundId; ///< æ‰“å¼€æ—¶å¤åˆ¶çš„å·¥å…· idï¼Œå…³çª—ä¸å†è¯»å¯èƒ½å·²å¤±æ•ˆçš„é…ç½®          ///< æ–¹æ¡ˆå†…æ­£å¼å·¥å…·ï¼Œä¸æ‹¥æœ‰
+    ToolCfg m_draftView;            ///< æœ¬ä¼šè¯ draft
+    ToolRecipe m_formalSnapshot;    ///< Open æ—¶ formal é…æ–¹å¿«ç…§
+    ToolCfg* m_tool;                ///< æŒ‡å‘ m_draftViewï¼Œä¾›ç¼–è¾‘é€»è¾‘å¤ç”¨
+    Session* m_session;             ///< ä¼šè¯ï¼Œä¸æ‹¥æœ‰
+    Solution* m_sol;                ///< æ–¹æ¡ˆï¼Œä¸æ‹¥æœ‰
+    Job* m_job;                     ///< æ‰€å±æµç¨‹è¿è¡Œå®ä¾‹ï¼Œä¸æ‹¥æœ‰
+    bool m_commitToSolution;        ///< Save æ˜¯å¦ç½® Solution::dirty
+    QButtonGroup* m_drawTools;      ///< æµè§ˆä¸å½¢çŠ¶å·¥å…·äº’æ–¥ç»„
+    QWidget* m_drawBar;             ///< å½¢çŠ¶æŒ‰é’®å®¹å™¨
+    QFrame* m_drawPanel;            ///< å½¢çŠ¶å·¥å…·åŒºï¼ˆç»˜åˆ¶æ¨¡å¼å¼€æ—¶æ˜¾ç¤ºï¼‰
+    QWidget* m_drawModeWrap;        ///< ç»˜åˆ¶æ¨¡å¼è¡Œï¼ˆæ—  ROI èƒ½åŠ›æ—¶éšè—ï¼‰
+    QCheckBox* m_chkDrawMode;       ///< è¿ç»­ç»˜åˆ¶ï¼šç”»å®Œä¸åˆ‡å›æµè§ˆ
+    bool m_pendingNewRoi;           ///< ç‚¹æ–°å¢/é‡ç”»åå¾…ç”»æ–° ROI
     bool m_syncingRoiSelection;     
-    QVector<RoiSnapshot> m_roiUndo; ///< ROI ³·ÏúÕ»
-    std::string m_forcedImagePath;  ///< ¸´¼ìÇ¿ÖÆÍ¼Â·¾¶£»¿Õ=²»Ç¿ÖÆ
-    bool m_runBusy;                 ///< ÊÔÅÜÒÑÍ¶µİÎ´Íê³É
+    QVector<RoiSnapshot> m_roiUndo; ///< ROI æ’¤é”€æ ˆ
+    std::string m_forcedImagePath;  ///< å¤æ£€å¼ºåˆ¶å›¾è·¯å¾„ï¼›ç©º=ä¸å¼ºåˆ¶
+    bool m_runBusy;                 ///< è¯•è·‘å·²æŠ•é€’æœªå®Œæˆ
 };
 
 }

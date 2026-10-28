@@ -1,6 +1,6 @@
 /**
  * @file CvBlob.cpp
- * @brief CvBlobÊµÏÖ
+ * @brief CvBlobå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -15,11 +15,11 @@
 
 namespace Vision {
 
-// ¾ø¶Ô¡¢Ïà¶Ô¡¢¶¯Ì¬ãĞÖµ
+// ç»å¯¹ã€ç›¸å¯¹ã€åŠ¨æ€é˜ˆå€¼
 namespace {
 const char kVer_CvBlob[] = "1.0.0.0";
 const Vision::VerNoteRaw kNotes_CvBlob[] = {
-    { "1.0.0.0", "Ê×°æ" },
+    { "1.0.0.0", "é¦–ç‰ˆ" },
 };
 }
 
@@ -45,7 +45,7 @@ AlgToolOut CvBlob::run(const AlgToolIn& in)
         }
         cv::Mat roi = searchDomainFromAlgIn(plainRois(in.rois), plainRegions(in.regions), w, h);
         if (maskIsEmpty(roi)) {
-            return algorToolFail(Vision::acpToUtf8("ËÑË÷ÇøÓòÎª¿Õ"));
+            return algorToolFail("æœç´¢åŒºåŸŸä¸ºç©º");
         }
         cv::Mat local;
         gray.copyTo(local, roi);
@@ -124,8 +124,8 @@ AlgToolOut CvBlob::run(const AlgToolIn& in)
         cv::bitwise_and(bin, roi, bin);
         if (maskIsEmpty(bin)) {
             AlgToolOut emptyOut;
-            emptyOut.image.image = in.image.image;
-            emptyOut.message = Vision::acpToUtf8("Î´ÕÒµ½Á¬Í¨Óò");
+            emptyOut.image.image = inputImage(in);
+            emptyOut.message = "æœªæ‰¾åˆ°è¿é€šåŸŸ";
             return emptyOut;
         }
         cv::Mat morphed;
@@ -136,8 +136,8 @@ AlgToolOut CvBlob::run(const AlgToolIn& in)
                                   maxArea,
                                   minCirc,
                                   maxCirc,
-                                  Vision::acpToUtf8("Blob Íê³É"));
-        // ½á¹ûÅĞ¶¨£ºÊıÁ¿/×ÜÃæ»ı³¬³ö´°¿ÚÔò NG
+                                  "Blob å®Œæˆ");
+        // ç»“æœåˆ¤å®šï¼šæ•°é‡/æ€»é¢ç§¯è¶…å‡ºçª—å£åˆ™ NG
         if (out.ok) {
             const int count = out.values.value("count").toInt(0);
             const double area = out.values.value("area").toDouble(0.0);
@@ -147,16 +147,16 @@ AlgToolOut CvBlob::run(const AlgToolIn& in)
             const double okMaxArea = para.run.okMaxArea;
             if (okMinCount > 0 && count < okMinCount) {
                 out.ok = false;
-                out.message = Vision::acpToUtf8("Blob ÊıÁ¿µÍÓÚÅĞ¶¨ÏÂÏŞ");
+                out.message = "Blob æ•°é‡ä½äºåˆ¤å®šä¸‹é™";
             } else if (okMaxCount > 0 && count > okMaxCount) {
                 out.ok = false;
-                out.message = Vision::acpToUtf8("Blob ÊıÁ¿³¬¹ıÅĞ¶¨ÉÏÏŞ");
+                out.message = "Blob æ•°é‡è¶…è¿‡åˆ¤å®šä¸Šé™";
             } else if (okMinArea > 0.0 && area + 1e-9 < okMinArea) {
                 out.ok = false;
-                out.message = Vision::acpToUtf8("Blob ×ÜÃæ»ıµÍÓÚÅĞ¶¨ÏÂÏŞ");
+                out.message = "Blob æ€»é¢ç§¯ä½äºåˆ¤å®šä¸‹é™";
             } else if (okMaxArea > 0.0 && area > okMaxArea + 1e-9) {
                 out.ok = false;
-                out.message = Vision::acpToUtf8("Blob ×ÜÃæ»ı³¬¹ıÅĞ¶¨ÉÏÏŞ");
+                out.message = "Blob æ€»é¢ç§¯è¶…è¿‡åˆ¤å®šä¸Šé™";
             }
         }
         return out;

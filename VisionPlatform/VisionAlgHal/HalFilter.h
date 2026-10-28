@@ -1,6 +1,6 @@
 /**
  * @file HalFilter.h
- * @brief Í¼ÏñÂË²¨Á÷Ë®¡£ÔöÇ¿¡¢Æ½»¬ºÍ»Ò¶ÈĞÎÌ¬Ñ§°´²½Öè×ö£¨Halcon£©
+ * @brief å›¾åƒæ»¤æ³¢æµæ°´ã€‚å¢å¼ºã€å¹³æ»‘å’Œç°åº¦å½¢æ€å­¦æŒ‰æ­¥éª¤åšï¼ˆHalconï¼‰
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -10,12 +10,13 @@
 #define VISION_HALFILTER_H
 
 #include "AlgToolBase.h"
+#include "HalconCpp.h"
 
 namespace Vision {
 
 /**
  * @class HalFilter
- * @brief Í¼ÏñÂË²¨Á÷Ë®£¨Halcon£©
+ * @brief å›¾åƒæ»¤æ³¢æµæ°´ï¼ˆHalconï¼‰
  */
 class HalFilter : public AlgToolBase {
 public:
@@ -23,8 +24,25 @@ public:
     AlgLibKind algLib() const { return AlgLibHal; }
     std::string version() const;
     std::vector<VerNote> versionNotes() const;
+    int execute(const AlgToolIn& in, AlgToolOut* out) override {
+        if (!out) {
+            return HS_ERR_NULL;
+        }
+        *out = run(in);
+        if (out->ok) {
+            out->errCode = HS_OK;
+            return HS_OK;
+        }
+        if (out->errCode == HS_OK || out->errCode == 1) {
+            out->errCode = HS_ERR_OPERATOR;
+        }
+        return out->errCode;
+    }
     AlgToolOut run(const AlgToolIn& in);
     AlgToolBase* clone() const { return new HalFilter(); }
+
+private:
+    AlgToolOut writeFullImage(const AlgToolIn& in, const HalconCpp::HImage& work, const std::string& okMsg) const;
 };
 
 }

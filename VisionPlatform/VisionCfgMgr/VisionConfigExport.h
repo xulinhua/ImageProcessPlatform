@@ -1,6 +1,6 @@
 /**
  * @file VisionConfigExport.h
- * @brief VisionConfigExportͷ�ļ�
+ * @brief VisionConfigExport头文件
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.

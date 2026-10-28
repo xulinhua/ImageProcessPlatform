@@ -1,6 +1,6 @@
 /**
  * @file Geom.h
- * @brief GeomÍ·ÎÄ¼ş
+ * @brief Geomå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -17,24 +17,24 @@ namespace HsCommData {
 
 /**
  * @class Point_
- * @brief Í¼ÏñÆ½ÃæÉÏµÄµã»òÊ¸Á¿¡£x ÎªÁĞ£¬y ÎªĞĞ£¬ÏòÏÂÎªÕı
- * Æ½Ì¨¼¸ºÎÓÃ Point2d£¨double£©¡£ÕûĞÍ¡¢µ¥¾«¶ÈÖ»ÔÚÏñËØÏÂ±ê»ò¶Ô½ÓÍâ²¿¿âÊ±ÓÃ¡£
+ * @brief å›¾åƒå¹³é¢ä¸Šçš„ç‚¹æˆ–çŸ¢é‡ã€‚x ä¸ºåˆ—ï¼Œy ä¸ºè¡Œï¼Œå‘ä¸‹ä¸ºæ­£
+ * å¹³å°å‡ ä½•ç”¨ Point2dï¼ˆdoubleï¼‰ã€‚æ•´å‹ã€å•ç²¾åº¦åªåœ¨åƒç´ ä¸‹æ ‡æˆ–å¯¹æ¥å¤–éƒ¨åº“æ—¶ç”¨ã€‚
  */
 template<typename T>
 struct Point_ {
-    T x; ///< ÁĞ£¬ÏòÓÒÎªÕı
-    T y; ///< ĞĞ£¬ÏòÏÂÎªÕı
+    T x; ///< åˆ—ï¼Œå‘å³ä¸ºæ­£
+    T y; ///< è¡Œï¼Œå‘ä¸‹ä¸ºæ­£
 
-    /** @brief Ô­µã */
+    /** @brief åŸç‚¹ */
     Point_() : x(0), y(0) {}
     /**
-     * @brief Ö¸¶¨×ø±ê
-     * @param x_ ÁĞ
-     * @param y_ ĞĞ
+     * @brief æŒ‡å®šåæ ‡
+     * @param x_ åˆ—
+     * @param y_ è¡Œ
      */
     Point_(T x_, T y_) : x(x_), y(y_) {}
     /**
-     * @brief ´ÓÁíÒ»ÖÖÊıÖµÀàĞÍ×ª»»¡£ÏÔÊ½£¬±ÜÃâºÍ double ÔËËã»ìÓÃ
+     * @brief ä»å¦ä¸€ç§æ•°å€¼ç±»å‹è½¬æ¢ã€‚æ˜¾å¼ï¼Œé¿å…å’Œ double è¿ç®—æ··ç”¨
      */
     template<typename U>
     explicit Point_(const Point_<U>& p)
@@ -44,9 +44,9 @@ struct Point_ {
     }
 };
 
-typedef Point_<int> Point2i;       ///< ÕûĞÍÏñËØµã
-typedef Point_<float> Point2f;     ///< µ¥¾«¶Èµã
-typedef Point_<double> Point2d;     ///< Æ½Ì¨Ê¹ÓÃµÄÑÇÏñËØµã
+typedef Point_<int> Point2i;       ///< æ•´å‹åƒç´ ç‚¹
+typedef Point_<float> Point2f;     ///< å•ç²¾åº¦ç‚¹
+typedef Point_<double> Point2d;     ///< å¹³å°ä½¿ç”¨çš„äºšåƒç´ ç‚¹
 
 /**
  * @class Box2
@@ -139,41 +139,41 @@ HSCOMMDATA_EXPORT void translate(IRect& rect, int dx, int dy);
 
 /**
  * @class Pose2
- * @brief Æ½Ãæ¸ÕÌåÎ»×Ë¡£Æ½ÒÆ¼Ó×ª½Ç¡£Í¼Ïñ×ø±ê£ºx ÎªÁĞ£¬y ÎªĞĞ£¬ÏòÏÂÎªÕı¡£
- * ÏÈĞı×ªÔÙÆ½ÒÆ£ºp = R * p_local + t¡£×ª½ÇÄÚ²¿Îª»¡¶È£¬´Ó +x ×ªÏò +y¡£¶ÔÍâÓÃ ang¡¢angDeg¡£
+ * @brief å¹³é¢åˆšä½“ä½å§¿ã€‚å¹³ç§»åŠ è½¬è§’ã€‚å›¾åƒåæ ‡ï¼šx ä¸ºåˆ—ï¼Œy ä¸ºè¡Œï¼Œå‘ä¸‹ä¸ºæ­£ã€‚
+ * å…ˆæ—‹è½¬å†å¹³ç§»ï¼šp = R * p_local + tã€‚è½¬è§’å†…éƒ¨ä¸ºå¼§åº¦ï¼Œä» +x è½¬å‘ +yã€‚å¯¹å¤–ç”¨ angã€angDegã€‚
  */
 struct HSCOMMDATA_EXPORT Pose2 {
-    double tx;    ///< Æ½ÒÆ£¬ÁĞ·½Ïò£¬ÏñËØ
-    double ty;    ///< Æ½ÒÆ£¬ĞĞ·½Ïò£¬ÏñËØ
-    double angle; ///< ÄÚ²¿×ª½Ç£¬»¡¶È¡£Õı·½Ïò´Ó +x ×ªÏò +y¡£¶ÔÍâÓÃ ang¡¢angDeg
+    double tx;    ///< å¹³ç§»ï¼Œåˆ—æ–¹å‘ï¼Œåƒç´ 
+    double ty;    ///< å¹³ç§»ï¼Œè¡Œæ–¹å‘ï¼Œåƒç´ 
+    double angle; ///< å†…éƒ¨è½¬è§’ï¼Œå¼§åº¦ã€‚æ­£æ–¹å‘ä» +x è½¬å‘ +yã€‚å¯¹å¤–ç”¨ angã€angDeg
 
-    /** @brief µ¥Î»Î»×Ë£ºÆ½ÒÆ 0£¬×ª½Ç 0 */
+    /** @brief å•ä½ä½å§¿ï¼šå¹³ç§» 0ï¼Œè½¬è§’ 0 */
     Pose2();
     /**
-     * @brief Ö¸¶¨Æ½ÒÆºÍ×ª½Ç
-     * @param tx ÁĞ·½ÏòÆ½ÒÆ
-     * @param ty ĞĞ·½ÏòÆ½ÒÆ
-     * @param angle ÄÚ²¿×ª½Ç£¬»¡¶È¡£Õı·½Ïò´Ó +x ×ªÏò +y¡£¶ÔÍâÓÃ ang¡¢angDeg
+     * @brief æŒ‡å®šå¹³ç§»å’Œè½¬è§’
+     * @param tx åˆ—æ–¹å‘å¹³ç§»
+     * @param ty è¡Œæ–¹å‘å¹³ç§»
+     * @param angle å†…éƒ¨è½¬è§’ï¼Œå¼§åº¦ã€‚æ­£æ–¹å‘ä» +x è½¬å‘ +yã€‚å¯¹å¤–ç”¨ angã€angDeg
      */
     Pose2(double tx, double ty, double angle);
 
-    /** @brief Ö»Ğı×ªÏòÁ¿£¬²»¼ÓÆ½ÒÆ */
+    /** @brief åªæ—‹è½¬å‘é‡ï¼Œä¸åŠ å¹³ç§» */
     Point2d rotate(const Point2d& v) const;
-    /** @brief °Ñ¾Ö²¿µã±äµ½Í¼Ïñ£ºÏÈĞı×ªÔÙ¼ÓÆ½ÒÆ */
+    /** @brief æŠŠå±€éƒ¨ç‚¹å˜åˆ°å›¾åƒï¼šå…ˆæ—‹è½¬å†åŠ å¹³ç§» */
     Point2d apply(const Point2d& p) const;
-    /** @brief ÄæÎ»×Ë */
+    /** @brief é€†ä½å§¿ */
     Pose2 inverse() const;
-    /** @brief ÄÚ²¿×ª½Ç£¬»¡¶È */
+    /** @brief å†…éƒ¨è½¬è§’ï¼Œå¼§åº¦ */
     double angRad() const;
-    /** @brief Ğ´ÈëÄÚ²¿»¡¶È */
+    /** @brief å†™å…¥å†…éƒ¨å¼§åº¦ */
     void setAngRad(double rad);
-    /** @brief ×ª½ÇµÄ¶ÈÊı£¬Õı·½ÏòÓëÄÚ²¿ÏàÍ¬ */
+    /** @brief è½¬è§’çš„åº¦æ•°ï¼Œæ­£æ–¹å‘ä¸å†…éƒ¨ç›¸åŒ */
     double angDeg() const;
-    /** @brief °´¶ÈÊıĞ´Èë£¬Õı·½ÏòÓëÄÚ²¿ÏàÍ¬ */
+    /** @brief æŒ‰åº¦æ•°å†™å…¥ï¼Œæ­£æ–¹å‘ä¸å†…éƒ¨ç›¸åŒ */
     void setAngDeg(double deg);
-    /** @brief °´ÏµÍ³½Ç¶Èµ¥Î»ºÍÕı·½Ïò¶ÁÈ¡ */
+    /** @brief æŒ‰ç³»ç»Ÿè§’åº¦å•ä½å’Œæ­£æ–¹å‘è¯»å– */
     double ang() const;
-    /** @brief °´ÏµÍ³½Ç¶Èµ¥Î»ºÍÕı·½ÏòĞ´Èë */
+    /** @brief æŒ‰ç³»ç»Ÿè§’åº¦å•ä½å’Œæ­£æ–¹å‘å†™å…¥ */
     void setAng(double external);};
 
 }

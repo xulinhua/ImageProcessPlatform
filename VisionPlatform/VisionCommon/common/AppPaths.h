@@ -1,6 +1,6 @@
 /**
  * @file AppPaths.h
- * @brief AppPathsÍ·ÎÄ¼ş
+ * @brief AppPathså¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -16,35 +16,35 @@ namespace Vision {
 
 /**
  * @class AppPaths
- * @brief ±¾»úÄ¿Â¼Ô¼¶¨£ºÒ»ÂÉÏà¶Ô exe£¬Êı¾İÂäÔÚ exe/data£¨²»¸úÏµÍ³ AppData£©
+ * @brief æœ¬æœºç›®å½•çº¦å®šï¼šä¸€å¾‹ç›¸å¯¹ exeï¼Œæ•°æ®è½åœ¨ exe/dataï¼ˆä¸è·Ÿç³»ç»Ÿ AppDataï¼‰
  */
 class VISION_COMMON_API AppPaths {
 public:
-    /** @brief Æô¶¯Ê±ÓÉ VisionApp Ğ´Èë exe ËùÔÚÄ¿Â¼ */
+    /** @brief å¯åŠ¨æ—¶ç”± VisionApp å†™å…¥ exe æ‰€åœ¨ç›®å½• */
     static void setExeDir(const std::string& dir);
-    /** @brief exe Ä¿Â¼ */
+    /** @brief exe ç›®å½• */
     static std::string exeDir();
-    /** @brief Êı¾İ¸ù£ºexe\data */
+    /** @brief æ•°æ®æ ¹ï¼šexe\data */
     static std::string rootDir();
-    /** @brief Êı¾İÄ¿Â¼£¨Í¬ rootDir£© */
+    /** @brief æ•°æ®ç›®å½•ï¼ˆåŒ rootDirï¼‰ */
     static std::string dataDir();
-    /** @brief ÈÕÖ¾Ä¿Â¼£ºdata\logs */
+    /** @brief æ—¥å¿—ç›®å½•ï¼šdata\logs */
     static std::string logsDir();
-    /** @brief ·½°¸Ä¿Â¼£ºdata\solutions£¨*.vpsol£© */
+    /** @brief æ–¹æ¡ˆç›®å½•ï¼šdata\solutionsï¼ˆ*.vpsolï¼‰ */
     static std::string solutionsDir();
-    /** @brief ¶ÀÁ¢×éºÏ£ºdata\composites£¬Ò»¸öÎÄ¼şÒ»·İ */
+    /** @brief ç‹¬ç«‹ç»„åˆï¼šdata\compositesï¼Œä¸€ä¸ªæ–‡ä»¶ä¸€ä»½ */
     static std::string compositesDir();
-    /** @brief ±¾»úÉèÖÃ£ºdata\settings.json */
+    /** @brief æœ¬æœºè®¾ç½®ï¼šdata\settings.json */
     static std::string settingsFile();
-    /** @brief SQLite£ºdata\vision.db */
+    /** @brief SQLiteï¼šdata\vision.db */
     static std::string databaseFile();
-    /** @brief ²å¼ş¸ù£ºexe\plugins */
+    /** @brief æ’ä»¶æ ¹ï¼šexe\plugins */
     static std::string pluginsDir();
-    /** @brief ¹¤¾ß¿Ç£ºplugins\tools */
+    /** @brief å·¥å…·å£³ï¼šplugins\tools */
     static std::string pluginsToolsDir();
-    /** @brief Ëã·¨ºó¶Ë£ºplugins\algos */
+    /** @brief ç®—æ³•åç«¯ï¼šplugins\algos */
     static std::string pluginsAlgosDir();
-    /** @brief È·±£ data¡¢logs¡¢solutions¡¢plugins ´æÔÚ */
+    /** @brief ç¡®ä¿ dataã€logsã€solutionsã€plugins å­˜åœ¨ */
     static void ensureDirs();
 };
 

@@ -1,6 +1,6 @@
 /**
  * @file DraftRegistry.cpp
- * @brief DraftRegistryÊµÏÖ
+ * @brief DraftRegistryå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -15,21 +15,21 @@ namespace Vision {
 namespace {
 
 struct DraftState {
-    bool open;   ///< ÅäÖÃÒ³ÊÇ·ñ´ò¿ª
-    bool dirty;  ///< ÊÇ·ñÓĞÎ´±£´æĞŞ¸Ä
+    bool open;   ///< é…ç½®é¡µæ˜¯å¦æ‰“å¼€
+    bool dirty;  ///< æ˜¯å¦æœ‰æœªä¿å­˜ä¿®æ”¹
     DraftState() : open(false), dirty(false) {}
 };
 
 typedef std::map<std::string, DraftState> DraftMap;
 
-// ¹¤¾ß²İ¸åµÄ´ò¿ªÓëÔà±ê¼Ç
+// å·¥å…·è‰ç¨¿çš„æ‰“å¼€ä¸è„æ ‡è®°
 DraftMap& toolDrafts()
 {
     static DraftMap g;
     return g;
 }
 
-// Á÷³Ì²İ¸åµÄ´ò¿ªÓëÔà±ê¼Ç
+// æµç¨‹è‰ç¨¿çš„æ‰“å¼€ä¸è„æ ‡è®°
 DraftMap& jobDrafts()
 {
     static DraftMap g;
@@ -38,7 +38,7 @@ DraftMap& jobDrafts()
 
 }
 
-// ¹¤¾ßÏêÏ¸µ÷ÊÔÒ³´ò¿ª
+// å·¥å…·è¯¦ç»†è°ƒè¯•é¡µæ‰“å¼€
 void DraftRegistry::registerToolDraft(const ObjectId& toolId)
 {
     if (toolId.isNull()) {
@@ -49,7 +49,7 @@ void DraftRegistry::registerToolDraft(const ObjectId& toolId)
     s.dirty = false;
 }
 
-// ¸üĞÂ¹¤¾ß draft Ôà±ê¼Ç
+// æ›´æ–°å·¥å…· draft è„æ ‡è®°
 void DraftRegistry::setToolDraftDirty(const ObjectId& toolId, bool dirty)
 {
     if (toolId.isNull()) {
@@ -59,7 +59,7 @@ void DraftRegistry::setToolDraftDirty(const ObjectId& toolId, bool dirty)
     s.dirty = dirty;
 }
 
-// ¹¤¾ßÏêÏ¸µ÷ÊÔÒ³¹Ø±Õ
+// å·¥å…·è¯¦ç»†è°ƒè¯•é¡µå…³é—­
 void DraftRegistry::unregisterToolDraft(const ObjectId& toolId)
 {
     if (toolId.isNull()) {
@@ -68,7 +68,7 @@ void DraftRegistry::unregisterToolDraft(const ObjectId& toolId)
     toolDrafts().erase(toolId.toString());
 }
 
-// ¹¤¾ß draft ÊÇ·ñ×èÖ¹ÕıÊ½ÔËĞĞ
+// å·¥å…· draft æ˜¯å¦é˜»æ­¢æ­£å¼è¿è¡Œ
 bool DraftRegistry::toolDraftBlocksFormalRun(const ObjectId& toolId)
 {
     if (toolId.isNull()) {
@@ -78,7 +78,7 @@ bool DraftRegistry::toolDraftBlocksFormalRun(const ObjectId& toolId)
     return it != toolDrafts().end() && it->second.open && it->second.dirty;
 }
 
-// Á÷³ÌÅäÖÃÒ³´ò¿ª
+// æµç¨‹é…ç½®é¡µæ‰“å¼€
 void DraftRegistry::registerJobDraft(const ObjectId& jobId)
 {
     if (jobId.isNull()) {
@@ -89,7 +89,7 @@ void DraftRegistry::registerJobDraft(const ObjectId& jobId)
     s.dirty = false;
 }
 
-// ¸üĞÂÁ÷³Ì draft Ôà±ê¼Ç
+// æ›´æ–°æµç¨‹ draft è„æ ‡è®°
 void DraftRegistry::setJobDraftDirty(const ObjectId& jobId, bool dirty)
 {
     if (jobId.isNull()) {
@@ -99,7 +99,7 @@ void DraftRegistry::setJobDraftDirty(const ObjectId& jobId, bool dirty)
     s.dirty = dirty;
 }
 
-// Á÷³ÌÅäÖÃÒ³¹Ø±Õ
+// æµç¨‹é…ç½®é¡µå…³é—­
 void DraftRegistry::unregisterJobDraft(const ObjectId& jobId)
 {
     if (jobId.isNull()) {
@@ -108,7 +108,7 @@ void DraftRegistry::unregisterJobDraft(const ObjectId& jobId)
     jobDrafts().erase(jobId.toString());
 }
 
-// Á÷³Ì draft ÊÇ·ñ×èÖ¹ÕıÊ½ÔËĞĞ
+// æµç¨‹ draft æ˜¯å¦é˜»æ­¢æ­£å¼è¿è¡Œ
 bool DraftRegistry::jobDraftBlocksFormalRun(const ObjectId& jobId)
 {
     if (jobId.isNull()) {
@@ -118,7 +118,7 @@ bool DraftRegistry::jobDraftBlocksFormalRun(const ObjectId& jobId)
     return it != jobDrafts().end() && it->second.open && it->second.dirty;
 }
 
-// Á÷³ÌÄÚÊÇ·ñÓĞ¹¤¾ßÔÚÎ´±£´æµ÷ÊÔ draft ÖĞ
+// æµç¨‹å†…æ˜¯å¦æœ‰å·¥å…·åœ¨æœªä¿å­˜è°ƒè¯• draft ä¸­
 bool DraftRegistry::anyToolInJobBlocked(const Solution* sol, const ObjectId& jobId)
 {
     if (jobDraftBlocksFormalRun(jobId)) {

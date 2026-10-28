@@ -1,33 +1,33 @@
 # HsImage
 
-¶ÀÁ¢Í¼ÏñĞ­ÒéÓëÏÔÊ¾¿Ø¼ş·½°¸£¬Óë `VisionPlatform` ½âñî¿ª·¢£¬²úÎïÒÔµÚÈı·½¿âĞÎÊ½½ÓÈëÆ½Ì¨¡£
+ç‹¬ç«‹å›¾åƒåè®®ä¸æ˜¾ç¤ºæ§ä»¶æ–¹æ¡ˆï¼Œä¸ `VisionPlatform` è§£è€¦å¼€å‘ï¼Œäº§ç‰©ä»¥ç¬¬ä¸‰æ–¹åº“å½¢å¼æ¥å…¥å¹³å°ã€‚
 
-## ¹¤³ÌÒ»ÀÀ
+## å·¥ç¨‹ä¸€è§ˆ
 
-| ¹¤³Ì | ÀàĞÍ | Ö°Ôğ |
+| å·¥ç¨‹ | ç±»å‹ | èŒè´£ |
 |------|------|------|
-| [HsCommData](HsCommData/README.md) | DLL | ¼¸ºÎ / Í¼Ïñ / µş¼ÓĞ­Òé£¬ÎŞ Qt |
-| [HsImageCtrl](HsImageCtrl/README.md) | DLL | Qt Í¼Ïñ´°¿ÚÓë `ImageWidgetApi` ¿Ç²ã |
-| [HsImageDemo](HsImageDemo/README.md) | EXE | ½»»¥ÑİÊ¾£¨ROI¡¢µş²ã¡¢ãĞÖµµÈ£© |
-| [HsImageBench](HsImageBench/README.md) | EXE | ×ª»»Óë¶ÔÏóÏà¹ØĞÔÄÜÌ¨¼Ü |
+| [HsCommData](HsCommData/README.md) | DLL | å‡ ä½• / å›¾åƒ / å åŠ åè®®ï¼Œæ—  Qt |
+| [HsImageCtrl](HsImageCtrl/README.md) | DLL | Qt å›¾åƒçª—å£ä¸ `ImageWidgetApi` å£³å±‚ |
+| [HsImageDemo](HsImageDemo/README.md) | EXE | äº¤äº’æ¼”ç¤ºï¼ˆROIã€å å±‚ã€é˜ˆå€¼ç­‰ï¼‰ |
+| [HsImageBench](HsImageBench/README.md) | EXE | è½¬æ¢ä¸å¯¹è±¡ç›¸å…³æ€§èƒ½å°æ¶ |
 
-½â¾ö·½°¸£º`HsImage.sln`£¨VS2015 / ¹¤¾ß¼¯ v140£©¡£
+è§£å†³æ–¹æ¡ˆï¼š`HsImage.sln`ï¼ˆVS2022 / å·¥å…·é›† v143 / C++17ï¼‰ã€‚
 
-## ÒÀÀµ¹ØÏµ
+## ä¾èµ–å…³ç³»
 
 ```text
-HsCommData  (ÎŞ Qt)
+HsCommData  (æ—  Qt)
     ^
 HsImageCtrl (Qt Widgets)
     ^
 HsImageDemo / HsImageBench
 ```
 
-## ¹¹½¨
+## æ„å»º
 
-1. ÓÃ VS2015 ´ò¿ª `HsImage.sln`¡£
-2. ÅäÖÃ `Debug|x64` »ò `Release|x64`£¨Òà¿É Win32£©¡£
-3. Éú³É½â¾ö·½°¸¡£²úÎïÊä³öµ½£º
+1. ç”¨ VS2022 æ‰“å¼€ `HsImage.sln`ã€‚
+2. é…ç½® `Debug|x64` æˆ– `Release|x64`ï¼ˆäº¦å¯ Win32ï¼‰ã€‚
+3. ç”Ÿæˆè§£å†³æ–¹æ¡ˆã€‚äº§ç‰©è¾“å‡ºåˆ°ï¼š
 
 ```text
 HsImage\bin\<Platform>\<Configuration>\
@@ -37,38 +37,38 @@ HsImage\bin\<Platform>\<Configuration>\
   HsImageBench.exe
 ```
 
-### »·¾³Ô¼¶¨
+### ç¯å¢ƒçº¦å®š
 
-| Ïî | Ä¬ÈÏ |
+| é¡¹ | é»˜è®¤ |
 |----|------|
-| Qt | `C:\Qt\Qt5.9.9\5.9.9\msvc2015_64`£¨Win32 ¶ÔÓ¦ `msvc2015`£© |
-| HALCON£¨Demo/Bench ¿ÉÑ¡£© | `C:\Program Files\MVTec\HALCON-17.12-Progress` |
-| OpenCV£¨Ctrl/Bench ¿ÉÑ¡£© | `C:\opencv\build` |
+| Qt | ç¯å¢ƒå˜é‡ `QTDIR`ã€‚x64 æŒ‡å‘ `msvc2019_64`ï¼ŒWin32 æŒ‡å‘ `msvc2019` |
+| HALCONï¼ˆDemo/Benchï¼Œx64ï¼‰ | `VisionPlatform\third_party\Halcon` |
+| OpenCVï¼ˆCtrl/Benchï¼‰ | `VisionPlatform\third_party\OpenCV` |
 
-¿ÉÓÃ»·¾³±äÁ¿ `QTDIR`¡¢`HALCONROOT`¡¢`OPENCV_DIR` ¸²¸Ç¡£
+Qt åªè¯»ç¯å¢ƒå˜é‡ `QTDIR`ã€‚Halcon å’Œ OpenCV ç”¨ä¸Šé¢çš„ä»“åº“å†…ç›®å½•ã€‚
 
-### Ô´Âë±àÂë
+### æºç ç¼–ç 
 
-ÖĞÎÄ Windows ÏÂÔ´Âë°´ **ÏµÍ³ ANSI/GBK** ±£´æ£¨Óë VisionPlatform Ò»ÖÂ£©£¬**²»Òª**¶Ô¹¤³Ì¼Ó `/utf-8`¡£×¢ÊÍÓë `fromLocal8Bit` Õ­×ÖÃæÁ¿¾ù°´´ËÔ¼¶¨¡£
+æºç æŒ‰ UTF-8 ä¿å­˜ï¼Œå·¥ç¨‹ç¼–è¯‘é€‰é¡¹å¸¦ `/utf-8`ã€‚ç•Œé¢å­—ç¬¦ä¸²ç”¨ `fromUtf8`ã€‚
 
-## ½ÓÈë VisionPlatform
+## æ¥å…¥ VisionPlatform
 
-±àºÃºó½«¶ÔÓ¦ÅäÖÃµÄ DLL/LIB ¿½µ½£º
+ç¼–å¥½åå°†å¯¹åº”é…ç½®çš„ DLL/LIB æ‹·åˆ°ï¼š
 
 ```text
 VisionPlatform\third_party\HsCommData\bin|lib\<Platform>\<Configuration>\
 VisionPlatform\third_party\HsImageCtrl\bin|lib\<Platform>\<Configuration>\
 ```
 
-Í·ÎÄ¼şÍ¬²½µ½£º
+å¤´æ–‡ä»¶åŒæ­¥åˆ°ï¼š
 
 ```text
 VisionPlatform\third_party\HsCommData\include\HsCommData\
 VisionPlatform\third_party\HsImageCtrl\include\
 ```
 
-Æ½Ì¨²àÍ¨¹ı `vision.props` / ¹¤³ÌÒıÓÃÁ´½Ó `HsCommData.lib`¡¢`HsImageCtrl.lib`£¬ÔËĞĞÊ±´Ó `third_party\...\bin` ¿½±´ DLL¡£
+å¹³å°ä¾§é€šè¿‡ `vision.props` / å·¥ç¨‹å¼•ç”¨é“¾æ¥ `HsCommData.lib`ã€`HsImageCtrl.lib`ï¼Œè¿è¡Œæ—¶ä» `third_party\...\bin` æ‹·è´ DLLã€‚
 
-## Ïà¹ØÎÄµµ
+## ç›¸å…³æ–‡æ¡£
 
-- [docs/»æÖÆÓëÆÁ±Î·½°¸.md](docs/»æÖÆÓëÆÁ±Î·½°¸.md) ¡ª »æÖÆ»á»°ÓëÆÁ±ÎÍ¿Ä¨Éè¼Æ
+- [docs/ç»˜åˆ¶ä¸å±è”½æ–¹æ¡ˆ.md](docs/ç»˜åˆ¶ä¸å±è”½æ–¹æ¡ˆ.md) â€” ç»˜åˆ¶ä¼šè¯ä¸å±è”½æ¶‚æŠ¹è®¾è®¡

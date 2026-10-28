@@ -1,6 +1,6 @@
 /**
  * @file Theme.h
- * @brief ThemeÍ·ÎÄ¼ş
+ * @brief Themeå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -23,64 +23,64 @@ class QLabel;
 
 namespace Vision {
 
-/** @brief µ±Ç°Ä¬ÈÏµµ£¨Ç³É«¹¤Òµ£©µÄÈ«¾Ö QSS */
+/** @brief å½“å‰é»˜è®¤æ¡£ï¼ˆæµ…è‰²å·¥ä¸šï¼‰çš„å…¨å±€ QSS */
 VISION_WIDGETS_API QString appStyleSheet();
 /**
- * @brief °´Ö÷ÌâµµÉú³É QSS¡£id Îª industrial¡¢industrialLarge¡¢industrialContrast
- * @param themeId ´æÅÌ¼ü£»²»ÈÏÊ¶Ôò»ØÍË industrial
+ * @brief æŒ‰ä¸»é¢˜æ¡£ç”Ÿæˆ QSSã€‚id ä¸º industrialã€industrialLargeã€industrialContrast
+ * @param themeId å­˜ç›˜é”®ï¼›ä¸è®¤è¯†åˆ™å›é€€ industrial
  */
 VISION_WIDGETS_API QString appStyleSheet(const std::string& themeId);
-/** @brief Ó¦ÓÃµ½ qApp£¬Á¢¼´»»Æ¤ */
+/** @brief åº”ç”¨åˆ° qAppï¼Œç«‹å³æ¢çš® */
 VISION_WIDGETS_API void applyAppTheme(const std::string& themeId);
-/** @brief Ö÷ÌâµµÊıÁ¿ */
+/** @brief ä¸»é¢˜æ¡£æ•°é‡ */
 VISION_WIDGETS_API int themeCount();
-/** @brief µÚ i ¸öÖ÷Ìâ´æÅÌ¼ü */
+/** @brief ç¬¬ i ä¸ªä¸»é¢˜å­˜ç›˜é”® */
 VISION_WIDGETS_API const char* themeIdAt(int i);
-/** @brief Ö÷ÌâÏÔÊ¾Ãû£¨×ß Translate£© */
+/** @brief ä¸»é¢˜æ˜¾ç¤ºåï¼ˆèµ° Translateï¼‰ */
 VISION_WIDGETS_API std::string themeTitle(const std::string& themeId);
 
 /**
- * @brief ¸ø°´Å¥´ò role ÊôĞÔ£¬ÅäºÏ QSS Çø·ÖÖ÷/´Î/Î£ÏÕ
- * @param role Èç "primary" / "danger"
+ * @brief ç»™æŒ‰é’®æ‰“ role å±æ€§ï¼Œé…åˆ QSS åŒºåˆ†ä¸»/æ¬¡/å±é™©
+ * @param role å¦‚ "primary" / "danger"
  */
 VISION_WIDGETS_API void setButtonRole(QPushButton* btn, const char* role);
-/** @brief ¿¨Æ¬ÈİÆ÷£¨Ô²½ÇÃæ°å£© */
+/** @brief å¡ç‰‡å®¹å™¨ï¼ˆåœ†è§’é¢æ¿ï¼‰ */
 VISION_WIDGETS_API QFrame* makeCard(QWidget* parent);
 /**
- * @brief ÔÊĞí¶Ô»°¿òÊÖ¶¯µ÷Õû³ß´ç£¨È¥¹Ì¶¨´óĞ¡±ê¼Ç¡¢ÆôÓÃÓÒÏÂ½Ç grip£©
- * @param dlg Ä¿±ê¶Ô»°¿ò
+ * @brief å…è®¸å¯¹è¯æ¡†æ‰‹åŠ¨è°ƒæ•´å°ºå¯¸ï¼ˆå»å›ºå®šå¤§å°æ ‡è®°ã€å¯ç”¨å³ä¸‹è§’ gripï¼‰
+ * @param dlg ç›®æ ‡å¯¹è¯æ¡†
  */
 VISION_WIDGETS_API void enableDialogResize(QDialog* dlg);
-/** @brief È¥µôÏµÍ³±êÌâÀ¸£¬±£ÁôÈÎÎñÀ¸±êÌâ */
+/** @brief å»æ‰ç³»ç»Ÿæ ‡é¢˜æ ï¼Œä¿ç•™ä»»åŠ¡æ æ ‡é¢˜ */
 VISION_WIDGETS_API void applyFramelessDialog(QDialog* dlg);
-/** @brief ´´½¨ÓÒÉÏ½Ç¹Ø±Õ°´Å¥£¬µã»÷´¥·¢ dlg->close() */
+/** @brief åˆ›å»ºå³ä¸Šè§’å…³é—­æŒ‰é’®ï¼Œç‚¹å‡»è§¦å‘ dlg->close() */
 VISION_WIDGETS_API QPushButton* makeDialogCloseButton(QDialog* dlg, QWidget* parent);
-/** @brief ÔÚ handle ÇøÓò°´×¡×ó¼üÍÏ¶¯¶Ô»°¿ò */
+/** @brief åœ¨ handle åŒºåŸŸæŒ‰ä½å·¦é”®æ‹–åŠ¨å¯¹è¯æ¡† */
 VISION_WIDGETS_API void installDialogDragHandle(QDialog* dlg, QWidget* handle);
 /**
- * @brief ÔÚ¸ù²¼¾Ö¶¥²åÈë±êÌâÀ¸£¨±êÌâ + ¹Ø±Õ£©£¬²¢ÆôÓÃÍÏ×§
- * @return ±êÌâÎÄ×Ö±êÇ©£¬objectName Îª dialogTitleText
+ * @brief åœ¨æ ¹å¸ƒå±€é¡¶æ’å…¥æ ‡é¢˜æ ï¼ˆæ ‡é¢˜ + å…³é—­ï¼‰ï¼Œå¹¶å¯ç”¨æ‹–æ‹½
+ * @return æ ‡é¢˜æ–‡å­—æ ‡ç­¾ï¼ŒobjectName ä¸º dialogTitleText
  */
 VISION_WIDGETS_API QLabel* prependFramelessTitleBar(QDialog* dlg, QBoxLayout* rootLayout, const QString& title);
 /**
- * @brief ÎŞ±ß¿ò¶Ô»°¿òÄÚÈİÇø£¨×óÓÒ/ÏÂÁô°×£¬¶¥À¸ÈÔÌù±ß£©
- * @param margin ÄÚÈİÇø×óÓÒ/ÏÂÄÚ±ß¾à px
- * @param topMargin ÄÚÈİÇøÓë¶¥À¸¼ä¾à px
+ * @brief æ— è¾¹æ¡†å¯¹è¯æ¡†å†…å®¹åŒºï¼ˆå·¦å³/ä¸‹ç•™ç™½ï¼Œé¡¶æ ä»è´´è¾¹ï¼‰
+ * @param margin å†…å®¹åŒºå·¦å³/ä¸‹å†…è¾¹è· px
+ * @param topMargin å†…å®¹åŒºä¸é¡¶æ é—´è· px
  */
 VISION_WIDGETS_API QVBoxLayout* framelessDialogContentLayout(QDialog* dlg, QBoxLayout* rootLayout,
                                           int margin = 12, int topMargin = 10);
-/** @brief Í¬²½×Ô»æ±êÌâÀ¸ÎÄ×Ö£¨ÈÔ±£Áô setWindowTitle ¹©ÈÎÎñÀ¸£© */
+/** @brief åŒæ­¥è‡ªç»˜æ ‡é¢˜æ æ–‡å­—ï¼ˆä»ä¿ç•™ setWindowTitle ä¾›ä»»åŠ¡æ ï¼‰ */
 VISION_WIDGETS_API void syncDialogTitleBar(QDialog* dlg, const QString& title);
 /**
- * @brief ´´½¨ CV-X Æ·ÅÆ¶¥À¸£¨logo + ±êÌâ + ¿ÉÑ¡¸±±êÌâ/°ïÖú + ¹Ø±Õ£©
- * @param titleLabelOut Èô·Ç¿ÕÔòĞ´³ö±êÌâ±êÇ©Ö¸Õë
+ * @brief åˆ›å»º CV-X å“ç‰Œé¡¶æ ï¼ˆlogo + æ ‡é¢˜ + å¯é€‰å‰¯æ ‡é¢˜/å¸®åŠ© + å…³é—­ï¼‰
+ * @param titleLabelOut è‹¥éç©ºåˆ™å†™å‡ºæ ‡é¢˜æ ‡ç­¾æŒ‡é’ˆ
  */
 VISION_WIDGETS_API QFrame* makeCvXTitleBar(QDialog* dlg, QWidget* parent, const QString& title,
                         const QString& subtitle = QString(), bool withHelp = false,
                         QLabel** titleLabelOut = 0);
 /**
- * @brief µ¯³öÎ´±£´æ¹Ø´°Ñ¯ÎÊ£¨±£´æ / ²»±£´æ / È¡Ïû£©
- * @return 0 È¡Ïû£¬1 ²»±£´æ£¬2 µã±£´æ
+ * @brief å¼¹å‡ºæœªä¿å­˜å…³çª—è¯¢é—®ï¼ˆä¿å­˜ / ä¸ä¿å­˜ / å–æ¶ˆï¼‰
+ * @return 0 å–æ¶ˆï¼Œ1 ä¸ä¿å­˜ï¼Œ2 ç‚¹ä¿å­˜
  */
 VISION_WIDGETS_API int askUnsavedCloseQuestion(QWidget* parent);
 

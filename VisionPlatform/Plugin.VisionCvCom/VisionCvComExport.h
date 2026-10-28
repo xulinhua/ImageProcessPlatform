@@ -1,6 +1,6 @@
 /**
  * @file VisionCvComExport.h
- * @brief VisionCvComExportͷ�ļ�
+ * @brief VisionCvComExport头文件
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.

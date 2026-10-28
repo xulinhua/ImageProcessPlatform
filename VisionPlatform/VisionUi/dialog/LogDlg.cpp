@@ -1,6 +1,6 @@
 /**
  * @file LogDlg.cpp
- * @brief LogDlgÊµÏÖ
+ * @brief LogDlgå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -33,13 +33,13 @@ namespace Vision {
 
 namespace {
 
-// ½¨Ò»ÕÅÖ»¶ÁÈÕÖ¾±í
+// å»ºä¸€å¼ åªè¯»æ—¥å¿—è¡¨
 QTableWidget* makeLogTable(QWidget* parent)
 {
     QTableWidget* t = new QTableWidget(parent);
     t->setColumnCount(7);
     QStringList h;
-    h << T("Ê±¼ä") << T("ÓÃ»§") << T("½ÇÉ«") << T("¶¯×÷") << T("¶ÔÏó") << T("½á¹û") << T("ËµÃ÷");
+    h << T("æ—¶é—´") << T("ç”¨æˆ·") << T("è§’è‰²") << T("åŠ¨ä½œ") << T("å¯¹è±¡") << T("ç»“æœ") << T("è¯´æ˜");
     t->setHorizontalHeaderLabels(h);
     t->horizontalHeader()->setStretchLastSection(true);
     t->verticalHeader()->setVisible(false);
@@ -49,26 +49,26 @@ QTableWidget* makeLogTable(QWidget* parent)
     return t;
 }
 
-// ²éÑ¯½á¹ûÁĞ£ºÊ§°Ü¡¢¾Ü¾ø£¬ÆäÓàÊÓÎª³É¹¦
+// æŸ¥è¯¢ç»“æœåˆ—ï¼šå¤±è´¥ã€æ‹’ç»ï¼Œå…¶ä½™è§†ä¸ºæˆåŠŸ
 QString resultText(const std::string& r)
 {
     if (r == "fail") {
-        return QString::fromUtf8(Translate::tr("Ê§°Ü").c_str());
+        return QString::fromUtf8(Translate::tr("å¤±è´¥").c_str());
     }
     if (r == "denied") {
-        return QString::fromUtf8(Translate::tr("¾Ü¾ø").c_str());
+        return QString::fromUtf8(Translate::tr("æ‹’ç»").c_str());
     }
-    return QString::fromUtf8(Translate::tr("³É¹¦").c_str());
+    return QString::fromUtf8(Translate::tr("æˆåŠŸ").c_str());
 }
 
 } // namespace
 
-// Èı¸öÒ³£º²Ù×÷¡¢µ÷ÊÔ¡¢¹ÜÀí
+// ä¸‰ä¸ªé¡µï¼šæ“ä½œã€è°ƒè¯•ã€ç®¡ç†
 LogDlg::LogDlg(Session* session, QWidget* parent)
     : QDialog(parent)
     , m_session(session)
 {
-    setWindowTitle(T("ÈÕÖ¾¹Ü¿Ø"));
+    setWindowTitle(T("æ—¥å¿—ç®¡æ§"));
     setModal(true);
     resize(900, 560);
 
@@ -81,14 +81,14 @@ LogDlg::LogDlg(Session* session, QWidget* parent)
     m_to->setDisplayFormat(QLatin1String("yyyy-MM-dd"));
     m_to->setDate(QDate::currentDate());
 
-    QPushButton* refresh = new QPushButton(T("²éÑ¯"), this);
+    QPushButton* refresh = new QPushButton(T("æŸ¥è¯¢"), this);
     setButtonRole(refresh, "primary");
     connect(refresh, SIGNAL(clicked()), this, SLOT(onRefresh()));
 
     QHBoxLayout* filter = new QHBoxLayout();
-    filter->addWidget(new QLabel(T("´Ó"), this));
+    filter->addWidget(new QLabel(T("ä»"), this));
     filter->addWidget(m_from);
-    filter->addWidget(new QLabel(T("µ½"), this));
+    filter->addWidget(new QLabel(T("åˆ°"), this));
     filter->addWidget(m_to);
     filter->addWidget(refresh);
     filter->addStretch();
@@ -97,7 +97,7 @@ LogDlg::LogDlg(Session* session, QWidget* parent)
     m_dbgTable = makeLogTable(this);
 
     m_files = new QListWidget(this);
-    m_btnDelete = new QPushButton(T("É¾³ı¹´Ñ¡µÄÈÕÆÚ"), this);
+    m_btnDelete = new QPushButton(T("åˆ é™¤å‹¾é€‰çš„æ—¥æœŸ"), this);
     connect(m_btnDelete, SIGNAL(clicked()), this, SLOT(onDelete()));
     m_fileHint = new QLabel(this);
     m_fileHint->setWordWrap(true);
@@ -110,12 +110,12 @@ LogDlg::LogDlg(Session* session, QWidget* parent)
     mLay->addWidget(m_btnDelete, 0, Qt::AlignLeft);
 
     m_tabs = new QTabWidget(this);
-    m_tabs->addTab(m_opTable, T("²Ù×÷ÈÕÖ¾"));
-    m_tabs->addTab(m_dbgTable, T("µ÷ÊÔÈÕÖ¾"));
-    m_tabs->addTab(manage, T("ÈÕÖ¾¹ÜÀí"));
+    m_tabs->addTab(m_opTable, T("æ“ä½œæ—¥å¿—"));
+    m_tabs->addTab(m_dbgTable, T("è°ƒè¯•æ—¥å¿—"));
+    m_tabs->addTab(manage, T("æ—¥å¿—ç®¡ç†"));
     connect(m_tabs, SIGNAL(currentChanged(int)), this, SLOT(onTabChanged(int)));
 
-    QPushButton* closeBtn = new QPushButton(T("¹Ø±Õ"), this);
+    QPushButton* closeBtn = new QPushButton(T("å…³é—­"), this);
     connect(closeBtn, SIGNAL(clicked()), this, SLOT(accept()));
 
     QVBoxLayout* root = new QVBoxLayout(this);
@@ -131,13 +131,13 @@ LogDlg::LogDlg(Session* session, QWidget* parent)
     onRefresh();
 }
 
-// ÓĞÉ¾³ıÈ¨ÏŞ²ÅÔÊĞí¹´Ñ¡É¾³ı
+// æœ‰åˆ é™¤æƒé™æ‰å…è®¸å‹¾é€‰åˆ é™¤
 bool LogDlg::canManage() const
 {
     return m_session && m_session->has(PermManageLogs);
 }
 
-// ²éÑ¯µ±Ç°ÈÕÆÚ·¶Î§
+// æŸ¥è¯¢å½“å‰æ—¥æœŸèŒƒå›´
 void LogDlg::onRefresh()
 {
     fillTable(m_opTable, LogKindOp);
@@ -145,12 +145,12 @@ void LogDlg::onRefresh()
     fillFiles();
 }
 
-// Ò³Ç©ÇĞ»»²Û£»²é¿âÈÔÓÉË¢ĞÂ°´Å¥¸ºÔğ
+// é¡µç­¾åˆ‡æ¢æ§½ï¼›æŸ¥åº“ä»ç”±åˆ·æ–°æŒ‰é’®è´Ÿè´£
 void LogDlg::onTabChanged(int)
 {
 }
 
-// ÌîÒ»ÕÅ±í
+// å¡«ä¸€å¼ è¡¨
 void LogDlg::fillTable(QTableWidget* table, LogKind kind)
 {
     if (!table) {
@@ -178,19 +178,19 @@ void LogDlg::fillTable(QTableWidget* table, LogKind kind)
     table->resizeColumnsToContents();
 }
 
-// ÎÄ¼şÁĞ±í£ºÎŞ¹ÜÀíÈ¨ÏŞÔòÖ»¶Á
+// æ–‡ä»¶åˆ—è¡¨ï¼šæ— ç®¡ç†æƒé™åˆ™åªè¯»
 void LogDlg::fillFiles()
 {
     m_files->clear();
     const bool manage = canManage();
     m_btnDelete->setEnabled(manage);
     m_fileHint->setText(manage
-                        ? T("¹´Ñ¡ÈÕÆÚºóÉ¾³ı¡£É¾³ıµÄÊÇÊı¾İ¿âÖĞ¸ÃÈÕ¼ÇÂ¼£¬²»¿É»Ö¸´¡£")
-                        : T("µ±Ç°½ÇÉ«Ö»ÄÜ²é¿´£¬²»ÄÜÉ¾³ıÈÕÖ¾¡£"));
+                        ? T("å‹¾é€‰æ—¥æœŸååˆ é™¤ã€‚åˆ é™¤çš„æ˜¯æ•°æ®åº“ä¸­è¯¥æ—¥è®°å½•ï¼Œä¸å¯æ¢å¤ã€‚")
+                        : T("å½“å‰è§’è‰²åªèƒ½æŸ¥çœ‹ï¼Œä¸èƒ½åˆ é™¤æ—¥å¿—ã€‚"));
     const std::vector<LogFileInfo> files = LogMgr::listFiles();
     for (size_t i = 0; i < files.size(); ++i) {
         const LogFileInfo& fi = files[i];
-        const QString kind = (fi.kind == LogKindDebug) ? T("µ÷ÊÔ") : T("²Ù×÷");
+        const QString kind = (fi.kind == LogKindDebug) ? T("è°ƒè¯•") : T("æ“ä½œ");
         QListWidgetItem* it = new QListWidgetItem(kind + QLatin1String("  ") + qs(fi.fileName), m_files);
         it->setData(Qt::UserRole, qs(fi.path));
         if (manage) {
@@ -202,11 +202,11 @@ void LogDlg::fillFiles()
     }
 }
 
-// É¾³ı¹´Ñ¡ÎÄ¼ş²¢¼Ç²Ù×÷ÈÕÖ¾
+// åˆ é™¤å‹¾é€‰æ–‡ä»¶å¹¶è®°æ“ä½œæ—¥å¿—
 void LogDlg::onDelete()
 {
     if (!canManage()) {
-        QMessageBox::warning(this, T("ÈÕÖ¾¹Ü¿Ø"), T("Ã»ÓĞÉ¾³ıÈÕÖ¾µÄÈ¨ÏŞ¡£"));
+        QMessageBox::warning(this, T("æ—¥å¿—ç®¡æ§"), T("æ²¡æœ‰åˆ é™¤æ—¥å¿—çš„æƒé™ã€‚"));
         return;
     }
     std::vector<std::string> paths;
@@ -217,11 +217,11 @@ void LogDlg::onDelete()
         }
     }
     if (paths.empty()) {
-        QMessageBox::information(this, T("ÈÕÖ¾¹Ü¿Ø"), T("ÇëÏÈ¹´Ñ¡ÒªÉ¾³ıµÄÈÕÆÚ¡£"));
+        QMessageBox::information(this, T("æ—¥å¿—ç®¡æ§"), T("è¯·å…ˆå‹¾é€‰è¦åˆ é™¤çš„æ—¥æœŸã€‚"));
         return;
     }
-    if (QMessageBox::question(this, T("ÈÕÖ¾¹Ü¿Ø"),
-                              T("È·¶¨É¾³ı¹´Ñ¡ÈÕÆÚµÄÈÕÖ¾£¿´Ë²Ù×÷²»¿É»Ö¸´¡£"),
+    if (QMessageBox::question(this, T("æ—¥å¿—ç®¡æ§"),
+                              T("ç¡®å®šåˆ é™¤å‹¾é€‰æ—¥æœŸçš„æ—¥å¿—ï¼Ÿæ­¤æ“ä½œä¸å¯æ¢å¤ã€‚"),
                               QMessageBox::Yes | QMessageBox::No,
                               QMessageBox::No) != QMessageBox::Yes) {
         return;

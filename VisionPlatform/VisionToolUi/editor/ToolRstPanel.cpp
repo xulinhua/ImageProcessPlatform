@@ -1,6 +1,6 @@
 /**
  * @file ToolRstPanel.cpp
- * @brief ToolRstPanelÊµÏÖ
+ * @brief ToolRstPanelå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -29,13 +29,13 @@ namespace Vision {
 namespace {
 
 enum RunStatusKind {
-    RunStatusNone = 0,   ///< Î´Ñ¡ÖĞ / ÎŞÉÏÏÂÎÄ
-    RunStatusPending,    ///< Î´ÔËĞĞ
+    RunStatusNone = 0,   ///< æœªé€‰ä¸­ / æ— ä¸Šä¸‹æ–‡
+    RunStatusPending,    ///< æœªè¿è¡Œ
     RunStatusOk,         ///< OK
     RunStatusNg          ///< NG
 };
 
-// ÔËĞĞ½á¹û±êÇ©£º½ö×ÖÌåÑÕÉ«£¬²»¸Ä±³¾°
+// è¿è¡Œç»“æœæ ‡ç­¾ï¼šä»…å­—ä½“é¢œè‰²ï¼Œä¸æ”¹èƒŒæ™¯
 static void applyRunStatusLabel(QLabel* lab, RunStatusKind kind)
 {
     if (!lab) {
@@ -62,7 +62,7 @@ static void applyRunStatusLabel(QLabel* lab, RunStatusKind kind)
     }
 }
 
-// Êä³ö±íÖĞ OK/NG µ¥Ôª¸ñ×ÅÉ«
+// è¾“å‡ºè¡¨ä¸­ OK/NG å•å…ƒæ ¼ç€è‰²
 static void applyOkNgTableCell(QTableWidgetItem* it, bool ok)
 {
     if (!it) {
@@ -82,7 +82,7 @@ static void applyOkNgTableCell(QTableWidgetItem* it, bool ok)
 
 } // namespace
 
-// Ö»¶Áµ¥Ôª¸ñ
+// åªè¯»å•å…ƒæ ¼
 static QTableWidgetItem* roCell(const QString& text, bool rightNum)
 {
     QTableWidgetItem* it = new QTableWidgetItem(text);
@@ -93,7 +93,7 @@ static QTableWidgetItem* roCell(const QString& text, bool rightNum)
     return it;
 }
 
-// ²ÎÊıÖµ×ªÏÔÊ¾ÎÄ±¾
+// å‚æ•°å€¼è½¬æ˜¾ç¤ºæ–‡æœ¬
 static QString paramText(const ParamValue& v)
 {
     if (v.isNull()) {
@@ -102,7 +102,7 @@ static QString paramText(const ParamValue& v)
     return qs(v.toString());
 }
 
-// ÔËĞĞ½á¹ûÖ»¶ÁÇø
+// è¿è¡Œç»“æœåªè¯»åŒº
 ToolRstPanel::ToolRstPanel(QWidget* parent)
     : QWidget(parent)
     , m_toolLab(nullptr)
@@ -115,7 +115,7 @@ ToolRstPanel::ToolRstPanel(QWidget* parent)
     m_toolLab->setWordWrap(true);
     m_toolLab->setObjectName(QLatin1String("section"));
 
-    QGroupBox* runBox = new QGroupBox(T("ÔËĞĞ½á¹û"), this);
+    QGroupBox* runBox = new QGroupBox(T("è¿è¡Œç»“æœ"), this);
     QVBoxLayout* runLay = new QVBoxLayout(runBox);
     runLay->setContentsMargins(8, 6, 8, 6);
     runLay->setSpacing(2);
@@ -130,13 +130,13 @@ ToolRstPanel::ToolRstPanel(QWidget* parent)
     runLay->addWidget(m_msgLab);
     runBox->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
 
-    QGroupBox* outBox = new QGroupBox(T("Êä³öÊı¾İ"), this);
+    QGroupBox* outBox = new QGroupBox(T("è¾“å‡ºæ•°æ®"), this);
     QVBoxLayout* outLay = new QVBoxLayout(outBox);
     outLay->setContentsMargins(8, 6, 8, 6);
     m_outTable = new QTableWidget(outBox);
     m_outTable->setColumnCount(2);
     QStringList hh;
-    hh << T("Ïî") << T("Öµ");
+    hh << T("é¡¹") << T("å€¼");
     m_outTable->setHorizontalHeaderLabels(hh);
     m_outTable->verticalHeader()->setVisible(false);
     m_outTable->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -165,7 +165,7 @@ ToolRstPanel::ToolRstPanel(QWidget* parent)
     lay->addWidget(split, 1);
 }
 
-// ÌîÊä³ö¼üÖµ±í
+// å¡«è¾“å‡ºé”®å€¼è¡¨
 void ToolRstPanel::fillOutputTable(const ParamMap& values)
 {
     if (!m_outTable) {
@@ -183,13 +183,13 @@ void ToolRstPanel::fillOutputTable(const ParamMap& values)
     m_outTable->resizeRowsToContents();
 }
 
-// °´¹¤¾ßÓëÁ÷³Ì»º´æË¢ĞÂÔËĞĞ½á¹ûÓëÊä³ö
+// æŒ‰å·¥å…·ä¸æµç¨‹ç¼“å­˜åˆ·æ–°è¿è¡Œç»“æœä¸è¾“å‡º
 void ToolRstPanel::refresh(Solution* sol, ToolCfg* tool, Job* job, const ToolOut* lastRun,
                               bool afterJobRun)
 {
     if (!tool) {
-        m_toolLab->setText(T("Ñ¡ÖĞ¹¤¾ß"));
-        m_statusLab->setText(T("×´Ì¬£º") + T("Î´Ñ¡ÖĞ"));
+        m_toolLab->setText(T("é€‰ä¸­å·¥å…·"));
+        m_statusLab->setText(T("çŠ¶æ€ï¼š") + T("æœªé€‰ä¸­"));
         applyRunStatusLabel(m_statusLab, RunStatusNone);
         m_msgLab->clear();
         fillOutputTable(ParamMap());
@@ -226,7 +226,7 @@ void ToolRstPanel::refresh(Solution* sol, ToolCfg* tool, Job* job, const ToolOut
         } else if (paramHas(values, ValueKey::Pass)) {
             ok = paramGet(values, ValueKey::Pass).toBool(ok);
         }
-        msg = T("±¾Á÷³ÌÒÑÔËĞĞ");
+        msg = T("æœ¬æµç¨‹å·²è¿è¡Œ");
     } else if (hasCache) {
         hasStatus = true;
         if (paramHas(values, ValueKey::Ok)) {
@@ -236,25 +236,25 @@ void ToolRstPanel::refresh(Solution* sol, ToolCfg* tool, Job* job, const ToolOut
         } else {
             ok = true;
         }
-        msg = T("À´×ÔÉÏ´ÎÔËĞĞ»º´æ");
+        msg = T("æ¥è‡ªä¸Šæ¬¡è¿è¡Œç¼“å­˜");
     }
 
     if (!hasStatus) {
-        m_statusLab->setText(T("×´Ì¬£º") + T("Î´ÔËĞĞ"));
+        m_statusLab->setText(T("çŠ¶æ€ï¼š") + T("æœªè¿è¡Œ"));
         applyRunStatusLabel(m_statusLab, RunStatusPending);
-        m_msgLab->setText(T("µã¡¸ÔËĞĞ±¾¹¤¾ß¡¹»ò¡¸ÔËĞĞ±¾Á÷³Ì¡¹²é¿´½á¹û¡£"));
+        m_msgLab->setText(T("ç‚¹ã€Œè¿è¡Œæœ¬å·¥å…·ã€æˆ–ã€Œè¿è¡Œæœ¬æµç¨‹ã€æŸ¥çœ‹ç»“æœã€‚"));
     } else {
         const QString stText = ok ? T("OK") : T("NG");
-        QString line = T("×´Ì¬£º") + stText;
+        QString line = T("çŠ¶æ€ï¼š") + stText;
         if (ms > 0) {
-            line += QLatin1String("    ") + T("ºÄÊ±£º") + QString::number(ms) + T(" ms");
+            line += QLatin1String("    ") + T("è€—æ—¶ï¼š") + QString::number(ms) + T(" ms");
         }
         m_statusLab->setText(line);
         applyRunStatusLabel(m_statusLab, ok ? RunStatusOk : RunStatusNg);
-        m_msgLab->setText(msg.isEmpty() ? T("£¨ÎŞËµÃ÷£©") : msg);
+        m_msgLab->setText(msg.isEmpty() ? T("ï¼ˆæ— è¯´æ˜ï¼‰") : msg);
     }
     fillOutputTable(values);
-    // µ¥¹¤¾ßÊÓÍ¼£ºÈôÊä³öº¬ ok/pass£¬×ÅÉ«¶ÔÓ¦ĞĞ
+    // å•å·¥å…·è§†å›¾ï¼šè‹¥è¾“å‡ºå« ok/passï¼Œç€è‰²å¯¹åº”è¡Œ
     if (m_outTable && hasStatus) {
         for (int r = 0; r < m_outTable->rowCount(); ++r) {
             QTableWidgetItem* keyIt = m_outTable->item(r, 0);
@@ -274,20 +274,20 @@ void ToolRstPanel::refresh(Solution* sol, ToolCfg* tool, Job* job, const ToolOut
     }
 }
 
-// Éè¼ÆÌ¬£º»ã×ÜÕû JobCfg ¸÷¹¤¾ßµÄÔËĞĞ½á¹ûÓëÊä³ö
+// è®¾è®¡æ€ï¼šæ±‡æ€»æ•´ JobCfg å„å·¥å…·çš„è¿è¡Œç»“æœä¸è¾“å‡º
 void ToolRstPanel::refreshJob(Solution* sol, const JobCfg* jobConfig, Job* job,
                                  const ToolOut* jobOut)
 {
     if (!jobConfig) {
-        m_toolLab->setText(T("Ñ¡ÖĞÁ÷³Ì"));
-        m_statusLab->setText(T("×´Ì¬£º") + T("Î´Ñ¡ÖĞ"));
+        m_toolLab->setText(T("é€‰ä¸­æµç¨‹"));
+        m_statusLab->setText(T("çŠ¶æ€ï¼š") + T("æœªé€‰ä¸­"));
         applyRunStatusLabel(m_statusLab, RunStatusNone);
         m_msgLab->clear();
         fillOutputTable(ParamMap());
         return;
     }
 
-    m_toolLab->setText(T("Á÷³Ì ") + qs(jobConfig->name));
+    m_toolLab->setText(T("æµç¨‹ ") + qs(jobConfig->name));
 
     int ranCount = 0;
     int okCount = 0;
@@ -314,27 +314,27 @@ void ToolRstPanel::refreshJob(Solution* sol, const JobCfg* jobConfig, Job* job,
     } else if (ranCount > 0) {
         hasStatus = true;
         jobOk = (okCount == ranCount);
-        msg = T("À´×ÔÉÏ´ÎÔËĞĞ»º´æ");
+        msg = T("æ¥è‡ªä¸Šæ¬¡è¿è¡Œç¼“å­˜");
     }
 
     if (!hasStatus) {
-        m_statusLab->setText(T("×´Ì¬£º") + T("Î´ÔËĞĞ"));
+        m_statusLab->setText(T("çŠ¶æ€ï¼š") + T("æœªè¿è¡Œ"));
         applyRunStatusLabel(m_statusLab, RunStatusPending);
-        m_msgLab->setText(T("µã¡¸ÔËĞĞ±¾Á÷³Ì¡¹²é¿´±¾Á÷³ÌÈ«²¿¹¤¾ßÊä³ö¡£"));
+        m_msgLab->setText(T("ç‚¹ã€Œè¿è¡Œæœ¬æµç¨‹ã€æŸ¥çœ‹æœ¬æµç¨‹å…¨éƒ¨å·¥å…·è¾“å‡ºã€‚"));
     } else {
         const QString stText = jobOk ? T("OK") : T("NG");
-        QString line = T("×´Ì¬£º") + stText;
+        QString line = T("çŠ¶æ€ï¼š") + stText;
         if (ms > 0) {
-            line += QLatin1String("    ") + T("ºÄÊ±£º") + QString::number(ms) + T(" ms");
+            line += QLatin1String("    ") + T("è€—æ—¶ï¼š") + QString::number(ms) + T(" ms");
         }
         line += QString::fromUtf8("    (") + QString::number(okCount)
-            + QLatin1Char('/') + QString::number(ranCount) + T(" ¹¤¾ß OK") + QLatin1Char(')');
+            + QLatin1Char('/') + QString::number(ranCount) + T(" å·¥å…· OK") + QLatin1Char(')');
         m_statusLab->setText(line);
         applyRunStatusLabel(m_statusLab, jobOk ? RunStatusOk : RunStatusNg);
-        m_msgLab->setText(msg.isEmpty() ? T("£¨ÎŞËµÃ÷£©") : msg);
+        m_msgLab->setText(msg.isEmpty() ? T("ï¼ˆæ— è¯´æ˜ï¼‰") : msg);
     }
 
-    // Êä³ö±í£º°´Ö´ĞĞĞòÁĞ³ö¸÷¹¤¾ßÈ«²¿Êä³ö¼üÖµ
+    // è¾“å‡ºè¡¨ï¼šæŒ‰æ‰§è¡Œåºåˆ—å‡ºå„å·¥å…·å…¨éƒ¨è¾“å‡ºé”®å€¼
     if (m_outTable) {
         m_outTable->setRowCount(0);
         int row = 0;
@@ -346,7 +346,7 @@ void ToolRstPanel::refreshJob(Solution* sol, const JobCfg* jobConfig, Job* job,
             bool tok = false;
             job->cachedToolOk(order[i], &tok);
             m_outTable->insertRow(row);
-            m_outTable->setItem(row, 0, roCell(qs(t->name) + QLatin1Char(' ') + QString(QChar(0x00B7)) + QLatin1Char(' ') + T("×´Ì¬"), false));
+            m_outTable->setItem(row, 0, roCell(qs(t->name) + QLatin1Char(' ') + QString(QChar(0x00B7)) + QLatin1Char(' ') + T("çŠ¶æ€"), false));
             QTableWidgetItem* stCell = roCell(tok ? T("OK") : T("NG"), false);
             applyOkNgTableCell(stCell, tok);
             m_outTable->setItem(row, 1, stCell);

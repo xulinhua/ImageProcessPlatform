@@ -5,46 +5,46 @@
 
 /**
  * @file HsInterface2D.h
- * @brief ÓëÎ¬ÊıÎŞ¹ØÒÔ¼°Æ½ÃæÉÏµÄ×ÔÓÉº¯Êı¡£½Ç¶È¡¢³¤¶È¡¢Èİ²îÔÚÕâÀï£¬ÒÔºóµÄÆ½Ãæ×ÔÓÉº¯ÊıÒ²·ÅÕâÀï
+ * @brief ä¸ç»´æ•°æ— å…³ä»¥åŠå¹³é¢ä¸Šçš„è‡ªç”±å‡½æ•°ã€‚è§’åº¦ã€é•¿åº¦ã€å®¹å·®åœ¨è¿™é‡Œï¼Œä»¥åçš„å¹³é¢è‡ªç”±å‡½æ•°ä¹Ÿæ”¾è¿™é‡Œ
  */
 
 namespace HsCommData {
 
 /**
- * @brief ½Ç¶È»»³É»¡¶È
- * @param deg ½Ç¶È
+ * @brief è§’åº¦æ¢æˆå¼§åº¦
+ * @param deg è§’åº¦
  */
 HSCOMMDATA_EXPORT double toRadian(double deg);
 /**
- * @brief »¡¶È»»³É½Ç¶È
- * @param rad »¡¶È
+ * @brief å¼§åº¦æ¢æˆè§’åº¦
+ * @param rad å¼§åº¦
  */
 HSCOMMDATA_EXPORT double toDegree(double rad);
 /**
- * @brief Íâ²¿Æ½Ãæ½Ç»»³ÉÄÚ²¿»¡¶È¡£µ¥Î»¸úÏµÍ³¡£ÄÚ²¿Õı½ÇÔÚ»­ÃæÉÏÊÇË³Ê±Õë£¬ÏµÍ³ÄæÊ±ÕëÎªÕıÊ±È¡·´
- * @param external Íâ²¿×ª½Ç
+ * @brief å¤–éƒ¨å¹³é¢è§’æ¢æˆå†…éƒ¨å¼§åº¦ã€‚å•ä½è·Ÿç³»ç»Ÿã€‚å†…éƒ¨æ­£è§’åœ¨ç”»é¢ä¸Šæ˜¯é¡ºæ—¶é’ˆï¼Œç³»ç»Ÿé€†æ—¶é’ˆä¸ºæ­£æ—¶å–å
+ * @param external å¤–éƒ¨è½¬è§’
  */
 HSCOMMDATA_EXPORT double toAngle(double external);
 /**
- * @brief ÄÚ²¿»¡¶È»»³ÉÍâ²¿Æ½Ãæ½Ç
- * @param internalRad ÄÚ²¿»¡¶È
+ * @brief å†…éƒ¨å¼§åº¦æ¢æˆå¤–éƒ¨å¹³é¢è§’
+ * @param internalRad å†…éƒ¨å¼§åº¦
  */
 HSCOMMDATA_EXPORT double fromAngle(double internalRad);
 
 /**
- * @brief Íâ²¿³¤¶È»»³ÉºÁÃ×
- * @param external Íâ²¿³¤¶È
+ * @brief å¤–éƒ¨é•¿åº¦æ¢æˆæ¯«ç±³
+ * @param external å¤–éƒ¨é•¿åº¦
  */
 HSCOMMDATA_EXPORT double toLength(double external);
 /**
- * @brief ºÁÃ×»»³ÉÍâ²¿³¤¶È
- * @param mm ºÁÃ×
+ * @brief æ¯«ç±³æ¢æˆå¤–éƒ¨é•¿åº¦
+ * @param mm æ¯«ç±³
  */
 HSCOMMDATA_EXPORT double fromLength(double mm);
 
 /**
- * @brief Á½ÊıÖ®²î²»³¬¹ıÏµÍ³Èİ²î¡£²»½Ğ near£¬±ÜÃâºÍ windows.h µÄ near ºê³åÍ»
- * @return ×ã¹»½üÊ±Îª true
+ * @brief ä¸¤æ•°ä¹‹å·®ä¸è¶…è¿‡ç³»ç»Ÿå®¹å·®ã€‚ä¸å« nearï¼Œé¿å…å’Œ windows.h çš„ near å®å†²çª
+ * @return è¶³å¤Ÿè¿‘æ—¶ä¸º true
  */
 HSCOMMDATA_EXPORT bool withinTol(double a, double b);
 

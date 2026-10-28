@@ -1,6 +1,6 @@
 /**
  * @file CalibMgr.cpp
- * @brief CalibMgrÊµÏÖ
+ * @brief CalibMgrå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -495,7 +495,7 @@ CalibRst CalibMgr::active(const ObjectId& cameraId) const
     return r;
 }
 
-// ³¬ãĞÖµ²İ¸å£¬²»×÷ÎªÉúĞ§½á¹û
+// è¶…é˜ˆå€¼è‰ç¨¿ï¼Œä¸ä½œä¸ºç”Ÿæ•ˆç»“æœ
 CalibRst CalibMgr::draft(const ObjectId& cameraId) const
 {
     CalibRst r;
@@ -513,7 +513,7 @@ CalibRst CalibMgr::draft(const ObjectId& cameraId) const
     return r;
 }
 
-// ÀëÏßÍ¼Æ¬Ä¿Â¼ calib/<cameraId>/offline
+// ç¦»çº¿å›¾ç‰‡ç›®å½• calib/<cameraId>/offline
 std::string CalibMgr::offlineDir(const ObjectId& cameraId) const
 {
     if (!m_impl || m_impl->dir.empty() || !safeId(cameraId.toString())) {
@@ -523,7 +523,7 @@ std::string CalibMgr::offlineDir(const ObjectId& cameraId) const
     return pathJoin(m_impl->camDir(cameraId.toString()), "offline");
 }
 
-// ¶Á Halcon Ïà»ú²ÎÊıÎÄ¼ş
+// è¯» Halcon ç›¸æœºå‚æ•°æ–‡ä»¶
 std::string CalibMgr::readHalconDat(const ObjectId& cameraId) const
 {
     if (!m_impl || !safeId(cameraId.toString())) {
@@ -535,7 +535,7 @@ std::string CalibMgr::readHalconDat(const ObjectId& cameraId) const
     return text;
 }
 
-// Ğ´ Halcon Ïà»ú²ÎÊıÎÄ¼ş
+// å†™ Halcon ç›¸æœºå‚æ•°æ–‡ä»¶
 bool CalibMgr::writeHalconDat(const ObjectId& cameraId, const std::string& text, std::string* err)
 {
     if (!m_impl || !safeId(cameraId.toString()) || m_impl->dir.empty()) {

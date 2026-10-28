@@ -1,6 +1,6 @@
 /**
  * @file DeviceDlg.cpp
- * @brief DeviceDlgÊµÏÖ
+ * @brief DeviceDlgå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -33,7 +33,7 @@ namespace Vision {
 
 namespace {
 
-// °ÑÍ¼ÏñÂ·¾¶Æ´³ÉÒ»ĞĞÒ»Ìõ
+// æŠŠå›¾åƒè·¯å¾„æ‹¼æˆä¸€è¡Œä¸€æ¡
 std::string joinImageLines(QListWidget* list)
 {
     std::string out;
@@ -53,7 +53,7 @@ std::string joinImageLines(QListWidget* list)
     return out;
 }
 
-// °ÑÒÑ¼ÇÂ¼Â·¾¶Ìî½øÁĞ±í
+// æŠŠå·²è®°å½•è·¯å¾„å¡«è¿›åˆ—è¡¨
 void fillImageList(QListWidget* list, const std::string& packed)
 {
     if (!list) {
@@ -78,7 +78,7 @@ void fillImageList(QListWidget* list, const std::string& packed)
 }
 
 } // namespace
-// µ¥Éè±¸ÅäÖÃ
+// å•è®¾å¤‡é…ç½®
 DeviceDlg::DeviceDlg(Session* session, Solution* solution, const QString& deviceId, QWidget* parent)
     : QDialog(parent)
     , m_session(session)
@@ -87,22 +87,22 @@ DeviceDlg::DeviceDlg(Session* session, Solution* solution, const QString& device
     , m_images(nullptr)
     , m_imageRow(nullptr)
 {
-    setWindowTitle(T("µ¥Éè±¸ÅäÖÃ"));
+    setWindowTitle(T("å•è®¾å¤‡é…ç½®"));
     resize(520, 460);
     enableDialogResize(this);
     const bool can = session->has(PermEditDevice);
     m_name = new QLineEdit(this);
     m_kind = new QComboBox(this);
-    m_kind->addItem(T("Ïà»ú"), DeviceCamera);
-    m_kind->addItem(T("¿ØÖÆ¿¨"), DeviceControlCard);
+    m_kind->addItem(T("ç›¸æœº"), DeviceCamera);
+    m_kind->addItem(T("æ§åˆ¶å¡"), DeviceControlCard);
     m_kind->addItem(T("PLC"), DevicePlc);
-    m_kind->addItem(T("ÎÄ¼ş¼Ğ"), DeviceFolder);
-    m_kind->addItem(T("Í¼Ïñ"), DeviceImage);
+    m_kind->addItem(T("æ–‡ä»¶å¤¹"), DeviceFolder);
+    m_kind->addItem(T("å›¾åƒ"), DeviceImage);
     m_backend = new QComboBox(this);
-    m_backend->addItem(T("ÎÄ¼şÔ´"), CameraBackendFile);
-    m_backend->addItem(T("ÕæÏà»ú"), CameraBackendSdk);
+    m_backend->addItem(T("æ–‡ä»¶æº"), CameraBackendFile);
+    m_backend->addItem(T("çœŸç›¸æœº"), CameraBackendSdk);
     m_path = new QLineEdit(this);
-    QPushButton* browse = new QPushButton(T("ä¯ÀÀ¡­"), this);
+    QPushButton* browse = new QPushButton(T("æµè§ˆâ€¦"), this);
     connect(browse, SIGNAL(clicked()), this, SLOT(onBrowse()));
     m_pathRow = new QWidget(this);
     QHBoxLayout* pathLay = new QHBoxLayout(m_pathRow);
@@ -112,8 +112,8 @@ DeviceDlg::DeviceDlg(Session* session, Solution* solution, const QString& device
     m_images = new QListWidget(this);
     m_images->setSelectionMode(QAbstractItemView::ExtendedSelection);
     m_images->setMinimumHeight(96);
-    QPushButton* addImg = new QPushButton(T("Ìí¼Ó"), this);
-    QPushButton* delImg = new QPushButton(T("ÒÆ³ı"), this);
+    QPushButton* addImg = new QPushButton(T("æ·»åŠ "), this);
+    QPushButton* delImg = new QPushButton(T("ç§»é™¤"), this);
     connect(addImg, SIGNAL(clicked()), this, SLOT(onAddImages()));
     connect(delImg, SIGNAL(clicked()), this, SLOT(onRemoveImage()));
     m_imageRow = new QWidget(this);
@@ -168,14 +168,14 @@ DeviceDlg::DeviceDlg(Session* session, Solution* solution, const QString& device
     m_slave->setEnabled(can);
 
     QFormLayout* form = new QFormLayout();
-    form->addRow(T("Ãû³Æ"), m_name);
-    form->addRow(T("ÀàĞÍ"), m_kind);
-        form->addRow(T("Ä¬ÈÏÎÄ¼ş¼Ğ"), m_pathRow);
-    form->addRow(T("Í¼ÏñÁĞ±í"), m_imageRow);
-    form->addRow(T("³§ÉÌ"), m_vendor);
-    form->addRow(T("µØÖ·"), m_address);
-    form->addRow(T("Í¨ĞÅÍ¨µÀ"), m_comm);
-    form->addRow(T("´ÓÕ¾ºÅ"), m_slave);
+    form->addRow(T("åç§°"), m_name);
+    form->addRow(T("ç±»å‹"), m_kind);
+        form->addRow(T("é»˜è®¤æ–‡ä»¶å¤¹"), m_pathRow);
+    form->addRow(T("å›¾åƒåˆ—è¡¨"), m_imageRow);
+    form->addRow(T("å‚å•†"), m_vendor);
+    form->addRow(T("åœ°å€"), m_address);
+    form->addRow(T("é€šä¿¡é€šé“"), m_comm);
+    form->addRow(T("ä»ç«™å·"), m_slave);
 
     QDialogButtonBox* box = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, this);
     connect(box, SIGNAL(accepted()), this, SLOT(onOk()));
@@ -189,12 +189,12 @@ DeviceDlg::DeviceDlg(Session* session, Solution* solution, const QString& device
     syncFieldVisibility();
 }
 
-// ÓÃ·½°¸Í¨ĞÅÍ¨µÀÌî³ä PLC °ó¶¨ÏÂÀ­
+// ç”¨æ–¹æ¡ˆé€šä¿¡é€šé“å¡«å…… PLC ç»‘å®šä¸‹æ‹‰
 void DeviceDlg::reloadCommCombo()
 {
     const QString keep = qs(m_draft.defaultParams.value("commChannelId").toString());
     m_comm->clear();
-    m_comm->addItem(T("£¨Î´°ó¶¨£©"), QString());
+    m_comm->addItem(T("ï¼ˆæœªç»‘å®šï¼‰"), QString());
     for (size_t i = 0; i < m_sol->commChannels.size(); ++i) {
         const CommChannel& c = m_sol->commChannels[i];
         m_comm->addItem(qs(c.name) + QLatin1String(" [")
@@ -205,7 +205,7 @@ void DeviceDlg::reloadCommCombo()
     m_comm->setCurrentIndex(idx >= 0 ? idx : 0);
 }
 
-// °´Ïà»ú¡¢¿ØÖÆ¿¨¡¢PLC ÏÔÒş×Ö¶Î
+// æŒ‰ç›¸æœºã€æ§åˆ¶å¡ã€PLC æ˜¾éšå­—æ®µ
 void DeviceDlg::syncFieldVisibility()
 {
     const DeviceKind kind = static_cast<DeviceKind>(m_kind->currentData().toInt());
@@ -223,24 +223,24 @@ void DeviceDlg::syncFieldVisibility()
     m_slave->setVisible(plc);
 }
 
-// ÖÖÀà±ä»¯ºóË¢ĞÂ¿É¼û×Ö¶Î²¢¼ÇÈë²İ¸å
+// ç§ç±»å˜åŒ–ååˆ·æ–°å¯è§å­—æ®µå¹¶è®°å…¥è‰ç¨¿
 void DeviceDlg::onKindChanged(int)
 {
     syncFieldVisibility();
     onEdited();
 }
 
-// Ñ¡ÔñÎÄ¼şÔ´Ä¿Â¼
+// é€‰æ‹©æ–‡ä»¶æºç›®å½•
 void DeviceDlg::onBrowse()
 {
-    const QString p = QFileDialog::getExistingDirectory(this, T("ÎÄ¼ş¼ĞÔ´"));
+    const QString p = QFileDialog::getExistingDirectory(this, T("æ–‡ä»¶å¤¹æº"));
     if (!p.isEmpty()) {
         m_path->setText(p);
         onEdited();
     }
 }
 
-// °Ñ½çÃæ×Ö¶ÎĞ´ÈëÉè±¸²İ¸å
+// æŠŠç•Œé¢å­—æ®µå†™å…¥è®¾å¤‡è‰ç¨¿
 void DeviceDlg::flushUiToDraft()
 {
     if (!m_session->has(PermEditDevice)) {
@@ -261,14 +261,14 @@ void DeviceDlg::flushUiToDraft()
     m_draft.defaultParams.insert("slaveId", m_slave->value());
 }
 
-// ¿Ø¼ş¸Ä¶¯ºóÍ¬²½²İ¸åÓë×Ö¶ÎÏÔÒş
+// æ§ä»¶æ”¹åŠ¨ååŒæ­¥è‰ç¨¿ä¸å­—æ®µæ˜¾éš
 void DeviceDlg::onEdited()
 {
     flushUiToDraft();
     syncFieldVisibility();
 }
 
-// Î´±£´æÊ±Ñ¯ÎÊÈ¡Ïû¡¢¶ªÆú»ò±£´æ
+// æœªä¿å­˜æ—¶è¯¢é—®å–æ¶ˆã€ä¸¢å¼ƒæˆ–ä¿å­˜
 int DeviceDlg::askCloseAction()
 {
     flushUiToDraft();
@@ -288,7 +288,7 @@ int DeviceDlg::askCloseAction()
     return 1;
 }
 
-// Ìá½»²İ¸åµ½·½°¸£¬Ê§°ÜÔòµ¯´°
+// æäº¤è‰ç¨¿åˆ°æ–¹æ¡ˆï¼Œå¤±è´¥åˆ™å¼¹çª—
 bool DeviceDlg::trySave()
 {
     if (!m_session->has(PermEditDevice)) {
@@ -302,7 +302,7 @@ bool DeviceDlg::trySave()
     dev.id = oid(m_id);
     m_draft.applyTo(&dev);
     if (!m_sol->commitDevice(dev)) {
-        QMessageBox::warning(this, T("±£´æ"), T("±£´æÊ§°Ü¡£"));
+        QMessageBox::warning(this, T("ä¿å­˜"), T("ä¿å­˜å¤±è´¥ã€‚"));
         return false;
     }
     m_formalSnapshot = m_draft;
@@ -310,7 +310,7 @@ bool DeviceDlg::trySave()
     return true;
 }
 
-// ¹Ø±ÕÇ°È·ÈÏÊÇ·ñ±£´æ
+// å…³é—­å‰ç¡®è®¤æ˜¯å¦ä¿å­˜
 void DeviceDlg::reject()
 {
     const int action = askCloseAction();
@@ -324,7 +324,7 @@ void DeviceDlg::reject()
     QDialog::reject();
 }
 
-// ±êÌâÀ¸¹Ø±ÕÊ±Í¬ÑùÈ·ÈÏÊÇ·ñ±£´æ
+// æ ‡é¢˜æ å…³é—­æ—¶åŒæ ·ç¡®è®¤æ˜¯å¦ä¿å­˜
 void DeviceDlg::closeEvent(QCloseEvent* event)
 {
     const int action = askCloseAction();
@@ -340,7 +340,7 @@ void DeviceDlg::closeEvent(QCloseEvent* event)
     }
 }
 
-// ±£´æ³É¹¦ºó¹Ø±Õ
+// ä¿å­˜æˆåŠŸåå…³é—­
 void DeviceDlg::onOk()
 {
     if (!trySave()) {
@@ -350,13 +350,13 @@ void DeviceDlg::onOk()
 }
 
 
-// Ñ¡ÔñÒª¼ÓÔØµÄÍ¼Ïñ²¢¼Ç×¡Â·¾¶
+// é€‰æ‹©è¦åŠ è½½çš„å›¾åƒå¹¶è®°ä½è·¯å¾„
 void DeviceDlg::onAddImages()
 {
     if (!m_session->has(PermEditDevice) || !m_images) {
         return;
     }
-    const QStringList files = QFileDialog::getOpenFileNames(this, T("Ñ¡ÔñÍ¼Ïñ"), QString(),
+    const QStringList files = QFileDialog::getOpenFileNames(this, T("é€‰æ‹©å›¾åƒ"), QString(),
         QLatin1String("Images (*.bmp *.png *.jpg *.jpeg *.tif *.tiff)"));
     for (int i = 0; i < files.size(); ++i) {
         bool dup = false;
@@ -375,7 +375,7 @@ void DeviceDlg::onAddImages()
     }
 }
 
-// ´ÓÁĞ±íÒÆ³ıÑ¡ÖĞµÄÍ¼Ïñ
+// ä»åˆ—è¡¨ç§»é™¤é€‰ä¸­çš„å›¾åƒ
 void DeviceDlg::onRemoveImage()
 {
     if (!m_session->has(PermEditDevice) || !m_images) {

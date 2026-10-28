@@ -1,6 +1,6 @@
 /**
  * @file AboutDlg.h
- * @brief AboutDlgÍ·ÎÄ¼ş
+ * @brief AboutDlgå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -16,16 +16,16 @@ namespace Vision {
 
 /**
  * @class AboutDlg
- * @brief ¹ØÓÚ£ºÆ·ÅÆ¡¢¼ò½é¡¢°æ±¾ÕªÒªÓë°æÈ¨£¨ÏêÏ¸°æ±¾¼û¡¸°æ±¾¹ÜÀí¡¹£©
+ * @brief å…³äºï¼šå“ç‰Œã€ç®€ä»‹ã€ç‰ˆæœ¬æ‘˜è¦ä¸ç‰ˆæƒï¼ˆè¯¦ç»†ç‰ˆæœ¬è§ã€Œç‰ˆæœ¬ç®¡ç†ã€ï¼‰
  */
 class VISION_UI_API AboutDlg : public QDialog {
     Q_OBJECT
 public:
-    /** @brief ¹¹Ôì¹ØÓÚ¶Ô»°¿ò */
+    /** @brief æ„é€ å…³äºå¯¹è¯æ¡† */
     explicit AboutDlg(QWidget* parent = 0);
 
 private slots:
-    /** @brief ´ò¿ª°æ±¾¹ÜÀí²¢¹Ø±Õ±¾´° */
+    /** @brief æ‰“å¼€ç‰ˆæœ¬ç®¡ç†å¹¶å…³é—­æœ¬çª— */
     void onOpenVersions();
 };
 

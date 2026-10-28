@@ -1,6 +1,6 @@
 /**
  * @file PortTypes.cpp
- * @brief PortTypesÊµÏÖ
+ * @brief PortTypeså®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -10,7 +10,7 @@
 
 namespace Vision {
 
-// ÕûÊı»¹Ô­ÇøÓòÓÃÍ¾£»Ô½½çµ±Õı³£ÇøÓò
+// æ•´æ•°è¿˜åŸåŒºåŸŸç”¨é€”ï¼›è¶Šç•Œå½“æ­£å¸¸åŒºåŸŸ
 RegionUse regionUseFromInt(int v)
 {
     if (v == static_cast<int>(RegionUse::Mask)) {
@@ -22,7 +22,7 @@ RegionUse regionUseFromInt(int v)
     return RegionUse::Normal;
 }
 
-// Êı¾İÀàĞÍ¶ÔÓ¦µÄ¼üºó×º
+// æ•°æ®ç±»å‹å¯¹åº”çš„é”®åç¼€
 const char* portDataSuffix(PortData d)
 {
     switch (d) {
@@ -33,11 +33,14 @@ const char* portDataSuffix(PortData d)
     case PortData::Logic:   return "logic";
     case PortData::Pose:    return "pose";
     case PortData::Tuple:   return "tuple";
+    case PortData::Cloud:   return "cloud";
+    case PortData::Pose3:   return "pose3";
+    case PortData::Shape3:  return "shape3";
     default:                return "image";
     }
 }
 
-// ¶Ë¿Ú²ÛÎ»×ª in.xxx / out.xxx£»ÓĞ¿ÚÃûÊ±ÔÙ¼ÓÒ»¶Î
+// ç«¯å£æ§½ä½è½¬ in.xxx / out.xxxï¼›æœ‰å£åæ—¶å†åŠ ä¸€æ®µ
 std::string portKey(const PortSlot& s)
 {
     const char* dir = (s.dir == PortDir::In) ? "in" : "out";
@@ -49,7 +52,7 @@ std::string portKey(const PortSlot& s)
     return k;
 }
 
-// ¶Ë¿ÚÃû¹æ·¶³É in.xxx¡¢out.xxx£»¼æÈİ¾É graphics¡¢values
+// ç«¯å£åè§„èŒƒæˆ in.xxxã€out.xxxï¼›å…¼å®¹æ—§ graphicsã€values
 std::string canonicalizePortKey(const std::string& key)
 {
     if (key == "in.graphics") {
@@ -67,7 +70,7 @@ std::string canonicalizePortKey(const std::string& key)
     return key;
 }
 
-// ÓÉÀàĞÍºó×º½âÎöÊı¾İÀàĞÍ
+// ç”±ç±»å‹åç¼€è§£ææ•°æ®ç±»å‹
 PortData portDataFromSuffix(const std::string& k)
 {
     if (k == "region") {
@@ -88,10 +91,19 @@ PortData portDataFromSuffix(const std::string& k)
     if (k == "tuple") {
         return PortData::Tuple;
     }
+    if (k == "cloud") {
+        return PortData::Cloud;
+    }
+    if (k == "pose3") {
+        return PortData::Pose3;
+    }
+    if (k == "shape3") {
+        return PortData::Shape3;
+    }
     return PortData::Image;
 }
 
-// ´Ó¼ü½âÎö¶Ë¿Ú²ÛÎ»¡£in.image.locate µÄ¿ÚÃûÊÇ locate
+// ä»é”®è§£æç«¯å£æ§½ä½ã€‚in.image.locate çš„å£åæ˜¯ locate
 PortSlot portSlotFromKey(const std::string& key)
 {
     const std::string k = canonicalizePortKey(key);
@@ -115,7 +127,7 @@ PortSlot portSlotFromKey(const std::string& key)
     return s;
 }
 
-// ÓÉ´æÅÌµÄ·½ÏòÓëÊı¾İÀàĞÍÕûÊı»¹Ô­¶Ë¿Ú²ÛÎ»
+// ç”±å­˜ç›˜çš„æ–¹å‘ä¸æ•°æ®ç±»å‹æ•´æ•°è¿˜åŸç«¯å£æ§½ä½
 PortSlot portSlotFromInts(int dir, int data)
 {
     PortDir d = (dir == static_cast<int>(PortDir::In)) ? PortDir::In : PortDir::Out;

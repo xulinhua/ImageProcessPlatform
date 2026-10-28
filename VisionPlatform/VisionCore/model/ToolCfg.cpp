@@ -1,6 +1,6 @@
 /**
  * @file ToolCfg.cpp
- * @brief ToolCfgÊµÏÖ
+ * @brief ToolCfgå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -10,7 +10,7 @@
 
 namespace Vision {
 
-// ¸³Öµ£¨²»¸ÄÒıÓÃ°ó¶¨Ä¿±ê£©
+// èµ‹å€¼ï¼ˆä¸æ”¹å¼•ç”¨ç»‘å®šç›®æ ‡ï¼‰
 ToolCfg& ToolCfg::operator=(const ToolCfg& o)
 {
         if (this == &o) {

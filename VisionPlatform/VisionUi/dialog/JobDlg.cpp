@@ -1,6 +1,6 @@
 /**
  * @file JobDlg.cpp
- * @brief JobDlgÊµÏÖ
+ * @brief JobDlgå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -69,39 +69,39 @@
 namespace Vision {
 
 enum {
-    ToolListId = Qt::UserRole,           ///< ½Úµã id
+    ToolListId = Qt::UserRole,           ///< èŠ‚ç‚¹ id
     ToolListKind = Qt::UserRole + 1,     ///< ListKind*
     ToolListRunState = Qt::UserRole + 2, ///< TreeRunState*
     ToolListIconKey = Qt::UserRole + 3, ///< ToolTreeIconKey*
     ToolListBadge = Qt::UserRole + 4,   ///< TreeBadge*
-    ToolListChecked = Qt::UserRole + 5, ///< ¹´Ñ¡×´Ì¬
-    ToolListToolName = Qt::UserRole + 6 ///< ¹¤¾ß toolName£¬ÓÃÓÚÍ¼±ê
+    ToolListChecked = Qt::UserRole + 5, ///< å‹¾é€‰çŠ¶æ€
+    ToolListToolName = Qt::UserRole + 6 ///< å·¥å…· toolNameï¼Œç”¨äºå›¾æ ‡
 };
 
 enum {
-    ListKindGroup = 0,  ///< ²¢ĞĞ×é
-    ListKindBranch = 1, ///< ·ÖÖ§
-    ListKindTool = 2,   ///< ¹¤¾ß
-    ListKindIf = 3,     ///< Ìõ¼ş×é
-    ListKindLoop = 4     ///< Ñ­»·×é
+    ListKindGroup = 0,  ///< å¹¶è¡Œç»„
+    ListKindBranch = 1, ///< åˆ†æ”¯
+    ListKindTool = 2,   ///< å·¥å…·
+    ListKindIf = 3,     ///< æ¡ä»¶ç»„
+    ListKindLoop = 4     ///< å¾ªç¯ç»„
 };
 
 enum {
-    TreeRunNone = 0, ///< Î´ÔËĞĞ
+    TreeRunNone = 0, ///< æœªè¿è¡Œ
     TreeRunOk = 1,   ///< OK
     TreeRunNg = 2    ///< NG
 };
 
 enum {
-    TreeBadgeNone = 0,     ///< ÎŞ½Ç±ê
-    TreeBadgeParallel = 1, ///< ²¢ĞĞ
-    TreeBadgeIf = 2,       ///< Ìõ¼ş
-    TreeBadgeLoop = 3      ///< Ñ­»·
+    TreeBadgeNone = 0,     ///< æ— è§’æ ‡
+    TreeBadgeParallel = 1, ///< å¹¶è¡Œ
+    TreeBadgeIf = 2,       ///< æ¡ä»¶
+    TreeBadgeLoop = 3      ///< å¾ªç¯
 };
 
 /**
  * @class JobToolTreeDelegate
- * @brief Á÷³ÌÊ÷Î¯ÍĞ£º°´ÔËĞĞ×´Ì¬ºÍ½Ç±ê»æÖÆ½Úµã
+ * @brief æµç¨‹æ ‘å§”æ‰˜ï¼šæŒ‰è¿è¡ŒçŠ¶æ€å’Œè§’æ ‡ç»˜åˆ¶èŠ‚ç‚¹
  */
 class JobToolTreeDelegate : public QStyledItemDelegate {
 public:
@@ -111,7 +111,7 @@ public:
     {
     }
 
-    // ĞĞ¸ßÖÁÉÙ 28
+    // è¡Œé«˜è‡³å°‘ 28
     QSize sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const
     {
         QSize s = QStyledItemDelegate::sizeHint(option, index);
@@ -121,7 +121,7 @@ public:
         return s;
     }
 
-    // ×Ô»æÍ¼±ê¡¢ÎÄ×ÖºÍ½Ç±ê
+    // è‡ªç»˜å›¾æ ‡ã€æ–‡å­—å’Œè§’æ ‡
     void paint(QPainter* painter, const QStyleOptionViewItem& option,
                const QModelIndex& index) const
     {
@@ -178,7 +178,7 @@ public:
         painter->drawText(textRect, Qt::AlignVCenter | Qt::AlignLeft, elided);
 
         if (badge != TreeBadgeNone) {
-            QString badgeText; if (badge == TreeBadgeParallel) badgeText = T("²¢ĞĞ"); else if (badge == TreeBadgeLoop) badgeText = T("Ñ­»·"); else badgeText = T("Ìõ¼ş");
+            QString badgeText; if (badge == TreeBadgeParallel) badgeText = T("å¹¶è¡Œ"); else if (badge == TreeBadgeLoop) badgeText = T("å¾ªç¯"); else badgeText = T("æ¡ä»¶");
             const int tw = fm.width(elided);
             const int bw = fm.width(badgeText) + 10;
             const int bh = fm.height() + 2;
@@ -232,7 +232,7 @@ public:
         style->drawPrimitive(QStyle::PE_IndicatorCheckBox, &cb, painter, opt.widget);
     }
 
-    // ¹´Ñ¡¿òµã»÷ÇĞ»»Ê¹ÄÜ
+    // å‹¾é€‰æ¡†ç‚¹å‡»åˆ‡æ¢ä½¿èƒ½
     bool editorEvent(QEvent* event, QAbstractItemModel* model,
                      const QStyleOptionViewItem& option, const QModelIndex& index)
     {
@@ -257,7 +257,7 @@ public:
         if (!tree) {
             return false;
         }
-        // itemFromIndex ÊÇ protected£¬¸ÄÓÃ itemAt
+        // itemFromIndex æ˜¯ protectedï¼Œæ”¹ç”¨ itemAt
         QTreeWidgetItem* item = tree->itemAt(me->pos());
         if (!item) {
             return false;
@@ -269,10 +269,10 @@ public:
     }
 
 private:
-    JobDlg* m_owner; ///< ËùÊô¶Ô»°¿ò
+    JobDlg* m_owner; ///< æ‰€å±å¯¹è¯æ¡†
 };
 
-// ´´½¨Ê÷½Úµã²¢Ğ´Èë id¡¢ÖÖÀàºÍÍ¼±ê
+// åˆ›å»ºæ ‘èŠ‚ç‚¹å¹¶å†™å…¥ idã€ç§ç±»å’Œå›¾æ ‡
 static QTreeWidgetItem* makeItem(QTreeWidgetItem* parent, QTreeWidget* tree,
                                  const QString& text, const QString& id, int kind,
                                  int iconKey, int badge, bool checked,
@@ -294,7 +294,7 @@ static QTreeWidgetItem* makeItem(QTreeWidgetItem* parent, QTreeWidget* tree,
     return it;
 }
 
-// ×éÄÚ¹¤¾ßÊÇ·ñÈ«²¿Ê¹ÄÜ
+// ç»„å†…å·¥å…·æ˜¯å¦å…¨éƒ¨ä½¿èƒ½
 static bool groupToolsAllEnabled(const JobCfg* job, const ToolGroup& g)
 {
     const std::vector<ObjectId> ids = g.toolIds();
@@ -310,7 +310,7 @@ static bool groupToolsAllEnabled(const JobCfg* job, const ToolGroup& g)
     return true;
 }
 
-// Á÷³ÌÅäÖÃ¶Ô»°¿ò
+// æµç¨‹é…ç½®å¯¹è¯æ¡†
 JobDlg::JobDlg(Session* session, Solution* solution, Job* job, const QString& jobId,
                      QWidget* parent)
     : QDialog(parent)
@@ -320,22 +320,23 @@ JobDlg::JobDlg(Session* session, Solution* solution, Job* job, const QString& jo
     , m_jobId(jobId)
     , m_debug(nullptr)
 {
-    setWindowTitle(T("Á÷³ÌÅäÖÃ"));
+    setWindowTitle(T("æµç¨‹é…ç½®"));
     resize(1100, 640);
     setMinimumSize(760, 420);
     enableDialogResize(this);
     const bool can = canEdit();
 
     m_name = new QLineEdit(this);
-    m_enabled = new QCheckBox(T("ÆôÓÃ"), this);
+    m_enabled = new QCheckBox(T("å¯ç”¨"), this);
     m_enabled->setEnabled(can);
     m_timeout = new QSpinBox(this);
     m_timeout->setRange(1, 600000);
     m_timeout->setSuffix(QLatin1String(" ms"));
     m_fail = new QComboBox(this);
-    m_fail->addItem(T("Í£Õ¾"), FailStopStation);
-    m_fail->addItem(T("Ìø¹ı"), FailSkip);
-    m_fail->addItem(T("NG Ê±¼ÌĞø"), FailNgContinue);
+    m_fail->addItem(T("ç»§ç»­"), FailContinue);
+    m_fail->addItem(T("åœå·¥ç«™"), FailStopStation);
+    m_fail->addItem(T("åœå…¨éƒ¨"), FailStopAll);
+    m_fail->addItem(T("è·³è¿‡"), FailSkip);
     m_fromRule = new QComboBox(this);
 
     JobCfg* formalJob = m_sol->findJobConfig(oid(jobId));
@@ -359,24 +360,24 @@ JobDlg::JobDlg(Session* session, Solution* solution, Job* job, const QString& jo
     QGridLayout* head = new QGridLayout();
     head->setHorizontalSpacing(12);
     head->setVerticalSpacing(6);
-    head->addWidget(new QLabel(T("Ãû³Æ"), this), 0, 0);
+    head->addWidget(new QLabel(T("åç§°"), this), 0, 0);
     QWidget* nameRow = new QWidget(this);
     QHBoxLayout* nameLay = new QHBoxLayout(nameRow);
     nameLay->setContentsMargins(0, 0, 0, 0);
     nameLay->addWidget(m_name, 1);
     nameLay->addWidget(m_enabled);
     head->addWidget(nameRow, 0, 1);
-    head->addWidget(new QLabel(T("³¬Ê±"), this), 0, 2);
+    head->addWidget(new QLabel(T("è¶…æ—¶"), this), 0, 2);
     head->addWidget(m_timeout, 0, 3);
-    head->addWidget(new QLabel(T("Ê§°Ü²ßÂÔ"), this), 1, 0);
+    head->addWidget(new QLabel(T("å¤±è´¥ç­–ç•¥"), this), 1, 0);
     head->addWidget(m_fail, 1, 1);
-    head->addWidget(new QLabel(T("½á¹ûÀ´Ô´"), this), 1, 2);
+    head->addWidget(new QLabel(T("ç»“æœæ¥æº"), this), 1, 2);
     head->addWidget(m_fromRule, 1, 3);
     head->setColumnStretch(1, 1);
     head->setColumnStretch(3, 1);
 
     m_lib = new QTreeWidget(this);
-    m_lib->setHeaderLabel(T("¹¤¾ß¿â"));
+    m_lib->setHeaderLabel(T("å·¥å…·åº“"));
     m_lib->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     m_lib->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
     m_lib->setMinimumHeight(80);
@@ -402,7 +403,7 @@ JobDlg::JobDlg(Session* session, Solution* solution, Job* job, const QString& jo
     m_flowCanvas->bindJob(&m_draftJob);
     m_flowCanvas->setDraftMode(true);
     m_flowCanvas->setEditable(can);
-    m_flowCanvas->setHintText(T("¹öÂÖËõ·Å£¬ÍÏ¶¯»­²¼Æ½ÒÆ£¬ÍÏ¹¤¾ß¿ÉÒÆ¶¯£¬´ÓÊä³ö¶Ë¿ÚÍÏµ½ÊäÈë¶Ë¿ÚÁ¬Ïß¡£ÓÒ¼üÓëÓÒ²àÊ÷ÏàÍ¬¡£"));
+    m_flowCanvas->setHintText(T("æ»šè½®ç¼©æ”¾ï¼Œæ‹–åŠ¨ç”»å¸ƒå¹³ç§»ï¼Œæ‹–å·¥å…·å¯ç§»åŠ¨ï¼Œä»è¾“å‡ºç«¯å£æ‹–åˆ°è¾“å…¥ç«¯å£è¿çº¿ã€‚å³é”®ä¸å³ä¾§æ ‘ç›¸åŒã€‚"));
     m_flowCanvas->setMinimumHeight(80);
     m_flowCanvas->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     if (JobCanvas* cv = m_flowCanvas->canvas()) {
@@ -418,12 +419,12 @@ JobDlg::JobDlg(Session* session, Solution* solution, Job* job, const QString& jo
     connect(m_flowCanvas, SIGNAL(linksChanged()), this, SLOT(onHeaderEdited()));
     connect(m_flowCanvas, SIGNAL(nodeMoved(QString,qreal,qreal)), this, SLOT(onHeaderEdited()));
 
-    QPushButton* add = new QPushButton(T("Ìí¼Ó¹¤¾ß"), this);
-    QPushButton* par = new QPushButton(T("Ìí¼Ó²¢ĞĞ×é"), this);
-    m_ifBtn = new QPushButton(T("Ìí¼ÓÌõ¼ş×é"), this);
-    m_loopBtn = new QPushButton(T("Ìí¼ÓÑ­»·×é"), this);
-    m_branch = new QPushButton(T("Ìí¼ÓÖ§Â·"), this);
-    QPushButton* run = new QPushButton(T("ÔËĞĞ±¾Á÷³Ì"), this);
+    QPushButton* add = new QPushButton(T("æ·»åŠ å·¥å…·"), this);
+    QPushButton* par = new QPushButton(T("æ·»åŠ å¹¶è¡Œç»„"), this);
+    m_ifBtn = new QPushButton(T("æ·»åŠ æ¡ä»¶ç»„"), this);
+    m_loopBtn = new QPushButton(T("æ·»åŠ å¾ªç¯ç»„"), this);
+    m_branch = new QPushButton(T("æ·»åŠ æ”¯è·¯"), this);
+    QPushButton* run = new QPushButton(T("è¿è¡Œæœ¬æµç¨‹"), this);
     setButtonRole(run, "primary");
     connect(add, SIGNAL(clicked()), this, SLOT(onAdd()));
     connect(par, SIGNAL(clicked()), this, SLOT(onParallel()));
@@ -437,30 +438,30 @@ JobDlg::JobDlg(Session* session, Solution* solution, Job* job, const QString& jo
     m_loopBtn->setEnabled(can);
     m_branch->setEnabled(false);
 
-    m_up = new QPushButton(T("ÉÏÒÆ"), this);
-    m_down = new QPushButton(T("ÏÂÒÆ"), this);
-    m_rename = new QPushButton(T("ÖØÃüÃû"), this);
-    m_copy = new QPushButton(T("¸´ÖÆ"), this);
-    m_del = new QPushButton(T("É¾³ı"), this);
+    m_up = new QPushButton(T("ä¸Šç§»"), this);
+    m_down = new QPushButton(T("ä¸‹ç§»"), this);
+    m_rename = new QPushButton(T("é‡å‘½å"), this);
+    m_copy = new QPushButton(T("å¤åˆ¶"), this);
+    m_del = new QPushButton(T("åˆ é™¤"), this);
     connect(m_up, SIGNAL(clicked()), this, SLOT(onMoveUp()));
     connect(m_down, SIGNAL(clicked()), this, SLOT(onMoveDown()));
     connect(m_rename, SIGNAL(clicked()), this, SLOT(onRename()));
     connect(m_copy, SIGNAL(clicked()), this, SLOT(onCopy()));
     connect(m_del, SIGNAL(clicked()), this, SLOT(onDel()));
 
-    QAction* actUp = new QAction(T("ÉÏÒÆ"), this);
+    QAction* actUp = new QAction(T("ä¸Šç§»"), this);
     actUp->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Up));
     connect(actUp, SIGNAL(triggered()), this, SLOT(onMoveUp()));
-    QAction* actDown = new QAction(T("ÏÂÒÆ"), this);
+    QAction* actDown = new QAction(T("ä¸‹ç§»"), this);
     actDown->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Down));
     connect(actDown, SIGNAL(triggered()), this, SLOT(onMoveDown()));
-    QAction* actRename = new QAction(T("ÖØÃüÃû"), this);
+    QAction* actRename = new QAction(T("é‡å‘½å"), this);
     actRename->setShortcut(QKeySequence(Qt::Key_F2));
     connect(actRename, SIGNAL(triggered()), this, SLOT(onRename()));
-    QAction* actCopy = new QAction(T("¸´ÖÆ"), this);
+    QAction* actCopy = new QAction(T("å¤åˆ¶"), this);
     actCopy->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_D));
     connect(actCopy, SIGNAL(triggered()), this, SLOT(onCopy()));
-    QAction* actDel = new QAction(T("É¾³ı"), this);
+    QAction* actDel = new QAction(T("åˆ é™¤"), this);
     actDel->setShortcut(QKeySequence::Delete);
     connect(actDel, SIGNAL(triggered()), this, SLOT(onDel()));
     addAction(actUp);
@@ -473,18 +474,18 @@ JobDlg::JobDlg(Session* session, Solution* solution, Job* job, const QString& jo
     leftPanel->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
     QVBoxLayout* left = new QVBoxLayout(leftPanel);
     left->setContentsMargins(0, 0, 0, 0);
-    left->addWidget(new QLabel(T("¹¤¾ß¿â"), leftPanel));
+    left->addWidget(new QLabel(T("å·¥å…·åº“"), leftPanel));
     left->addWidget(m_lib, 1);
 
     QWidget* midPanel = new QWidget(this);
     midPanel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     QVBoxLayout* mid = new QVBoxLayout(midPanel);
     mid->setContentsMargins(0, 0, 0, 0);
-    QLabel* midTitle = new QLabel(T("Á÷³Ì»­²¼"), midPanel);
+    QLabel* midTitle = new QLabel(T("æµç¨‹ç”»å¸ƒ"), midPanel);
     midTitle->setObjectName(QLatin1String("section"));
     mid->addWidget(midTitle);
     mid->addWidget(m_flowCanvas, 1);
-    // ¹¤¾ß²Ù×÷°´Å¥Íø¸ñ
+    // å·¥å…·æ“ä½œæŒ‰é’®ç½‘æ ¼
     QGridLayout* tb = new QGridLayout();
     tb->setHorizontalSpacing(8);
     tb->setVerticalSpacing(6);
@@ -501,13 +502,13 @@ JobDlg::JobDlg(Session* session, Solution* solution, Job* job, const QString& jo
     QVBoxLayout* right = new QVBoxLayout(rightPanel);
     right->setContentsMargins(0, 0, 0, 0);
     QHBoxLayout* titleRow = new QHBoxLayout();
-    QLabel* rTitle = new QLabel(T("Á÷³Ì½á¹¹"), rightPanel);
+    QLabel* rTitle = new QLabel(T("æµç¨‹ç»“æ„"), rightPanel);
     rTitle->setObjectName(QLatin1String("section"));
-    QLabel* rSync = new QLabel(T("Óë»­²¼Í¬²½"), rightPanel);
+    QLabel* rSync = new QLabel(T("ä¸ç”»å¸ƒåŒæ­¥"), rightPanel);
     rSync->setObjectName(QLatin1String("hint"));
     titleRow->addWidget(rTitle);
     titleRow->addWidget(rSync, 1);
-    QLabel* rHint = new QLabel(T("Ñ¡ÖĞ Then/Else ·ÖÖ§»ò²¢ĞĞÖ§Â·ºóÔÙÌí¼Ó¹¤¾ß¡£Ìõ¼ş×éÖ»ÅÜÃüÖĞµÄÒ»²à¡£"), rightPanel);
+    QLabel* rHint = new QLabel(T("é€‰ä¸­ Then/Else åˆ†æ”¯æˆ–å¹¶è¡Œæ”¯è·¯åå†æ·»åŠ å·¥å…·ã€‚æ¡ä»¶ç»„åªæ‰§è¡Œå‘½ä¸­çš„ä¸€ä¾§ã€‚"), rightPanel);
     rHint->setObjectName(QLatin1String("hint"));
     rHint->setWordWrap(true);
     rHint->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
@@ -518,14 +519,14 @@ JobDlg::JobDlg(Session* session, Solution* solution, Job* job, const QString& jo
     m_condPanel = new QWidget(rightPanel);
     m_condSrc = new QComboBox(m_condPanel);
     m_condWant = new QComboBox(m_condPanel);
-    m_condWant->addItem(T("½á¹ûÎª OK Ê±×ß Then"), CondThenOnOk);
-    m_condWant->addItem(T("½á¹ûÎª NG Ê±×ß Then"), CondThenOnNg);
+    m_condWant->addItem(T("ç»“æœä¸º OK æ—¶èµ° Then"), CondThenOnOk);
+    m_condWant->addItem(T("ç»“æœä¸º NG æ—¶èµ° Then"), CondThenOnNg);
     connect(m_condSrc, SIGNAL(currentIndexChanged(int)), this, SLOT(onCondChanged()));
     connect(m_condWant, SIGNAL(currentIndexChanged(int)), this, SLOT(onCondChanged()));
     QFormLayout* condForm = new QFormLayout(m_condPanel);
     condForm->setContentsMargins(0, 0, 0, 8);
-    condForm->addRow(T("Ìõ¼şÀ´Ô´"), m_condSrc);
-    condForm->addRow(T("Then Ìõ¼ş"), m_condWant);
+    condForm->addRow(T("æ¡ä»¶æ¥æº"), m_condSrc);
+    condForm->addRow(T("Then æ¡ä»¶"), m_condWant);
     m_condPanel->setVisible(false);
     right->addWidget(m_condPanel);
 
@@ -536,11 +537,11 @@ JobDlg::JobDlg(Session* session, Solution* solution, Job* job, const QString& jo
     connect(m_loopCount, SIGNAL(valueChanged(int)), this, SLOT(onLoopCountChanged(int)));
     QFormLayout* loopForm = new QFormLayout(m_loopPanel);
     loopForm->setContentsMargins(0, 0, 0, 8);
-    loopForm->addRow(T("Ñ­»·´ÎÊı"), m_loopCount);
+    loopForm->addRow(T("å¾ªç¯æ¬¡æ•°"), m_loopCount);
     m_loopPanel->setVisible(false);
     right->addWidget(m_loopPanel);
 
-    m_btnRstRules = new QPushButton(T("Êä³ö½á¹ûÅäÖÃ"), rightPanel);
+    m_btnRstRules = new QPushButton(T("è¾“å‡ºç»“æœé…ç½®"), rightPanel);
     connect(m_btnRstRules, SIGNAL(clicked()), this, SLOT(onOpenRstRules()));
     m_btnRstRules->setEnabled(can);
 
@@ -556,7 +557,7 @@ JobDlg::JobDlg(Session* session, Solution* solution, Job* job, const QString& jo
     right->addLayout(ops1);
     right->addLayout(ops2);
 
-    // È·¶¨×ß±£´æ£¬È¡Ïû¹Ø±Õ
+    // ç¡®å®šèµ°ä¿å­˜ï¼Œå–æ¶ˆå…³é—­
     QDialogButtonBox* box = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, rightPanel);
     box->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
     connect(box, SIGNAL(accepted()), this, SLOT(onSave()));
@@ -585,39 +586,39 @@ JobDlg::JobDlg(Session* session, Solution* solution, Job* job, const QString& jo
     reloadTools();
 }
 
-// ÊÇ·ñÔÊĞí¸Ä·½°¸
+// æ˜¯å¦å…è®¸æ”¹æ–¹æ¡ˆ
 bool JobDlg::canEdit() const
 {
     return m_session->has(PermEditSolution);
 }
 
-// µ±Ç°±à¼­ÖĞµÄÁ÷³Ì²İ¸å
+// å½“å‰ç¼–è¾‘ä¸­çš„æµç¨‹è‰ç¨¿
 JobCfg* JobDlg::currentJob()
 {
     return m_draftJob.id.isNull() ? 0 : &m_draftJob;
 }
 
-// µ±Ç°±à¼­ÖĞµÄÁ÷³Ì²İ¸å
+// å½“å‰ç¼–è¾‘ä¸­çš„æµç¨‹è‰ç¨¿
 const JobCfg* JobDlg::currentJob() const
 {
     return m_draftJob.id.isNull() ? 0 : &m_draftJob;
 }
 
-// µ±Ç°Ê÷½Úµã id
+// å½“å‰æ ‘èŠ‚ç‚¹ id
 QString JobDlg::currentNodeId() const
 {
     QTreeWidgetItem* it = m_tools->currentItem();
     return it ? it->data(0, ToolListId).toString() : QString();
 }
 
-// µ±Ç°Ê÷½ÚµãÖÖÀà
+// å½“å‰æ ‘èŠ‚ç‚¹ç§ç±»
 int JobDlg::currentKind() const
 {
     QTreeWidgetItem* it = m_tools->currentItem();
     return it ? it->data(0, ToolListKind).toInt() : -1;
 }
 
-// ÒÆ¶¯ÓÃµÄ½Úµã id
+// ç§»åŠ¨ç”¨çš„èŠ‚ç‚¹ id
 ObjectId JobDlg::moveId() const
 {
     const JobCfg* job = currentJob();
@@ -632,7 +633,7 @@ ObjectId JobDlg::moveId() const
     return oid(id);
 }
 
-// °´ id Ñ¡ÖĞÊ÷½Úµã
+// æŒ‰ id é€‰ä¸­æ ‘èŠ‚ç‚¹
 void JobDlg::selectInTree(const QString& id)
 {
     if (id.isEmpty()) {
@@ -648,7 +649,7 @@ void JobDlg::selectInTree(const QString& id)
     }
 }
 
-// °´×éµİ¹éÌîÁ÷³ÌÊ÷
+// æŒ‰ç»„é€’å½’å¡«æµç¨‹æ ‘
 void JobDlg::fillTree(QTreeWidgetItem* parent, const ToolGroup& g, const JobCfg* job)
 {
     if (!g.toolId.isNull() && g.children.empty()) {
@@ -697,7 +698,7 @@ void JobDlg::fillTree(QTreeWidgetItem* parent, const ToolGroup& g, const JobCfg*
     }
 }
 
-// °´Ñ¡ÖĞÏîË¢ĞÂ°´Å¥
+// æŒ‰é€‰ä¸­é¡¹åˆ·æ–°æŒ‰é’®
 void JobDlg::updateToolButtons()
 {
     JobCfg* job = currentJob();
@@ -718,7 +719,7 @@ void JobDlg::updateToolButtons()
             canUp = idx > 0;
             canDown = idx >= 0 && idx < p->children.size() - 1;
             if (p->kind == GroupIf) {
-                // If µÄ Then/Else ²»ÔÊĞíÉÏÏÂÒÆ
+                // If çš„ Then/Else ä¸å…è®¸ä¸Šä¸‹ç§»
                 canUp = false;
                 canDown = false;
             }
@@ -743,7 +744,7 @@ void JobDlg::updateToolButtons()
     fillLoopUi();
 }
 
-// ÖØÔØÁ÷³ÌÊ÷
+// é‡è½½æµç¨‹æ ‘
 void JobDlg::reloadTools(const QString& selectId)
 {
     const QString keep = !selectId.isEmpty() ? selectId : currentNodeId();
@@ -772,7 +773,7 @@ void JobDlg::reloadTools(const QString& selectId)
     refreshToolRunStatus();
 }
 
-// Ë¢ĞÂÊ÷ÉÏµÄÔËĞĞ×´Ì¬
+// åˆ·æ–°æ ‘ä¸Šçš„è¿è¡ŒçŠ¶æ€
 void JobDlg::refreshToolRunStatus()
 {
     QTreeWidgetItemIterator it(m_tools);
@@ -824,7 +825,7 @@ void JobDlg::refreshToolRunStatus()
     }
 }
 
-// °Ñ¹´Ñ¡Ğ´»Ø¹¤¾ßÊ¹ÄÜ
+// æŠŠå‹¾é€‰å†™å›å·¥å…·ä½¿èƒ½
 void JobDlg::applyTreeNodeEnabled(QTreeWidgetItem* item, bool enabled)
 {
     JobCfg* job = currentJob();
@@ -856,7 +857,7 @@ void JobDlg::applyTreeNodeEnabled(QTreeWidgetItem* item, bool enabled)
     reloadTools(item->data(0, ToolListId).toString());
 }
 
-// °ÑÒ³Í·Ğ´»Ø²İ¸å
+// æŠŠé¡µå¤´å†™å›è‰ç¨¿
 void JobDlg::flushHeaderToDraft()
 {
     JobCfg* job = currentJob();
@@ -870,13 +871,13 @@ void JobDlg::flushHeaderToDraft()
     JobRstRulePanel::applyFromRuleCombo(m_fromRule, job);
 }
 
-// Ë¢ĞÂ½á¹û¹æÔòÏÂÀ­
+// åˆ·æ–°ç»“æœè§„åˆ™ä¸‹æ‹‰
 void JobDlg::refreshFromRuleCombo()
 {
     JobRstRulePanel::populateFromRuleCombo(m_fromRule, currentJob());
 }
 
-// ±ê¼Ç²İ¸åÒÑĞŞ¸Ä
+// æ ‡è®°è‰ç¨¿å·²ä¿®æ”¹
 void JobDlg::markDraftDirty()
 {
     flushHeaderToDraft();
@@ -884,21 +885,21 @@ void JobDlg::markDraftDirty()
     updateWindowTitle();
 }
 
-// Ë¢ĞÂ´°¿Ú±êÌâ
+// åˆ·æ–°çª—å£æ ‡é¢˜
 void JobDlg::updateWindowTitle()
 {
-    QString title = T("Á÷³ÌÅäÖÃ");
+    QString title = T("æµç¨‹é…ç½®");
     if (!m_draftJob.name.empty()) {
         title = qs(m_draftJob.name) + QLatin1Char(' ') + QString(QChar(0x00B7)) + QLatin1Char(' ') + title;
     }
     if (DraftRegistry::jobDraftBlocksFormalRun(oid(m_jobId))) {
-        title += T(" ¡¤ Î´±£´æ");
+        title += T(" Â· æœªä¿å­˜");
     }
     setWindowTitle(title);
     syncDialogTitleBar(this, title);
 }
 
-// Ìá½»²İ¸åÎªÕıÊ½Á÷³Ì
+// æäº¤è‰ç¨¿ä¸ºæ­£å¼æµç¨‹
 bool JobDlg::trySave()
 {
     if (!canEdit()) {
@@ -910,7 +911,7 @@ bool JobDlg::trySave()
         return true;
     }
     if (!m_sol->commitJob(m_draftJob)) {
-        QMessageBox::warning(this, T("±£´æÊ§°Ü"), T("Á÷³ÌÎ´ÄÜ±£´æ¡£"));
+        QMessageBox::warning(this, T("ä¿å­˜å¤±è´¥"), T("æµç¨‹æœªèƒ½ä¿å­˜ã€‚"));
         return false;
     }
     m_formalSnapshot = m_draftJob.clone();
@@ -919,25 +920,25 @@ bool JobDlg::trySave()
     return true;
 }
 
-// ¹Ø±ÕÇ°Ñ¯ÎÊ
+// å…³é—­å‰è¯¢é—®
 int JobDlg::askCloseAction()
 {
     if (!DraftRegistry::jobDraftBlocksFormalRun(oid(m_jobId))) {
         DraftRegistry::unregisterJobDraft(oid(m_jobId));
         return 1;
     }
-    QMessageBox box(QMessageBox::Question, T("Î´±£´æµÄĞŞ¸Ä"),
-                    T("ÓĞÎ´±£´æµÄĞŞ¸Ä£¬ÊÇ·ñ±£´æ£¿"),
+    QMessageBox box(QMessageBox::Question, T("æœªä¿å­˜çš„ä¿®æ”¹"),
+                    T("æœ‰æœªä¿å­˜çš„ä¿®æ”¹ï¼Œæ˜¯å¦ä¿å­˜ï¼Ÿ"),
                     QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, this);
     box.setDefaultButton(QMessageBox::Yes);
     if (QAbstractButton* saveBtn = box.button(QMessageBox::Yes)) {
-        saveBtn->setText(T("±£´æ"));
+        saveBtn->setText(T("ä¿å­˜"));
     }
     if (QAbstractButton* discardBtn = box.button(QMessageBox::No)) {
-        discardBtn->setText(T("²»±£´æ"));
+        discardBtn->setText(T("ä¸ä¿å­˜"));
     }
     if (QAbstractButton* cancelBtn = box.button(QMessageBox::Cancel)) {
-        cancelBtn->setText(T("È¡Ïû"));
+        cancelBtn->setText(T("å–æ¶ˆ"));
     }
     const int r = box.exec();
     if (r == QMessageBox::Cancel) {
@@ -954,7 +955,7 @@ int JobDlg::askCloseAction()
     return 1;
 }
 
-// È¡Ïû¶Ô»°¿ò
+// å–æ¶ˆå¯¹è¯æ¡†
 void JobDlg::reject()
 {
     const int action = askCloseAction();
@@ -968,7 +969,7 @@ void JobDlg::reject()
     QDialog::reject();
 }
 
-// ¹Ø±Õ´°¿Ú
+// å…³é—­çª—å£
 void JobDlg::closeEvent(QCloseEvent* event)
 {
     const int action = askCloseAction();
@@ -986,25 +987,25 @@ void JobDlg::closeEvent(QCloseEvent* event)
     }
 }
 
-// Ò³Í·±»±à¼­
+// é¡µå¤´è¢«ç¼–è¾‘
 void JobDlg::onHeaderEdited()
 {
     markDraftDirty();
 }
 
-// ½á¹ûÀ´Ô´±ä»¯
+// ç»“æœæ¥æºå˜åŒ–
 void JobDlg::onFromRuleChanged()
 {
     markDraftDirty();
 }
 
-// ½á¹û¹æÔò±ä»¯
+// ç»“æœè§„åˆ™å˜åŒ–
 void JobDlg::onRstRulesChanged()
 {
     markDraftDirty();
 }
 
-// ´ò¿ª½á¹û¹æÔò
+// æ‰“å¼€ç»“æœè§„åˆ™
 void JobDlg::onOpenRstRules()
 {
     JobCfg* job = currentJob();
@@ -1023,7 +1024,7 @@ void JobDlg::onOpenRstRules()
     }
 }
 
-// Ìí¼Ó½Úµã
+// æ·»åŠ èŠ‚ç‚¹
 void JobDlg::onAdd()
 {
     if (!canEdit()) {
@@ -1032,12 +1033,12 @@ void JobDlg::onAdd()
     JobCfg* job = currentJob();
     QTreeWidgetItem* it = m_lib->currentItem();
     if (!job || !it) {
-        QMessageBox::information(this, T("Ìí¼Ó¹¤¾ß"), T("ÇëÏÈÔÚ×ó²àÑ¡ÔñÒ»¸ö¹¤¾ß¡£"));
+        QMessageBox::information(this, T("æ·»åŠ å·¥å…·"), T("è¯·å…ˆåœ¨å·¦ä¾§é€‰æ‹©ä¸€ä¸ªå·¥å…·ã€‚"));
         return;
     }
     const QString tn = it->data(0, Qt::UserRole).toString();
     if (tn.isEmpty()) {
-        QMessageBox::information(this, T("Ìí¼Ó¹¤¾ß"), T("ÇëÑ¡Ôñ¾ßÌå¹¤¾ß£¬²»ÒªÑ¡·ÖÀà¡£"));
+        QMessageBox::information(this, T("æ·»åŠ å·¥å…·"), T("è¯·é€‰æ‹©å…·ä½“å·¥å…·ï¼Œä¸è¦é€‰åˆ†ç±»ã€‚"));
         return;
     }
     if (tn == QLatin1String("group.parallel")) {
@@ -1052,7 +1053,7 @@ void JobDlg::onAdd()
         onLoop();
         return;
     }
-    // ĞÂ¹¤¾ß°ó¶¨¹¤Õ¾µÚÒ»Ì¨Éè±¸
+    // æ–°å·¥å…·ç»‘å®šå·¥ç«™ç¬¬ä¸€å°è®¾å¤‡
     ObjectId dev;
     for (int i = 0; i < m_sol->stations.size(); ++i) {
         for (int j = 0; j < m_sol->stations[i].jobs.size(); ++j) {
@@ -1069,7 +1070,7 @@ void JobDlg::onAdd()
     reloadTools(qs(t.id));
 }
 
-// É¾³ı½Úµã
+// åˆ é™¤èŠ‚ç‚¹
 void JobDlg::onDel()
 {
     if (!canEdit()) {
@@ -1082,9 +1083,9 @@ void JobDlg::onDel()
         return;
     }
     const QString msg = (kind == ListKindTool)
-        ? T("É¾³ı´Ë¹¤¾ß£¿")
-        : T("É¾³ı´Ë×é¼°ÆäÄÚ²¿¹¤¾ß£¿");
-    if (QMessageBox::question(this, T("É¾³ı"), msg) != QMessageBox::Yes) {
+        ? T("åˆ é™¤æ­¤å·¥å…·ï¼Ÿ")
+        : T("åˆ é™¤æ­¤ç»„åŠå…¶å†…éƒ¨å·¥å…·ï¼Ÿ");
+    if (QMessageBox::question(this, T("åˆ é™¤"), msg) != QMessageBox::Yes) {
         return;
     }
     bool ok = false;
@@ -1100,7 +1101,7 @@ void JobDlg::onDel()
     reloadTools();
 }
 
-// ÉÏÒÆ
+// ä¸Šç§»
 void JobDlg::onMoveUp()
 {
     JobCfg* job = currentJob();
@@ -1115,7 +1116,7 @@ void JobDlg::onMoveUp()
     reloadTools(keep);
 }
 
-// ÏÂÒÆ
+// ä¸‹ç§»
 void JobDlg::onMoveDown()
 {
     JobCfg* job = currentJob();
@@ -1130,7 +1131,7 @@ void JobDlg::onMoveDown()
     reloadTools(keep);
 }
 
-// ÖØÃüÃû
+// é‡å‘½å
 void JobDlg::onRename()
 {
     JobCfg* job = currentJob();
@@ -1154,7 +1155,7 @@ void JobDlg::onRename()
         cur = qs(g->name);
     }
     bool ok = false;
-    const QString n = QInputDialog::getText(this, T("ÖØÃüÃû"), T("Ãû³Æ"),
+    const QString n = QInputDialog::getText(this, T("é‡å‘½å"), T("åç§°"),
                                             QLineEdit::Normal, cur, &ok);
     if (!ok) {
         return;
@@ -1170,7 +1171,7 @@ void JobDlg::onRename()
     reloadTools(id);
 }
 
-// ¸´ÖÆ
+// å¤åˆ¶
 void JobDlg::onCopy()
 {
     JobCfg* job = currentJob();
@@ -1197,7 +1198,7 @@ void JobDlg::onCopy()
 }
 
 
-// ÇĞ»»¹¤¾ßÊ¹ÄÜ
+// åˆ‡æ¢å·¥å…·ä½¿èƒ½
 void JobDlg::onToggleToolEnabled()
 {
     if (!canEdit() || currentKind() != ListKindTool) {
@@ -1210,7 +1211,7 @@ void JobDlg::onToggleToolEnabled()
     const bool cur = it->data(0, ToolListChecked).toBool();
     applyTreeNodeEnabled(it, !cur);
 }
-// ¹¤¾ßÊ÷ÓÒ¼ü²Ëµ¥
+// å·¥å…·æ ‘å³é”®èœå•
 void JobDlg::onToolMenu(const QPoint& pos)
 {
     QTreeWidgetItem* it = m_tools->itemAt(pos);
@@ -1221,21 +1222,21 @@ void JobDlg::onToolMenu(const QPoint& pos)
     popupFlowMenu(m_tools->mapToGlobal(pos));
 }
 
-// µ¯³öÁ÷³Ì²Ëµ¥
+// å¼¹å‡ºæµç¨‹èœå•
 void JobDlg::popupFlowMenu(const QPoint& globalPos)
 {
     QMenu menu(this);
-    QAction* addTool = menu.addAction(T("ÔÚ´Ë´¦Ìí¼Ó¹¤¾ß"));
-    QAction* branch = menu.addAction(T("Ìí¼ÓÖ§Â·"));
+    QAction* addTool = menu.addAction(T("åœ¨æ­¤å¤„æ·»åŠ å·¥å…·"));
+    QAction* branch = menu.addAction(T("æ·»åŠ æ”¯è·¯"));
     branch->setEnabled(m_branch->isEnabled());
     addTool->setEnabled(canEdit());
     menu.addSeparator();
-    QAction* up = menu.addAction(T("ÉÏÒÆ"));
-    QAction* down = menu.addAction(T("ÏÂÒÆ"));
+    QAction* up = menu.addAction(T("ä¸Šç§»"));
+    QAction* down = menu.addAction(T("ä¸‹ç§»"));
     menu.addSeparator();
-    QAction* rename = menu.addAction(T("ÖØÃüÃû"));
-    QAction* copy = menu.addAction(T("¸´ÖÆ"));
-    QAction* del = menu.addAction(T("É¾³ı"));
+    QAction* rename = menu.addAction(T("é‡å‘½å"));
+    QAction* copy = menu.addAction(T("å¤åˆ¶"));
+    QAction* del = menu.addAction(T("åˆ é™¤"));
     up->setEnabled(m_up->isEnabled());
     down->setEnabled(m_down->isEnabled());
     rename->setEnabled(m_rename->isEnabled());
@@ -1248,15 +1249,15 @@ void JobDlg::popupFlowMenu(const QPoint& globalPos)
         const bool on = cur->data(0, ToolListChecked).toBool();
         const int kind = cur->data(0, ToolListKind).toInt();
         if (kind == ListKindTool) {
-            enAct = menu.addAction(on ? T("½ûÓÃ¹¤¾ß") : T("ÆôÓÃ¹¤¾ß"));
+            enAct = menu.addAction(on ? T("ç¦ç”¨å·¥å…·") : T("å¯ç”¨å·¥å…·"));
         } else {
-            enAct = menu.addAction(on ? T("½ûÓÃ´Ë×é") : T("ÆôÓÃ´Ë×é"));
+            enAct = menu.addAction(on ? T("ç¦ç”¨æ­¤ç»„") : T("å¯ç”¨æ­¤ç»„"));
         }
     }
     menu.addSeparator();
-    QAction* autoLay = menu.addAction(T("×Ô¶¯²¼¾Ö"));
+    QAction* autoLay = menu.addAction(T("è‡ªåŠ¨å¸ƒå±€"));
     autoLay->setEnabled(canEdit());
-    QAction* zoom = menu.addAction(T("¸´Î»Ëõ·Å"));
+    QAction* zoom = menu.addAction(T("å¤ä½ç¼©æ”¾"));
     QAction* chosen = menu.exec(globalPos);
     if (chosen == addTool) {
         onAdd();
@@ -1289,7 +1290,7 @@ void JobDlg::popupFlowMenu(const QPoint& globalPos)
     }
 }
 
-// »­²¼Ñ¡ÖĞ¹¤¾ß
+// ç”»å¸ƒé€‰ä¸­å·¥å…·
 void JobDlg::onCanvasTool(const QString& toolId)
 {
     selectInTree(toolId);
@@ -1297,13 +1298,13 @@ void JobDlg::onCanvasTool(const QString& toolId)
     updateToolButtons();
 }
 
-// »­²¼Ë«»÷¹¤¾ß
+// ç”»å¸ƒåŒå‡»å·¥å…·
 void JobDlg::onCanvasToolDouble(const QString& toolId)
 {
     openToolDebug(toolId);
 }
 
-// Ê÷½ÚµãË«»÷
+// æ ‘èŠ‚ç‚¹åŒå‡»
 void JobDlg::onTreeDouble(QTreeWidgetItem* item, int)
 {
     if (!item) {
@@ -1318,7 +1319,7 @@ void JobDlg::onTreeDouble(QTreeWidgetItem* item, int)
     onRename();
 }
 
-// ´ò¿ª¹¤¾ßµ÷ÊÔ
+// æ‰“å¼€å·¥å…·è°ƒè¯•
 void JobDlg::openToolDebug(const QString& toolId)
 {
     if (toolId.isEmpty()) {
@@ -1347,11 +1348,11 @@ void JobDlg::openToolDebug(const QString& toolId)
     m_debug->refreshView();
 }
 
-// µ÷ÊÔÔËĞĞ½áÊø»ØĞ´
+// è°ƒè¯•è¿è¡Œç»“æŸå›å†™
 void JobDlg::onDebugRun()
 {
     if (!m_session->has(PermRunJobDebug)) {
-        QMessageBox::warning(this, T("È¨ÏŞ"), T("Ã»ÓĞÔËĞĞµ÷ÊÔµÄÈ¨ÏŞ¡£"));
+        QMessageBox::warning(this, T("æƒé™"), T("æ²¡æœ‰è¿è¡Œè°ƒè¯•çš„æƒé™ã€‚"));
         return;
     }
     if (m_debugToolId.isEmpty() || !m_debug) {
@@ -1366,14 +1367,14 @@ void JobDlg::onDebugRun()
     m_debug->refreshView(&out);
 }
 
-// µ÷ÊÔ±£´æºóË¢ĞÂ²İ¸å
+// è°ƒè¯•ä¿å­˜ååˆ·æ–°è‰ç¨¿
 void JobDlg::onDebugSaved()
 {
     markDraftDirty();
     reloadTools(m_debugToolId);
 }
 
-// µ÷ÊÔÀï ROI ±ä»¯
+// è°ƒè¯•é‡Œ ROI å˜åŒ–
 void JobDlg::onDebugRoiChanged()
 {
     markDraftDirty();
@@ -1382,7 +1383,7 @@ void JobDlg::onDebugRoiChanged()
     }
 }
 
-// »­²¼Ñ¡ÖĞ×é
+// ç”»å¸ƒé€‰ä¸­ç»„
 void JobDlg::onCanvasGroup(const QString& groupId)
 {
     selectInTree(groupId);
@@ -1390,7 +1391,7 @@ void JobDlg::onCanvasGroup(const QString& groupId)
     updateToolButtons();
 }
 
-// »­²¼ÓÒ¼ü²Ëµ¥
+// ç”»å¸ƒå³é”®èœå•
 void JobDlg::onCanvasMenu(const QString& id, int kind, const QPoint& globalPos)
 {
     if (kind == CanvasHitWire) {
@@ -1398,8 +1399,8 @@ void JobDlg::onCanvasMenu(const QString& id, int kind, const QPoint& globalPos)
             return;
         }
         QMenu menu(this);
-        QAction* reset = menu.addAction(T("»Ö¸´×Ô¶¯Â·ÓÉ"));
-        QAction* del = menu.addAction(T("¶Ï¿ªÁ¬Ïß"));
+        QAction* reset = menu.addAction(T("æ¢å¤è‡ªåŠ¨è·¯ç”±"));
+        QAction* del = menu.addAction(T("æ–­å¼€è¿çº¿"));
         QAction* chosen = menu.exec(globalPos);
         if (!chosen) {
             return;
@@ -1419,7 +1420,7 @@ void JobDlg::onCanvasMenu(const QString& id, int kind, const QPoint& globalPos)
     popupFlowMenu(globalPos);
 }
 
-// Ìí¼ÓÌõ¼ş×é
+// æ·»åŠ æ¡ä»¶ç»„
 void JobDlg::onIf()
 {
     JobCfg* job = currentJob();
@@ -1434,7 +1435,7 @@ void JobDlg::onIf()
     reloadTools(qs(nid));
 }
 
-// Ë¢ĞÂÌõ¼ş×é½çÃæ
+// åˆ·æ–°æ¡ä»¶ç»„ç•Œé¢
 void JobDlg::fillCondUi()
 {
     JobCfg* job = currentJob();
@@ -1450,8 +1451,8 @@ void JobDlg::fillCondUi()
     m_condSrc->blockSignals(true);
     m_condWant->blockSignals(true);
     m_condSrc->clear();
-    m_condSrc->addItem(T("£¨Î´Ö¸¶¨£©"), QString());
-    // Ìõ¼şÔ´²»ÁĞ³ö×éÄÚ¹¤¾ß
+    m_condSrc->addItem(T("ï¼ˆæœªæŒ‡å®šï¼‰"), QString());
+    // æ¡ä»¶æºä¸åˆ—å‡ºç»„å†…å·¥å…·
     const std::vector<ObjectId> inside = g->toolIds();
     for (int i = 0; i < job->tools.size(); ++i) {
         bool skip = false;
@@ -1479,7 +1480,7 @@ void JobDlg::fillCondUi()
     m_condWant->blockSignals(false);
 }
 
-// Ìõ¼ş×é²ÎÊı±ä»¯
+// æ¡ä»¶ç»„å‚æ•°å˜åŒ–
 void JobDlg::onCondChanged()
 {
     JobCfg* job = currentJob();
@@ -1497,7 +1498,7 @@ void JobDlg::onCondChanged()
 
 
 
-// Ìí¼ÓÑ­»·×é
+// æ·»åŠ å¾ªç¯ç»„
 void JobDlg::onLoop()
 {
     JobCfg* job = currentJob();
@@ -1512,7 +1513,7 @@ void JobDlg::onLoop()
     reloadTools(qs(nid));
 }
 
-// Ë¢ĞÂÑ­»·×é½çÃæ
+// åˆ·æ–°å¾ªç¯ç»„ç•Œé¢
 void JobDlg::fillLoopUi()
 {
     JobCfg* job = currentJob();
@@ -1530,7 +1531,7 @@ void JobDlg::fillLoopUi()
     m_loopCount->blockSignals(false);
 }
 
-// Ñ­»·´ÎÊı±ä»¯
+// å¾ªç¯æ¬¡æ•°å˜åŒ–
 void JobDlg::onLoopCountChanged(int value)
 {
     JobCfg* job = currentJob();
@@ -1558,7 +1559,7 @@ void JobDlg::onParallel()
     reloadTools(qs(nid));
 }
 
-// Ìí¼Ó·ÖÖ§
+// æ·»åŠ åˆ†æ”¯
 void JobDlg::onAddBranch()
 {
     JobCfg* job = currentJob();
@@ -1573,7 +1574,7 @@ void JobDlg::onAddBranch()
     reloadTools(qs(nid));
 }
 
-// ±£´æÁ÷³Ì²İ¸å
+// ä¿å­˜æµç¨‹è‰ç¨¿
 void JobDlg::onSave()
 {
     if (!canEdit()) {
@@ -1587,20 +1588,20 @@ void JobDlg::onSave()
     accept();
 }
 
-// ÔËĞĞÁ÷³Ì
+// è¿è¡Œæµç¨‹
 void JobDlg::onRun()
 {
     if (!m_session->has(PermRunJobDebug)) {
-        QMessageBox::warning(this, T("È¨ÏŞ"), T("Ã»ÓĞÔËĞĞÁ÷³ÌµÄÈ¨ÏŞ¡£"));
+        QMessageBox::warning(this, T("æƒé™"), T("æ²¡æœ‰è¿è¡Œæµç¨‹çš„æƒé™ã€‚"));
         return;
     }
     flushHeaderToDraft();
     if (!m_job) {
-        QMessageBox::warning(this, T("ÔËĞĞ"), T("µ±Ç°Ã»ÓĞ¿ÉÔËĞĞµÄÁ÷³ÌÊµÀı¡£"));
+        QMessageBox::warning(this, T("è¿è¡Œ"), T("å½“å‰æ²¡æœ‰å¯è¿è¡Œçš„æµç¨‹å®ä¾‹ã€‚"));
         return;
     }
     if (m_job->isRunning()) {
-        QMessageBox::information(this, T("ÔËĞĞ"), T("Á÷³ÌÕıÔÚÔËĞĞ£¬ÇëÉÔºò¡£"));
+        QMessageBox::information(this, T("è¿è¡Œ"), T("æµç¨‹æ­£åœ¨è¿è¡Œï¼Œè¯·ç¨å€™ã€‚"));
         return;
     }
     JobCfg* draft = new JobCfg(m_draftJob);
@@ -1619,7 +1620,7 @@ void JobDlg::onRun()
     });
 }
 
-// Òì²½ÔËĞĞ½áÊø
+// å¼‚æ­¥è¿è¡Œç»“æŸ
 void JobDlg::onAsyncJobRunDone(void* outPtr)
 {
     ToolOut* out = static_cast<ToolOut*>(outPtr);
@@ -1630,7 +1631,7 @@ void JobDlg::onAsyncJobRunDone(void* outPtr)
     if (m_session
         && m_session->settings().shouldPopupJobResult(out->ok, out->error)) {
         const QString title = out->error
-                                  ? T("Ê§°Ü")
+                                  ? T("å¤±è´¥")
                                   : (out->ok ? T("OK") : T("NG"));
         if (out->error) {
             QMessageBox::warning(this, title, qs(out->message));

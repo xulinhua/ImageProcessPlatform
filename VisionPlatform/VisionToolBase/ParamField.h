@@ -1,6 +1,6 @@
 /**
  * @file ParamField.h
- * @brief ParamFieldÍ·ÎÄ¼ş
+ * @brief ParamFieldå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -16,29 +16,32 @@
 
 namespace Vision {
 
-/** @brief ²ÎÊıÒ³¿Ø¼şÖÖÀà */
+/** @brief å‚æ•°é¡µæ§ä»¶ç§ç±» */
 enum class ParamFieldType {
-    Undefined = -1, ///< Î´¶¨Òå
-    Bool = 0, ///< ¹´Ñ¡
-    Int,      ///< ÕûÊı
-    Double,   ///< ¸¡µã
-    String,   ///< ÎÄ±¾£»ÓĞÑ¡ÏîÔòÎªÏÂÀ­
-    Path,     ///< Â·¾¶£¬ÎÄ±¾¼Óä¯ÀÀ
-    Device,    ///< µ±Ç°·½°¸ÀïµÄÉè±¸
-    Max ///< ¸öÊı£¬²»ÊÇºÏ·¨Öµ
+    Undefined = -1, ///< æœªå®šä¹‰
+    Bool = 0, ///< å‹¾é€‰
+    Int,      ///< æ•´æ•°
+    Double,   ///< æµ®ç‚¹
+    String,   ///< æ–‡æœ¬ï¼›æœ‰é€‰é¡¹åˆ™ä¸ºä¸‹æ‹‰
+    Path,     ///< è·¯å¾„ï¼Œæ–‡æœ¬åŠ æµè§ˆ
+    Device,    ///< å½“å‰æ–¹æ¡ˆé‡Œçš„è®¾å¤‡
+    Max ///< ä¸ªæ•°ï¼Œä¸æ˜¯åˆæ³•å€¼
 };
 
-/** @class ParamField @brief ¹¤¾ß¿ÇÉÏµÄÒ»Ïî²ÎÊıËµÃ÷£¬½çÃæ¾İ´ËÉú³É±íµ¥ */
+/** @class ParamField @brief å·¥å…·å£³ä¸Šçš„ä¸€é¡¹å‚æ•°è¯´æ˜ï¼Œç•Œé¢æ®æ­¤ç”Ÿæˆè¡¨å• */
 struct ParamField {
-    std::string key;                    ///< Ğ´Èë ParamMap µÄ¼ü
-    std::string title;                  ///< ½çÃæÎÄ×Ö£¬×÷·­Òë¼ü
-    ParamFieldType type;                ///< ¿Ø¼şÖÖÀà
-    ParamValue def;                     ///< ĞÂÍÏ½øÁ÷³ÌÊ±µÄ³õÖµ
-    bool hasMin;                        ///< ÊÇ·ñÏŞÖÆ×îĞ¡
-    bool hasMax;                        ///< ÊÇ·ñÏŞÖÆ×î´ó
-    double minValue;                    ///< ×îĞ¡
-    double maxValue;                    ///< ×î´ó
-    std::vector<std::string> choices;   ///< ×Ö·û´®Ã¶¾Ù£»¿Õ±íÊ¾×ÔÓÉÎÄ±¾
+    std::string key;                    ///< å†™å…¥ ParamMap çš„é”®
+    std::string title;                  ///< ç•Œé¢æ–‡å­—ï¼Œä½œç¿»è¯‘é”®
+    ParamFieldType type;                ///< æ§ä»¶ç§ç±»
+    ParamValue def;                     ///< æ–°æ‹–è¿›æµç¨‹æ—¶çš„åˆå€¼
+    bool hasMin;                        ///< æ˜¯å¦é™åˆ¶æœ€å°
+    bool hasMax;                        ///< æ˜¯å¦é™åˆ¶æœ€å¤§
+    double minValue;                    ///< æœ€å°
+    double maxValue;                    ///< æœ€å¤§
+    std::vector<std::string> choices;   ///< å­—ç¬¦ä¸²æšä¸¾ï¼›ç©ºè¡¨ç¤ºè‡ªç”±æ–‡æœ¬
+    std::string showKey;                ///< æ˜¾éšä¾èµ–çš„å‚æ•°é”®ã€‚ç©ºåˆ™å§‹ç»ˆæ˜¾ç¤º
+    std::vector<std::string> showValues; ///< showKey ç­‰äºå…¶ä¸­ä»»ä¸€å€¼æ—¶æ˜¾ç¤ºæœ¬é¡¹
+    std::string liveAction;             ///< å€¼å˜åŒ–æ—¶è§¦å‘çš„è°ƒè¯•åŠ¨ä½œ idã€‚ç©ºåˆ™ä¸è§¦å‘
     ParamField()
         : type(ParamFieldType::Undefined)
         , hasMin(false)
@@ -48,34 +51,34 @@ struct ParamField {
     {}
 };
 
-/** @brief Æ´ÏÂÀ­Ñ¡Ïî£»¿ÕÖ¸ÕëÌø¹ı */
+/** @brief æ‹¼ä¸‹æ‹‰é€‰é¡¹ï¼›ç©ºæŒ‡é’ˆè·³è¿‡ */
     VISION_TOOL_API std::vector<std::string> paramChoices(const char* a, const char* b = 0, const char* c = 0, const char* d = 0);
 
 
-/** @brief ²¼¶ûÏî */
+/** @brief å¸ƒå°”é¡¹ */
     VISION_TOOL_API ParamField paramBool(const char* key, const char* title, bool def);
 
 
-/** @brief ÕûÊıÏî */
+/** @brief æ•´æ•°é¡¹ */
     VISION_TOOL_API ParamField paramInt(const char* key, const char* title, int def, bool hasMin, double minV,
                            bool hasMax, double maxV);
 
 
-/** @brief ¸¡µãÏî */
+/** @brief æµ®ç‚¹é¡¹ */
     VISION_TOOL_API ParamField paramDouble(const char* key, const char* title, double def, bool hasMin, double minV,
                               bool hasMax, double maxV);
 
 
-/** @brief ×Ö·û´®Ïî£»choices ·Ç¿ÕÔòÎªÏÂÀ­ */
+/** @brief å­—ç¬¦ä¸²é¡¹ï¼›choices éç©ºåˆ™ä¸ºä¸‹æ‹‰ */
     VISION_TOOL_API ParamField paramString(const char* key, const char* title, const std::string& def,
                               const std::vector<std::string>& choices);
 
 
-/** @brief Â·¾¶Ïî */
+/** @brief è·¯å¾„é¡¹ */
     VISION_TOOL_API ParamField paramPath(const char* key, const char* title, const std::string& def);
 
 
-/** @brief Éè±¸Ïî£»½çÃæĞ´ ToolCfg.deviceId£¬²»½ø params */
+/** @brief è®¾å¤‡é¡¹ï¼›ç•Œé¢å†™ ToolCfg.deviceIdï¼Œä¸è¿› params */
     VISION_TOOL_API ParamField paramDevice(const char* key, const char* title);
 
 

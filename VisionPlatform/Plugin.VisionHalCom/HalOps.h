@@ -1,37 +1,28 @@
 /**
  * @file HalOps.h
- * @brief HalOpsÍ·ÎÄ¼ş
- * @author Hoson
- *
- * @copyright Copyright (c) 2026 Hoson. All rights reserved.
+ * @brief æ¨¡æ¿å¥æŸ„å’ŒåŒºåŸŸçš„å…±ç”¨æ“ä½œ
  */
 
 #ifndef VISION_HAL_OPS_H
 #define VISION_HAL_OPS_H
 
 #include "VisionHalComExport.h"
-
 #include "HalconCpp.h"
 
 namespace Vision {
 
-/**
- * @brief ÇøÓò¿ª±ÕÔËËã¡£¿ÕÓòÖ±½Ó·µ»Ø¡£openR/closeR ÎªÔ²°ë¾¶£¬¡Ü0.4 Ìø¹ı¶ÔÓ¦²½
- */
-VISION_HALCOM_API void morphOpenClose(const HalconCpp::HObject& bin, double openR, double closeR,
-                                      HalconCpp::HObject*& out);
-
-/**
- * @brief ÔÚ¾ØĞÎ²âÁ¿ÇøÓòÄÚÄâºÏÖ±Ïß£¨edges_sub_pix + fit_line_contour_xld ±¡·â×°£©
- * @param image ÊäÈëÍ¼£¨ÒÑ ReduceDomain Òà¿É£©
- * @param row1,col1,row2,col2 ²âÁ¿¾ØĞÎ¶Ô½Ç£¨Halcon ĞĞÁĞ£©
- * @param sigma,low,high ±ßÔµ²ÎÊı
- * @param outRow1..outCol2 Êä³öÏß¶Î¶Ëµã£»Ê§°Ü·µ»Ø false
- */
-VISION_HALCOM_API bool measureLineRect(const HalconCpp::HImage& image,
-                                       double row1, double col1, double row2, double col2,
-                                       double sigma, double low, double high,
-                                       double*& outRow1, double*& outCol1, double*& outRow2, double*& outCol2);
+/** @brief è®© Halcon æŒ‰ UTF-8 è§£é‡Šè·¯å¾„ã€‚è¿›ç¨‹å†…åªè®¾ä¸€æ¬¡ */
+VISION_HALCOM_API void initFileNames();
+/** @brief å…ƒç»„é‡Œè‡³å°‘æœ‰ä¸€ä¸ªæœ‰æ•ˆæ¨¡æ¿å· */
+VISION_HALCOM_API bool modelOk(const HalconCpp::HTuple& model);
+/** @brief é‡Šæ”¾å½¢çŠ¶æ¨¡æ¿å¹¶å†™æˆ -1 */
+VISION_HALCOM_API void clearShapeModel(HalconCpp::HTuple& model);
+/** @brief é‡Šæ”¾ NCC æ¨¡æ¿å¹¶å†™æˆ -1 */
+VISION_HALCOM_API void clearNccModel(HalconCpp::HTuple& model);
+/** @brief åŒºåŸŸæœ‰é¢ç§¯ */
+VISION_HALCOM_API bool regionHasArea(const HalconCpp::HObject& region);
+/** @brief å¼€è¿ç®—å†é—­è¿ç®—ã€‚åŠå¾„ä¸å¤§äº 0.4 çš„é‚£ä¸€æ­¥è·³è¿‡ */
+VISION_HALCOM_API void morphOpenClose(const HalconCpp::HObject& bin, double openR, double closeR, HalconCpp::HObject*& out);
 
 }
 

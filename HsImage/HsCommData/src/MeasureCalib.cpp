@@ -1,6 +1,6 @@
 /**
  * @file MeasureCalib.cpp
- * @brief MeasureCalibÊµÏÖ
+ * @brief MeasureCalibå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -15,7 +15,7 @@
 
 namespace HsCommData {
 
-// Ä¬ÈÏÖ»ÏÔÊ¾ÏñËØ£¬±ÈÀı 1:1
+// é»˜è®¤åªæ˜¾ç¤ºåƒç´ ï¼Œæ¯”ä¾‹ 1:1
 ImageCalib::ImageCalib()
 {
     show.push_back(UnitPx);
@@ -25,7 +25,7 @@ namespace {
 
 const double kPi = 3.14159265358979323846;
 
-// Á½¸ö±ÈÀıÊÇ·ñ¿Éµ±³ÉÏàÍ¬
+// ä¸¤ä¸ªæ¯”ä¾‹æ˜¯å¦å¯å½“æˆç›¸åŒ
 bool nearlySame(double a, double b)
 {
     const double scale = std::fabs(a) + std::fabs(b);
@@ -33,7 +33,7 @@ bool nearlySame(double a, double b)
     return std::fabs(a - b) <= tol;
 }
 
-// ÔÚÒÑĞ´ÈëµÄ±ÈÀıÀï²éÕÒ¸Ãµ¥Î»
+// åœ¨å·²å†™å…¥çš„æ¯”ä¾‹é‡ŒæŸ¥æ‰¾è¯¥å•ä½
 bool findFactor(const ImageCalib& calib, LengthUnit unit, UnitFactor* out)
 {
     for (size_t i = 0; i < calib.factors.size(); ++i) {
@@ -52,7 +52,7 @@ bool findFactor(const ImageCalib& calib, LengthUnit unit, UnitFactor* out)
     return false;
 }
 
-// µ¥Î»Ãû¡£Î¢Ã×ÓÃ UTF-8 ×Ö½Ú£¬µ÷ÓÃ·½°´ UTF-8 ÏÔÊ¾
+// å•ä½åã€‚å¾®ç±³ç”¨ UTF-8 å­—èŠ‚ï¼Œè°ƒç”¨æ–¹æŒ‰ UTF-8 æ˜¾ç¤º
 const char* unitName(LengthUnit unit)
 {
     switch (unit) {
@@ -64,7 +64,7 @@ const char* unitName(LengthUnit unit)
     }
 }
 
-// ¸Ãµ¥Î»µÄĞ¡ÊıÎ»Êı
+// è¯¥å•ä½çš„å°æ•°ä½æ•°
 int decimals(LengthUnit unit)
 {
     switch (unit) {
@@ -76,7 +76,7 @@ int decimals(LengthUnit unit)
     }
 }
 
-// °´Ğ¡ÊıÎ»Êı¸ñÊ½»¯
+// æŒ‰å°æ•°ä½æ•°æ ¼å¼åŒ–
 std::string num(double v, int dec)
 {
     char buf[64];
@@ -84,7 +84,7 @@ std::string num(double v, int dec)
     return std::string(buf);
 }
 
-// ÒªÏÔÊ¾µÄµ¥Î»¡£¿ÕÁĞ±íµ±³ÉÖ»ÏÔÊ¾ÏñËØ
+// è¦æ˜¾ç¤ºçš„å•ä½ã€‚ç©ºåˆ—è¡¨å½“æˆåªæ˜¾ç¤ºåƒç´ 
 std::vector<LengthUnit> shown(const ImageCalib& calib)
 {
     if (!calib.show.empty()) {
@@ -95,7 +95,7 @@ std::vector<LengthUnit> shown(const ImageCalib& calib)
     return one;
 }
 
-// ÏÔÊ¾ÁĞ±íÀïÊÇ·ñÓĞÏñËØÒÔÍâµÄµ¥Î»
+// æ˜¾ç¤ºåˆ—è¡¨é‡Œæ˜¯å¦æœ‰åƒç´ ä»¥å¤–çš„å•ä½
 bool physicalShown(const ImageCalib& calib)
 {
     const std::vector<LengthUnit> units = shown(calib);
@@ -107,7 +107,7 @@ bool physicalShown(const ImageCalib& calib)
     return false;
 }
 
-// Çó½ÇÓÃµÄ±ÈÀı¡£ÓÅÏÈµÚÒ»¸ö·ÇÏñËØµ¥Î»
+// æ±‚è§’ç”¨çš„æ¯”ä¾‹ã€‚ä¼˜å…ˆç¬¬ä¸€ä¸ªéåƒç´ å•ä½
 UnitFactor scaleForAngle(const ImageCalib& calib)
 {
     const std::vector<LengthUnit> units = shown(calib);
@@ -124,8 +124,8 @@ UnitFactor scaleForAngle(const ImageCalib& calib)
 
 }
 
-// ½âÎöµ¥Î»±ÈÀı¡£ÏñËØºãÎª 1£¬Ã»ÓĞ¼ÇÂ¼Ôò 1:1
-// ¿í¸ß»»³ÉÏÔÊ¾µ¥Î»¡£µÚÒ»¸öÊı×ßÁĞ±ÈÀı£¬µÚ¶ş¸öÊı×ßĞĞ±ÈÀı
+// è§£æå•ä½æ¯”ä¾‹ã€‚åƒç´ æ’ä¸º 1ï¼Œæ²¡æœ‰è®°å½•åˆ™ 1:1
+// å®½é«˜æ¢æˆæ˜¾ç¤ºå•ä½ã€‚ç¬¬ä¸€ä¸ªæ•°èµ°åˆ—æ¯”ä¾‹ï¼Œç¬¬äºŒä¸ªæ•°èµ°è¡Œæ¯”ä¾‹
 static std::string formatAxes(double wPx, double hPx, const char* wTag, const char* hTag, const ImageCalib& calib)
 {
     const std::vector<LengthUnit> units = shown(calib);
@@ -183,7 +183,7 @@ UnitFactor resolveFactor(const ImageCalib& calib, LengthUnit unit)
     return factor;
 }
 
-// ÏñËØÎ»ÒÆ»»³É¸Ãµ¥Î»ÏÂµÄ³¤¶È
+// åƒç´ ä½ç§»æ¢æˆè¯¥å•ä½ä¸‹çš„é•¿åº¦
 double lengthIn(double dxPx, double dyPx, const UnitFactor& factor)
 {
     const double dx = dxPx * factor.xPerPixel;
@@ -191,7 +191,7 @@ double lengthIn(double dxPx, double dyPx, const UnitFactor& factor)
     return std::sqrt(dx * dx + dy * dy);
 }
 
-// °´ÏÔÊ¾µ¥Î»Æ´³¤¶È
+// æŒ‰æ˜¾ç¤ºå•ä½æ‹¼é•¿åº¦
 std::string formatLength(double dxPx, double dyPx, const ImageCalib& calib)
 {
     const std::vector<LengthUnit> units = shown(calib);
@@ -208,7 +208,7 @@ std::string formatLength(double dxPx, double dyPx, const ImageCalib& calib)
     return text;
 }
 
-// °´ÏÔÊ¾µ¥Î»Æ´×ø±ê¡£Ö»ÓĞÏñËØÊ±·µ»Ø¿Õ´®
+// æŒ‰æ˜¾ç¤ºå•ä½æ‹¼åæ ‡ã€‚åªæœ‰åƒç´ æ—¶è¿”å›ç©ºä¸²
 std::string formatPoint(double xPx, double yPx, const ImageCalib& calib)
 {
     if (!physicalShown(calib)) {
@@ -236,7 +236,7 @@ std::string formatPoint(double xPx, double yPx, const ImageCalib& calib)
     return text;
 }
 
-// ÏñËØÔ²µÄ°ë¾¶ºÍÖ±¾¶
+// åƒç´ åœ†çš„åŠå¾„å’Œç›´å¾„
 std::string formatRadius(double rPx, const ImageCalib& calib)
 {
     const std::vector<LengthUnit> units = shown(calib);
@@ -282,7 +282,7 @@ std::string formatRadius(double rPx, const ImageCalib& calib)
     return text;
 }
 
-// Èıµã¼Ğ½Ç£¬µ¥Î»¶È
+// ä¸‰ç‚¹å¤¹è§’ï¼Œå•ä½åº¦
 std::string formatAngle(const Point2d& a, const Point2d& vertex, const Point2d& c, const ImageCalib& calib)
 {
     const UnitFactor factor = scaleForAngle(calib);
@@ -309,13 +309,13 @@ std::string formatAngle(const Point2d& a, const Point2d& vertex, const Point2d& 
     return num(rad, 4) + " rad";
 }
 
-// Öá¶ÔÆë¾ØĞÎµÄ¿íºÍ¸ß
+// è½´å¯¹é½çŸ©å½¢çš„å®½å’Œé«˜
 std::string formatRect(double wPx, double hPx, const ImageCalib& calib)
 {
     return formatAxes(wPx, hPx, "W", "H", calib);
 }
 
-// ÍÖÔ²Á½Ìõ°ëÖá
+// æ¤­åœ†ä¸¤æ¡åŠè½´
 std::string formatEllipse(double raPx, double rbPx, const ImageCalib& calib)
 {
     return formatAxes(raPx, rbPx, "Ra", "Rb", calib);

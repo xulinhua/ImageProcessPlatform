@@ -1,6 +1,6 @@
 /**
  * @file GraphicBuild.h
- * @brief GraphicBuildͷ�ļ�
+ * @brief GraphicBuild头文件
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.

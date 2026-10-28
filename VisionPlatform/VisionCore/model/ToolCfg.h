@@ -1,6 +1,6 @@
 /**
  * @file ToolCfg.h
- * @brief ToolCfgÍ·ÎÄ¼ş
+ * @brief ToolCfgå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -17,27 +17,27 @@
 
 namespace Vision {
 
-/** @class RoutePoint @brief Á¬ÏßÕÛÏßÖĞ¼ä¹Õµã£¨³¡¾°×ø±ê£»¶ËµãÓÉÕë½ÅÊµÊ±Ëã£© */
+/** @class RoutePoint @brief è¿çº¿æŠ˜çº¿ä¸­é—´æ‹ç‚¹ï¼ˆåœºæ™¯åæ ‡ï¼›ç«¯ç‚¹ç”±é’ˆè„šå®æ—¶ç®—ï¼‰ */
 struct RoutePoint {
-    double x; ///< ³¡¾° X
-    double y; ///< ³¡¾° Y
+    double x; ///< åœºæ™¯ X
+    double y; ///< åœºæ™¯ Y
     RoutePoint() : x(0), y(0) {}
     RoutePoint(double xx, double yy) : x(xx), y(yy) {}
 };
 
 /**
  * @class ToolLink
- * @brief Á÷³Ì¼¶Á¬ÏßÊÓÍ¼£¨µ÷¶È/»­²¼»º´æ£©£ºº¬Á½¶Ë¹¤¾ß id£»ÕÛÏß¼¸ºÎ¼û JobLayout
+ * @brief æµç¨‹çº§è¿çº¿è§†å›¾ï¼ˆè°ƒåº¦/ç”»å¸ƒç¼“å­˜ï¼‰ï¼šå«ä¸¤ç«¯å·¥å…· idï¼›æŠ˜çº¿å‡ ä½•è§ JobLayout
  */
 struct ToolLink {
-    ObjectId fromId;   ///< À´Ô´¹¤¾ß id
-    ObjectId toId;     ///< Ä¿±ê¹¤¾ß id
-    PortSlot fromPort; ///< À´Ô´¶Ë¿Ú²ÛÎ»
-    PortSlot toPort;   ///< Ä¿±ê¶Ë¿Ú²ÛÎ»
-    bool routeCustom;  ///< ÊÇ·ñÊ¹ÓÃÊÖ¶¯Â·ÓÉ¹Õµã£¨¹ı¶É£ºÈÔ¿É¶Á£»ÕæÔ´ÔÚ JobLayout£©
-    std::vector<RoutePoint> routePoints; ///< ÖĞ¼ä¹Õµã£»¿ÕÇÒ routeCustom Ê±°´×Ô¶¯
-    int index;             ///< ÉÏÓÎ¸Ã¿ÚµÄµÚ¼¸¸ö£»-1 ±íÊ¾Õû¿Ú
-    RegionUse use;          ///< ÇøÓòÓÃÍ¾£¬Ö»¶Ô Region / Roi ÓĞÒâÒå
+    ObjectId fromId;   ///< æ¥æºå·¥å…· id
+    ObjectId toId;     ///< ç›®æ ‡å·¥å…· id
+    PortSlot fromPort; ///< æ¥æºç«¯å£æ§½ä½
+    PortSlot toPort;   ///< ç›®æ ‡ç«¯å£æ§½ä½
+    bool routeCustom;  ///< æ˜¯å¦ä½¿ç”¨æ‰‹åŠ¨è·¯ç”±æ‹ç‚¹ï¼ˆè¿‡æ¸¡ï¼šä»å¯è¯»ï¼›çœŸæºåœ¨ JobLayoutï¼‰
+    std::vector<RoutePoint> routePoints; ///< ä¸­é—´æ‹ç‚¹ï¼›ç©ºä¸” routeCustom æ—¶æŒ‰è‡ªåŠ¨
+    int index;             ///< ä¸Šæ¸¸è¯¥å£çš„ç¬¬å‡ ä¸ªï¼›-1 è¡¨ç¤ºæ•´å£
+    RegionUse use;          ///< åŒºåŸŸç”¨é€”ï¼Œåªå¯¹ Region / Roi æœ‰æ„ä¹‰
     ToolLinkOrigin origin; ///< ToolLinkOrigin
     ToolLink()
         : fromPort(portSlotOut(PortData::Image))
@@ -51,19 +51,19 @@ struct ToolLink {
 
 /**
  * @class ToolCfg
- * @brief Á÷³ÌÄÚ¹¤¾ß´æÅÌ¾ÛºÏ£ºinfo / links / param Æ½ĞĞ£»runtime ²»ÂäÅÌ
- * @note Óë Job ÄÚ ToolBase* ÊµÀıÍ¬²½£»±âÆ½×Ö¶ÎÎªÇ¶Ì×³ÉÔ±ÒıÓÃ±ğÃû
+ * @brief æµç¨‹å†…å·¥å…·å­˜ç›˜èšåˆï¼šinfo / links / param å¹³è¡Œï¼›runtime ä¸è½ç›˜
+ * @note ä¸ Job å†… ToolBase* å®ä¾‹åŒæ­¥ï¼›æ‰å¹³å­—æ®µä¸ºåµŒå¥—æˆå‘˜å¼•ç”¨åˆ«å
  */
 struct VISIONCORE_API ToolCfg {
-    ToolInfo info;                      ///< Éí·İ
-    std::vector<ToolInputLink> links;   ///< ÊäÈëÁ¬Ïß£¨È¨Íş£©
-    ToolParam param;                      ///< ²ÎÊı
-    ParamMap runtime;                   ///< ÔËĞĞÌ¬£¨²»³Ö¾Ã»¯£©
+    ToolInfo info;                      ///< èº«ä»½
+    std::vector<ToolInputLink> links;   ///< æ—§æ–‡ä»¶è¿å…¥æµç¨‹ links åæ¸…ç©ºï¼Œä¸å†ä½œä¸ºæ¥æº
+    ToolParam param;                      ///< å‚æ•°
+    ParamMap runtime;                   ///< è¿è¡Œæ€ï¼ˆä¸æŒä¹…åŒ–ï¼‰
 
-    /** »­²¼¾µÏñ£¨¹ı¶É£©£ºÕæÔ´Ç¨ÖÁ JobLayout£»¶ÁĞ´ÈÔ¿ÉÓÃ£¬±£´æÊ±Ğ´Èë layout */
-    double canvasX;    ///< »­²¼½Úµã×óÉÏ½Ç X
-    double canvasY;    ///< »­²¼½Úµã×óÉÏ½Ç Y
-    bool canvasPlaced; ///< ÊÇ·ñÒÑÓÉÓÃ»§ÍÏµ½×Ô¶¨ÒåÎ»ÖÃ
+    /** ç”»å¸ƒé•œåƒï¼ˆè¿‡æ¸¡ï¼‰ï¼šçœŸæºè¿è‡³ JobLayoutï¼›è¯»å†™ä»å¯ç”¨ï¼Œä¿å­˜æ—¶å†™å…¥ layout */
+    double canvasX;    ///< ç”»å¸ƒèŠ‚ç‚¹å·¦ä¸Šè§’ X
+    double canvasY;    ///< ç”»å¸ƒèŠ‚ç‚¹å·¦ä¸Šè§’ Y
+    bool canvasPlaced; ///< æ˜¯å¦å·²ç”±ç”¨æˆ·æ‹–åˆ°è‡ªå®šä¹‰ä½ç½®
 
     ObjectId& id;                 ///< -> info.id
     std::string& toolName;       ///< -> info.toolName
@@ -75,7 +75,7 @@ struct VISIONCORE_API ToolCfg {
     bool& enabled;               ///< -> info.enabled
     ObjectId& deviceId;          ///< -> param.deviceId
 
-    /** @brief Ä¬ÈÏ¹¹Ôì²¢°ó¶¨ÒıÓÃ±ğÃû */
+    /** @brief é»˜è®¤æ„é€ å¹¶ç»‘å®šå¼•ç”¨åˆ«å */
     ToolCfg()
         : canvasX(0)
         , canvasY(0)
@@ -91,7 +91,7 @@ struct VISIONCORE_API ToolCfg {
         , deviceId(param.deviceId)
     {}
 
-    /** @brief ¿½±´¹¹Ôì£¨ÒıÓÃ°óµ½±¾¶ÔÏóÇ¶Ì×³ÉÔ±£© */
+    /** @brief æ‹·è´æ„é€ ï¼ˆå¼•ç”¨ç»‘åˆ°æœ¬å¯¹è±¡åµŒå¥—æˆå‘˜ï¼‰ */
     ToolCfg(const ToolCfg& o)
         : info(o.info)
         , links(o.links)
@@ -111,53 +111,53 @@ struct VISIONCORE_API ToolCfg {
         , deviceId(param.deviceId)
     {}
 
-    /** @brief ¸³Öµ£¨²»¸ÄÒıÓÃ°ó¶¨Ä¿±ê£© */
+    /** @brief èµ‹å€¼ï¼ˆä¸æ”¹å¼•ç”¨ç»‘å®šç›®æ ‡ï¼‰ */
     ToolCfg& operator=(const ToolCfg& o);
 
 
-    /** @brief °ÑµãÂÖÀªÊÕ³ÉÖ±Ïß£¬²¢Í¬²½·ÖÇø */
+    /** @brief æŠŠç‚¹è½®å»“æ”¶æˆç›´çº¿ï¼Œå¹¶åŒæ­¥åˆ†åŒº */
     void syncRois();
-    /** @brief Êµ¼ÊÊ¹ÓÃµÄ ROI ÁĞ±í */
+    /** @brief å®é™…ä½¿ç”¨çš„ ROI åˆ—è¡¨ */
     std::vector<HsCommData::HsObject> effectiveRois() const;
-    /** @brief ²é×¢²á±íÈ¡¹¤¾ßÄÜÁ¦ */
+    /** @brief æŸ¥æ³¨å†Œè¡¨å–å·¥å…·èƒ½åŠ› */
     ToolCaps caps() const;
-    /** @brief °´Ãû²é¹¤¾ßÄÜÁ¦ */
+    /** @brief æŒ‰åæŸ¥å·¥å…·èƒ½åŠ› */
     static ToolCaps capsFor(const std::string& toolName);
-    /** @brief ÊÇ·ñÔÚÍ¼ÉÏ»­ ROI */
+    /** @brief æ˜¯å¦åœ¨å›¾ä¸Šç”» ROI */
     bool usesRoi() const;
-    /** @brief ÊÇ·ñÔÊĞí¶à ROI */
+    /** @brief æ˜¯å¦å…è®¸å¤š ROI */
     bool usesMultiRoi() const;
-    /** @brief ÍÆ¼ö¼¸ºÎÖÖÀà£»-1 ±íÊ¾²»ÏŞ */
+    /** @brief æ¨èå‡ ä½•ç§ç±»ï¼›-1 è¡¨ç¤ºä¸é™ */
     int preferredRoiKind() const;
-    /** @brief ¼¸ºÎÖÖÀàÊÇ·ñÓëÍÆ¼öÒ»ÖÂ */
+    /** @brief å‡ ä½•ç§ç±»æ˜¯å¦ä¸æ¨èä¸€è‡´ */
     bool roiKindMatches(int kind) const;
-    /** @brief ÓÃ×¢²á±íÈ±Ê¡²ÎÊı²¹ÆëÈ±Ê§Ïî */
+    /** @brief ç”¨æ³¨å†Œè¡¨ç¼ºçœå‚æ•°è¡¥é½ç¼ºå¤±é¡¹ */
     void ensureDefaults();
-    /** @brief ¸´ÖÆ²¢»»ĞÂ id */
+    /** @brief å¤åˆ¶å¹¶æ¢æ–° id */
     ToolCfg duplicate() const;
-    /** @brief °ÑÎóĞ´Èë params µÄÔËĞĞÌ¬¼üÇ¨³ö */
+    /** @brief æŠŠè¯¯å†™å…¥ params çš„è¿è¡Œæ€é”®è¿å‡º */
     void migrateRuntime();
-    /** @brief È«²¿ ROI µÄ»æÖÆ²ã */
+    /** @brief å…¨éƒ¨ ROI çš„ç»˜åˆ¶å±‚ */
     std::vector<HsCommData::Graphic> drawings() const;
-    /** @brief »æÖÆ²ã£¬²¢°´Ñ¡ÖĞĞĞµ÷Í¸Ã÷¶È */
+    /** @brief ç»˜åˆ¶å±‚ï¼Œå¹¶æŒ‰é€‰ä¸­è¡Œè°ƒé€æ˜åº¦ */
     std::vector<HsCommData::Graphic> drawingsForDisplay(int selectedIndex) const;
-    /** @brief °ÑÒ»±Ê»æÖÆĞ´½øÅäÖÃ */
+    /** @brief æŠŠä¸€ç¬”ç»˜åˆ¶å†™è¿›é…ç½® */
     void applyDrawnRoi(const HsCommData::Graphic& g);
-    /** @brief °´ĞĞºÅ¸üĞÂÒÑÓĞ ROI */
+    /** @brief æŒ‰è¡Œå·æ›´æ–°å·²æœ‰ ROI */
     void applyDrawnRoiAt(const HsCommData::Graphic& g, int index);
-    /** @brief Çå¿ÕÈ«²¿ ROI */
+    /** @brief æ¸…ç©ºå…¨éƒ¨ ROI */
     void clearRois();
-    /** @brief É¾³ı×îºóÒ»¸ö ROI */
+    /** @brief åˆ é™¤æœ€åä¸€ä¸ª ROI */
     void removeLastRoi();
-    /** @brief °´ĞĞºÅÉ¾³ıÒ»Ìõ ROI */
+    /** @brief æŒ‰è¡Œå·åˆ é™¤ä¸€æ¡ ROI */
     void removeRoiAt(int index);
-    /** @brief °´×¢²áÃû´´½¨£»Î´µÇ¼ÇÔòÊÖÌî */
+    /** @brief æŒ‰æ³¨å†Œååˆ›å»ºï¼›æœªç™»è®°åˆ™æ‰‹å¡« */
     static ToolCfg make(const std::string& toolName, const ObjectId& deviceId);
-    /** @brief °´×¢²áÃû´´½¨£»Î´µÇ¼Ç·µ»Ø¿Õ¼ÇÂ¼ */
+    /** @brief æŒ‰æ³¨å†Œååˆ›å»ºï¼›æœªç™»è®°è¿”å›ç©ºè®°å½• */
     static ToolCfg createRegistered(const std::string& toolName, const ObjectId& deviceId = ObjectId());
-    /** @brief ¾É toolName Ó³Éäµ½µ±Ç°Ãû */
+    /** @brief æ—§ toolName æ˜ å°„åˆ°å½“å‰å */
     static std::string canonicalize(const std::string& n);
-    /** @brief ¿É×÷Îª½á¹û¾ØÕóÁĞ */
+    /** @brief å¯ä½œä¸ºç»“æœçŸ©é˜µåˆ— */
     bool producesOkNg() const
     {
         return enabled && toolTypeProducesOkNg(type);

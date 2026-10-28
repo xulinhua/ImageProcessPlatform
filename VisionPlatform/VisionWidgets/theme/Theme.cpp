@@ -1,6 +1,6 @@
 /**
  * @file Theme.cpp
- * @brief ThemeÊµÏÖ
+ * @brief Themeå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -44,7 +44,7 @@ namespace Vision {
 
 namespace {
 
-// ±êÌâÀ¸ÍÏ×§ÒÆ¶¯ÎŞ±ß¿ò¶Ô»°¿ò
+// æ ‡é¢˜æ æ‹–æ‹½ç§»åŠ¨æ— è¾¹æ¡†å¯¹è¯æ¡†
 class DialogDragFilter : public QObject {
 public:
     DialogDragFilter(QDialog* dlg, QObject* parent = 0)
@@ -95,12 +95,12 @@ protected:
     }
 
 private:
-    QDialog* m_dlg;   ///< Ä¿±ê¶Ô»°¿ò
-    bool m_dragging;  ///< ÊÇ·ñÕıÔÚÍÏ¶¯
-    QPoint m_dragPos; ///< °´ÏÂÊ±Êó±êÏà¶Ô´°¿Ú×óÉÏ½ÇµÄÆ«ÒÆ
+    QDialog* m_dlg;   ///< ç›®æ ‡å¯¹è¯æ¡†
+    bool m_dragging;  ///< æ˜¯å¦æ­£åœ¨æ‹–åŠ¨
+    QPoint m_dragPos; ///< æŒ‰ä¸‹æ—¶é¼ æ ‡ç›¸å¯¹çª—å£å·¦ä¸Šè§’çš„åç§»
 };
 
-// Win ÎŞ±ß¿ò£ºWM_NCCALCSIZE ÈÃ¿Í»§ÇøÆÌÂú´°¿Ú£¬WM_NCHITTEST ±£Áô±ßÔµËõ·Å
+// Win æ— è¾¹æ¡†ï¼šWM_NCCALCSIZE è®©å®¢æˆ·åŒºé“ºæ»¡çª—å£ï¼ŒWM_NCHITTEST ä¿ç•™è¾¹ç¼˜ç¼©æ”¾
 class FramelessNativeFilter : public QAbstractNativeEventFilter {
 public:
     static FramelessNativeFilter* instance()
@@ -124,7 +124,7 @@ public:
         });
     }
 
-    // Show / WinIdChange ºóµÇ¼Ç hwnd£¬Ô­Éú»Øµ÷Ö»²é±í¡¢²»ÔÙ winId()
+    // Show / WinIdChange åç™»è®° hwndï¼ŒåŸç”Ÿå›è°ƒåªæŸ¥è¡¨ã€ä¸å† winId()
     void bindHwnd(QDialog* dlg)
     {
         if (!dlg) {
@@ -218,7 +218,7 @@ public:
                 if (maxS.height() < 16777215) {
                     mmi->ptMaxTrackSize.y = maxS.height();
                 }
-                // ÏûÏ¢ÒÑ´¦Àí±ØĞëÏÔÊ½»Ø 0£¬Qt µÄ LRESULT Î´³õÊ¼»¯£¬Â©Ğ´»á°ÑÕ»ÉÏÀ¬»ø·µ¸ø Windows
+                // æ¶ˆæ¯å·²å¤„ç†å¿…é¡»æ˜¾å¼å› 0ï¼ŒQt çš„ LRESULT æœªåˆå§‹åŒ–ï¼Œæ¼å†™ä¼šæŠŠæ ˆä¸Šåƒåœ¾è¿”ç»™ Windows
                 *result = 0;
                 return true;
             }
@@ -248,10 +248,10 @@ private:
         }
     }
 
-    QHash<HWND, QPointer<QDialog> > m_hwndToDialog; ///< hwnd ¡ú ÎŞ±ß¿ò¶Ô»°¿ò£¨ÈõÒıÓÃ£©
+    QHash<HWND, QPointer<QDialog> > m_hwndToDialog; ///< hwnd â†’ æ— è¾¹æ¡†å¯¹è¯æ¡†ï¼ˆå¼±å¼•ç”¨ï¼‰
 };
 
-// ÎŞ±ß¿ò´°£ºWin Ô­ÉúËõ·Å/ÒõÓ° + ÍâÔµÃè±ß
+// æ— è¾¹æ¡†çª—ï¼šWin åŸç”Ÿç¼©æ”¾/é˜´å½± + å¤–ç¼˜æè¾¹
 class FramelessDialogChromeHelper : public QObject {
 public:
     FramelessDialogChromeHelper(QDialog* dlg, QObject* parent = 0)
@@ -289,7 +289,7 @@ protected:
     }
 
 private:
-    // ÍâÔµ 1px »ÒÏß£¬Ëæ´°¿Ú³ß´ç¸üĞÂ²¢ÖÃ¶¥£¨²»µ²Êó±ê£©
+    // å¤–ç¼˜ 1px ç°çº¿ï¼Œéšçª—å£å°ºå¯¸æ›´æ–°å¹¶ç½®é¡¶ï¼ˆä¸æŒ¡é¼ æ ‡ï¼‰
     void syncOutline()
     {
         if (!m_dlg || !m_outline) {
@@ -325,8 +325,8 @@ private:
 #endif
     }
 
-    QDialog* m_dlg;     ///< Ä¿±ê¶Ô»°¿ò
-    QFrame* m_outline;  ///< ÍâÔµÃè±ß£¨Í¸Ã÷¡¢²»À¹½Øµã»÷£©
+    QDialog* m_dlg;     ///< ç›®æ ‡å¯¹è¯æ¡†
+    QFrame* m_outline;  ///< å¤–ç¼˜æè¾¹ï¼ˆé€æ˜ã€ä¸æ‹¦æˆªç‚¹å‡»ï¼‰
 };
 
 const char* kThemeIds[] = {
@@ -337,7 +337,7 @@ const char* kThemeIds[] = {
 
 }
 
-// Ç³É«¹¤Òµ·çÈ«¾ÖÑùÊ½£»°´µµ¸Ä×ÖºÅÓë¶Ô±È¶È£¬²»¸Ä ROI / Ö÷É«
+// æµ…è‰²å·¥ä¸šé£å…¨å±€æ ·å¼ï¼›æŒ‰æ¡£æ”¹å­—å·ä¸å¯¹æ¯”åº¦ï¼Œä¸æ”¹ ROI / ä¸»è‰²
 QString appStyleSheet(const std::string& themeId)
 {
     int fontPx = 13;
@@ -528,13 +528,13 @@ QString appStyleSheet(const std::string& themeId)
     return qss;
 }
 
-// Ä¬ÈÏÇ³É«¹¤Òµµµ
+// é»˜è®¤æµ…è‰²å·¥ä¸šæ¡£
 QString appStyleSheet()
 {
     return appStyleSheet(std::string("industrial"));
 }
 
-// °ÑÖ÷Ìâ QSS Éèµ½ qApp
+// æŠŠä¸»é¢˜ QSS è®¾åˆ° qApp
 void applyAppTheme(const std::string& themeId)
 {
     if (qApp) {
@@ -542,13 +542,13 @@ void applyAppTheme(const std::string& themeId)
     }
 }
 
-// Ö÷ÌâµµÊıÁ¿
+// ä¸»é¢˜æ¡£æ•°é‡
 int themeCount()
 {
     return 3;
 }
 
-// µÚ i ¸öÖ÷Ìâ´æÅÌ¼ü
+// ç¬¬ i ä¸ªä¸»é¢˜å­˜ç›˜é”®
 const char* themeIdAt(int i)
 {
     if (i < 0 || i >= 3) {
@@ -557,19 +557,19 @@ const char* themeIdAt(int i)
     return kThemeIds[i];
 }
 
-// Ö÷ÌâÏÔÊ¾Ãû
+// ä¸»é¢˜æ˜¾ç¤ºå
 std::string themeTitle(const std::string& themeId)
 {
     if (themeId == "industrialLarge") {
-        return Translate::tr("Ç³É«´ó×Ö");
+        return Translate::tr("æµ…è‰²å¤§å­—");
     }
     if (themeId == "industrialContrast") {
-        return Translate::tr("¸ß¶Ô±ÈÇ³É«");
+        return Translate::tr("é«˜å¯¹æ¯”æµ…è‰²");
     }
-    return Translate::tr("Ç³É«¹¤Òµ");
+    return Translate::tr("æµ…è‰²å·¥ä¸š");
 }
 
-// ¸ø°´Å¥´ò¶¯Ì¬ÊôĞÔ²¢ polish£¬Ê¹ÑùÊ½±í [role=true] ÉúĞ§
+// ç»™æŒ‰é’®æ‰“åŠ¨æ€å±æ€§å¹¶ polishï¼Œä½¿æ ·å¼è¡¨ [role=true] ç”Ÿæ•ˆ
 void setButtonRole(QPushButton* btn, const char* role)
 {
     if (!btn) {
@@ -580,7 +580,7 @@ void setButtonRole(QPushButton* btn, const char* role)
     btn->style()->polish(btn);
 }
 
-// °×µ×¿¨Æ¬ Frame
+// ç™½åº•å¡ç‰‡ Frame
 QFrame* makeCard(QWidget* parent)
 {
     QFrame* f = new QFrame(parent);
@@ -589,20 +589,20 @@ QFrame* makeCard(QWidget* parent)
     return f;
 }
 
-// ÔÊĞí¶Ô»°¿òÊÖ¶¯µ÷Õû³ß´ç
+// å…è®¸å¯¹è¯æ¡†æ‰‹åŠ¨è°ƒæ•´å°ºå¯¸
 void enableDialogResize(QDialog* dlg)
 {
     if (!dlg) {
         return;
     }
     dlg->setWindowFlag(Qt::MSWindowsFixedSizeDialogHint, false);
-    // ÎŞ±ß¿ò´°ÓÉ FramelessDialogChromeHelper Ìá¹©±ßÔµËõ·Å£¬²»ÓÃÓÒÏÂ½Ç grip
+    // æ— è¾¹æ¡†çª—ç”± FramelessDialogChromeHelper æä¾›è¾¹ç¼˜ç¼©æ”¾ï¼Œä¸ç”¨å³ä¸‹è§’ grip
     if (!dlg->property("frameless").toBool()) {
         dlg->setSizeGripEnabled(true);
     }
 }
 
-// È¥µôÏµÍ³±êÌâÀ¸
+// å»æ‰ç³»ç»Ÿæ ‡é¢˜æ 
 void applyFramelessDialog(QDialog* dlg)
 {
     if (!dlg) {
@@ -622,12 +622,12 @@ void applyFramelessDialog(QDialog* dlg)
     new FramelessDialogChromeHelper(dlg, dlg);
 }
 
-// ´´½¨ÓÒÉÏ½Ç¹Ø±Õ°´Å¥£¨Óë±êÌâÀ¸µÈ¸ß£©
+// åˆ›å»ºå³ä¸Šè§’å…³é—­æŒ‰é’®ï¼ˆä¸æ ‡é¢˜æ ç­‰é«˜ï¼‰
 QPushButton* makeDialogCloseButton(QDialog* dlg, QWidget* parent)
 {
     QPushButton* btn = new QPushButton(QString(QChar(0x00D7)), parent);
     btn->setObjectName(QLatin1String("dialogCloseBtn"));
-    btn->setToolTip(QString::fromUtf8(Translate::tr("¹Ø±Õ").c_str()));
+    btn->setToolTip(QString::fromUtf8(Translate::tr("å…³é—­").c_str()));
     btn->setCursor(Qt::PointingHandCursor);
     btn->setFlat(true);
     btn->setFixedSize(46, 42);
@@ -637,7 +637,7 @@ QPushButton* makeDialogCloseButton(QDialog* dlg, QWidget* parent)
     return btn;
 }
 
-// ÔÚÖ¸¶¨ÇøÓòÆôÓÃÍÏ×§ÒÆ¶¯
+// åœ¨æŒ‡å®šåŒºåŸŸå¯ç”¨æ‹–æ‹½ç§»åŠ¨
 void installDialogDragHandle(QDialog* dlg, QWidget* handle)
 {
     if (!dlg || !handle) {
@@ -648,7 +648,7 @@ void installDialogDragHandle(QDialog* dlg, QWidget* handle)
     handle->installEventFilter(filter);
 }
 
-// ´´½¨ CV-X Æ·ÅÆ¶¥À¸
+// åˆ›å»º CV-X å“ç‰Œé¡¶æ 
 QFrame* makeCvXTitleBar(QDialog* dlg, QWidget* parent, const QString& title,
                         const QString& subtitle, bool withHelp, QLabel** titleLabelOut)
 {
@@ -677,7 +677,7 @@ QFrame* makeCvXTitleBar(QDialog* dlg, QWidget* parent, const QString& title,
         QLabel* help = new QLabel(QString::fromUtf8("?"), bar);
         help->setObjectName(QLatin1String("toolDebugHeaderHelp"));
         help->setAlignment(Qt::AlignCenter);
-        help->setToolTip(QString::fromUtf8(Translate::tr("ÏêÏ¸µ÷ÊÔ").c_str()));
+        help->setToolTip(QString::fromUtf8(Translate::tr("è¯¦ç»†è°ƒè¯•").c_str()));
         h->addWidget(help, 0, Qt::AlignVCenter);
     }
     if (!subtitle.isEmpty()) {
@@ -696,7 +696,7 @@ QFrame* makeCvXTitleBar(QDialog* dlg, QWidget* parent, const QString& title,
     return bar;
 }
 
-// ÔÚ¸ù²¼¾Ö¶¥²åÈë±êÌâÀ¸
+// åœ¨æ ¹å¸ƒå±€é¡¶æ’å…¥æ ‡é¢˜æ 
 QLabel* prependFramelessTitleBar(QDialog* dlg, QBoxLayout* rootLayout, const QString& title)
 {
     if (!dlg || !rootLayout) {
@@ -712,7 +712,7 @@ QLabel* prependFramelessTitleBar(QDialog* dlg, QBoxLayout* rootLayout, const QSt
     return text;
 }
 
-// ÎŞ±ß¿ò¶Ô»°¿òÄÚÈİÇø£¨¶¥À¸/µ×À¸Ö®ÍâµÄÁô°×ÇøÓò£©
+// æ— è¾¹æ¡†å¯¹è¯æ¡†å†…å®¹åŒºï¼ˆé¡¶æ /åº•æ ä¹‹å¤–çš„ç•™ç™½åŒºåŸŸï¼‰
 QVBoxLayout* framelessDialogContentLayout(QDialog* dlg, QBoxLayout* rootLayout, int margin, int topMargin)
 {
     if (!dlg || !rootLayout) {
@@ -728,7 +728,7 @@ QVBoxLayout* framelessDialogContentLayout(QDialog* dlg, QBoxLayout* rootLayout, 
     return lay;
 }
 
-// Í¬²½×Ô»æ±êÌâÀ¸ÎÄ×Ö
+// åŒæ­¥è‡ªç»˜æ ‡é¢˜æ æ–‡å­—
 void syncDialogTitleBar(QDialog* dlg, const QString& title)
 {
     if (!dlg) {
@@ -740,23 +740,23 @@ void syncDialogTitleBar(QDialog* dlg, const QString& title)
     }
 }
 
-// Î´±£´æ¹Ø´°£º±£´æ / ²»±£´æ / È¡Ïû
+// æœªä¿å­˜å…³çª—ï¼šä¿å­˜ / ä¸ä¿å­˜ / å–æ¶ˆ
 int askUnsavedCloseQuestion(QWidget* parent)
 {
     QMessageBox box(QMessageBox::Question,
-                    QString::fromUtf8(Translate::tr("Î´±£´æµÄĞŞ¸Ä").c_str()),
-                    QString::fromUtf8(Translate::tr("ÓĞÎ´±£´æµÄĞŞ¸Ä£¬ÊÇ·ñ±£´æ£¿").c_str()),
+                    QString::fromUtf8(Translate::tr("æœªä¿å­˜çš„ä¿®æ”¹").c_str()),
+                    QString::fromUtf8(Translate::tr("æœ‰æœªä¿å­˜çš„ä¿®æ”¹ï¼Œæ˜¯å¦ä¿å­˜ï¼Ÿ").c_str()),
                     QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel,
                     parent);
     box.setDefaultButton(QMessageBox::Yes);
     if (QAbstractButton* saveBtn = box.button(QMessageBox::Yes)) {
-        saveBtn->setText(QString::fromUtf8(Translate::tr("±£´æ").c_str()));
+        saveBtn->setText(QString::fromUtf8(Translate::tr("ä¿å­˜").c_str()));
     }
     if (QAbstractButton* discardBtn = box.button(QMessageBox::No)) {
-        discardBtn->setText(QString::fromUtf8(Translate::tr("²»±£´æ").c_str()));
+        discardBtn->setText(QString::fromUtf8(Translate::tr("ä¸ä¿å­˜").c_str()));
     }
     if (QAbstractButton* cancelBtn = box.button(QMessageBox::Cancel)) {
-        cancelBtn->setText(QString::fromUtf8(Translate::tr("È¡Ïû").c_str()));
+        cancelBtn->setText(QString::fromUtf8(Translate::tr("å–æ¶ˆ").c_str()));
     }
     const int r = box.exec();
     if (r == QMessageBox::Cancel) {

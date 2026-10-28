@@ -1,6 +1,6 @@
 /**
  * @file RecipeDraft.h
- * @brief RecipeDraftÍ·ÎÄ¼ş
+ * @brief RecipeDraftå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -15,74 +15,74 @@
 
 namespace Vision {
 
-/** @class ToolRecipe @brief ¹¤¾ßÅä·½ÊÓÍ¼£¨draft ±à¼­×Ö¶Î£»¶ÔÓ¦ StationRecipe / DeviceRecipe£© */
+/** @class ToolRecipe @brief å·¥å…·é…æ–¹è§†å›¾ï¼ˆdraft ç¼–è¾‘å­—æ®µï¼›å¯¹åº” StationRecipe / DeviceRecipeï¼‰ */
 struct VISIONCORE_API ToolRecipe {
-    ParamMap params;              ///< Åä·½²ÎÊı
-    std::vector<HsCommData::HsObject> rois;    ///< ROI ÁĞ±í£¨½çÃæ»æÖÆ£¬Êô²ÎÊı£©
-    ObjectId deviceId;            ///< °ó¶¨Éè±¸
-    AlgLibKind algLib;            ///< Ëã·¨¿â
+    ParamMap params;              ///< é…æ–¹å‚æ•°
+    std::vector<HsCommData::HsObject> rois;    ///< ROI åˆ—è¡¨ï¼ˆç•Œé¢ç»˜åˆ¶ï¼Œå±å‚æ•°ï¼‰
+    ObjectId deviceId;            ///< ç»‘å®šè®¾å¤‡
+    AlgLibKind algLib;            ///< ç®—æ³•åº“
     ToolRecipe() : algLib(AlgLibHal) {}
-    /** @brief ´ÓÅäÖÃ¼ÓÔØÅä·½×Ö¶Î */
+    /** @brief ä»é…ç½®åŠ è½½é…æ–¹å­—æ®µ */
     void loadFrom(const ToolCfg& t);
-    /** @brief Ğ´»ØÅä·½×Ö¶Î */
+    /** @brief å†™å›é…æ–¹å­—æ®µ */
     void applyTo(ToolCfg* t) const;
-    /** @brief ÊÇ·ñÓëÁíÒ»·İÅä·½ÏàÍ¬ */
+    /** @brief æ˜¯å¦ä¸å¦ä¸€ä»½é…æ–¹ç›¸åŒ */
     bool equals(const ToolRecipe& other) const;
-    /** @brief Ğ´»ØÕıÊ½¹¤¾ßÅäÖÃ£¬±£Áô runtime */
+    /** @brief å†™å›æ­£å¼å·¥å…·é…ç½®ï¼Œä¿ç•™ runtime */
     void commitTo(ToolCfg* formal) const;
 };
 
 /**
  * @class StationRecipe
- * @brief ¹¤Õ¾Åä·½ draft ×Ö¶Î
+ * @brief å·¥ç«™é…æ–¹ draft å­—æ®µ
  */
 struct VISIONCORE_API StationRecipe {
-    std::string name;                    ///< ¹¤Õ¾Ãû³Æ
-    std::string stationCode;             ///< ¹¤Î»±àºÅ
-    bool enabled;                        ///< ÊÇ·ñÊ¹ÄÜ
-    JobSchedule jobSchedule;             ///< JobCfg ±àÅÅ
-    int timeoutMs;                       ///< Ä¬ÈÏ³¬Ê±
-    FailPolicy failPolicy;               ///< Ê§°Ü²ßÂÔ
-    std::vector<DeviceRef> boundDevices; ///< °ó¶¨Éè±¸
-    std::vector<JobCfg> jobs;               ///< ±¾¹¤Õ¾Á÷³Ì
-    std::string commChannelId;           ///< Í¨ĞÅÍ¨µÀ
+    std::string name;                    ///< å·¥ç«™åç§°
+    std::string stationCode;             ///< å·¥ä½ç¼–å·
+    bool enabled;                        ///< æ˜¯å¦ä½¿èƒ½
+    JobSchedule jobSchedule;             ///< JobCfg ç¼–æ’
+    int timeoutMs;                       ///< é»˜è®¤è¶…æ—¶
+    FailPolicy failPolicy;               ///< å¤±è´¥ç­–ç•¥
+    std::vector<DeviceRef> boundDevices; ///< ç»‘å®šè®¾å¤‡
+    std::vector<JobCfg> jobs;               ///< æœ¬å·¥ç«™æµç¨‹
+    std::string commChannelId;           ///< é€šä¿¡é€šé“
 
-    /** @brief È±Ê¡¹¤Õ¾Åä·½£ºÊ¹ÄÜ¡¢´®ĞĞ¡¢³¬Ê± 500 ºÁÃë¡¢Ê§°ÜÍ£¹¤Õ¾ */
+    /** @brief ç¼ºçœå·¥ç«™é…æ–¹ï¼šä½¿èƒ½ã€ä¸²è¡Œã€è¶…æ—¶ 500 æ¯«ç§’ã€å¤±è´¥åœå·¥ç«™ */
     StationRecipe();
-    /** @brief ´Ó StationCfg ¼ÓÔØ */
+    /** @brief ä» StationCfg åŠ è½½ */
     void loadFrom(const StationCfg& st);
-    /** @brief Ğ´»Ø StationCfg */
+    /** @brief å†™å› StationCfg */
     void applyTo(StationCfg* st) const;
-    /** @brief ÊÇ·ñÏàÍ¬ */
+    /** @brief æ˜¯å¦ç›¸åŒ */
     bool equals(const StationRecipe& other) const;
 };
 
 /**
  * @class DeviceRecipe
- * @brief Éè±¸Åä·½ draft ×Ö¶Î
+ * @brief è®¾å¤‡é…æ–¹ draft å­—æ®µ
  */
 struct VISIONCORE_API DeviceRecipe {
-    std::string name;           ///< Ãû³Æ
-    DeviceKind kind;            ///< ÀàĞÍ
-    CameraBackend cameraBackend; ///< Ïà»úºó¶Ë
-    ParamMap defaultParams;     ///< Ä¬ÈÏ²ÎÊı
+    std::string name;           ///< åç§°
+    DeviceKind kind;            ///< ç±»å‹
+    CameraBackend cameraBackend; ///< ç›¸æœºåç«¯
+    ParamMap defaultParams;     ///< é»˜è®¤å‚æ•°
 
     DeviceRecipe()
         : kind(DeviceKindUndefined)
         , cameraBackend(CameraBackendUndefined)
     {}
-    /** @brief ´Ó HardwareDevice ¼ÓÔØ */
+    /** @brief ä» HardwareDevice åŠ è½½ */
     void loadFrom(const HardwareDevice& d);
-    /** @brief Ğ´»Ø HardwareDevice */
+    /** @brief å†™å› HardwareDevice */
     void applyTo(HardwareDevice* d) const;
-    /** @brief ÊÇ·ñÏàÍ¬ */
+    /** @brief æ˜¯å¦ç›¸åŒ */
     bool equals(const DeviceRecipe& other) const;
 };
 
-VISIONCORE_API /** @brief ±È½ÏÁ½·İ ParamMap ÊÇ·ñÏàÍ¬ */
+VISIONCORE_API /** @brief æ¯”è¾ƒä¸¤ä»½ ParamMap æ˜¯å¦ç›¸åŒ */
 bool paramMapEquals(const ParamMap& a, const ParamMap& b);
 
-VISIONCORE_API /** @brief ÊÇ·ñÎªÔËĞĞÌ¬¼ü£¨»­²¼¡¢µ÷ÊÔµÈ£¬²»²ÎÓë draft ¶Ô±È£© */
+VISIONCORE_API /** @brief æ˜¯å¦ä¸ºè¿è¡Œæ€é”®ï¼ˆç”»å¸ƒã€è°ƒè¯•ç­‰ï¼Œä¸å‚ä¸ draft å¯¹æ¯”ï¼‰ */
 bool isRuntimeParamKey(const std::string& key);
 
 

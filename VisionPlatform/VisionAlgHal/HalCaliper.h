@@ -1,6 +1,6 @@
 /**
  * @file HalCaliper.h
- * @brief HalCaliperÍ·ÎÄ¼ş
+ * @brief HalCaliperå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -15,16 +15,30 @@ namespace Vision {
 
 /**
  * @class HalCaliper
- * @brief ÑØ¿¨³ß²ÉÑùÕÒ±ß£¨Halcon£©
+ * @brief æ²¿å¡å°ºé‡‡æ ·æ‰¾è¾¹ï¼ˆHalconï¼‰
  */
 class HalCaliper : public AlgToolBase {
 public:
     std::string toolName() const { return "locate.caliper"; }
     AlgLibKind algLib() const { return AlgLibHal; }
     std::string version() const;
-    /** @brief °æ±¾±ä¸ü£¬Ö»×·¼Ó */
+    /** @brief ç‰ˆæœ¬å˜æ›´ï¼Œåªè¿½åŠ  */
     std::vector<VerNote> versionNotes() const;
-    /** @brief ÔÚ¿¨³ß ROI ÉÏ²ÉÑùÕÒ±ß */
+    /** @brief åœ¨å¡å°º ROI ä¸Šé‡‡æ ·æ‰¾è¾¹ */
+    int execute(const AlgToolIn& in, AlgToolOut* out) override {
+        if (!out) {
+            return HS_ERR_NULL;
+        }
+        *out = run(in);
+        if (out->ok) {
+            out->errCode = HS_OK;
+            return HS_OK;
+        }
+        if (out->errCode == HS_OK || out->errCode == 1) {
+            out->errCode = HS_ERR_OPERATOR;
+        }
+        return out->errCode;
+    }
     AlgToolOut run(const AlgToolIn& in);
     AlgToolBase* clone() const { return new HalCaliper(); }
 };

@@ -1,6 +1,6 @@
 /**
  * @file PermMgr.cpp
- * @brief PermMgrÊµÏÖ
+ * @brief PermMgrå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -11,14 +11,14 @@
 
 namespace Vision {
 
-// ½ø³ÌÄÚÎ¨Ò»È¨ÏŞÄ¿Â¼
+// è¿›ç¨‹å†…å”¯ä¸€æƒé™ç›®å½•
 PermMgr& PermMgr::instance()
 {
     static PermMgr g;
     return g;
 }
 
-// µÇ¼ÇÒ»ÌõÈ¨ÏŞ£»Í¬±êÊ¶Ôò¸²¸Ç
+// ç™»è®°ä¸€æ¡æƒé™ï¼›åŒæ ‡è¯†åˆ™è¦†ç›–
 void PermMgr::add(const PermDesc& d)
 {
     if (d.id.empty()) {
@@ -33,7 +33,7 @@ void PermMgr::add(const PermDesc& d)
     m_items.push_back(d);
 }
 
-// Ä¿Â¼Îª¿ÕÊ±ÌîÈëÄÚÖÃÈ¨ÏŞ
+// ç›®å½•ä¸ºç©ºæ—¶å¡«å…¥å†…ç½®æƒé™
 void PermMgr::ensureBuiltins()
 {
     if (!m_items.empty()) {
@@ -62,7 +62,7 @@ void PermMgr::ensureBuiltins()
     }
 }
 
-// ¸Ã±êÊ¶ÊÇ·ñÒÑµÇ¼Ç
+// è¯¥æ ‡è¯†æ˜¯å¦å·²ç™»è®°
 bool PermMgr::contains(const std::string& id) const
 {
     for (size_t i = 0; i < m_items.size(); ++i) {
@@ -73,19 +73,19 @@ bool PermMgr::contains(const std::string& id) const
     return false;
 }
 
-// ¶Á½ÇÉ«È¨ÏŞÑÚÂë
+// è¯»è§’è‰²æƒé™æ©ç 
 bool PermMgr::loadRoleMask(UserRole role, uint32_t* mask, std::string* error)
 {
     return AuthDb::instance().loadRoleMask(role, mask, error);
 }
 
-// Ğ´½ÇÉ«È¨ÏŞÑÚÂë
+// å†™è§’è‰²æƒé™æ©ç 
 bool PermMgr::saveRoleMask(UserRole role, uint32_t mask, std::string* error)
 {
     return AuthDb::instance().saveRoleMask(role, mask, error);
 }
 
-// È«²¿È¨ÏŞÏî
+// å…¨éƒ¨æƒé™é¡¹
 const std::vector<PermDesc>& PermMgr::all() const
 {
     return m_items;

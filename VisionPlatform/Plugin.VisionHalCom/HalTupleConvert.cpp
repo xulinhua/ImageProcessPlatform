@@ -1,6 +1,6 @@
 /**
  * @file HalTupleConvert.cpp
- * @brief HalTupleConvertÊµÏÖ
+ * @brief HalTupleConvertå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -10,7 +10,7 @@
 
 namespace Vision {
 
-// HsTuple ¡ú HTuple¡£»ìºÏÔª×é°´¸ñÀàĞÍ×·¼Ó£»¿ÕÔª×éµÃ¿Õ HTuple
+// HsTuple â†’ HTupleã€‚æ··åˆå…ƒç»„æŒ‰æ ¼ç±»å‹è¿½åŠ ï¼›ç©ºå…ƒç»„å¾—ç©º HTuple
 bool hsTupleToHTuple(const HsCommData::HsTuple& src, HalconCpp::HTuple*& out, std::string* err)
 {
     if (!out) {
@@ -40,7 +40,7 @@ bool hsTupleToHTuple(const HsCommData::HsTuple& src, HalconCpp::HTuple*& out, st
                 t.Append(src.S(i).c_str());
             }
         } else {
-            // »ìºÏ£ºÖğ¸ñ°´ÀàĞÍ×·¼Ó
+            // æ··åˆï¼šé€æ ¼æŒ‰ç±»å‹è¿½åŠ 
             for (int i = 0; i < n; ++i) {
                 int64_t lv = 0;
                 double dv = 0;
@@ -74,7 +74,7 @@ bool hsTupleToHTuple(const HsCommData::HsTuple& src, HalconCpp::HTuple*& out, st
     }
 }
 
-// HTuple ¡ú HsTuple¡£°´ Halcon ÔªËØÀàĞÍĞ´Èë long/double/string
+// HTuple â†’ HsTupleã€‚æŒ‰ Halcon å…ƒç´ ç±»å‹å†™å…¥ long/double/string
 bool hTupleToHsTuple(const HalconCpp::HTuple& src, HsCommData::HsTuple*& out, std::string* err)
 {
     if (!out) {

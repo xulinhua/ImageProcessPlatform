@@ -1,6 +1,6 @@
 /**
  * @file LogMgr.h
- * @brief LogMgrÍ·ÎÄ¼ş
+ * @brief LogMgrå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -15,48 +15,48 @@
 
 namespace Vision {
 
-/** @brief ÈÕÖ¾ÖÖÀà£º²Ù×÷»òµ÷ÊÔ */
+/** @brief æ—¥å¿—ç§ç±»ï¼šæ“ä½œæˆ–è°ƒè¯• */
 enum LogKind {
-    LogKindOp = 0, ///< ²Ù×÷£¨µÇÂ¼¡¢¿ªÊ¼Í£Ö¹¡¢¸ÄÈ¨ÏŞµÈ£©
-    LogKindDebug   ///< µ÷ÊÔ£¨ÔËĞĞ±¾¹¤¾ß¡¢±¾Á÷³Ì£©
+    LogKindOp = 0, ///< æ“ä½œï¼ˆç™»å½•ã€å¼€å§‹åœæ­¢ã€æ”¹æƒé™ç­‰ï¼‰
+    LogKindDebug   ///< è°ƒè¯•ï¼ˆè¿è¡Œæœ¬å·¥å…·ã€æœ¬æµç¨‹ï¼‰
 };
 
-/** @brief ÈÕÖ¾Í¨µÀ */
+/** @brief æ—¥å¿—é€šé“ */
 enum LogChannel {
-    LogChannelSystem = 0, ///< Æô¶¯¡¢²å¼ş¡¢ÅäÖÃ
-    LogChannelRun,        ///< ¹¤Õ¾ / Á÷³Ì / ¹¤¾ß
-    LogChannelAlgo,       ///< Ëã·¨Ï¸½Ú
-    LogChannelAudit       ///< ²Ù×÷Éó¼Æ
+    LogChannelSystem = 0, ///< å¯åŠ¨ã€æ’ä»¶ã€é…ç½®
+    LogChannelRun,        ///< å·¥ç«™ / æµç¨‹ / å·¥å…·
+    LogChannelAlgo,       ///< ç®—æ³•ç»†èŠ‚
+    LogChannelAudit       ///< æ“ä½œå®¡è®¡
 };
 
-/** @brief ¼¶±ğ£»¿É±È½Ï£¨Trace < ¡­ < Error£© */
+/** @brief çº§åˆ«ï¼›å¯æ¯”è¾ƒï¼ˆTrace < â€¦ < Errorï¼‰ */
 enum LogLevel {
-    LogLevelTrace = 0, ///< ¸ú×Ù
-    LogLevelDebug,     ///< µ÷ÊÔ
-    LogLevelInfo,      ///< ĞÅÏ¢
-    LogLevelWarn,      ///< ¾¯¸æ
-    LogLevelError      ///< ´íÎó
+    LogLevelTrace = 0, ///< è·Ÿè¸ª
+    LogLevelDebug,     ///< è°ƒè¯•
+    LogLevelInfo,      ///< ä¿¡æ¯
+    LogLevelWarn,      ///< è­¦å‘Š
+    LogLevelError      ///< é”™è¯¯
 };
 
 /**
  * @class LogRecord
- * @brief Ò»ÌõÈÕÖ¾¡£Ğ´Èë SQLite£¬²»µ¯´°
+ * @brief ä¸€æ¡æ—¥å¿—ã€‚å†™å…¥ SQLiteï¼Œä¸å¼¹çª—
  */
 struct LogRecord {
-    std::string timeIso; ///< ±¾µØÊ±¼ä
-    LogKind kind;        ///< ÖÖÀà£¨¾É²éÑ¯£©
-    LogChannel channel;  ///< Í¨µÀ£¨Òì²½Êä³ö¶Ë£©
-    LogLevel level;      ///< ¼¶±ğ
-    std::string action;  ///< ¶¯×÷¼ü£¬Èç login¡¢debug_tool
-    std::string user;    ///< µÇÂ¼Ãû
-    std::string role;    ///< ½ÇÉ«¼ü
-    std::string target;  ///< ¶ÔÏó£¨·½°¸Â·¾¶¡¢¹¤¾ß id µÈ£©
-    std::string result;  ///< ok¡¢fail¡¢denied
-    std::string detail;  ///< ²¹³ä
-    std::string stationId; ///< ¹¤Õ¾ id
-    std::string jobId;     ///< Á÷³Ì id
-    std::string toolId;    ///< ¹¤¾ß id
-    int elapsedMs;         ///< ºÄÊ±ºÁÃë
+    std::string timeIso; ///< æœ¬åœ°æ—¶é—´
+    LogKind kind;        ///< ç§ç±»ï¼ˆæ—§æŸ¥è¯¢ï¼‰
+    LogChannel channel;  ///< é€šé“ï¼ˆå¼‚æ­¥è¾“å‡ºç«¯ï¼‰
+    LogLevel level;      ///< çº§åˆ«
+    std::string action;  ///< åŠ¨ä½œé”®ï¼Œå¦‚ loginã€debug_tool
+    std::string user;    ///< ç™»å½•å
+    std::string role;    ///< è§’è‰²é”®
+    std::string target;  ///< å¯¹è±¡ï¼ˆæ–¹æ¡ˆè·¯å¾„ã€å·¥å…· id ç­‰ï¼‰
+    std::string result;  ///< okã€failã€denied
+    std::string detail;  ///< è¡¥å……
+    std::string stationId; ///< å·¥ç«™ id
+    std::string jobId;     ///< æµç¨‹ id
+    std::string toolId;    ///< å·¥å…· id
+    int elapsedMs;         ///< è€—æ—¶æ¯«ç§’
     LogRecord()
         : kind(LogKindOp)
         , channel(LogChannelAudit)
@@ -68,13 +68,13 @@ struct LogRecord {
 
 /**
  * @class LogFileInfo
- * @brief ¿âÖĞÄ³Ò»ÈÕ¡¢Ä³Ò»ÖÖÀàµÄÈÕÖ¾¡£path ÎªÉ¾³ıÓÃµÄ¼ü£¬²»ÊÇÎÄ¼şÂ·¾¶
+ * @brief åº“ä¸­æŸä¸€æ—¥ã€æŸä¸€ç§ç±»çš„æ—¥å¿—ã€‚path ä¸ºåˆ é™¤ç”¨çš„é”®ï¼Œä¸æ˜¯æ–‡ä»¶è·¯å¾„
  */
 struct LogFileInfo {
-    std::string path;     ///< ÍêÕûÂ·¾¶
-    std::string fileName; ///< ÎÄ¼şÃû
+    std::string path;     ///< å®Œæ•´è·¯å¾„
+    std::string fileName; ///< æ–‡ä»¶å
     std::string day;      ///< YYYY-MM-DD
-    LogKind kind;         ///< ²Ù×÷»òµ÷ÊÔ
+    LogKind kind;         ///< æ“ä½œæˆ–è°ƒè¯•
     LogFileInfo()
         : kind(LogKindOp)
     {
@@ -83,13 +83,13 @@ struct LogFileInfo {
 
 /**
  * @class LogQuery
- * @brief ²éÑ¯Ìõ¼ş¡£ÈÕÆÚ¿ÕÔò²»ÏŞÖÆ¸Ã¶Ë
+ * @brief æŸ¥è¯¢æ¡ä»¶ã€‚æ—¥æœŸç©ºåˆ™ä¸é™åˆ¶è¯¥ç«¯
  */
 struct LogQuery {
-    LogKind kind;        ///< ²éÄÄÒ»Àà
-    std::string dayFrom; ///< ÆğÊ¼ÈÕ YYYY-MM-DD£¬¿Õ=²»ÏŞ
-    std::string dayTo;   ///< ½áÊøÈÕ£¬¿Õ=²»ÏŞ
-    int maxRows;         ///< ×î¶à·µ»ØÌõÊı
+    LogKind kind;        ///< æŸ¥å“ªä¸€ç±»
+    std::string dayFrom; ///< èµ·å§‹æ—¥ YYYY-MM-DDï¼Œç©º=ä¸é™
+    std::string dayTo;   ///< ç»“æŸæ—¥ï¼Œç©º=ä¸é™
+    int maxRows;         ///< æœ€å¤šè¿”å›æ¡æ•°
     LogQuery()
         : kind(LogKindOp)
         , maxRows(500)
@@ -99,42 +99,42 @@ struct LogQuery {
 
 /**
  * @class LogMgr
- * @brief ²Ù×÷ÈÕÖ¾Óëµ÷ÊÔÈÕÖ¾£ºÒì²½Ğ´ÈëÊı¾İ¿â¡¢°´ÈÕ²éÑ¯¡¢°´ÈÕÉ¾³ı¡£ÎŞ Qt
+ * @brief æ“ä½œæ—¥å¿—ä¸è°ƒè¯•æ—¥å¿—ï¼šå¼‚æ­¥å†™å…¥æ•°æ®åº“ã€æŒ‰æ—¥æŸ¥è¯¢ã€æŒ‰æ—¥åˆ é™¤ã€‚æ—  Qt
  */
 class VISION_LOG_API LogMgr {
 public:
-    /** @brief ½ø³ÌÄÚÎ¨Ò»ÈÕÖ¾¹ÜÀí */
+    /** @brief è¿›ç¨‹å†…å”¯ä¸€æ—¥å¿—ç®¡ç† */
     static LogMgr& instance();
-    /** @brief Æô¶¯Òì²½Ğ´ÈëÏß³Ì */
+    /** @brief å¯åŠ¨å¼‚æ­¥å†™å…¥çº¿ç¨‹ */
     static void startup();
-    /** @brief Í£Ïß³Ì²¢Ë¢Íê¶ÓÁĞ */
+    /** @brief åœçº¿ç¨‹å¹¶åˆ·å®Œé˜Ÿåˆ— */
     static void shutdown();
-    /** @brief ÏµÍ³Í¨µÀ */
+    /** @brief ç³»ç»Ÿé€šé“ */
     static void writeSystem(LogLevel level, const std::string& action, const std::string& detail);
 
-    /** @brief ×·¼ÓÒ»Ìõ£¨Òì²½Èë¿â£© */
+    /** @brief è¿½åŠ ä¸€æ¡ï¼ˆå¼‚æ­¥å…¥åº“ï¼‰ */
     static void append(const LogRecord& rec);
     /**
-     * @brief Ğ´²Ù×÷ÈÕÖ¾
-     * @param result Ä¬ÈÏ ok
+     * @brief å†™æ“ä½œæ—¥å¿—
+     * @param result é»˜è®¤ ok
      */
     static void appendOp(const std::string& user, const std::string& role,
                          const std::string& action, const std::string& target,
                          const std::string& detail, const std::string& result);
-    /** @brief Ğ´µ÷ÊÔÈÕÖ¾ */
+    /** @brief å†™è°ƒè¯•æ—¥å¿— */
     static void appendDebug(const std::string& user, const std::string& role,
                             const std::string& action, const std::string& target,
                             const std::string& detail, const std::string& result);
-    /** @brief °´Ìõ¼ş¶ÁÈÕÖ¾£¬ĞÂµÄÔÚÇ° */
+    /** @brief æŒ‰æ¡ä»¶è¯»æ—¥å¿—ï¼Œæ–°çš„åœ¨å‰ */
     static std::vector<LogRecord> query(const LogQuery& q);
-    /** @brief ÁĞ³ö¿âÖĞÓĞÈÕÖ¾µÄÈÕÆÚ */
+    /** @brief åˆ—å‡ºåº“ä¸­æœ‰æ—¥å¿—çš„æ—¥æœŸ */
     static std::vector<LogFileInfo> listFiles();
     /**
-     * @brief É¾³ıÖ¸¶¨ÈÕÆÚ£¨path Îª listFiles ·µ»ØµÄ¼ü£©
-     * @return ³É¹¦É¾³ıµÄÈÕÆÚ¸öÊı
+     * @brief åˆ é™¤æŒ‡å®šæ—¥æœŸï¼ˆpath ä¸º listFiles è¿”å›çš„é”®ï¼‰
+     * @return æˆåŠŸåˆ é™¤çš„æ—¥æœŸä¸ªæ•°
      */
     static int deleteFiles(const std::vector<std::string>& paths);
-    /** @brief ¶¯×÷¼üÖĞÎÄÃû£¬¹©½çÃæ±í¸ñ */
+    /** @brief åŠ¨ä½œé”®ä¸­æ–‡åï¼Œä¾›ç•Œé¢è¡¨æ ¼ */
     static std::string actionTitle(const std::string& action);
 };
 

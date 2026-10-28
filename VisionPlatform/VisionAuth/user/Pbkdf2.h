@@ -1,6 +1,6 @@
 /**
  * @file Pbkdf2.h
- * @brief Pbkdf2Í·ÎÄ¼þ
+ * @brief Pbkdf2å¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -17,16 +17,16 @@
 namespace Vision {
 
 enum {
-    HashKindSha256 = 0,      ///< ¿ÚÁî¹þÏ££ºSHA-256
-    HashKindPbkdf2 = 1,      ///< ¿ÚÁî¹þÏ££ºPBKDF2
-    Pbkdf2Iterations = 10000 ///< Ä¬ÈÏµü´ú´ÎÊý
+    HashKindSha256 = 0,      ///< å£ä»¤å“ˆå¸Œï¼šSHA-256
+    HashKindPbkdf2 = 1,      ///< å£ä»¤å“ˆå¸Œï¼šPBKDF2
+    Pbkdf2Iterations = 10000 ///< é»˜è®¤è¿­ä»£æ¬¡æ•°
 };
 
-/** @brief HMAC-SHA256£¬Êä³ö 32 ×Ö½Ú */
+/** @brief HMAC-SHA256ï¼Œè¾“å‡º 32 å­—èŠ‚ */
 VISION_AUTH_API void hmacSha256(const unsigned char* key, size_t keyLen,
                 const unsigned char* data, size_t dataLen,
                 unsigned char out[32]);
-/** @brief ÓÃÑÎºÍ¿ÚÁîÅÉÉú 32 ×Ö½ÚÃÜÔ¿ */
+/** @brief ç”¨ç›å’Œå£ä»¤æ´¾ç”Ÿ 32 å­—èŠ‚å¯†é’¥ */
 VISION_AUTH_API std::vector<unsigned char> pbkdf2HmacSha256(const std::vector<unsigned char>& salt,
                                             const std::string& password,
                                             int iterations);

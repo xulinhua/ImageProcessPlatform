@@ -1,6 +1,6 @@
 /**
  * @file QtConv.cpp
- * @brief QtConvÊµÏÖ
+ * @brief QtConvå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -10,7 +10,7 @@
 
 namespace Vision {
 
-// HsImage ×ª QImage£¨ÀúÊ·ËõÂÔÍ¼µÈ£©
+// HsImage è½¬ QImageï¼ˆå†å²ç¼©ç•¥å›¾ç­‰ï¼‰
 QImage toQImage(const HsCommData::HsImage& frame)
 {
     if (frame.isNull() || frame.kind != HsCommData::PixelByte) {
@@ -60,7 +60,7 @@ QImage toQImage(const HsCommData::HsImage& frame)
     return img;
 }
 
-// QImage ×ª HsImage
+// QImage è½¬ HsImage
 HsCommData::HsImage fromQImage(const QImage& img, int64_t frameId)
 {
     if (img.isNull()) {
@@ -89,7 +89,7 @@ HsCommData::HsImage fromQImage(const QImage& img, int64_t frameId)
     return fb;
 }
 
-// Ïà»úÓĞÉúĞ§±ÈÀı³ßÊ±Ğ´³ÉºÁÃ×£¬·ñÔòÏñËØ1:1
+// ç›¸æœºæœ‰ç”Ÿæ•ˆæ¯”ä¾‹å°ºæ—¶å†™æˆæ¯«ç±³ï¼Œå¦åˆ™åƒç´ 1:1
 HsCommData::ImageCalib imageCalibForCamera(const ObjectId& cameraId)
 {
     HsCommData::ImageCalib calib;

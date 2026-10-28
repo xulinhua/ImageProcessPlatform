@@ -1,6 +1,6 @@
 /**
  * @file HalObjectConvert.cpp
- * @brief HalObjectConvertÊµÏÖ
+ * @brief HalObjectConvertå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -28,7 +28,7 @@ using HalconCpp::GetRegionRuns;
 
 namespace Vision {
 
-// ÇøÓòÊÇ·ñÎŞÓĞĞ§Ãæ»ı
+// åŒºåŸŸæ˜¯å¦æ— æœ‰æ•ˆé¢ç§¯
 bool hoIsEmpty(const HObject& r)
 {
     try {
@@ -50,7 +50,7 @@ bool hoIsEmpty(const HObject& r)
     }
 }
 
-// Õû·ù¾ØĞÎÇøÓò£¨Halcon ĞĞ/ÁĞ±ÕÇø¼ä£©
+// æ•´å¹…çŸ©å½¢åŒºåŸŸï¼ˆHalcon è¡Œ/åˆ—é—­åŒºé—´ï¼‰
 HObject fullImageRegion(int imgW, int imgH)
 {
     HObject r;
@@ -60,7 +60,7 @@ HObject fullImageRegion(int imgW, int imgH)
     return r;
 }
 
-// Ïß¶ÎÀ©³ÉÌõ´øÇøÓò
+// çº¿æ®µæ‰©æˆæ¡å¸¦åŒºåŸŸ
 static HObject lineStripRegion(double x1, double y1, double x2, double y2, double dilateR)
 {
     HObject r;
@@ -73,7 +73,7 @@ static HObject lineStripRegion(double x1, double y1, double x2, double y2, doubl
     return r;
 }
 
-// HsRegion ĞĞ³Ì ¡ú HObject
+// HsRegion è¡Œç¨‹ â†’ HObject
 HObject hsRegionToHObject(const HsCommData::HsRegion& reg)
 {
     HObject r;
@@ -93,7 +93,7 @@ HObject hsRegionToHObject(const HsCommData::HsRegion& reg)
     return r;
 }
 
-// µ¥¸ñ¼¸ºÎ ¡ú ÇøÓò£»Ê§°Ü·µ»Ø¿Õ¶ÔÏó£¨µ÷ÓÃ·½¾ö¶¨ÊÇ·ñÕû·ùÍ¼£©
+// å•æ ¼å‡ ä½• â†’ åŒºåŸŸï¼›å¤±è´¥è¿”å›ç©ºå¯¹è±¡ï¼ˆè°ƒç”¨æ–¹å†³å®šæ˜¯å¦æ•´å¹…å›¾ï¼‰
 static HObject geomCellToRegion(const HsCommData::HsObject& obj, int index)
 {
     using namespace HsCommData;
@@ -172,7 +172,7 @@ static HObject geomCellToRegion(const HsCommData::HsObject& obj, int index)
     return r;
 }
 
-// ²¢ÈëÀÛ¼ÓÇøÓò
+// å¹¶å…¥ç´¯åŠ åŒºåŸŸ
 static void unionInto(HObject* acc, bool* first, const HObject& one)
 {
     if (!acc || !first || hoIsEmpty(one)) {
@@ -188,7 +188,7 @@ static void unionInto(HObject* acc, bool* first, const HObject& one)
     }
 }
 
-// µ¥¸ñ»òÕû´ü HsObject ×ª HObject£¨ÇøÓò²¢¼¯£»Ìø¹ı ObjImage£©
+// å•æ ¼æˆ–æ•´è¢‹ HsObject è½¬ HObjectï¼ˆåŒºåŸŸå¹¶é›†ï¼›è·³è¿‡ ObjImageï¼‰
 HObject hsObjectToHObject(const HsCommData::HsObject& obj, int imgW, int imgH)
 {
     if (!obj.isInitialized() || obj.isEmpty()) {
@@ -209,7 +209,7 @@ HObject hsObjectToHObject(const HsCommData::HsObject& obj, int imgW, int imgH)
     return acc;
 }
 
-// ¶àÖ»ÉÏÓÎÇøÓò¶ÔÏó²¢¼¯£»¿ÕÔòÕû·ùÍ¼
+// å¤šåªä¸Šæ¸¸åŒºåŸŸå¯¹è±¡å¹¶é›†ï¼›ç©ºåˆ™æ•´å¹…å›¾
 HObject hsRegionsToHObject(const std::vector<HsCommData::HsObject>& regs, int imgW, int imgH)
 {
     if (regs.empty()) {
@@ -240,7 +240,7 @@ HObject hsRegionsToHObject(const std::vector<HsCommData::HsObject>& regs, int im
     return acc;
 }
 
-// µ¥Ö» HsObject ¡ú ÇøÓò£»ÎŞĞ§ÔòÕû·ùÍ¼
+// å•åª HsObject â†’ åŒºåŸŸï¼›æ— æ•ˆåˆ™æ•´å¹…å›¾
 HObject toolRoiToHObject(const HsCommData::HsObject& roi, int imgW, int imgH)
 {
     if (!roi.isInitialized() || roi.isEmpty() || imgW <= 0 || imgH <= 0) {
@@ -253,7 +253,7 @@ HObject toolRoiToHObject(const HsCommData::HsObject& roi, int imgW, int imgH)
     return r;
 }
 
-// ¶à ROI ²¢¼¯£»¿ÕÔòÕû·ùÍ¼
+// å¤š ROI å¹¶é›†ï¼›ç©ºåˆ™æ•´å¹…å›¾
 HObject toolRoisToHObject(const std::vector<HsCommData::HsObject>& rois, int imgW, int imgH)
 {
     if (rois.empty()) {
@@ -270,7 +270,7 @@ HObject toolRoisToHObject(const std::vector<HsCommData::HsObject>& rois, int img
     return acc;
 }
 
-// HObject(Region) ¡ú HsObject(ObjRegion)
+// HObject(Region) â†’ HsObject(ObjRegion)
 HsCommData::HsObject hObjectToRegionObject(const HObject& r)
 {
     HsCommData::HsRegion reg;
@@ -308,7 +308,7 @@ HsCommData::HsObject hObjectToRegionObject(const HObject& r)
     return HsCommData::HsObject(reg);
 }
 
-// ½á¹ûÔ² ¡ú HsObject
+// ç»“æœåœ† â†’ HsObject
 HsCommData::HsObject circleObject(double cx, double cy, double r)
 {
     HsCommData::CircleP c;
@@ -317,7 +317,7 @@ HsCommData::HsObject circleObject(double cx, double cy, double r)
     return HsCommData::HsObject(c);
 }
 
-// ½á¹ûÏß¶Î ¡ú HsObject
+// ç»“æœçº¿æ®µ â†’ HsObject
 HsCommData::HsObject lineObject(double x1, double y1, double x2, double y2)
 {
     HsCommData::LineP ln;
@@ -326,7 +326,7 @@ HsCommData::HsObject lineObject(double x1, double y1, double x2, double y2)
     return HsCommData::HsObject(ln);
 }
 
-// Æ¥ÅäµãÊ®×Ö£¨Á½¶ÎÏß¶Î£©¡ú HsObject
+// åŒ¹é…ç‚¹åå­—ï¼ˆä¸¤æ®µçº¿æ®µï¼‰â†’ HsObject
 HsCommData::HsObject crossObject(double cx, double cy)
 {
     const double s = 8.0;

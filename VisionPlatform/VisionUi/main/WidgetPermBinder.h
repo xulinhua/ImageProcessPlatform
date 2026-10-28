@@ -1,6 +1,6 @@
 /**
  * @file WidgetPermBinder.h
- * @brief WidgetPermBinderÍ·ÎÄ¼ş
+ * @brief WidgetPermBinderå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -22,22 +22,22 @@ class Session;
 
 /**
  * @class WidgetPermBinder
- * @brief °ÑÒ³ÃæÉÏµÄ¿Ø¼ş¡¢¶¯×÷°óµ½È¨ÏŞÎ»¡£µÇÂ¼»ò¸ÄÈ¨ÏŞºó apply
+ * @brief æŠŠé¡µé¢ä¸Šçš„æ§ä»¶ã€åŠ¨ä½œç»‘åˆ°æƒé™ä½ã€‚ç™»å½•æˆ–æ”¹æƒé™å apply
  */
 class VISION_UI_API WidgetPermBinder {
 public:
-    /** @brief °ó¶¨ QWidget£¨°´Å¥µÈ£©£¬ÎŞÈ¨ÏŞÔò½ûÓÃ */
+    /** @brief ç»‘å®š QWidgetï¼ˆæŒ‰é’®ç­‰ï¼‰ï¼Œæ— æƒé™åˆ™ç¦ç”¨ */
     void bindWidget(QWidget* w, Perm perm);
-    /** @brief °ó¶¨ QAction£¬ÎŞÈ¨ÏŞÔò½ûÓÃ */
+    /** @brief ç»‘å®š QActionï¼Œæ— æƒé™åˆ™ç¦ç”¨ */
     void bindAction(QAction* a, Perm perm);
-    /** @brief °´µ±Ç°»á»°Ë¢ĞÂÈ«²¿°ó¶¨ */
+    /** @brief æŒ‰å½“å‰ä¼šè¯åˆ·æ–°å…¨éƒ¨ç»‘å®š */
     void apply(const Session& session) const;
 
 private:
     struct Item {
-        QWidget* widget;   ///< ¿Ø¼ş£¬¿É¿Õ
-        QAction* action;   ///< ¶¯×÷£¬¿É¿Õ
-        Perm perm;   ///< ËùĞèÈ¨ÏŞ
+        QWidget* widget;   ///< æ§ä»¶ï¼Œå¯ç©º
+        QAction* action;   ///< åŠ¨ä½œï¼Œå¯ç©º
+        Perm perm;   ///< æ‰€éœ€æƒé™
         Item()
             : widget(nullptr)
             , action(nullptr)
@@ -45,7 +45,7 @@ private:
         {
         }
     };
-    std::vector<Item> m_items; ///< °ó¶¨±í
+    std::vector<Item> m_items; ///< ç»‘å®šè¡¨
 };
 
 }

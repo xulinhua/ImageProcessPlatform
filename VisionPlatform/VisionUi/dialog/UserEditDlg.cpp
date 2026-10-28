@@ -1,6 +1,6 @@
 /**
  * @file UserEditDlg.cpp
- * @brief UserEditDlgÊµÏÖ
+ * @brief UserEditDlgå®žçŽ°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -24,28 +24,28 @@
 
 namespace Vision {
 
-// Ìí¼Ó»ò±à¼­ÓÃ»§£º¿ÚÁî¿ÉÁô¿Õ
+// æ·»åŠ æˆ–ç¼–è¾‘ç”¨æˆ·ï¼šå£ä»¤å¯ç•™ç©º
 UserEditDlg::UserEditDlg(Session* session, const QString& loginName, QWidget* parent)
     : QDialog(parent)
     , m_session(session)
     , m_editLogin(loginName.toLower())
     , m_isNew(loginName.isEmpty())
 {
-    setWindowTitle(m_isNew ? T("Ìí¼ÓÓÃ»§") : T("±à¼­ÓÃ»§"));
+    setWindowTitle(m_isNew ? T("æ·»åŠ ç”¨æˆ·") : T("ç¼–è¾‘ç”¨æˆ·"));
     setModal(true);
     resize(400, 280);
 
     m_login = new QLineEdit(this);
     m_display = new QLineEdit(this);
     m_role = new QComboBox(this);
-    m_role->addItem(T("²Ù×÷Ô±"), RoleOperator);
-    m_role->addItem(T("¹¤³ÌÊ¦"), RoleEngineer);
-    m_role->addItem(T("¹ÜÀíÔ±"), RoleAdmin);
+    m_role->addItem(T("æ“ä½œå‘˜"), RoleOperator);
+    m_role->addItem(T("å·¥ç¨‹å¸ˆ"), RoleEngineer);
+    m_role->addItem(T("ç®¡ç†å‘˜"), RoleAdmin);
     m_pwd = new QLineEdit(this);
     m_pwd2 = new QLineEdit(this);
     m_pwd->setEchoMode(QLineEdit::Password);
     m_pwd2->setEchoMode(QLineEdit::Password);
-    m_enabled = new QCheckBox(T("ÆôÓÃ´ËÕË»§"), this);
+    m_enabled = new QCheckBox(T("å¯ç”¨æ­¤è´¦æˆ·"), this);
     m_enabled->setChecked(true);
 
     if (!m_isNew) {
@@ -57,27 +57,27 @@ UserEditDlg::UserEditDlg(Session* session, const QString& loginName, QWidget* pa
             m_enabled->setChecked(u->enabled);
         }
         m_login->setReadOnly(true);
-        m_pwd->setPlaceholderText(T("Áô¿ÕÔò²»¸Ä¿ÚÁî"));
-        m_pwd2->setPlaceholderText(T("Áô¿ÕÔò²»¸Ä¿ÚÁî"));
+        m_pwd->setPlaceholderText(T("ç•™ç©ºåˆ™ä¸æ”¹å£ä»¤"));
+        m_pwd2->setPlaceholderText(T("ç•™ç©ºåˆ™ä¸æ”¹å£ä»¤"));
     } else {
-        m_pwd->setPlaceholderText(T("Áô¿ÕÔòÎÞ¿ÚÁî"));
-        m_pwd2->setPlaceholderText(T("Áô¿ÕÔòÎÞ¿ÚÁî"));
+        m_pwd->setPlaceholderText(T("ç•™ç©ºåˆ™æ— å£ä»¤"));
+        m_pwd2->setPlaceholderText(T("ç•™ç©ºåˆ™æ— å£ä»¤"));
     }
 
     QFormLayout* form = new QFormLayout();
-    form->addRow(T("µÇÂ¼Ãû"), m_login);
-    form->addRow(T("ÏÔÊ¾Ãû"), m_display);
-    form->addRow(T("½ÇÉ«"), m_role);
-    form->addRow(m_isNew ? T("³õÊ¼¿ÚÁî") : T("ÐÂ¿ÚÁî"), m_pwd);
-    form->addRow(T("È·ÈÏ¿ÚÁî"), m_pwd2);
+    form->addRow(T("ç™»å½•å"), m_login);
+    form->addRow(T("æ˜¾ç¤ºå"), m_display);
+    form->addRow(T("è§’è‰²"), m_role);
+    form->addRow(m_isNew ? T("åˆå§‹å£ä»¤") : T("æ–°å£ä»¤"), m_pwd);
+    form->addRow(T("ç¡®è®¤å£ä»¤"), m_pwd2);
     form->addRow(m_enabled);
 
-    QLabel* hint = new QLabel(T("¿ÚÁî¿ÉÁô¿Õ¡£ÓÃ»§¿É×ÔÐÐÐÞ¸Ä¿ÚÁî¡£"), this);
+    QLabel* hint = new QLabel(T("å£ä»¤å¯ç•™ç©ºã€‚ç”¨æˆ·å¯è‡ªè¡Œä¿®æ”¹å£ä»¤ã€‚"), this);
     hint->setWordWrap(true);
     hint->setObjectName(QLatin1String("hint"));
 
     QDialogButtonBox* box = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, this);
-    box->button(QDialogButtonBox::Ok)->setText(T("±£´æ"));
+    box->button(QDialogButtonBox::Ok)->setText(T("ä¿å­˜"));
     setButtonRole(box->button(QDialogButtonBox::Ok), "primary");
     connect(box, SIGNAL(accepted()), this, SLOT(onOk()));
     connect(box, SIGNAL(rejected()), this, SLOT(reject()));
@@ -90,18 +90,18 @@ UserEditDlg::UserEditDlg(Session* session, const QString& loginName, QWidget* pa
     lay->addWidget(box);
 }
 
-// ¶Ô»°¿òÖÐµÄµÇÂ¼Ãû£¨Ð¡Ð´£©
+// å¯¹è¯æ¡†ä¸­çš„ç™»å½•åï¼ˆå°å†™ï¼‰
 QString UserEditDlg::loginName() const
 {
     return m_login->text().trimmed().toLower();
 }
 
-// Ð£Ñé²¢´´½¨/¸üÐÂÓÃ»§£¬½ûÖ¹½ûÓÃ×Ô¼ººÍÈ¡ÏûÄ©¸ö¹ÜÀíÔ±
+// æ ¡éªŒå¹¶åˆ›å»º/æ›´æ–°ç”¨æˆ·ï¼Œç¦æ­¢ç¦ç”¨è‡ªå·±å’Œå–æ¶ˆæœ«ä¸ªç®¡ç†å‘˜
 void UserEditDlg::onOk()
 {
     const QString login = m_login->text().trimmed().toLower();
     if (login.isEmpty()) {
-        QMessageBox::warning(this, T("ÓÃ»§"), T("µÇÂ¼Ãû²»ÄÜÎª¿Õ¡£"));
+        QMessageBox::warning(this, T("ç”¨æˆ·"), T("ç™»å½•åä¸èƒ½ä¸ºç©ºã€‚"));
         return;
     }
     QString display = m_display->text().trimmed();
@@ -112,16 +112,16 @@ void UserEditDlg::onOk()
     const QString p1 = m_pwd->text();
     const QString p2 = m_pwd2->text();
     if (p1 != p2) {
-        QMessageBox::warning(this, T("ÓÃ»§"), T("Á½´Î¿ÚÁî²»Ò»ÖÂ¡£"));
+        QMessageBox::warning(this, T("ç”¨æˆ·"), T("ä¸¤æ¬¡å£ä»¤ä¸ä¸€è‡´ã€‚"));
         return;
     }
 
     if (m_isNew) {
-        // ÐÂ½¨ÓÃ»§²¢ÂäÅÌ
+        // æ–°å»ºç”¨æˆ·å¹¶è½ç›˜
         UserAccount u = AuthMgr::makeUser(ss(login), ss(display), role, ss(p1));
         u.enabled = m_enabled->isChecked();
         if (!m_session->users().addUser(u)) {
-            QMessageBox::warning(this, T("ÓÃ»§"), T("µÇÂ¼ÃûÒÑ´æÔÚ¡£"));
+            QMessageBox::warning(this, T("ç”¨æˆ·"), T("ç™»å½•åå·²å­˜åœ¨ã€‚"));
             return;
         }
         m_session->persistUsers();
@@ -136,12 +136,12 @@ void UserEditDlg::onOk()
         return;
     }
     if (u->id == m_session->user().id && !m_enabled->isChecked()) {
-        QMessageBox::warning(this, T("ÓÃ»§"), T("²»ÄÜ½ûÓÃµ±Ç°µÇÂ¼ÕË»§¡£"));
+        QMessageBox::warning(this, T("ç”¨æˆ·"), T("ä¸èƒ½ç¦ç”¨å½“å‰ç™»å½•è´¦æˆ·ã€‚"));
         return;
     }
     if (u->role == RoleAdmin && role != RoleAdmin
         && m_session->users().countRole(RoleAdmin, true) <= 1 && u->enabled) {
-        QMessageBox::warning(this, T("ÓÃ»§"), T("²»ÄÜÈ¡Ïû×îºóÒ»¸öÆôÓÃµÄ¹ÜÀíÔ±¡£"));
+        QMessageBox::warning(this, T("ç”¨æˆ·"), T("ä¸èƒ½å–æ¶ˆæœ€åŽä¸€ä¸ªå¯ç”¨çš„ç®¡ç†å‘˜ã€‚"));
         return;
     }
     u->displayName = ss(display);

@@ -1,6 +1,6 @@
 /**
  * @file CommMgrDlg.h
- * @brief CommMgrDlgÍ·ÎÄ¼ş
+ * @brief CommMgrDlgå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -30,103 +30,103 @@ struct Solution;
 
 /**
  * @class CommMgrDlg
- * @brief ·½°¸¼¶Í¨ĞÅ¹ÜÀí£º´®¿Ú¡¢TCP ¿Í»§¶Ë/·şÎñ¶Ë¡¢UDP£¬ÒÔ¼° Modbus Ö÷´Ó²âÊÔ
+ * @brief æ–¹æ¡ˆçº§é€šä¿¡ç®¡ç†ï¼šä¸²å£ã€TCP å®¢æˆ·ç«¯/æœåŠ¡ç«¯ã€UDPï¼Œä»¥åŠ Modbus ä¸»ä»æµ‹è¯•
  */
 class VISION_UI_API CommMgrDlg : public QDialog {
     Q_OBJECT
 public:
-    /** @brief »á»°Óë·½°¸¾ù²»ÓµÓĞ */
+    /** @brief ä¼šè¯ä¸æ–¹æ¡ˆå‡ä¸æ‹¥æœ‰ */
     CommMgrDlg(Session* session, Solution* solution, QWidget* parent = 0);
 
 private slots:
-    /** @brief ĞÂÔöÔ­Ê¼´®¿ÚÍ¨µÀ */
+    /** @brief æ–°å¢åŸå§‹ä¸²å£é€šé“ */
     void onAddSerial();
-    /** @brief ĞÂÔö TCP ¿Í»§¶ËÍ¨µÀ */
+    /** @brief æ–°å¢ TCP å®¢æˆ·ç«¯é€šé“ */
     void onAddTcpClient();
-    /** @brief ĞÂÔö TCP ·şÎñ¶ËÍ¨µÀ */
+    /** @brief æ–°å¢ TCP æœåŠ¡ç«¯é€šé“ */
     void onAddTcpServer();
-    /** @brief ĞÂÔö UDP Í¨µÀ */
+    /** @brief æ–°å¢ UDP é€šé“ */
     void onAddUdp();
-    /** @brief ĞÂÔö Modbus RTU Í¨µÀ */
+    /** @brief æ–°å¢ Modbus RTU é€šé“ */
     void onAddModbusRtu();
-    /** @brief ĞÂÔö Modbus TCP ¿Í»§¶ËÍ¨µÀ */
+    /** @brief æ–°å¢ Modbus TCP å®¢æˆ·ç«¯é€šé“ */
     void onAddModbusTcp();
-    /** @brief È·ÈÏºóÉ¾³ıµ±Ç°Í¨µÀ²¢¶Ï¿ª */
+    /** @brief ç¡®è®¤ååˆ é™¤å½“å‰é€šé“å¹¶æ–­å¼€ */
     void onRemove();
-    /** @brief Ñ¡ÖĞÍ¨µÀºó°Ñ²ÎÊı¹àÈëÓÒ²à */
+    /** @brief é€‰ä¸­é€šé“åæŠŠå‚æ•°çŒå…¥å³ä¾§ */
     void onSel();
-    /** @brief °ÑÓÒ²à²ÎÊıĞ´»Øµ±Ç°Í¨µÀ */
+    /** @brief æŠŠå³ä¾§å‚æ•°å†™å›å½“å‰é€šé“ */
     void onApplyFields();
-    /** @brief ±£´æ²ÎÊı²¢´ò¿ªµ±Ç°Í¨µÀ */
+    /** @brief ä¿å­˜å‚æ•°å¹¶æ‰“å¼€å½“å‰é€šé“ */
     void onConnect();
-    /** @brief ¹Ø±Õµ±Ç°Í¨µÀ */
+    /** @brief å…³é—­å½“å‰é€šé“ */
     void onDisconnect();
-    /** @brief °´Ô­Ê¼×Ö½Ú·¢ËÍ²¢³¢ÊÔ¶Á»Ø */
+    /** @brief æŒ‰åŸå§‹å­—èŠ‚å‘é€å¹¶å°è¯•è¯»å› */
     void onSend();
-    /** @brief °´µ±Ç°ÇøÓëµØÖ·¶Á Modbus */
+    /** @brief æŒ‰å½“å‰åŒºä¸åœ°å€è¯» Modbus */
     void onModbusRead();
-    /** @brief °´µ±Ç°ÇøÓëµØÖ·Ğ´ Modbus */
+    /** @brief æŒ‰å½“å‰åŒºä¸åœ°å€å†™ Modbus */
     void onModbusWrite();
-    /** @brief ÖØÁĞ±¾»ú´®¿Ú */
+    /** @brief é‡åˆ—æœ¬æœºä¸²å£ */
     void onRefreshPorts();
-    /** @brief ÖØÁĞ TCP ·şÎñ¶ËÒÑ½ÓÈëµÄ¶Ô¶Ë */
+    /** @brief é‡åˆ— TCP æœåŠ¡ç«¯å·²æ¥å…¥çš„å¯¹ç«¯ */
     void onRefreshPeers();
-    /** @brief Ğ­ÒéÇĞ»»ºó¸üĞÂÀàĞÍ±êÇ©Óë²âÊÔÇø */
+    /** @brief åè®®åˆ‡æ¢åæ›´æ–°ç±»å‹æ ‡ç­¾ä¸æµ‹è¯•åŒº */
     void onProtocolChanged();
 
 private:
-    /** @brief °´·½°¸Í¨µÀÖØ½¨×ó²àÁĞ±í */
+    /** @brief æŒ‰æ–¹æ¡ˆé€šé“é‡å»ºå·¦ä¾§åˆ—è¡¨ */
     void refreshList();
     /**
-     * @brief °´ÀàĞÍ×·¼ÓÒ»ÌõÍ¨µÀ²¢Ñ¡ÖĞ
-     * @param nameKey Ãû³Æ¸ñÊ½£¬º¬ {0}
+     * @brief æŒ‰ç±»å‹è¿½åŠ ä¸€æ¡é€šé“å¹¶é€‰ä¸­
+     * @param nameKey åç§°æ ¼å¼ï¼Œå« {0}
      */
     void addChannel(CommChannelType type, const char* nameKey, bool modbus);
-    /** @brief µ±Ç°ÁĞ±íÑ¡ÖĞµÄÍ¨µÀ id */
+    /** @brief å½“å‰åˆ—è¡¨é€‰ä¸­çš„é€šé“ id */
     QString currentId() const;
-    /** @brief TCP ·şÎñ¶Ëµ±Ç°¶Ô¶Ë id£¬ÆäËüÀàĞÍÎª¿Õ */
+    /** @brief TCP æœåŠ¡ç«¯å½“å‰å¯¹ç«¯ idï¼Œå…¶å®ƒç±»å‹ä¸ºç©º */
     std::string currentPeerId() const;
-    /** @brief µ±Ç°Ñ¡ÖĞµÄÍ¨µÀ£¬Ã»ÓĞÔòÎª¿Õ */
+    /** @brief å½“å‰é€‰ä¸­çš„é€šé“ï¼Œæ²¡æœ‰åˆ™ä¸ºç©º */
     CommChannel* currentChannel();
-    /** @brief °ÑÍ¨µÀ²ÎÊı¹à½øÓÒ²à¿Ø¼ş */
+    /** @brief æŠŠé€šé“å‚æ•°çŒè¿›å³ä¾§æ§ä»¶ */
     void loadFields(const CommChannel& ch);
-    /** @brief °ÑÓÒ²à¿Ø¼şĞ´»ØÍ¨µÀ */
+    /** @brief æŠŠå³ä¾§æ§ä»¶å†™å›é€šé“ */
     void saveFieldsTo(CommChannel* ch);
-    /** @brief °´Í¨µÀÀàĞÍÇĞ»»ÓÒ²à²ÎÊıÒ³ */
+    /** @brief æŒ‰é€šé“ç±»å‹åˆ‡æ¢å³ä¾§å‚æ•°é¡µ */
     void syncTypePage(CommChannelType t);
-    /** @brief °´Í¨µÀÀàĞÍºÍĞ­ÒéÏÔÊ¾¶ÔÓ¦µÄ²ÎÊıÓë²âÊÔÇø */
+    /** @brief æŒ‰é€šé“ç±»å‹å’Œåè®®æ˜¾ç¤ºå¯¹åº”çš„å‚æ•°ä¸æµ‹è¯•åŒº */
     void syncActionPanel();
 
-    Session* m_session; ///< »á»°£¨²»ÓµÓĞ£©
-    Solution* m_sol; ///< ·½°¸£¨²»ÓµÓĞ£©
-    QListWidget* m_list; ///< Í¨µÀÁĞ±í
-    QLineEdit* m_name; ///< Í¨µÀÃû³Æ
-    QLabel* m_type;                  ///< ÀàĞÍ£¬Ö»Õ¹Ê¾
-    QLabel* m_protocolLabel;         ///< ¡¸Ğ­Òé¡¹±êÇ©£¬UDP Ê±Òş²Ø
-    QComboBox* m_protocol; ///< Ô­Ê¼»ò Modbus Ö÷´Ó
-    QStackedWidget* m_stack; ///< °´Í¨µÀÀàĞÍÇĞ»»µÄ²ÎÊıÒ³
-    QComboBox* m_serialPort; ///< ´®¿ÚºÅ
-    QSpinBox* m_baud; ///< ²¨ÌØÂÊ
-    QSpinBox* m_dataBits; ///< Êı¾İÎ»
-    QComboBox* m_parity; ///< Ğ£ÑéÎ»
-    QSpinBox* m_stopBits; ///< Í£Ö¹Î»
-    QLineEdit* m_host; ///< TCP ¿Í»§¶ËÖ÷»ú
-    QSpinBox* m_tcpPort; ///< TCP ¿Í»§¶Ë¶Ë¿Ú
-    QSpinBox* m_listenPort; ///< TCP ·şÎñ¶Ë¼àÌı¶Ë¿Ú
-    QComboBox* m_peers; ///< ÒÑ½ÓÈë¶Ô¶Ë
-    QSpinBox* m_udpBind; ///< UDP ±¾µØ¶Ë¿Ú
-    QLineEdit* m_udpHost; ///< UDP ¶Ô¶ËÖ÷»ú
-    QSpinBox* m_udpRemote; ///< UDP ¶Ô¶Ë¶Ë¿Ú
-    QComboBox* m_mbArea; ///< Modbus ¼Ä´æÆ÷Çø
-    QSpinBox* m_mbSlave; ///< ´ÓÕ¾ºÅ
-    QSpinBox* m_mbAddr; ///< ÆğÊ¼µØÖ·
-    QSpinBox* m_mbCount; ///< ¶ÁĞ´ÊıÁ¿
-    QSpinBox* m_mbValue; ///< Ğ´ÈëÖµ
-    QWidget* m_rawPanel;             ///< Ô­Ê¼×Ö½ÚÊÕ·¢
-    QWidget* m_modbusPanel;          ///< Modbus ¶ÁĞ´
-    QPlainTextEdit* m_io; ///< ÊÕ·¢¼ÇÂ¼
-    QLineEdit* m_sendEdit; ///< ´ı·¢ËÍÎÄ±¾
-    QLabel* m_status; ///< Á¬½Ó×´Ì¬
+    Session* m_session; ///< ä¼šè¯ï¼ˆä¸æ‹¥æœ‰ï¼‰
+    Solution* m_sol; ///< æ–¹æ¡ˆï¼ˆä¸æ‹¥æœ‰ï¼‰
+    QListWidget* m_list; ///< é€šé“åˆ—è¡¨
+    QLineEdit* m_name; ///< é€šé“åç§°
+    QLabel* m_type;                  ///< ç±»å‹ï¼Œåªå±•ç¤º
+    QLabel* m_protocolLabel;         ///< ã€Œåè®®ã€æ ‡ç­¾ï¼ŒUDP æ—¶éšè—
+    QComboBox* m_protocol; ///< åŸå§‹æˆ– Modbus ä¸»ä»
+    QStackedWidget* m_stack; ///< æŒ‰é€šé“ç±»å‹åˆ‡æ¢çš„å‚æ•°é¡µ
+    QComboBox* m_serialPort; ///< ä¸²å£å·
+    QSpinBox* m_baud; ///< æ³¢ç‰¹ç‡
+    QSpinBox* m_dataBits; ///< æ•°æ®ä½
+    QComboBox* m_parity; ///< æ ¡éªŒä½
+    QSpinBox* m_stopBits; ///< åœæ­¢ä½
+    QLineEdit* m_host; ///< TCP å®¢æˆ·ç«¯ä¸»æœº
+    QSpinBox* m_tcpPort; ///< TCP å®¢æˆ·ç«¯ç«¯å£
+    QSpinBox* m_listenPort; ///< TCP æœåŠ¡ç«¯ç›‘å¬ç«¯å£
+    QComboBox* m_peers; ///< å·²æ¥å…¥å¯¹ç«¯
+    QSpinBox* m_udpBind; ///< UDP æœ¬åœ°ç«¯å£
+    QLineEdit* m_udpHost; ///< UDP å¯¹ç«¯ä¸»æœº
+    QSpinBox* m_udpRemote; ///< UDP å¯¹ç«¯ç«¯å£
+    QComboBox* m_mbArea; ///< Modbus å¯„å­˜å™¨åŒº
+    QSpinBox* m_mbSlave; ///< ä»ç«™å·
+    QSpinBox* m_mbAddr; ///< èµ·å§‹åœ°å€
+    QSpinBox* m_mbCount; ///< è¯»å†™æ•°é‡
+    QSpinBox* m_mbValue; ///< å†™å…¥å€¼
+    QWidget* m_rawPanel;             ///< åŸå§‹å­—èŠ‚æ”¶å‘
+    QWidget* m_modbusPanel;          ///< Modbus è¯»å†™
+    QPlainTextEdit* m_io; ///< æ”¶å‘è®°å½•
+    QLineEdit* m_sendEdit; ///< å¾…å‘é€æ–‡æœ¬
+    QLabel* m_status; ///< è¿æ¥çŠ¶æ€
 };
 
 }

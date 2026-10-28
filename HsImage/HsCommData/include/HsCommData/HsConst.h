@@ -3,13 +3,13 @@
 
 /**
  * @file HsConst.h
- * @brief ���ڹ��õ���ֵ������ֻ�Ŷദ���õ�������ĳ�������Լ��ı������ڸ�������
+ * @brief 库内共用的数值常量。只放多处会用到的数，某个类型自己的比例留在该类型里
  */
 
 namespace HsCommData {
 
-const double kPi = 3.14159265358979323846; ///< Բ����
-const double kZeroLen2 = 1e-24;            ///< ����ƽ�����ڴ�ֵ��Ϊ�㳤��
+const double kPi = 3.14159265358979323846; ///< 圆周率
+const double kZeroLen2 = 1e-24;            ///< 长度平方低于此值视为零长度
 
 }
 

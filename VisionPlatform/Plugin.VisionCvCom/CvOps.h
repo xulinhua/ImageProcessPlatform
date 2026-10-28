@@ -1,6 +1,6 @@
 /**
  * @file CvOps.h
- * @brief CvOpsÍ·ÎÄ¼ş
+ * @brief CvOpså¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -16,7 +16,7 @@
 namespace Vision {
 
 /**
- * @brief ÑÚÄ¤¿ª±ÕÔËËã£¨ÍÖÔ²ºË£©¡£¿ÕÑÚÄ¤Ö±½Ó·µ»Ø¡£openR/closeR ¡Ü0.4 Ìø¹ı¶ÔÓ¦²½
+ * @brief æ©è†œå¼€é—­è¿ç®—ï¼ˆæ¤­åœ†æ ¸ï¼‰ã€‚ç©ºæ©è†œç›´æ¥è¿”å›ã€‚openR/closeR â‰¤0.4 è·³è¿‡å¯¹åº”æ­¥
  */
 VISION_CVCOM_API void morphOpenClose(const cv::Mat& bin, double openR, double closeR, cv::Mat*& out);
 

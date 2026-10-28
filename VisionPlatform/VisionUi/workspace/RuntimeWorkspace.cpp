@@ -1,6 +1,6 @@
 /**
  * @file RuntimeWorkspace.cpp
- * @brief RuntimeWorkspaceÊµÏÖ
+ * @brief RuntimeWorkspaceå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -23,7 +23,7 @@
 
 namespace Vision {
 
-// ÔËĞĞ¿Ç£ºÈ«¾Ö¿ØÖÆ + ¶à¹¤Õ¾Ãæ°åËŞÖ÷
+// è¿è¡Œå£³ï¼šå…¨å±€æ§åˆ¶ + å¤šå·¥ç«™é¢æ¿å®¿ä¸»
 RuntimeWorkspace::RuntimeWorkspace(QWidget* parent)
     : QWidget(parent)
     , m_sol(nullptr)
@@ -37,19 +37,19 @@ RuntimeWorkspace::RuntimeWorkspace(QWidget* parent)
     , m_tileLay(nullptr)
     , m_solBanner(nullptr)
 {
-    m_btnStart = new QPushButton(T("¿ªÊ¼"), this);
-    bindTrKey(m_btnStart, "¿ªÊ¼");
-    m_btnTrigger = new QPushButton(T("ÊÖ¶¯²âÊÔ"), this);
-    bindTrKey(m_btnTrigger, "ÊÖ¶¯²âÊÔ");
-    m_btnStop = new QPushButton(T("Í£Ö¹"), this);
-    bindTrKey(m_btnStop, "Í£Ö¹");
-    m_btnReset = new QPushButton(T("ÇåÁã"), this);
-    bindTrKey(m_btnReset, "ÇåÁã");
-    m_btnSwitch = new QPushButton(T("ÇĞ»»·½°¸"), this);
-    bindTrKey(m_btnSwitch, "ÇĞ»»·½°¸");
-    m_btnLayout = new QPushButton(T("»­ÃæÅäÖÃ"), this);
-    bindTrKey(m_btnLayout, "»­ÃæÅäÖÃ");
-    m_btnStart->setObjectName(QLatin1String("rtGhost")); // Î´ÔËĞĞ£ºÆÕÍ¨µ×£»ÔËĞĞÖĞ¸Ä rtStart ÂÌ
+    m_btnStart = new QPushButton(T("å¼€å§‹"), this);
+    bindTrKey(m_btnStart, "å¼€å§‹");
+    m_btnTrigger = new QPushButton(T("æ‰‹åŠ¨æµ‹è¯•"), this);
+    bindTrKey(m_btnTrigger, "æ‰‹åŠ¨æµ‹è¯•");
+    m_btnStop = new QPushButton(T("åœæ­¢"), this);
+    bindTrKey(m_btnStop, "åœæ­¢");
+    m_btnReset = new QPushButton(T("æ¸…é›¶"), this);
+    bindTrKey(m_btnReset, "æ¸…é›¶");
+    m_btnSwitch = new QPushButton(T("åˆ‡æ¢æ–¹æ¡ˆ"), this);
+    bindTrKey(m_btnSwitch, "åˆ‡æ¢æ–¹æ¡ˆ");
+    m_btnLayout = new QPushButton(T("ç”»é¢é…ç½®"), this);
+    bindTrKey(m_btnLayout, "ç”»é¢é…ç½®");
+    m_btnStart->setObjectName(QLatin1String("rtGhost")); // æœªè¿è¡Œï¼šæ™®é€šåº•ï¼›è¿è¡Œä¸­æ”¹ rtStart ç»¿
     m_btnTrigger->setObjectName(QLatin1String("rtGhost"));
     m_btnStop->setObjectName(QLatin1String("rtStop"));
     m_btnReset->setObjectName(QLatin1String("rtGhost"));
@@ -64,19 +64,19 @@ RuntimeWorkspace::RuntimeWorkspace(QWidget* parent)
     QFrame* left = makeCard(this);
     left->setFixedWidth(140);
     QVBoxLayout* lLay = new QVBoxLayout(left);
-    // ÉÏ£º²úÏß²Ù×÷£¨¿ªÊ¼/Í£Ö¹³É¶Ô£¬Èí´¥·¢´ÎÖ®£¬ÇåÁãµ¥¶À£©
+    // ä¸Šï¼šäº§çº¿æ“ä½œï¼ˆå¼€å§‹/åœæ­¢æˆå¯¹ï¼Œè½¯è§¦å‘æ¬¡ä¹‹ï¼Œæ¸…é›¶å•ç‹¬ï¼‰
     lLay->addWidget(m_btnStart);
     lLay->addWidget(m_btnStop);
     lLay->addWidget(m_btnTrigger);
     lLay->addWidget(m_btnReset);
     lLay->addStretch();
-    // ÏÂ£º»»·½°¸ / »­ÃæÅäÖÃ£¨·Ç½ÚÅÄÄÚ²Ù×÷£¬ÓëÉú²ú°´Å¥¸ô¿ª£©
+    // ä¸‹ï¼šæ¢æ–¹æ¡ˆ / ç”»é¢é…ç½®ï¼ˆéèŠ‚æ‹å†…æ“ä½œï¼Œä¸ç”Ÿäº§æŒ‰é’®éš”å¼€ï¼‰
     lLay->addWidget(m_btnSwitch);
     lLay->addWidget(m_btnLayout);
     m_side = left;
 
-    m_solBanner = new QLabel(T("·½°¸£º-"), this);
-    bindTrKey(m_solBanner, "·½°¸£º-");
+    m_solBanner = new QLabel(T("æ–¹æ¡ˆï¼š-"), this);
+    bindTrKey(m_solBanner, "æ–¹æ¡ˆï¼š-");
     m_solBanner->setObjectName(QLatin1String("section"));
 
     m_host = new QWidget(this);
@@ -95,14 +95,14 @@ RuntimeWorkspace::RuntimeWorkspace(QWidget* parent)
     lay->addLayout(right, 1);
 }
 
-// ½¹µãÃæ°åÍ¼Ïñ´°
+// ç„¦ç‚¹é¢æ¿å›¾åƒçª—
 HsCtrl::HsImageWindow* RuntimeWorkspace::imageWindow() const
 {
     StationRuntimePanel* p = activePanel();
     return p ? p->imageWindow() : 0;
 }
 
-// ÖØ½¨¿Ç²¢°ó¶¨Ô¤ÀÀÊµÀı
+// é‡å»ºå£³å¹¶ç»‘å®šé¢„è§ˆå®ä¾‹
 void RuntimeWorkspace::bindContext(Solution* sol, StationCfg* previewSt, Station* previewStation)
 {
     m_sol = sol;
@@ -114,7 +114,7 @@ void RuntimeWorkspace::bindContext(Solution* sol, StationCfg* previewSt, Station
     rebuildHost();
 }
 
-// ÔËĞĞÊµÀı¹Òµ½¶ÔÓ¦Ãæ°å£¨ÒÑÓĞÃæ°åÖ»»»Ö¸Õë£¬±ÜÃâÍ£Ö¹ºóÔÙ¿ªË¢µô»­Ãæ£©
+// è¿è¡Œå®ä¾‹æŒ‚åˆ°å¯¹åº”é¢æ¿ï¼ˆå·²æœ‰é¢æ¿åªæ¢æŒ‡é’ˆï¼Œé¿å…åœæ­¢åå†å¼€åˆ·æ‰ç”»é¢ï¼‰
 void RuntimeWorkspace::setStationInstance(const ObjectId& stationId, Station* station)
 {
     StationRuntimePanel* p = panelFor(stationId);
@@ -129,7 +129,7 @@ void RuntimeWorkspace::setStationInstance(const ObjectId& stationId, Station* st
     p->bindContext(m_sol, config, station);
 }
 
-// Í£Ö¹ºóĞ¶ÏÂÊµÀıÖ¸Õë£¬±£Áô¸÷Ãæ°å»­ÃæÓë¼ÆÊı
+// åœæ­¢åå¸ä¸‹å®ä¾‹æŒ‡é’ˆï¼Œä¿ç•™å„é¢æ¿ç”»é¢ä¸è®¡æ•°
 void RuntimeWorkspace::detachAllStations()
 {
     const QList<StationRuntimePanel*> all = m_panels.values();
@@ -140,7 +140,7 @@ void RuntimeWorkspace::detachAllStations()
     }
 }
 
-// Ê×´Î½øÔËĞĞ»ò·½°¸±ä¿ÕºóÔÙ½¨£»ÒÑÓĞÃæ°åÔò²»ÖØ½¨
+// é¦–æ¬¡è¿›è¿è¡Œæˆ–æ–¹æ¡ˆå˜ç©ºåå†å»ºï¼›å·²æœ‰é¢æ¿åˆ™ä¸é‡å»º
 void RuntimeWorkspace::ensureHost(Solution* sol)
 {
     m_sol = sol;
@@ -159,7 +159,7 @@ void RuntimeWorkspace::ensureHost(Solution* sol)
         rebuildHost();
         return;
     }
-    // ¹¤Õ¾ id ¼¯ºÏ±ä»¯ÔòÖØ½¨
+    // å·¥ç«™ id é›†åˆå˜åŒ–åˆ™é‡å»º
     for (size_t i = 0; i < sol->stations.size(); ++i) {
         if (!m_panels.contains(qs(sol->stations[i].id))) {
             rebuildHost();
@@ -168,7 +168,7 @@ void RuntimeWorkspace::ensureHost(Solution* sol)
     }
 }
 
-// °´ id È¡Ãæ°å
+// æŒ‰ id å–é¢æ¿
 StationRuntimePanel* RuntimeWorkspace::panelFor(const ObjectId& stationId) const
 {
     if (stationId.isNull()) {
@@ -177,25 +177,25 @@ StationRuntimePanel* RuntimeWorkspace::panelFor(const ObjectId& stationId) const
     return m_panels.value(qs(stationId), 0);
 }
 
-// È«²¿Ãæ°å
+// å…¨éƒ¨é¢æ¿
 QList<StationRuntimePanel*> RuntimeWorkspace::panels() const
 {
     return m_panels.values();
 }
 
-// ¼æÈİ£ºµ¥Õ¾±êÌâ£¨¶àÕ¾Ê±Ğ´µ½Ô¤ÀÀÕ¾Ãæ°å£©
+// å…¼å®¹ï¼šå•ç«™æ ‡é¢˜ï¼ˆå¤šç«™æ—¶å†™åˆ°é¢„è§ˆç«™é¢æ¿ï¼‰
 void RuntimeWorkspace::setStationName(const QString& name)
 {
     Q_UNUSED(name);
 }
 
-// ·½°¸Ãûºá·ù
+// æ–¹æ¡ˆåæ¨ªå¹…
 void RuntimeWorkspace::setSolutionName(const QString& name)
 {
-    m_solBanner->setText(T("·½°¸£º") + name);
+    m_solBanner->setText(T("æ–¹æ¡ˆï¼š") + name);
 }
 
-// ½¹µãÃæ°å¼ÆÊı
+// ç„¦ç‚¹é¢æ¿è®¡æ•°
 void RuntimeWorkspace::setCounts(int total, int pass, int fail, int cycleMs)
 {
     StationRuntimePanel* p = activePanel();
@@ -204,7 +204,7 @@ void RuntimeWorkspace::setCounts(int total, int pass, int fail, int cycleMs)
     }
 }
 
-// ½¹µãÃæ°å OK/NG
+// ç„¦ç‚¹é¢æ¿ OK/NG
 void RuntimeWorkspace::setLastOk(bool ok)
 {
     StationRuntimePanel* p = activePanel();
@@ -213,7 +213,7 @@ void RuntimeWorkspace::setLastOk(bool ok)
     }
 }
 
-// È«²¿ Live
+// å…¨éƒ¨ Live
 void RuntimeWorkspace::setLive(bool live)
 {
     const QList<StationRuntimePanel*> all = m_panels.values();
@@ -224,7 +224,7 @@ void RuntimeWorkspace::setLive(bool live)
     }
 }
 
-// ½¹µãÃæ°åÀúÊ·
+// ç„¦ç‚¹é¢æ¿å†å²
 void RuntimeWorkspace::addResult(bool ok, const QString& line, const QImage& thumb)
 {
     StationRuntimePanel* p = activePanel();
@@ -233,7 +233,7 @@ void RuntimeWorkspace::addResult(bool ok, const QString& line, const QImage& thu
     }
 }
 
-// Çå¿ÕÈ«²¿
+// æ¸…ç©ºå…¨éƒ¨
 void RuntimeWorkspace::resetHistory()
 {
     const QList<StationRuntimePanel*> all = m_panels.values();
@@ -244,7 +244,7 @@ void RuntimeWorkspace::resetHistory()
     }
 }
 
-// ½¹µãÃæ°åË¢Í¼
+// ç„¦ç‚¹é¢æ¿åˆ·å›¾
 void RuntimeWorkspace::setRunImages(const HsCommData::HsImage& source,
                                     const HsCommData::HsImage& result,
                                     const QVector<HsCommData::Graphic>& overlay)
@@ -255,7 +255,7 @@ void RuntimeWorkspace::setRunImages(const HsCommData::HsImage& source,
     }
 }
 
-// È¨ÏŞ
+// æƒé™
 void RuntimeWorkspace::setControlPerms(bool canStartStop, bool canReset, bool canSwitch)
 {
     m_btnStart->setEnabled(canStartStop);
@@ -265,13 +265,13 @@ void RuntimeWorkspace::setControlPerms(bool canStartStop, bool canReset, bool ca
     m_btnSwitch->setEnabled(canSwitch);
 }
 
-// »­ÃæÅäÖÃ°´Å¥
+// ç”»é¢é…ç½®æŒ‰é’®
 void RuntimeWorkspace::setConfigureEnabled(bool on)
 {
     m_btnLayout->setEnabled(on);
 }
 
-// ¿ªÊ¼°´Å¥ËæÑ­»·×´Ì¬±äÉ«£ºÎ´ÔËĞĞÆÕÍ¨µ×£¬ÔËĞĞÖĞÂÌÉ«
+// å¼€å§‹æŒ‰é’®éšå¾ªç¯çŠ¶æ€å˜è‰²ï¼šæœªè¿è¡Œæ™®é€šåº•ï¼Œè¿è¡Œä¸­ç»¿è‰²
 void RuntimeWorkspace::setLoopRunning(bool running)
 {
     if (!m_btnStart) {
@@ -283,7 +283,7 @@ void RuntimeWorkspace::setLoopRunning(bool running)
     m_btnStart->update();
 }
 
-// °´ Tabs/Tiles ÖØ½¨¸÷¹¤Õ¾Ãæ°å
+// æŒ‰ Tabs/Tiles é‡å»ºå„å·¥ç«™é¢æ¿
 void RuntimeWorkspace::rebuildHost()
 {
     m_panels.clear();
@@ -300,7 +300,7 @@ void RuntimeWorkspace::rebuildHost()
     m_tileLay = nullptr;
 
     if (!m_sol || m_sol->stations.empty()) {
-        QLabel* empty = new QLabel(T("·½°¸ÀïÃ»ÓĞ¹¤Õ¾"), m_host);
+        QLabel* empty = new QLabel(T("æ–¹æ¡ˆé‡Œæ²¡æœ‰å·¥ç«™"), m_host);
         empty->setAlignment(Qt::AlignCenter);
         m_hostLay->addWidget(empty, 1);
         m_side->setVisible(true);
@@ -341,7 +341,7 @@ void RuntimeWorkspace::rebuildHost()
             m_panels.insert(qs(config->id), panel);
             QString tabName = qs(config->name);
             if (!config->enabled) {
-                tabName += T("£¨Î´Ê¹ÄÜ£©");
+                tabName += T("ï¼ˆæœªä½¿èƒ½ï¼‰");
             }
             m_tabs->addTab(panel, tabName);
             if (m_previewSt && config->id == m_previewSt->id) {
@@ -351,7 +351,7 @@ void RuntimeWorkspace::rebuildHost()
         m_hostLay->addWidget(m_tabs, 1);
     }
 
-    // ÈÎÒ»¹¤Õ¾¹´Ñ¡¡¸ÏÔÊ¾¿ªÊ¼Í£Ö¹¡¹ÔòÏÔÊ¾¿Ç²àÀ¸
+    // ä»»ä¸€å·¥ç«™å‹¾é€‰ã€Œæ˜¾ç¤ºå¼€å§‹åœæ­¢ã€åˆ™æ˜¾ç¤ºå£³ä¾§æ 
     bool showSide = false;
     for (int i = 0; i < n; ++i) {
         if (m_sol->stations[static_cast<size_t>(i)].runtimeView.showSideButtons) {
@@ -362,7 +362,7 @@ void RuntimeWorkspace::rebuildHost()
     m_side->setVisible(showSide);
 }
 
-// µ±Ç°½¹µãÃæ°å
+// å½“å‰ç„¦ç‚¹é¢æ¿
 StationRuntimePanel* RuntimeWorkspace::activePanel() const
 {
     if (m_tabs) {
@@ -374,7 +374,7 @@ StationRuntimePanel* RuntimeWorkspace::activePanel() const
     return 0;
 }
 
-// ÓïÑÔÈÈÇĞ»»£ºË¢ÔËĞĞ¿Ç°´Å¥Óë·½°¸Ìõ
+// è¯­è¨€çƒ­åˆ‡æ¢ï¼šåˆ·è¿è¡Œå£³æŒ‰é’®ä¸æ–¹æ¡ˆæ¡
 void RuntimeWorkspace::retranslateUi()
 {
     retranslateBound(this);

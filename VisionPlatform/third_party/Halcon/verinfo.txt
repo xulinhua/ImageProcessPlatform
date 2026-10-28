@@ -1,0 +1,4 @@
+HALCON-17.12-Progress
+17.12.0.0
+arch=x64-win64
+runtime=halcon.dll,halconcpp.dll,hAcqFile.dll,hAcqDirectFile.dll

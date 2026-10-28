@@ -1,6 +1,6 @@
 /**
  * @file HsContour3.h
- * @brief HsContour3Í·ÎÄ¼ş
+ * @brief HsContour3å¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -17,22 +17,22 @@ namespace HsCommData {
 
 /**
  * @class Contour3
- * @brief ÈıÎ¬ÕÛÏß¡£µãÁĞÎªºÁÃ××ø±ê¡£Õû·İ¿½±´£¬²»¹²Ïí»º³å¡£²»ÊÇ¶şÎ¬ HsContour
+ * @brief ä¸‰ç»´æŠ˜çº¿ã€‚ç‚¹åˆ—ä¸ºæ¯«ç±³åæ ‡ã€‚æ•´ä»½æ‹·è´ï¼Œä¸å…±äº«ç¼“å†²ã€‚ä¸æ˜¯äºŒç»´ HsContour
  */
 struct HSCOMMDATA_EXPORT Contour3 {
-    std::vector<Point3d> pts; ///< ¶¥µãÁĞ£¬ºÁÃ×
-    bool closed;             ///< true Ê±Ê×Î²ÏàÁ¬
+    std::vector<Point3d> pts; ///< é¡¶ç‚¹åˆ—ï¼Œæ¯«ç±³
+    bool closed;             ///< true æ—¶é¦–å°¾ç›¸è¿
 
-    /** @brief Ä¬ÈÏ¿ªÕÛÏß */
+    /** @brief é»˜è®¤å¼€æŠ˜çº¿ */
     Contour3();
-    /** @brief Í¬ÀàĞÍ¿½±´£¬µãÁĞÕû·İ¸´ÖÆ */
+    /** @brief åŒç±»å‹æ‹·è´ï¼Œç‚¹åˆ—æ•´ä»½å¤åˆ¶ */
     Contour3(const Contour3& other);
-    /** @brief Í¬ÀàĞÍ¸³Öµ£¬µãÁĞÕû·İ¸´ÖÆ */
+    /** @brief åŒç±»å‹èµ‹å€¼ï¼Œç‚¹åˆ—æ•´ä»½å¤åˆ¶ */
     Contour3& operator=(const Contour3& other);
 
-    /** @brief ÎŞ¶¥µãÔòÎª¿Õ */
+    /** @brief æ— é¡¶ç‚¹åˆ™ä¸ºç©º */
     bool isEmpty() const;
-    /** @brief ¶¥µã°üÎ§ºĞ¡£¿ÕÕÛÏß·µ»Ø¿Õ Aabb3 */
+    /** @brief é¡¶ç‚¹åŒ…å›´ç›’ã€‚ç©ºæŠ˜çº¿è¿”å›ç©º Aabb3 */
     Aabb3 bounds() const;
 };
 

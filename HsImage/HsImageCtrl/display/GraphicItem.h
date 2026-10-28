@@ -1,6 +1,6 @@
 /**
  * @file GraphicItem.h
- * @brief GraphicItemÍ·ÎÄ¼þ
+ * @brief GraphicItemå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -22,83 +22,83 @@ namespace HsCtrl {
 
 /**
  * @class HandleHit
- * @brief ÊÖ±úÃüÖÐ¡£index Óë handleScenePositions ÏÂ±êÒ»ÖÂ¡£
+ * @brief æ‰‹æŸ„å‘½ä¸­ã€‚index ä¸Ž handleScenePositions ä¸‹æ ‡ä¸€è‡´ã€‚
  */
 struct HandleHit {
-    int index;        ///< ÊÖ±úÏÂ±ê£¬-1 ±íÊ¾Î´ÃüÖÐ
-    QPointF scenePos; ///< ÃüÖÐµÄ³¡¾°×ø±ê
+    int index;        ///< æ‰‹æŸ„ä¸‹æ ‡ï¼Œ-1 è¡¨ç¤ºæœªå‘½ä¸­
+    QPointF scenePos; ///< å‘½ä¸­çš„åœºæ™¯åæ ‡
     HandleHit() : index(-1) {}
-    /** @brief ÊÇ·ñÃüÖÐÓÐÐ§ÊÖ±ú */
+    /** @brief æ˜¯å¦å‘½ä¸­æœ‰æ•ˆæ‰‹æŸ„ */
     bool isValid() const;
 };
 
 /**
  * @class GraphicItem
- * @brief Ò»Ìõ HsCommData::Graphic µÄ³¡¾° Item¡£ÇøÓò×ßÐÐ³Ì»º´æ£¬²»ÔÚ paint ÀïÉ¨ÏÒ¡£
+ * @brief ä¸€æ¡ HsCommData::Graphic çš„åœºæ™¯ Itemã€‚åŒºåŸŸèµ°è¡Œç¨‹ç¼“å­˜ï¼Œä¸åœ¨ paint é‡Œæ‰«å¼¦ã€‚
  */
 class GraphicItem : public QGraphicsItem {
 public:
-    /** @brief ÓÃÐ­ÒéÀïµÄ HsCommData::Graphic ½¨³¡¾° Item */
+    /** @brief ç”¨åè®®é‡Œçš„ HsCommData::Graphic å»ºåœºæ™¯ Item */
     explicit GraphicItem(const HsCommData::Graphic& g, QGraphicsItem* parent = 0);
 
-    /** @brief Ìæ»»Ð­ÒéÊý¾Ý²¢ÖØ½¨ HsCommData::HsRegion »º´æ */
+    /** @brief æ›¿æ¢åè®®æ•°æ®å¹¶é‡å»º HsCommData::HsRegion ç¼“å­˜ */
     void setGraphic(const HsCommData::Graphic& g);
-    /** @brief µ±Ç°Ð­ÒéÊý¾Ý¸±±¾ */
+    /** @brief å½“å‰åè®®æ•°æ®å‰¯æœ¬ */
     HsCommData::Graphic graphic() const;
-    /** @brief Drawing Ñ¡ÖÐ£¨ÏÔÊ¾ÊÖ±ú£© */
+    /** @brief Drawing é€‰ä¸­ï¼ˆæ˜¾ç¤ºæ‰‹æŸ„ï¼‰ */
     void setSelectedDrawing(bool on);
-    /** @brief ÊÇ·ñÎªµ±Ç°Ñ¡ÖÐ ROI */
+    /** @brief æ˜¯å¦ä¸ºå½“å‰é€‰ä¸­ ROI */
     bool isSelectedDrawing() const;
-    /** @brief ÊÓ¿ÚËõ·Å£¬ÓÃÓÚÊÖ±ú´ÖÏ¸Óë HsCommData::HsRegion LOD */
+    /** @brief è§†å£ç¼©æ”¾ï¼Œç”¨äºŽæ‰‹æŸ„ç²—ç»†ä¸Ž HsCommData::HsRegion LOD */
     void setViewScale(qreal s);
-    /** @brief ÊÇ·ñÎªÐý×ªÊÖ±ú */
+    /** @brief æ˜¯å¦ä¸ºæ—‹è½¬æ‰‹æŸ„ */
     bool isRotationHandle(int index) const;
-    /** @brief ¸ÃÊÖ±úÔÚµ±Ç°ÊÓ¿ÚÏÂµÄ¹â±ê */
+    /** @brief è¯¥æ‰‹æŸ„åœ¨å½“å‰è§†å£ä¸‹çš„å…‰æ ‡ */
     QCursor cursorForHandle(int index, const QTransform& sceneToView) const;
 
-    /** @brief º¬ÊÖ±úµæµÄ°üÎ§ºÐ */
+    /** @brief å«æ‰‹æŸ„åž«çš„åŒ…å›´ç›’ */
     QRectF boundingRect() const override;
-    /** @brief ¼ÓÃè±ß¿í¶ÈºóµÄÃüÖÐÐÎ×´ */
+    /** @brief åŠ æè¾¹å®½åº¦åŽçš„å‘½ä¸­å½¢çŠ¶ */
     QPainterPath shape() const override;
-    /** @brief °´ kind »­¼¸ºÎ£¬Ñ¡ÖÐÊ±»­ÊÖ±ú */
+    /** @brief æŒ‰ kind ç”»å‡ ä½•ï¼Œé€‰ä¸­æ—¶ç”»æ‰‹æŸ„ */
     void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
 
     /**
-     * @brief ÊÓ¿Ú×ø±êÃüÖÐÊÖ±ú
-     * @param hotPx ÃüÖÐÈÈÇø£¬ÆÁÄ»ÏñËØ
+     * @brief è§†å£åæ ‡å‘½ä¸­æ‰‹æŸ„
+     * @param hotPx å‘½ä¸­çƒ­åŒºï¼Œå±å¹•åƒç´ 
      */
     HandleHit hitHandle(const QPointF& viewPos, const QTransform& sceneToView, qreal hotPx) const;
     /**
-     * @brief Í¼Ïñ×ø±êÃüÖÐÂÖÀª»òÌî³ä
-     * @param imageTol Í¼Ïñ×ø±êÈÝ²î
+     * @brief å›¾åƒåæ ‡å‘½ä¸­è½®å»“æˆ–å¡«å……
+     * @param imageTol å›¾åƒåæ ‡å®¹å·®
      */
     bool hitShape(const QPointF& scenePos, qreal imageTol) const;
 
-    /** @brief ÊÖ±úÔÚÍ¼Ïñ×ø±êÏµÖÐµÄÎ»ÖÃ */
+    /** @brief æ‰‹æŸ„åœ¨å›¾åƒåæ ‡ç³»ä¸­çš„ä½ç½® */
     QVector<QPointF> handleScenePositions() const;
 
 private:
-    HsCommData::Graphic m_g;     ///< Ð­ÒéÊý¾Ý
-    RegionDisplay m_regionDisp;  ///< HsCommData::HsRegion µÄ path/mask »º´æ
-    bool m_selected;             ///< Drawing ÊÇ·ñÑ¡ÖÐ
-    qreal m_viewScale;           ///< ÊÓ¿ÚËõ·Å
-    QRectF m_bounds;             ///< º¬ÊÖ±úµæµÄ°üÎ§ºÐ
+    HsCommData::Graphic m_g;     ///< åè®®æ•°æ®
+    RegionDisplay m_regionDisp;  ///< HsCommData::HsRegion çš„ path/mask ç¼“å­˜
+    bool m_selected;             ///< Drawing æ˜¯å¦é€‰ä¸­
+    qreal m_viewScale;           ///< è§†å£ç¼©æ”¾
+    QRectF m_bounds;             ///< å«æ‰‹æŸ„åž«çš„åŒ…å›´ç›’
 
-    /** @brief °´¼¸ºÎÓëÊÖ±úÖØËã°üÎ§ºÐ */
+    /** @brief æŒ‰å‡ ä½•ä¸Žæ‰‹æŸ„é‡ç®—åŒ…å›´ç›’ */
     void rebuildBounds();
-    /** @brief °´ RLE ¸´ÔÓ¶ÈÑ¡Ôñ path »ò mask */
+    /** @brief æŒ‰ RLE å¤æ‚åº¦é€‰æ‹© path æˆ– mask */
     void ensureRegionDisplay();
-    /** @brief mask ÊÇ·ñÒòËõ·Å¹ýÆÚ */
+    /** @brief mask æ˜¯å¦å› ç¼©æ”¾è¿‡æœŸ */
     bool regionLodStale(qreal lod) const;
-    /** @brief HsCommData::HsRegion Ìî³äÉ« */
+    /** @brief HsCommData::HsRegion å¡«å……è‰² */
     QColor regionFillColor() const;
-    /** @brief °Ñ mask Ìùµ½ bounds ¾ØÐÎ */
+    /** @brief æŠŠ mask è´´åˆ° bounds çŸ©å½¢ */
     void paintRegionMask(QPainter* painter, const QStyleOptionGraphicsItem* option) const;
-    /** @brief ÂÖÀªÂ·¾¶£¨ÃüÖÐÓëÃè±ß¹²ÓÃ£© */
+    /** @brief è½®å»“è·¯å¾„ï¼ˆå‘½ä¸­ä¸Žæè¾¹å…±ç”¨ï¼‰ */
     QPainterPath outlinePath() const;
-    /** @brief »­Ñ¡ÖÐÊÖ±ú */
+    /** @brief ç”»é€‰ä¸­æ‰‹æŸ„ */
     void paintHandles(QPainter* painter) const;
-    /** @brief ´Ó painter ÊÀ½ç±ä»»È¡µ±Ç°Ëõ·Å */
+    /** @brief ä»Ž painter ä¸–ç•Œå˜æ¢å–å½“å‰ç¼©æ”¾ */
     qreal viewScale(const QPainter* painter) const;
 };
 

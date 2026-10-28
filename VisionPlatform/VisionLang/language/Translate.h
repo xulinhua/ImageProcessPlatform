@@ -1,6 +1,6 @@
 /**
  * @file Translate.h
- * @brief TranslateÍ·ÎÄ¼ş
+ * @brief Translateå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -15,58 +15,58 @@
 
 namespace Vision {
 
-/** @brief ½çÃæÓïÑÔ¡£´ÊÌõÖ»´æÔÚ±¾¹¤³Ì£¬ÆäËü¹¤³Ì½ûÖ¹Ğ´ÓÃ»§¿É¼ûÖĞÎÄ */
+/** @brief ç•Œé¢è¯­è¨€ã€‚è¯æ¡åªå­˜åœ¨æœ¬å·¥ç¨‹ï¼Œå…¶å®ƒå·¥ç¨‹ç¦æ­¢å†™ç”¨æˆ·å¯è§ä¸­æ–‡ */
 enum LangId {
-    LangZhCN = 0, ///< ¼òÌåÖĞÎÄ£¨Ô´ÓïÑÔ£©
+    LangZhCN = 0, ///< ç®€ä½“ä¸­æ–‡ï¼ˆæºè¯­è¨€ï¼‰
     LangEnUS      ///< English
 };
 
 /**
  * @class Translate
- * @brief ·­ÒëÈë¿Ú¡£¼üÎªÔ´ÓïÑÔ£¨¼òÌåÖĞÎÄ£©×ÖÃæÁ¿£»Ó¢ÎÄÔÚ±¾¹¤³Ì´ÊÌõ±í
+ * @brief ç¿»è¯‘å…¥å£ã€‚é”®ä¸ºæºè¯­è¨€ï¼ˆç®€ä½“ä¸­æ–‡ï¼‰å­—é¢é‡ï¼›è‹±æ–‡åœ¨æœ¬å·¥ç¨‹è¯æ¡è¡¨
  */
 class VISION_LANGUAGE_API Translate {
 public:
-    /** @brief ÇĞ»»µ±Ç°ÓïÑÔ£¨Á¢¼´Ó°ÏìºóĞø tr£© */
+    /** @brief åˆ‡æ¢å½“å‰è¯­è¨€ï¼ˆç«‹å³å½±å“åç»­ trï¼‰ */
     static void setLanguage(LangId lang);
     /**
-     * @brief °´ÓïÑÔ¼üÇĞ»»¡£ÈÏÊ¶ zh-CN¡¢zh¡¢en-US¡¢en
-     * @return ÊÇ·ñÎªÒÑÖ§³ÖµÄ¼ü
+     * @brief æŒ‰è¯­è¨€é”®åˆ‡æ¢ã€‚è®¤è¯† zh-CNã€zhã€en-USã€en
+     * @return æ˜¯å¦ä¸ºå·²æ”¯æŒçš„é”®
      */
     static bool setLanguageKey(const std::string& key);
-    /** @brief µ±Ç°ÓïÑÔ */
+    /** @brief å½“å‰è¯­è¨€ */
     static LangId language();
-    /** @brief ´æÅÌÓÃ¼ü£¬Èç zh-CN */
+    /** @brief å­˜ç›˜ç”¨é”®ï¼Œå¦‚ zh-CN */
     static std::string languageKey();
-    /** @brief ÓïÑÔÖÖÊı */
+    /** @brief è¯­è¨€ç§æ•° */
     static int languageCount();
-    /** @brief µÚ i ÖÖÓïÑÔ£»Ô½½ç»Ø zh-CN¡£ÁĞ±íÀ´×Ô lang\\languages.txt£¬È±ÎÄ¼şÊ±Ö»ÓĞÖĞÓ¢ */
+    /** @brief ç¬¬ i ç§è¯­è¨€ï¼›è¶Šç•Œå› zh-CNã€‚åˆ—è¡¨æ¥è‡ª lang\\languages.txtï¼Œç¼ºæ–‡ä»¶æ—¶åªæœ‰ä¸­è‹± */
     static LangId languageAt(int i);
-    /** @brief µÚ i ÖÖÓïÑÔµÄ´æÅÌ¼ü£»Ô½½ç¿Õ´® */
+    /** @brief ç¬¬ i ç§è¯­è¨€çš„å­˜ç›˜é”®ï¼›è¶Šç•Œç©ºä¸² */
     static std::string languageKeyAt(int i);
-    /** @brief ´æÅÌ¼ü */
+    /** @brief å­˜ç›˜é”® */
     static std::string languageKeyOf(LangId lang);
-    /** @brief ÓïÑÔ±¾Ãû£¨²»Ëæ½çÃæÓïÑÔ±ä£º¼òÌåÖĞÎÄ »ò English£© */
+    /** @brief è¯­è¨€æœ¬åï¼ˆä¸éšç•Œé¢è¯­è¨€å˜ï¼šç®€ä½“ä¸­æ–‡ æˆ– Englishï¼‰ */
     static std::string languageNativeName(LangId lang);
-    /** @brief µÚ i ÖÖÓïÑÔµÄ±¾Ãû£»Ô½½ç¿Õ´® */
+    /** @brief ç¬¬ i ç§è¯­è¨€çš„æœ¬åï¼›è¶Šç•Œç©ºä¸² */
     static std::string languageNativeNameAt(int i);
 
     /**
-     * @brief È¡µ±Ç°ÓïÑÔÎÄ±¾
-     * @param key Ô´ÓïÑÔ×ÖÃæÁ¿£¨ÖĞÎÄ»ò×¨ÒµÓ¢ÎÄ£©¡£zh-CN Ô­Ñù·µ»Ø£»ÆäËüÓïÑÔ²é±í£¬È±Ìõ»Ø key
+     * @brief å–å½“å‰è¯­è¨€æ–‡æœ¬
+     * @param key æºè¯­è¨€å­—é¢é‡ï¼ˆä¸­æ–‡æˆ–ä¸“ä¸šè‹±æ–‡ï¼‰ã€‚zh-CN åŸæ ·è¿”å›ï¼›å…¶å®ƒè¯­è¨€æŸ¥è¡¨ï¼Œç¼ºæ¡å› key
      */
     static std::string tr(const char* key);
 
     /**
-     * @brief È¡ÒëÎÄ²¢°Ñ {0}¡¢{1} »»³É²ÎÊı¡£²ÎÊıÔÚµ÷ÓÃ·½ÏÈ×ª³É×Ö·û´®
-     * @param key Ô´ÓïÑÔ¾ä×Ó£¬Õ¼Î»´Ó 0 ±àºÅ
+     * @brief å–è¯‘æ–‡å¹¶æŠŠ {0}ã€{1} æ¢æˆå‚æ•°ã€‚å‚æ•°åœ¨è°ƒç”¨æ–¹å…ˆè½¬æˆå­—ç¬¦ä¸²
+     * @param key æºè¯­è¨€å¥å­ï¼Œå ä½ä» 0 ç¼–å·
      */
     static std::string format(const char* key, const std::vector<std::string>& args);
-    /** @brief ÓÃÒ»¸ö²ÎÊıÌæ»» {0} */
+    /** @brief ç”¨ä¸€ä¸ªå‚æ•°æ›¿æ¢ {0} */
     static std::string format(const char* key, const std::string& a0);
-    /** @brief ÓÃÁ½¸ö²ÎÊıÌæ»» {0}¡¢{1} */
+    /** @brief ç”¨ä¸¤ä¸ªå‚æ•°æ›¿æ¢ {0}ã€{1} */
     static std::string format(const char* key, const std::string& a0, const std::string& a1);
-    /** @brief ÓÃÈı¸ö²ÎÊıÌæ»» {0}¡¢{1}¡¢{2} */
+    /** @brief ç”¨ä¸‰ä¸ªå‚æ•°æ›¿æ¢ {0}ã€{1}ã€{2} */
     static std::string format(const char* key, const std::string& a0, const std::string& a1, const std::string& a2);
 };
 

@@ -1,6 +1,6 @@
 /**
  * @file HalGeom.h
- * @brief HalGeomÕ∑Œƒº˛
+ * @brief HalGeomÂ§¥Êñá‰ª∂
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -8,28 +8,27 @@
 
 #ifndef VISION_HALCONGEOM_H
 #define VISION_HALCONGEOM_H
-/** @brief ºÊ»›æ…Õ∑£∫º∏∫Œ◊™ªª«Î”√ HalObjectConvert.h£ª±‡≈≈∏®÷˙«Î”√ HalAlgoHelpers.h */
+/** @brief ÂÖºÂÆπÊóßÂ§¥ÔºöÂá†‰ΩïËΩ¨Êç¢ËØ∑Áî® HalObjectConvert.h */
 #include "HalObjectConvert.h"
 #include "HalImageConvert.h"
-#include "HalAlgoHelpers.h"
 
 namespace Vision {
-/** @deprecated «Î”√ toolRoiToHObject */
+/** @deprecated ËØ∑Áî® toolRoiToHObject */
 inline HalconCpp::HObject roiToRegion(const HsCommData::HsObject& roi, int imgW, int imgH)
 {
     return toolRoiToHObject(roi, imgW, imgH);
 }
-/** @deprecated «Î”√ toolRoisToHObject */
+/** @deprecated ËØ∑Áî® toolRoisToHObject */
 inline HalconCpp::HObject roisToRegion(const std::vector<HsCommData::HsObject>& rois, int imgW, int imgH)
 {
     return toolRoisToHObject(rois, imgW, imgH);
 }
-/** @deprecated «Î”√ hsRegionsToHObject */
+/** @deprecated ËØ∑Áî® hsRegionsToHObject */
 inline HalconCpp::HObject rleRegionsToHObject(const std::vector<HsCommData::HsObject>& regs, int imgW, int imgH)
 {
     return hsRegionsToHObject(regs, imgW, imgH);
 }
-/** @deprecated «Î”√ hObjectToRegionObject */
+/** @deprecated ËØ∑Áî® hObjectToRegionObject */
 inline HsCommData::HsObject regionObject(const HalconCpp::HObject& r)
 {
     return hObjectToRegionObject(r);

@@ -1,6 +1,6 @@
 /**
  * @file CvSmooth.cpp
- * @brief CvSmoothÊµÏÖ
+ * @brief CvSmoothå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -10,13 +10,13 @@
 #include "TextEncoding.h"
 #include "CvAlgoHelpers.h"
 namespace Vision {
-// µÚi²½²ÎÊı¼ü
+// ç¬¬iæ­¥å‚æ•°é”®
 static std::string stepKey(int i, const char* suffix)
 {
     return std::string("pl_") + std::to_string(static_cast<long long>(i)) + "_" + suffix;
 }
 
-// Æ½»¬Ëã×Ó
+// å¹³æ»‘ç®—å­
 enum class SmoothOp {
     Mean = 0,
     Median,
@@ -24,7 +24,7 @@ enum class SmoothOp {
     Bilateral
 };
 
-// Æ½»¬¹ÜÏßÒ»²½
+// å¹³æ»‘ç®¡çº¿ä¸€æ­¥
 struct SmoothStep {
     SmoothOp op;
     int maskW;
@@ -40,7 +40,7 @@ struct SmoothStep {
     {}
 };
 
-// ÕûĞÍ×ªÆ½»¬Ëã×Ó
+// æ•´å‹è½¬å¹³æ»‘ç®—å­
 static SmoothOp smoothOpFromInt(int v)
 {
     switch (v) {
@@ -52,7 +52,7 @@ static SmoothOp smoothOpFromInt(int v)
     }
 }
 
-// ´Ó²ÎÊı½â¿ªÆ½»¬²½Öè
+// ä»å‚æ•°è§£å¼€å¹³æ»‘æ­¥éª¤
 static std::vector<SmoothStep> smoothStepsFromParams(const ParamMap& p)
 {
     std::vector<SmoothStep> out;
@@ -73,7 +73,7 @@ static std::vector<SmoothStep> smoothStepsFromParams(const ParamMap& p)
     return out;
 }
 
-// Æ½»¬Ò»²½
+// å¹³æ»‘ä¸€æ­¥
 static bool applySmoothOp(cv::Mat* img, const SmoothStep& st, std::string* err)
 {
     switch (st.op) {
@@ -118,17 +118,17 @@ static bool applySmoothOp(cv::Mat* img, const SmoothStep& st, std::string* err)
     }
     default:
         if (err) {
-            *err = Vision::acpToUtf8("Î´ÖªÆ½»¬Ëã×Ó");
+            *err = "æœªçŸ¥å¹³æ»‘ç®—å­";
         }
         return false;
     }
 }
 
-// Æ½»¬¹ÜÏß
+// å¹³æ»‘ç®¡çº¿
 namespace {
 const char kVer_CvSmooth[] = "1.0.0.0";
 const Vision::VerNoteRaw kNotes_CvSmooth[] = {
-    { "1.0.0.0", "Ê×°æ" },
+    { "1.0.0.0", "é¦–ç‰ˆ" },
 };
 }
 
@@ -164,7 +164,7 @@ AlgToolOut CvSmooth::run(const AlgToolIn& in)
                 return algorToolFail(err);
             }
         }
-        return finishPreprocessWork(in, gray, work, roiMask, Vision::acpToUtf8("Í¼ÏñÆ½»¬Íê³É"));
+        return finishPreprocessWork(in, gray, work, roiMask, "å›¾åƒå¹³æ»‘å®Œæˆ");
     } catch (const cv::Exception& e) {
         return algorToolFail(e.what() ? std::string(e.what()) : std::string("OpenCV error"));
     }

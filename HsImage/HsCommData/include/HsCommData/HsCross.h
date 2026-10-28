@@ -1,6 +1,6 @@
 /**
  * @file HsCross.h
- * @brief HsCrossÍ·ÎÄ¼þ
+ * @brief HsCrosså¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -21,18 +21,18 @@ namespace HsCommData {
 struct HSCOMMDATA_EXPORT HsCross {
     Point2d center; ///< center
     double size;   ///< half arm in pixels; <0 means follow window
-    double angle;  ///< ÄÚ²¿×ª½Ç£¬»¡¶È¡£Õý·½Ïò´Ó +x ×ªÏò +y¡£¶ÔÍâÓÃ ang¡¢angDeg
-    /** @brief ÄÚ²¿×ª½Ç£¬»¡¶È */
+    double angle;  ///< å†…éƒ¨è½¬è§’ï¼Œå¼§åº¦ã€‚æ­£æ–¹å‘ä»Ž +x è½¬å‘ +yã€‚å¯¹å¤–ç”¨ angã€angDeg
+    /** @brief å†…éƒ¨è½¬è§’ï¼Œå¼§åº¦ */
     double angRad() const;
-    /** @brief Ð´ÈëÄÚ²¿»¡¶È */
+    /** @brief å†™å…¥å†…éƒ¨å¼§åº¦ */
     void setAngRad(double rad);
-    /** @brief ×ª½ÇµÄ¶ÈÊý£¬Õý·½ÏòÓëÄÚ²¿ÏàÍ¬ */
+    /** @brief è½¬è§’çš„åº¦æ•°ï¼Œæ­£æ–¹å‘ä¸Žå†…éƒ¨ç›¸åŒ */
     double angDeg() const;
-    /** @brief °´¶ÈÊýÐ´Èë£¬Õý·½ÏòÓëÄÚ²¿ÏàÍ¬ */
+    /** @brief æŒ‰åº¦æ•°å†™å…¥ï¼Œæ­£æ–¹å‘ä¸Žå†…éƒ¨ç›¸åŒ */
     void setAngDeg(double deg);
-    /** @brief °´ÏµÍ³½Ç¶Èµ¥Î»ºÍÕý·½Ïò¶ÁÈ¡ */
+    /** @brief æŒ‰ç³»ç»Ÿè§’åº¦å•ä½å’Œæ­£æ–¹å‘è¯»å– */
     double ang() const;
-    /** @brief °´ÏµÍ³½Ç¶Èµ¥Î»ºÍÕý·½ÏòÐ´Èë */
+    /** @brief æŒ‰ç³»ç»Ÿè§’åº¦å•ä½å’Œæ­£æ–¹å‘å†™å…¥ */
     void setAng(double external);
 
     HsCross(); ///< size 10, angle 0

@@ -5,7 +5,7 @@
 
 /**
  * @file HsInterface3D.h
- * @brief ÈıÎ¬×ÔÓÉº¯Êı¡£µã¡¢Î»×ËÒÔ¼°ÒÔºóµÄÈıÎ¬×ÔÓÉº¯Êı·ÅÕâÀï
+ * @brief ä¸‰ç»´è‡ªç”±å‡½æ•°ã€‚ç‚¹ã€ä½å§¿ä»¥åŠä»¥åçš„ä¸‰ç»´è‡ªç”±å‡½æ•°æ”¾è¿™é‡Œ
  */
 
 #include <HsCommData/Geom3.h>
@@ -13,25 +13,25 @@
 namespace HsCommData {
 
 /**
- * @brief Íâ²¿µã»»³ÉÄÚ²¿µã£¨Öá¡¢ÊÖĞÔ¡¢³¤¶ÈÒ»Æğ»»£©
- * @param external Íâ²¿×ø±ê
+ * @brief å¤–éƒ¨ç‚¹æ¢æˆå†…éƒ¨ç‚¹ï¼ˆè½´ã€æ‰‹æ€§ã€é•¿åº¦ä¸€èµ·æ¢ï¼‰
+ * @param external å¤–éƒ¨åæ ‡
  */
 HSCOMMDATA_EXPORT Point3d toPoint3(const Point3d& external);
 /**
- * @brief ÄÚ²¿µã»»³ÉÍâ²¿µã
- * @param internal ÄÚ²¿×ø±ê£¬ºÁÃ×
+ * @brief å†…éƒ¨ç‚¹æ¢æˆå¤–éƒ¨ç‚¹
+ * @param internal å†…éƒ¨åæ ‡ï¼Œæ¯«ç±³
  */
 HSCOMMDATA_EXPORT Point3d fromPoint3(const Point3d& internal);
 
 /**
- * @brief Íâ²¿Æ½ÒÆºÍÅ·À­½Ç»»³ÉÄÚ²¿Î»×Ë¡£Å·À­·ÖÁ¿Ö»»»µ¥Î»ºÍÕı·½Ïò£¬²»Ì×Æ½Ãæ½ÇÁãÎ»
- * @param tx,ty,tz Íâ²¿Æ½ÒÆ
- * @param a,b,c ÈÆ X¡¢Y¡¢Z µÄÍâ²¿Å·À­½Ç£¬Ë³Ğò¿´ÏµÍ³ÀïµÄÅ·À­Ë³Ğò
+ * @brief å¤–éƒ¨å¹³ç§»å’Œæ¬§æ‹‰è§’æ¢æˆå†…éƒ¨ä½å§¿ã€‚æ¬§æ‹‰åˆ†é‡åªæ¢å•ä½å’Œæ­£æ–¹å‘ï¼Œä¸å¥—å¹³é¢è§’é›¶ä½
+ * @param tx,ty,tz å¤–éƒ¨å¹³ç§»
+ * @param a,b,c ç»• Xã€Yã€Z çš„å¤–éƒ¨æ¬§æ‹‰è§’ï¼Œé¡ºåºçœ‹ç³»ç»Ÿé‡Œçš„æ¬§æ‹‰é¡ºåº
  */
 HSCOMMDATA_EXPORT Pose3 toPose(double tx, double ty, double tz, double a, double b, double c);
 /**
- * @brief ÄÚ²¿Î»×Ë»»³ÉÍâ²¿Æ½ÒÆºÍÅ·À­½Ç¡£ÍòÏò½ÚËøÊ±°ÑÈÆ Z µÄ·ÖÁ¿ÖÃ 0¡£Ö¸Õë¿É¿Õ
- * @param pose ÄÚ²¿Î»×Ë
+ * @brief å†…éƒ¨ä½å§¿æ¢æˆå¤–éƒ¨å¹³ç§»å’Œæ¬§æ‹‰è§’ã€‚ä¸‡å‘èŠ‚é”æ—¶æŠŠç»• Z çš„åˆ†é‡ç½® 0ã€‚æŒ‡é’ˆå¯ç©º
+ * @param pose å†…éƒ¨ä½å§¿
  */
 HSCOMMDATA_EXPORT void fromPose(const Pose3& pose, double* tx, double* ty, double* tz,
                                 double* a, double* b, double* c);

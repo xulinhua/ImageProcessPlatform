@@ -1,6 +1,6 @@
 /**
  * @file CommNet.cpp
- * @brief CommNetÊµÏÖ
+ * @brief CommNetå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -21,7 +21,7 @@ bool wsaStarted = false;
 
 } // namespace
 
-// °Ñ´íÎóÎÄ±¾Ğ´Èë err£»¿ÕÖ¸ÕëÔòºöÂÔ
+// æŠŠé”™è¯¯æ–‡æœ¬å†™å…¥ errï¼›ç©ºæŒ‡é’ˆåˆ™å¿½ç•¥
 void setCommErr(std::string* err, const std::string& msg)
 {
     if (err) {
@@ -29,7 +29,7 @@ void setCommErr(std::string* err, const std::string& msg)
     }
 }
 
-// ½ø³ÌÄÚ³õÊ¼»¯ Winsock£¬ÒÑ³õÊ¼»¯ÔòÖ±½Ó·µ»Ø
+// è¿›ç¨‹å†…åˆå§‹åŒ– Winsockï¼Œå·²åˆå§‹åŒ–åˆ™ç›´æ¥è¿”å›
 void commNetEnsure()
 {
     if (wsaStarted) {
@@ -41,11 +41,11 @@ void commNetEnsure()
     }
 }
 
-// °ÑÖ÷»úÃû»òµã·ÖµØÖ·½âÎö³É IPv4
+// æŠŠä¸»æœºåæˆ–ç‚¹åˆ†åœ°å€è§£ææˆ IPv4
 bool commResolveIpv4(const std::string& host, unsigned long* addr, std::string* err)
 {
     if (!addr || host.empty()) {
-        setCommErr(err, Vision::acpToUtf8("Î´ÌîĞ´Ö÷»ú"));
+        setCommErr(err, "æœªå¡«å†™ä¸»æœº");
         return false;
     }
     commNetEnsure();
@@ -59,7 +59,7 @@ bool commResolveIpv4(const std::string& host, unsigned long* addr, std::string* 
     hints.ai_family = AF_INET;
     addrinfo* res = nullptr;
     if (getaddrinfo(host.c_str(), 0, &hints, &res) != 0 || !res) {
-        setCommErr(err, Vision::acpToUtf8("Ö÷»úÃûÎŞ·¨½âÎö"));
+        setCommErr(err, "ä¸»æœºåæ— æ³•è§£æ");
         return false;
     }
     *addr = reinterpret_cast<sockaddr_in*>(res->ai_addr)->sin_addr.s_addr;
@@ -67,7 +67,7 @@ bool commResolveIpv4(const std::string& host, unsigned long* addr, std::string* 
     return true;
 }
 
-// µÈµ½Ì×½Ó×Ö¿É¶Á»ò¿ÉĞ´£¬³¬Ê±·µ»Ø 0
+// ç­‰åˆ°å¥—æ¥å­—å¯è¯»æˆ–å¯å†™ï¼Œè¶…æ—¶è¿”å› 0
 int commWaitSocket(SOCKET sock, bool wantRead, int timeoutMs)
 {
     if (timeoutMs < 0) {
@@ -91,7 +91,7 @@ int commWaitSocket(SOCKET sock, bool wantRead, int timeoutMs)
     return 1;
 }
 
-// ÔÚ³¬Ê±ÄÚ°ÑÕû¶Î×Ö½Ú·¢³öÈ¥
+// åœ¨è¶…æ—¶å†…æŠŠæ•´æ®µå­—èŠ‚å‘å‡ºå»
 bool commSendAll(SOCKET sock, const CommBytes& data, int timeoutMs, std::string* err)
 {
     int off = 0;
@@ -99,16 +99,16 @@ bool commSendAll(SOCKET sock, const CommBytes& data, int timeoutMs, std::string*
     while (off < n) {
         const int w = commWaitSocket(sock, false, timeoutMs);
         if (w == 0) {
-            setCommErr(err, Vision::acpToUtf8("Ğ´³¬Ê±"));
+            setCommErr(err, "å†™è¶…æ—¶");
             return false;
         }
         if (w < 0) {
-            setCommErr(err, Vision::acpToUtf8("Ğ´Ê§°Ü"));
+            setCommErr(err, "å†™å¤±è´¥");
             return false;
         }
         const int k = send(sock, reinterpret_cast<const char*>(&data[0]) + off, n - off, 0);
         if (k <= 0) {
-            setCommErr(err, Vision::acpToUtf8("Ğ´Ê§°Ü"));
+            setCommErr(err, "å†™å¤±è´¥");
             return false;
         }
         off += k;
@@ -116,11 +116,11 @@ bool commSendAll(SOCKET sock, const CommBytes& data, int timeoutMs, std::string*
     return true;
 }
 
-// ¶ÁÒ»Åú×Ö½Ú£»³¬Ê±¡¢Ê§°Ü¡¢¶Ô¶Ë¹Ø±Õ·Ö±ğ·µ»Ø
+// è¯»ä¸€æ‰¹å­—èŠ‚ï¼›è¶…æ—¶ã€å¤±è´¥ã€å¯¹ç«¯å…³é—­åˆ†åˆ«è¿”å›
 int commRecvSome(SOCKET sock, int maxBytes, int timeoutMs, CommBytes* out, std::string* err)
 {
     if (!out) {
-        setCommErr(err, Vision::acpToUtf8("²ÎÊıÎŞĞ§"));
+        setCommErr(err, "å‚æ•°æ— æ•ˆ");
         return -1;
     }
     out->clear();
@@ -132,7 +132,7 @@ int commRecvSome(SOCKET sock, int maxBytes, int timeoutMs, CommBytes* out, std::
         return 0;
     }
     if (w < 0) {
-        setCommErr(err, Vision::acpToUtf8("¶ÁÊ§°Ü"));
+        setCommErr(err, "è¯»å¤±è´¥");
         return -1;
     }
     out->resize(static_cast<size_t>(maxBytes));
@@ -146,14 +146,14 @@ int commRecvSome(SOCKET sock, int maxBytes, int timeoutMs, CommBytes* out, std::
         if (WSAGetLastError() == WSAEWOULDBLOCK) {
             return 0;
         }
-        setCommErr(err, Vision::acpToUtf8("¶ÁÊ§°Ü"));
+        setCommErr(err, "è¯»å¤±è´¥");
         return -1;
     }
     out->resize(static_cast<size_t>(k));
     return 1;
 }
 
-// °ÑµØÖ·¸ñÊ½»¯³É IP:¶Ë¿Ú
+// æŠŠåœ°å€æ ¼å¼åŒ–æˆ IP:ç«¯å£
 std::string commEndpointText(const sockaddr_in& addr)
 {
     char ip[64];

@@ -1,6 +1,6 @@
 /**
  * @file ObjectId.cpp
- * @brief ObjectIdÊµÏÖ
+ * @brief ObjectIdå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -14,7 +14,7 @@
 
 namespace Vision {
 
-// È¥µô GUID ×Ö·û´®Á½¶ËµÄ»¨À¨ºÅ
+// å»æ‰ GUID å­—ç¬¦ä¸²ä¸¤ç«¯çš„èŠ±æ‹¬å·
 std::string ObjectId::stripBraces(std::string s)
 {
     std::string o;
@@ -27,19 +27,19 @@ std::string ObjectId::stripBraces(std::string s)
     return o;
 }
 
-// ÓÃÈ¥µô»¨À¨ºÅºóµÄ×Ö·û´®¹¹Ôì
+// ç”¨å»æ‰èŠ±æ‹¬å·åçš„å­—ç¬¦ä¸²æ„é€ 
 ObjectId::ObjectId(const std::string& s)
     : m_s(stripBraces(s))
 {
 }
 
-// ´Ó×Ö·û´®¹¹Ôì ObjectId
+// ä»å­—ç¬¦ä¸²æ„é€  ObjectId
 ObjectId ObjectId::fromString(const std::string& s)
 {
     return ObjectId(s);
 }
 
-// ÓÃ Windows UUID Éú³ÉĞÂ ID
+// ç”¨ Windows UUID ç”Ÿæˆæ–° ID
 ObjectId ObjectId::create()
 {
     UUID u;
@@ -53,31 +53,31 @@ ObjectId ObjectId::create()
     return ObjectId(s);
 }
 
-// ÊÇ·ñÎª¿Õ
+// æ˜¯å¦ä¸ºç©º
 bool ObjectId::isNull() const
 {
     return m_s.empty();
 }
 
-// ×ªÎªÎÄ±¾
+// è½¬ä¸ºæ–‡æœ¬
 const std::string& ObjectId::toString() const
 {
     return m_s;
 }
 
-// ÏàµÈ
+// ç›¸ç­‰
 bool ObjectId::operator==(const ObjectId& o) const
 {
     return m_s == o.m_s;
 }
 
-// ²»µÈ
+// ä¸ç­‰
 bool ObjectId::operator!=(const ObjectId& o) const
 {
     return m_s != o.m_s;
 }
 
-// Ğ¡ÓÚ
+// å°äº
 bool ObjectId::operator<(const ObjectId& o) const
 {
     return m_s < o.m_s;

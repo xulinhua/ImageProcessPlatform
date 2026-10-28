@@ -1,6 +1,6 @@
 /**
  * @file CvEnhance.cpp
- * @brief CvEnhanceÊµÏÖ
+ * @brief CvEnhanceå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -10,13 +10,13 @@
 #include "TextEncoding.h"
 #include "CvAlgoHelpers.h"
 namespace Vision {
-// µÚi²½²ÎÊı¼ü
+// ç¬¬iæ­¥å‚æ•°é”®
 static std::string stepKey(int i, const char* suffix)
 {
     return std::string("pl_") + std::to_string(static_cast<long long>(i)) + "_" + suffix;
 }
 
-// ÔöÇ¿Ëã×Ó
+// å¢å¼ºç®—å­
 enum class EnhanceOp {
     EquHisto = 0,
     Emphasize,
@@ -25,7 +25,7 @@ enum class EnhanceOp {
     Invert
 };
 
-// ÔöÇ¿¹ÜÏßÒ»²½
+// å¢å¼ºç®¡çº¿ä¸€æ­¥
 struct EnhanceStep {
     EnhanceOp op;
     int maskW;
@@ -43,7 +43,7 @@ struct EnhanceStep {
     {}
 };
 
-// ÕûĞÍ×ªÔöÇ¿Ëã×Ó
+// æ•´å‹è½¬å¢å¼ºç®—å­
 static EnhanceOp enhanceOpFromInt(int v)
 {
     switch (v) {
@@ -56,7 +56,7 @@ static EnhanceOp enhanceOpFromInt(int v)
     }
 }
 
-// ´Ó²ÎÊı½â¿ªÔöÇ¿²½Öè
+// ä»å‚æ•°è§£å¼€å¢å¼ºæ­¥éª¤
 static std::vector<EnhanceStep> enhanceStepsFromParams(const ParamMap& p)
 {
     std::vector<EnhanceStep> out;
@@ -78,7 +78,7 @@ static std::vector<EnhanceStep> enhanceStepsFromParams(const ParamMap& p)
     return out;
 }
 
-// ÔöÇ¿Ò»²½
+// å¢å¼ºä¸€æ­¥
 static bool applyEnhanceOp(cv::Mat* img, const EnhanceStep& st, std::string* err)
 {
     switch (st.op) {
@@ -147,17 +147,17 @@ static bool applyEnhanceOp(cv::Mat* img, const EnhanceStep& st, std::string* err
         return true;
     default:
         if (err) {
-            *err = Vision::acpToUtf8("Î´ÖªÔöÇ¿Ëã×Ó");
+            *err = "æœªçŸ¥å¢å¼ºç®—å­";
         }
         return false;
     }
 }
 
-// ÔöÇ¿¹ÜÏß
+// å¢å¼ºç®¡çº¿
 namespace {
 const char kVer_CvEnhance[] = "1.0.0.0";
 const Vision::VerNoteRaw kNotes_CvEnhance[] = {
-    { "1.0.0.0", "Ê×°æ" },
+    { "1.0.0.0", "é¦–ç‰ˆ" },
 };
 }
 
@@ -193,7 +193,7 @@ AlgToolOut CvEnhance::run(const AlgToolIn& in)
                 return algorToolFail(err);
             }
         }
-        return finishPreprocessWork(in, gray, work, roiMask, Vision::acpToUtf8("Í¼ÏñÔöÇ¿Íê³É"));
+        return finishPreprocessWork(in, gray, work, roiMask, "å›¾åƒå¢å¼ºå®Œæˆ");
     } catch (const cv::Exception& e) {
         return algorToolFail(e.what() ? std::string(e.what()) : std::string("OpenCV error"));
     }

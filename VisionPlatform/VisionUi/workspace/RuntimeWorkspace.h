@@ -1,6 +1,6 @@
 /**
  * @file RuntimeWorkspace.h
- * @brief RuntimeWorkspaceÍ·ÎÄ¼ş
+ * @brief RuntimeWorkspaceå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -33,95 +33,95 @@ class StationRuntimePanel;
 
 /**
  * @class RuntimeWorkspace
- * @brief ÔËĞĞ¿Ç£ºÈ«¾Ö¿ªÊ¼/Í£Ö¹£¬°´·½°¸²¼¾ÖÇ¶Ì×¸÷¹¤Õ¾Ãæ°å£¨·ÖÒ³Ç©»òÆ´Ìù£©
+ * @brief è¿è¡Œå£³ï¼šå…¨å±€å¼€å§‹/åœæ­¢ï¼ŒæŒ‰æ–¹æ¡ˆå¸ƒå±€åµŒå¥—å„å·¥ç«™é¢æ¿ï¼ˆåˆ†é¡µç­¾æˆ–æ‹¼è´´ï¼‰
  */
 class VISION_UI_API RuntimeWorkspace : public QWidget {
     Q_OBJECT
 public:
-    /** @brief ¿ÕÔËĞĞÒ³ */
+    /** @brief ç©ºè¿è¡Œé¡µ */
     explicit RuntimeWorkspace(QWidget* parent = 0);
 
-    /** @brief µ±Ç°½¹µã/Ê×¸ö¹¤Õ¾Ãæ°åµÄÍ¼Ïñ´°£¨µ÷ÊÔÈë¿Ú£© */
+    /** @brief å½“å‰ç„¦ç‚¹/é¦–ä¸ªå·¥ç«™é¢æ¿çš„å›¾åƒçª—ï¼ˆè°ƒè¯•å…¥å£ï¼‰ */
     HsCtrl::HsImageWindow* imageWindow() const;
-    /** @brief °´·½°¸ÖØ½¨¸÷¹¤Õ¾Ãæ°åÓë¿Ç²¼¾Ö£»¿ÉÑ¡°ó¶¨Éè¼ÆÌ¬Ô¤ÀÀÓÃµÄµ¥Õ¾ÊµÀı */
+    /** @brief æŒ‰æ–¹æ¡ˆé‡å»ºå„å·¥ç«™é¢æ¿ä¸å£³å¸ƒå±€ï¼›å¯é€‰ç»‘å®šè®¾è®¡æ€é¢„è§ˆç”¨çš„å•ç«™å®ä¾‹ */
     void bindContext(Solution* sol, StationCfg* previewSt, Station* previewStation);
-    /** @brief °ÑÔËĞĞÊµÀı¹Òµ½¶ÔÓ¦¹¤Õ¾Ãæ°å£¨ÒÑÓĞÃæ°åÊ±Ö»»»Ö¸Õë£¬²»Çå»­Ãæ£© */
+    /** @brief æŠŠè¿è¡Œå®ä¾‹æŒ‚åˆ°å¯¹åº”å·¥ç«™é¢æ¿ï¼ˆå·²æœ‰é¢æ¿æ—¶åªæ¢æŒ‡é’ˆï¼Œä¸æ¸…ç”»é¢ï¼‰ */
     void setStationInstance(const ObjectId& stationId, Station* station);
-    /** @brief È«²¿Ãæ°åĞ¶ÏÂÔËĞĞÊµÀıÖ¸Õë£¨Í£Ö¹ºóµ÷ÓÃ£¬±£Áô»­ÃæÓë²úÁ¿£© */
+    /** @brief å…¨éƒ¨é¢æ¿å¸ä¸‹è¿è¡Œå®ä¾‹æŒ‡é’ˆï¼ˆåœæ­¢åè°ƒç”¨ï¼Œä¿ç•™ç”»é¢ä¸äº§é‡ï¼‰ */
     void detachAllStations();
-    /** @brief ÈôËŞÖ÷ÉĞÎŞÃæ°åÔò°´·½°¸½¨Ò»´Î£»ÒÑÓĞÔòÖ»¸üĞÂ·½°¸Ö¸ÕëÓëºá·ù */
+    /** @brief è‹¥å®¿ä¸»å°šæ— é¢æ¿åˆ™æŒ‰æ–¹æ¡ˆå»ºä¸€æ¬¡ï¼›å·²æœ‰åˆ™åªæ›´æ–°æ–¹æ¡ˆæŒ‡é’ˆä¸æ¨ªå¹… */
     void ensureHost(Solution* sol);
-    /** @brief °´ id È¡Ãæ°å£»ÎŞÔò 0 */
+    /** @brief æŒ‰ id å–é¢æ¿ï¼›æ— åˆ™ 0 */
     StationRuntimePanel* panelFor(const ObjectId& stationId) const;
-    /** @brief È«²¿Ãæ°å */
+    /** @brief å…¨éƒ¨é¢æ¿ */
     QList<StationRuntimePanel*> panels() const;
-    /** @brief ¹¤Õ¾Ãû£¨±£Áô¼æÈİ£»¶àÕ¾Ê±¸÷Ãæ°å×Ô´øÃû£© */
+    /** @brief å·¥ç«™åï¼ˆä¿ç•™å…¼å®¹ï¼›å¤šç«™æ—¶å„é¢æ¿è‡ªå¸¦åï¼‰ */
     void setStationName(const QString& name);
-    /** @brief ·½°¸Ãû */
+    /** @brief æ–¹æ¡ˆå */
     void setSolutionName(const QString& name);
-    /** @brief ¼æÈİ¾Éµ÷ÓÃ£ºĞ´Èëµ±Ç°½¹µãÃæ°å¼ÆÊı */
+    /** @brief å…¼å®¹æ—§è°ƒç”¨ï¼šå†™å…¥å½“å‰ç„¦ç‚¹é¢æ¿è®¡æ•° */
     void setCounts(int total, int pass, int fail, int cycleMs);
-    /** @brief ¼æÈİ£º½¹µãÃæ°å×î½üÅĞ¶¨ */
+    /** @brief å…¼å®¹ï¼šç„¦ç‚¹é¢æ¿æœ€è¿‘åˆ¤å®š */
     void setLastOk(bool ok);
-    /** @brief È«²¿Ãæ°å Live Ö¸Ê¾ */
+    /** @brief å…¨éƒ¨é¢æ¿ Live æŒ‡ç¤º */
     void setLive(bool live);
-    /** @brief ¼æÈİ£º½¹µãÃæ°å×·¼ÓÀúÊ· */
+    /** @brief å…¼å®¹ï¼šç„¦ç‚¹é¢æ¿è¿½åŠ å†å² */
     void addResult(bool ok, const QString& line, const QImage& thumb);
-    /** @brief Çå¿ÕÈ«²¿¹¤Õ¾ÀúÊ·Óë¼ÆÊı */
+    /** @brief æ¸…ç©ºå…¨éƒ¨å·¥ç«™å†å²ä¸è®¡æ•° */
     void resetHistory();
-    /** @brief ¼æÈİ£º½¹µãÃæ°åË¢Í¼ */
+    /** @brief å…¼å®¹ï¼šç„¦ç‚¹é¢æ¿åˆ·å›¾ */
     void setRunImages(const HsCommData::HsImage& source,
                       const HsCommData::HsImage& result,
                       const QVector<HsCommData::Graphic>& overlay);
-    /** @brief °´È¨ÏŞÏÔÒş¿ªÊ¼¡¢Í£Ö¹¡¢ÇåÁã¡¢ÇĞ·½°¸ */
+    /** @brief æŒ‰æƒé™æ˜¾éšå¼€å§‹ã€åœæ­¢ã€æ¸…é›¶ã€åˆ‡æ–¹æ¡ˆ */
     void setControlPerms(bool canStartStop, bool canReset, bool canSwitch);
-    /** @brief »­ÃæÅäÖÃ°´Å¥ÊÇ·ñ¿Éµã */
+    /** @brief ç”»é¢é…ç½®æŒ‰é’®æ˜¯å¦å¯ç‚¹ */
     void setConfigureEnabled(bool on);
     /**
-     * @brief ¿ªÊ¼°´Å¥ËæÑ­»·×´Ì¬±äÉ«
-     * @param running true=ÔËĞĞÖĞÂÌÉ«£»false=Î´ÔËĞĞÆÕÍ¨µ×
+     * @brief å¼€å§‹æŒ‰é’®éšå¾ªç¯çŠ¶æ€å˜è‰²
+     * @param running true=è¿è¡Œä¸­ç»¿è‰²ï¼›false=æœªè¿è¡Œæ™®é€šåº•
      */
     void setLoopRunning(bool running);
-    /** @brief ÓïÑÔÈÈÇĞ»»ºóË¢ĞÂ¾²Ì¬ÎÄ°¸ */
+    /** @brief è¯­è¨€çƒ­åˆ‡æ¢ååˆ·æ–°é™æ€æ–‡æ¡ˆ */
     void retranslateUi();
 
 signals:
-    /** @brief ¿ªÊ¼Ñ­»· */
+    /** @brief å¼€å§‹å¾ªç¯ */
     void startRequested();
-    /** @brief ÊÖ¶¯²âÊÔ£¨µÈ´¥·¢Ä£Ê½ÏÂÅÜÒ»ÂÖ£© */
+    /** @brief æ‰‹åŠ¨æµ‹è¯•ï¼ˆç­‰è§¦å‘æ¨¡å¼ä¸‹è·‘ä¸€è½®ï¼‰ */
     void softTriggerRequested();
-    /** @brief Í£Ö¹Ñ­»· */
+    /** @brief åœæ­¢å¾ªç¯ */
     void stopRequested();
-    /** @brief ÇåÁã²úÁ¿ */
+    /** @brief æ¸…é›¶äº§é‡ */
     void resetRequested();
-    /** @brief ÔËĞĞÌ¬ÇĞ·½°¸ */
+    /** @brief è¿è¡Œæ€åˆ‡æ–¹æ¡ˆ */
     void switchSolutionRequested();
-    /** @brief ´ò¿ª»­ÃæÅäÖÃ */
+    /** @brief æ‰“å¼€ç”»é¢é…ç½® */
     void configureViewRequested();
 
 private:
-    /** @brief °´ Tabs/Tiles ÖØ½¨¸÷¹¤Õ¾Ãæ°åËŞÖ÷ */
+    /** @brief æŒ‰ Tabs/Tiles é‡å»ºå„å·¥ç«™é¢æ¿å®¿ä¸» */
     void rebuildHost();
-    /** @brief µ±Ç°½¹µãÃæ°å£¨Ò³Ç©µ±Ç°Ò³»òµÚÒ»¿é£© */
+    /** @brief å½“å‰ç„¦ç‚¹é¢æ¿ï¼ˆé¡µç­¾å½“å‰é¡µæˆ–ç¬¬ä¸€å—ï¼‰ */
     StationRuntimePanel* activePanel() const;
 
-    Solution* m_sol;                              ///< ·½°¸£¨²»ÓµÓĞ£©
-    StationCfg* m_previewSt;                   ///< Éè¼ÆÔ¤ÀÀ¹¤Õ¾ÅäÖÃ
-    Station* m_previewStation;                    ///< Éè¼ÆÔ¤ÀÀÔËĞĞÊµÀı
-    QWidget* m_side;                              ///< ×ó²à¿ªÊ¼Í£Ö¹ÁĞ
-    QWidget* m_host;                              ///< ÓÒ²àÃæ°åËŞÖ÷
-    QVBoxLayout* m_hostLay;                       ///< ËŞÖ÷²¼¾Ö
-    QTabWidget* m_tabs;                           ///< ·ÖÒ³Ç©Ä£Ê½
-    QWidget* m_tileHost;                          ///< Æ´ÌùÄ£Ê½ÈİÆ÷
-    QGridLayout* m_tileLay;                       ///< Æ´ÌùÍø¸ñ
-    QPushButton* m_btnStart;                      ///< ¿ªÊ¼
-    QPushButton* m_btnTrigger;                    ///< ÊÖ¶¯²âÊÔ
-    QPushButton* m_btnStop;                       ///< Í£Ö¹
-    QPushButton* m_btnReset;                      ///< ÇåÁã
-    QPushButton* m_btnSwitch;                     ///< ÇĞ·½°¸
-    QPushButton* m_btnLayout;                     ///< »­ÃæÅäÖÃ
-    QLabel* m_solBanner;                          ///< ·½°¸Ãû
-    QMap<QString, StationRuntimePanel*> m_panels; ///< stationId ¡ú Ãæ°å
+    Solution* m_sol;                              ///< æ–¹æ¡ˆï¼ˆä¸æ‹¥æœ‰ï¼‰
+    StationCfg* m_previewSt;                   ///< è®¾è®¡é¢„è§ˆå·¥ç«™é…ç½®
+    Station* m_previewStation;                    ///< è®¾è®¡é¢„è§ˆè¿è¡Œå®ä¾‹
+    QWidget* m_side;                              ///< å·¦ä¾§å¼€å§‹åœæ­¢åˆ—
+    QWidget* m_host;                              ///< å³ä¾§é¢æ¿å®¿ä¸»
+    QVBoxLayout* m_hostLay;                       ///< å®¿ä¸»å¸ƒå±€
+    QTabWidget* m_tabs;                           ///< åˆ†é¡µç­¾æ¨¡å¼
+    QWidget* m_tileHost;                          ///< æ‹¼è´´æ¨¡å¼å®¹å™¨
+    QGridLayout* m_tileLay;                       ///< æ‹¼è´´ç½‘æ ¼
+    QPushButton* m_btnStart;                      ///< å¼€å§‹
+    QPushButton* m_btnTrigger;                    ///< æ‰‹åŠ¨æµ‹è¯•
+    QPushButton* m_btnStop;                       ///< åœæ­¢
+    QPushButton* m_btnReset;                      ///< æ¸…é›¶
+    QPushButton* m_btnSwitch;                     ///< åˆ‡æ–¹æ¡ˆ
+    QPushButton* m_btnLayout;                     ///< ç”»é¢é…ç½®
+    QLabel* m_solBanner;                          ///< æ–¹æ¡ˆå
+    QMap<QString, StationRuntimePanel*> m_panels; ///< stationId â†’ é¢æ¿
 };
 
 }

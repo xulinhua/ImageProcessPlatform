@@ -1,6 +1,6 @@
 /**
  * @file UiText.cpp
- * @brief UiTextÊµÏÖ
+ * @brief UiTextå®žçŽ°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -9,7 +9,7 @@
 #include "UiText.h"
 
 
-// °´ÒÑ°ó¶¨µÄ vpTr ¼üË¢ÐÂ¿Ø¼þ/¶¯×÷ÎÄ°¸
+// æŒ‰å·²ç»‘å®šçš„ vpTr é”®åˆ·æ–°æŽ§ä»¶/åŠ¨ä½œæ–‡æ¡ˆ
 void applyTrKey(QObject* o)
 {
     if (!o) {
@@ -42,7 +42,7 @@ void applyTrKey(QObject* o)
     }
 }
 
-// µÝ¹éË¢ÐÂ±¾¶ÔÏóÊ÷ÖÐ°ó¶¨ÁË vpTr µÄÎÄ°¸
+// é€’å½’åˆ·æ–°æœ¬å¯¹è±¡æ ‘ä¸­ç»‘å®šäº† vpTr çš„æ–‡æ¡ˆ
 void retranslateBound(QObject* root)
 {
     if (!root) {

@@ -1,6 +1,6 @@
 /**
  * @file FileDocument.h
- * @brief FileDocumentÍ·ÎÄ¼ş
+ * @brief FileDocumentå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -17,93 +17,93 @@ namespace Vision {
 
 /**
  * @class ITableWriter
- * @brief ±í¸ñĞ´³ö³éÏó£º±íÍ·¡¢ĞĞ¡¢±£´æµ½ÎÄ¼ş
+ * @brief è¡¨æ ¼å†™å‡ºæŠ½è±¡ï¼šè¡¨å¤´ã€è¡Œã€ä¿å­˜åˆ°æ–‡ä»¶
  */
 class ITableWriter {
 public:
     virtual ~ITableWriter() {}
-    /** @brief ÉèÖÃÁĞÃû */
+    /** @brief è®¾ç½®åˆ—å */
     virtual void setHeaders(const std::vector<std::string>& headers) = 0;
-    /** @brief ×·¼ÓÒ»ĞĞ */
+    /** @brief è¿½åŠ ä¸€è¡Œ */
     virtual void addRow(const std::vector<std::string>& cells) = 0;
-    /** @brief Ğ´µ½Â·¾¶£»Ê§°ÜÊ±ÌîĞ´ error */
+    /** @brief å†™åˆ°è·¯å¾„ï¼›å¤±è´¥æ—¶å¡«å†™ error */
     virtual bool save(const std::string& path, std::string* error) = 0;
 };
 
 /**
  * @class TxtDocument
- * @brief ÖÆ±í·û·Ö¸ôµÄÎÄ±¾±í£¬¿É´ø UTF-8 BOM
+ * @brief åˆ¶è¡¨ç¬¦åˆ†éš”çš„æ–‡æœ¬è¡¨ï¼Œå¯å¸¦ UTF-8 BOM
  */
 class VISION_FILE_API TxtDocument : public ITableWriter {
 public:
-    /** @brief ¼ÇÏÂµ¼³öÁĞÃû */
+    /** @brief è®°ä¸‹å¯¼å‡ºåˆ—å */
     void setHeaders(const std::vector<std::string>& headers);
-    /** @brief »º´æÒ»ĞĞµ¥Ôª¸ñ */
+    /** @brief ç¼“å­˜ä¸€è¡Œå•å…ƒæ ¼ */
     void addRow(const std::vector<std::string>& cells);
-    /** @brief °´ÖÆ±í·ûĞ´³ö£¬²¢´ø UTF-8 BOM */
+    /** @brief æŒ‰åˆ¶è¡¨ç¬¦å†™å‡ºï¼Œå¹¶å¸¦ UTF-8 BOM */
     bool save(const std::string& path, std::string* error);
-    /** @brief ¸²¸ÇĞ´³ö UTF-8 ÎÄ±¾ */
+    /** @brief è¦†ç›–å†™å‡º UTF-8 æ–‡æœ¬ */
     static bool writeText(const std::string& path, const std::string& utf8, bool withBom, std::string* error);
-    /** @brief ÔÚÎÄ¼şÄ©Î²×·¼Ó UTF-8 ÎÄ±¾ */
+    /** @brief åœ¨æ–‡ä»¶æœ«å°¾è¿½åŠ  UTF-8 æ–‡æœ¬ */
     static bool appendText(const std::string& path, const std::string& utf8, std::string* error);
 
 private:
-    std::vector<std::string> m_headers; ///< ±íÍ·
-    std::vector<std::vector<std::string> > m_rows; ///< Êı¾İĞĞ
+    std::vector<std::string> m_headers; ///< è¡¨å¤´
+    std::vector<std::vector<std::string> > m_rows; ///< æ•°æ®è¡Œ
 };
 
 /**
  * @class CsvDocument
- * @brief ¶ººÅ·Ö¸ô±í
+ * @brief é€—å·åˆ†éš”è¡¨
  */
 class VISION_FILE_API CsvDocument : public ITableWriter {
 public:
-    /** @brief ¼ÇÏÂµ¼³öÁĞÃû */
+    /** @brief è®°ä¸‹å¯¼å‡ºåˆ—å */
     void setHeaders(const std::vector<std::string>& headers);
-    /** @brief »º´æÒ»ĞĞµ¥Ôª¸ñ */
+    /** @brief ç¼“å­˜ä¸€è¡Œå•å…ƒæ ¼ */
     void addRow(const std::vector<std::string>& cells);
-    /** @brief °´¶ººÅĞ´³ö CSV */
+    /** @brief æŒ‰é€—å·å†™å‡º CSV */
     bool save(const std::string& path, std::string* error);
-    /** @brief º¬¶ººÅ¡¢ÒıºÅ»ò»»ĞĞÊ±°´ CSV ¹æÔò¼ÓÒıºÅ */
+    /** @brief å«é€—å·ã€å¼•å·æˆ–æ¢è¡Œæ—¶æŒ‰ CSV è§„åˆ™åŠ å¼•å· */
     static std::string escapeCell(const std::string& s);
 
 private:
-    std::vector<std::string> m_headers; ///< ±íÍ·
-    std::vector<std::vector<std::string> > m_rows; ///< Êı¾İĞĞ
+    std::vector<std::string> m_headers; ///< è¡¨å¤´
+    std::vector<std::vector<std::string> > m_rows; ///< æ•°æ®è¡Œ
 };
 
 /**
  * @class XlsxDocument
- * @brief ×îĞ¡ xlsx£ºÎŞÑ¹Ëõ°ü¼Ó¹¤×÷±í XML
+ * @brief æœ€å° xlsxï¼šæ— å‹ç¼©åŒ…åŠ å·¥ä½œè¡¨ XML
  */
 class VISION_FILE_API XlsxDocument : public ITableWriter {
 public:
-    /** @brief ¼ÇÏÂµ¼³öÁĞÃû */
+    /** @brief è®°ä¸‹å¯¼å‡ºåˆ—å */
     void setHeaders(const std::vector<std::string>& headers);
-    /** @brief »º´æÒ»ĞĞµ¥Ôª¸ñ */
+    /** @brief ç¼“å­˜ä¸€è¡Œå•å…ƒæ ¼ */
     void addRow(const std::vector<std::string>& cells);
-    /** @brief ´ò³É xlsx ÎÄ¼ş */
+    /** @brief æ‰“æˆ xlsx æ–‡ä»¶ */
     bool save(const std::string& path, std::string* error);
 
 private:
-    std::vector<std::string> m_headers; ///< ±íÍ·
-    std::vector<std::vector<std::string> > m_rows; ///< Êı¾İĞĞ
+    std::vector<std::string> m_headers; ///< è¡¨å¤´
+    std::vector<std::vector<std::string> > m_rows; ///< æ•°æ®è¡Œ
 };
 
 /**
  * @class FileUtil
- * @brief Ä¿Â¼¡¢Ô­×ÓĞ´¡¢°´ÌìÇåÀí¡£²»ÒÀÀµ½çÃæ
+ * @brief ç›®å½•ã€åŸå­å†™ã€æŒ‰å¤©æ¸…ç†ã€‚ä¸ä¾èµ–ç•Œé¢
  */
 class VISION_FILE_API FileUtil {
 public:
-    /** @brief Ä¿Â¼²»´æÔÚÔòÖğ¼¶´´½¨ */
+    /** @brief ç›®å½•ä¸å­˜åœ¨åˆ™é€çº§åˆ›å»º */
     static bool ensureDir(const std::string& dir, std::string* error);
-    /** @brief ÏÈĞ´ÁÙÊ±ÎÄ¼şÔÙÌæ»»£¬±ÜÃâ°ë½ØÄÚÈİ */
+    /** @brief å…ˆå†™ä¸´æ—¶æ–‡ä»¶å†æ›¿æ¢ï¼Œé¿å…åŠæˆªå†…å®¹ */
     static bool writeAtomic(const std::string& path, const std::string& bytes, std::string* error);
     /**
-     * @brief °´×îºóĞ´ÈëÊ±¼äÉ¾µô¹ıÆÚÎÄ¼ş
-     * @param pattern ÎÄ¼şÃûÍ¨Åä£»¿ÕÔò *.*
-     * @return É¾³ıµÄÎÄ¼ş¸öÊı
+     * @brief æŒ‰æœ€åå†™å…¥æ—¶é—´åˆ æ‰è¿‡æœŸæ–‡ä»¶
+     * @param pattern æ–‡ä»¶åé€šé…ï¼›ç©ºåˆ™ *.*
+     * @return åˆ é™¤çš„æ–‡ä»¶ä¸ªæ•°
      */
     static int deleteOlderThanDays(const std::string& dir, const std::string& pattern, int days);
 };

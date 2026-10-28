@@ -1,6 +1,6 @@
 /**
  * @file CvFindCircle.cpp
- * @brief CvFindCircleÊµÏÖ
+ * @brief CvFindCircleå®žçŽ°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -19,11 +19,11 @@
 
 namespace Vision {
 
-// ÕÒÔ²£ºÂÖÀªÔ²¶ÈÉ¸Ñ¡
+// æ‰¾åœ†ï¼šè½®å»“åœ†åº¦ç­›é€‰
 namespace {
 const char kVer_CvFindCircle[] = "1.0.0.0";
 const Vision::VerNoteRaw kNotes_CvFindCircle[] = {
-    { "1.0.0.0", "Ê×°æ" },
+    { "1.0.0.0", "é¦–ç‰ˆ" },
 };
 }
 
@@ -90,7 +90,7 @@ AlgToolOut CvFindCircle::run(const AlgToolIn& in)
             if (peri < 1e-6) {
                 continue;
             }
-            // Ô²¶È¹ýµÍÔòÌø¹ý
+            // åœ†åº¦è¿‡ä½Žåˆ™è·³è¿‡
             const double circ = 4.0 * M_PI * area / (peri * peri);
             if (circ < 0.25) {
                 continue;
@@ -103,9 +103,9 @@ AlgToolOut CvFindCircle::run(const AlgToolIn& in)
             }
         }
         AlgToolOut out;
-        out.image.image = in.image.image;
+        out.image.image = inputImage(in);
         if (!found) {
-            out.message = Vision::acpToUtf8("Î´ÕÒµ½Ô²");
+            out.message = "æœªæ‰¾åˆ°åœ†";
             return out;
         }
         out.ok = true;
@@ -117,7 +117,7 @@ AlgToolOut CvFindCircle::run(const AlgToolIn& in)
         paramSet(&out.values, ValueKey::Angle, 0.0);
         paramSet(&out.values, ValueKey::Score, 1.0);
         out.objects.push_back(circleObject(bestCx, bestCy, bestR));
-        out.message = Vision::acpToUtf8("ÕÒÔ²Íê³É");
+        out.message = "æ‰¾åœ†å®Œæˆ";
         return out;
     } catch (const cv::Exception& e) {
         return algorToolFail(e.what() ? std::string(e.what()) : std::string("OpenCV error"));

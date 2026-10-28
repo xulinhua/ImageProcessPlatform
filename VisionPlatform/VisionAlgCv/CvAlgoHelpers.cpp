@@ -1,6 +1,6 @@
 /**
  * @file CvAlgoHelpers.cpp
- * @brief CvAlgoHelpersÊµÏÖ
+ * @brief CvAlgoHelperså®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -18,16 +18,16 @@
 
 namespace Vision {
 
-// ´ÓÊäÈëÈ¡»Ò¶ÈÓë³ß´ç
+// ä»è¾“å…¥å–ç°åº¦ä¸å°ºå¯¸
 bool loadGrayFromAlgIn(const AlgToolIn& in, cv::Mat*& gray, int* w, int* h, std::string* err)
 {
-    if (in.image.image.isNull()) {
+    if (inputImage(in).isNull()) {
         if (err) {
-            *err = Vision::acpToUtf8("ÎŞÊäÈëÍ¼");
+            *err = "æ— è¾“å…¥å›¾";
         }
         return false;
     }
-    if (!hsImageToMatGray(in.image.image, gray, err)) {
+    if (!hsImageToMatGray(inputImage(in), gray, err)) {
         return false;
     }
     *w = gray->cols;
@@ -35,7 +35,7 @@ bool loadGrayFromAlgIn(const AlgToolIn& in, cv::Mat*& gray, int* w, int* h, std:
     return true;
 }
 
-// ±¾µØ ROI ÓëÉÏÓÎÇøÓò²¢¼¯¡£¿Õ ROI ÁĞ±í±íÊ¾ÎŞ±¾µØÔ¼Êø
+// æœ¬åœ° ROI ä¸ä¸Šæ¸¸åŒºåŸŸå¹¶é›†ã€‚ç©º ROI åˆ—è¡¨è¡¨ç¤ºæ— æœ¬åœ°çº¦æŸ
 cv::Mat searchDomainFromAlgIn(const std::vector<HsCommData::HsObject>& rois,
                                 const std::vector<HsCommData::HsObject>& regions,
                                 int imgW, int imgH)
@@ -56,7 +56,7 @@ cv::Mat searchDomainFromAlgIn(const std::vector<HsCommData::HsObject>& rois,
     return uni;
 }
 
-// Á¬Í¨ÓòÉ¸Ñ¡´ò°ü
+// è¿é€šåŸŸç­›é€‰æ‰“åŒ…
 AlgToolOut packConnectedBlobs(const cv::Mat& bin, const AlgToolIn& in,
                                 double minArea, double maxArea, double minCirc, double maxCirc,
                                 const std::string& okMsg)
@@ -97,9 +97,9 @@ AlgToolOut packConnectedBlobs(const cv::Mat& bin, const AlgToolIn& in,
         sumA += area;
     }
     AlgToolOut out;
-    out.image.image = in.image.image;
+    out.image.image = inputImage(in);
     if (count < 1) {
-        out.message = Vision::acpToUtf8("Î´ÕÒµ½Á¬Í¨Óò");
+        out.message = "æœªæ‰¾åˆ°è¿é€šåŸŸ";
         return out;
     }
     out.ok = true;
@@ -110,7 +110,7 @@ AlgToolOut packConnectedBlobs(const cv::Mat& bin, const AlgToolIn& in,
     return out;
 }
 
-// ROI ÄÚÔ¤´¦Àíµ×Í¼
+// ROI å†…é¢„å¤„ç†åº•å›¾
 bool preparePreprocessWork(const AlgToolIn& in, cv::Mat*& gray, cv::Mat*& work, cv::Mat*& roiMask, std::string* err)
 {
     int w = 0;
@@ -123,7 +123,7 @@ bool preparePreprocessWork(const AlgToolIn& in, cv::Mat*& gray, cv::Mat*& work, 
     return true;
 }
 
-// ½ö ROI Ğ´»Ø
+// ä»… ROI å†™å›
 AlgToolOut finishPreprocessWork(const AlgToolIn& in, const cv::Mat& gray, const cv::Mat& work,
                                   const cv::Mat& roiMask, const std::string& okMsg)
 {
@@ -132,7 +132,7 @@ AlgToolOut finishPreprocessWork(const AlgToolIn& in, const cv::Mat& gray, const 
     AlgToolOut out;
     std::string err;
     HsCommData::HsImage* pImage = &out.image.image;
-    if (!matToHsImage(merged, in.image.image.frameId, pImage, &err)) {
+    if (!matToHsImage(merged, inputImage(in).frameId, pImage, &err)) {
         return algorToolFail(err);
     }
     out.ok = true;
@@ -140,7 +140,7 @@ AlgToolOut finishPreprocessWork(const AlgToolIn& in, const cv::Mat& gray, const 
     return out;
 }
 
-// Í³Ò»Ê§°Ü°ü
+// ç»Ÿä¸€å¤±è´¥åŒ…
 AlgToolOut algorToolFail(const std::string& msg)
 {
     AlgToolOut o;

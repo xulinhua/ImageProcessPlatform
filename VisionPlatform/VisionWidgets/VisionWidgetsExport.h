@@ -1,6 +1,6 @@
 /**
  * @file VisionWidgetsExport.h
- * @brief VisionWidgetsExportͷ�ļ�
+ * @brief VisionWidgetsExport头文件
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.

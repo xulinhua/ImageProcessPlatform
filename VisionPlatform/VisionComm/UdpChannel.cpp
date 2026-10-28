@@ -1,6 +1,6 @@
 /**
  * @file UdpChannel.cpp
- * @brief UdpChannelÊµÏÖ
+ * @brief UdpChannelå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -13,7 +13,7 @@
 
 namespace Vision {
 
-// Ì×½Ó×ÖÖÃÎªÎ´´ò¿ª
+// å¥—æ¥å­—ç½®ä¸ºæœªæ‰“å¼€
 UdpChannel::UdpChannel()
     : m_sock(INVALID_SOCKET)
     , m_hasRemote(false)
@@ -21,25 +21,25 @@ UdpChannel::UdpChannel()
     std::memset(&m_remote, 0, sizeof(m_remote));
 }
 
-// Îö¹¹Ê±¹Ø±ÕÌ×½Ó×Ö
+// ææ„æ—¶å…³é—­å¥—æ¥å­—
 UdpChannel::~UdpChannel()
 {
     close();
 }
 
-// °ó¶¨±¾»ú¶Ë¿Ú£¬²¢¼ÇÏÂ²ÎÊıÀïµÄ¶Ô¶Ë
+// ç»‘å®šæœ¬æœºç«¯å£ï¼Œå¹¶è®°ä¸‹å‚æ•°é‡Œçš„å¯¹ç«¯
 bool UdpChannel::open(const ParamMap& params, std::string* err)
 {
     close();
     commNetEnsure();
     const int port = params.value("port").toInt(9000);
     if (port < 0 || port > 65535) {
-        setCommErr(err, Vision::acpToUtf8("¶Ë¿ÚÎŞĞ§"));
+        setCommErr(err, "ç«¯å£æ— æ•ˆ");
         return false;
     }
     m_sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
     if (m_sock == INVALID_SOCKET) {
-        setCommErr(err, Vision::acpToUtf8("´´½¨Ì×½Ó×ÖÊ§°Ü"));
+        setCommErr(err, "åˆ›å»ºå¥—æ¥å­—å¤±è´¥");
         return false;
     }
     sockaddr_in local;
@@ -48,7 +48,7 @@ bool UdpChannel::open(const ParamMap& params, std::string* err)
     local.sin_addr.s_addr = htonl(INADDR_ANY);
     local.sin_port = htons(static_cast<u_short>(port));
     if (bind(m_sock, reinterpret_cast<sockaddr*>(&local), sizeof(local)) != 0) {
-        setCommErr(err, Vision::acpToUtf8("¶Ë¿Ú°ó¶¨Ê§°Ü"));
+        setCommErr(err, "ç«¯å£ç»‘å®šå¤±è´¥");
         close();
         return false;
     }
@@ -69,7 +69,7 @@ bool UdpChannel::open(const ParamMap& params, std::string* err)
     return true;
 }
 
-// ¹Ø±ÕÌ×½Ó×Ö²¢Çå¶Ô¶Ë
+// å…³é—­å¥—æ¥å­—å¹¶æ¸…å¯¹ç«¯
 void UdpChannel::close()
 {
     if (m_sock != INVALID_SOCKET) {
@@ -80,13 +80,13 @@ void UdpChannel::close()
     m_remoteText.clear();
 }
 
-// Ì×½Ó×ÖÊÇ·ñÓĞĞ§
+// å¥—æ¥å­—æ˜¯å¦æœ‰æ•ˆ
 bool UdpChannel::isOpen() const
 {
     return m_sock != INVALID_SOCKET;
 }
 
-// ÒÑÅäÖÃ¶Ô¶ËÊ±·µ»ØÆäµØÖ·
+// å·²é…ç½®å¯¹ç«¯æ—¶è¿”å›å…¶åœ°å€
 std::vector<CommPeer> UdpChannel::peers() const
 {
     std::vector<CommPeer> list;
@@ -98,15 +98,15 @@ std::vector<CommPeer> UdpChannel::peers() const
     return list;
 }
 
-// ·¢Íù´ò¿ªÊ±¼ÇÏÂµÄ¶Ô¶Ë
+// å‘å¾€æ‰“å¼€æ—¶è®°ä¸‹çš„å¯¹ç«¯
 bool UdpChannel::write(const std::string&, const CommBytes& data, int timeoutMs, std::string* err)
 {
     if (!isOpen()) {
-        setCommErr(err, Vision::acpToUtf8("Í¨µÀÎ´´ò¿ª"));
+        setCommErr(err, "é€šé“æœªæ‰“å¼€");
         return false;
     }
     if (!m_hasRemote) {
-        setCommErr(err, Vision::acpToUtf8("Î´ÌîĞ´¶Ô¶ËµØÖ·"));
+        setCommErr(err, "æœªå¡«å†™å¯¹ç«¯åœ°å€");
         return false;
     }
     if (data.empty()) {
@@ -114,24 +114,24 @@ bool UdpChannel::write(const std::string&, const CommBytes& data, int timeoutMs,
     }
     const int w = commWaitSocket(m_sock, false, timeoutMs <= 0 ? 1000 : timeoutMs);
     if (w <= 0) {
-        setCommErr(err, w == 0 ? "Ğ´³¬Ê±" : "Ğ´Ê§°Ü");
+        setCommErr(err, w == 0 ? "å†™è¶…æ—¶" : "å†™å¤±è´¥");
         return false;
     }
     const int n = sendto(m_sock, reinterpret_cast<const char*>(&data[0]), static_cast<int>(data.size()), 0,
                           reinterpret_cast<sockaddr*>(&m_remote), sizeof(m_remote));
     if (n != static_cast<int>(data.size())) {
-        setCommErr(err, Vision::acpToUtf8("Ğ´Èë²»ÍêÕû"));
+        setCommErr(err, "å†™å…¥ä¸å®Œæ•´");
         return false;
     }
     return true;
 }
 
-// ÊÕÒ»°ü£»À´Ô´µØÖ·¼Ç³ÉÏÂÒ»´Î·¢ËÍÄ¿±ê
+// æ”¶ä¸€åŒ…ï¼›æ¥æºåœ°å€è®°æˆä¸‹ä¸€æ¬¡å‘é€ç›®æ ‡
 CommBytes UdpChannel::read(const std::string&, int maxBytes, int timeoutMs, std::string* err)
 {
     CommBytes out;
     if (!isOpen()) {
-        setCommErr(err, Vision::acpToUtf8("Í¨µÀÎ´´ò¿ª"));
+        setCommErr(err, "é€šé“æœªæ‰“å¼€");
         return out;
     }
     if (maxBytes <= 0) {
@@ -140,12 +140,12 @@ CommBytes UdpChannel::read(const std::string&, int maxBytes, int timeoutMs, std:
     const int w = commWaitSocket(m_sock, true, timeoutMs);
     if (w == 0) {
         if (timeoutMs > 0) {
-            setCommErr(err, Vision::acpToUtf8("¶Á³¬Ê±"));
+            setCommErr(err, "è¯»è¶…æ—¶");
         }
         return out;
     }
     if (w < 0) {
-        setCommErr(err, Vision::acpToUtf8("¶ÁÊ§°Ü"));
+        setCommErr(err, "è¯»å¤±è´¥");
         return out;
     }
     out.resize(static_cast<size_t>(maxBytes));
@@ -155,7 +155,7 @@ CommBytes UdpChannel::read(const std::string&, int maxBytes, int timeoutMs, std:
                             reinterpret_cast<sockaddr*>(&from), &fromLen);
     if (n <= 0) {
         out.clear();
-        setCommErr(err, Vision::acpToUtf8("¶ÁÊ§°Ü"));
+        setCommErr(err, "è¯»å¤±è´¥");
         return out;
     }
     out.resize(static_cast<size_t>(n));
@@ -165,7 +165,7 @@ CommBytes UdpChannel::read(const std::string&, int maxBytes, int timeoutMs, std:
     return out;
 }
 
-// ÓÃÁã³¬Ê±°Ñ½ÓÊÕ¶ÓÁĞ¶Á¿Õ
+// ç”¨é›¶è¶…æ—¶æŠŠæ¥æ”¶é˜Ÿåˆ—è¯»ç©º
 void UdpChannel::drain(const std::string&)
 {
     if (!isOpen()) {
@@ -181,13 +181,13 @@ void UdpChannel::drain(const std::string&)
     }
 }
 
-// UDP ²»Çø·Ö½ÓÈë¶Ë£¬Ê¼ÖÕ·µ»Ø¿Õ
+// UDP ä¸åŒºåˆ†æ¥å…¥ç«¯ï¼Œå§‹ç»ˆè¿”å›ç©º
 std::string UdpChannel::waitIncoming(int)
 {
     return std::string();
 }
 
-// ´«ÊäÀàĞÍ
+// ä¼ è¾“ç±»å‹
 CommTransport UdpChannel::transport() const
 {
     return TransportUdp;

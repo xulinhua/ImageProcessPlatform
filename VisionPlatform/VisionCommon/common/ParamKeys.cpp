@@ -1,6 +1,6 @@
 /**
  * @file ParamKeys.cpp
- * @brief ParamKeysÊµÏÖ
+ * @brief ParamKeyså®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -11,7 +11,7 @@
 
 namespace Vision {
 
-// ValueKey ĞòÁĞ»¯Ãû
+// ValueKey åºåˆ—åŒ–å
 const char* valueKeyName(ValueKey k)
 {
     switch (k) {
@@ -28,7 +28,7 @@ const char* valueKeyName(ValueKey k)
     }
 }
 
-// ´ÓĞòÁĞ»¯Ãû½âÎö ValueKey
+// ä»åºåˆ—åŒ–åè§£æ ValueKey
 bool valueKeyFromName(const std::string& s, ValueKey* out)
 {
     if (!out) {
@@ -47,7 +47,7 @@ bool valueKeyFromName(const std::string& s, ValueKey* out)
     return false;
 }
 
-// RuntimeKey ĞòÁĞ»¯Ãû
+// RuntimeKey åºåˆ—åŒ–å
 const char* runtimeKeyName(RuntimeKey k)
 {
     switch (k) {
@@ -63,7 +63,7 @@ const char* runtimeKeyName(RuntimeKey k)
     }
 }
 
-// ´ÓĞòÁĞ»¯Ãû½âÎö RuntimeKey
+// ä»åºåˆ—åŒ–åè§£æ RuntimeKey
 bool runtimeKeyFromName(const std::string& s, RuntimeKey* out)
 {
     if (!out) {
@@ -81,7 +81,7 @@ bool runtimeKeyFromName(const std::string& s, RuntimeKey* out)
     return false;
 }
 
-// TeachKey ĞòÁĞ»¯Ãû
+// TeachKey åºåˆ—åŒ–å
 const char* teachKeyName(TeachKey k)
 {
     switch (k) {
@@ -92,7 +92,7 @@ const char* teachKeyName(TeachKey k)
     }
 }
 
-// ´ÓĞòÁĞ»¯Ãû½âÎö TeachKey
+// ä»åºåˆ—åŒ–åè§£æ TeachKey
 bool teachKeyFromName(const std::string& s, TeachKey* out)
 {
     if (!out) {
@@ -105,13 +105,13 @@ bool teachKeyFromName(const std::string& s, TeachKey* out)
     return false;
 }
 
-// ParamMap ÊÇ·ñº¬ ValueKey
+// ParamMap æ˜¯å¦å« ValueKey
 bool paramHas(const ParamMap& m, ValueKey k)
 {
     return m.contains(valueKeyName(k));
 }
 
-// ¶ÁÈ¡ ValueKey
+// è¯»å– ValueKey
 ParamValue paramGet(const ParamMap& m, ValueKey k, const ParamValue& def)
 {
     const std::string key = valueKeyName(k);
@@ -121,7 +121,7 @@ ParamValue paramGet(const ParamMap& m, ValueKey k, const ParamValue& def)
     return m.value(key);
 }
 
-// Ğ´Èë ValueKey
+// å†™å…¥ ValueKey
 void paramSet(ParamMap* m, ValueKey k, const ParamValue& v)
 {
     if (!m) {
@@ -130,13 +130,13 @@ void paramSet(ParamMap* m, ValueKey k, const ParamValue& v)
     m->insert(valueKeyName(k), v);
 }
 
-// ParamMap ÊÇ·ñº¬ RuntimeKey
+// ParamMap æ˜¯å¦å« RuntimeKey
 bool runtimeHas(const ParamMap& m, RuntimeKey k)
 {
     return m.contains(runtimeKeyName(k));
 }
 
-// ¶ÁÈ¡ RuntimeKey
+// è¯»å– RuntimeKey
 ParamValue runtimeGet(const ParamMap& m, RuntimeKey k, const ParamValue& def)
 {
     const std::string key = runtimeKeyName(k);
@@ -146,7 +146,7 @@ ParamValue runtimeGet(const ParamMap& m, RuntimeKey k, const ParamValue& def)
     return m.value(key);
 }
 
-// Ğ´Èë RuntimeKey
+// å†™å…¥ RuntimeKey
 void runtimeSet(ParamMap* m, RuntimeKey k, const ParamValue& v)
 {
     if (!m) {
@@ -155,13 +155,13 @@ void runtimeSet(ParamMap* m, RuntimeKey k, const ParamValue& v)
     m->insert(runtimeKeyName(k), v);
 }
 
-// ParamMap ÊÇ·ñº¬ TeachKey
+// ParamMap æ˜¯å¦å« TeachKey
 bool teachHas(const ParamMap& m, TeachKey k)
 {
     return m.contains(teachKeyName(k));
 }
 
-// ¶ÁÈ¡ TeachKey
+// è¯»å– TeachKey
 ParamValue teachGet(const ParamMap& m, TeachKey k, const ParamValue& def)
 {
     const std::string key = teachKeyName(k);
@@ -171,7 +171,7 @@ ParamValue teachGet(const ParamMap& m, TeachKey k, const ParamValue& def)
     return m.value(key);
 }
 
-// Ğ´Èë TeachKey
+// å†™å…¥ TeachKey
 void teachSet(ParamMap* m, TeachKey k, const ParamValue& v)
 {
     if (!m) {

@@ -1,6 +1,6 @@
 /**
  * @file TextEncoding.cpp
- * @brief TextEncoding实现
+ * @brief TextEncoding瀹炵幇
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -14,7 +14,7 @@ namespace Vision {
 
 namespace {
 
-// 宽字符转到指定代码页
+// 瀹藉瓧绗﹁浆鍒版寚瀹氫唬鐮侀〉
 std::string wideToCp(const std::wstring& w, UINT cp)
 {
     if (w.empty()) {
@@ -31,7 +31,7 @@ std::string wideToCp(const std::wstring& w, UINT cp)
     return out;
 }
 
-// 指定代码页转到宽字符
+// 鎸囧畾浠ｇ爜椤佃浆鍒板瀛楃
 std::wstring cpToWide(const std::string& s, UINT cp)
 {
     if (s.empty()) {
@@ -48,47 +48,15 @@ std::wstring cpToWide(const std::string& s, UINT cp)
 
 } // namespace
 
-// UTF-8 转到系统 ANSI
-std::string utf8ToAcp(const std::string& utf8)
-{
-    return wideToCp(cpToWide(utf8, CP_UTF8), CP_ACP);
-}
-
-// 系统 ANSI 转到 UTF-8
-std::string acpToUtf8(const std::string& acp)
-{
-    return wideToCp(cpToWide(acp, CP_ACP), CP_UTF8);
-}
-
-// 系统 ANSI 转到宽字符，供宽字符文件接口使用
-std::wstring acpToWide(const std::string& acp)
-{
-    return cpToWide(acp, CP_ACP);
-}
-
-// 宽字符路径转到系统 ANSI
-std::string wideToAcp(const wchar_t* wide)
-{
-    if (!wide || !wide[0]) {
-        return std::string();
-    }
-    const int n = WideCharToMultiByte(CP_ACP, 0, wide, -1, 0, 0, 0, 0);
-    if (n <= 1) {
-        return std::string();
-    }
-    std::string out(static_cast<size_t>(n - 1), '\0');
-    WideCharToMultiByte(CP_ACP, 0, wide, -1, &out[0], n, 0, 0);
-    return out;
-}
 
 
-// UTF-8路径转宽字符
+// UTF-8璺緞杞瀛楃
 std::wstring utf8ToWide(const std::string& utf8)
 {
     return cpToWide(utf8, CP_UTF8);
 }
 
-// 宽字符路径转 UTF-8
+// 瀹藉瓧绗﹁矾寰勮浆 UTF-8
 std::string wideToUtf8(const wchar_t* wide)
 {
     if (!wide || !wide[0]) {

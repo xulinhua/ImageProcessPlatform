@@ -1,6 +1,6 @@
 /**
  * @file CalibMgr.h
- * @brief CalibMgrÍ·ÎÄ¼ş
+ * @brief CalibMgrå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -18,73 +18,73 @@ namespace Vision {
 
 /**
  * @class CalibMgr
- * @brief ±ê¶¨¹ÜÀí¡£½ø³ÌÄÚµ¥Àı£¬°´Ïà»ú±£´æ²ÎÊıºÍ½á¹û
+ * @brief æ ‡å®šç®¡ç†ã€‚è¿›ç¨‹å†…å•ä¾‹ï¼ŒæŒ‰ç›¸æœºä¿å­˜å‚æ•°å’Œç»“æœ
  */
 class VISION_CALIB_API CalibMgr {
 public:
-    /** @brief ½ø³ÌÄÚÎ¨Ò»ÊµÀı */
+    /** @brief è¿›ç¨‹å†…å”¯ä¸€å®ä¾‹ */
     static CalibMgr& instance();
 
     /**
-     * @brief ´Ó·½°¸Ä¿Â¼ÏÂµÄ calib ¶ÁÈë¡£Ä¿Â¼²»´æÔÚÊÓÎª¿Õ
-     * @param solutionDir ·½°¸ÎÄ¼şËùÔÚÄ¿Â¼£¬ UTF-8
+     * @brief ä»æ–¹æ¡ˆç›®å½•ä¸‹çš„ calib è¯»å…¥ã€‚ç›®å½•ä¸å­˜åœ¨è§†ä¸ºç©º
+     * @param solutionDir æ–¹æ¡ˆæ–‡ä»¶æ‰€åœ¨ç›®å½•ï¼Œ UTF-8
      */
     bool load(const std::string& solutionDir, std::string* err);
-    /** @brief °ÑÄÚ´æÖĞµÄ²ÎÊıºÍÉúĞ§½á¹ûĞ´»Øµ±Ç°·½°¸Ä¿Â¼ */
+    /** @brief æŠŠå†…å­˜ä¸­çš„å‚æ•°å’Œç”Ÿæ•ˆç»“æœå†™å›å½“å‰æ–¹æ¡ˆç›®å½• */
     bool save(std::string* err);
-    /** @brief Ğ¶µôµ±Ç°·½°¸µÄ±ê¶¨£¬²»É¾´ÅÅÌ */
+    /** @brief å¸æ‰å½“å‰æ–¹æ¡ˆçš„æ ‡å®šï¼Œä¸åˆ ç£ç›˜ */
     void unload();
-    /** @brief Ö®ºó save Ğ´µ½Õâ¸ö·½°¸Ä¿Â¼¡£²»ÖØĞÂ¶ÁÅÌ */
+    /** @brief ä¹‹å save å†™åˆ°è¿™ä¸ªæ–¹æ¡ˆç›®å½•ã€‚ä¸é‡æ–°è¯»ç›˜ */
     void setSolutionDir(const std::string& solutionDir);
 
-    /** @brief ÒÑÓĞ±ê¶¨Ä¿Â¼µÄÏà»ú */
+    /** @brief å·²æœ‰æ ‡å®šç›®å½•çš„ç›¸æœº */
     std::vector<ObjectId> cameras() const;
-    /** @brief ²ÎÊı¡£Ã»ÓĞÕâÂ·Ïà»úÊ±·µ»ØÄ¬ÈÏÖµ */
+    /** @brief å‚æ•°ã€‚æ²¡æœ‰è¿™è·¯ç›¸æœºæ—¶è¿”å›é»˜è®¤å€¼ */
     CalibParam param(const ObjectId& cameraId) const;
-    /** @brief Ğ´²ÎÊı¡£Ïà»ú²»´æÔÚÔò½¨Ò»Ìõ */
+    /** @brief å†™å‚æ•°ã€‚ç›¸æœºä¸å­˜åœ¨åˆ™å»ºä¸€æ¡ */
     bool setParam(const ObjectId& cameraId, const CalibParam& param, std::string* err);
-    /** @brief ÕâÂ·Ïà»úµÄÏÔÊ¾Ãû */
+    /** @brief è¿™è·¯ç›¸æœºçš„æ˜¾ç¤ºå */
     std::string cameraName(const ObjectId& cameraId) const;
-    /** @brief ¸ÄÏÔÊ¾Ãû */
+    /** @brief æ”¹æ˜¾ç¤ºå */
     bool setCameraName(const ObjectId& cameraId, const std::string& name, std::string* err);
-    /** @brief ±ê¶¨Õë¶ÔµÄÍ¼Ïñ¿í¸ß¡£Ã»ÓĞÕâÂ·Ïà»úÊ±Ğ´³ö 0 */
+    /** @brief æ ‡å®šé’ˆå¯¹çš„å›¾åƒå®½é«˜ã€‚æ²¡æœ‰è¿™è·¯ç›¸æœºæ—¶å†™å‡º 0 */
     void imageSize(const ObjectId& cameraId, int* width, int* height) const;
-    /** @brief ±ê¶¨Õë¶ÔµÄÍ¼Ïñ¿í¸ß¡£ÓëÒÑÓĞ½á¹û²»Ò»ÖÂÊ±°Ñ½á¹û±ê³ÉÊ§Ğ§ */
+    /** @brief æ ‡å®šé’ˆå¯¹çš„å›¾åƒå®½é«˜ã€‚ä¸å·²æœ‰ç»“æœä¸ä¸€è‡´æ—¶æŠŠç»“æœæ ‡æˆå¤±æ•ˆ */
     bool setImageSize(const ObjectId& cameraId, int width, int height, std::string* err);
 
-    /** @brief µ±Ç°½á¹û¡£ÔËĞĞÊ±Ö»Ê¹ÓÃ×´Ì¬ÎªÉúĞ§µÄÄ£ĞÍ */
+    /** @brief å½“å‰ç»“æœã€‚è¿è¡Œæ—¶åªä½¿ç”¨çŠ¶æ€ä¸ºç”Ÿæ•ˆçš„æ¨¡å‹ */
     CalibRst active(const ObjectId& cameraId) const;
-    /** @brief ³¬ãĞÖµÁôÏÂµÄ²İ¸å¡£ÔËĞĞÊ±²»ÓÃ */
+    /** @brief è¶…é˜ˆå€¼ç•™ä¸‹çš„è‰ç¨¿ã€‚è¿è¡Œæ—¶ä¸ç”¨ */
     CalibRst draft(const ObjectId& cameraId) const;
-    /** @brief ÕâÂ·Ïà»úµÄÀëÏßÍ¼Æ¬Ä¿Â¼¡£·½°¸Î´´ò¿ªÊ±Îª¿Õ */
+    /** @brief è¿™è·¯ç›¸æœºçš„ç¦»çº¿å›¾ç‰‡ç›®å½•ã€‚æ–¹æ¡ˆæœªæ‰“å¼€æ—¶ä¸ºç©º */
     std::string offlineDir(const ObjectId& cameraId) const;
-    /** @brief ¶Á camera.halcon.dat¡£Ã»ÓĞÔò¿Õ´® */
+    /** @brief è¯» camera.halcon.datã€‚æ²¡æœ‰åˆ™ç©ºä¸² */
     std::string readHalconDat(const ObjectId& cameraId) const;
-    /** @brief Ğ´ camera.halcon.dat */
+    /** @brief å†™ camera.halcon.dat */
     bool writeHalconDat(const ObjectId& cameraId, const std::string& text, std::string* err);
-    /** @brief Í¬Ïà»ú¡¢Í¬ÖÖÀàµÄÀúÊ·ÎÄ¼ş */
+    /** @brief åŒç›¸æœºã€åŒç§ç±»çš„å†å²æ–‡ä»¶ */
     std::vector<CalibHistItem> history(const ObjectId& cameraId, CalibKind kind) const;
 
-    /** @brief Ìá½»Ïà»úÄ£ĞÍ¡£²Ğ²î³¬ãĞÖµÔò²»Ìæ»»µ±Ç°ÉúĞ§½á¹û */
+    /** @brief æäº¤ç›¸æœºæ¨¡å‹ã€‚æ®‹å·®è¶…é˜ˆå€¼åˆ™ä¸æ›¿æ¢å½“å‰ç”Ÿæ•ˆç»“æœ */
     bool commitCamera(const ObjectId& cameraId, CamModel model, std::string* err);
-    /** @brief Ìá½»Æ½ÃæÓ³Éä */
+    /** @brief æäº¤å¹³é¢æ˜ å°„ */
     bool commitPlane(const ObjectId& cameraId, PlaneMap model, std::string* err);
-    /** @brief Ìá½»Ğı×ªÖĞĞÄ¡£ÈôÒÑÓĞÉúĞ§Æ½ÃæÓ³Éä£¬»á²¹ºÁÃ×Ô²ĞÄ */
+    /** @brief æäº¤æ—‹è½¬ä¸­å¿ƒã€‚è‹¥å·²æœ‰ç”Ÿæ•ˆå¹³é¢æ˜ å°„ï¼Œä¼šè¡¥æ¯«ç±³åœ†å¿ƒ */
     bool commitRotate(const ObjectId& cameraId, RotateCenter model, std::string* err);
 
     /**
-     * @brief ÀëÏßµã±í¡£Ã¿ĞĞ imageX,imageY,worldX,worldY £¬°´ÕâÂ·Ïà»úµÄ planeFit ÄâºÏ²¢Ìá½»
-     * @param csvPath UTF-8 Â·¾¶
+     * @brief ç¦»çº¿ç‚¹è¡¨ã€‚æ¯è¡Œ imageX,imageY,worldX,worldY ï¼ŒæŒ‰è¿™è·¯ç›¸æœºçš„ planeFit æ‹Ÿåˆå¹¶æäº¤
+     * @param csvPath UTF-8 è·¯å¾„
      */
     bool importPointTable(const ObjectId& cameraId, const std::string& csvPath, std::string* err);
-    /** @brief ÀëÏßµ¼ÈëÒ»·İ½á¹û json £¨Ïà»ú¡¢Æ½Ãæ»òĞı×ª£© */
+    /** @brief ç¦»çº¿å¯¼å…¥ä¸€ä»½ç»“æœ json ï¼ˆç›¸æœºã€å¹³é¢æˆ–æ—‹è½¬ï¼‰ */
     bool importResult(const ObjectId& cameraId, const std::string& filePath, std::string* err);
-    /** @brief ÁÙÊ±Ïà»ú id ¸Ä³ÉÌ¨ÕËÀïµÄÉè±¸ id £¬Ä¿Â¼Ò»Æğ¸ÄÃû */
+    /** @brief ä¸´æ—¶ç›¸æœº id æ”¹æˆå°è´¦é‡Œçš„è®¾å¤‡ id ï¼Œç›®å½•ä¸€èµ·æ”¹å */
     bool bindCamera(const ObjectId& fromId, const ObjectId& deviceId, std::string* err);
 
     /**
-     * @brief ÓÃÉúĞ§µÄÆ½ÃæÓ³ÉäºÍĞı×ªÖĞĞÄ°ÑÏñËØÎ»×Ë»»³ÉºÁÃ×
-     * @param out Ã»ÓĞÉúĞ§Æ½ÃæÓ³ÉäÊ±²»¸Ä£¬²¢·µ»Ø¼Ù
+     * @brief ç”¨ç”Ÿæ•ˆçš„å¹³é¢æ˜ å°„å’Œæ—‹è½¬ä¸­å¿ƒæŠŠåƒç´ ä½å§¿æ¢æˆæ¯«ç±³
+     * @param out æ²¡æœ‰ç”Ÿæ•ˆå¹³é¢æ˜ å°„æ—¶ä¸æ”¹ï¼Œå¹¶è¿”å›å‡
      */
     bool mapPose(const ObjectId& cameraId, const CalibPose& in, CalibPose* out, std::string* err) const;
 
@@ -94,9 +94,9 @@ private:
     CalibMgr(const CalibMgr&);
     CalibMgr& operator=(const CalibMgr&);
 
-    /** @class Impl @brief °´Ïà»ú´æ·ÅµÄ²ÎÊıºÍ½á¹û */
+    /** @class Impl @brief æŒ‰ç›¸æœºå­˜æ”¾çš„å‚æ•°å’Œç»“æœ */
     struct Impl;
-    Impl* m_impl; ///< Ïà»ú±í
+    Impl* m_impl; ///< ç›¸æœºè¡¨
 };
 
 }

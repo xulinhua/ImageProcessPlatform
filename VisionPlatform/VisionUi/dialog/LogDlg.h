@@ -1,6 +1,6 @@
 /**
  * @file LogDlg.h
- * @brief LogDlgÍ·ÎÄ¼ş
+ * @brief LogDlgå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -26,42 +26,42 @@ class Session;
 
 /**
  * @class LogDlg
- * @brief ÈÕÖ¾¹Ü¿Ø£º²Ù×÷ÈÕÖ¾¡¢µ÷ÊÔÈÕÖ¾²éÑ¯£¬ÒÔ¼°°´ÈÕÆÚÉ¾³ıÊı¾İ¿â¼ÇÂ¼
+ * @brief æ—¥å¿—ç®¡æ§ï¼šæ“ä½œæ—¥å¿—ã€è°ƒè¯•æ—¥å¿—æŸ¥è¯¢ï¼Œä»¥åŠæŒ‰æ—¥æœŸåˆ é™¤æ•°æ®åº“è®°å½•
  */
 class VISION_UI_API LogDlg : public QDialog {
     Q_OBJECT
 public:
     /**
-     * @brief ¹¹Ôì
-     * @param session »á»°£¨²»ÓµÓĞ£©£¬ÓÃÓÚÈ¨ÏŞÓëĞ´É¾³ıÉó¼Æ
+     * @brief æ„é€ 
+     * @param session ä¼šè¯ï¼ˆä¸æ‹¥æœ‰ï¼‰ï¼Œç”¨äºæƒé™ä¸å†™åˆ é™¤å®¡è®¡
      */
     explicit LogDlg(Session* session, QWidget* parent = 0);
 
 private slots:
-    /** @brief Ë¢ĞÂµ±Ç°Ò³±í¸ñ */
+    /** @brief åˆ·æ–°å½“å‰é¡µè¡¨æ ¼ */
     void onRefresh();
-    /** @brief ÇĞ Tab ºóË¢ĞÂ */
+    /** @brief åˆ‡ Tab ååˆ·æ–° */
     void onTabChanged(int index);
-    /** @brief É¾³ı¹´Ñ¡ÈÕÆÚµÄÈÕÖ¾ */
+    /** @brief åˆ é™¤å‹¾é€‰æ—¥æœŸçš„æ—¥å¿— */
     void onDelete();
 
 private:
-    /** @brief °Ñ²éÑ¯½á¹ûÌî½ø±í */
+    /** @brief æŠŠæŸ¥è¯¢ç»“æœå¡«è¿›è¡¨ */
     void fillTable(QTableWidget* table, LogKind kind);
-    /** @brief Ë¢ĞÂÎÄ¼şÁĞ±í */
+    /** @brief åˆ·æ–°æ–‡ä»¶åˆ—è¡¨ */
     void fillFiles();
-    /** @brief µ±Ç°ÓÃ»§ÊÇ·ñ¿ÉÉ¾ÈÕÖ¾ */
+    /** @brief å½“å‰ç”¨æˆ·æ˜¯å¦å¯åˆ æ—¥å¿— */
     bool canManage() const;
 
-    Session* m_session;          ///< »á»°
-    QTabWidget* m_tabs;          ///< Èı¸öÒ³
-    QTableWidget* m_opTable;     ///< ²Ù×÷ÈÕÖ¾
-    QTableWidget* m_dbgTable;    ///< µ÷ÊÔÈÕÖ¾
-    QDateEdit* m_from;           ///< ÆğÊ¼ÈÕ
-    QDateEdit* m_to;             ///< ½áÊøÈÕ
-    QListWidget* m_files;        ///< ¿ÉÉ¾ÈÕÆÚ
-    QPushButton* m_btnDelete;    ///< É¾³ıËùÑ¡
-    QLabel* m_fileHint;          ///< ¹ÜÀíÒ³ËµÃ÷
+    Session* m_session;          ///< ä¼šè¯
+    QTabWidget* m_tabs;          ///< ä¸‰ä¸ªé¡µ
+    QTableWidget* m_opTable;     ///< æ“ä½œæ—¥å¿—
+    QTableWidget* m_dbgTable;    ///< è°ƒè¯•æ—¥å¿—
+    QDateEdit* m_from;           ///< èµ·å§‹æ—¥
+    QDateEdit* m_to;             ///< ç»“æŸæ—¥
+    QListWidget* m_files;        ///< å¯åˆ æ—¥æœŸ
+    QPushButton* m_btnDelete;    ///< åˆ é™¤æ‰€é€‰
+    QLabel* m_fileHint;          ///< ç®¡ç†é¡µè¯´æ˜
 };
 
 }

@@ -1,6 +1,6 @@
 /**
  * @file ToolParaCalibUndistort.hpp
- * @brief ToolParaCalibUndistortÍ·ÎÄ¼ş
+ * @brief ToolParaCalibUndistortå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -16,21 +16,21 @@ namespace Vision {
 
 /**
  * @class ToolParaCalibUndistort
- * @brief CalibUndistortTool ÔËĞĞ²ÎÊı
+ * @brief CalibUndistortTool è¿è¡Œå‚æ•°
  */
 class ToolParaCalibUndistort : public ToolParaBase {
 public:
-    /** @brief Ñ§Ï°²ÎÊı£¬Ã»ÓĞÔòÎª¿Õ */
+    /** @brief å­¦ä¹ å‚æ•°ï¼Œæ²¡æœ‰åˆ™ä¸ºç©º */
     struct Learn {
     };
-    /** @brief ÔËĞĞ²ÎÊı */
+    /** @brief è¿è¡Œå‚æ•° */
     struct Run {
     };
 
-    Learn learn; ///< Ñ§Ï°²ÎÊı£¬Ã»ÓĞÔòÎª¿Õ
-    Run run;     ///< ÔËĞĞ²ÎÊı
+    Learn learn; ///< å­¦ä¹ å‚æ•°ï¼Œæ²¡æœ‰åˆ™ä¸ºç©º
+    Run run;     ///< è¿è¡Œå‚æ•°
 
-    /** @brief ´Ó ToolParam ÌîĞ´ */
+    /** @brief ä» ToolParam å¡«å†™ */
     void load(const ToolParam& src)
     {
         const ParamMap& m = src.run;

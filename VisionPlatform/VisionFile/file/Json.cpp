@@ -1,6 +1,6 @@
 /**
  * @file Json.cpp
- * @brief JsonÊµÏÖ
+ * @brief Jsonå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -12,7 +12,7 @@
 
 namespace Vision {
 
-// ¿ÕÖµ£ºNull¡¢¼Ù¡¢0
+// ç©ºå€¼ï¼šNullã€å‡ã€0
 JsonValue::JsonValue()
     : m_type(Null)
     , m_bool(false)
@@ -20,7 +20,7 @@ JsonValue::JsonValue()
 {
 }
 
-// ²¼¶ûÖµ£¬Êı×Ö²ÛÎ»Í¬²½Îª 0/1
+// å¸ƒå°”å€¼ï¼Œæ•°å­—æ§½ä½åŒæ­¥ä¸º 0/1
 JsonValue::JsonValue(bool v)
     : m_type(Bool)
     , m_bool(v)
@@ -28,7 +28,7 @@ JsonValue::JsonValue(bool v)
 {
 }
 
-// ÕûÊı´æÎª Number
+// æ•´æ•°å­˜ä¸º Number
 JsonValue::JsonValue(int v)
     : m_type(Number)
     , m_bool(v != 0)
@@ -36,7 +36,7 @@ JsonValue::JsonValue(int v)
 {
 }
 
-// ¸¡µã Number
+// æµ®ç‚¹ Number
 JsonValue::JsonValue(double v)
     : m_type(Number)
     , m_bool(v != 0.0)
@@ -44,7 +44,7 @@ JsonValue::JsonValue(double v)
 {
 }
 
-// C ×Ö·û´®£»¿ÕÖ¸Õëµ±¿Õ´®
+// C å­—ç¬¦ä¸²ï¼›ç©ºæŒ‡é’ˆå½“ç©ºä¸²
 JsonValue::JsonValue(const char* v)
     : m_type(String)
     , m_bool(false)
@@ -62,7 +62,7 @@ JsonValue::JsonValue(const std::string& v)
 {
 }
 
-// °´ÀàĞÍ×ª²¼¶û£»Null ÓÃÄ¬ÈÏÖµ
+// æŒ‰ç±»å‹è½¬å¸ƒå°”ï¼›Null ç”¨é»˜è®¤å€¼
 bool JsonValue::toBool(bool def) const
 {
     if (m_type == Null) {
@@ -80,7 +80,7 @@ bool JsonValue::toBool(bool def) const
     return def;
 }
 
-// °´ÀàĞÍ×ª int£»×Ö·û´®×ß atoi
+// æŒ‰ç±»å‹è½¬ intï¼›å­—ç¬¦ä¸²èµ° atoi
 int JsonValue::toInt(int def) const
 {
     if (m_type == Null) {
@@ -98,7 +98,7 @@ int JsonValue::toInt(int def) const
     return def;
 }
 
-// °´ÀàĞÍ×ª double£»×Ö·û´®×ß atof
+// æŒ‰ç±»å‹è½¬ doubleï¼›å­—ç¬¦ä¸²èµ° atof
 double JsonValue::toDouble(double def) const
 {
     if (m_type == Null) {
@@ -116,7 +116,7 @@ double JsonValue::toDouble(double def) const
     return def;
 }
 
-// ×Ö·û´®Ô­Ñù£»²¼¶û true/false£»ÕûÊıÎŞĞ¡Êı·ñÔò %.17g
+// å­—ç¬¦ä¸²åŸæ ·ï¼›å¸ƒå°” true/falseï¼›æ•´æ•°æ— å°æ•°å¦åˆ™ %.17g
 std::string JsonValue::toString() const
 {
     if (m_type == String) {
@@ -138,7 +138,7 @@ std::string JsonValue::toString() const
     return std::string();
 }
 
-// Êı×é³¤¶È»ò¶ÔÏó¼üÊı
+// æ•°ç»„é•¿åº¦æˆ–å¯¹è±¡é”®æ•°
 int JsonValue::size() const
 {
     if (m_type == Array) {
@@ -150,7 +150,7 @@ int JsonValue::size() const
     return 0;
 }
 
-// Êı×éÏÂ±ê£»Ô½½ç·µ»Ø Null
+// æ•°ç»„ä¸‹æ ‡ï¼›è¶Šç•Œè¿”å› Null
 JsonValue JsonValue::at(int i) const
 {
     if (m_type != Array || i < 0 || i >= static_cast<int>(m_arr.size())) {
@@ -159,7 +159,7 @@ JsonValue JsonValue::at(int i) const
     return m_arr[static_cast<size_t>(i)];
 }
 
-// Çå¿ÕÎªÊı×é
+// æ¸…ç©ºä¸ºæ•°ç»„
 void JsonValue::makeArray()
 {
     m_type = Array;
@@ -168,7 +168,7 @@ void JsonValue::makeArray()
     m_str.clear();
 }
 
-// Çå¿ÕÎª¶ÔÏó
+// æ¸…ç©ºä¸ºå¯¹è±¡
 void JsonValue::makeObject()
 {
     m_type = Object;
@@ -177,7 +177,7 @@ void JsonValue::makeObject()
     m_str.clear();
 }
 
-// ×·¼Óµ½Êı×é£»·ÇÊı×éÔòÏÈ×ªÊı×é
+// è¿½åŠ åˆ°æ•°ç»„ï¼›éæ•°ç»„åˆ™å…ˆè½¬æ•°ç»„
 void JsonValue::append(const JsonValue& v)
 {
     if (m_type != Array) {
@@ -186,7 +186,7 @@ void JsonValue::append(const JsonValue& v)
     m_arr.push_back(v);
 }
 
-// ¶ÔÏóÊÇ·ñº¬¸Ã¼ü
+// å¯¹è±¡æ˜¯å¦å«è¯¥é”®
 bool JsonValue::contains(const std::string& key) const
 {
     if (m_type != Object) {
@@ -195,7 +195,7 @@ bool JsonValue::contains(const std::string& key) const
     return m_obj.find(key) != m_obj.end();
 }
 
-// È¡¶ÔÏó×Ö¶Î£»È±Ê§·µ»Ø Null
+// å–å¯¹è±¡å­—æ®µï¼›ç¼ºå¤±è¿”å› Null
 JsonValue JsonValue::value(const std::string& key) const
 {
     if (m_type != Object) {
@@ -208,7 +208,7 @@ JsonValue JsonValue::value(const std::string& key) const
     return it->second;
 }
 
-// Ğ´¶ÔÏó×Ö¶Î£»·Ç¶ÔÏóÔòÏÈ×ª¶ÔÏó
+// å†™å¯¹è±¡å­—æ®µï¼›éå¯¹è±¡åˆ™å…ˆè½¬å¯¹è±¡
 void JsonValue::set(const std::string& key, const JsonValue& v)
 {
     if (m_type != Object) {
@@ -217,7 +217,7 @@ void JsonValue::set(const std::string& key, const JsonValue& v)
     m_obj[key] = v;
 }
 
-// ¶ÔÏó×Ö¶Î×ª¸¡µã£»È±¼üÓÃÄ¬ÈÏÖµ
+// å¯¹è±¡å­—æ®µè½¬æµ®ç‚¹ï¼›ç¼ºé”®ç”¨é»˜è®¤å€¼
 double JsonValue::number(const std::string& key, double def) const
 {
     if (!contains(key)) {
@@ -226,7 +226,7 @@ double JsonValue::number(const std::string& key, double def) const
     return value(key).toDouble(def);
 }
 
-// ¶ÔÏó×Ö¶Î×ªÕûÊı£»È±¼üÓÃÄ¬ÈÏÖµ
+// å¯¹è±¡å­—æ®µè½¬æ•´æ•°ï¼›ç¼ºé”®ç”¨é»˜è®¤å€¼
 int JsonValue::integerOf(const std::string& key, int def) const
 {
     if (!contains(key)) {
@@ -235,7 +235,7 @@ int JsonValue::integerOf(const std::string& key, int def) const
     return value(key).toInt(def);
 }
 
-// ¶ÔÏó×Ö¶Î×ª²¼¶û£»È±¼üÓÃÄ¬ÈÏÖµ
+// å¯¹è±¡å­—æ®µè½¬å¸ƒå°”ï¼›ç¼ºé”®ç”¨é»˜è®¤å€¼
 bool JsonValue::flagOf(const std::string& key, bool def) const
 {
     if (!contains(key)) {
@@ -244,7 +244,7 @@ bool JsonValue::flagOf(const std::string& key, bool def) const
     return value(key).toBool(def);
 }
 
-// ¶ÔÏó×Ö¶Î×ªÎÄ±¾£»È±¼üÎª¿Õ´®
+// å¯¹è±¡å­—æ®µè½¬æ–‡æœ¬ï¼›ç¼ºé”®ä¸ºç©ºä¸²
 std::string JsonValue::stringOf(const std::string& key) const
 {
     if (!contains(key)) {
@@ -258,7 +258,7 @@ struct JsonParser {
     size_t i;
     std::string* err;
 
-    // ´ÓÎÄ±¾Æğµã½âÎö£¬´íÎóĞ´Èë err
+    // ä»æ–‡æœ¬èµ·ç‚¹è§£æï¼Œé”™è¯¯å†™å…¥ err
     JsonParser(const std::string& text, std::string* e)
         : t(text)
         , i(0)
@@ -266,7 +266,7 @@ struct JsonParser {
     {
     }
 
-    // Ö»¼ÇµÚÒ»Ìõ´íÎó
+    // åªè®°ç¬¬ä¸€æ¡é”™è¯¯
     void fail(const char* m)
     {
         if (err && err->empty()) {
@@ -274,7 +274,7 @@ struct JsonParser {
         }
     }
 
-    // Ìø¹ı¿Õ°×
+    // è·³è¿‡ç©ºç™½
     void skipWs()
     {
         while (i < t.size()) {
@@ -287,7 +287,7 @@ struct JsonParser {
         }
     }
 
-    // Ìø¿Õ°×ºóÈôÆ¥Åä c ÔòÍÌµô
+    // è·³ç©ºç™½åè‹¥åŒ¹é… c åˆ™åæ‰
     bool eat(char c)
     {
         skipWs();
@@ -298,7 +298,7 @@ struct JsonParser {
         return false;
     }
 
-    // °´Ê××Ö·û·ÖÅÉÖµÀàĞÍ
+    // æŒ‰é¦–å­—ç¬¦åˆ†æ´¾å€¼ç±»å‹
     JsonValue parseValue()
     {
         skipWs();
@@ -329,7 +329,7 @@ struct JsonParser {
         return JsonValue();
     }
 
-    // ×ÖÃæÁ¿ null
+    // å­—é¢é‡ null
     JsonValue parseNull()
     {
         if (t.compare(i, 4, "null") == 0) {
@@ -340,7 +340,7 @@ struct JsonParser {
         return JsonValue();
     }
 
-    // ×ÖÃæÁ¿ true/false
+    // å­—é¢é‡ true/false
     JsonValue parseBool()
     {
         if (t.compare(i, 4, "true") == 0) {
@@ -355,7 +355,7 @@ struct JsonParser {
         return JsonValue();
     }
 
-    // É¨ÃèÕûÊı/Ğ¡Êı/Ö¸Êıºó atof
+    // æ‰«ææ•´æ•°/å°æ•°/æŒ‡æ•°å atof
     JsonValue parseNumber()
     {
         const size_t start = i;
@@ -383,7 +383,7 @@ struct JsonParser {
         return JsonValue(atof(t.substr(start, i - start).c_str()));
     }
 
-    // ÂëµãĞ´³É UTF-8
+    // ç ç‚¹å†™æˆ UTF-8
     static void appendUtf8(std::string* o, unsigned int cp)
     {
         if (cp <= 0x7F) {
@@ -403,7 +403,7 @@ struct JsonParser {
         }
     }
 
-    // ¶Á 4 Î»Ê®Áù½øÖÆ
+    // è¯» 4 ä½åå…­è¿›åˆ¶
     int hex4()
     {
         int v = 0;
@@ -426,7 +426,7 @@ struct JsonParser {
         return v;
     }
 
-    // ½âÎö´ø×ªÒåµÄ JSON ×Ö·û´®
+    // è§£æå¸¦è½¬ä¹‰çš„ JSON å­—ç¬¦ä¸²
     JsonValue parseString()
     {
         if (!eat('"')) {
@@ -437,7 +437,7 @@ struct JsonParser {
         while (i < t.size()) {
             const char c = t[i++];
             if (c == '"') {
-                // Ô´ÂëÓë´ÅÅÌ JSON ¾ùÎª UTF-8£¬ÄÚ´æ²»ÔÙ×ªÏµÍ³ ANSI
+                // æºç ä¸ç£ç›˜ JSON å‡ä¸º UTF-8ï¼Œå†…å­˜ä¸å†è½¬ç³»ç»Ÿ ANSI
                 return JsonValue(o);
             }
             if (c != '\\') {
@@ -475,7 +475,7 @@ struct JsonParser {
         return JsonValue();
     }
 
-    // ½âÎöÊı×é
+    // è§£ææ•°ç»„
     JsonValue parseArray()
     {
         if (!eat('[')) {
@@ -501,7 +501,7 @@ struct JsonParser {
         }
     }
 
-    // ½âÎö¶ÔÏó
+    // è§£æå¯¹è±¡
     JsonValue parseObject()
     {
         if (!eat('{')) {
@@ -535,7 +535,7 @@ struct JsonParser {
     }
 };
 
-// ½âÎöÕû¶Î JSON£»Î²ËæÄÚÈİ¼Ç´íÎóµ«ÈÔ·µ»ØÒÑ½âÎöÖµ
+// è§£ææ•´æ®µ JSONï¼›å°¾éšå†…å®¹è®°é”™è¯¯ä½†ä»è¿”å›å·²è§£æå€¼
 JsonValue JsonValue::parse(const std::string& text, std::string* error)
 {
     if (error) {
@@ -556,7 +556,7 @@ JsonValue JsonValue::parse(const std::string& text, std::string* error)
     return v;
 }
 
-// Ğ´³É JSON ×Ö·û´®×ÖÃæÁ¿£¨ÄÚ´æÒÑÊÇ UTF-8£©
+// å†™æˆ JSON å­—ç¬¦ä¸²å­—é¢é‡ï¼ˆå†…å­˜å·²æ˜¯ UTF-8ï¼‰
 static void escapeTo(std::string* o, const std::string& s)
 {
     const std::string& u = s;
@@ -584,7 +584,7 @@ static void escapeTo(std::string* o, const std::string& s)
     o->push_back('"');
 }
 
-// µİ¹éĞòÁĞ»¯£»pretty Ê±°´ indent Ëõ½ø
+// é€’å½’åºåˆ—åŒ–ï¼›pretty æ—¶æŒ‰ indent ç¼©è¿›
 static void dump(const JsonValue& v, std::string* o, bool pretty, int indent)
 {
     switch (v.type()) {
@@ -647,7 +647,7 @@ static void dump(const JsonValue& v, std::string* o, bool pretty, int indent)
     }
 }
 
-// ĞòÁĞ»¯£»pretty Ê±Ä©Î²»»ĞĞ
+// åºåˆ—åŒ–ï¼›pretty æ—¶æœ«å°¾æ¢è¡Œ
 std::string JsonValue::stringify(const JsonValue& v, bool pretty)
 {
     std::string o;
@@ -658,55 +658,55 @@ std::string JsonValue::stringify(const JsonValue& v, bool pretty)
     return o;
 }
 
-// µ±Ç°ÖÖÀà
+// å½“å‰ç§ç±»
 JsonValue::Type JsonValue::type() const
 {
     return m_type;
 }
 
-// ÊÇ·ñÎª¿Õ
+// æ˜¯å¦ä¸ºç©º
 bool JsonValue::isNull() const
 {
     return m_type == Null;
 }
 
-// ÊÇ·ñ¶ÔÏó
+// æ˜¯å¦å¯¹è±¡
 bool JsonValue::isObject() const
 {
     return m_type == Object;
 }
 
-// ÊÇ·ñÊı×é
+// æ˜¯å¦æ•°ç»„
 bool JsonValue::isArray() const
 {
     return m_type == Array;
 }
 
-// ÊÇ·ñÎÄ±¾
+// æ˜¯å¦æ–‡æœ¬
 bool JsonValue::isString() const
 {
     return m_type == String;
 }
 
-// ÊÇ·ñÊı×Ö
+// æ˜¯å¦æ•°å­—
 bool JsonValue::isNumber() const
 {
     return m_type == Number;
 }
 
-// ÊÇ·ñ²¼¶û
+// æ˜¯å¦å¸ƒå°”
 bool JsonValue::isBool() const
 {
     return m_type == Bool;
 }
 
-// µ×²ãÊı×é
+// åº•å±‚æ•°ç»„
 const std::vector<JsonValue>& JsonValue::array() const
 {
     return m_arr;
 }
 
-// µ×²ã¶ÔÏó
+// åº•å±‚å¯¹è±¡
 const std::map<std::string, JsonValue>& JsonValue::object() const
 {
     return m_obj;

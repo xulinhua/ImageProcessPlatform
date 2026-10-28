@@ -1,6 +1,6 @@
 /**
  * @file EnhanceTool.cpp
- * @brief EnhanceToolÊµÏÖ
+ * @brief EnhanceToolå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -14,31 +14,31 @@
 #include <vector>
 
 namespace {
-// µ±Ç°°æ±¾¡£±ØĞëµÈÓÚ±ä¸ü±í×îºóÒ»ĞĞ
+// å½“å‰ç‰ˆæœ¬ã€‚å¿…é¡»ç­‰äºå˜æ›´è¡¨æœ€åä¸€è¡Œ
 const char kToolVersion[] = "1.0.0.0";
-// ±ä¸ü±í¡£Ö»×·¼Ó£¬²»É¾¾ÉĞĞ
+// å˜æ›´è¡¨ã€‚åªè¿½åŠ ï¼Œä¸åˆ æ—§è¡Œ
 const Vision::VerNoteRaw kVerNotes[] = {
-    { "1.0.0.0", "Ê×°æ" },
+    { "1.0.0.0", "é¦–ç‰ˆ" },
 };
 
-// ×¢²áÃû
+// æ³¨å†Œå
 const char kToolName[] = "preprocess.enhance";
-// ½çÃæÏÔÊ¾Ãû
-const char kDisplayName[] = "Í¼ÏñÔöÇ¿";
-// ¹¤¾ßËµÃ÷
-const char kDescription[] = "¿Éµş¼ÓÖ±·½Í¼¾ùºâ¡¢Ç¿µ÷¡¢ÕÕ¶È¡¢Ëõ·Å¡¢·´É«";
+// ç•Œé¢æ˜¾ç¤ºå
+const char kDisplayName[] = "å›¾åƒå¢å¼º";
+// å·¥å…·è¯´æ˜
+const char kDescription[] = "å¯å åŠ ç›´æ–¹å›¾å‡è¡¡ã€å¼ºè°ƒã€ç…§åº¦ã€ç¼©æ”¾ã€åè‰²";
 
-// ²ÎÊıËµÃ÷
+// å‚æ•°è¯´æ˜
 std::vector<Vision::ParamField> fields()
 {
     std::vector<Vision::ParamField> f;
-    f.push_back(Vision::paramInt("pl_n", "²½ÖèÊı", 1, true, 0, true, 8));
-    f.push_back(Vision::paramInt("pl_0_op", "Ëã×Ó", 0, true, 0, true, 4));
-    f.push_back(Vision::paramInt("pl_0_w", "ÑÚÄ¤¿í", 7, true, 1, true, 255));
-    f.push_back(Vision::paramInt("pl_0_h", "ÑÚÄ¤¸ß", 7, true, 1, true, 255));
-    f.push_back(Vision::paramDouble("pl_0_c0", "ÏµÊı", 1.0, false, 0, false, 0));
-    f.push_back(Vision::paramDouble("pl_0_c1", "ÏµÊı2", 0.0, false, 0, false, 0));
-    f.push_back(Vision::paramInt("pl_0_f", "Ëõ·Åµ½×î´ó", 0, true, 0, true, 1));
+    f.push_back(Vision::paramInt("pl_n", "æ­¥éª¤æ•°", 1, true, 0, true, 8));
+    f.push_back(Vision::paramInt("pl_0_op", "ç®—å­", 0, true, 0, true, 4));
+    f.push_back(Vision::paramInt("pl_0_w", "æ©è†œå®½", 7, true, 1, true, 255));
+    f.push_back(Vision::paramInt("pl_0_h", "æ©è†œé«˜", 7, true, 1, true, 255));
+    f.push_back(Vision::paramDouble("pl_0_c0", "ç³»æ•°", 1.0, false, 0, false, 0));
+    f.push_back(Vision::paramDouble("pl_0_c1", "ç³»æ•°2", 0.0, false, 0, false, 0));
+    f.push_back(Vision::paramInt("pl_0_f", "ç¼©æ”¾åˆ°æœ€å¤§", 0, true, 0, true, 1));
     return f;
 }
 Vision::ToolCaps caps()
@@ -54,7 +54,7 @@ Vision::ToolCaps caps()
     return c;
 }
 
-// ÓÉ²ÎÊıËµÃ÷Éú³ÉÈ±Ê¡ ParamMap
+// ç”±å‚æ•°è¯´æ˜ç”Ÿæˆç¼ºçœ ParamMap
 Vision::ParamMap defaultsFrom(const std::vector<Vision::ParamField>& fields)
 {
     Vision::ParamMap m;
@@ -69,62 +69,62 @@ Vision::ParamMap defaultsFrom(const std::vector<Vision::ParamField>& fields)
 
 }
 
-// ×¢²áÃû
+// æ³¨å†Œå
 std::string Vision::EnhanceTool::toolName() const
 {
     return kToolName;
 }
 
-// ¹¤¾ß´óÀà
+// å·¥å…·å¤§ç±»
 Vision::ToolType Vision::EnhanceTool::type() const
 {
     return Vision::ToolType::Preprocess;
 }
 
-// ½çÃæÏÔÊ¾Ãû
+// ç•Œé¢æ˜¾ç¤ºå
 std::string Vision::EnhanceTool::displayName() const
 {
-    return Vision::acpToUtf8(kDisplayName);
+    return kDisplayName;
 }
 
-// ¹¤¾ß°æ±¾
+// å·¥å…·ç‰ˆæœ¬
 std::string Vision::EnhanceTool::version() const
 {
     return std::string(kToolVersion);
 }
 
-// °æ±¾±ä¸ü£¬Ö»×·¼Ó
+// ç‰ˆæœ¬å˜æ›´ï¼Œåªè¿½åŠ 
 std::vector<Vision::VerNote> Vision::EnhanceTool::versionNotes() const
 {
     return Vision::verNotesFrom(kVerNotes, static_cast<int>(sizeof(kVerNotes) / sizeof(kVerNotes[0])));
 }
 
 
-// ¹¤¾ßËµÃ÷
+// å·¥å…·è¯´æ˜
 std::string Vision::EnhanceTool::description() const
 {
-    return Vision::acpToUtf8(kDescription);
+    return kDescription;
 }
 
-// È±Ê¡²ÎÊı
+// ç¼ºçœå‚æ•°
 Vision::ParamMap Vision::EnhanceTool::defaultParams() const
 {
     return defaultsFrom(fields());
 }
 
-// ²ÎÊıËµÃ÷
+// å‚æ•°è¯´æ˜
 std::vector<Vision::ParamField> Vision::EnhanceTool::paramFields() const
 {
     return fields();
 }
 
-// »­²¼ÄÜÁ¦
+// ç”»å¸ƒèƒ½åŠ›
 Vision::ToolCaps Vision::EnhanceTool::capabilities() const
 {
     return caps();
 }
 
-// µ÷Ëã·¨²å¼şÖ´ĞĞ
+// è°ƒç®—æ³•æ’ä»¶æ‰§è¡Œ
 Vision::ToolOut Vision::EnhanceTool::execute(const Vision::ToolIn& in)
 {
     Vision::ToolOut out = Vision::runAlgToolBase(toolName(), in, true);
@@ -137,13 +137,13 @@ Vision::ToolOut Vision::EnhanceTool::execute(const Vision::ToolIn& in)
     return out;
 }
 
-// ¿ËÂ¡±¾ÊµÀı
+// å…‹éš†æœ¬å®ä¾‹
 Vision::ToolBase* Vision::EnhanceTool::clone() const
 {
     EnhanceTool* p = new EnhanceTool();
     p->copyInstanceDataFrom(*this);
     return p;
-}// ·µ»Ø±¾¹¤¾ß²ÎÊı¶ÔÏó
+}// è¿”å›æœ¬å·¥å…·å‚æ•°å¯¹è±¡
 
 const Vision::ToolParaBase* Vision::EnhanceTool::toolParam() const
 {

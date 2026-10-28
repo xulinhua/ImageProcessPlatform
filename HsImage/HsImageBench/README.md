@@ -29,7 +29,7 @@ HsImageBench/
 | HALCON（可选） | 检测到头文件时参与对比路径 |
 | OpenCV（可选） | 检测到 `opencv2/core.hpp` 时启用 |
 
-默认 OpenCV 库名：`opencv_world3410(d).lib`，可用 `OPENCV_LIB` / `OPENCV_LIB_DEBUG` 覆盖。
+OpenCV 使用 `VisionPlatform\third_party\OpenCV`。x64 链接 `hsvisbasall64(d).lib`，Win32 链接 `hsvisbasall(d).lib`。
 
 ## 构建与运行
 

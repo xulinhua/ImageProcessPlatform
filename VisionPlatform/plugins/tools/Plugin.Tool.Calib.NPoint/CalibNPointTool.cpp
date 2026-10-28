@@ -1,6 +1,6 @@
 /**
  * @file CalibNPointTool.cpp
- * @brief CalibNPointToolÊµÏÖ
+ * @brief CalibNPointToolå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -22,16 +22,16 @@
 #include <vector>
 
 namespace {
-// µ±Ç°°æ±¾¡£±ØĞëµÈÓÚ±ä¸ü±í×îºóÒ»ĞĞ
+// å½“å‰ç‰ˆæœ¬ã€‚å¿…é¡»ç­‰äºå˜æ›´è¡¨æœ€åä¸€è¡Œ
 const char kToolVersion[] = "1.0.0.0";
-// ±ä¸ü±í¡£Ö»×·¼Ó£¬²»É¾¾ÉĞĞ
+// å˜æ›´è¡¨ã€‚åªè¿½åŠ ï¼Œä¸åˆ æ—§è¡Œ
 const Vision::VerNoteRaw kVerNotes[] = {
-    { "1.0.0.0", "Ê×°æ" },
+    { "1.0.0.0", "é¦–ç‰ˆ" },
 };
 
 const double kPi = 3.14159265358979323846;
 
-// ¿í×Ö·û×ª UTF-8
+// å®½å­—ç¬¦è½¬ UTF-8
 std::string U(const wchar_t* w)
 {
     std::string o;
@@ -54,7 +54,7 @@ std::string U(const wchar_t* w)
     return o;
 }
 
-// ±ê¶¨¹¤¾ß²»»­ËÑË÷Çø
+// æ ‡å®šå·¥å…·ä¸ç”»æœç´¢åŒº
 Vision::ToolCaps noRoi()
 {
     Vision::ToolCaps c;
@@ -62,7 +62,7 @@ Vision::ToolCaps noRoi()
     return c;
 }
 
-// ÓÃ²ÎÊıËµÃ÷ÌîÄ¬ÈÏÖµ
+// ç”¨å‚æ•°è¯´æ˜å¡«é»˜è®¤å€¼
 Vision::ParamMap defaultsFrom(const std::vector<Vision::ParamField>& fields)
 {
     Vision::ParamMap m;
@@ -75,7 +75,7 @@ Vision::ParamMap defaultsFrom(const std::vector<Vision::ParamField>& fields)
     return m;
 }
 
-// ¶ÁÎÄ±¾ĞĞ£¬Ìø¹ı¿ÕĞĞºÍ¾®ºÅ
+// è¯»æ–‡æœ¬è¡Œï¼Œè·³è¿‡ç©ºè¡Œå’Œäº•å·
 bool readLines(const std::string& path, std::vector<std::string>* lines, std::string* err)
 {
     std::ifstream in(path.c_str());
@@ -98,7 +98,7 @@ bool readLines(const std::string& path, std::vector<std::string>* lines, std::st
     return true;
 }
 
-// °´¶ººÅ¡¢·ÖºÅ»ò¿Õ°×²ğ³ÉÊı×Ö
+// æŒ‰é€—å·ã€åˆ†å·æˆ–ç©ºç™½æ‹†æˆæ•°å­—
 bool readDoubles(const std::string& line, std::vector<double>* nums)
 {
     nums->clear();
@@ -122,13 +122,13 @@ bool readDoubles(const std::string& line, std::vector<double>* nums)
     return true;
 }
 
-// ¹¤¾ßÉÏ°ó¶¨µÄÏà»ú
+// å·¥å…·ä¸Šç»‘å®šçš„ç›¸æœº
 Vision::ObjectId cameraOf(const Vision::ToolIn& in)
 {
     return in.param.deviceId;
 }
 
-// Ã»°óÏà»úÔòÊ§°Ü
+// æ²¡ç»‘ç›¸æœºåˆ™å¤±è´¥
 Vision::ToolOut needCamera(const Vision::ToolIn& in)
 {
     Vision::ToolOut out;
@@ -163,7 +163,9 @@ Vision::AlgToolOut runNamed(const char* toolName, Vision::AlgLibKind prefer, con
         }
         return Vision::AlgToolOut();
     }
-    return proto->run(in);
+    Vision::AlgToolOut out;
+    proto->run(Vision::ExecMode::Auto, in, &out);
+    return out;
 }
 
 Vision::CamModel modelFrom(const Vision::ParamMap& v)
@@ -187,47 +189,47 @@ Vision::CamModel modelFrom(const Vision::ParamMap& v)
 
 }
 
-// ¾Åµã±ê¶¨¹¤¾ßÃû
+// ä¹ç‚¹æ ‡å®šå·¥å…·å
 std::string Vision::CalibNPointTool::version() const
 {
     return std::string(kToolVersion);
 }
 
-// °æ±¾±ä¸ü£¬Ö»×·¼Ó
+// ç‰ˆæœ¬å˜æ›´ï¼Œåªè¿½åŠ 
 std::vector<Vision::VerNote> Vision::CalibNPointTool::versionNotes() const
 {
     return Vision::verNotesFrom(kVerNotes, static_cast<int>(sizeof(kVerNotes) / sizeof(kVerNotes[0])));
 }
 
 std::string Vision::CalibNPointTool::toolName() const { return "calib.npoint"; }
-// ÀàĞÍÎª±ê¶¨
+// ç±»å‹ä¸ºæ ‡å®š
 Vision::ToolType Vision::CalibNPointTool::type() const { return Vision::ToolType::Calib; }
-// ½çÃæÏÔÊ¾Ãû
+// ç•Œé¢æ˜¾ç¤ºå
 std::string Vision::CalibNPointTool::displayName() const { return U(L"\u4e5d\u70b9\u6807\u5b9a"); }
-// ¹¤¾ßËµÃ÷
+// å·¥å…·è¯´æ˜
 std::string Vision::CalibNPointTool::description() const
 {
     return U(L"\u5b66\u4e60\u65f6\u6309\u70b9\u8868\u62df\u5408\u5e73\u9762\u6620\u5c04\u3002\u6bcf\u884c imageX,imageY,worldX,worldY");
 }
-// Ä¬ÈÏ²ÎÊı
+// é»˜è®¤å‚æ•°
 Vision::ParamMap Vision::CalibNPointTool::defaultParams() const { return defaultsFrom(paramFields()); }
-// ²ÎÊıËµÃ÷
+// å‚æ•°è¯´æ˜
 std::vector<Vision::ParamField> Vision::CalibNPointTool::paramFields() const
 {
     std::vector<Vision::ParamField> f;
-    f.push_back(Vision::paramDevice("deviceId", "Ïà»ú"));
-    f.push_back(Vision::paramPath("tablePath", "µã±í", std::string()));
+    f.push_back(Vision::paramDevice("deviceId", "ç›¸æœº"));
+    f.push_back(Vision::paramPath("tablePath", "ç‚¹è¡¨", std::string()));
     f.push_back(Vision::paramPath("imageDir", "imageDir", std::string()));
     return f;
 }
-// ²»Ê¹ÓÃËÑË÷Çø
+// ä¸ä½¿ç”¨æœç´¢åŒº
 Vision::ToolCaps Vision::CalibNPointTool::capabilities() const { return noRoi(); }
-// Ñ§Ï°¹¤¾ßÎŞ¶Ë¿Ú
+// å­¦ä¹ å·¥å…·æ— ç«¯å£
 std::vector<Vision::PortDesc> Vision::CalibNPointTool::ports() const
 {
     return std::vector<Vision::PortDesc>();
 }
-// Ñ§Ï°Ê±µ¼Èëµã±í²¢ÄâºÏÆ½Ãæ
+// å­¦ä¹ æ—¶å¯¼å…¥ç‚¹è¡¨å¹¶æ‹Ÿåˆå¹³é¢
 Vision::ToolOut Vision::CalibNPointTool::execute(const Vision::ToolIn& in)
 {
     Vision::ToolOut out = needCamera(in);
@@ -297,7 +299,7 @@ Vision::ToolOut Vision::CalibNPointTool::execute(const Vision::ToolIn& in)
     out.syncIo();
     return out;
 }
-// ¿ËÂ¡ÊµÀı
+// å…‹éš†å®ä¾‹
 Vision::ToolBase* Vision::CalibNPointTool::clone() const
 {
     CalibNPointTool* p = new CalibNPointTool();
@@ -307,7 +309,7 @@ Vision::ToolBase* Vision::CalibNPointTool::clone() const
 
 
 
-// ·µ»Ø±¾¹¤¾ß²ÎÊı¶ÔÏó
+// è¿”å›æœ¬å·¥å…·å‚æ•°å¯¹è±¡
 const Vision::ToolParaBase* Vision::CalibNPointTool::toolParam() const
 {
     return &m_param;

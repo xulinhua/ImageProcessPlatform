@@ -1,6 +1,6 @@
 /**
  * @file Markers.cpp
- * @brief MarkersÊµÏÖ
+ * @brief Markerså®žçŽ°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -17,61 +17,61 @@ namespace HsCommData {
 
 namespace {
 
-const double kHeadOpen = 0.4; ///< Ä¬ÈÏÕÅ½Ç£¨»¡¶È£©£¬°ë¿íÎ´¸ø¶¨Ê±ÓÃ
+const double kHeadOpen = 0.4; ///< é»˜è®¤å¼ è§’ï¼ˆå¼§åº¦ï¼‰ï¼ŒåŠå®½æœªç»™å®šæ—¶ç”¨
 
 }
 
-// Ê®×ÖÄ¬ÈÏ°ë¿í 10¡¢½Ç¶È 0
+// åå­—é»˜è®¤åŠå®½ 10ã€è§’åº¦ 0
 HsCross::HsCross()
     : size(10.0)
     , angle(0.0)
 {
 }
-// ÄÚ²¿×ª½Ç£¬»¡¶È
+// å†…éƒ¨è½¬è§’ï¼Œå¼§åº¦
 double HsCross::angRad() const
 {
     return angle;
 }
 
-// Ð´ÈëÄÚ²¿»¡¶È
+// å†™å…¥å†…éƒ¨å¼§åº¦
 void HsCross::setAngRad(double rad)
 {
     angle = rad;
 }
 
-// ×ª½ÇµÄ¶ÈÊý£¬Õý·½ÏòÓëÄÚ²¿ÏàÍ¬
+// è½¬è§’çš„åº¦æ•°ï¼Œæ­£æ–¹å‘ä¸Žå†…éƒ¨ç›¸åŒ
 double HsCross::angDeg() const
 {
     return toDegree(angle);
 }
 
-// °´¶ÈÊýÐ´Èë£¬Õý·½ÏòÓëÄÚ²¿ÏàÍ¬
+// æŒ‰åº¦æ•°å†™å…¥ï¼Œæ­£æ–¹å‘ä¸Žå†…éƒ¨ç›¸åŒ
 void HsCross::setAngDeg(double deg)
 {
     angle = toRadian(deg);
 }
 
-// °´ÏµÍ³½Ç¶Èµ¥Î»ºÍÕý·½Ïò¶ÁÈ¡
+// æŒ‰ç³»ç»Ÿè§’åº¦å•ä½å’Œæ­£æ–¹å‘è¯»å–
 double HsCross::ang() const
 {
     return fromAngle(angle);
 }
 
-// °´ÏµÍ³½Ç¶Èµ¥Î»ºÍÕý·½ÏòÐ´Èë
+// æŒ‰ç³»ç»Ÿè§’åº¦å•ä½å’Œæ­£æ–¹å‘å†™å…¥
 void HsCross::setAng(double external)
 {
     angle = toAngle(external);
 }
 
 
-// ¼ýÍ·Ä¬ÈÏ°´¼ýÉí±ÈÀý
+// ç®­å¤´é»˜è®¤æŒ‰ç®­èº«æ¯”ä¾‹
 HsArrow::HsArrow()
     : headLen(-1.0)
     , headWidth(-1.0)
 {
 }
 
-// ÓÉ¼ýÉí·½ÏòºÍ¼ýÍ·³ß´çËã³öÁ½Òí
+// ç”±ç®­èº«æ–¹å‘å’Œç®­å¤´å°ºå¯¸ç®—å‡ºä¸¤ç¿¼
 bool HsArrow::wings(Point2d* left, Point2d* right) const
 {
     if (!left || !right) {
@@ -108,7 +108,7 @@ bool HsArrow::wings(Point2d* left, Point2d* right) const
     return true;
 }
 
-// ¿ÕÕýÎÄ
+// ç©ºæ­£æ–‡
 HsText::HsText()
 {
 }

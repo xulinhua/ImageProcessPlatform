@@ -1,6 +1,6 @@
 /**
  * @file RuntimeViewDlg.cpp
- * @brief RuntimeViewDlgÊµÏÖ
+ * @brief RuntimeViewDlgå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -27,13 +27,13 @@ namespace Vision {
 namespace {
 
 struct ToolPick {
-    ObjectId id;     ///< ¹¤¾ß id
-    QString label;   ///< JobCfg Ãû / ¹¤¾ßÃû
-    ToolType type;   ///< ¹¤¾ß´óÀà
+    ObjectId id;     ///< å·¥å…· id
+    QString label;   ///< JobCfg å / å·¥å…·å
+    ToolType type;   ///< å·¥å…·å¤§ç±»
     ToolPick() : type(ToolType::Acquire) {}
 };
 
-// ÊÕ¼¯±¾¹¤Õ¾¹¤¾ß£¬¹©µ×Í¼Óëµş¼ÓÉ¸Ñ¡
+// æ”¶é›†æœ¬å·¥ç«™å·¥å…·ï¼Œä¾›åº•å›¾ä¸å åŠ ç­›é€‰
 std::vector<ToolPick> collectStationTools(const StationCfg* st)
 {
     std::vector<ToolPick> out;
@@ -54,7 +54,7 @@ std::vector<ToolPick> collectStationTools(const StationCfg* st)
     return out;
 }
 
-// ÏòÁ¿ÖĞÊÇ·ñÒÑÓĞ¸Ã id
+// å‘é‡ä¸­æ˜¯å¦å·²æœ‰è¯¥ id
 bool containsId(const std::vector<ObjectId>& ids, const ObjectId& id)
 {
     for (int i = 0; i < static_cast<int>(ids.size()); ++i) {
@@ -65,7 +65,7 @@ bool containsId(const std::vector<ObjectId>& ids, const ObjectId& id)
     return false;
 }
 
-// ÔÚÁĞ±íÖĞ°´ id ²éÕÒ¹¤¾ß
+// åœ¨åˆ—è¡¨ä¸­æŒ‰ id æŸ¥æ‰¾å·¥å…·
 const ToolPick* findPick(const std::vector<ToolPick>& tools, const ObjectId& id)
 {
     for (int i = 0; i < static_cast<int>(tools.size()); ++i) {
@@ -78,11 +78,11 @@ const ToolPick* findPick(const std::vector<ToolPick>& tools, const ObjectId& id)
 
 } // namespace
 
-// µ×Í¼ÏÂÀ­£º¿ÕÏîÎª¹¤Õ¾±¾ÅÄ£¬ÆäÓà½ö±¾Õ¾²É¼¯ÓëÔ¤´¦Àí
+// åº•å›¾ä¸‹æ‹‰ï¼šç©ºé¡¹ä¸ºå·¥ç«™æœ¬æ‹ï¼Œå…¶ä½™ä»…æœ¬ç«™é‡‡é›†ä¸é¢„å¤„ç†
 void RuntimePaneDlg::fillImageCombo()
 {
     m_img->clear();
-    m_img->addItem(T("¹¤Õ¾½á¹û£¨Ä¬ÈÏ£©"), QString());
+    m_img->addItem(T("å·¥ç«™ç»“æœï¼ˆé»˜è®¤ï¼‰"), QString());
     int sel = 0;
     const std::vector<ToolPick> tools = collectStationTools(m_station);
     bool found = m_pane.imageToolId.isNull();
@@ -99,18 +99,18 @@ void RuntimePaneDlg::fillImageCombo()
     }
     if (!found && !m_pane.imageToolId.isNull()) {
         const ToolPick* extra = findPick(tools, m_pane.imageToolId);
-        const QString label = extra ? extra->label : (qs(m_pane.imageToolId) + T("£¨·Ç±¾Õ¾£©"));
+        const QString label = extra ? extra->label : (qs(m_pane.imageToolId) + T("ï¼ˆéæœ¬ç«™ï¼‰"));
         m_img->addItem(label, qs(m_pane.imageToolId));
         sel = m_img->count() - 1;
     }
     m_img->setCurrentIndex(sel);
 }
 
-// µş¼ÓÁĞ±í£º½ö±¾Õ¾¹¤¾ß
+// å åŠ åˆ—è¡¨ï¼šä»…æœ¬ç«™å·¥å…·
 void RuntimePaneDlg::fillOverlayList()
 {
     m_ovList->clear();
-    QListWidgetItem* station = new QListWidgetItem(T("¹¤Õ¾½á¹ûÍ¼ĞÎ"));
+    QListWidgetItem* station = new QListWidgetItem(T("å·¥ç«™ç»“æœå›¾å½¢"));
     station->setFlags(station->flags() | Qt::ItemIsUserCheckable);
     station->setData(Qt::UserRole, QString());
     station->setCheckState(containsId(m_pane.overlayToolIds, ObjectId())
@@ -140,7 +140,7 @@ void RuntimePaneDlg::fillOverlayList()
         }
         const ToolPick* extra = findPick(tools, id);
         QListWidgetItem* it = new QListWidgetItem(
-            extra ? extra->label : (qs(id) + T("£¨·Ç±¾Õ¾£©")));
+            extra ? extra->label : (qs(id) + T("ï¼ˆéæœ¬ç«™ï¼‰")));
         it->setFlags(it->flags() | Qt::ItemIsUserCheckable);
         it->setData(Qt::UserRole, qs(id));
         it->setCheckState(Qt::Checked);
@@ -149,7 +149,7 @@ void RuntimePaneDlg::fillOverlayList()
     }
 }
 
-// µ¥´°¿Ú£ºÒ»ÕÅµ×Í¼ + ¶àÂ·µş¼Ó¹´Ñ¡
+// å•çª—å£ï¼šä¸€å¼ åº•å›¾ + å¤šè·¯å åŠ å‹¾é€‰
 RuntimePaneDlg::RuntimePaneDlg(Solution* sol, StationCfg* st, int index,
                                      const RuntimePane& pane, QWidget* parent)
     : QDialog(parent)
@@ -158,17 +158,17 @@ RuntimePaneDlg::RuntimePaneDlg(Solution* sol, StationCfg* st, int index,
     , m_pane(pane)
 {
     Q_UNUSED(m_sol);
-    setWindowTitle(T("´°¿ÚÅäÖÃ") + QLatin1String(" - ") + T("´°¿Ú") + QString::number(index + 1));
+    setWindowTitle(T("çª—å£é…ç½®") + QLatin1String(" - ") + T("çª—å£") + QString::number(index + 1));
     setModal(true);
     resize(420, 480);
 
     m_img = new QComboBox(this);
     fillImageCombo();
 
-    m_showOv = new QCheckBox(T("ÏÔÊ¾µş¼Ó"), this);
+    m_showOv = new QCheckBox(T("æ˜¾ç¤ºå åŠ "), this);
     m_showOv->setChecked(m_pane.showOverlay);
 
-    QLabel* ovHint = new QLabel(T("¹´Ñ¡Òªµşµ½¸Ãµ×Í¼ÉÏµÄ½á¹ûÍ¼ĞÎ£¬¿É¶àÑ¡£¨½ö±¾¹¤Õ¾¹¤¾ß£©¡£"), this);
+    QLabel* ovHint = new QLabel(T("å‹¾é€‰è¦å åˆ°è¯¥åº•å›¾ä¸Šçš„ç»“æœå›¾å½¢ï¼Œå¯å¤šé€‰ï¼ˆä»…æœ¬å·¥ç«™å·¥å…·ï¼‰ã€‚"), this);
     ovHint->setWordWrap(true);
     ovHint->setObjectName(QLatin1String("hint"));
 
@@ -181,20 +181,20 @@ RuntimePaneDlg::RuntimePaneDlg(Solution* sol, StationCfg* st, int index,
     connect(box, SIGNAL(rejected()), this, SLOT(reject()));
 
     QFormLayout* form = new QFormLayout();
-    form->addRow(T("µ×Í¼"), m_img);
+    form->addRow(T("åº•å›¾"), m_img);
     form->addRow(m_showOv);
 
     QVBoxLayout* root = new QVBoxLayout(this);
     prependFramelessTitleBar(this, root, windowTitle());
     QVBoxLayout* lay = framelessDialogContentLayout(this, root);
     lay->addLayout(form);
-    lay->addWidget(new QLabel(T("µş¼Ó¹¤¾ß"), this));
+    lay->addWidget(new QLabel(T("å åŠ å·¥å…·"), this));
     lay->addWidget(ovHint);
     lay->addWidget(m_ovList, 1);
     lay->addWidget(box);
 }
 
-// ¶Á»Øµ×Í¼Óë¹´Ñ¡µÄµş¼Ó
+// è¯»å›åº•å›¾ä¸å‹¾é€‰çš„å åŠ 
 RuntimePane RuntimePaneDlg::pane() const
 {
     RuntimePane p = m_pane;
@@ -211,19 +211,19 @@ RuntimePane RuntimePaneDlg::pane() const
     return p;
 }
 
-// Ò»ĞĞÕªÒª£ºµ×Í¼Ãû + µş¼Ó¹¤¾ßÃû
+// ä¸€è¡Œæ‘˜è¦ï¼šåº•å›¾å + å åŠ å·¥å…·å
 static QString paneSummary(const RuntimePane& pane, const Solution* sol)
 {
-    QString img = T("¹¤Õ¾½á¹û");
+    QString img = T("å·¥ç«™ç»“æœ");
     if (!pane.imageToolId.isNull() && sol) {
         const ToolCfg* t = sol->findTool(pane.imageToolId);
         img = t ? qs(t->name) : qs(pane.imageToolId);
     }
     QString ov;
     if (!pane.showOverlay) {
-        ov = T("µş¼Ó¹Ø±Õ");
+        ov = T("å åŠ å…³é—­");
     } else if (pane.overlayToolIds.empty()) {
-        ov = T("ÎŞµş¼Ó");
+        ov = T("æ— å åŠ ");
     } else {
         for (int i = 0; i < static_cast<int>(pane.overlayToolIds.size()); ++i) {
             if (!ov.isEmpty()) {
@@ -231,29 +231,29 @@ static QString paneSummary(const RuntimePane& pane, const Solution* sol)
             }
             const ObjectId id = pane.overlayToolIds[static_cast<size_t>(i)];
             if (id.isNull()) {
-                ov += T("¹¤Õ¾½á¹û");
+                ov += T("å·¥ç«™ç»“æœ");
                 continue;
             }
             const ToolCfg* t = sol ? sol->findTool(id) : nullptr;
             ov += t ? qs(t->name) : qs(id);
         }
     }
-    return T("µ×Í¼") + QLatin1String(": ") + img + QLatin1String("    ")
-        + T("µş¼Ó") + QLatin1String(": ") + ov;
+    return T("åº•å›¾") + QLatin1String(": ") + img + QLatin1String("    ")
+        + T("å åŠ ") + QLatin1String(": ") + ov;
 }
 
-// »­ÃæÅäÖÃ£º·½°¸¼¶¶à¹¤Õ¾²¼¾Ö + µ±Ç°¹¤Õ¾´°¸ñ
+// ç”»é¢é…ç½®ï¼šæ–¹æ¡ˆçº§å¤šå·¥ç«™å¸ƒå±€ + å½“å‰å·¥ç«™çª—æ ¼
 RuntimeViewDlg::RuntimeViewDlg(Solution* sol, StationCfg* st, QWidget* parent)
     : QDialog(parent)
     , m_sol(sol)
     , m_station(st)
 {
-    setWindowTitle(T("»­ÃæÅäÖÃ"));
+    setWindowTitle(T("ç”»é¢é…ç½®"));
     setModal(true);
     resize(760, 580);
 
     m_shellLayout = new QComboBox(this);
-    // Title ·µ»Ø UTF-8 Ô´×Ö·û´®
+    // Title è¿”å› UTF-8 æºå­—ç¬¦ä¸²
     m_shellLayout->addItem(QString::fromUtf8(runtimeStationLayoutTitle(RuntimeStationsTabs).c_str()),
                            static_cast<int>(RuntimeStationsTabs));
     m_shellLayout->addItem(QString::fromUtf8(runtimeStationLayoutTitle(RuntimeStationsTiles).c_str()),
@@ -286,29 +286,29 @@ RuntimeViewDlg::RuntimeViewDlg(Solution* sol, StationCfg* st, QWidget* parent)
     QWidget* gridPick = new QWidget(this);
     QHBoxLayout* gridLay = new QHBoxLayout(gridPick);
     gridLay->setContentsMargins(0, 0, 0, 0);
-    gridLay->addWidget(new QLabel(T("ĞĞÊı"), gridPick));
+    gridLay->addWidget(new QLabel(T("è¡Œæ•°"), gridPick));
     gridLay->addWidget(m_rowCombo);
     gridLay->addSpacing(16);
-    gridLay->addWidget(new QLabel(T("ÁĞÊı"), gridPick));
+    gridLay->addWidget(new QLabel(T("åˆ—æ•°"), gridPick));
     gridLay->addWidget(m_colCombo);
     gridLay->addStretch();
 
-    m_stats = new QCheckBox(T("ÏÔÊ¾²úÁ¿Í³¼Æ"), this);
-    m_hist = new QCheckBox(T("ÏÔÊ¾½á¹ûÀúÊ·"), this);
-    m_side = new QCheckBox(T("ÏÔÊ¾¿ªÊ¼Í£Ö¹"), this);
+    m_stats = new QCheckBox(T("æ˜¾ç¤ºäº§é‡ç»Ÿè®¡"), this);
+    m_hist = new QCheckBox(T("æ˜¾ç¤ºç»“æœå†å²"), this);
+    m_side = new QCheckBox(T("æ˜¾ç¤ºå¼€å§‹åœæ­¢"), this);
 
     QWidget* flags = new QWidget(this);
     QFormLayout* form = new QFormLayout(flags);
     form->setContentsMargins(0, 0, 0, 0);
-    form->addRow(T("¶à¹¤Õ¾²¼¾Ö"), m_shellLayout);
-    form->addRow(T("±à¼­¹¤Õ¾"), m_stationCombo);
-    form->addRow(T("Í¼Ïñ´°¿Ú²¼¾Ö"), gridPick);
+    form->addRow(T("å¤šå·¥ç«™å¸ƒå±€"), m_shellLayout);
+    form->addRow(T("ç¼–è¾‘å·¥ç«™"), m_stationCombo);
+    form->addRow(T("å›¾åƒçª—å£å¸ƒå±€"), gridPick);
     form->addRow(m_side);
     form->addRow(m_stats);
     form->addRow(m_hist);
 
     QLabel* hint = new QLabel(
-        T("¶à¹¤Õ¾²¼¾ÖÎª·½°¸¼¶£º·ÖÒ³Ç©Ò»´Î¿´Ò»¸ö¹¤Õ¾£¬Ò»ÆÁÆ´ÌùÍ¬Ê±ÏÔÊ¾¡£ÏÂ·½´°¸ñ½ö¶Ôµ±Ç°±à¼­¹¤Õ¾ÉúĞ§£»µ×Í¼/µş¼ÓÖ»ÁĞ±¾Õ¾¹¤¾ß¡£"),
+        T("å¤šå·¥ç«™å¸ƒå±€ä¸ºæ–¹æ¡ˆçº§ï¼šåˆ†é¡µç­¾ä¸€æ¬¡çœ‹ä¸€ä¸ªå·¥ç«™ï¼Œä¸€å±æ‹¼è´´åŒæ—¶æ˜¾ç¤ºã€‚ä¸‹æ–¹çª—æ ¼ä»…å¯¹å½“å‰ç¼–è¾‘å·¥ç«™ç”Ÿæ•ˆï¼›åº•å›¾/å åŠ åªåˆ—æœ¬ç«™å·¥å…·ã€‚"),
         this);
     hint->setWordWrap(true);
     hint->setObjectName(QLatin1String("hint"));
@@ -321,12 +321,12 @@ RuntimeViewDlg::RuntimeViewDlg(Solution* sol, StationCfg* st, QWidget* parent)
         QHBoxLayout* row = new QHBoxLayout(m_lines[i]);
         row->setContentsMargins(0, 0, 0, 0);
         m_en[i] = new QCheckBox(m_lines[i]);
-        m_en[i]->setToolTip(T("Ê¹ÄÜ"));
-        QLabel* idx = new QLabel(T("´°¿Ú") + QString::number(i + 1), m_lines[i]);
+        m_en[i]->setToolTip(T("ä½¿èƒ½"));
+        QLabel* idx = new QLabel(T("çª—å£") + QString::number(i + 1), m_lines[i]);
         idx->setMinimumWidth(48);
         m_summary[i] = new QLabel(m_lines[i]);
         m_summary[i]->setObjectName(QLatin1String("hint"));
-        m_config[i] = new QPushButton(T("ÅäÖÃ¡­"), m_lines[i]);
+        m_config[i] = new QPushButton(T("é…ç½®â€¦"), m_lines[i]);
         m_config[i]->setProperty("pane", i);
         connect(m_config[i], SIGNAL(clicked()), this, SLOT(onConfigPane()));
         row->addWidget(m_en[i]);
@@ -352,7 +352,7 @@ RuntimeViewDlg::RuntimeViewDlg(Solution* sol, StationCfg* st, QWidget* parent)
     loadStationView();
 }
 
-// Á½¸ö´°¸ñÊÇ·ñÏàÍ¬
+// ä¸¤ä¸ªçª—æ ¼æ˜¯å¦ç›¸åŒ
 static bool runtimePaneSame(const RuntimePane& a, const RuntimePane& b)
 {
     if (a.imageToolId != b.imageToolId || a.showOverlay != b.showOverlay || a.enabled != b.enabled) {
@@ -369,7 +369,7 @@ static bool runtimePaneSame(const RuntimePane& a, const RuntimePane& b)
     return true;
 }
 
-// Á½·İÔËĞĞ»­ÃæÊÇ·ñÏàÍ¬
+// ä¸¤ä»½è¿è¡Œç”»é¢æ˜¯å¦ç›¸åŒ
 static bool runtimeViewSame(const RuntimeView& a, const RuntimeView& b)
 {
     if (a.rows != b.rows || a.cols != b.cols || a.showStats != b.showStats
@@ -384,7 +384,7 @@ static bool runtimeViewSame(const RuntimeView& a, const RuntimeView& b)
     }
     return true;
 }
-// °Ñµ±Ç° UI Ğ´»Ø¹¤Õ¾
+// æŠŠå½“å‰ UI å†™å›å·¥ç«™
 void RuntimeViewDlg::flushCurrentStation()
 {
     if (!m_station) {
@@ -410,7 +410,7 @@ void RuntimeViewDlg::flushCurrentStation()
     m_station->runtimeView = v;
 }
 
-// ´Óµ±Ç°¹¤Õ¾¼ÓÔØ´°¸ñ UI
+// ä»å½“å‰å·¥ç«™åŠ è½½çª—æ ¼ UI
 void RuntimeViewDlg::loadStationView()
 {
     RuntimeView view;
@@ -435,7 +435,7 @@ void RuntimeViewDlg::loadStationView()
     applyRowVisible();
 }
 
-// ÇĞ»»±à¼­¹¤Õ¾
+// åˆ‡æ¢ç¼–è¾‘å·¥ç«™
 void RuntimeViewDlg::onStationChanged()
 {
     flushCurrentStation();
@@ -446,7 +446,7 @@ void RuntimeViewDlg::onStationChanged()
     loadStationView();
 }
 
-// Ë¢ĞÂÒ»ĞĞÕªÒª
+// åˆ·æ–°ä¸€è¡Œæ‘˜è¦
 void RuntimeViewDlg::refreshSummary(int index)
 {
     if (index < 0 || index > 8) {
@@ -455,13 +455,13 @@ void RuntimeViewDlg::refreshSummary(int index)
     m_summary[index]->setText(paneSummary(m_panes[index], m_sol));
 }
 
-// ĞĞÁĞ±äÁËÖ»ÁôÓÃµÃµ½µÄ´°¸ñĞĞ
+// è¡Œåˆ—å˜äº†åªç•™ç”¨å¾—åˆ°çš„çª—æ ¼è¡Œ
 void RuntimeViewDlg::onLayoutChanged()
 {
     applyRowVisible();
 }
 
-// ´ò¿ª¸ÃĞĞµÄ´°¿ÚÅäÖÃ
+// æ‰“å¼€è¯¥è¡Œçš„çª—å£é…ç½®
 void RuntimeViewDlg::onConfigPane()
 {
     QPushButton* btn = qobject_cast<QPushButton*>(sender());
@@ -483,7 +483,7 @@ void RuntimeViewDlg::onConfigPane()
     refreshSummary(i);
 }
 
-// °´µ±Ç°ĞĞÁĞÏÔÒş 1..9 ĞĞ
+// æŒ‰å½“å‰è¡Œåˆ—æ˜¾éš 1..9 è¡Œ
 void RuntimeViewDlg::applyRowVisible()
 {
     int rows = m_rowCombo->currentData().toInt();
@@ -506,7 +506,7 @@ void RuntimeViewDlg::applyRowVisible()
     }
 }
 
-// Ğ´»Ø·½°¸²¼¾ÖÓëµ±Ç°¹¤Õ¾
+// å†™å›æ–¹æ¡ˆå¸ƒå±€ä¸å½“å‰å·¥ç«™
 void RuntimeViewDlg::onSave()
 {
     if (m_sol) {

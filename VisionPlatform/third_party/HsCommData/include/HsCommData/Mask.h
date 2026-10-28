@@ -1,6 +1,6 @@
 /**
  * @file Mask.h
- * @brief MaskÍ·ÎÄ¼ş
+ * @brief Maskå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -18,19 +18,19 @@ namespace HsCommData {
 
 /**
  * @class MaskP
- * @brief Óëµ×Í¼Í¬³ß´çµÄ 8bit ÑÚÂë¡£ÏñËØ 0 ÎªÍ¸Ã÷£¬²»º¬ÑÕÉ«
+ * @brief ä¸åº•å›¾åŒå°ºå¯¸çš„ 8bit æ©ç ã€‚åƒç´  0 ä¸ºé€æ˜ï¼Œä¸å«é¢œè‰²
  */
 struct HSCOMMDATA_EXPORT MaskP {
-    int32_t width;                     ///< ¿í
-    int32_t height;                    ///< ¸ß
-    std::vector<unsigned char> pixels; ///< ĞĞÓÅÏÈ£¬size = width*height
+    int32_t width;                     ///< å®½
+    int32_t height;                    ///< é«˜
+    std::vector<unsigned char> pixels; ///< è¡Œä¼˜å…ˆï¼Œsize = width*height
 
-    MaskP(); ///< ¿ÕÑÚÂë
-    /** @brief Í¬ÀàĞÍ¿½±´£¬ÏñËØ»º³åÕû·İ¸´ÖÆ */
+    MaskP(); ///< ç©ºæ©ç 
+    /** @brief åŒç±»å‹æ‹·è´ï¼Œåƒç´ ç¼“å†²æ•´ä»½å¤åˆ¶ */
     MaskP(const MaskP& other);
-    /** @brief Í¬ÀàĞÍ¸³Öµ£¬ÏñËØ»º³åÕû·İ¸´ÖÆ */
+    /** @brief åŒç±»å‹èµ‹å€¼ï¼Œåƒç´ ç¼“å†²æ•´ä»½å¤åˆ¶ */
     MaskP& operator=(const MaskP& other);
-    /** @brief ³ß´ç»ò»º³å·Ç·¨ÔòÎª¿Õ */
+    /** @brief å°ºå¯¸æˆ–ç¼“å†²éæ³•åˆ™ä¸ºç©º */
     bool isEmpty() const;
 };
 

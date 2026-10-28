@@ -1,6 +1,6 @@
 /**
  * @file MainWindow.h
- * @brief MainWindowÍ·ÎÄ¼ş
+ * @brief MainWindowå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -39,23 +39,23 @@ class MainWindow;
 
 /**
  * @class LiveStationSlot
- * @brief ÔËĞĞÌ¬Ò»¸ö¹¤Õ¾µÄÊµÀı¡¢Ñ­»·Ïß³ÌÓë²úÁ¿¼ÆÊı
+ * @brief è¿è¡Œæ€ä¸€ä¸ªå·¥ç«™çš„å®ä¾‹ã€å¾ªç¯çº¿ç¨‹ä¸äº§é‡è®¡æ•°
  */
 struct LiveStationSlot {
-    MainWindow* window;   ///< »ØÍ¶ UI µÄÖ÷´°
-    ObjectId stationId;   ///< ¹¤Õ¾ id
-    Station* station;     ///< ÔËĞĞÊµÀı£¨ÓµÓĞ£©
-    StationLoop loop;     ///< ×¨ÊôÑ­»·
-    int total;            ///< ²úÁ¿
+    MainWindow* window;   ///< å›æŠ• UI çš„ä¸»çª—
+    ObjectId stationId;   ///< å·¥ç«™ id
+    Station* station;     ///< è¿è¡Œå®ä¾‹ï¼ˆæ‹¥æœ‰ï¼‰
+    StationLoop loop;     ///< ä¸“å±å¾ªç¯
+    int total;            ///< äº§é‡
     int pass;             ///< OK
     int fail;             ///< NG
-    std::mutex uiMu;      ///< ±£»¤´ıË¢½á¹ûÓë´ı¼Ó¼ÆÊı
-    StationRunRst pendingResult; ///< ×î½üÒ»ÅÄ£¨ºÏ²¢Ë¢ĞÂ£©
-    int pendingTotal;     ///< ´ı²¢Èë UI µÄ²úÁ¿ÔöÁ¿
-    int pendingPass;      ///< ´ı²¢Èë OK
-    int pendingFail;      ///< ´ı²¢Èë NG
-    std::atomic<bool> uiQueued; ///< ÊÇ·ñÒÑÓĞ Queued Ë¢ÆÁÈÎÎñ
-    long long lastHistMs;    ///< ÉÏ´Î×·¼ÓÀúÊ·µÄÊ±¿Ì£¨½ÚÁ÷£©
+    std::mutex uiMu;      ///< ä¿æŠ¤å¾…åˆ·ç»“æœä¸å¾…åŠ è®¡æ•°
+    StationRunRst pendingResult; ///< æœ€è¿‘ä¸€æ‹ï¼ˆåˆå¹¶åˆ·æ–°ï¼‰
+    int pendingTotal;     ///< å¾…å¹¶å…¥ UI çš„äº§é‡å¢é‡
+    int pendingPass;      ///< å¾…å¹¶å…¥ OK
+    int pendingFail;      ///< å¾…å¹¶å…¥ NG
+    std::atomic<bool> uiQueued; ///< æ˜¯å¦å·²æœ‰ Queued åˆ·å±ä»»åŠ¡
+    long long lastHistMs;    ///< ä¸Šæ¬¡è¿½åŠ å†å²çš„æ—¶åˆ»ï¼ˆèŠ‚æµï¼‰
     LiveStationSlot()
         : window(nullptr)
         , station(nullptr)
@@ -72,239 +72,259 @@ struct LiveStationSlot {
 
 /**
  * @class MainWindow
- * @brief Ö÷´°£ºÉè¼Æ/ÔËĞĞÒ³ÇĞ»»¡¢·½°¸´æÈ¡¡¢È¨ÏŞÕ¢ÃÅ¡£ÊµÏÖ IRunListener / ISessionListener
+ * @brief ä¸»çª—ï¼šè®¾è®¡/è¿è¡Œé¡µåˆ‡æ¢ã€æ–¹æ¡ˆå­˜å–ã€æƒé™é—¸é—¨ã€‚å®ç° IRunListener / ISessionListener
  */
 class VISION_UI_API MainWindow : public QMainWindow, public IRunListener, public ISessionListener {
     Q_OBJECT
 public:
-    /** @brief session ²»ÓµÓĞ£¬ÓÉ VisionApp ³ÖÓĞ */
+    /** @brief session ä¸æ‹¥æœ‰ï¼Œç”± VisionApp æŒæœ‰ */
     explicit MainWindow(Session* session, QWidget* parent = 0);
-    /** @brief ÊÍ·Å¹¤Õ¾ÔËĞĞÊµÀı */
+    /** @brief é‡Šæ”¾å·¥ç«™è¿è¡Œå®ä¾‹ */
     virtual ~MainWindow();
 
-    /** @brief ÔËĞĞÈÕÖ¾ sink£ºÅÅ¶ÓÇĞµ½ UI Ïß³ÌÔÙË¢Ãæ°å */
+    /** @brief è¿è¡Œæ—¥å¿— sinkï¼šæ’é˜Ÿåˆ‡åˆ° UI çº¿ç¨‹å†åˆ·é¢æ¿ */
     void onRunLog(const RunLogEvent& ev);
-    /** @brief µÇÂ¼ÓÃ»§±ä»¯£¬Ë¢ĞÂ¶¯×÷¿ÉÓÃĞÔ */
+    /** @brief ç™»å½•ç”¨æˆ·å˜åŒ–ï¼Œåˆ·æ–°åŠ¨ä½œå¯ç”¨æ€§ */
     void onUserChanged();
-    /** @brief ÓïÑÔ/Ö÷ÌâÈÈÇĞ»»ºóË¢Ö÷´°Óë¹¤×÷ÇøÎÄ°¸ */
+    /** @brief è¯­è¨€/ä¸»é¢˜çƒ­åˆ‡æ¢ååˆ·ä¸»çª—ä¸å·¥ä½œåŒºæ–‡æ¡ˆ */
     void onUiLocaleChanged();
+    /**
+     * @brief æ‰˜ç›˜å¸¸é©»ã€‚å…³çª—å£åªè—èµ·æ¥
+     * @param on ä¸ºçœŸæ—¶å…³é—­ä¸»çª—å£å›åˆ°æ‰˜ç›˜
+     */
+    void setResidentTray(bool on);
+    /**
+     * @brief åˆ†å¸ƒå¼æ—¶å·¥ç«™åœ¨ Vision.Station é‡Œè·‘ï¼Œç•Œé¢åªæ”¶ JPEG
+     * @param on å•æœºä¸ºå‡ï¼Œå·¥ç«™åœ¨æœ¬è¿›ç¨‹é‡Œè·‘
+     */
+    void setServiceRun(bool on);
+    /** @brief æ‰˜ç›˜é€‰é€€å‡ºæ—¶æ‰çœŸæ­£å…³æ‰è¿›ç¨‹ */
+    void setForceQuit(bool on);
+    /** @brief åˆ‡åˆ°è¿è¡Œé¡µã€‚æ‰˜ç›˜ã€Œè¿è¡Œç”»é¢ã€è°ƒç”¨ */
+    void showRuntimePage();
 
 protected:
-    /** @brief Î´±£´æÔòÑ¯ÎÊ */
+    /** @brief æœªä¿å­˜åˆ™è¯¢é—® */
     void closeEvent(QCloseEvent* e);
 
 private slots:
-    /** @brief ÇĞÉè¼ÆÌ¬£¨¿ÉÄÜÌáÈ¨£© */
+    /** @brief åˆ‡è®¾è®¡æ€ï¼ˆå¯èƒ½ææƒï¼‰ */
     void switchDesign();
-    /** @brief ÇĞÔËĞĞÌ¬ */
+    /** @brief åˆ‡è¿è¡Œæ€ */
     void switchRuntime();
-    /** @brief ÇĞ¸´¼ìÌ¬ */
+    /** @brief åˆ‡å¤æ£€æ€ */
     void switchRecheck();
-    /** @brief ¸´¼ìÅúÅÜÇ°°ó¶¨ËùÑ¡¹¤Õ¾ÔËĞĞÊµÀı */
+    /** @brief å¤æ£€æ‰¹è·‘å‰ç»‘å®šæ‰€é€‰å·¥ç«™è¿è¡Œå®ä¾‹ */
     void onRecheckPrepareStation(const QString& stationId);
     /**
-     * @brief ¸´¼ìÌø×ªÉè¼Æµ÷ÊÔ
-     * @param jobId Á÷³Ì id
-     * @param toolId ¹¤¾ß id
-     * @param imagePath ¸´¼ìÍ¼Â·¾¶
+     * @brief å¤æ£€è·³è½¬è®¾è®¡è°ƒè¯•
+     * @param jobId æµç¨‹ id
+     * @param toolId å·¥å…· id
+     * @param imagePath å¤æ£€å›¾è·¯å¾„
      */
     void onRecheckOpenDebug(const QString& jobId, const QString& toolId, const QString& imagePath);
-    /** @brief ĞÂ½¨·½°¸ */
+    /** @brief æ–°å»ºæ–¹æ¡ˆ */
     void newSolution();
-    /** @brief ´ò¿ª·½°¸ */
+    /** @brief æ‰“å¼€æ–¹æ¡ˆ */
     void openSolution();
-    /** @brief ±£´æ·½°¸ */
+    /** @brief ä¿å­˜æ–¹æ¡ˆ */
     void saveSolutionFile();
-    /** @brief Áí´æ·½°¸ */
+    /** @brief å¦å­˜æ–¹æ¡ˆ */
     void saveSolutionAs();
-    /** @brief ´ò¿ªµ×Í¼ÎÄ¼ş£¨µ÷ÊÔ£© */
+    /** @brief æ‰“å¼€åº•å›¾æ–‡ä»¶ï¼ˆè°ƒè¯•ï¼‰ */
     void openImage();
-    /** @brief ¹¤Õ¾¹ÜÀí */
+    /** @brief å·¥ç«™ç®¡ç† */
     void openStations();
-    /** @brief Éè¼ÆÌ¬¿ì½İĞÂ½¨¹¤Õ¾ */
+    /** @brief è®¾è®¡æ€å¿«æ·æ–°å»ºå·¥ç«™ */
     void newStation();
-    /** @brief Éè¼ÆÌ¬¿ì½İĞÂ½¨Á÷³Ì£¨¹Òµ½µ±Ç°¹¤Õ¾£© */
+    /** @brief è®¾è®¡æ€å¿«æ·æ–°å»ºæµç¨‹ï¼ˆæŒ‚åˆ°å½“å‰å·¥ç«™ï¼‰ */
     void newJob();
-    /** @brief Éè±¸¹ÜÀí */
+    /** @brief è®¾å¤‡ç®¡ç† */
     void openDevices();
-    /** @brief ±ê¶¨¹ÜÀí */
+    /** @brief æ ‡å®šç®¡ç† */
     void openCalib();
-    /** @brief ´ò¿ª¹¤¾ß¿â¹ÜÀí£¬¿ÉÈÈ¼ÓÔØĞÂ²å¼ş */
+    /** @brief æ‰“å¼€å·¥å…·åº“ç®¡ç†ï¼Œå¯çƒ­åŠ è½½æ–°æ’ä»¶ */
     void openToolLib();
-    /** @brief Í¨ĞÅ¹ÜÀí */
+    /** @brief é€šä¿¡ç®¡ç† */
     void openComm();
-    /** @brief ÓÃ»§¹ÜÀí */
+    /** @brief ç”¨æˆ·ç®¡ç† */
     void openUsers();
-    /** @brief È¨ÏŞËµÃ÷£¨Ö»¶Á±í£© */
+    /** @brief æƒé™è¯´æ˜ï¼ˆåªè¯»è¡¨ï¼‰ */
     void openPerms();
-    /** @brief ´ò¿ª±¾»úÉèÖÃÖĞĞÄ */
+    /** @brief æ‰“å¼€æœ¬æœºè®¾ç½®ä¸­å¿ƒ */
     void openAppSettings();
-    /** @brief ÔËĞĞÖ÷½çÃæ»­ÃæÅäÖÃ */
+    /** @brief è¿è¡Œä¸»ç•Œé¢ç”»é¢é…ç½® */
     void openRuntimeView();
-    /** @brief ÈÕÖ¾¹Ü¿Ø */
+    /** @brief æ—¥å¿—ç®¡æ§ */
     void openLogs();
-    /** @brief ¸Äµ±Ç°ÓÃ»§¿ÚÁî */
+    /** @brief æ”¹å½“å‰ç”¨æˆ·å£ä»¤ */
     void changePwd();
-    /** @brief ×¢Ïú */
+    /** @brief æ³¨é”€ */
     void logout();
-    /** @brief ¹ØÓÚ¶Ô»°¿ò */
+    /** @brief å…³äºå¯¹è¯æ¡† */
     void about();
-    /** @brief ´ò¿ª°æ±¾¹ÜÀí¶Ô»°¿ò */
+    /** @brief æ‰“å¼€ç‰ˆæœ¬ç®¡ç†å¯¹è¯æ¡† */
     void openVersionManager();
     void openParaAdapt();
     void openComposites();
-    /** @brief Éè¼ÆÊ÷Ñ¡ÖĞ¹¤Õ¾ */
+    /** @brief è®¾è®¡æ ‘é€‰ä¸­å·¥ç«™ */
     void onStation(const QString& id);
-    /** @brief Éè¼ÆÊ÷Ñ¡ÖĞ JobCfg */
+    /** @brief è®¾è®¡æ ‘é€‰ä¸­ JobCfg */
     void onJob(const QString& id);
-    /** @brief Éè¼ÆÊ÷Ñ¡ÖĞÉè±¸ */
+    /** @brief è®¾è®¡æ ‘é€‰ä¸­è®¾å¤‡ */
     void onDevice(const QString& id);
-    /** @brief Éè¼ÆÊ÷Ñ¡ÖĞ¹¤¾ß */
+    /** @brief è®¾è®¡æ ‘é€‰ä¸­å·¥å…· */
     void onTool(const QString& id);
-    /** @brief ÅÜµ±Ç°¹¤¾ß */
+    /** @brief è·‘å½“å‰å·¥å…· */
     void runThisTool();
-    /** @brief ÅÜµ±Ç° JobCfg */
+    /** @brief è·‘å½“å‰ JobCfg */
     void runThisJob();
-    /** @brief °´ id ÅÜ JobCfg */
+    /** @brief æŒ‰ id è·‘ JobCfg */
     void runJobById(const QString& jobId);
-    /** @brief Ñ­»·ÅÜÈ«²¿¹¤Õ¾ */
+    /** @brief å¾ªç¯è·‘å…¨éƒ¨å·¥ç«™ */
     void startStation();
-    /** @brief Èí¼ş´¥·¢£ºµÈ´¥·¢Ä£Ê½ÏÂÅÜÒ»ÂÖ */
+    /** @brief è½¯ä»¶è§¦å‘ï¼šç­‰è§¦å‘æ¨¡å¼ä¸‹è·‘ä¸€è½® */
     void pulseSoftTrigger();
-    /** @brief Í£Ö¹Ñ­»· */
+    /** @brief åœæ­¢å¾ªç¯ */
     void stopStation();
-    /** @brief ÇåÁã²úÁ¿ */
+    /** @brief æ¸…é›¶äº§é‡ */
     void resetCount();
-    /** @brief UI Ïß³ÌĞ´ÈÕÖ¾£¨ÕûĞĞ£© */
+    /** @brief UI çº¿ç¨‹å†™æ—¥å¿—ï¼ˆæ•´è¡Œï¼‰ */
     void onEngineLog(const QString& line);
-    /** @brief UI Ïß³ÌĞ´ÔËĞĞÈÕÖ¾£¨¼¶±ğ + ÕıÎÄ£© */
+    /** @brief UI çº¿ç¨‹å†™è¿è¡Œæ—¥å¿—ï¼ˆçº§åˆ« + æ­£æ–‡ï¼‰ */
     void onEngineRunLog(const QString& level, const QString& message);
-    /** @brief Éè¼ÆÌ¬Òì²½ÅÜ¹¤¾ßÍê³É£¨outPtr Îª¶ÑÉÏ ToolOut*£¬±¾²ÛÊÍ·Å£© */
+    /** @brief è®¾è®¡æ€å¼‚æ­¥è·‘å·¥å…·å®Œæˆï¼ˆoutPtr ä¸ºå †ä¸Š ToolOut*ï¼Œæœ¬æ§½é‡Šæ”¾ï¼‰ */
     void onDesignToolFinished(const QString& toolId, void* outPtr);
-    /** @brief Éè¼ÆÌ¬Òì²½ÅÜÁ÷³ÌÍê³É£¨outPtr Îª¶ÑÉÏ ToolOut*£© */
+    /** @brief è®¾è®¡æ€å¼‚æ­¥è·‘æµç¨‹å®Œæˆï¼ˆoutPtr ä¸ºå †ä¸Š ToolOut*ï¼‰ */
     void onDesignJobFinished(const QString& jobId, void* outPtr);
-    /** @brief ÔËĞĞÌ¬ÖÜÆÚÍê³É£¨resultPtr Îª¶ÑÉÏ CycleUiPayload*£© */
+    /** @brief è¿è¡Œæ€å‘¨æœŸå®Œæˆï¼ˆresultPtr ä¸ºå †ä¸Š CycleUiPayload*ï¼‰ */
     void onStationCycleFinished(void* resultPtr);
-    /** @brief ×´Ì¬À¸Ê±ÖÓ */
+    /** @brief çŠ¶æ€æ æ—¶é’Ÿ */
     void onClock();
-    /** @brief Ë¢ĞÂ´°¿Ú±êÌâ */
+    /** @brief çª—å£å¯è§æ—¶ä»å…±äº«å†…å­˜åˆ·è¿è¡Œç”»é¢ */
+    void pullSharedPreview();
+    /** @brief åˆ·æ–°çª—å£æ ‡é¢˜ */
     void updateTitle();
 
 private:
-    /** @brief ¹¤Õ¾Ñ­»·Ïß³Ì»Øµ÷ ¡ú Queued µ½ UI */
+    /** @brief å·¥ç«™å¾ªç¯çº¿ç¨‹å›è°ƒ â†’ Queued åˆ° UI */
     static void stationCycleThunk(void* user, const StationRunRst& result);
-    /** @brief ÎŞÉè¼ÆÈ¨ÏŞÔòµ¯µÇÂ¼ÌáÊ¾ */
+    /** @brief æ— è®¾è®¡æƒé™åˆ™å¼¹ç™»å½•æç¤º */
     bool ensureDesignAccess();
-    /** @brief ÎŞÈ¨ÏŞÔòÌáÊ¾ */
+    /** @brief æ— æƒé™åˆ™æç¤º */
     bool ensurePerm(Perm perm, const QString& deniedText);
-    /** @brief dirty Ê±Ñ¯ÎÊ±£´æ */
+    /** @brief dirty æ—¶è¯¢é—®ä¿å­˜ */
     bool confirmSave();
-    /** @brief Ó¦ÓÃÉè¼Æ/ÔËĞĞÄ£Ê½ */
+    /** @brief åº”ç”¨è®¾è®¡/è¿è¡Œæ¨¡å¼ */
     void applyMode(AppMode mode);
-    /** @brief °´È¨ÏŞË¢ĞÂ²Ëµ¥/¹¤¾ßÀ¸ */
+    /** @brief æŒ‰æƒé™åˆ·æ–°èœå•/å·¥å…·æ  */
     void updateActions();
-    /** @brief ÖØ½¨²Ëµ¥À¸£¨ÓïÑÔÈÈÇĞ»»£© */
+    /** @brief é‡å»ºèœå•æ ï¼ˆè¯­è¨€çƒ­åˆ‡æ¢ï¼‰ */
     void buildMenus();
-    /** @brief Ë¢ĞÂÖ÷´°¾²Ì¬ÎÄ°¸ */
+    /** @brief åˆ·æ–°ä¸»çª—é™æ€æ–‡æ¡ˆ */
     void retranslateUi();
-    /** @brief ¼ÇÏÂµ±Ç°¿É´æÅÌÄÚÈİ£¬×÷ÎªÎ´¸Ä¶¯»ùÏß */
+    /** @brief è®°ä¸‹å½“å‰å¯å­˜ç›˜å†…å®¹ï¼Œä½œä¸ºæœªæ”¹åŠ¨åŸºçº¿ */
     void capturePersistBase();
-    /** @brief ÓÃ¿É´æÅÌÄÚÈİ¶ÔÕÕ»ùÏß£¬Ë¢ĞÂ dirty */
+    /** @brief ç”¨å¯å­˜ç›˜å†…å®¹å¯¹ç…§åŸºçº¿ï¼Œåˆ·æ–° dirty */
     void syncDirty();
-    /** @brief Çå dirty */
+    /** @brief æ¸… dirty */
     void markSaved();
-    /** @brief ´ò¿ª¹¤Õ¾±à¼­ */
+    /** @brief æ‰“å¼€å·¥ç«™ç¼–è¾‘ */
     void openStationDlg(const QString& id);
-    /** @brief ´ò¿ªÉè±¸±à¼­ */
+    /** @brief æ‰“å¼€è®¾å¤‡ç¼–è¾‘ */
     void openDeviceDlg(const QString& id);
-    /** @brief ´ò¿ª JobCfg ÊôĞÔ */
+    /** @brief æ‰“å¼€ JobCfg å±æ€§ */
     void showJobDlg(const QString& jobId);
-    /** @brief °Ñ¹¤¾ßÊä³öËÍµ½Éè¼Æ/ÔËĞĞÍ¼Ïñ´° */
+    /** @brief æŠŠå·¥å…·è¾“å‡ºé€åˆ°è®¾è®¡/è¿è¡Œå›¾åƒçª— */
     void applyToolOut(const QString& toolId, const ToolOut& out, bool toRuntime);
-    /** @brief ·½°¸¶ÁÈëºóË¢½çÃæ */
+    /** @brief æ–¹æ¡ˆè¯»å…¥ååˆ·ç•Œé¢ */
     void applyLoadedSolution();
-    /** @brief °´Ö÷¹¤Õ¾ÅäÖÃÖØ½¨ Station ÔËĞĞÊµÀı */
+    /** @brief æŒ‰ä¸»å·¥ç«™é…ç½®é‡å»º Station è¿è¡Œå®ä¾‹ */
     void rebuildStation();
     /**
-     * @brief È·±£Éè¼Æ/¸´¼ìÓÃÔËĞĞÊµÀıÖ¸ÏòÖ¸¶¨¹¤Õ¾
-     * @param config ·½°¸ÄÚ StationCfg£»¿ÕÔòÊÍ·ÅÊµÀı
+     * @brief ç¡®ä¿è®¾è®¡/å¤æ£€ç”¨è¿è¡Œå®ä¾‹æŒ‡å‘æŒ‡å®šå·¥ç«™
+     * @param config æ–¹æ¡ˆå†… StationCfgï¼›ç©ºåˆ™é‡Šæ”¾å®ä¾‹
      */
     void ensureStationRuntime(StationCfg* config);
-    /** @brief ÊÇ·ñÓĞÔËĞĞÌ¬Ñ­»·ÔÚÅÜ */
+    /** @brief æ˜¯å¦æœ‰è¿è¡Œæ€å¾ªç¯åœ¨è·‘ */
     bool isRuntimeLive() const;
-    /** @brief Í£Ö¹²¢ÊÍ·ÅÈ«²¿ÔËĞĞÌ¬¹¤Õ¾²Û£¨ÏÈ°Ñ²úÁ¿Ğ´ÈëÀÛ¼Æ±í£© */
+    /** @brief åœæ­¢å¹¶é‡Šæ”¾å…¨éƒ¨è¿è¡Œæ€å·¥ç«™æ§½ï¼ˆå…ˆæŠŠäº§é‡å†™å…¥ç´¯è®¡è¡¨ï¼‰ */
     void clearLiveStations();
-    /** @brief °Ñ live ÊµÀıÖØĞÂ¹Òµ½ÔËĞĞ¿ÇÃæ°å */
+    /** @brief æŠŠ live å®ä¾‹é‡æ–°æŒ‚åˆ°è¿è¡Œå£³é¢æ¿ */
     void rebindLivePanels();
-    /** @brief ´ÓÀÛ¼Æ±í»Ö¸´²ÛÄÚ²úÁ¿ */
+    /** @brief ä»ç´¯è®¡è¡¨æ¢å¤æ§½å†…äº§é‡ */
     void restoreProdToSlot(LiveStationSlot* slot);
-    /** @brief °Ñ²ÛÄÚ²úÁ¿Ğ´»ØÀÛ¼Æ±í */
+    /** @brief æŠŠæ§½å†…äº§é‡å†™å›ç´¯è®¡è¡¨ */
     void storeProdFromSlot(const LiveStationSlot* slot);
-    /** @brief ÇåÁãÀÛ¼Æ²úÁ¿£¨»»·½°¸»òµãÇåÁã£© */
+    /** @brief æ¸…é›¶ç´¯è®¡äº§é‡ï¼ˆæ¢æ–¹æ¡ˆæˆ–ç‚¹æ¸…é›¶ï¼‰ */
     void clearProdAccum();
-    /** @brief ¼ÇÏÂÉÏ´Î·½°¸Â·¾¶ */
+    /** @brief è®°ä¸‹ä¸Šæ¬¡æ–¹æ¡ˆè·¯å¾„ */
     void rememberSolutionPath();
-    /** @brief Æô¶¯Ê±³¢ÊÔ´ò¿ªÉÏ´Î·½°¸£»Ê§°ÜÔòÌáÊ¾£¬²»µ²×¡Ö÷´° */
+    /** @brief å¯åŠ¨æ—¶å°è¯•æ‰“å¼€ä¸Šæ¬¡æ–¹æ¡ˆï¼›å¤±è´¥åˆ™æç¤ºï¼Œä¸æŒ¡ä½ä¸»çª— */
     void tryLastSolution();
     /**
-     * @brief ÍË³öÇ°Í£¹¤Õ¾Ïß³Ì¡¢¾ÜÊÕ/ÅÅ¿ÕÏß³Ì³Ø¡¢Ğ¶¼àÌı£¨¿ÉÖØ¸´µ÷ÓÃ£©
+     * @brief é€€å‡ºå‰åœå·¥ç«™çº¿ç¨‹ã€æ‹’æ”¶/æ’ç©ºçº¿ç¨‹æ± ã€å¸ç›‘å¬ï¼ˆå¯é‡å¤è°ƒç”¨ï¼‰
      */
     void shutdownRuntime();
 
-    Session* m_session;              ///< »á»°£¨²»ÓµÓĞ£©
-    Solution m_sol;                  ///< µ±Ç°·½°¸
-    std::string m_persistBase; ///< ÉÏ´Î´ò¿ª»ò±£´æµÄ¿É´æÅÌÖ¸ÎÆ
-    AppMode m_mode;                  ///< Éè¼Æ/ÔËĞĞ
-    Station* m_station;              ///< Éè¼Æ/¸´¼ìÓÃ¹¤Õ¾ÊµÀı£¨ÓµÓĞ£©
-    QString m_boundStationId;        ///< m_station °ó¶¨µÄ¹¤Õ¾ id£¨·À stations À©ÈİĞü¿Õ£©
-    std::vector<LiveStationSlot*> m_live; ///< ÔËĞĞÌ¬¶à¹¤Õ¾²Û£¨ÓµÓĞ£©
+    Session* m_session;              ///< ä¼šè¯ï¼ˆä¸æ‹¥æœ‰ï¼‰
+    Solution m_sol;                  ///< å½“å‰æ–¹æ¡ˆ
+    std::string m_persistBase; ///< ä¸Šæ¬¡æ‰“å¼€æˆ–ä¿å­˜çš„å¯å­˜ç›˜æŒ‡çº¹
+    AppMode m_mode;                  ///< è®¾è®¡/è¿è¡Œ
+    Station* m_station;              ///< è®¾è®¡/å¤æ£€ç”¨å·¥ç«™å®ä¾‹ï¼ˆæ‹¥æœ‰ï¼‰
+    QString m_boundStationId;        ///< m_station ç»‘å®šçš„å·¥ç«™ idï¼ˆé˜² stations æ‰©å®¹æ‚¬ç©ºï¼‰
+    std::vector<LiveStationSlot*> m_live; ///< è¿è¡Œæ€å¤šå·¥ç«™æ§½ï¼ˆæ‹¥æœ‰ï¼‰
     /**
      * @class StationProdAccum
-     * @brief ¹¤Õ¾²úÁ¿ÀÛ¼Æ£¨¿çÍ£Ö¹/ÔÙ¿ª±£Áô£¬ÇåÁã»ò»»·½°¸²ÅÇå£©
+     * @brief å·¥ç«™äº§é‡ç´¯è®¡ï¼ˆè·¨åœæ­¢/å†å¼€ä¿ç•™ï¼Œæ¸…é›¶æˆ–æ¢æ–¹æ¡ˆæ‰æ¸…ï¼‰
      */
     struct StationProdAccum {
-        int total; ///< ²úÁ¿
+        int total; ///< äº§é‡
         int pass;  ///< OK
         int fail;  ///< NG
-        int cycleMs; ///< ×î½ü½ÚÅÄ
+        int cycleMs; ///< æœ€è¿‘èŠ‚æ‹
         StationProdAccum() : total(0), pass(0), fail(0), cycleMs(0) {}
     };
-    QHash<QString, StationProdAccum> m_prodAccum; ///< stationId ¡ú ²úÁ¿ÀÛ¼Æ
-    RunLogHub m_runLogHub;           ///< ÔËĞĞÈÕÖ¾ÉÈ³ö£¨UI + VisionLog£©
-    VisionLogRunSink m_runLogFile;   ///< ÔËĞĞÈÕÖ¾ÂäÅÌ sink
-    bool m_running;                  ///< ÊÇ·ñÔÚÑ­»·ÅÜ
-    bool m_shuttingDown;             ///< ÕıÔÚÍË³ö£¬Òì²½»Øµ÷ÎğÔÙÅö UI/·½°¸
-    int m_designBusy;                ///< Éè¼ÆÌ¬Òì²½ÈÎÎñ¼ÆÊı£¨>0 Ê±Îğ¿ªÔËĞĞ£©
-    QStackedWidget* m_stack;         ///< Éè¼Æ/ÔËĞĞÒ³
-    DesignWorkspace* m_design;       ///< Éè¼Æ¹¤×÷Çø
-    RuntimeWorkspace* m_runtime;     ///< ÔËĞĞ¹¤×÷Çø
-    RecheckWorkspace* m_recheck;     ///< ¸´¼ì¹¤×÷Çø
-    QPushButton* m_tabDesign;        ///< ¶¥À¸Éè¼Æ
-    QPushButton* m_tabRuntime;       ///< ¶¥À¸ÔËĞĞ
-    QPushButton* m_tabRecheck;       ///< ¶¥À¸¸´¼ì
-    QToolBar* m_mainTb;              ///< Ö÷¹¤¾ßÌõ
-    QAction* m_tbNew;                ///< ¹¤¾ßÀ¸ĞÂ½¨
-    QAction* m_tbOpen;               ///< ¹¤¾ßÀ¸´ò¿ª
-    QAction* m_tbSave;               ///< ¹¤¾ßÀ¸±£´æ
-    QAction* m_tbSep1;               ///< ·Ö¸ô
-    QAction* m_tbNewStation;         ///< ĞÂ½¨¹¤Õ¾
-    QAction* m_tbNewJob;             ///< ĞÂ½¨Á÷³Ì
-    QAction* m_tbStart;              ///< ¿ªÊ¼
-    QAction* m_tbStop;               ///< Í£Ö¹
-    QAction* m_tbReset;              ///< ÇåÁã
-    QAction* m_actUsers;             ///< ÓÃ»§¹ÜÀí
-    QAction* m_actPerms;             ///< È¨ÏŞ
-    QAction* m_actSettings;          ///< ÏµÍ³ÉèÖÃ
-    QAction* m_actRuntimeView;       ///< »­ÃæÅäÖÃ
-    QAction* m_actLogs;              ///< ÈÕÖ¾¹Ü¿Ø
-    QAction* m_actNew;               ///< ²Ëµ¥ĞÂ½¨
-    QAction* m_actSave;              ///< ²Ëµ¥±£´æ
-    WidgetPermBinder m_binder;       ///< Ò³Ãæ¿Ø¼şÓëÈ¨ÏŞ°ó¶¨
-    QLabel* m_userLabel;             ///< ×´Ì¬À¸ÓÃ»§
-    QLabel* m_solLabel;              ///< ×´Ì¬À¸·½°¸Ãû
-    QLabel* m_stLabel;               ///< ×´Ì¬À¸¹¤Õ¾
-    QLabel* m_clockLabel;            ///< ×´Ì¬À¸Ê±ÖÓ
-    QTimer* m_clock;                 ///< Ê±ÖÓ¶¨Ê±Æ÷
+    QHash<QString, StationProdAccum> m_prodAccum; ///< stationId â†’ äº§é‡ç´¯è®¡
+    RunLogHub m_runLogHub;           ///< è¿è¡Œæ—¥å¿—æ‰‡å‡ºï¼ˆUI + VisionLogï¼‰
+    VisionLogRunSink m_runLogFile;   ///< è¿è¡Œæ—¥å¿—è½ç›˜ sink
+    bool m_running;                  ///< æ˜¯å¦åœ¨å¾ªç¯è·‘
+    bool m_residentTray;             ///< å…³çª—å£å›æ‰˜ç›˜
+    bool m_serviceRun;               ///< åˆ†å¸ƒå¼ï¼šå·¥ç«™åœ¨ Vision.Stationï¼Œç•Œé¢æ‹‰ JPEG
+    bool m_forceQuit;                ///< æ‰˜ç›˜é€€å‡ºï¼Œè¿™æ¬¡å…³é—­ä¸å†è—çª—å£
+    bool m_shuttingDown;             ///< æ­£åœ¨é€€å‡ºï¼Œå¼‚æ­¥å›è°ƒå‹¿å†ç¢° UI/æ–¹æ¡ˆ
+    int m_designBusy;                ///< è®¾è®¡æ€å¼‚æ­¥ä»»åŠ¡è®¡æ•°ï¼ˆ>0 æ—¶å‹¿å¼€è¿è¡Œï¼‰
+    QStackedWidget* m_stack;         ///< è®¾è®¡/è¿è¡Œé¡µ
+    DesignWorkspace* m_design;       ///< è®¾è®¡å·¥ä½œåŒº
+    RuntimeWorkspace* m_runtime;     ///< è¿è¡Œå·¥ä½œåŒº
+    RecheckWorkspace* m_recheck;     ///< å¤æ£€å·¥ä½œåŒº
+    QPushButton* m_tabDesign;        ///< é¡¶æ è®¾è®¡
+    QPushButton* m_tabRuntime;       ///< é¡¶æ è¿è¡Œ
+    QPushButton* m_tabRecheck;       ///< é¡¶æ å¤æ£€
+    QToolBar* m_mainTb;              ///< ä¸»å·¥å…·æ¡
+    QAction* m_tbNew;                ///< å·¥å…·æ æ–°å»º
+    QAction* m_tbOpen;               ///< å·¥å…·æ æ‰“å¼€
+    QAction* m_tbSave;               ///< å·¥å…·æ ä¿å­˜
+    QAction* m_tbSep1;               ///< åˆ†éš”
+    QAction* m_tbNewStation;         ///< æ–°å»ºå·¥ç«™
+    QAction* m_tbNewJob;             ///< æ–°å»ºæµç¨‹
+    QAction* m_tbStart;              ///< å¼€å§‹
+    QAction* m_tbStop;               ///< åœæ­¢
+    QAction* m_tbReset;              ///< æ¸…é›¶
+    QAction* m_actUsers;             ///< ç”¨æˆ·ç®¡ç†
+    QAction* m_actPerms;             ///< æƒé™
+    QAction* m_actSettings;          ///< ç³»ç»Ÿè®¾ç½®
+    QAction* m_actRuntimeView;       ///< ç”»é¢é…ç½®
+    QAction* m_actLogs;              ///< æ—¥å¿—ç®¡æ§
+    QAction* m_actNew;               ///< èœå•æ–°å»º
+    QAction* m_actSave;              ///< èœå•ä¿å­˜
+    WidgetPermBinder m_binder;       ///< é¡µé¢æ§ä»¶ä¸æƒé™ç»‘å®š
+    QLabel* m_userLabel;             ///< çŠ¶æ€æ ç”¨æˆ·
+    QLabel* m_solLabel;              ///< çŠ¶æ€æ æ–¹æ¡ˆå
+    QLabel* m_stLabel;               ///< çŠ¶æ€æ å·¥ç«™
+    QLabel* m_clockLabel;            ///< çŠ¶æ€æ æ—¶é’Ÿ
+    QTimer* m_clock;                 ///< æ—¶é’Ÿå®šæ—¶å™¨
+    QTimer* m_previewTimer;          ///< è¿è¡Œç”»é¢æ‰“å¼€æ—¶æ‹‰å…±äº«å†…å­˜
 };
 
 }

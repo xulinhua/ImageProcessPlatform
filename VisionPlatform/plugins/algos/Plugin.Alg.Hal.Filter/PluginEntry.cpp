@@ -1,6 +1,6 @@
 /**
  * @file PluginEntry.cpp
- * @brief µÇ¼Ç Halcon Í¼ÏñÂË²¨Ëã·¨
+ * @brief ç™»è®° Halcon å›¾åƒæ»¤æ³¢ç®—æ³•
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.

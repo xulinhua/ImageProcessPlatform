@@ -1,6 +1,6 @@
 /**
  * @file main.cpp
- * @brief mainÊµÏÖ
+ * @brief mainå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -10,7 +10,7 @@
 
 #include <QApplication>
 
-// Æô¶¯ Demo Ö÷´°¿Ú
+// å¯åŠ¨ Demo ä¸»çª—å£
 int main(int argc, char* argv[])
 {
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);

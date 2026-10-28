@@ -1,6 +1,6 @@
 /**
  * @file Graphic.cpp
- * @brief GraphicÊµÏÖ
+ * @brief Graphicå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -13,7 +13,7 @@
 
 namespace HsCommData {
 
-// Ğı×ªÍÖÔ²»ò¾ØĞÎµÄÖá¶ÔÆë°üÎ§ºĞ
+// æ—‹è½¬æ¤­åœ†æˆ–çŸ©å½¢çš„è½´å¯¹é½åŒ…å›´ç›’
 static Box2 ellipseBounds(const Point2d& c, double ra, double rb, double phi)
 {
     const double cosA = std::cos(phi);
@@ -27,7 +27,7 @@ static Box2 ellipseBounds(const Point2d& c, double ra, double rb, double phi)
     return Box2(c.x - hw, c.y - hh, hw * 2.0, hh * 2.0);
 }
 
-// Í¼ÔªÄ¬ÈÏÔ²¡¢Stack¡¢¿É¼û
+// å›¾å…ƒé»˜è®¤åœ†ã€Stackã€å¯è§
 Graphic::Graphic()
     : kind(KindObject)
     , role(RoleStack)
@@ -38,7 +38,7 @@ Graphic::Graphic()
     geom = CircleP();
 }
 
-// Drawing Ö»ÓÃµÚ 0 ¸ö£»Stack °´ÈİÆ÷¸öÊı¡£µã¡¢Ê®×Ö¡¢¼ıÍ·¡¢ÎÄ×Ö¿ÕÈİÆ÷Îª 0
+// Drawing åªç”¨ç¬¬ 0 ä¸ªï¼›Stack æŒ‰å®¹å™¨ä¸ªæ•°ã€‚ç‚¹ã€åå­—ã€ç®­å¤´ã€æ–‡å­—ç©ºå®¹å™¨ä¸º 0
 int Graphic::geomSpan() const
 {
     switch (kind) {
@@ -75,7 +75,7 @@ int Graphic::geomSpan() const
     }
 }
 
-// µ¥¸öÍ¼±ê°´×Ô¼ºµÄÖÖÀàËãºĞ×Ó¡£Í¼ÏñºÍ¿ÕÔªËØÃ»ÓĞºĞ×Ó
+// å•ä¸ªå›¾æ ‡æŒ‰è‡ªå·±çš„ç§ç±»ç®—ç›’å­ã€‚å›¾åƒå’Œç©ºå…ƒç´ æ²¡æœ‰ç›’å­
 static Box2 objectBox(const Graphic& g, int index)
 {
     switch (g.geom.kindAt(index)) {
@@ -110,7 +110,7 @@ static Box2 objectBox(const Graphic& g, int index)
     }
 }
 
-// Ğı×ªºóÁ½±Û¶ËµãµÄÖá¶ÔÆëºĞ×Ó¡£°ë¿íĞ¡ÓÚ 0 Ê±±Û³¤²»ÔÚÍ¼Ïñ×ø±êÀï
+// æ—‹è½¬åä¸¤è‡‚ç«¯ç‚¹çš„è½´å¯¹é½ç›’å­ã€‚åŠå®½å°äº 0 æ—¶è‡‚é•¿ä¸åœ¨å›¾åƒåæ ‡é‡Œ
 static Box2 crossBox(const HsCross& c)
 {
     if (c.size < 0.0) {
@@ -127,7 +127,7 @@ static Box2 crossBox(const HsCross& c)
     return Box2(c.center.x - hw, c.center.y - hh, hw * 2.0, hh * 2.0);
 }
 
-// ¼ıÉí¼ÓÉÏÁ½Òí¡£Ë®Æ½»òÊúÖ±Ê±ÈÔÁô³ö 1 ÏñËØ£¬±ÜÃâ±»µ±³É¿ÕºĞ×Ó¶ªµô
+// ç®­èº«åŠ ä¸Šä¸¤ç¿¼ã€‚æ°´å¹³æˆ–ç«–ç›´æ—¶ä»ç•™å‡º 1 åƒç´ ï¼Œé¿å…è¢«å½“æˆç©ºç›’å­ä¸¢æ‰
 static Box2 arrowBox(const HsArrow& a)
 {
     Point2d pts[4];
@@ -170,7 +170,7 @@ static Box2 arrowBox(const HsArrow& a)
     return Box2(minX, minY, w, h);
 }
 
-// µã¡¢Ê®×Ö¡¢¼ıÍ·¡¢ÎÄ×Ö¡¢ÑÚÄ¤²»ÔÚ geom Àï¡£index ÊÇ¶ÔÓ¦ÈİÆ÷µÄÏÂ±ê
+// ç‚¹ã€åå­—ã€ç®­å¤´ã€æ–‡å­—ã€æ©è†œä¸åœ¨ geom é‡Œã€‚index æ˜¯å¯¹åº”å®¹å™¨çš„ä¸‹æ ‡
 static Box2 fieldBox(const Graphic& g, int index)
 {
     switch (g.kind) {
@@ -210,7 +210,7 @@ static Box2 fieldBox(const Graphic& g, int index)
     }
 }
 
-// °´ kind ÖØËãÍ¼Ïñ×ø±ê°üÎ§ºĞ¡£Stack »ì·ÅÊ±Ã¿¸öÔªËØÓÃ×Ô¼ºµÄÖÖÀà
+// æŒ‰ kind é‡ç®—å›¾åƒåæ ‡åŒ…å›´ç›’ã€‚Stack æ··æ”¾æ—¶æ¯ä¸ªå…ƒç´ ç”¨è‡ªå·±çš„ç§ç±»
 void Graphic::updateBounds()
 {
     if (role == RoleStack && geom.isInitialized() && geom.kind() == ObjMixed) {

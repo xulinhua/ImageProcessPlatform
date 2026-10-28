@@ -1,6 +1,6 @@
 /**
  * @file LogDb.h
- * @brief LogDbÍ·ÎÄ¼ş
+ * @brief LogDbå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -17,42 +17,42 @@ namespace Vision {
 
 /**
  * @class LogDb
- * @brief ÈÕÖ¾±í app_log¡£ÓëÓÃ»§¿â¹²ÓÃ data\vision.db£¬ÎÄ±¾ÁĞÎª UTF-8
+ * @brief æ—¥å¿—è¡¨ app_logã€‚ä¸ç”¨æˆ·åº“å…±ç”¨ data\vision.dbï¼Œæ–‡æœ¬åˆ—ä¸º UTF-8
  */
 class LogDb {
 public:
-    /** @brief ½ø³ÌÄÚÎ¨Ò»ÈÕÖ¾¿â */
+    /** @brief è¿›ç¨‹å†…å”¯ä¸€æ—¥å¿—åº“ */
     static LogDb& instance();
 
-    /** @brief ÅúÁ¿²åÈë£»¿ÕÁĞ±íÊÓÎª³É¹¦ */
+    /** @brief æ‰¹é‡æ’å…¥ï¼›ç©ºåˆ—è¡¨è§†ä¸ºæˆåŠŸ */
     bool insertMany(const std::vector<LogRecord>& rows);
-    /** @brief °´ÖÖÀàÓëÈÕÆÚ²é£¬ĞÂµÄÔÚÇ° */
+    /** @brief æŒ‰ç§ç±»ä¸æ—¥æœŸæŸ¥ï¼Œæ–°çš„åœ¨å‰ */
     std::vector<LogRecord> query(const LogQuery& q);
-    /** @brief ÓĞ¼ÇÂ¼µÄÈÕÆÚ¡£path Îª "op|YYYY-MM-DD" »ò "debug|YYYY-MM-DD" */
+    /** @brief æœ‰è®°å½•çš„æ—¥æœŸã€‚path ä¸º "op|YYYY-MM-DD" æˆ– "debug|YYYY-MM-DD" */
     std::vector<LogFileInfo> listDays();
     /**
-     * @brief °´ listDays ¸ø³öµÄ path É¾³ı¸ÃÈÕ¸ÃÖÖÀà
-     * @return ³É¹¦É¾³ıµÄÈÕÆÚ¸öÊı
+     * @brief æŒ‰ listDays ç»™å‡ºçš„ path åˆ é™¤è¯¥æ—¥è¯¥ç§ç±»
+     * @return æˆåŠŸåˆ é™¤çš„æ—¥æœŸä¸ªæ•°
      */
     int deleteDays(const std::vector<std::string>& keys);
-    /** @brief É¾µôÔçÓÚ±£ÁôÌìÊıµÄ¼ÇÂ¼ */
+    /** @brief åˆ æ‰æ—©äºä¿ç•™å¤©æ•°çš„è®°å½• */
     void pruneOlderThanDays(int days);
 
 private:
-    /** @brief ·ÖÅäÊµÏÖ */
+    /** @brief åˆ†é…å®ç° */
     LogDb();
-    /** @brief ÊÍ·ÅÊµÏÖ */
+    /** @brief é‡Šæ”¾å®ç° */
     ~LogDb();
-    /** @brief ½ûÖ¹¿½±´ */
+    /** @brief ç¦æ­¢æ‹·è´ */
     LogDb(const LogDb&);
-    /** @brief ½ûÖ¹¸³Öµ */
+    /** @brief ç¦æ­¢èµ‹å€¼ */
     LogDb& operator=(const LogDb&);
 
-    /** @brief ´ò¿ª¹²ÓÃ¿â²¢È·±£ app_log ±í´æÔÚ */
+    /** @brief æ‰“å¼€å…±ç”¨åº“å¹¶ç¡®ä¿ app_log è¡¨å­˜åœ¨ */
     bool ensureOpen();
 
     struct Impl;
-    Impl* m; ///< Á¬½ÓÓëÁÙ½çÇø
+    Impl* m; ///< è¿æ¥ä¸ä¸´ç•ŒåŒº
 };
 
 }

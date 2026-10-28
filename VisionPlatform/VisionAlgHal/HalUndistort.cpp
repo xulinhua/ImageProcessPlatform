@@ -1,6 +1,6 @@
 /**
  * @file HalUndistort.cpp
- * @brief HalUndistortÊµÏÖ
+ * @brief HalUndistortå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -57,11 +57,11 @@ HalconCpp::HTuple parseCam(const std::string& text)
 
 }
 
-// ÓÃ Halcon Ïà»ú²ÎÊı×ö¾¶Ïò»û±äĞ£Õı
+// ç”¨ Halcon ç›¸æœºå‚æ•°åšå¾„å‘ç•¸å˜æ ¡æ­£
 namespace {
 const char kVer_HalUndistort[] = "1.0.0.0";
 const Vision::VerNoteRaw kNotes_HalUndistort[] = {
-    { "1.0.0.0", "Ê×°æ" },
+    { "1.0.0.0", "é¦–ç‰ˆ" },
 };
 }
 
@@ -70,7 +70,7 @@ std::string Vision::HalUndistort::version() const
     return kVer_HalUndistort;
 }
 
-// °æ±¾±ä¸ü£¬Ö»×·¼Ó
+// ç‰ˆæœ¬å˜æ›´ï¼Œåªè¿½åŠ 
 std::vector<Vision::VerNote> Vision::HalUndistort::versionNotes() const
 {
     return Vision::verNotesFrom(kNotes_HalUndistort, static_cast<int>(sizeof(kNotes_HalUndistort) / sizeof(kNotes_HalUndistort[0])));
@@ -78,7 +78,7 @@ std::vector<Vision::VerNote> Vision::HalUndistort::versionNotes() const
 Vision::AlgToolOut Vision::HalUndistort::run(const Vision::AlgToolIn& in)
 {
     AlgToolOut out;
-    if (in.image.image.isNull()) {
+    if (inputImage(in).isNull()) {
         out.message = U(L"\u6ca1\u6709\u8f93\u5165\u56fe");
         return out;
     }
@@ -91,7 +91,7 @@ Vision::AlgToolOut Vision::HalUndistort::run(const Vision::AlgToolIn& in)
         HalconCpp::HObject raw;
         HalconCpp::HObject* rawPtr = &raw;
         std::string err;
-        if (!hsImageToHObject(in.image.image, rawPtr, &err)) {
+        if (!hsImageToHObject(inputImage(in), rawPtr, &err)) {
             out.message = err;
             return out;
         }
@@ -101,7 +101,7 @@ Vision::AlgToolOut Vision::HalUndistort::run(const Vision::AlgToolIn& in)
         HalconCpp::HImage fixed = img.ChangeRadialDistortionImage(img.GetDomain(), camIn, camOut);
         HsCommData::HsImage image;
         HsCommData::HsImage* imagePtr = &image;
-        if (!hObjectToHsImage(fixed, in.image.image.frameId, imagePtr, &err)) {
+        if (!hObjectToHsImage(fixed, inputImage(in).frameId, imagePtr, &err)) {
             out.message = err;
             return out;
         }

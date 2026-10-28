@@ -1,6 +1,6 @@
 /**
  * @file HsInterface2D.cpp
- * @brief HsInterface2DÊµÏÖ
+ * @brief HsInterface2Då®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -12,19 +12,19 @@
 
 namespace HsCommData {
 
-// ½Ç¶È»»³É»¡¶È
+// è§’åº¦æ¢æˆå¼§åº¦
 double toRadian(double deg)
 {
     return deg * kPi / 180.0;
 }
 
-// »¡¶È»»³É½Ç¶È
+// å¼§åº¦æ¢æˆè§’åº¦
 double toDegree(double rad)
 {
     return rad * 180.0 / kPi;
 }
 
-// Íâ²¿Æ½Ãæ½Ç»»³ÉÄÚ²¿»¡¶È¡£Í¼Ïñ y ÏòÏÂ£¬ÄÚ²¿Õı½Ç´Ó +x ×ªÏò +y£¬»­ÃæÉÏÊÇË³Ê±Õë¡£ÏµÍ³ÄæÊ±ÕëÎªÕıÊ±È¡·´
+// å¤–éƒ¨å¹³é¢è§’æ¢æˆå†…éƒ¨å¼§åº¦ã€‚å›¾åƒ y å‘ä¸‹ï¼Œå†…éƒ¨æ­£è§’ä» +x è½¬å‘ +yï¼Œç”»é¢ä¸Šæ˜¯é¡ºæ—¶é’ˆã€‚ç³»ç»Ÿé€†æ—¶é’ˆä¸ºæ­£æ—¶å–å
 double toAngle(double external)
 {
     const HsSystem& system = HsSystem::instance();
@@ -38,7 +38,7 @@ double toAngle(double external)
     return a;
 }
 
-// ÄÚ²¿»¡¶È»»³ÉÍâ²¿Æ½Ãæ½Ç¡£Óë toAngle »¥Äæ
+// å†…éƒ¨å¼§åº¦æ¢æˆå¤–éƒ¨å¹³é¢è§’ã€‚ä¸ toAngle äº’é€†
 double fromAngle(double internalRad)
 {
     const HsSystem& system = HsSystem::instance();
@@ -53,7 +53,7 @@ double fromAngle(double internalRad)
 }
 
 
-// Íâ²¿³¤¶Èµ½ºÁÃ×
+// å¤–éƒ¨é•¿åº¦åˆ°æ¯«ç±³
 double toLength(double external)
 {
     if (HsSystem::instance().lengthUnit == HsSystem::UnitM) {
@@ -62,7 +62,7 @@ double toLength(double external)
     return external;
 }
 
-// ºÁÃ×µ½Íâ²¿³¤¶È
+// æ¯«ç±³åˆ°å¤–éƒ¨é•¿åº¦
 double fromLength(double mm)
 {
     if (HsSystem::instance().lengthUnit == HsSystem::UnitM) {
@@ -71,7 +71,7 @@ double fromLength(double mm)
     return mm;
 }
 
-// ²î²»³¬¹ıÏµÍ³Èİ²î
+// å·®ä¸è¶…è¿‡ç³»ç»Ÿå®¹å·®
 bool withinTol(double a, double b)
 {
     const double d = a - b;

@@ -1,12 +1,13 @@
 /**
  * @file Job.cpp
- * @brief Job???
+ * @brief Job实现
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
  */
 
 #include "Job.h"
+#include <HsCommData/HsError.h>
 #include "AppPaths.h"
 #include "CompositeDef.h"
 #include "Solution.h"
@@ -27,7 +28,7 @@
 namespace Vision {
 static thread_local Job* t_runningJob = 0;
 
-// ??????????????
+// 拷贝共享图像。空指针返回空图
 static HsCommData::HsImage copyImage(const std::shared_ptr<HsCommData::HsImage>& p)
 {
     if (!p) {
@@ -38,7 +39,7 @@ static HsCommData::HsImage copyImage(const std::shared_ptr<HsCommData::HsImage>&
 
 
 
-// ?????????��?????????????
+// 绑定流程配置，并按配置创建工具实例
 Job::Job(JobCfg* config)
     : m_config(config)
     , m_listener(nullptr)
@@ -50,7 +51,7 @@ Job::Job(JobCfg* config)
     rebuildTools();
 }
 
-// ??????????????
+// 释放下属工具实例
 Job::~Job()
 {
     for (size_t i = 0; i < m_tools.size(); ++i) {
@@ -62,8 +63,7 @@ Job::~Job()
     m_tools.clear();
 }
 
-// ?????????
-// ?????????
+// 清空本拍缓存，帧号回到 1
 void JobRuntime::clear()
 {
     images.clear();
@@ -79,14 +79,14 @@ void JobRuntime::clear()
     loopCount = 0;
 }
 
-// ???????��????????
+// 换绑配置并重建工具实例
 void Job::setConfig(JobCfg* config)
 {
     m_config = config;
     rebuildTools();
 }
 
-// ?????? clone ???? ToolBase ?????????
+// 同 id 同类型的实例留下，缺的创建，多的销毁
 void Job::rebuildTools()
 {
     std::map<std::string, ToolBase*> kept;
@@ -134,7 +134,7 @@ void Job::rebuildTools()
             m_paramStamp.erase(id);
         }
         if (!inst) {
-            emitLog(RunLogError, Translate::format("δע��Ĺ��� {0}", config.toolName), config.id, -1);
+            emitLog(RunLogError, Translate::format("tool is not registered: {0}", config.toolName), config.id, -1);
             continue;
         }
         applyToolConfig(inst, config);
@@ -162,7 +162,7 @@ void Job::syncToolsToConfig()
     }
 }
 
-// ?? id ??????????
+// 按 id 查找工具实例
 ToolBase* Job::findTool(const ObjectId& id) const
 {
     for (size_t i = 0; i < m_tools.size(); ++i) {
@@ -173,7 +173,7 @@ ToolBase* Job::findTool(const ObjectId& id) const
     return 0;
 }
 
-// ???��??????
+// 按下标取工具
 ToolBase* Job::toolAt(int index) const
 {
     if (index < 0 || index >= static_cast<int>(m_tools.size())) {
@@ -182,25 +182,25 @@ ToolBase* Job::toolAt(int index) const
     return m_tools[static_cast<size_t>(index)];
 }
 
-// ?????????????????
+// 设置日志监听，不拥有
 void Job::setListener(IRunListener* listener)
 {
     m_listener = listener;
 }
 
-// ?????? id ??????? Station*??
+// 设置日志用的工站 id，不是 Station 指针
 void Job::setStationId(const ObjectId& stationId)
 {
     m_stationId = stationId;
 }
 
-// ????��????????????��??????? Tool ????? Job??
+// 写一行 Info 日志
 void Job::emitLog(const std::string& line)
 {
     emitLog(RunLogInfo, line);
 }
 
-// ???????????
+// 写结构化运行日志
 void Job::emitLog(RunLogLevel level, const std::string& message,
                   const ObjectId& toolId, int elapsedMs)
 {
@@ -212,13 +212,13 @@ void Job::emitLog(RunLogLevel level, const std::string& message,
     log(ev);
 }
 
-// ???????????? ?? Info
+// 写一行 Info 日志
 void Job::log(const std::string& line)
 {
     emitLog(RunLogInfo, line);
 }
 
-// ?��??????????????????????? id??
+// 补全工站和流程 id 后交给监听器
 void Job::log(const RunLogEvent& ev)
 {
     if (!m_listener) {
@@ -234,7 +234,7 @@ void Job::log(const RunLogEvent& ev)
     m_listener->onRunLog(out);
 }
 
-// ??????/????/OK/??????????????????
+// 清空工具缓存、源图，并清掉各工具运行态
 void Job::clearRuntime()
 {
     m_runtime.clear();
@@ -246,8 +246,7 @@ void Job::clearRuntime()
     }
 }
 
-// ?��?????????????
-// ????????????????
+// 某工具上次输出图
 HsCommData::HsImage Job::cachedImage(const ObjectId& toolId) const
 {
     RtView hold = viewRuntime();
@@ -261,8 +260,7 @@ HsCommData::HsImage Job::cachedImage(const ObjectId& toolId) const
     return copyImage(it->second);
 }
 
-// ?��????????��??????
-// ???????????????????
+// 某工具上次结果几何
 std::vector<HsCommData::HsObject> Job::cachedOverlay(const ObjectId& toolId) const
 {
     RtView hold = viewRuntime();
@@ -276,8 +274,7 @@ std::vector<HsCommData::HsObject> Job::cachedOverlay(const ObjectId& toolId) con
     return *it->second;
 }
 
-// ??????�ڨ�????????????
-// ?????????????????????
+// 是否已有该工具的输出图
 bool Job::hasCache(const ObjectId& toolId) const
 {
     RtView hold = viewRuntime();
@@ -287,8 +284,7 @@ bool Job::hasCache(const ObjectId& toolId) const
     return hold.rt->images.count(toolId) != 0;
 }
 
-// ?��???????????????��?
-// ?????????????????????
+// 该工具是否在本周期内跑过
 bool Job::hasToolRun(const ObjectId& toolId) const
 {
     RtView hold = viewRuntime();
@@ -298,8 +294,7 @@ bool Job::hasToolRun(const ObjectId& toolId) const
     return hold.rt->ok.count(toolId) != 0;
 }
 
-// ?��????????? OK/NG
-// ???????????? OK/NG
+// 该工具最近一次 OK 或 NG。未跑过返回 false
 bool Job::cachedToolOk(const ObjectId& toolId, bool* ok) const
 {
     RtView hold = viewRuntime();
@@ -316,8 +311,7 @@ bool Job::cachedToolOk(const ObjectId& toolId, bool* ok) const
     return true;
 }
 
-// ?????????��????��??? -1
-// ???????????????????? -1
+// 该工具最近一次耗时。未跑过返回 -1
 int Job::cachedElapsedMs(const ObjectId& toolId) const
 {
     RtView hold = viewRuntime();
@@ -331,20 +325,19 @@ int Job::cachedElapsedMs(const ObjectId& toolId) const
     return it->second;
 }
 
-// ??????????????
+// 按连线解析的输入图
 HsCommData::HsImage Job::cachedInputImage(const JobCfg& job, const ObjectId& toolId) const
 {
     return inputImage(job, toolId);
 }
 
-// ?????????��??
+// 按连线解析的上游位姿
 bool Job::cachedInputPose(const JobCfg& job, const ObjectId& toolId, HsCommData::Pose2* pose) const
 {
     return inputPose(job, toolId, pose);
 }
 
-// ?��???????????????
-// ??????????????????
+// 某工具上次输出数值
 ParamMap Job::cachedValues(const ObjectId& toolId) const
 {
     RtView hold = viewRuntime();
@@ -358,8 +351,7 @@ ParamMap Job::cachedValues(const ObjectId& toolId) const
     return *it->second;
 }
 
-// ?��????????��???????????????????????????
-// ????????????????????????????????????????
+// 某工具上次分类输出。没有 io 时用旧缓存拼
 ToolIo Job::cachedIo(const ObjectId& toolId) const
 {
     RtView hold = viewRuntime();
@@ -372,8 +364,7 @@ ToolIo Job::cachedIo(const ObjectId& toolId) const
     return ioFromLegacyCache(toolId);
 }
 
-// ????????????????????????�ħ�?? io ?????
-// ?t??????????????????????????? io ?????
+// 旧缓存没有分类输出时，用图、几何、数值和 OK 拼一份
 ToolIo Job::ioFromLegacyCache(const ObjectId& toolId) const
 {
     ToolIo io;
@@ -411,8 +402,7 @@ ToolIo Job::ioFromLegacyCache(const ObjectId& toolId) const
     return io;
 }
 
-// JobCfg ??????��???????????????????
-// JobCfg ???????????????????????????
+// 本流程源图
 HsCommData::HsImage Job::sourceImage() const
 {
     RtView hold = viewRuntime();
@@ -422,8 +412,7 @@ HsCommData::HsImage Job::sourceImage() const
     return copyImage(hold.rt->source);
 }
 
-// ???? in.image ????????????????????????????????
-// ???? in.image ????????????????????????????????
+// 优先图像连线的上游图，否则取执行序里上一张缓存图
 HsCommData::HsImage Job::inputImage(const JobCfg& job, const ObjectId& toolId) const
 {
     RtView hold = viewRuntime();
@@ -459,7 +448,7 @@ HsCommData::HsImage Job::inputImage(const JobCfg& job, const ObjectId& toolId) c
     return last;
 }
 
-// ??? in.region??in.contour??in.roi ???��??��?????? in.graphics??
+// 合并区域、轮廓、ROI 连线的上游几何
 std::vector<HsCommData::HsObject> Job::inputGraphics(const JobCfg& job, const ObjectId& toolId) const
 {
     std::vector<HsCommData::HsObject> g;
@@ -492,7 +481,7 @@ std::vector<HsCommData::HsObject> Job::inputGraphics(const JobCfg& job, const Ob
     return g;
 }
 
-// ??? in.pose ????��?????��?????
+// 合并位姿连线的上游位姿，后写覆盖
 bool Job::inputPose(const JobCfg& job, const ObjectId& toolId, HsCommData::Pose2* pose) const
 {
     if (!pose) {
@@ -526,8 +515,7 @@ bool Job::inputPose(const JobCfg& job, const ObjectId& toolId, HsCommData::Pose2
     return found;
 }
 
-// ??? in.logic ??????????????????? in.values??
-// ??? in.logic ??????????????????? in.values??
+// 合并逻辑连线的上游数值
 ParamMap Job::upstreamValues(const JobCfg& job, const ObjectId& toolId) const
 {
     ParamMap u;
@@ -558,7 +546,7 @@ ParamMap Job::upstreamValues(const JobCfg& job, const ObjectId& toolId) const
     return u;
 }
 
-// ??????????��??????????????????????
+// 按连线把上游分类数据汇总到本工具输入
 ToolIo Job::inputIo(const JobCfg& job, const ObjectId& toolId) const
 {
     ToolIo io;
@@ -576,7 +564,7 @@ ToolIo Job::inputIo(const JobCfg& job, const ObjectId& toolId) const
     return io;
 }
 
-// ???????? execute ??? ToolCfg??????????????????????
+// 把草稿的参数、搜索区和设备盖到正式工具上，供本次执行使用
 ToolCfg Job::resolveRecipeTool(const ToolCfg* formal, const ToolCfg* recipeTool,
                                   const JobCfg* recipeJob) const
 {
@@ -602,15 +590,14 @@ ToolCfg Job::resolveRecipeTool(const ToolCfg* formal, const ToolCfg* recipeTool,
     return shadow;
 }
 
-// ???????????
+// 尝试占用本流程。已经在执行则失败
 bool Job::tryBeginRun()
 {
     bool expected = false;
     return m_executing.compare_exchange_strong(expected, true);
 }
 
-// ???????
-// ???????????????????????
+// 参数指纹。自动运行时用来判断要不要重新填参数
 std::string Job::paramStamp(const ToolParam& param) const
 {
     std::string stamp = param.paraVersion;
@@ -674,7 +661,7 @@ Job::RtView Job::viewRuntime() const
     return view;
 }
 
-// ???�h?????????????????????????
+// 把本拍运行态换成界面可见的快照
 void Job::publishRuntime()
 {
     std::shared_ptr<JobRuntime> next = std::make_shared<JobRuntime>(m_runtime);
@@ -690,7 +677,7 @@ void Job::endRun()
 
 namespace {
 
-// ��????????
+// 采集路径是否存在
 bool grabPathExists(const std::string& p)
 {
     if (p.empty()) {
@@ -700,7 +687,7 @@ bool grabPathExists(const std::string& p)
     return a != INVALID_FILE_ATTRIBUTES;
 }
 
-// ???��??
+// 拼接采集路径
 std::string joinGrabPath(const std::string& a, const std::string& b)
 {
     if (a.empty()) {
@@ -713,7 +700,7 @@ std::string joinGrabPath(const std::string& a, const std::string& b)
     return a + "\\" + b;
 }
 
-// ??????? path ???????څ folder/file?????��????? exe ??
+// 参数路径为空时用设备的 folder 或 file。相对路径再试 exe 目录
 std::string resolveGrabPath(const std::string& paramPath, const HardwareDevice* dev)
 {
     std::string p = paramPath;
@@ -732,7 +719,7 @@ std::string resolveGrabPath(const std::string& paramPath, const HardwareDevice* 
     return p;
 }
 
-// ????��???????????????????? HardwareDevice ???????
+// 采集设备状态。真相机还没接 SDK
 std::string cameraDeviceStatus(const HardwareDevice* dev)
 {
     if (!dev) {
@@ -750,7 +737,7 @@ std::string cameraDeviceStatus(const HardwareDevice* dev)
     return std::string("not_acquire");
 }
 
-// ?????????????????????????? id ?????
+// 把各工具名字和数值放进引用表，键是工具 id
 void fillRefValues(ToolIn* in, const JobCfg& job, const JobRuntime& rt)
 {
     if (!in) {
@@ -767,7 +754,7 @@ void fillRefValues(ToolIn* in, const JobCfg& job, const JobRuntime& rt)
     }
 }
 
-// ??? Logic ??????????????????????? OK
+// 逻辑工具没有有效输入时，用前面定位和检测的 OK 补判定
 void fillJudgeLogics(ToolIn* in, const JobCfg& job, const ObjectId& self, const JobRuntime& rt)
 {
     if (!in) {
@@ -799,7 +786,7 @@ void fillJudgeLogics(ToolIn* in, const JobCfg& job, const ObjectId& self, const 
     }
 }
 
-// ????????????????????��/????????? inputIo
+// 结果处理没有几何输入时，把前面定位和检测的叠层收进 inputIo
 void fillMergeOverlays(ToolIn* in, const JobCfg& job, const ObjectId& self, const JobRuntime& rt)
 {
     if (!in) {
@@ -826,13 +813,13 @@ void fillMergeOverlays(ToolIn* in, const JobCfg& job, const ObjectId& self, cons
     }
 }
 
-// ?????????
+// 流程正忙时的失败结果
 ToolOut busyToolOut()
 {
     ToolOut out;
     out.ok = false;
     out.error = true;
-    out.message = std::string(Translate::tr("???????????"));
+    out.message = std::string(Translate::tr("job is already running"));
     return out;
 }
 
@@ -856,7 +843,7 @@ struct JobRunGuard {
 
 } // namespace
 
-// ?????????????????????��?index ��?? 0 ???????
+// 从分类输出里取一块或全部几何。index 小于 0 表示全部
 static bool collectPort(const ToolIo& io, PortData data, int index, std::vector<HsCommData::HsObject>* out)
 {
     std::vector<HsCommData::HsObject> all;
@@ -893,7 +880,7 @@ static bool collectPort(const ToolIo& io, PortData data, int index, std::vector<
     return true;
 }
 
-// ?????????????????????????��?????????????
+// 按搜索项解析本工具自己的区域。引用在前，绘制在后
 static bool resolveRoiItems(const std::vector<ToolRoiItem>& items, const JobRuntime& rt,
                             std::vector<ResolvedRoi>* out, std::string* err)
 {
@@ -939,7 +926,7 @@ static bool resolveRoiItems(const std::vector<ToolRoiItem>& items, const JobRunt
         if (!found) {
             if (item.presence == RoiPresence::Required) {
                 if (err) {
-                    *err = acpToUtf8("?????????");
+                    *err = "required search region was not found";
                 }
                 return false;
             }
@@ -956,7 +943,7 @@ static bool resolveRoiItems(const std::vector<ToolRoiItem>& items, const JobRunt
     return true;
 }
 
-// ?????????????????????????????????????????��?
+// 把解析好的搜索区写进输入。没有搜索项时沿用配方里的区域
 static bool fillResolvedRois(const ToolCfg& tool, const JobRuntime& rt, ToolIn* in, std::string* err)
 {
     if (!in) {
@@ -995,7 +982,7 @@ static bool fillResolvedRois(const ToolCfg& tool, const JobRuntime& rt, ToolIn* 
     }
     return true;
 }
-// ??��???????????????????? Tool::run ��???�g?????
+// 占用后跑单个工具。结果由工具写回缓存
 ToolOut Job::runTool(Solution* sol, const ObjectId& toolId, const ToolCfg* recipeTool)
 {
     if (!tryBeginRun()) {
@@ -1005,7 +992,7 @@ ToolOut Job::runTool(Solution* sol, const ObjectId& toolId, const ToolCfg* recip
     return runToolBody(sol, toolId, recipeTool);
 }
 
-// ??????????��???????
+// 把组合工具对外的参数和搜索区盖到内部流程
 static void overlayComposite(JobCfg* inner, const CompositeDef& def, const ToolParam& param)
 {
     if (!inner) {
@@ -1053,7 +1040,7 @@ static ToolOut runCompositeNode(Solution* sol, const ToolCfg& node, const ToolIn
     if (!def) {
         out.ok = false;
         out.error = true;
-        out.message = acpToUtf8("???????????");
+        out.message = "composite definition was not found";
         return out;
     }
     JobCfg inner = def->inner;
@@ -1068,14 +1055,14 @@ static ToolOut runCompositeNode(Solution* sol, const ToolCfg& node, const ToolIn
         if (!dest) {
             continue;
         }
-        ToolInputLink inLink;
-        inLink.fromToolId = ext;
-        inLink.fromPort = PortSlot(PortDir::Out, port.data);
-        inLink.toPort = port.innerPort;
-        inLink.origin = LinkOriginManual;
-        dest->links.push_back(inLink);
+        ToolLink edge;
+        edge.fromId = ext;
+        edge.fromPort = PortSlot(PortDir::Out, port.data);
+        edge.toId = port.innerToolId;
+        edge.toPort = port.innerPort;
+        edge.origin = LinkOriginManual;
+        inner.links.push_back(edge);
     }
-    inner.rebuildLinksCache();
     inner.ensureTree();
     Job child(&inner);
     ToolIo seed = in.inputIo;
@@ -1114,14 +1101,14 @@ ToolOut Job::runToolBody(Solution* sol, const ObjectId& toolId, const ToolCfg* r
         job = const_cast<JobCfg*>(m_recipeJob);
     }
     if (!formal || !job) {
-        out.message = std::string(Translate::tr("?????????"));
+        out.message = std::string(Translate::tr("tool was not found"));
         out.error = true;
         return out;
     }
     ToolCfg execTool = resolveRecipeTool(formal, recipeTool, m_recipeJob);
     if (!execTool.enabled) {
         out.ok = true;
-        out.message = std::string(Translate::tr("??????????"));
+        out.message = std::string(Translate::tr("tool is disabled"));
         return out;
     }
     execTool.runtime = formal->runtime;
@@ -1211,7 +1198,7 @@ ToolOut Job::runToolBody(Solution* sol, const ObjectId& toolId, const ToolCfg* r
         }
     }
 
-    // ????????????? JobCfg?????????????????
+    // 配置里有这个工具但实例还没建出来时，先重建
     if (m_config && m_config->findTool(toolId) && !findTool(toolId)) {
         rebuildTools();
     }
@@ -1252,7 +1239,7 @@ ToolOut Job::runToolBody(Solution* sol, const ObjectId& toolId, const ToolCfg* r
     m_runtime.ok[toolId] = out.ok;
     m_runtime.values[toolId] = std::make_shared<ParamMap>(out.values);
     m_runtime.io[toolId] = std::make_shared<ToolIo>(out.io);
-    // ??�p?????????????????
+    // 模板学完后清掉重建标志，避免下一拍再学
     if (formal->toolName == "locate.template"
         && formal->params.value("rebuildModel").toBool(false)) {
         formal->params.insert("rebuildModel", false);
@@ -1272,7 +1259,7 @@ ToolOut Job::runToolBody(Solution* sol, const ObjectId& toolId, const ToolCfg* r
     return out;
 }
 
-// ?????????????????????????????????????????��????
+// 按执行序先跑上游，再跑到指定工具为止
 ToolOut Job::runToolChain(Solution* sol, const ObjectId& toolId, const ToolCfg* recipeTool,
                              const JobCfg* recipeJobArg)
 {
@@ -1283,7 +1270,7 @@ ToolOut Job::runToolChain(Solution* sol, const ObjectId& toolId, const ToolCfg* 
 
     ToolOut last;
     if (!sol) {
-        last.message = std::string(Translate::tr("?????????"));
+        last.message = std::string(Translate::tr("no solution is open"));
         last.error = true;
         return last;
     }
@@ -1337,7 +1324,7 @@ ToolOut Job::runToolChain(Solution* sol, const ObjectId& toolId, const ToolCfg* 
             reached = true;
             break;
         }
-        if (!last.ok && job->failPolicy == FailStopStation) {
+        if (!last.ok && job->failPolicy != FailContinue) {
             m_recipeTool = savedRecipeTool;
             m_recipeJob = savedRecipeJob;
             return last;
@@ -1351,37 +1338,63 @@ ToolOut Job::runToolChain(Solution* sol, const ObjectId& toolId, const ToolCfg* 
     return last;
 }
 
-// ????????????��??????????If ???????????????????????????????????????????
-ToolOut Job::runGroup(Solution* sol, JobCfg* job, const ToolGroup& g, bool fallbackOk)
+// 按组执行。叶子跑工具，条件选支，循环按次数重跑，并行逐个跑完
+ToolOut Job::runGroup(Solution* sol, JobCfg* job, const ToolGroup& g, bool fallbackOk, int depth)
 {
     ToolOut last;
     last.ok = true;
     if (!job) {
-        last.message = std::string(Translate::tr("???????"));
+        last.message = std::string(Translate::tr("no job"));
         last.ok = false;
         return last;
+    }
+    if (g.kind == GroupSubJob) {
+        if (depth >= 8) {
+            last.ok = false;
+            last.message = std::string(Translate::tr("sub-job nesting is too deep"));
+            return last;
+        }
+        JobCfg* ref = 0;
+        if (sol && !g.subJobRef.empty()) {
+            for (size_t s = 0; s < sol->stations.size() && !ref; ++s) {
+                for (size_t j = 0; j < sol->stations[s].jobs.size(); ++j) {
+                    JobCfg& one = sol->stations[s].jobs[j];
+                    if (&one != job && one.name == g.subJobRef) {
+                        ref = &one;
+                        break;
+                    }
+                }
+            }
+        }
+        if (!ref) {
+            last.ok = false;
+            last.message = std::string(Translate::tr("sub-job was not found"));
+            return last;
+        }
+        Job nested(ref);
+        return nested.run(sol, 0, depth + 1);
     }
     if (!g.toolId.isNull() && g.children.empty()) {
         return runToolBody(sol, g.toolId, 0);
     }
     if (g.children.empty()) {
         last.ok = fallbackOk;
-        last.message = std::string(Translate::tr("???��??????"));
+        last.message = std::string(Translate::tr("branch is empty"));
         return last;
     }
     if (g.kind == GroupKindUndefined) {
         last.ok = false;
-        last.message = std::string(Translate::tr("??????��????"));
+        last.message = std::string(Translate::tr("group kind is undefined"));
         return last;
     }
     if (g.kind == GroupIf) {
         const bool takeThen = evalIf(g, fallbackOk);
         const int idx = takeThen ? 0 : 1;
-        emitLog(RunLogDebug, Translate::format("????? {0} ?? {1}", g.name, takeThen ? std::string("Then") : std::string("Else")));
+        emitLog(RunLogDebug, Translate::format("condition {0} takes {1}", g.name, takeThen ? std::string("Then") : std::string("Else")));
         if (idx < static_cast<int>(g.children.size())) {
-            return runGroup(sol, job, g.children[static_cast<size_t>(idx)], fallbackOk);
+            return runGroup(sol, job, g.children[static_cast<size_t>(idx)], fallbackOk, depth);
         }
-        last.message = std::string(Translate::tr("???????????????"));
+        last.message = std::string(Translate::tr("condition branch is missing"));
         return last;
     }
     if (g.kind == GroupLoop) {
@@ -1389,7 +1402,7 @@ ToolOut Job::runGroup(Solution* sol, JobCfg* job, const ToolGroup& g, bool fallb
         if (n < 1) {
             n = 1;
         }
-        emitLog(RunLogDebug, Translate::format("??? {0} x{1}", g.name, std::to_string(n)));
+        emitLog(RunLogDebug, Translate::format("loop {0} x{1}", g.name, std::to_string(n)));
         const int savedIdx = m_runtime.loopIndex;
         const int savedCnt = m_runtime.loopCount;
         m_runtime.loopCount = n;
@@ -1398,9 +1411,9 @@ ToolOut Job::runGroup(Solution* sol, JobCfg* job, const ToolGroup& g, bool fallb
         for (int k = 0; k < n; ++k) {
             m_runtime.loopIndex = k;
             for (int i = 0; i < static_cast<int>(g.children.size()); ++i) {
-                last = runGroup(sol, job, g.children[static_cast<size_t>(i)], lastOk);
+                last = runGroup(sol, job, g.children[static_cast<size_t>(i)], lastOk, depth);
                 lastOk = last.ok;
-                if (!last.ok && job->failPolicy == FailStopStation) {
+                if (!last.ok && job->failPolicy != FailContinue) {
                     const bool nextIf = (i + 1 < static_cast<int>(g.children.size())
                                          && g.children[static_cast<size_t>(i + 1)].kind == GroupIf);
                     if (g.children[static_cast<size_t>(i)].kind != GroupIf && !nextIf) {
@@ -1408,7 +1421,7 @@ ToolOut Job::runGroup(Solution* sol, JobCfg* job, const ToolGroup& g, bool fallb
                     }
                 }
             }
-            if (!last.ok && job->failPolicy == FailStopStation) {
+            if (!last.ok && job->failPolicy != FailContinue) {
                 break;
             }
         }
@@ -1419,7 +1432,7 @@ ToolOut Job::runGroup(Solution* sol, JobCfg* job, const ToolGroup& g, bool fallb
     if (g.kind == GroupParallel) {
         last.ok = true;
         for (int i = 0; i < static_cast<int>(g.children.size()); ++i) {
-            const ToolOut r = runGroup(sol, job, g.children[static_cast<size_t>(i)], fallbackOk);
+            const ToolOut r = runGroup(sol, job, g.children[static_cast<size_t>(i)], fallbackOk, depth);
             if (!r.ok) {
                 last.ok = false;
             }
@@ -1434,10 +1447,10 @@ ToolOut Job::runGroup(Solution* sol, JobCfg* job, const ToolGroup& g, bool fallb
     }
     bool lastOk = fallbackOk;
     for (int i = 0; i < static_cast<int>(g.children.size()); ++i) {
-        last = runGroup(sol, job, g.children[static_cast<size_t>(i)], lastOk);
+        last = runGroup(sol, job, g.children[static_cast<size_t>(i)], lastOk, depth);
         lastOk = last.ok;
-        if (!last.ok && job->failPolicy == FailStopStation) {
-            // NG ?????????? If ???????????????????? NG
+        if (!last.ok && job->failPolicy != FailContinue) {
+            // 失败后如果下一项是条件，继续跑，让条件能接到这次 NG
             const bool nextIf = (i + 1 < static_cast<int>(g.children.size())
                                  && g.children[static_cast<size_t>(i + 1)].kind == GroupIf);
             if (g.children[static_cast<size_t>(i)].kind != GroupIf && !nextIf) {
@@ -1448,7 +1461,7 @@ ToolOut Job::runGroup(Solution* sol, JobCfg* job, const ToolGroup& g, bool fallb
     return last;
 }
 
-// ?????? OK??CondThenOnNg ?????
+// 取条件源的 OK。期望 NG 时取反
 bool Job::evalIf(const ToolGroup& g, bool fallbackOk) const
 {
     bool ok = fallbackOk;
@@ -1461,8 +1474,8 @@ bool Job::evalIf(const ToolGroup& g, bool fallbackOk) const
     return ok;
 }
 
-// ???? JobCfg ???????��??????
-ToolOut Job::run(Solution* sol, const JobCfg* recipeJob)
+// 跑整条流程。recipe 非空时用草稿配置
+ToolOut Job::run(Solution* sol, const JobCfg* recipeJob, int depth)
 {
     if (!tryBeginRun()) {
         m_autoPrepared = false;
@@ -1477,11 +1490,11 @@ ToolOut Job::run(Solution* sol, const JobCfg* recipeJob)
         if (!job) {
             last.ok = false;
             last.error = true;
-            last.message = std::string(Translate::tr("???????"));
+            last.message = std::string(Translate::tr("no job"));
             emitLog(RunLogError, last.message);
         } else {
             last.ok = true;
-            last.message = std::string(Translate::tr("?????????"));
+            last.message = std::string(Translate::tr("job is disabled"));
             emitLog(RunLogInfo, last.message);
         }
         return last;
@@ -1490,7 +1503,7 @@ ToolOut Job::run(Solution* sol, const JobCfg* recipeJob)
     const JobCfg* savedRecipeJob = m_recipeJob;
     m_recipeJob = recipeJob;
     m_runtime.source.reset();
-    last = runGroup(sol, job, job->root, true);
+    last = runGroup(sol, job, job->root, true, depth);
     m_recipeJob = savedRecipeJob;
     last.source = copyImage(m_runtime.source);
     if (!job->resultFromRuleId.isNull() && !job->resultRules.empty()) {
@@ -1526,7 +1539,7 @@ ToolOut Job::run(Solution* sol, const JobCfg* recipeJob)
 }
 
 
-// ??????????? runtime????????????????
+// 把定位数值写进工具运行态，供下一拍参考
 static void copyLocateRuntime(ParamMap* runtime, const ParamMap& values)
 {
     if (!runtime) {
@@ -1546,28 +1559,28 @@ static void copyLocateRuntime(ParamMap* runtime, const ParamMap& values)
     }
 }
 
-// ?? ToolCfg ?????��???????
+// 把配置里的身份、参数和运行态写入工具实例
 void Job::applyToolConfig(ToolBase* inst, const ToolCfg& config)
 {
     if (!inst) {
         return;
     }
-    inst->applyInstanceData(config.info, config.links, config.param, config.runtime);
+    inst->applyInstanceData(config.info, std::vector<ToolInputLink>(), config.param, config.runtime);
 }
 
-// ??????????????????????????????
+// 把实例的身份、参数和运行态收回配置，不改画布坐标
 void Job::harvestToolConfig(const ToolBase* inst, ToolCfg* config)
 {
     if (!inst || !config) {
         return;
     }
     config->info = inst->info();
-    config->links = inst->links();
+    config->links.clear();
     config->param = inst->param();
     config->runtime = inst->runtime();
 }
 
-// ??��???????????? Job ?????????????????????
+// 执行工具实例。没有实例时用注册表里的原型
 ToolOut Job::runToolInstance(ToolBase* inst, const ToolIn& in, ToolCfg* formal)
 {
     ToolOut out;
@@ -1585,8 +1598,8 @@ ToolOut Job::runToolInstance(ToolBase* inst, const ToolIn& in, ToolCfg* formal)
     } else {
         out.ok = false;
         out.error = true;
-        out.errCode = 1;
-        out.message = std::string(Translate::tr("��???????"));
+        out.errCode = HS_ERR_NO_ALG;
+        out.message = std::string(Translate::tr("tool is not registered"));
         out.image = in.input;
     }
     if (formal) {
@@ -1620,33 +1633,32 @@ ToolOut Job::runToolInstance(ToolBase* inst, const ToolIn& in, ToolCfg* formal)
     return out;
 }
 
-// ???????
+// 当前配置
 JobCfg* Job::config() const
 {
     return m_config;
 }
 
-// ?????
+// 运行态
 JobRuntime& Job::runtime()
 {
     return m_runtime;
 }
 
-// ????????????
-// ?????????
+// 界面可见的上一拍快照
 std::shared_ptr<const JobRuntime> Job::publishedRuntime() const
 {
     std::lock_guard<std::mutex> lock(m_publishMu);
     return m_published;
 }
 
-// ??????
+// 工具实例个数
 int Job::toolCount() const
 {
     return static_cast<int>(m_tools.size());
 }
 
-// ?????????
+// 是否正在执行
 bool Job::isRunning() const
 {
     return m_executing.load();

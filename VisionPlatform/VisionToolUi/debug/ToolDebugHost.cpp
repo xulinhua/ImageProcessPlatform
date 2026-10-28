@@ -55,7 +55,7 @@ namespace Vision {
 static const int kMaxRoiUndo = 32;
 
 
-// ±àºÅ¿¨Æ¬£ºĞòºÅ»ÕÕÂ + ±êÌâ + ÄÚÈİ£»expandBody=false Ê±ÄÚÈİ¶¥¶ÔÆë¡¢ÏÂ·½Áô°×
+// ç¼–å·å¡ç‰‡ï¼šåºå·å¾½ç«  + æ ‡é¢˜ + å†…å®¹ï¼›expandBody=false æ—¶å†…å®¹é¡¶å¯¹é½ã€ä¸‹æ–¹ç•™ç™½
 static QFrame* makeDebugCard(const QString& badge, const QString& title, QWidget* body,
                              QWidget* parent, bool expandBody)
 {
@@ -89,7 +89,7 @@ static QFrame* makeDebugCard(const QString& badge, const QString& title, QWidget
     if (expandBody) {
         inner->addWidget(body, 1);
     } else {
-        // ²ÎÊı/ÊäÈë£ºÄÚÈİ°´×ÔÉí¸ß¶È¶¥¶ÔÆë£¬¿Õ°×Áô¸ø stretch
+        // å‚æ•°/è¾“å…¥ï¼šå†…å®¹æŒ‰è‡ªèº«é«˜åº¦é¡¶å¯¹é½ï¼Œç©ºç™½ç•™ç»™ stretch
         body->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
         inner->addWidget(body, 0, Qt::AlignTop);
         inner->addStretch(1);
@@ -98,7 +98,7 @@ static QFrame* makeDebugCard(const QString& badge, const QString& title, QWidget
     return card;
 }
 
-// ¸üĞÂ¿¨Æ¬ĞòºÅ»ÕÕÂ
+// æ›´æ–°å¡ç‰‡åºå·å¾½ç« 
 static void setCardBadge(QFrame* card, const QString& badge)
 {
     if (!card) {
@@ -109,7 +109,7 @@ static void setCardBadge(QFrame* card, const QString& badge)
     }
 }
 
-// ÁÙÊ±Õï¶Ï£º¶Ô±È Qt ²à¼¸ºÎÓëÔ­Éú´°¿Ú¾ØĞÎ
+// ä¸´æ—¶è¯Šæ–­ï¼šå¯¹æ¯” Qt ä¾§å‡ ä½•ä¸åŸç”Ÿçª—å£çŸ©å½¢
 static void dumpWindowGeometry(QWidget* root, const QString& tag, const QString& when)
 {
     QFile f(QCoreApplication::applicationDirPath() + QLatin1String("/layout_debug.txt"));
@@ -140,7 +140,7 @@ static void dumpWindowGeometry(QWidget* root, const QString& tag, const QString&
     ts << "\n";
 }
 
-// µ÷ÊÔ´°ÊÇ·ñÒÑÓĞ±¾¹¤¾ßÊäÈëÍ¼£¨ÓĞÔòÊÔÅÜÖ»ÅÜ±¾¹¤¾ß£©
+// è°ƒè¯•çª—æ˜¯å¦å·²æœ‰æœ¬å·¥å…·è¾“å…¥å›¾ï¼ˆæœ‰åˆ™è¯•è·‘åªè·‘æœ¬å·¥å…·ï¼‰
 static bool toolHasDebugInput(JobCfg* jobCfg, Job* job, const ObjectId& toolId)
 {
     if (!jobCfg || !job || toolId.isNull()) {
@@ -149,7 +149,7 @@ static bool toolHasDebugInput(JobCfg* jobCfg, Job* job, const ObjectId& toolId)
     return !job->cachedInputImage(*jobCfg, toolId).isNull();
 }
 
-// ÏêÏ¸µ÷ÊÔ´°£ºÍ¼Ïñ¡¢²ÎÊı¡¢Á¬½ÓÓë ROI
+// è¯¦ç»†è°ƒè¯•çª—ï¼šå›¾åƒã€å‚æ•°ã€è¿æ¥ä¸ ROI
 ToolDebugHost::ToolDebugHost(ToolCfg* tool, Session* session, Solution* sol, Job* job,
                              QWidget* parent)
     : QDialog(parent)
@@ -180,8 +180,8 @@ ToolDebugHost::ToolDebugHost(ToolCfg* tool, Session* session, Solution* sol, Job
     , m_syncingRoiSelection(false)
     , m_runBusy(false)
 {
-    // ³ß´ç±ØĞëÔÚ½¨×Ó¿Ø¼şÖ®Ç°¶¨ºÃ£ºÔ­Éú´°¿Ú¿ÉÄÜÔÚ¹¹ÔìÍ¾ÖĞ¾Í±»´´½¨
-    // ÄÇÊ±Èô»¹Ã»¶¨³ß´ç£¬´°¿Ú»á°´²¼¾Ö½¨Òé³ß´ç¿ª³öÀ´£¬Ö®ºó Qt ²àÔÙ¸ÄÒ²Í¬²½²»»Ø
+    // å°ºå¯¸å¿…é¡»åœ¨å»ºå­æ§ä»¶ä¹‹å‰å®šå¥½ï¼šåŸç”Ÿçª—å£å¯èƒ½åœ¨æ„é€ é€”ä¸­å°±è¢«åˆ›å»º
+    // é‚£æ—¶è‹¥è¿˜æ²¡å®šå°ºå¯¸ï¼Œçª—å£ä¼šæŒ‰å¸ƒå±€å»ºè®®å°ºå¯¸å¼€å‡ºæ¥ï¼Œä¹‹å Qt ä¾§å†æ”¹ä¹ŸåŒæ­¥ä¸å›
     setMinimumSize(760, 480);
     resize(preferredDebugSize(this));
 
@@ -219,7 +219,7 @@ ToolDebugHost::ToolDebugHost(ToolCfg* tool, Session* session, Solution* sol, Job
         paramBody->setObjectName(QLatin1String("toolDebugParamBody"));
     }
 
-    QFrame* linkCard = makeDebugCard(QLatin1String("1"), T("ÊäÈë"),
+    QFrame* linkCard = makeDebugCard(QLatin1String("1"), T("è¾“å…¥"),
                                      m_io->pageWidget(ToolIoPage::Link), this, false);
     linkCard->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     m_linkCard = linkCard;
@@ -237,14 +237,14 @@ ToolDebugHost::ToolDebugHost(ToolCfg* tool, Session* session, Solution* sol, Job
 
     m_chkDrawMode = new QCheckBox(QString(), this);
     m_chkDrawMode->setObjectName(QLatin1String("toolDebugDrawSwitch"));
-    m_chkDrawMode->setToolTip(T("¿ªÆôºóÏÔÊ¾»æÖÆ¹¤¾ß£¬¿ÉÁ¬ĞøÌí¼Ó ROI£»¹Ø±ÕÔò½öä¯ÀÀÓë²é¿´½á¹û¡£"));
+    m_chkDrawMode->setToolTip(T("å¼€å¯åæ˜¾ç¤ºç»˜åˆ¶å·¥å…·ï¼Œå¯è¿ç»­æ·»åŠ  ROIï¼›å…³é—­åˆ™ä»…æµè§ˆä¸æŸ¥çœ‹ç»“æœã€‚"));
     connect(m_chkDrawMode, SIGNAL(toggled(bool)), this, SLOT(onDrawModeChanged()));
 
     m_drawModeWrap = new QWidget(this);
     QHBoxLayout* drawModeLay = new QHBoxLayout(m_drawModeWrap);
     drawModeLay->setContentsMargins(0, 0, 0, 0);
     drawModeLay->setSpacing(6);
-    QLabel* drawModeLabel = new QLabel(T("»æÖÆÄ£Ê½"), m_drawModeWrap);
+    QLabel* drawModeLabel = new QLabel(T("ç»˜åˆ¶æ¨¡å¼"), m_drawModeWrap);
     drawModeLabel->setObjectName(QLatin1String("toolDebugDrawLabel"));
     drawModeLay->addWidget(drawModeLabel);
     drawModeLay->addWidget(m_chkDrawMode);
@@ -263,7 +263,7 @@ ToolDebugHost::ToolDebugHost(ToolCfg* tool, Session* session, Solution* sol, Job
     roiBodyLay->addWidget(m_io->pageWidget(ToolIoPage::Roi), 1);
 
     m_roiCard = makeDebugCard(QLatin1String("2"), T("ROI"), roiBody, this, true);
-    m_paramCard = makeDebugCard(QLatin1String("3"), T("²ÎÊı"), paramBody, this, false);
+    m_paramCard = makeDebugCard(QLatin1String("3"), T("å‚æ•°"), paramBody, this, false);
     m_roiCard->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     m_paramCard->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 
@@ -294,33 +294,33 @@ ToolDebugHost::ToolDebugHost(ToolCfg* tool, Session* session, Solution* sol, Job
     m_log->setReadOnly(true);
     m_log->setMaximumBlockCount(200);
     m_log->setMinimumHeight(52);
-    // ÓëÓÒ²àÁ½ĞĞ°´Å¥µÈ¸ß
+    // ä¸å³ä¾§ä¸¤è¡ŒæŒ‰é’®ç­‰é«˜
     m_log->setMaximumHeight(84);
 
-    QString toolTitle = m_tool && !m_tool->name.empty() ? qs(m_tool->name) : T("¹¤¾ß");
+    QString toolTitle = m_tool && !m_tool->name.empty() ? qs(m_tool->name) : T("å·¥å…·");
     QString toolKindTitle = toolTitle;
     if (m_tool && !m_tool->toolName.empty()) {
         if (ToolBase* reg = ToolRegistry::instance().find(m_tool->toolName)) {
             toolKindTitle = qs(reg->displayName());
-            if (!toolKindTitle.endsWith(T("¹¤¾ß"))) {
-                toolKindTitle += T("¹¤¾ß");
+            if (!toolKindTitle.endsWith(T("å·¥å…·"))) {
+                toolKindTitle += T("å·¥å…·");
             }
         }
     }
     QFrame* header = makeCvXTitleBar(this, this, toolKindTitle, toolTitle, true, 0);
 
-    QPushButton* cancel = new QPushButton(T("È¡Ïû"), this);
+    QPushButton* cancel = new QPushButton(T("å–æ¶ˆ"), this);
     connect(cancel, SIGNAL(clicked()), this, SLOT(onCancel()));
-    QPushButton* save = new QPushButton(T("±£´æ"), this);
+    QPushButton* save = new QPushButton(T("ä¿å­˜"), this);
     save->setObjectName(QLatin1String("toolDebugSaveBtn"));
     connect(save, SIGNAL(clicked()), this, SLOT(onSave()));
-    QPushButton* run = new QPushButton(T("ÔËĞĞ±¾¹¤¾ß"), this);
+    QPushButton* run = new QPushButton(T("è¿è¡Œæœ¬å·¥å…·"), this);
     run->setObjectName(QLatin1String("toolDebugRunBtn"));
     setButtonRole(run, "primary");
     run->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     connect(run, SIGNAL(clicked()), this, SLOT(onRun()));
 
-    // °´Å¥·ÖÁ½ĞĞ£ºÉÏĞĞÈ¡Ïû + ±£´æ£¬ÏÂĞĞµ¥¶À·ÅÔËĞĞ
+    // æŒ‰é’®åˆ†ä¸¤è¡Œï¼šä¸Šè¡Œå–æ¶ˆ + ä¿å­˜ï¼Œä¸‹è¡Œå•ç‹¬æ”¾è¿è¡Œ
     QHBoxLayout* actTopLay = new QHBoxLayout();
     actTopLay->setContentsMargins(0, 0, 0, 0);
     actTopLay->setSpacing(8);
@@ -364,12 +364,12 @@ ToolDebugHost::ToolDebugHost(ToolCfg* tool, Session* session, Solution* sol, Job
     refreshView();
     syncDrawingInteractionView();
     warnRoiKindMismatch();
-    appendDebugLog(T("µ÷ÊÔ´°¿ÚÒÑ´ò¿ª£º") + toolTitle);
+    appendDebugLog(T("è°ƒè¯•çª—å£å·²æ‰“å¼€ï¼š") + toolTitle);
     setAttribute(Qt::WA_Resized, true);
     resize(preferredDebugSize(this));
 }
 
-// ´ò¿ª³ß´ç£º°´ 1120x720 Æğ£¬µ«²»³¬¹ıÆÁÄ»¿ÉÓÃÇø£¬±£Ö¤µ×À¸°´Å¥²»±»¼·³öÆÁÄ»
+// æ‰“å¼€å°ºå¯¸ï¼šæŒ‰ 1120x720 èµ·ï¼Œä½†ä¸è¶…è¿‡å±å¹•å¯ç”¨åŒºï¼Œä¿è¯åº•æ æŒ‰é’®ä¸è¢«æŒ¤å‡ºå±å¹•
 QSize ToolDebugHost::preferredDebugSize(const QWidget* ref)
 {
     QRect avail;
@@ -386,19 +386,19 @@ QSize ToolDebugHost::preferredDebugSize(const QWidget* ref)
     return QSize(qMax(760, w), qMax(480, h));
 }
 
-// ½¨Òé³ß´ç¹Ì¶¨Îª´ò¿ª³ß´ç£¬À¹×¡°´ sizeHint ÀÛ¼Ó³Å´ó´°¿ÚµÄÂ·¾¶
+// å»ºè®®å°ºå¯¸å›ºå®šä¸ºæ‰“å¼€å°ºå¯¸ï¼Œæ‹¦ä½æŒ‰ sizeHint ç´¯åŠ æ’‘å¤§çª—å£çš„è·¯å¾„
 QSize ToolDebugHost::sizeHint() const
 {
     return preferredDebugSize(this);
 }
 
-// ×îĞ¡³ß´ç²»¸úÍ¼Ïñ´°/²¼¾ÖÄÚÈİ×ß£¬±ÜÃâ´ò¿ªÊ±±»³Å¸ß
+// æœ€å°å°ºå¯¸ä¸è·Ÿå›¾åƒçª—/å¸ƒå±€å†…å®¹èµ°ï¼Œé¿å…æ‰“å¼€æ—¶è¢«æ’‘é«˜
 QSize ToolDebugHost::minimumSizeHint() const
 {
     return QSize(760, 480);
 }
 
-// ´°¿Ú¸ßÓÚÆÁÄ»¿ÉÓÃÇøÊ±ÊÕ»ØÀ´£¬²¢Å²½øÆÁÄ»ÄÚ
+// çª—å£é«˜äºå±å¹•å¯ç”¨åŒºæ—¶æ”¶å›æ¥ï¼Œå¹¶æŒªè¿›å±å¹•å†…
 void ToolDebugHost::clampToScreen()
 {
     QDesktopWidget* desk = QApplication::desktop();
@@ -432,7 +432,7 @@ void ToolDebugHost::clampToScreen()
     }
 }
 
-// ×·¼ÓÒ»ĞĞ´øÊ±¼ä´ÁµÄµ÷ÊÔÈÕÖ¾
+// è¿½åŠ ä¸€è¡Œå¸¦æ—¶é—´æˆ³çš„è°ƒè¯•æ—¥å¿—
 void ToolDebugHost::appendDebugLog(const QString& line)
 {
     if (!m_log || line.isEmpty()) {
@@ -445,7 +445,7 @@ void ToolDebugHost::appendDebugLog(const QString& line)
     m_log->setTextCursor(cur);
 }
 
-// °´¹¤¾ßÄÜÁ¦ÖØÅÅËÄ¹¬¸ñ
+// æŒ‰å·¥å…·èƒ½åŠ›é‡æ’å››å®«æ ¼
 void ToolDebugHost::rebuildQuadLayout()
 {
     if (!m_quadGrid) {
@@ -475,7 +475,7 @@ void ToolDebugHost::rebuildQuadLayout()
     if (paramOn) {
         order[count++] = m_paramCard;
     }
-    // Ã»½øËÄ¹¬¸ñµÄ¿¨Æ¬±ØĞëÒş²Ø£¬·ñÔò»á³ÉÎªÍÑÀë²¼¾ÖµÄÓÎÀë¿Ø¼ş
+    // æ²¡è¿›å››å®«æ ¼çš„å¡ç‰‡å¿…é¡»éšè—ï¼Œå¦åˆ™ä¼šæˆä¸ºè„±ç¦»å¸ƒå±€çš„æ¸¸ç¦»æ§ä»¶
     if (m_roiCard && !roiOn) {
         m_roiCard->hide();
     }
@@ -513,13 +513,13 @@ void ToolDebugHost::rebuildQuadLayout()
     updateDrawBarVisibility();
 }
 
-// °´¹¤¾ßÄÜÁ¦ÏÔÊ¾ ROI ¿¨Æ¬²¢ÖØÅÅËÄ¹¬¸ñ
+// æŒ‰å·¥å…·èƒ½åŠ›æ˜¾ç¤º ROI å¡ç‰‡å¹¶é‡æ’å››å®«æ ¼
 void ToolDebugHost::updateRoiCardVisibility()
 {
     rebuildQuadLayout();
 }
 
-// °´¹¤¾ßÍÆ¼öÖÖÀàÏÔÒşĞÎ×´°´Å¥£¨±ÜÃâÒ»ÅÅÈ«Â¶³ö£©
+// æŒ‰å·¥å…·æ¨èç§ç±»æ˜¾éšå½¢çŠ¶æŒ‰é’®ï¼ˆé¿å…ä¸€æ’å…¨éœ²å‡ºï¼‰
 void ToolDebugHost::updateDrawShapeTools()
 {
     ToolCaps caps;
@@ -580,7 +580,7 @@ void ToolDebugHost::updateDrawShapeTools()
     }
 }
 
-// »æÖÆÄ£Ê½¿ª/¹ØÊ±ÏÔÒşĞÎ×´À¸
+// ç»˜åˆ¶æ¨¡å¼å¼€/å…³æ—¶æ˜¾éšå½¢çŠ¶æ 
 void ToolDebugHost::updateDrawBarVisibility()
 {
     const bool roiOn = m_tool && m_tool->usesRoi();
@@ -600,7 +600,7 @@ void ToolDebugHost::updateDrawBarVisibility()
     }
 }
 
-// Ctrl+Z ³·Ïú ROI
+// Ctrl+Z æ’¤é”€ ROI
 void ToolDebugHost::keyPressEvent(QKeyEvent* event)
 {
     if (event->matches(QKeySequence::Undo)) {
@@ -611,7 +611,7 @@ void ToolDebugHost::keyPressEvent(QKeyEvent* event)
     QDialog::keyPressEvent(event);
 }
 
-// ĞŞ¸Ä ROI Ç°Ñ¹Õ»
+// ä¿®æ”¹ ROI å‰å‹æ ˆ
 void ToolDebugHost::pushRoiUndo()
 {
     if (!m_tool) {
@@ -627,7 +627,7 @@ void ToolDebugHost::pushRoiUndo()
     }
 }
 
-// ³·ÏúÉÏÒ»²½ ROI
+// æ’¤é”€ä¸Šä¸€æ­¥ ROI
 void ToolDebugHost::undoRoi()
 {
     if (m_roiUndo.isEmpty() || !m_tool) {
@@ -646,7 +646,7 @@ void ToolDebugHost::undoRoi()
     emit roiChanged();
 }
 
-// ROI ÖÖÀàÓë¹¤¾ß²»Æ¥ÅäÊ±ÌáÊ¾
+// ROI ç§ç±»ä¸å·¥å…·ä¸åŒ¹é…æ—¶æç¤º
 void ToolDebugHost::warnRoiKindMismatch()
 {
     if (!m_tool || !m_tool->usesRoi()) {
@@ -657,8 +657,8 @@ void ToolDebugHost::warnRoiKindMismatch()
         if (!rs[i].isInitialized() || rs[i].isEmpty() || !m_tool->roiKindMatches(static_cast<int>(rs[i].kind()))) {
             QMessageBox::warning(
                 this,
-                T("ROI ÀàĞÍ"),
-                T("µ±Ç° ROI ÀàĞÍÓë¹¤¾ßÍÆ¼ö²»Ò»ÖÂ£¨%1 ½¨ÒéÊ¹ÓÃ %2£©¡£ÇëÖØ»­»òÇĞ»»»æÖÆ¹¤¾ß¡£")
+                T("ROI ç±»å‹"),
+                T("å½“å‰ ROI ç±»å‹ä¸å·¥å…·æ¨èä¸ä¸€è‡´ï¼ˆ%1 å»ºè®®ä½¿ç”¨ %2ï¼‰ã€‚è¯·é‡ç”»æˆ–åˆ‡æ¢ç»˜åˆ¶å·¥å…·ã€‚")
                     .arg(qs(m_tool->name))
                     .arg(QString::fromUtf8(
                         roiKindTitle(m_tool->preferredRoiKind()).c_str())));
@@ -667,31 +667,31 @@ void ToolDebugHost::warnRoiKindMismatch()
     }
 }
 
-// É¾³ı ROI Ç°È·ÈÏ
+// åˆ é™¤ ROI å‰ç¡®è®¤
 bool ToolDebugHost::confirmRoiDelete(const QString& message) const
 {
     const QMessageBox::StandardButton btn = QMessageBox::question(
         const_cast<ToolDebugHost*>(this),
-        T("É¾³ı ROI"),
+        T("åˆ é™¤ ROI"),
         message,
         QMessageBox::Yes | QMessageBox::No,
         QMessageBox::No);
     return btn == QMessageBox::Yes;
 }
 
-// Ò³ÄÚÊÔÅÜÓÃµÄ draft ÊÓÍ¼
+// é¡µå†…è¯•è·‘ç”¨çš„ draft è§†å›¾
 const ToolCfg* ToolDebugHost::draftTool() const
 {
     return m_formalTool ? &m_draftView : 0;
 }
 
-// ±£´æÊ±ÊÇ·ñ±ê¼Ç Solution::dirty
+// ä¿å­˜æ—¶æ˜¯å¦æ ‡è®° Solution::dirty
 void ToolDebugHost::setSolutionCommit(bool commit)
 {
     m_commitToSolution = commit;
 }
 
-// Ê×´ÎÏÔÊ¾ºó°´Êµ¼Ê²¼¾ÖÖØËã²ÎÊıÒ³¸ß¶È£¬²¢°Ñ´°¿ÚÊÕ½øÆÁÄ»
+// é¦–æ¬¡æ˜¾ç¤ºåæŒ‰å®é™…å¸ƒå±€é‡ç®—å‚æ•°é¡µé«˜åº¦ï¼Œå¹¶æŠŠçª—å£æ”¶è¿›å±å¹•
 void ToolDebugHost::showEvent(QShowEvent* event)
 {
     QDialog::showEvent(event);
@@ -705,21 +705,21 @@ void ToolDebugHost::showEvent(QShowEvent* event)
     dumpWindowGeometry(this, m_tool ? qs(m_tool->name) : QString(), QLatin1String("show"));
 }
 
-// »æÖÆĞ¡´°¸ú×Åµ÷ÊÔ´°£¬ÌùÔÚÍ¼Ïñ×óÉÏ
+// ç»˜åˆ¶å°çª—è·Ÿç€è°ƒè¯•çª—ï¼Œè´´åœ¨å›¾åƒå·¦ä¸Š
 void ToolDebugHost::moveEvent(QMoveEvent* event)
 {
     QDialog::moveEvent(event);
     placeDrawPad();
 }
 
-// µ÷ÊÔ´°±ä´óÊ±»æÖÆĞ¡´°ÈÔÌù×ÅÍ¼Ïñ
+// è°ƒè¯•çª—å˜å¤§æ—¶ç»˜åˆ¶å°çª—ä»è´´ç€å›¾åƒ
 void ToolDebugHost::resizeEvent(QResizeEvent* event)
 {
     QDialog::resizeEvent(event);
     placeDrawPad();
 }
 
-// °Ñ»æÖÆĞ¡´°°Úµ½Í¼ÏñÉÏ·½
+// æŠŠç»˜åˆ¶å°çª—æ‘†åˆ°å›¾åƒä¸Šæ–¹
 void ToolDebugHost::placeDrawPad()
 {
     if (!m_drawPad || !m_view || !m_drawPad->isVisible()) {
@@ -731,7 +731,7 @@ void ToolDebugHost::placeDrawPad()
     m_drawPad->popup(m_view);
 }
 
-// ¹Ø±ÕÇ°£ºÈ¡Ïû=ÁôÔÚ´°ÄÚ£¬²»±£´æ=¶ªÆú²¢¹Ø£¬ÒÑ±£´æ=±£´æºó¹Ø
+// å…³é—­å‰ï¼šå–æ¶ˆ=ç•™åœ¨çª—å†…ï¼Œä¸ä¿å­˜=ä¸¢å¼ƒå¹¶å…³ï¼Œå·²ä¿å­˜=ä¿å­˜åå…³
 void ToolDebugHost::closeEvent(QCloseEvent* event)
 {
     const int action = askCloseAction();
@@ -742,7 +742,7 @@ void ToolDebugHost::closeEvent(QCloseEvent* event)
     if (m_drawPad) {
         m_drawPad->hide();
     }
-    // µÈÊÔÅÜÏß³Ì½áÊø£¬ÔÙ¹Ø´°£¨±ÜÃâ»Øµ÷ÒÑÏú»ÙµÄ this£©
+    // ç­‰è¯•è·‘çº¿ç¨‹ç»“æŸï¼Œå†å…³çª—ï¼ˆé¿å…å›è°ƒå·²é”€æ¯çš„ thisï¼‰
     if (m_runBusy) {
         ThreadPool::shared().waitIdle();
         QCoreApplication::sendPostedEvents(this, QEvent::MetaCall);
@@ -755,7 +755,7 @@ void ToolDebugHost::closeEvent(QCloseEvent* event)
     }
 }
 
-// °Ñ²ÎÊıÒ³Ğ´»Ø draft
+// æŠŠå‚æ•°é¡µå†™å› draft
 void ToolDebugHost::applyParams()
 {
     if (m_editor) {
@@ -763,22 +763,22 @@ void ToolDebugHost::applyParams()
     }
 }
 
-// Ò³ÄÚÊÔÅÜ£ºÍ¶µİ C++ Ïß³Ì³Ø£¬½á¹û Queued »Ø UI
+// é¡µå†…è¯•è·‘ï¼šæŠ•é€’ C++ çº¿ç¨‹æ± ï¼Œç»“æœ Queued å› UI
 void ToolDebugHost::onRun()
 {
     if (!m_formalTool || !m_job || !m_sol || !m_tool) {
         return;
     }
     if (m_runBusy) {
-        appendDebugLog(T("ÊÔÅÜ½øĞĞÖĞ£¬ÇëÉÔºò¡£"));
+        appendDebugLog(T("è¯•è·‘è¿›è¡Œä¸­ï¼Œè¯·ç¨å€™ã€‚"));
         return;
     }
     if (m_job->isRunning()) {
-        appendDebugLog(T("Á÷³ÌÕıÔÚÖ´ĞĞ£¬ÇëÉÔºò¡£"));
+        appendDebugLog(T("æµç¨‹æ­£åœ¨æ‰§è¡Œï¼Œè¯·ç¨å€™ã€‚"));
         return;
     }
     applyParams();
-    appendDebugLog(T("¿ªÊ¼ÔËĞĞ¡£"));
+    appendDebugLog(T("å¼€å§‹è¿è¡Œã€‚"));
 
     struct Pack {
         ToolCfg draft;
@@ -835,7 +835,7 @@ void ToolDebugHost::onRun()
     });
 }
 
-// ÊÔÅÜ½á¹û»Ø UI
+// è¯•è·‘ç»“æœå› UI
 void ToolDebugHost::onAsyncRunDone(void* outPtr)
 {
     m_runBusy = false;
@@ -857,7 +857,7 @@ void ToolDebugHost::onAsyncRunDone(void* outPtr)
     }
 }
 
-// ¸´¼ìÌø×ª£ºÇ¿ÖÆµ¥ÎÄ¼şÍ¼Â·¾¶
+// å¤æ£€è·³è½¬ï¼šå¼ºåˆ¶å•æ–‡ä»¶å›¾è·¯å¾„
 void ToolDebugHost::applyForcedImageFile(const std::string& imagePath)
 {
     m_forcedImagePath = imagePath;
@@ -873,17 +873,17 @@ void ToolDebugHost::applyForcedImageFile(const std::string& imagePath)
         }
         refreshIo();
     }
-    appendDebugLog(T("ÒÑÔØÈë¸´¼ìÍ¼£º") + qs(imagePath));
+    appendDebugLog(T("å·²è½½å…¥å¤æ£€å›¾ï¼š") + qs(imagePath));
     refreshView();
 }
 
-// ±£´æ draft£¬µ÷ÊÔ´°±£³Ö´ò¿ª
+// ä¿å­˜ draftï¼Œè°ƒè¯•çª—ä¿æŒæ‰“å¼€
 void ToolDebugHost::onSave()
 {
     trySave();
 }
 
-// È¡Ïû£ºÎ´±£´æÊ±ÈıÑ¡Ò»£¬·ñÔòÖ±½Ó¹Ø
+// å–æ¶ˆï¼šæœªä¿å­˜æ—¶ä¸‰é€‰ä¸€ï¼Œå¦åˆ™ç›´æ¥å…³
 void ToolDebugHost::onCancel()
 {
     const int action = askCloseAction();
@@ -897,7 +897,7 @@ void ToolDebugHost::onCancel()
     }
 }
 
-// Ìá½» draft Ğ´»Ø formal
+// æäº¤ draft å†™å› formal
 void ToolDebugHost::commitDraft()
 {
     if (!m_formalTool || !m_sol) {
@@ -919,7 +919,7 @@ void ToolDebugHost::commitDraft()
     emit draftSaved();
 }
 
-// ¸üĞÂ draft °¹±ê¼Ç
+// æ›´æ–° draft è‚®æ ‡è®°
 void ToolDebugHost::markDraftDirty()
 {
     if (!m_formalTool) {
@@ -931,10 +931,10 @@ void ToolDebugHost::markDraftDirty()
     updateWindowTitle();
 }
 
-// Ë¢ĞÂ±êÌâ
+// åˆ·æ–°æ ‡é¢˜
 void ToolDebugHost::updateWindowTitle()
 {
-    QString title = T("ÏêÏ¸µ÷ÊÔ");
+    QString title = T("è¯¦ç»†è°ƒè¯•");
     if (m_tool && !m_tool->name.empty()) {
         title = qs(m_tool->name) + QLatin1Char(' ') + QString(QChar(0x00B7)) + QLatin1Char(' ') + title;
         ToolBase* reg = ToolRegistry::instance().find(m_tool->toolName);
@@ -943,12 +943,12 @@ void ToolDebugHost::updateWindowTitle()
         }
     }
     if (m_formalTool && DraftRegistry::toolDraftBlocksFormalRun(m_formalTool->id)) {
-        title += T(" ¡¤ Î´±£´æ");
+        title += T(" Â· æœªä¿å­˜");
     }
     setWindowTitle(title);
 }
 
-// Ğ´»Ø formal ²¢Ë¢ĞÂ±êÌâ£¬²»¹Ø±Õ
+// å†™å› formal å¹¶åˆ·æ–°æ ‡é¢˜ï¼Œä¸å…³é—­
 bool ToolDebugHost::trySave()
 {
     if (!m_formalTool || !m_sol || !m_session->has(PermEditSolution)) {
@@ -956,11 +956,11 @@ bool ToolDebugHost::trySave()
     }
     applyParams();
     commitDraft();
-    appendDebugLog(T("ÒÑ±£´æ"));
+    appendDebugLog(T("å·²ä¿å­˜"));
     return true;
 }
 
-// ¹Ø´°Ç°ÈıÑ¡Ò»£º0 È¡Ïû£¬1 ²»±£´æ²¢¹Ø£¬2 ±£´æ²¢¹Ø
+// å…³çª—å‰ä¸‰é€‰ä¸€ï¼š0 å–æ¶ˆï¼Œ1 ä¸ä¿å­˜å¹¶å…³ï¼Œ2 ä¿å­˜å¹¶å…³
 int ToolDebugHost::askCloseAction()
 {
     if (m_boundId.isNull() || !DraftRegistry::toolDraftBlocksFormalRun(m_boundId)) {
@@ -970,19 +970,19 @@ int ToolDebugHost::askCloseAction()
         return 1;
     }
     QMessageBox box(QMessageBox::Question,
-                    T("Î´±£´æµÄĞŞ¸Ä"),
-                    T("ÓĞÎ´±£´æµÄĞŞ¸Ä£¬ÊÇ·ñ±£´æ£¿"),
+                    T("æœªä¿å­˜çš„ä¿®æ”¹"),
+                    T("æœ‰æœªä¿å­˜çš„ä¿®æ”¹ï¼Œæ˜¯å¦ä¿å­˜ï¼Ÿ"),
                     QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel,
                     this);
     box.setDefaultButton(QMessageBox::Yes);
     if (QAbstractButton* saveBtn = box.button(QMessageBox::Yes)) {
-        saveBtn->setText(T("±£´æ"));
+        saveBtn->setText(T("ä¿å­˜"));
     }
     if (QAbstractButton* discardBtn = box.button(QMessageBox::No)) {
-        discardBtn->setText(T("²»±£´æ"));
+        discardBtn->setText(T("ä¸ä¿å­˜"));
     }
     if (QAbstractButton* cancelBtn = box.button(QMessageBox::Cancel)) {
-        cancelBtn->setText(T("È¡Ïû"));
+        cancelBtn->setText(T("å–æ¶ˆ"));
     }
     const int r = box.exec();
     if (r == QMessageBox::Cancel) {
@@ -999,7 +999,7 @@ int ToolDebugHost::askCloseAction()
     return 1;
 }
 
-// ÇĞ»»»æÖÆ¹¤¾ß
+// åˆ‡æ¢ç»˜åˆ¶å·¥å…·
 void ToolDebugHost::onDrawTool(int id)
 {
     m_view->setDrawTool(static_cast<HsCtrl::DrawTool>(id));
@@ -1011,7 +1011,7 @@ void ToolDebugHost::onDrawTool(int id)
     syncDrawingInteractionView();
 }
 
-// ÊäÈëÏÂÀ­±ä¸üÁ¬Ïß
+// è¾“å…¥ä¸‹æ‹‰å˜æ›´è¿çº¿
 void ToolDebugHost::onInputLinkChanged(int portData, const QString& fromId, const QString& fromPort)
 {
     if (!m_formalTool || !m_sol || !m_session || !m_session->has(PermEditSolution)) {
@@ -1028,7 +1028,7 @@ void ToolDebugHost::onInputLinkChanged(int portData, const QString& fromId, cons
     } else {
         std::string err;
         if (!job->connectPorts(oid(fromId), portSlotFromKey(ss(fromPort)), m_formalTool->id, toPort, &err)) {
-            QMessageBox::warning(this, T("Á¬Ïß"), qs(err));
+            QMessageBox::warning(this, T("è¿çº¿"), qs(err));
             refreshIo();
             return;
         }
@@ -1039,17 +1039,17 @@ void ToolDebugHost::onInputLinkChanged(int portData, const QString& fromId, cons
     refreshIo();
     refreshView();
     if (fromId.isEmpty()) {
-        appendDebugLog(T("ÊäÈëÒÑ¶Ï¿ª£º") + qs(portDataTitle(data)));
+        appendDebugLog(T("è¾“å…¥å·²æ–­å¼€ï¼š") + qs(portDataTitle(data)));
     } else {
         const ToolCfg* src = job->findTool(oid(fromId));
         const QString srcName = src ? qs(src->name) : fromId;
-        appendDebugLog(T("ÊäÈëÒÑÁ¬½Ó£º") + qs(portDataTitle(data)) + QLatin1String(" -> ")
+        appendDebugLog(T("è¾“å…¥å·²è¿æ¥ï¼š") + qs(portDataTitle(data)) + QLatin1String(" -> ")
                        + srcName);
     }
     emit linksChanged();
 }
 
-// ²ÎÊıÒ³¸Ä¶¯£ºÂ·¾¶±ä¸üºó°´ draft ÖØ²ÉÍ¼
+// å‚æ•°é¡µæ”¹åŠ¨ï¼šè·¯å¾„å˜æ›´åæŒ‰ draft é‡é‡‡å›¾
 void ToolDebugHost::onEditorEdited()
 {
     markDraftDirty();
@@ -1068,14 +1068,14 @@ void ToolDebugHost::onEditorEdited()
     }
 }
 
-// ¡¸»æÖÆÄ£Ê½¡¹¹´Ñ¡±ä»¯
+// ã€Œç»˜åˆ¶æ¨¡å¼ã€å‹¾é€‰å˜åŒ–
 void ToolDebugHost::onDrawModeChanged()
 {
     updateDrawBarVisibility();
     applyDrawings(false);
 }
 
-// ±íÖĞÑ¡ÖĞ ROI ĞĞ±ä»¯
+// è¡¨ä¸­é€‰ä¸­ ROI è¡Œå˜åŒ–
 void ToolDebugHost::onRoiSelectionChanged(int index)
 {
     if (index >= 0) {
@@ -1083,13 +1083,13 @@ void ToolDebugHost::onRoiSelectionChanged(int index)
         if (m_view) {
         }
     } else if (m_tool && m_tool->usesMultiRoi() && isDrawMode() && m_view) {
-        // ¶à ROI È¡Ïû±íÑ¡ºóÈÔ¿É¼ÌĞøÔÚ¿Õ°×´¦Ìí¼Ó
+        // å¤š ROI å–æ¶ˆè¡¨é€‰åä»å¯ç»§ç»­åœ¨ç©ºç™½å¤„æ·»åŠ 
         m_pendingNewRoi = true;
     }
     applyDrawings(false);
 }
 
-// Í¼ÉÏÑ¡ÖĞ ROI ±ä»¯£¬Í¬²½±í¸ñ
+// å›¾ä¸Šé€‰ä¸­ ROI å˜åŒ–ï¼ŒåŒæ­¥è¡¨æ ¼
 void ToolDebugHost::onDrawingSelected(const HsCommData::Graphic& g)
 {
     if (m_syncingRoiSelection || !m_io) {
@@ -1116,7 +1116,7 @@ void ToolDebugHost::onDrawingSelected(const HsCommData::Graphic& g)
     applyDrawings(false);
 }
 
-// ¹¤¾ßÍÆ¼öµÄ»æÖÆ¹¤¾ß id
+// å·¥å…·æ¨èçš„ç»˜åˆ¶å·¥å…· id
 int ToolDebugHost::preferredDrawToolId() const
 {
     if (!m_tool) {
@@ -1152,7 +1152,7 @@ int ToolDebugHost::preferredDrawToolId() const
     return static_cast<int>(HsCtrl::ToolRect1);
 }
 
-// °´¹¤¾ßÓëÒÑÓĞ ROI Ñ¡Ä¬ÈÏĞÎ×´
+// æŒ‰å·¥å…·ä¸å·²æœ‰ ROI é€‰é»˜è®¤å½¢çŠ¶
 int ToolDebugHost::defaultDrawToolId() const
 {
     if (!m_tool) {
@@ -1180,7 +1180,7 @@ int ToolDebugHost::defaultDrawToolId() const
     return preferredDrawToolId();
 }
 
-// µã¡¸ĞÂ½¨ ROI¡¹»ò¡¸ÖØ»­¡¹
+// ç‚¹ã€Œæ–°å»º ROIã€æˆ–ã€Œé‡ç”»ã€
 void ToolDebugHost::onAddRoi()
 {
     if (!m_tool || !m_session || !m_session->has(PermEditSolution)) {
@@ -1209,13 +1209,13 @@ void ToolDebugHost::onAddRoi()
     applyDrawings(false);
 }
 
-// ÊÇ·ñ´¦ÓÚÁ¬Ğø»æÖÆÄ£Ê½
+// æ˜¯å¦å¤„äºè¿ç»­ç»˜åˆ¶æ¨¡å¼
 bool ToolDebugHost::isDrawMode() const
 {
     return m_chkDrawMode && m_chkDrawMode->isChecked();
 }
 
-// »­Íê ROI Ğ´»Ø draft
+// ç”»å®Œ ROI å†™å› draft
 void ToolDebugHost::onRoi(const HsCommData::Graphic& g)
 {
     if (!m_tool || !m_session || !m_session->has(PermEditSolution)) {
@@ -1247,7 +1247,7 @@ void ToolDebugHost::onRoi(const HsCommData::Graphic& g)
     applyDrawings();
     const bool multi = m_tool->usesMultiRoi();
     if (multi) {
-        // ¶à ROI£º±£³Ö´ı»­×´Ì¬£¬±ãÓÚÁ¬ĞøÌí¼Ó
+        // å¤š ROIï¼šä¿æŒå¾…ç”»çŠ¶æ€ï¼Œä¾¿äºè¿ç»­æ·»åŠ 
         m_pendingNewRoi = true;
         if (m_view) {
         }
@@ -1269,13 +1269,13 @@ void ToolDebugHost::onRoi(const HsCommData::Graphic& g)
     emit roiChanged();
 }
 
-// Çå¿Õ ROI
+// æ¸…ç©º ROI
 void ToolDebugHost::onClearRoi()
 {
     if (!m_tool || !m_session || !m_session->has(PermEditSolution)) {
         return;
     }
-    if (!confirmRoiDelete(T("È·¶¨Çå¿ÕÈ«²¿ ROI£¿"))) {
+    if (!confirmRoiDelete(T("ç¡®å®šæ¸…ç©ºå…¨éƒ¨ ROIï¼Ÿ"))) {
         return;
     }
     pushRoiUndo();
@@ -1287,13 +1287,13 @@ void ToolDebugHost::onClearRoi()
     emit roiChanged();
 }
 
-// É¾³ı×îºóÒ»¸ö ROI
+// åˆ é™¤æœ€åä¸€ä¸ª ROI
 void ToolDebugHost::onDelLastRoi()
 {
     if (!m_tool || !m_session || !m_session->has(PermEditSolution)) {
         return;
     }
-    if (!confirmRoiDelete(T("È·¶¨É¾³ı×îºóÒ»Ïî ROI£¿"))) {
+    if (!confirmRoiDelete(T("ç¡®å®šåˆ é™¤æœ€åä¸€é¡¹ ROIï¼Ÿ"))) {
         return;
     }
     pushRoiUndo();
@@ -1308,13 +1308,13 @@ void ToolDebugHost::onDelLastRoi()
     emit roiChanged();
 }
 
-// É¾³ıÖ¸¶¨ĞĞ ROI
+// åˆ é™¤æŒ‡å®šè¡Œ ROI
 void ToolDebugHost::onRemoveRoi(int index)
 {
     if (!m_tool || !m_session || !m_session->has(PermEditSolution)) {
         return;
     }
-    if (!confirmRoiDelete(T("È·¶¨É¾³ıÑ¡ÖĞµÄ ROI£¿"))) {
+    if (!confirmRoiDelete(T("ç¡®å®šåˆ é™¤é€‰ä¸­çš„ ROIï¼Ÿ"))) {
         return;
     }
     pushRoiUndo();
@@ -1329,7 +1329,7 @@ void ToolDebugHost::onRemoveRoi(int index)
     emit roiChanged();
 }
 
-// Ë¢ĞÂÊäÈëÕªÒª
+// åˆ·æ–°è¾“å…¥æ‘˜è¦
 void ToolDebugHost::refreshIo()
 {
     if (!m_io) {
@@ -1340,7 +1340,7 @@ void ToolDebugHost::refreshIo()
     updateRoiCardVisibility();
 }
 
-// ¼Ç×¡Ğ¡´°Ìá½»Ê±µÄ»­±Ê
+// è®°ä½å°çª—æäº¤æ—¶çš„ç”»ç¬”
 void ToolDebugHost::rememberDrawStyle(int index, const HsCommData::Style& style)
 {
     if (index < 0) {
@@ -1353,7 +1353,7 @@ void ToolDebugHost::rememberDrawStyle(int index, const HsCommData::Style& style)
     m_drawStyles[static_cast<size_t>(index)] = style;
     m_drawStyleOn[static_cast<size_t>(index)] = 1;
 }
-// °Ñµ±Ç°¹¤¾ßµÄ ROI Ë¢µ½Í¼ÏñÉÏ
+// æŠŠå½“å‰å·¥å…·çš„ ROI åˆ·åˆ°å›¾åƒä¸Š
 void ToolDebugHost::applyDrawings(bool refreshTable)
 {
     const int selIdx = m_io ? m_io->selectedRoiRow() : -1;
@@ -1380,7 +1380,7 @@ void ToolDebugHost::applyDrawings(bool refreshTable)
     syncDrawingInteractionView();
 }
 
-// °´Ñ¡ÖĞĞĞÓë»æÖÆÄ£Ê½Í¬²½ Drawing ½»»¥
+// æŒ‰é€‰ä¸­è¡Œä¸ç»˜åˆ¶æ¨¡å¼åŒæ­¥ Drawing äº¤äº’
 void ToolDebugHost::syncDrawingInteractionView()
 {
     if (!m_view || !m_tool) {
@@ -1394,13 +1394,13 @@ void ToolDebugHost::syncDrawingInteractionView()
     m_syncingRoiSelection = false;
 }
 
-// ¶ÔÍâ£ºÖ»Ë¢ĞÂ ROI
+// å¯¹å¤–ï¼šåªåˆ·æ–° ROI
 void ToolDebugHost::reloadDrawings()
 {
     applyDrawings();
 }
 
-// Ë¢ĞÂÍ¼Óë ROI£»µ×Í¼³ß´çÎ´±äÊ±²»ÖØÖÃËõ·Å
+// åˆ·æ–°å›¾ä¸ ROIï¼›åº•å›¾å°ºå¯¸æœªå˜æ—¶ä¸é‡ç½®ç¼©æ”¾
 void ToolDebugHost::showResult(const HsCommData::HsImage& fb, const QVector<HsCommData::Graphic>& overlay,
                               const QVector<HsCommData::Graphic>& /*drawings*/, bool replaceBase)
 {
@@ -1427,7 +1427,7 @@ void ToolDebugHost::showResult(const HsCommData::HsImage& fb, const QVector<HsCo
     applyDrawings();
 }
 
-// µ×Í¼=±¾¹¤¾ßÊäÈëÍ¼£¬µş¼Ó±¾¹¤¾ßÊä³ö£»ÅÜÍêºóÊ¼ÖÕË¢ĞÂ
+// åº•å›¾=æœ¬å·¥å…·è¾“å…¥å›¾ï¼Œå åŠ æœ¬å·¥å…·è¾“å‡ºï¼›è·‘å®Œåå§‹ç»ˆåˆ·æ–°
 void ToolDebugHost::refreshView(const ToolOut* runOut)
 {
     if (!m_tool || !m_job || !m_view || !m_formalTool) {

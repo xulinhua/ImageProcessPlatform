@@ -1,6 +1,6 @@
 /**
  * @file ObjectPage.cpp
- * @brief ObjectPageÊµÏÖ
+ * @brief ObjectPageå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -29,7 +29,7 @@
 
 static QString L8(const char* s)
 {
-    return QString::fromLocal8Bit(s);
+    return QString::fromUtf8(s);
 }
 
 static QString formatMs(double ms)
@@ -77,15 +77,15 @@ static QFrame* metricCard(QWidget* parent, const QString& title, QLabel** value)
 static QString failText(int fail, int errorCode)
 {
     if (fail == 1) {
-        return L8("²ÎÊıÎŞĞ§»ò»¹Ã»ÓĞÑù±¾");
+        return L8("å‚æ•°æ— æ•ˆæˆ–è¿˜æ²¡æœ‰æ ·æœ¬");
     }
     if (fail == 2) {
-        return L8("Ñù±¾³¬¹ı 800MB£¬Çë¼õĞ¡¸öÊı»òÔØºÉ");
+        return L8("æ ·æœ¬è¶…è¿‡ 800MBï¼Œè¯·å‡å°ä¸ªæ•°æˆ–è½½è·");
     }
     if (fail == 3) {
-        return L8("Òì³££¬´íÎóÂë %1").arg(errorCode);
+        return L8("å¼‚å¸¸ï¼Œé”™è¯¯ç  %1").arg(errorCode);
     }
-    return L8("Ê§°Ü");
+    return L8("å¤±è´¥");
 }
 
 ObjectWorker::ObjectWorker(QObject* parent)
@@ -167,15 +167,15 @@ ObjectPage::ObjectPage(QWidget* parent)
 
     QHBoxLayout* metrics = new QHBoxLayout();
     metrics->setSpacing(8);
-    metrics->addWidget(metricCard(this, L8("¾ä±ú¿½±´"), &m_vHandle), 1);
-    metrics->addWidget(metricCard(this, L8("Ôª×é clone"), &m_vClone), 1);
-    metrics->addWidget(metricCard(this, L8("Stack Ë¢ĞÂ"), &m_vStack), 1);
-    metrics->addWidget(metricCard(this, L8("¶àÏß³ÌËø"), &m_vLock), 1);
+    metrics->addWidget(metricCard(this, L8("å¥æŸ„æ‹·è´"), &m_vHandle), 1);
+    metrics->addWidget(metricCard(this, L8("å…ƒç»„ clone"), &m_vClone), 1);
+    metrics->addWidget(metricCard(this, L8("Stack åˆ·æ–°"), &m_vStack), 1);
+    metrics->addWidget(metricCard(this, L8("å¤šçº¿ç¨‹é”"), &m_vLock), 1);
     left->addLayout(metrics);
 
     QLabel* hint = new QLabel(L8(
-        "¾ä±ú¿½±´Ö»¹²ÏíÔª×é¡£clone£¬ÒÔ¼° Region / Contour / Poly µÄ¸³Öµ£¬²Å¸´ÖÆĞĞ³ÌºÍµãÁĞ¡£"
-        "Ë¢ĞÂ Stack Ê±ÏÈ clone ÒªÏÔÊ¾µÄÄÇÒ»¶Î£¬ÔÙ setOverlays£¬±ÜÃâºÍËø²âÊÔĞ´Í¬Ò»·İÊı¾İ¡£"), this);
+        "å¥æŸ„æ‹·è´åªå…±äº«å…ƒç»„ã€‚cloneï¼Œä»¥åŠ Region / Contour / Poly çš„èµ‹å€¼ï¼Œæ‰å¤åˆ¶è¡Œç¨‹å’Œç‚¹åˆ—ã€‚"
+        "åˆ·æ–° Stack æ—¶å…ˆ clone è¦æ˜¾ç¤ºçš„é‚£ä¸€æ®µï¼Œå† setOverlaysï¼Œé¿å…å’Œé”æµ‹è¯•å†™åŒä¸€ä»½æ•°æ®ã€‚"), this);
     hint->setObjectName(QStringLiteral("hint"));
     hint->setWordWrap(true);
     left->addWidget(hint);
@@ -196,7 +196,7 @@ ObjectPage::ObjectPage(QWidget* parent)
     sideLay->setContentsMargins(0, 0, 0, 0);
     sideLay->setSpacing(8);
 
-    m_sampleInfo = new QLabel(L8("»¹Ã»ÓĞÑù±¾"), side);
+    m_sampleInfo = new QLabel(L8("è¿˜æ²¡æœ‰æ ·æœ¬"), side);
     m_sampleInfo->setObjectName(QStringLiteral("sampleInfo"));
     m_sampleInfo->setWordWrap(true);
     sideLay->addWidget(m_sampleInfo);
@@ -204,13 +204,13 @@ ObjectPage::ObjectPage(QWidget* parent)
     QFrame* sampleBox = new QFrame(side);
     QVBoxLayout* sampleLay = new QVBoxLayout(sampleBox);
     sampleLay->setContentsMargins(0, 0, 0, 0);
-    sampleLay->addWidget(new QLabel(L8("Ñù±¾"), sampleBox));
+    sampleLay->addWidget(new QLabel(L8("æ ·æœ¬"), sampleBox));
     m_kindBox = new QComboBox(sampleBox);
-    m_kindBox->addItem(L8("Region ÇøÓò"), SampleRegion);
-    m_kindBox->addItem(L8("Contour ÂÖÀª"), SampleContour);
-    m_kindBox->addItem(L8("Poly ÕÛÏß"), SamplePoly);
-    m_kindBox->addItem(L8("Circle Ô²"), SampleCircle);
-    m_kindBox->addItem(L8("»ìºÏ"), SampleMixed);
+    m_kindBox->addItem(L8("Region åŒºåŸŸ"), SampleRegion);
+    m_kindBox->addItem(L8("Contour è½®å»“"), SampleContour);
+    m_kindBox->addItem(L8("Poly æŠ˜çº¿"), SamplePoly);
+    m_kindBox->addItem(L8("Circle åœ†"), SampleCircle);
+    m_kindBox->addItem(L8("æ··åˆ"), SampleMixed);
     sampleLay->addWidget(m_kindBox);
 
     m_count = new QSpinBox(sampleBox);
@@ -220,11 +220,11 @@ ObjectPage::ObjectPage(QWidget* parent)
     m_payload->setRange(1, 500000);
     m_payload->setValue(2000);
     m_payloadCaption = new QLabel(payloadCaption(SampleRegion), sampleBox);
-    sampleLay->addWidget(new QLabel(L8("¶ÔÏó¸öÊı"), sampleBox));
+    sampleLay->addWidget(new QLabel(L8("å¯¹è±¡ä¸ªæ•°"), sampleBox));
     sampleLay->addWidget(m_count);
     sampleLay->addWidget(m_payloadCaption);
     sampleLay->addWidget(m_payload);
-    m_btnBuild = new QPushButton(L8("Éú³ÉÑù±¾"), sampleBox);
+    m_btnBuild = new QPushButton(L8("ç”Ÿæˆæ ·æœ¬"), sampleBox);
     m_btnBuild->setObjectName(QStringLiteral("go"));
     sampleLay->addWidget(m_btnBuild);
     sideLay->addWidget(sampleBox);
@@ -232,15 +232,15 @@ ObjectPage::ObjectPage(QWidget* parent)
     QFrame* copyBox = new QFrame(side);
     QVBoxLayout* copyLay = new QVBoxLayout(copyBox);
     copyLay->setContentsMargins(0, 0, 0, 0);
-    copyLay->addWidget(new QLabel(L8("Éî¿½±´"), copyBox));
+    copyLay->addWidget(new QLabel(L8("æ·±æ‹·è´"), copyBox));
     m_loops = new QSpinBox(copyBox);
     m_loops->setRange(1, 100);
     m_loops->setValue(3);
     QHBoxLayout* loopRow = new QHBoxLayout();
-    loopRow->addWidget(new QLabel(L8("Ñ­»·"), copyBox));
+    loopRow->addWidget(new QLabel(L8("å¾ªç¯"), copyBox));
     loopRow->addWidget(m_loops, 1);
     copyLay->addLayout(loopRow);
-    m_btnCopy = new QPushButton(L8("²â¾ä±ú / ÔªËØ / clone"), copyBox);
+    m_btnCopy = new QPushButton(L8("æµ‹å¥æŸ„ / å…ƒç´  / clone"), copyBox);
     m_btnCopy->setObjectName(QStringLiteral("go"));
     copyLay->addWidget(m_btnCopy);
     sideLay->addWidget(copyBox);
@@ -248,7 +248,7 @@ ObjectPage::ObjectPage(QWidget* parent)
     QFrame* stackBox = new QFrame(side);
     QVBoxLayout* stackLay = new QVBoxLayout(stackBox);
     stackLay->setContentsMargins(0, 0, 0, 0);
-    stackLay->addWidget(new QLabel(L8("Stack Ë¢ĞÂ"), stackBox));
+    stackLay->addWidget(new QLabel(L8("Stack åˆ·æ–°"), stackBox));
     m_show = new QSpinBox(stackBox);
     m_show->setRange(1, 5000);
     m_show->setValue(16);
@@ -256,14 +256,14 @@ ObjectPage::ObjectPage(QWidget* parent)
     m_refreshN->setRange(1, 30);
     m_refreshN->setValue(3);
     QHBoxLayout* showRow = new QHBoxLayout();
-    showRow->addWidget(new QLabel(L8("ÏÔÊ¾¸öÊı"), stackBox));
+    showRow->addWidget(new QLabel(L8("æ˜¾ç¤ºä¸ªæ•°"), stackBox));
     showRow->addWidget(m_show, 1);
     stackLay->addLayout(showRow);
     QHBoxLayout* refRow = new QHBoxLayout();
-    refRow->addWidget(new QLabel(L8("ÖØ¸´´ÎÊı"), stackBox));
+    refRow->addWidget(new QLabel(L8("é‡å¤æ¬¡æ•°"), stackBox));
     refRow->addWidget(m_refreshN, 1);
     stackLay->addLayout(refRow);
-    m_btnRefresh = new QPushButton(L8("Ë¢ĞÂ Stack"), stackBox);
+    m_btnRefresh = new QPushButton(L8("åˆ·æ–° Stack"), stackBox);
     m_btnRefresh->setObjectName(QStringLiteral("go"));
     stackLay->addWidget(m_btnRefresh);
     sideLay->addWidget(stackBox);
@@ -271,7 +271,7 @@ ObjectPage::ObjectPage(QWidget* parent)
     QFrame* lockBox = new QFrame(side);
     QVBoxLayout* lockLay = new QVBoxLayout(lockBox);
     lockLay->setContentsMargins(0, 0, 0, 0);
-    lockLay->addWidget(new QLabel(L8("¶àÏß³ÌËø"), lockBox));
+    lockLay->addWidget(new QLabel(L8("å¤šçº¿ç¨‹é”"), lockBox));
     m_readers = new QSpinBox(lockBox);
     m_readers->setRange(1, 16);
     m_readers->setValue(4);
@@ -282,16 +282,16 @@ ObjectPage::ObjectPage(QWidget* parent)
     m_ops->setRange(1, 5000);
     m_ops->setValue(50);
     QHBoxLayout* rw = new QHBoxLayout();
-    rw->addWidget(new QLabel(L8("¶ÁÕß"), lockBox));
+    rw->addWidget(new QLabel(L8("è¯»è€…"), lockBox));
     rw->addWidget(m_readers, 1);
-    rw->addWidget(new QLabel(L8("Ğ´Õß"), lockBox));
+    rw->addWidget(new QLabel(L8("å†™è€…"), lockBox));
     rw->addWidget(m_writers, 1);
     lockLay->addLayout(rw);
     QHBoxLayout* opRow = new QHBoxLayout();
-    opRow->addWidget(new QLabel(L8("Ã¿Ïß³Ì´ÎÊı"), lockBox));
+    opRow->addWidget(new QLabel(L8("æ¯çº¿ç¨‹æ¬¡æ•°"), lockBox));
     opRow->addWidget(m_ops, 1);
     lockLay->addLayout(opRow);
-    m_btnLock = new QPushButton(L8("ÑéÖ¤Ëø"), lockBox);
+    m_btnLock = new QPushButton(L8("éªŒè¯é”"), lockBox);
     m_btnLock->setObjectName(QStringLiteral("go"));
     lockLay->addWidget(m_btnLock);
     sideLay->addWidget(lockBox);
@@ -301,7 +301,7 @@ ObjectPage::ObjectPage(QWidget* parent)
     m_log->setReadOnly(true);
     m_log->setMaximumBlockCount(400);
     sideLay->addWidget(m_log, 1);
-    QPushButton* clearBtn = new QPushButton(L8("Çå¿ÕÈÕÖ¾"), side);
+    QPushButton* clearBtn = new QPushButton(L8("æ¸…ç©ºæ—¥å¿—"), side);
     sideLay->addWidget(clearBtn);
 
     QSplitter* split = new QSplitter(Qt::Horizontal, this);
@@ -370,17 +370,17 @@ QString ObjectPage::kindText(int kind) const
     if (kind == SampleContour) return L8("Contour");
     if (kind == SamplePoly) return L8("Poly");
     if (kind == SampleCircle) return L8("Circle");
-    if (kind == SampleMixed) return L8("»ìºÏ");
+    if (kind == SampleMixed) return L8("æ··åˆ");
     return L8("Region");
 }
 
 QString ObjectPage::payloadCaption(int kind) const
 {
-    if (kind == SampleContour) return L8("Ã¿ÌõÂÖÀªµÄµãÊı");
-    if (kind == SamplePoly) return L8("Ã¿ÌõÕÛÏßµÄ¶ÎÊı");
-    if (kind == SampleCircle) return L8("Ô²µÄ°ë¾¶£¨ÏñËØ£©");
-    if (kind == SampleMixed) return L8("ÇøÓòÏÒÊı / ÂÖÀªµãÊı");
-    return L8("Ã¿¸öÇøÓòµÄÏÒÊı");
+    if (kind == SampleContour) return L8("æ¯æ¡è½®å»“çš„ç‚¹æ•°");
+    if (kind == SamplePoly) return L8("æ¯æ¡æŠ˜çº¿çš„æ®µæ•°");
+    if (kind == SampleCircle) return L8("åœ†çš„åŠå¾„ï¼ˆåƒç´ ï¼‰");
+    if (kind == SampleMixed) return L8("åŒºåŸŸå¼¦æ•° / è½®å»“ç‚¹æ•°");
+    return L8("æ¯ä¸ªåŒºåŸŸçš„å¼¦æ•°");
 }
 
 void ObjectPage::onKindChanged(int)
@@ -407,7 +407,7 @@ void ObjectPage::onBuild()
     }
     setBusy(true);
     const int kind = m_kindBox->currentData().toInt();
-    appendLog(L8("Éú³É %1£¬¸öÊı %2£¬ÔØºÉ %3")
+    appendLog(L8("ç”Ÿæˆ %1ï¼Œä¸ªæ•° %2ï¼Œè½½è· %3")
                   .arg(kindText(kind))
                   .arg(m_count->value())
                   .arg(m_payload->value()));
@@ -423,7 +423,7 @@ void ObjectPage::onCopy()
         return;
     }
     if (!m_hasSample) {
-        appendLog(L8("ÏÈÉú³ÉÑù±¾"));
+        appendLog(L8("å…ˆç”Ÿæˆæ ·æœ¬"));
         return;
     }
     setBusy(true);
@@ -437,11 +437,11 @@ void ObjectPage::onLock()
         return;
     }
     if (!m_hasSample) {
-        appendLog(L8("ÏÈÉú³ÉÑù±¾"));
+        appendLog(L8("å…ˆç”Ÿæˆæ ·æœ¬"));
         return;
     }
     setBusy(true);
-    appendLog(L8("Ëø²âÊÔ£º¶ÁÕß %1£¬Ğ´Õß %2£¬Ã¿Ïß³Ì %3¡£Ğ´ÕßÖ» append£¬²»¸ÄµÚ 0 ¸öÔªËØ")
+    appendLog(L8("é”æµ‹è¯•ï¼šè¯»è€… %1ï¼Œå†™è€… %2ï¼Œæ¯çº¿ç¨‹ %3ã€‚å†™è€…åª appendï¼Œä¸æ”¹ç¬¬ 0 ä¸ªå…ƒç´ ")
                   .arg(m_readers->value())
                   .arg(m_writers->value())
                   .arg(m_ops->value()));
@@ -457,7 +457,7 @@ void ObjectPage::onRefresh()
         return;
     }
     if (!m_hasSample) {
-        appendLog(L8("ÏÈÉú³ÉÑù±¾"));
+        appendLog(L8("å…ˆç”Ÿæˆæ ·æœ¬"));
         return;
     }
     setBusy(true);
@@ -492,7 +492,7 @@ void ObjectPage::onRefresh()
     const double ms = (clock.nsecsElapsed() / 1.0e6) / times;
     const qreal fps = m_api->fps();
     m_vStack->setText(formatMs(ms));
-    appendLog(L8("Stack  ÏÔÊ¾ %1 / %2\n  ÏÔÊ¾ÓÃ clone %3\n  setOverlays Æ½¾ù %4£¨%5 ´Î£©  ¿Ø¼ş fps %6")
+    appendLog(L8("Stack  æ˜¾ç¤º %1 / %2\n  æ˜¾ç¤ºç”¨ clone %3\n  setOverlays å¹³å‡ %4ï¼ˆ%5 æ¬¡ï¼‰  æ§ä»¶ fps %6")
                   .arg(view.count())
                   .arg(total)
                   .arg(formatMs(msClone))
@@ -512,14 +512,14 @@ void ObjectPage::onSampleReady(int count, qint64 units, qint64 bytes, int w, int
     m_kind = m_kindBox->currentData().toInt();
     m_units = units;
     m_bytes = bytes;
-    m_sampleInfo->setText(L8("%1 ¡¤ %2 ¸ö ¡¤ ÔØºÉ %3 ¡¤ Ô¼ %4")
+    m_sampleInfo->setText(L8("%1 Â· %2 ä¸ª Â· è½½è· %3 Â· çº¦ %4")
                               .arg(kindText(m_kind))
                               .arg(count)
                               .arg(units)
                               .arg(formatBytes(bytes)));
     ensurePlate(w, h);
     m_api->clearOverlays();
-    appendLog(L8("Ñù±¾¾ÍĞ÷¡£%1").arg(m_sampleInfo->text()));
+    appendLog(L8("æ ·æœ¬å°±ç»ªã€‚%1").arg(m_sampleInfo->text()));
 }
 
 void ObjectPage::onCopyReady(int fail, int errorCode, int loops, double msHandle, double msElement, double msClone, bool isolated)
@@ -530,33 +530,33 @@ void ObjectPage::onCopyReady(int fail, int errorCode, int loops, double msHandle
     }
     m_vHandle->setText(formatMs(msHandle));
     m_vClone->setText(formatMs(msClone));
-    const QString element = (msElement < 0) ? L8("»ìºÏÀàĞÍ²»µ¥²âÔªËØ¸³Öµ") : formatMs(msElement);
-    appendLog(L8("Éî¿½±´  %1 ´ÎÆ½¾ù\n  ¾ä±ú %2\n  ÔªËØ¸³Öµ %3\n  clone %4\n  ¸ôÀë %5")
+    const QString element = (msElement < 0) ? L8("æ··åˆç±»å‹ä¸å•æµ‹å…ƒç´ èµ‹å€¼") : formatMs(msElement);
+    appendLog(L8("æ·±æ‹·è´  %1 æ¬¡å¹³å‡\n  å¥æŸ„ %2\n  å…ƒç´ èµ‹å€¼ %3\n  clone %4\n  éš”ç¦» %5")
                   .arg(loops)
                   .arg(formatMs(msHandle))
                   .arg(element)
                   .arg(formatMs(msClone))
-                  .arg(isolated ? L8("Í¨¹ı£ºclone ¿´²»µ½ËæºóµÄĞ´Èë") : L8("Ê§°Ü£ºclone ±»ºóÃæµÄĞ´Èë¸Äµ½ÁË")));
+                  .arg(isolated ? L8("é€šè¿‡ï¼šclone çœ‹ä¸åˆ°éšåçš„å†™å…¥") : L8("å¤±è´¥ï¼šclone è¢«åé¢çš„å†™å…¥æ”¹åˆ°äº†")));
 }
 
 void ObjectPage::onLockReady(bool ok, int errors, int readerOps, int writerOps, int startCount, int finalCount, double ms, bool countOk, bool cloneStable)
 {
-    m_vLock->setText(ok ? L8("Í¨¹ı") : L8("Ê§°Ü"));
+    m_vLock->setText(ok ? L8("é€šè¿‡") : L8("å¤±è´¥"));
     m_vLock->setStyleSheet(ok ? QStringLiteral("color:#3dd68c;") : QStringLiteral("color:#ff6b6b;"));
     const int expect = startCount + writerOps;
-    appendLog(L8("Ëø  %1  %2\n  ¶ÁÕß²Ù×÷ %3£¬Ğ´Õß append %4\n  ¸öÊı %5 -> %6£¬ÆÚÍû %7£¨%8£©\n  µÚ 0 ¸öÔªËØµÄ clone %9\n  Òì³£´ÎÊı %10")
-                  .arg(ok ? L8("Í¨¹ı") : L8("Ê§°Ü"))
+    appendLog(L8("é”  %1  %2\n  è¯»è€…æ“ä½œ %3ï¼Œå†™è€… append %4\n  ä¸ªæ•° %5 -> %6ï¼ŒæœŸæœ› %7ï¼ˆ%8ï¼‰\n  ç¬¬ 0 ä¸ªå…ƒç´ çš„ clone %9\n  å¼‚å¸¸æ¬¡æ•° %10")
+                  .arg(ok ? L8("é€šè¿‡") : L8("å¤±è´¥"))
                   .arg(formatMs(ms))
                   .arg(readerOps)
                   .arg(writerOps)
                   .arg(startCount)
                   .arg(finalCount)
                   .arg(expect)
-                  .arg(countOk ? L8("Ò»ÖÂ") : L8("²»Ò»ÖÂ"))
-                  .arg(cloneStable ? L8("Î´±»¸ÄĞ´") : L8("±»¸ÄĞ´"))
+                  .arg(countOk ? L8("ä¸€è‡´") : L8("ä¸ä¸€è‡´"))
+                  .arg(cloneStable ? L8("æœªè¢«æ”¹å†™") : L8("è¢«æ”¹å†™"))
                   .arg(errors));
     if (m_hasSample) {
-        m_sampleInfo->setText(L8("%1 ¡¤ ÏÖÓĞ %2 ¸ö£¨º¬Ëø²âÊÔ append µÄÔ²£©¡¤ Ô¼ %3")
+        m_sampleInfo->setText(L8("%1 Â· ç°æœ‰ %2 ä¸ªï¼ˆå«é”æµ‹è¯• append çš„åœ†ï¼‰Â· çº¦ %3")
                                   .arg(kindText(m_kind))
                                   .arg(finalCount)
                                   .arg(formatBytes(m_bytes)));

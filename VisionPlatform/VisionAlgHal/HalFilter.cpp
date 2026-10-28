@@ -1,6 +1,6 @@
 /**
  * @file HalFilter.cpp
- * @brief Í¼ÏñÂË²¨Á÷Ë®¡£ÔöÇ¿¡¢Æ½»¬ºÍ»Ò¶ÈĞÎÌ¬Ñ§°´²½Öè×ö£¨Halcon£©
+ * @brief å›¾åƒæ»¤æ³¢æµæ°´ã€‚å¢å¼ºã€å¹³æ»‘å’Œç°åº¦å½¢æ€å­¦æŒ‰æ­¥éª¤åšï¼ˆHalconï¼‰
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -9,7 +9,6 @@
 #include "HalFilter.h"
 #include "ToolParaFilter.hpp"
 #include "TextEncoding.h"
-#include "HalAlgoHelpers.h"
 #include "HalImageConvert.h"
 #include "HalObjectConvert.h"
 #include "HalOps.h"
@@ -19,7 +18,7 @@ namespace Vision {
 namespace {
 const char kVer_HalFilter[] = "1.0.0.0";
 const Vision::VerNoteRaw kNotes_HalFilter[] = {
-    { "1.0.0.0", "Ê×°æ£º¶à²½ÖèÂË²¨£¬Ö§³ÖĞÎÌ¬Ñ§ºÍ²½Öè°ó¶¨ÇøÓò" },
+    { "1.0.0.0", "é¦–ç‰ˆï¼šå¤šæ­¥éª¤æ»¤æ³¢ï¼Œæ”¯æŒå½¢æ€å­¦å’Œæ­¥éª¤ç»‘å®šåŒºåŸŸ" },
 };
 
 enum class FilterOp {
@@ -81,27 +80,6 @@ bool filterOpFromString(const std::string& v, FilterOp* out)
     if (v == FilterKey::opGrayDilate) { *out = FilterOp::GrayDilate; return true; }
     if (v == FilterKey::opTopHat)     { *out = FilterOp::TopHat;     return true; }
     if (v == FilterKey::opBottomHat)  { *out = FilterOp::BottomHat;  return true; }
-    return false;
-}
-
-bool regionHasArea(const HalconCpp::HObject& region)
-{
-    if (hoIsEmpty(region)) {
-        return false;
-    }
-    try {
-        HalconCpp::HTuple area;
-        HalconCpp::HTuple row;
-        HalconCpp::HTuple col;
-        HalconCpp::AreaCenter(region, &area, &row, &col);
-        for (int i = 0; i < area.Length(); ++i) {
-            if (area[i].D() > 0.0) {
-                return true;
-            }
-        }
-    } catch (const HalconCpp::HException&) {
-        return false;
-    }
     return false;
 }
 
@@ -272,7 +250,7 @@ bool applyFilterOp(HalconCpp::HObject* img, const FilterStep& st, std::string* e
     }
     default:
         if (err) {
-            *err = Vision::acpToUtf8("Î´ÖªÂË²¨Ëã×Ó");
+            *err = "æœªçŸ¥æ»¤æ³¢ç®—å­";
         }
         return false;
     }
@@ -349,6 +327,20 @@ std::vector<VerNote> HalFilter::versionNotes() const
     return verNotesFrom(kNotes_HalFilter, static_cast<int>(sizeof(kNotes_HalFilter) / sizeof(kNotes_HalFilter[0])));
 }
 
+AlgToolOut HalFilter::writeFullImage(const AlgToolIn& in, const HalconCpp::HImage& work, const std::string& okMsg) const
+{
+    AlgToolOut out;
+    const HalconCpp::HImage full = work.FullDomain();
+    std::string err;
+    HsCommData::HsImage* pImage = &out.image.image;
+    if (!hObjectToHsImage(full, inputImage(in).frameId, pImage, &err)) {
+        return AlgToolOut::fail(err);
+    }
+    out.ok = true;
+    out.message = okMsg;
+    return out;
+}
+
 AlgToolOut HalFilter::run(const AlgToolIn& in)
 {
     ToolParam bag;
@@ -362,10 +354,10 @@ AlgToolOut HalFilter::run(const AlgToolIn& in)
         const ToolParaFilter::Step& src = para.run.steps[i];
         FilterStep st;
         if (!filterOpFromString(src.op, &st.op)) {
-            return algorToolFail(Vision::acpToUtf8("Î´ÖªÂË²¨Ëã×Ó"));
+            return AlgToolOut::fail("æœªçŸ¥æ»¤æ³¢ç®—å­");
         }
         if (st.op == FilterOp::Bilateral && (src.coeff <= 0.0 || src.coeff2 <= 0.0)) {
-            return algorToolFail(Vision::acpToUtf8("Ë«±ßÂË²¨µÄ±ê×¼²î±ØĞë´óÓÚ 0"));
+            return AlgToolOut::fail("åŒè¾¹æ»¤æ³¢çš„æ ‡å‡†å·®å¿…é¡»å¤§äº 0");
         }
         st.maskW = src.maskW;
         st.maskH = src.maskH;
@@ -383,11 +375,11 @@ AlgToolOut HalFilter::run(const AlgToolIn& in)
         int imgH = 0;
         std::string err;
         HalconCpp::HImage* pGray = &gray;
-        if (!loadGrayFromAlgIn(in, pGray, &imgW, &imgH, &err)) {
-            return algorToolFail(err);
+        if (!hsImageToGray(inputImage(in), pGray, &imgW, &imgH, &err)) {
+            return AlgToolOut::fail(err);
         }
         if (imgW < 1 || imgH < 1) {
-            return algorToolFail(Vision::acpToUtf8("ÊäÈëÍ¼ÏñÎª¿Õ"));
+            return AlgToolOut::fail("è¾“å…¥å›¾åƒä¸ºç©º");
         }
         const std::vector<HalconCpp::HObject> stepRois = collectStepRois(in, imgW, imgH);
         HalconCpp::HObject work = gray;
@@ -406,16 +398,16 @@ AlgToolOut HalFilter::run(const AlgToolIn& in)
                 HalconCpp::HObject reduced;
                 HalconCpp::ReduceDomain(work, inside, &reduced);
                 if (!applyFilterOp(&reduced, steps[i], &err)) {
-                    return algorToolFail(err);
+                    return AlgToolOut::fail(err);
                 }
                 HalconCpp::OverpaintGray(work, reduced);
                 continue;
             }
             if (!applyFilterOp(&work, steps[i], &err)) {
-                return algorToolFail(err);
+                return AlgToolOut::fail(err);
             }
         }
-        AlgToolOut out = finishPreprocessWork(in, HalconCpp::HImage(work), Vision::acpToUtf8("Í¼ÏñÂË²¨Íê³É"));
+        AlgToolOut out = writeFullImage(in, HalconCpp::HImage(work), "å›¾åƒæ»¤æ³¢å®Œæˆ");
         if (out.ok) {
             out.values.insert(FilterKey::outWidth, out.image.image.width);
             out.values.insert(FilterKey::outHeight, out.image.image.height);
@@ -429,7 +421,7 @@ AlgToolOut HalFilter::run(const AlgToolIn& in)
         }
         return out;
     } catch (const HalconCpp::HException& e) {
-        return algorToolFail(hExceptionText(e));
+        return AlgToolOut::fail(hExceptionText(e));
     }
 }
 

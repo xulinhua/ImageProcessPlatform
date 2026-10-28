@@ -1,6 +1,6 @@
 /**
  * @file HalBlob.cpp
- * @brief ???????????????????Halcon??
+ * @brief Blob ç®—æ³•ï¼ˆHalconï¼‰
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -9,7 +9,6 @@
 #include "HalBlob.h"
 #include "ToolParaBlob.hpp"
 #include "TextEncoding.h"
-#include "HalAlgoHelpers.h"
 #include "HalImageConvert.h"
 #include "HalObjectConvert.h"
 #include "HalOps.h"
@@ -24,30 +23,9 @@ namespace Vision {
 namespace {
 const char kVer_HalBlob[] = "1.0.0.0";
 const Vision::VerNoteRaw kNotes_HalBlob[] = {
-    { "1.0.0.0", "???" },
-    { "1.0.0.1", "?????????????????????????" },
+    { "1.0.0.0", "initial release" },
+    { "1.0.0.1", "join regions; select by area and circularity" },
 };
-
-bool regionHasArea(const HObject& region)
-{
-    if (hoIsEmpty(region)) {
-        return false;
-    }
-    try {
-        HTuple area;
-        HTuple row;
-        HTuple col;
-        HalconCpp::AreaCenter(region, &area, &row, &col);
-        for (int i = 0; i < area.Length(); ++i) {
-            if (area[i].D() > 0.0) {
-                return true;
-            }
-        }
-    } catch (const HException&) {
-        return false;
-    }
-    return false;
-}
 
 void appendRegion(HObject* acc, bool* have, const HObject& one)
 {
@@ -368,16 +346,16 @@ void applyJudge(const ToolParaBlob::Run& rp, AlgToolOut* out)
     const double area = out->values.value("area").toDouble(0.0);
     if (rp.okMinCount > 0 && count < rp.okMinCount) {
         out->ok = false;
-        out->message = Vision::acpToUtf8("Blob ?????????§Ø?????");
+        out->message = "blob count is below the minimum";
     } else if (rp.okMaxCount > 0 && count > rp.okMaxCount) {
         out->ok = false;
-        out->message = Vision::acpToUtf8("Blob ?????????§Ø?????");
+        out->message = "blob count is above the maximum";
     } else if (rp.okMinArea > 0.0 && area + 1e-9 < rp.okMinArea) {
         out->ok = false;
-        out->message = Vision::acpToUtf8("Blob ??????????§Ø?????");
+        out->message = "blob area is below the minimum";
     } else if (rp.okMaxArea > 0.0 && area > rp.okMaxArea + 1e-9) {
         out->ok = false;
-        out->message = Vision::acpToUtf8("Blob ??????????§Ø?????");
+        out->message = "blob area is above the maximum";
     }
 }
 }
@@ -392,6 +370,38 @@ std::vector<VerNote> HalBlob::versionNotes() const
     return verNotesFrom(kNotes_HalBlob, static_cast<int>(sizeof(kNotes_HalBlob) / sizeof(kNotes_HalBlob[0])));
 }
 
+AlgToolOut HalBlob::packRegions(const HObject& bin, const AlgToolIn& in,
+                                double minArea, double maxArea, const std::string& okMsg) const
+{
+    HObject conn;
+    HalconCpp::Connection(bin, &conn);
+    HObject sel;
+    const double areaMax = maxArea > 0.0 ? maxArea : 1.0e12;
+    HalconCpp::SelectShape(conn, &sel, "area", "and", minArea, areaMax);
+    AlgToolOut out;
+    out.image.image = inputImage(in);
+    HTuple n;
+    HalconCpp::CountObj(sel, &n);
+    if (n.Length() < 1 || n[0].L() < 1) {
+        out.message = "no connected region";
+        return out;
+    }
+    HTuple rows;
+    HTuple cols;
+    HTuple areas;
+    HalconCpp::AreaCenter(sel, &areas, &rows, &cols);
+    double sumA = 0;
+    for (Hlong i = 0; i < areas.Length(); ++i) {
+        sumA += areas[i].D();
+    }
+    out.ok = true;
+    out.values.insert("count", static_cast<int>(n[0].L()));
+    out.values.insert("area", sumA);
+    out.objects.push_back(hObjectToRegionObject(sel));
+    out.message = okMsg;
+    return out;
+}
+
 AlgToolOut HalBlob::run(const AlgToolIn& in)
 {
     try {
@@ -400,8 +410,8 @@ AlgToolOut HalBlob::run(const AlgToolIn& in)
         int h = 0;
         std::string err;
         HImage* pGray = &gray;
-        if (!loadGrayFromAlgIn(in, pGray, &w, &h, &err)) {
-            return algorToolFail(err);
+        if (!hsImageToGray(inputImage(in), pGray, &w, &h, &err)) {
+            return AlgToolOut::fail(err);
         }
         ToolParam bag;
         bag.run = in.run;
@@ -420,21 +430,21 @@ AlgToolOut HalBlob::run(const AlgToolIn& in)
             }
         }
         if (!regionHasArea(detect)) {
-            return algorToolFail(Vision::acpToUtf8("???????????"));
+            return AlgToolOut::fail("search region is empty");
         }
 
         HObject region;
         if (!runSteps(para.run, gray, detect, stepRois, w, h, &region)) {
             AlgToolOut emptyOut;
-            emptyOut.image.image = in.image.image;
-            emptyOut.message = Vision::acpToUtf8("¦Ä????????");
+            emptyOut.image.image = inputImage(in);
+            emptyOut.message = "no connected region";
             return emptyOut;
         }
-        AlgToolOut out = packConnectedBlobs(region, in, 0.0, 0.0, 0.0, 1.0, Vision::acpToUtf8("Blob ???"));
+        AlgToolOut out = packRegions(region, in, 0.0, 0.0, "blob done");
         applyJudge(para.run, &out);
         return out;
     } catch (const HException& e) {
-        return algorToolFail(hExceptionText(e));
+        return AlgToolOut::fail(hExceptionText(e));
     }
 }
 

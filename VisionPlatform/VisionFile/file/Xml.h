@@ -1,6 +1,6 @@
 /**
  * @file Xml.h
- * @brief XmlÍ·ÎÄ¼ş
+ * @brief Xmlå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -18,61 +18,61 @@ namespace Vision {
 
 /**
  * @class XmlValue
- * @brief Ò»¸ö XML ÔªËØ¡£Ãû×Ö°´Ô­ÎÄ±£Áô£¬²»Õ¹¿ªÃüÃû¿Õ¼ä
+ * @brief ä¸€ä¸ª XML å…ƒç´ ã€‚åå­—æŒ‰åŸæ–‡ä¿ç•™ï¼Œä¸å±•å¼€å‘½åç©ºé—´
  */
 class VISION_FILE_API XmlValue {
 public:
-    XmlValue(); ///< ¿ÕÔªËØ£¬Ã»ÓĞÃû×Ö
+    XmlValue(); ///< ç©ºå…ƒç´ ï¼Œæ²¡æœ‰åå­—
 
     /**
-     * @brief ½âÎöÎÄµµ²¢È¡¸ùÔªËØ
-     * @param error Ê§°ÜÔ­Òò£»¿ÉÎª 0
-     * @return Ê§°ÜÊ±Îª¿ÕÔªËØ
+     * @brief è§£ææ–‡æ¡£å¹¶å–æ ¹å…ƒç´ 
+     * @param error å¤±è´¥åŸå› ï¼›å¯ä¸º 0
+     * @return å¤±è´¥æ—¶ä¸ºç©ºå…ƒç´ 
      */
     static XmlValue parse(const std::string& text, std::string* error);
     /**
-     * @brief ĞòÁĞ»¯³É UTF-8 ÎÄµµ£¬´ø XML ÉùÃ÷
-     * @param pretty true Ê±×ÓÔªËØ»»ĞĞËõ½ø
+     * @brief åºåˆ—åŒ–æˆ UTF-8 æ–‡æ¡£ï¼Œå¸¦ XML å£°æ˜
+     * @param pretty true æ—¶å­å…ƒç´ æ¢è¡Œç¼©è¿›
      */
     static std::string stringify(const XmlValue& v, bool pretty = true);
 
-    /** @brief »¹Ã»ÓĞÔªËØÃû */
+    /** @brief è¿˜æ²¡æœ‰å…ƒç´ å */
     bool isEmpty() const;
-    /** @brief ÔªËØÃû */
+    /** @brief å…ƒç´ å */
     const std::string& name() const;
-    /** @brief ÉèÖÃÔªËØÃû */
+    /** @brief è®¾ç½®å…ƒç´ å */
     void setName(const std::string& elementName);
 
-    /** @brief ÔªËØÎÄ±¾£¬Á½¶Ë¿Õ°×ÒÑÈ¥µô */
+    /** @brief å…ƒç´ æ–‡æœ¬ï¼Œä¸¤ç«¯ç©ºç™½å·²å»æ‰ */
     const std::string& text() const;
-    /** @brief ÉèÖÃÔªËØÎÄ±¾ */
+    /** @brief è®¾ç½®å…ƒç´ æ–‡æœ¬ */
     void setText(const std::string& text);
 
-    /** @brief ÊÇ·ñÓĞ¸ÃÊôĞÔ */
+    /** @brief æ˜¯å¦æœ‰è¯¥å±æ€§ */
     bool hasAttr(const std::string& key) const;
-    /** @brief ¶ÁÊôĞÔ£»Ã»ÓĞÔò·µ»Ø def */
+    /** @brief è¯»å±æ€§ï¼›æ²¡æœ‰åˆ™è¿”å› def */
     std::string attr(const std::string& key, const std::string& def = std::string()) const;
-    /** @brief Ğ´ÊôĞÔ */
+    /** @brief å†™å±æ€§ */
     void setAttr(const std::string& key, const std::string& value);
-    /** @brief È«²¿ÊôĞÔ */
+    /** @brief å…¨éƒ¨å±æ€§ */
     const std::map<std::string, std::string>& attrs() const;
 
-    /** @brief ×ÓÔªËØ¸öÊı */
+    /** @brief å­å…ƒç´ ä¸ªæ•° */
     int childCount() const;
-    /** @brief µÚ i ¸ö×ÓÔªËØ£»Ô½½ç·µ»Ø¿ÕÔªËØ */
+    /** @brief ç¬¬ i ä¸ªå­å…ƒç´ ï¼›è¶Šç•Œè¿”å›ç©ºå…ƒç´  */
     XmlValue childAt(int i) const;
-    /** @brief µÚÒ»¸öÍ¬Ãû×ÓÔªËØ£»Ã»ÓĞÔò¿ÕÔªËØ */
+    /** @brief ç¬¬ä¸€ä¸ªåŒåå­å…ƒç´ ï¼›æ²¡æœ‰åˆ™ç©ºå…ƒç´  */
     XmlValue child(const std::string& elementName) const;
-    /** @brief ÊÇ·ñÓĞÍ¬Ãû×ÓÔªËØ */
+    /** @brief æ˜¯å¦æœ‰åŒåå­å…ƒç´  */
     bool hasChild(const std::string& elementName) const;
-    /** @brief ×·¼Ó×ÓÔªËØ */
+    /** @brief è¿½åŠ å­å…ƒç´  */
     void appendChild(const XmlValue& child);
 
 private:
-    std::string m_name; ///< ÔªËØÃû
-    std::string m_text; ///< ÎÄ±¾
-    std::map<std::string, std::string> m_attr; ///< ÊôĞÔ
-    std::vector<XmlValue> m_children; ///< ×ÓÔªËØ
+    std::string m_name; ///< å…ƒç´ å
+    std::string m_text; ///< æ–‡æœ¬
+    std::map<std::string, std::string> m_attr; ///< å±æ€§
+    std::vector<XmlValue> m_children; ///< å­å…ƒç´ 
 };
 
 }

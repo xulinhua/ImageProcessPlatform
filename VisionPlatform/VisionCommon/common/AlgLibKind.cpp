@@ -1,6 +1,6 @@
 /**
  * @file AlgLibKind.cpp
- * @brief AlgLibKindÊµÏÖ
+ * @brief AlgLibKindå®žçŽ°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -13,7 +13,7 @@ namespace Vision {
 
 namespace {
 
-// Ð¡Ð´¿½±´£¬±ãÓÚ±È½Ï
+// å°å†™æ‹·è´ï¼Œä¾¿äºŽæ¯”è¾ƒ
 std::string toLowerAscii(const std::string& s)
 {
     std::string o = s;
@@ -25,7 +25,7 @@ std::string toLowerAscii(const std::string& s)
 
 } // namespace
 
-// UI ¶Ì±êÌâ
+// UI çŸ­æ ‡é¢˜
 const char* algLibKindTitle(AlgLibKind k)
 {
     switch (k) {
@@ -33,11 +33,14 @@ const char* algLibKindTitle(AlgLibKind k)
     case AlgLibHik:  return "Hik";
     case AlgLibHray: return "Hray";
     case AlgLibCv:   return "CV";
+    case AlgLibPcl:  return "PCL";
+    case AlgLibOpen3d: return "Open3D";
+    case AlgLibOnnx: return "Onnx";
     default:          return "";
     }
 }
 
-// ²å¼þµÇ¼ÇÃû
+// æ’ä»¶ç™»è®°å
 const char* algLibKindRegName(AlgLibKind k)
 {
     switch (k) {
@@ -45,11 +48,14 @@ const char* algLibKindRegName(AlgLibKind k)
     case AlgLibHik:  return "hik";
     case AlgLibHray: return "hray";
     case AlgLibCv:   return "opencv";
+    case AlgLibPcl:  return "pcl";
+    case AlgLibOpen3d: return "open3d";
+    case AlgLibOnnx: return "onnx";
     default:          return "";
     }
 }
 
-// µÇ¼ÇÃû ¡ú Ã¶¾Ù
+// ç™»è®°å â†’ æžšä¸¾
 bool algLibKindFromRegName(const std::string& regName, AlgLibKind* out)
 {
     if (!out || regName.empty()) {
@@ -72,10 +78,22 @@ bool algLibKindFromRegName(const std::string& regName, AlgLibKind* out)
         *out = AlgLibCv;
         return true;
     }
+    if (s == "pcl") {
+        *out = AlgLibPcl;
+        return true;
+    }
+    if (s == "open3d" || s == "open3D") {
+        *out = AlgLibOpen3d;
+        return true;
+    }
+    if (s == "onnx" || s == "onnxruntime") {
+        *out = AlgLibOnnx;
+        return true;
+    }
     return false;
 }
 
-// ºÏ·¨ÖÖÀà
+// åˆæ³•ç§ç±»
 bool algLibKindValid(int k)
 {
     return k >= 0 && k < AlgLibKindMax;

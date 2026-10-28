@@ -1,6 +1,6 @@
 /**
  * @file AuthMgr.h
- * @brief AuthMgrÍ·ÎÄ¼ş
+ * @brief AuthMgrå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -18,22 +18,22 @@ namespace Vision {
 
 /**
  * @class UserAccount
- * @brief ÄÚ´æÖĞµÄÓÃ»§¡£¿ÚÁîÖ»´æ salt + SHA256£¬´°¿ÚÔÚ VisionUi
+ * @brief å†…å­˜ä¸­çš„ç”¨æˆ·ã€‚å£ä»¤åªå­˜ salt + SHA256ï¼Œçª—å£åœ¨ VisionUi
  */
 struct UserAccount {
-    std::string id;                      ///< ÓÃ»§ id
-    std::string loginName;               ///< µÇÂ¼Ãû
-    std::string displayName;             ///< ÏÔÊ¾Ãû
-    UserRole role;                       ///< ½ÇÉ«
-    std::vector<unsigned char> salt;     ///< ¿ÚÁîÑÎ
-    std::vector<unsigned char> pwdHash;  ///< ¿ÚÁî¹şÏ£
-    int hashKind;                        ///< 0=SHA256£¬1=PBKDF2
-    int failCount;                       ///< Á¬ĞøÊ§°Ü´ÎÊı
-    std::string lockUntil;               ///< Ëø¶¨½ØÖ¹ ISO£»¿Õ=Î´Ëø
-    bool enabled;                        ///< ÊÇ·ñÔÊĞíµÇÂ¼
-    bool mustChangePwd;                  ///< ¼æÈİ¾ÉÓÃ»§¿â£¬½çÃæ²»ÔÙÊ¹ÓÃ
-    std::string createdAt;               ///< ´´½¨Ê±¼äÎÄ±¾
-    std::string lastLoginAt;             ///< ÉÏ´ÎµÇÂ¼Ê±¼äÎÄ±¾
+    std::string id;                      ///< ç”¨æˆ· id
+    std::string loginName;               ///< ç™»å½•å
+    std::string displayName;             ///< æ˜¾ç¤ºå
+    UserRole role;                       ///< è§’è‰²
+    std::vector<unsigned char> salt;     ///< å£ä»¤ç›
+    std::vector<unsigned char> pwdHash;  ///< å£ä»¤å“ˆå¸Œ
+    int hashKind;                        ///< 0=SHA256ï¼Œ1=PBKDF2
+    int failCount;                       ///< è¿ç»­å¤±è´¥æ¬¡æ•°
+    std::string lockUntil;               ///< é”å®šæˆªæ­¢ ISOï¼›ç©º=æœªé”
+    bool enabled;                        ///< æ˜¯å¦å…è®¸ç™»å½•
+    bool mustChangePwd;                  ///< å…¼å®¹æ—§ç”¨æˆ·åº“ï¼Œç•Œé¢ä¸å†ä½¿ç”¨
+    std::string createdAt;               ///< åˆ›å»ºæ—¶é—´æ–‡æœ¬
+    std::string lastLoginAt;             ///< ä¸Šæ¬¡ç™»å½•æ—¶é—´æ–‡æœ¬
 
     UserAccount()
         : role(RoleOperator)
@@ -42,59 +42,59 @@ struct UserAccount {
         , enabled(true)
         , mustChangePwd(false)
     {
-    } ///< Ä¬ÈÏ²Ù×÷Ô±¡¢ÎŞÇ¿ÖÆ¸ÄÃÜ
+    } ///< é»˜è®¤æ“ä½œå‘˜ã€æ— å¼ºåˆ¶æ”¹å¯†
 };
 
 /**
  * @class AuthMgr
- * @brief ÄÚ´æÓÃ»§¿â¡£³Ö¾Ã»¯×ß AuthDb£¬±¾Àà²»Ö±½Ó·ÃÎÊÊı¾İ¿â
+ * @brief å†…å­˜ç”¨æˆ·åº“ã€‚æŒä¹…åŒ–èµ° AuthDbï¼Œæœ¬ç±»ä¸ç›´æ¥è®¿é—®æ•°æ®åº“
  */
 class VISION_AUTH_API AuthMgr {
 public:
-    /** @brief ¿Õ¿âÊ±Ğ´Èë³ö³§ admin/engineer/operator */
+    /** @brief ç©ºåº“æ—¶å†™å…¥å‡ºå‚ admin/engineer/operator */
     bool ensureDefaults();
-    /** @brief ½« admin/engineer/operator ¿ÚÁîÖØÖÃÎª¿Õ£»ÓĞ±ä¸ü·µ»Ø true */
+    /** @brief å°† admin/engineer/operator å£ä»¤é‡ç½®ä¸ºç©ºï¼›æœ‰å˜æ›´è¿”å› true */
     bool ensureBuiltinEmptyPasswords();
-    /** @brief Çå¿ÕÈ«²¿ÓÃ»§ */
+    /** @brief æ¸…ç©ºå…¨éƒ¨ç”¨æˆ· */
     void clear();
 
-    /** @brief ÈËÊı */
+    /** @brief äººæ•° */
     int count() const;
-    /** @brief °´ÏÂ±êÈ¡£¨µ÷ÓÃ·½±£Ö¤·¶Î§£© */
+    /** @brief æŒ‰ä¸‹æ ‡å–ï¼ˆè°ƒç”¨æ–¹ä¿è¯èŒƒå›´ï¼‰ */
     const UserAccount& at(int i) const;
-    /** @brief °´ id ²éÕÒ */
+    /** @brief æŒ‰ id æŸ¥æ‰¾ */
     UserAccount* findById(const std::string& id);
-    /** @brief °´µÇÂ¼Ãû²éÕÒ */
+    /** @brief æŒ‰ç™»å½•åæŸ¥æ‰¾ */
     UserAccount* findByLogin(const std::string& loginName);
-    /** @brief °´µÇÂ¼Ãû²éÕÒ£¨Ö»¶Á£© */
+    /** @brief æŒ‰ç™»å½•åæŸ¥æ‰¾ï¼ˆåªè¯»ï¼‰ */
     const UserAccount* findByLogin(const std::string& loginName) const;
-    /** @brief ÕÒµÚÒ»¸öÖ¸¶¨½ÇÉ«µÄÓÃ»§£»enabledOnly Îª true Ê±Ìø¹ı½ûÓÃÕË»§ */
+    /** @brief æ‰¾ç¬¬ä¸€ä¸ªæŒ‡å®šè§’è‰²çš„ç”¨æˆ·ï¼›enabledOnly ä¸º true æ—¶è·³è¿‡ç¦ç”¨è´¦æˆ· */
     UserAccount* findFirstByRole(UserRole role, bool enabledOnly);
-    /** @brief ±£Ö¤ÖÁÉÙÓĞÒ»¸öÆôÓÃµÄ¹ÜÀíÔ±ÕË»§ */
+    /** @brief ä¿è¯è‡³å°‘æœ‰ä¸€ä¸ªå¯ç”¨çš„ç®¡ç†å‘˜è´¦æˆ· */
     bool ensureAdminAccount();
 
-    /** @brief ×·¼ÓÓÃ»§£»µÇÂ¼Ãû³åÍ»Ê§°Ü */
+    /** @brief è¿½åŠ ç”¨æˆ·ï¼›ç™»å½•åå†²çªå¤±è´¥ */
     bool addUser(const UserAccount& u);
-    /** @brief °´ id É¾³ı */
+    /** @brief æŒ‰ id åˆ é™¤ */
     bool removeById(const std::string& id);
-    /** @brief Ğ´ĞÂ¿ÚÁî¹şÏ££¨¿Õ¿ÚÁî±íÊ¾ÎŞÃÜÂë£© */
+    /** @brief å†™æ–°å£ä»¤å“ˆå¸Œï¼ˆç©ºå£ä»¤è¡¨ç¤ºæ— å¯†ç ï¼‰ */
     bool setPassword(UserAccount* u, const std::string& password);
-    /** @brief Ğ£Ñé¿ÚÁî */
+    /** @brief æ ¡éªŒå£ä»¤ */
     bool verifyPassword(const UserAccount& u, const std::string& password) const;
-    /** @brief Í³¼ÆÄ³½ÇÉ«ÈËÊı */
+    /** @brief ç»Ÿè®¡æŸè§’è‰²äººæ•° */
     int countRole(UserRole role, bool enabledOnly) const;
 
-    /** @brief SHA256(salt || utf8 ¿ÚÁî) */
+    /** @brief SHA256(salt || utf8 å£ä»¤) */
     static std::vector<unsigned char> hashPassword(const std::vector<unsigned char>& salt, const std::string& password);
-    /** @brief ¹¹Ôì´ø¹şÏ£µÄĞÂÓÃ»§ */
+    /** @brief æ„é€ å¸¦å“ˆå¸Œçš„æ–°ç”¨æˆ· */
     static UserAccount makeUser(const std::string& login, const std::string& display, UserRole role, const std::string& password);
-    /** @brief ´ÓÓÃ»§¿â¶ÁÈëÄÚ´æ */
+    /** @brief ä»ç”¨æˆ·åº“è¯»å…¥å†…å­˜ */
     bool load(std::string* error);
-    /** @brief °ÑÄÚ´æÓÃ»§Õû±íĞ´»ØÓÃ»§¿â */
+    /** @brief æŠŠå†…å­˜ç”¨æˆ·æ•´è¡¨å†™å›ç”¨æˆ·åº“ */
     bool save(std::string* error) const;
 
 private:
-    std::vector<UserAccount> m_users; ///< ÓÃ»§ÁĞ±í
+    std::vector<UserAccount> m_users; ///< ç”¨æˆ·åˆ—è¡¨
 };
 
 }

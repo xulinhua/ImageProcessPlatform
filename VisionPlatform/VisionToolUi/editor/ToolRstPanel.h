@@ -1,6 +1,6 @@
 /**
  * @file ToolRstPanel.h
- * @brief ToolRstPanelÍ·ÎÄ¼ş
+ * @brief ToolRstPanelå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -25,35 +25,35 @@ struct JobCfg;
 
 /**
  * @class ToolRstPanel
- * @brief Éè¼ÆÇøÓÒ²à£ºÔËĞĞ½á¹ûÓëÊä³öÊıÖµ£¨Ö»¶Á£¬²»º¬Ëã·¨²ÎÊı£©
+ * @brief è®¾è®¡åŒºå³ä¾§ï¼šè¿è¡Œç»“æœä¸è¾“å‡ºæ•°å€¼ï¼ˆåªè¯»ï¼Œä¸å«ç®—æ³•å‚æ•°ï¼‰
  */
 class VISION_TOOLUI_API ToolRstPanel : public QWidget {
 public:
-    /** @brief ÔËĞĞ½á¹ûÖ»¶ÁÇø */
+    /** @brief è¿è¡Œç»“æœåªè¯»åŒº */
     explicit ToolRstPanel(QWidget* parent = 0);
 
     /**
-     * @brief °´¹¤¾ßÓëÁ÷³Ì»º´æË¢ĞÂ
-     * @param lastRun ·Ç¿ÕÇÒ toolId Æ¥ÅäÊ±ÓÅÏÈÏÔÊ¾±¾´ÎÔËĞĞÕªÒª
-     * @param afterJobRun true ±íÊ¾¸ÕÅÜÍêÕûÁ÷³Ì£¬ÓÅÏÈ¶ÁÁ÷³Ì»º´æ
+     * @brief æŒ‰å·¥å…·ä¸æµç¨‹ç¼“å­˜åˆ·æ–°
+     * @param lastRun éç©ºä¸” toolId åŒ¹é…æ—¶ä¼˜å…ˆæ˜¾ç¤ºæœ¬æ¬¡è¿è¡Œæ‘˜è¦
+     * @param afterJobRun true è¡¨ç¤ºåˆšè·‘å®Œæ•´æµç¨‹ï¼Œä¼˜å…ˆè¯»æµç¨‹ç¼“å­˜
      */
     void refresh(Solution* sol, ToolCfg* tool, Job* job, const ToolOut* lastRun,
                  bool afterJobRun = false);
     /**
-     * @brief Éè¼ÆÌ¬£º°´Õû JobCfg »ã×Ü¸÷¹¤¾ßÔËĞĞ½á¹ûÓëÊä³ö
-     * @param jobOut ·Ç¿ÕÊ±Îª±¾´ÎÁ÷³ÌÔËĞĞÕªÒª
+     * @brief è®¾è®¡æ€ï¼šæŒ‰æ•´ JobCfg æ±‡æ€»å„å·¥å…·è¿è¡Œç»“æœä¸è¾“å‡º
+     * @param jobOut éç©ºæ—¶ä¸ºæœ¬æ¬¡æµç¨‹è¿è¡Œæ‘˜è¦
      */
     void refreshJob(Solution* sol, const JobCfg* jobConfig, Job* job, const ToolOut* jobOut);
 
 private:
-    /** @brief ÌîÊä³öÊıÖµ±í */
+    /** @brief å¡«è¾“å‡ºæ•°å€¼è¡¨ */
     void fillOutputTable(const ParamMap& values);
 
-    QLabel* m_toolLab;         ///< µ±Ç°¹¤¾ßÃû
-    QLabel* m_statusLab;       ///< OK/NG/Î´ÔËĞĞ
-    QLabel* m_msgLab;          ///< ÔËĞĞËµÃ÷
-    QLabel* m_timeLab;         ///< ºÄÊ±
-    QTableWidget* m_outTable;  ///< Êä³ö¼üÖµ
+    QLabel* m_toolLab;         ///< å½“å‰å·¥å…·å
+    QLabel* m_statusLab;       ///< OK/NG/æœªè¿è¡Œ
+    QLabel* m_msgLab;          ///< è¿è¡Œè¯´æ˜
+    QLabel* m_timeLab;         ///< è€—æ—¶
+    QTableWidget* m_outTable;  ///< è¾“å‡ºé”®å€¼
 };
 
 }

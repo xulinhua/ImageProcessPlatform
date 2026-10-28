@@ -1,6 +1,6 @@
 /**
  * @file SettingsDlg.h
- * @brief SettingsDlgÍ·ÎÄ¼ş
+ * @brief SettingsDlgå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -27,69 +27,69 @@ class Session;
 
 /**
  * @class SettingsDlg
- * @brief ±¾»úÉèÖÃÖĞĞÄ£º×óµ¼º½·ÖÀà + ÓÒÄÚÈİÒ³£¨³£¹æ/½çÃæ/Â·¾¶/ÔËĞĞÈÕÖ¾£©
+ * @brief æœ¬æœºè®¾ç½®ä¸­å¿ƒï¼šå·¦å¯¼èˆªåˆ†ç±» + å³å†…å®¹é¡µï¼ˆå¸¸è§„/ç•Œé¢/è·¯å¾„/è¿è¡Œæ—¥å¿—ï¼‰
  */
 class VISION_UI_API SettingsDlg : public QDialog {
     Q_OBJECT
 public:
     /**
-     * @brief ¹¹ÔìÉèÖÃÖĞĞÄ
-     * @param session »á»°£¨²»ÓµÓĞ£©
+     * @brief æ„é€ è®¾ç½®ä¸­å¿ƒ
+     * @param session ä¼šè¯ï¼ˆä¸æ‹¥æœ‰ï¼‰
      */
     explicit SettingsDlg(Session* session, QWidget* parent = 0);
 
 private slots:
-    /** @brief ×ó²à·ÖÀàÇĞ»» */
+    /** @brief å·¦ä¾§åˆ†ç±»åˆ‡æ¢ */
     void onCategoryChanged(int row);
-    /** @brief Ó¦ÓÃĞ´ÅÌ£¬²»¹Ø´° */
+    /** @brief åº”ç”¨å†™ç›˜ï¼Œä¸å…³çª— */
     void onApply();
-    /** @brief Ó¦ÓÃ²¢¹Ø±Õ */
+    /** @brief åº”ç”¨å¹¶å…³é—­ */
     void onOk();
-    /** @brief ´ò¿ªÊı¾İÏà¹ØÄ¿Â¼ */
+    /** @brief æ‰“å¼€æ•°æ®ç›¸å…³ç›®å½• */
     void onOpenDataDir();
-    /** @brief ÔÚ×ÊÔ´¹ÜÀíÆ÷ÖĞ´ò¿ª·½°¸Ä¿Â¼ */
+    /** @brief åœ¨èµ„æºç®¡ç†å™¨ä¸­æ‰“å¼€æ–¹æ¡ˆç›®å½• */
     void onOpenSolutionsDir();
-    /** @brief Ìø×ªÈÕÖ¾¹Ü¿Ø */
+    /** @brief è·³è½¬æ—¥å¿—ç®¡æ§ */
     void onOpenLogDlg();
 
 private:
-    /** @brief ´Ó Session Ìî³ä¿Ø¼ş */
+    /** @brief ä» Session å¡«å……æ§ä»¶ */
     void loadFromSettings();
-    /** @brief ¿Ø¼ş ¡ú AppSettings ²¢Ğ´ÅÌ¡¢Ó¦ÓÃÖ÷Ìâ/ÓïÑÔ */
+    /** @brief æ§ä»¶ â†’ AppSettings å¹¶å†™ç›˜ã€åº”ç”¨ä¸»é¢˜/è¯­è¨€ */
     bool applySettings(bool interactivePrompt);
-    /** @brief ÓïÑÔÈÈÇĞ»»ºóË¢ĞÂ±¾¶Ô»°¿òÎÄ°¸ */
+    /** @brief è¯­è¨€çƒ­åˆ‡æ¢ååˆ·æ–°æœ¬å¯¹è¯æ¡†æ–‡æ¡ˆ */
     void retranslateUi();
-    /** @brief °´Â·¾¶´ò¿ª×ÊÔ´¹ÜÀíÆ÷ */
+    /** @brief æŒ‰è·¯å¾„æ‰“å¼€èµ„æºç®¡ç†å™¨ */
     void openPath(const QString& path);
 
-    Session* m_session;          ///< »á»°
-    QListWidget* m_nav;          ///< ×óµ¼º½
-    QStackedWidget* m_stack;     ///< ÓÒÄÚÈİ
-    QCheckBox* m_autoOp;         ///< ×Ô¶¯µÇÂ¼²Ù×÷Ô±
-    QComboBox* m_startupMode;    ///< Æô¶¯Ä¬ÈÏÄ£Ê½
-    QComboBox* m_closeAction;    ///< ¹Ø±ÕÖ÷´°¿ÚĞĞÎª
-    QComboBox* m_theme;          ///< Ö÷Ìâ
-    QComboBox* m_lang;           ///< ÓïÑÔ
-    QLineEdit* m_dataDir;        ///< Êı¾İÄ¿Â¼
-    QLineEdit* m_dbFile;         ///< Êı¾İ¿â vision.db
-    QLineEdit* m_solsDir;        ///< ·½°¸Ä¿Â¼
-    QLineEdit* m_lastSol;        ///< ÉÏ´Î·½°¸
-    QLabel* m_titleLabel;        ///< ÎŞ±ß¿ò±êÌâ
-    QLabel* m_uiHint;            ///< Íâ¹ÛÒ³ÌáÊ¾
-    QLabel* m_closeHint;         ///< ¹Ø±ÕĞĞÎªÌáÊ¾
-    QLabel* m_pathHint;          ///< Â·¾¶Ò³ÌáÊ¾
-    QLabel* m_runHint;           ///< ÔËĞĞÒ³ÌáÊ¾
-    QGroupBox* m_popupBox;       ///< Á÷³ÌÊÔÅÜµ¯´°
-    QCheckBox* m_popupJobOk;     ///< OK Ê±µ¯´°
-    QCheckBox* m_popupJobNg;     ///< NG Ê±µ¯´°
-    QCheckBox* m_popupJobEx;     ///< Òì³£Ê±µ¯´°
-    QGroupBox* m_generalBox;     ///< Æô¶¯Óë¹Ø±Õ
-    QPushButton* m_btnOk;        ///< È·¶¨
-    QPushButton* m_btnCancel;    ///< È¡Ïû
-    QPushButton* m_btnApply;     ///< Ó¦ÓÃ
-    QPushButton* m_btnOpenLogsDlg; ///< ´ò¿ªÈÕÖ¾¹Ü¿Ø
-    QPushButton* m_btnOpenLogsFolder; ///< ´ò¿ªÈÕÖ¾Ä¿Â¼
-    bool m_canEdit;              ///< ÊÇ·ñ¿É±à¼­
+    Session* m_session;          ///< ä¼šè¯
+    QListWidget* m_nav;          ///< å·¦å¯¼èˆª
+    QStackedWidget* m_stack;     ///< å³å†…å®¹
+    QCheckBox* m_autoOp;         ///< è‡ªåŠ¨ç™»å½•æ“ä½œå‘˜
+    QComboBox* m_startupMode;    ///< å¯åŠ¨é»˜è®¤æ¨¡å¼
+    QComboBox* m_closeAction;    ///< å…³é—­ä¸»çª—å£è¡Œä¸º
+    QComboBox* m_theme;          ///< ä¸»é¢˜
+    QComboBox* m_lang;           ///< è¯­è¨€
+    QLineEdit* m_dataDir;        ///< æ•°æ®ç›®å½•
+    QLineEdit* m_dbFile;         ///< æ•°æ®åº“ vision.db
+    QLineEdit* m_solsDir;        ///< æ–¹æ¡ˆç›®å½•
+    QLineEdit* m_lastSol;        ///< ä¸Šæ¬¡æ–¹æ¡ˆ
+    QLabel* m_titleLabel;        ///< æ— è¾¹æ¡†æ ‡é¢˜
+    QLabel* m_uiHint;            ///< å¤–è§‚é¡µæç¤º
+    QLabel* m_closeHint;         ///< å…³é—­è¡Œä¸ºæç¤º
+    QLabel* m_pathHint;          ///< è·¯å¾„é¡µæç¤º
+    QLabel* m_runHint;           ///< è¿è¡Œé¡µæç¤º
+    QGroupBox* m_popupBox;       ///< æµç¨‹è¯•è·‘å¼¹çª—
+    QCheckBox* m_popupJobOk;     ///< OK æ—¶å¼¹çª—
+    QCheckBox* m_popupJobNg;     ///< NG æ—¶å¼¹çª—
+    QCheckBox* m_popupJobEx;     ///< å¼‚å¸¸æ—¶å¼¹çª—
+    QGroupBox* m_generalBox;     ///< å¯åŠ¨ä¸å…³é—­
+    QPushButton* m_btnOk;        ///< ç¡®å®š
+    QPushButton* m_btnCancel;    ///< å–æ¶ˆ
+    QPushButton* m_btnApply;     ///< åº”ç”¨
+    QPushButton* m_btnOpenLogsDlg; ///< æ‰“å¼€æ—¥å¿—ç®¡æ§
+    QPushButton* m_btnOpenLogsFolder; ///< æ‰“å¼€æ—¥å¿—ç›®å½•
+    bool m_canEdit;              ///< æ˜¯å¦å¯ç¼–è¾‘
 };
 
 }

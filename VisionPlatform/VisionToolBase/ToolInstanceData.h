@@ -1,6 +1,6 @@
 /**
  * @file ToolInstanceData.h
- * @brief ToolInstanceDataÍ·ÎÄ¼ş
+ * @brief ToolInstanceDataå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -17,22 +17,22 @@
 
 namespace Vision {
 
-/** @brief Á¬ÏßÀ´Ô´£º×Ô¶¯²¹±ß»òÓÃ»§ÊÖÁ¬ */
+/** @brief è¿çº¿æ¥æºï¼šè‡ªåŠ¨è¡¥è¾¹æˆ–ç”¨æˆ·æ‰‹è¿ */
 enum ToolLinkOrigin {
-    LinkOriginAuto = 0,   ///< °´Ö´ĞĞÊ÷µÈ×Ô¶¯Éú³É
-    LinkOriginManual = 1  ///< ÓÃ»§ÍÏÏß»ò¸Ä¹ı
+    LinkOriginAuto = 0,   ///< æŒ‰æ‰§è¡Œæ ‘ç­‰è‡ªåŠ¨ç”Ÿæˆ
+    LinkOriginManual = 1  ///< ç”¨æˆ·æ‹–çº¿æˆ–æ”¹è¿‡
 };
 
 /**
  * @class ToolInputLink
- * @brief ¹¤¾ß³ÖÓĞµÄÊäÈëÁ¬Ïß£¨Ö»´æÁ½¶Ë£»È¨Íş´æÅÌ£©
+ * @brief å·¥å…·æŒæœ‰çš„è¾“å…¥è¿çº¿ï¼ˆåªå­˜ä¸¤ç«¯ï¼›æƒå¨å­˜ç›˜ï¼‰
  */
 struct ToolInputLink {
-    ObjectId fromToolId; ///< ÉÏÓÎ¹¤¾ß
-    PortSlot fromPort;   ///< ÉÏÓÎÊä³ö¿Ú
-    PortSlot toPort;     ///< ±¾¹¤¾ßÊäÈë¿Ú
-    int index;          ///< ÉÏÓÎ¸Ã¿ÚµÄµÚ¼¸¸ö£»-1 ±íÊ¾Õû¿Ú
-    RegionUse use;       ///< ÇøÓòÓÃÍ¾£¬Ö»¶Ô Region / Roi ÓĞÒâÒå
+    ObjectId fromToolId; ///< ä¸Šæ¸¸å·¥å…·
+    PortSlot fromPort;   ///< ä¸Šæ¸¸è¾“å‡ºå£
+    PortSlot toPort;     ///< æœ¬å·¥å…·è¾“å…¥å£
+    int index;          ///< ä¸Šæ¸¸è¯¥å£çš„ç¬¬å‡ ä¸ªï¼›-1 è¡¨ç¤ºæ•´å£
+    RegionUse use;       ///< åŒºåŸŸç”¨é€”ï¼Œåªå¯¹ Region / Roi æœ‰æ„ä¹‰
     ToolLinkOrigin origin; ///< ToolLinkOrigin
     ToolInputLink()
         : fromPort(portSlotOut(PortData::Image))
@@ -45,17 +45,17 @@ struct ToolInputLink {
 
 /**
  * @class ToolInfo
- * @brief ¹¤¾ßÉí·İ£¨Ğ´Èë·½°¸£©
+ * @brief å·¥å…·èº«ä»½ï¼ˆå†™å…¥æ–¹æ¡ˆï¼‰
  */
 struct ToolInfo {
-    ObjectId id;          ///< ÊµÀı id
-    std::string toolName; ///< ¹¤¾ßÖÖÀàÃû
-    ToolType type;        ///< ¹¤¾ß´óÀà
-    std::string name;     ///< ÏÔÊ¾Ãû
-    bool enabled;         ///< ÊÇ·ñÆôÓÃ
+    ObjectId id;          ///< å®ä¾‹ id
+    std::string toolName; ///< å·¥å…·ç§ç±»å
+    ToolType type;        ///< å·¥å…·å¤§ç±»
+    std::string name;     ///< æ˜¾ç¤ºå
+    bool enabled;         ///< æ˜¯å¦å¯ç”¨
     std::string toolVersion;
-    ObjectId compositeId;     ///< ×éºÏ¶¨Òå id¡£ÆÕÍ¨¹¤¾ßÎª¿Õ
-    int compositeScope;       ///< CompositeScope¡£ÆÕÍ¨¹¤¾ßÎª 0
+    ObjectId compositeId;     ///< ç»„åˆå®šä¹‰ idã€‚æ™®é€šå·¥å…·ä¸ºç©º
+    int compositeScope;       ///< CompositeScopeã€‚æ™®é€šå·¥å…·ä¸º 0
     ToolInfo()
         : type(ToolType::Undefined)
         , enabled(true)

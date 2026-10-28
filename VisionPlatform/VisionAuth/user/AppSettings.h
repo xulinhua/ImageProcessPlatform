@@ -1,6 +1,6 @@
 /**
  * @file AppSettings.h
- * @brief AppSettingsÍ·ÎÄ¼ş
+ * @brief AppSettingså¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -16,36 +16,36 @@
 
 namespace Vision {
 
-/** @brief Æô¶¯ºóÄ¬ÈÏ½øÈëµÄÖ÷½çÃæÄ£Ê½£¨±¾»úÆ«ºÃ£© */
+/** @brief å¯åŠ¨åé»˜è®¤è¿›å…¥çš„ä¸»ç•Œé¢æ¨¡å¼ï¼ˆæœ¬æœºåå¥½ï¼‰ */
 enum StartupAppMode {
-    StartupModeDesign = 0,  ///< Éè¼ÆÌ¬
-    StartupModeRuntime = 1  ///< ÔËĞĞÌ¬
+    StartupModeDesign = 0,  ///< è®¾è®¡æ€
+    StartupModeRuntime = 1  ///< è¿è¡Œæ€
 };
 
-/** @brief ¹Ø±ÕÖ÷´°¿ÚÊ±µÄĞĞÎª£¨ÍĞÅÌÏîÔ¤Áô£© */
+/** @brief å…³é—­ä¸»çª—å£æ—¶çš„è¡Œä¸ºï¼ˆæ‰˜ç›˜é¡¹é¢„ç•™ï¼‰ */
 enum CloseMainWindowAction {
-    CloseActionExit = 0,         ///< ÍË³ö³ÌĞò
-    CloseActionMinimizeTray = 1  ///< ×îĞ¡»¯µ½ÍĞÅÌ£¨Ê×°æÎ´ÊµÏÖ£¬UI »ÒÏÔ£©
+    CloseActionExit = 0,         ///< é€€å‡ºç¨‹åº
+    CloseActionMinimizeTray = 1  ///< æœ€å°åŒ–åˆ°æ‰˜ç›˜ï¼ˆé¦–ç‰ˆæœªå®ç°ï¼ŒUI ç°æ˜¾ï¼‰
 };
 
 /**
  * @class AppSettings
- * @brief ±¾»úÉèÖÃ£ºÖ÷Ìâ¡¢ÓïÑÔ¡¢×Ô¶¯µÇÂ¼¡¢Æô¶¯/¹Ø±ÕÆ«ºÃ¡¢Á÷³ÌÊÔÅÜµ¯´°¡¢È¨ÏŞÑÚÂë
+ * @brief æœ¬æœºè®¾ç½®ï¼šä¸»é¢˜ã€è¯­è¨€ã€è‡ªåŠ¨ç™»å½•ã€å¯åŠ¨/å…³é—­åå¥½ã€æµç¨‹è¯•è·‘å¼¹çª—ã€æƒé™æ©ç 
  */
 struct VISION_AUTH_API AppSettings {
-    bool autoLoginOperator;              ///< ¿ª»úÒÔ²Ù×÷Ô±×Ô¶¯µÇÂ¼
-    std::string lastLoginName;           ///< ÉÏ´ÎµÇÂ¼Ãû
-    std::string lastSolutionPath;        ///< ÉÏ´Î³É¹¦´ò¿ª»ò±£´æµÄ·½°¸
-    std::string themeId;                 ///< Ö÷Ìâµµ£ºindustrial / industrialLarge / industrialContrast
-    std::string language;                ///< ½çÃæÓïÑÔ£ºzh-CN / en-US
-    StartupAppMode startupMode;          ///< Æô¶¯ºóÄ¬ÈÏÄ£Ê½
-    CloseMainWindowAction closeAction;   ///< ¹Ø±ÕÖ÷´°¿ÚĞĞÎª
-    bool popupJobOk;                     ///< Á÷³ÌÊÔÅÜ OK Ê±µ¯´°
-    bool popupJobNg;                     ///< Á÷³ÌÊÔÅÜ NG Ê±µ¯´°
-    bool popupJobException;              ///< Á÷³ÌÊÔÅÜÒì³£Ê±µ¯´°
-    uint32_t permOperator;               ///< ²Ù×÷Ô±È¨ÏŞÑÚÂë
-    uint32_t permEngineer;               ///< ¹¤³ÌÊ¦È¨ÏŞÑÚÂë
-    uint32_t permAdmin;                  ///< ¹ÜÀíÔ±È¨ÏŞÑÚÂë
+    bool autoLoginOperator;              ///< å¼€æœºä»¥æ“ä½œå‘˜è‡ªåŠ¨ç™»å½•
+    std::string lastLoginName;           ///< ä¸Šæ¬¡ç™»å½•å
+    std::string lastSolutionPath;        ///< ä¸Šæ¬¡æˆåŠŸæ‰“å¼€æˆ–ä¿å­˜çš„æ–¹æ¡ˆ
+    std::string themeId;                 ///< ä¸»é¢˜æ¡£ï¼šindustrial / industrialLarge / industrialContrast
+    std::string language;                ///< ç•Œé¢è¯­è¨€ï¼šzh-CN / en-US
+    StartupAppMode startupMode;          ///< å¯åŠ¨åé»˜è®¤æ¨¡å¼
+    CloseMainWindowAction closeAction;   ///< å…³é—­ä¸»çª—å£è¡Œä¸º
+    bool popupJobOk;                     ///< æµç¨‹è¯•è·‘ OK æ—¶å¼¹çª—
+    bool popupJobNg;                     ///< æµç¨‹è¯•è·‘ NG æ—¶å¼¹çª—
+    bool popupJobException;              ///< æµç¨‹è¯•è·‘å¼‚å¸¸æ—¶å¼¹çª—
+    uint32_t permOperator;               ///< æ“ä½œå‘˜æƒé™æ©ç 
+    uint32_t permEngineer;               ///< å·¥ç¨‹å¸ˆæƒé™æ©ç 
+    uint32_t permAdmin;                  ///< ç®¡ç†å‘˜æƒé™æ©ç 
 
     AppSettings()
         : autoLoginOperator(false)
@@ -61,27 +61,27 @@ struct VISION_AUTH_API AppSettings {
         , permAdmin(defaultPerms(RoleAdmin))
     {}
 
-    /** @brief Ä³½ÇÉ«µ±Ç°ÑÚÂë */
+    /** @brief æŸè§’è‰²å½“å‰æ©ç  */
     uint32_t permMask(UserRole role) const;
-    /** @brief Ğ´Ä³½ÇÉ«ÑÚÂë£¨µ÷ÓÃ·½Ó¦ OR ÉÏ lockedPerms£© */
+    /** @brief å†™æŸè§’è‰²æ©ç ï¼ˆè°ƒç”¨æ–¹åº” OR ä¸Š lockedPermsï¼‰ */
     void setPermMask(UserRole role, uint32_t mask);
-    /** @brief Èı½ÇÉ«»Ö¸´³ö³§È¨ÏŞ */
+    /** @brief ä¸‰è§’è‰²æ¢å¤å‡ºå‚æƒé™ */
     void resetPermsToDefault();
     /**
-     * @brief Á÷³ÌÊÔÅÜ½áÊøºóÊÇ·ñµ¯´°
-     * @param ok ÅĞ¶¨ OK
-     * @param isException ÔËĞĞÒì³££¨·ÇÆÕÍ¨ NG£©
+     * @brief æµç¨‹è¯•è·‘ç»“æŸåæ˜¯å¦å¼¹çª—
+     * @param ok åˆ¤å®š OK
+     * @param isException è¿è¡Œå¼‚å¸¸ï¼ˆéæ™®é€š NGï¼‰
      */
     bool shouldPopupJobResult(bool ok, bool isException) const;
 };
 
-/** @brief Æô¶¯Ä£Ê½ÏÔÊ¾Ãû */
+/** @brief å¯åŠ¨æ¨¡å¼æ˜¾ç¤ºå */
 VISION_AUTH_API std::string startupAppModeTitle(StartupAppMode m);
-/** @brief ¹Ø±ÕĞĞÎªÏÔÊ¾Ãû */
+/** @brief å…³é—­è¡Œä¸ºæ˜¾ç¤ºå */
 VISION_AUTH_API std::string closeMainWindowActionTitle(CloseMainWindowAction a);
-/** @brief ÕûÊı×ªÆô¶¯Ä£Ê½£¨Ô½½ç»ØÉè¼Æ£© */
+/** @brief æ•´æ•°è½¬å¯åŠ¨æ¨¡å¼ï¼ˆè¶Šç•Œå›è®¾è®¡ï¼‰ */
 VISION_AUTH_API StartupAppMode startupAppModeFromInt(int v);
-/** @brief ÕûÊı×ª¹Ø±ÕĞĞÎª£¨Ô½½ç»ØÍË³ö£© */
+/** @brief æ•´æ•°è½¬å…³é—­è¡Œä¸ºï¼ˆè¶Šç•Œå›é€€å‡ºï¼‰ */
 VISION_AUTH_API CloseMainWindowAction closeMainWindowActionFromInt(int v);
 
 }

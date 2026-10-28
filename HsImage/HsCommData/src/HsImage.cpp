@@ -1,6 +1,6 @@
 /**
  * @file HsImage.cpp
- * @brief HsImageÊµÏÖ
+ * @brief HsImageå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -23,7 +23,7 @@ namespace HsCommData {
 
 namespace {
 
-// ±àÂëÃû±È½Ï£¬ºöÂÔ´óĞ¡Ğ´
+// ç¼–ç åæ¯”è¾ƒï¼Œå¿½ç•¥å¤§å°å†™
 bool encEq(const char* a, const char* b)
 {
     if (!a || !b) {
@@ -47,7 +47,7 @@ bool encEq(const char* a, const char* b)
     return *a == 0 && *b == 0;
 }
 
-// ½»´íÍ¨µÀÊı¡£YUYV µÈ´ò°ü¸ñÊ½·µ»Ø 0
+// äº¤é”™é€šé“æ•°ã€‚YUYV ç­‰æ‰“åŒ…æ ¼å¼è¿”å› 0
 int encodingSamples(PixelEncoding encoding)
 {
     switch (encoding) {
@@ -64,7 +64,7 @@ int encodingSamples(PixelEncoding encoding)
     }
 }
 
-// BT.601 ÁÁ¶È£¬Ñ¹µ½ 0-255
+// BT.601 äº®åº¦ï¼Œå‹åˆ° 0-255
 int luma8(int r, int g, int b)
 {
     const double y = 0.299 * r + 0.587 * g + 0.114 * b;
@@ -77,7 +77,7 @@ int luma8(int r, int g, int b)
     return static_cast<int>(y + 0.5);
 }
 
-// ËÄÉáÎåÈë³É int£¬²¢¼Ğµ½ 32 Î»·¶Î§
+// å››èˆäº”å…¥æˆ intï¼Œå¹¶å¤¹åˆ° 32 ä½èŒƒå›´
 int roundToInt(double v)
 {
     if (v >= 2147483647.0) {
@@ -89,7 +89,7 @@ int roundToInt(double v)
     return static_cast<int>(std::floor(v + 0.5));
 }
 
-// ¼Ğµ½ 0-255
+// å¤¹åˆ° 0-255
 int clip8(double v)
 {
     if (v < 0.0) {
@@ -101,7 +101,7 @@ int clip8(double v)
     return static_cast<int>(v + 0.5);
 }
 
-// °´ kind ¶ÁÒ»¸öÑù±¾¡£¸´ÊıºÍ²»ÈÏÊ¶µÄ kind ·µ»Ø false
+// æŒ‰ kind è¯»ä¸€ä¸ªæ ·æœ¬ã€‚å¤æ•°å’Œä¸è®¤è¯†çš„ kind è¿”å› false
 bool readSample(const unsigned char* p, PixelKind kind, double* out)
 {
     switch (kind) {
@@ -145,7 +145,7 @@ bool readSample(const unsigned char* p, PixelKind kind, double* out)
     }
 }
 
-// 8 Î» YUV ×ª RGB
+// 8 ä½ YUV è½¬ RGB
 void yuv8ToRgb(int y, int u, int v, int* r, int* g, int* b)
 {
     const double du = static_cast<double>(u) - 128.0;
@@ -156,27 +156,27 @@ void yuv8ToRgb(int y, int u, int v, int* r, int* g, int* b)
     *b = clip8(yd + 1.772 * du);
 }
 
-// 4:2:2 ´ò°ü£ºYUYV / UYVY / YVYU
+// 4:2:2 æ‰“åŒ…ï¼šYUYV / UYVY / YVYU
 bool isYuv422(PixelEncoding encoding)
 {
     return encoding == EncodeYuyv || encoding == EncodeUyvy || encoding == EncodeYvyu;
 }
 
-// 4:2:0 Æ½Ãæ¡£´æ´¢ĞĞÊıÊÇ height µÄ 3/2
+// 4:2:0 å¹³é¢ã€‚å­˜å‚¨è¡Œæ•°æ˜¯ height çš„ 3/2
 bool isPlanar420(PixelEncoding encoding)
 {
     return encoding == EncodeNv12 || encoding == EncodeNv21
         || encoding == EncodeI420 || encoding == EncodeYv12;
 }
 
-// Bayer ÆğÊ¼ÏàÎ»
+// Bayer èµ·å§‹ç›¸ä½
 bool isBayer(PixelEncoding encoding)
 {
     return encoding == EncodeBayerRG || encoding == EncodeBayerGR
         || encoding == EncodeBayerGB || encoding == EncodeBayerBG;
 }
 
-// Ò»ĞĞÓĞĞ§×Ö½ÚÊı¡£²»ºÏ·¨·µ»Ø 0
+// ä¸€è¡Œæœ‰æ•ˆå­—èŠ‚æ•°ã€‚ä¸åˆæ³•è¿”å› 0
 int rowBytesOf(int width, PixelKind kind, PixelEncoding encoding)
 {
     if (width <= 0) {
@@ -205,7 +205,7 @@ int rowBytesOf(int width, PixelKind kind, PixelEncoding encoding)
     return bpp > 0 ? width * bpp : 0;
 }
 
-// ´æ´¢ĞĞÊı¡£4:2:0 º¬É«¶ÈÆ½Ãæ
+// å­˜å‚¨è¡Œæ•°ã€‚4:2:0 å«è‰²åº¦å¹³é¢
 int storageRowsOf(int height, PixelEncoding encoding)
 {
     if (height <= 0) {
@@ -258,7 +258,7 @@ int bayerChannel(PixelEncoding encoding, int x, int y)
     return 1;
 }
 
-// ´ò°ü»òÆ½ÃæÈ¡ RGB¡£²»Ö§³Ö·µ»Ø false¡£yOut ÓĞÁÁ¶ÈÊ±Ğ´³ö£¬·ñÔò -1
+// æ‰“åŒ…æˆ–å¹³é¢å– RGBã€‚ä¸æ”¯æŒè¿”å› falseã€‚yOut æœ‰äº®åº¦æ—¶å†™å‡ºï¼Œå¦åˆ™ -1
 bool tryPackedRgb(const unsigned char* pixels, int width, int height, int stride,
                   PixelKind kind, PixelEncoding encoding, int x, int y,
                   int* r, int* g, int* b, int* yOut)
@@ -423,7 +423,7 @@ bool tryPackedRgb(const unsigned char* pixels, int width, int height, int stride
     return false;
 }
 
-// ¸´ÊıÑù±¾µÄÄ££¬Êµ²¿ºÍĞé²¿°´ float ¶Á
+// å¤æ•°æ ·æœ¬çš„æ¨¡ï¼Œå®éƒ¨å’Œè™šéƒ¨æŒ‰ float è¯»
 bool readComplexMag(const unsigned char* p, double* out)
 {
     float re = 0.f;
@@ -436,7 +436,7 @@ bool readComplexMag(const unsigned char* p, double* out)
 
 } // namespace
 
-// ¿ÕÍ¼
+// ç©ºå›¾
 HsImage::HsImage()
     : frameId(0)
     , width(0)
@@ -447,7 +447,7 @@ HsImage::HsImage()
 {
 }
 
-// Éî¿½ÏñËØÓëÔªÊı¾İ
+// æ·±æ‹·åƒç´ ä¸å…ƒæ•°æ®
 HsImage::HsImage(const HsImage& other)
     : frameId(other.frameId)
     , width(other.width)
@@ -459,7 +459,7 @@ HsImage::HsImage(const HsImage& other)
 {
 }
 
-// Éî¿½¸³Öµ
+// æ·±æ‹·èµ‹å€¼
 HsImage& HsImage::operator=(const HsImage& other)
 {
     if (this != &other) {
@@ -474,7 +474,7 @@ HsImage& HsImage::operator=(const HsImage& other)
     return *this;
 }
 
-// µ¥Ñù±¾×Ö½ÚÊı¡£Î´Öª kind ·µ»Ø 0
+// å•æ ·æœ¬å­—èŠ‚æ•°ã€‚æœªçŸ¥ kind è¿”å› 0
 int HsImage::sampleBytes(PixelKind kind)
 {
     switch (kind) {
@@ -494,7 +494,7 @@ int HsImage::sampleBytes(PixelKind kind)
     }
 }
 
-// Ã¿ÏñËØ×Ö½ÚÊı¡£422/444/565 ½ö byte¡£411 ²»°´ÏñËØ¼Æ£¬·µ»Ø 0
+// æ¯åƒç´ å­—èŠ‚æ•°ã€‚422/444/565 ä»… byteã€‚411 ä¸æŒ‰åƒç´ è®¡ï¼Œè¿”å› 0
 int HsImage::bytesPerPixel(PixelKind kind, PixelEncoding encoding)
 {
     if (kind == PixelComplex64) {
@@ -520,19 +520,19 @@ int HsImage::bytesPerPixel(PixelKind kind, PixelEncoding encoding)
     return sb * n;
 }
 
-// Ã¿ÏñËØ×Ö½ÚÊı
+// æ¯åƒç´ å­—èŠ‚æ•°
 int HsImage::bytesPerPixel() const
 {
     return bytesPerPixel(kind, encoding);
 }
 
-// ¿í¸ß·Ç·¨»òÎŞ»º³å
+// å®½é«˜éæ³•æˆ–æ— ç¼“å†²
 bool HsImage::isNull() const
 {
     return pixels.empty() || width <= 0 || height <= 0;
 }
 
-// µÚ y ĞĞÖ»¶ÁÖ¸Õë¡£Ô½½çÅ×Òì³£
+// ç¬¬ y è¡Œåªè¯»æŒ‡é’ˆã€‚è¶Šç•ŒæŠ›å¼‚å¸¸
 const unsigned char* HsImage::scanLine(int y) const
 {
     if (y < 0 || y >= height || pixels.empty()) {
@@ -541,7 +541,7 @@ const unsigned char* HsImage::scanLine(int y) const
     return &pixels[static_cast<size_t>(y) * static_cast<size_t>(stride)];
 }
 
-// µÚ y ĞĞ¿ÉĞ´Ö¸Õë¡£Ô½½çÅ×Òì³£
+// ç¬¬ y è¡Œå¯å†™æŒ‡é’ˆã€‚è¶Šç•ŒæŠ›å¼‚å¸¸
 unsigned char* HsImage::scanLine(int y)
 {
     if (y < 0 || y >= height || pixels.empty()) {
@@ -550,7 +550,7 @@ unsigned char* HsImage::scanLine(int y)
     return &pixels[static_cast<size_t>(y) * static_cast<size_t>(stride)];
 }
 
-// ·ÖÅä¿ÕÍ¼Ïñ£¬ÏñËØÌîÁã
+// åˆ†é…ç©ºå›¾åƒï¼Œåƒç´ å¡«é›¶
 HsImage HsImage::make(int w, int h, PixelKind kind, PixelEncoding encoding, int64_t id)
 {
     HsImage img;
@@ -568,7 +568,7 @@ HsImage HsImage::make(int w, int h, PixelKind kind, PixelEncoding encoding, int6
     return img;
 }
 
-// ´ÓÔ­Ê¼»º³å°´ĞĞ¿½±´¡£Ê§°Ü·µ»Ø¿ÕÍ¼
+// ä»åŸå§‹ç¼“å†²æŒ‰è¡Œæ‹·è´ã€‚å¤±è´¥è¿”å›ç©ºå›¾
 HsImage HsImage::fromRaw(const unsigned char* data, int w, int h, int strideBytes,
                          const char* encoding, int64_t id)
 {
@@ -710,7 +710,7 @@ HsImage HsImage::fromRaw(const unsigned char* data, int w, int h, int strideByte
     return img;
 }
 
-// È¡»Ò¶È
+// å–ç°åº¦
 bool HsImage::sampleGray(int x, int y, double* gray) const
 {
     if (!gray || isNull()) {
@@ -780,13 +780,13 @@ bool HsImage::sampleGray(int x, int y, double* gray) const
     return true;
 }
 
-// È¡»Ò¶È¡£×ø±êÏòÏÂÈ¡Õû£¬Ô½½ç·µ»Ø false
+// å–ç°åº¦ã€‚åæ ‡å‘ä¸‹å–æ•´ï¼Œè¶Šç•Œè¿”å› false
 bool HsImage::sampleGray(double x, double y, double* gray) const
 {
     return sampleGray(static_cast<int>(std::floor(x)), static_cast<int>(std::floor(y)), gray);
 }
 
-// È¡ RGB
+// å– RGB
 bool HsImage::sampleRgb(int x, int y, int* r, int* g, int* b) const
 {
     if (!r || !g || !b || isNull()) {
@@ -848,7 +848,7 @@ bool HsImage::sampleRgb(int x, int y, int* r, int* g, int* b) const
     return true;
 }
 
-// È¡ RGB¡£×ø±êÏòÏÂÈ¡Õû
+// å– RGBã€‚åæ ‡å‘ä¸‹å–æ•´
 bool HsImage::sampleRgb(double x, double y, int* r, int* g, int* b) const
 {
     return sampleRgb(static_cast<int>(std::floor(x)), static_cast<int>(std::floor(y)), r, g, b);

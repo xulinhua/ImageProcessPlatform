@@ -1,6 +1,6 @@
 /**
  * @file DeviceControl.cpp
- * @brief DeviceControlÊµÏÖ
+ * @brief DeviceControlå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -21,7 +21,7 @@ namespace Vision {
 
 namespace {
 
-// Ä¿Â¼ÊÇ·ñ´æÔÚ
+// ç›®å½•æ˜¯å¦å­˜åœ¨
 bool dirExists(const std::string& path)
 {
     if (path.empty()) {
@@ -37,19 +37,19 @@ bool dirExists(const std::string& path)
 
 } // namespace
 
-// ¹¹ÔìÎ´´ò¿ªµÄÏà»ú¿ØÖÆ
+// æ„é€ æœªæ‰“å¼€çš„ç›¸æœºæ§åˆ¶
 CamDeviceControl::CamDeviceControl()
     : m_open(false)
 {
 }
 
-// Ã¶¾Ù³£ÓÃºòÑ¡£ºsamples Óë¸÷ÅÌ¸ùÄ¿Â¼
+// æšä¸¾å¸¸ç”¨å€™é€‰ï¼šsamples ä¸å„ç›˜æ ¹ç›®å½•
 std::vector<DeviceProbeInfo> CamDeviceControl::enumerate()
 {
     std::vector<DeviceProbeInfo> list;
     DeviceProbeInfo samples;
     samples.key = AppPaths::exeDir() + "/samples";
-    samples.title = std::string(Translate::tr("Ê¾ÀıÍ¼ samples"));
+    samples.title = std::string(Translate::tr("ç¤ºä¾‹å›¾ samples"));
     samples.params.insert("folder", samples.key);
     list.push_back(samples);
 #ifdef _WIN32
@@ -58,12 +58,12 @@ std::vector<DeviceProbeInfo> CamDeviceControl::enumerate()
         for (char* p = drives; *p; p += strlen(p) + 1) {
             DeviceProbeInfo info;
             info.key = p;
-            // È¥µôÄ©Î²·´Ğ±¸ÜÏÔÊ¾
+            // å»æ‰æœ«å°¾åæ–œæ æ˜¾ç¤º
             std::string title = p;
             if (!title.empty() && (title[title.size() - 1] == '\\' || title[title.size() - 1] == '/')) {
                 title.resize(title.size() - 1);
             }
-            info.title = std::string(Translate::tr("´ÅÅÌ ")) + title;
+            info.title = std::string(Translate::tr("ç£ç›˜ ")) + title;
             info.params.insert("folder", info.key);
             list.push_back(info);
         }
@@ -72,145 +72,145 @@ std::vector<DeviceProbeInfo> CamDeviceControl::enumerate()
     return list;
 }
 
-// ´ò¿ª£ºÎÄ¼şÔ´Ğ£ÑéÄ¿Â¼£»SDK Ôİ¾Ü¾ø
+// æ‰“å¼€ï¼šæ–‡ä»¶æºæ ¡éªŒç›®å½•ï¼›SDK æš‚æ‹’ç»
 bool CamDeviceControl::open(const HardwareDevice& device)
 {
     m_open = false;
     m_folder.clear();
     m_error.clear();
     if (device.kind != DeviceCamera) {
-        m_error = std::string(Translate::tr("²»ÊÇÏà»úÉè±¸"));
+        m_error = std::string(Translate::tr("ä¸æ˜¯ç›¸æœºè®¾å¤‡"));
         return false;
     }
-    m_error = std::string(Translate::tr("ÕæÏà»ú SDK Î´½ÓÈë"));
+    m_error = std::string(Translate::tr("çœŸç›¸æœº SDK æœªæ¥å…¥"));
     return false;
 }
 
-// ¹Ø±Õ²¢Çåµôµ±Ç°ÎÄ¼şÔ´Ä¿Â¼
+// å…³é—­å¹¶æ¸…æ‰å½“å‰æ–‡ä»¶æºç›®å½•
 void CamDeviceControl::close()
 {
     m_open = false;
     m_folder.clear();
 }
 
-// ÊÇ·ñÒÑ´ò¿ª
+// æ˜¯å¦å·²æ‰“å¼€
 bool CamDeviceControl::isOpen() const
 {
     return m_open;
 }
 
-// ×î½üÒ»´ÎÊ§°ÜÔ­Òò
+// æœ€è¿‘ä¸€æ¬¡å¤±è´¥åŸå› 
 std::string CamDeviceControl::lastError() const
 {
     return m_error;
 }
 
-// ¹¹ÔìÎ´´ò¿ªµÄ¿ØÖÆ¿¨¿ØÖÆ
+// æ„é€ æœªæ‰“å¼€çš„æ§åˆ¶å¡æ§åˆ¶
 ControlCardDeviceControl::ControlCardDeviceControl()
     : m_open(false)
 {
 }
 
-// Ê×°æÎŞÕæÊµÃ¶¾Ù£¬·µ»ØÕ¼Î»ËµÃ÷Ïî£¨²»×Ô¶¯µÇ¼Ç£©
+// é¦–ç‰ˆæ— çœŸå®æšä¸¾ï¼Œè¿”å›å ä½è¯´æ˜é¡¹ï¼ˆä¸è‡ªåŠ¨ç™»è®°ï¼‰
 std::vector<DeviceProbeInfo> ControlCardDeviceControl::enumerate()
 {
     std::vector<DeviceProbeInfo> list;
     DeviceProbeInfo tip;
     tip.key = "stub.controlcard";
-    tip.title = std::string(Translate::tr("£¨ÔİÎŞÒÑ·¢ÏÖ¿ØÖÆ¿¨£¬¿ÉÊÖ¶¯µÇ¼Ç£©"));
+    tip.title = std::string(Translate::tr("ï¼ˆæš‚æ— å·²å‘ç°æ§åˆ¶å¡ï¼Œå¯æ‰‹åŠ¨ç™»è®°ï¼‰"));
     tip.params.insert("vendor", std::string(""));
     tip.params.insert("address", std::string(""));
     list.push_back(tip);
     return list;
 }
 
-// Ğ£ÑéÖÖÀàºó±ê¼Ç´ò¿ª£¨Çı¶¯Î´½ÓÈë£©
+// æ ¡éªŒç§ç±»åæ ‡è®°æ‰“å¼€ï¼ˆé©±åŠ¨æœªæ¥å…¥ï¼‰
 bool ControlCardDeviceControl::open(const HardwareDevice& device)
 {
     m_open = false;
     m_error.clear();
     if (device.kind != DeviceControlCard) {
-        m_error = std::string(Translate::tr("²»ÊÇ¿ØÖÆ¿¨Éè±¸"));
+        m_error = std::string(Translate::tr("ä¸æ˜¯æ§åˆ¶å¡è®¾å¤‡"));
         return false;
     }
-    // Ê×°æ£º½ö±ê¼Ç´ò¿ª£¬ÕæÊµÇı¶¯ºóĞø½ÓÈë
+    // é¦–ç‰ˆï¼šä»…æ ‡è®°æ‰“å¼€ï¼ŒçœŸå®é©±åŠ¨åç»­æ¥å…¥
     m_open = true;
     return true;
 }
 
-// ¹Ø±Õ¿ØÖÆ¿¨
+// å…³é—­æ§åˆ¶å¡
 void ControlCardDeviceControl::close()
 {
     m_open = false;
 }
 
-// ÊÇ·ñÒÑ´ò¿ª
+// æ˜¯å¦å·²æ‰“å¼€
 bool ControlCardDeviceControl::isOpen() const
 {
     return m_open;
 }
 
-// ×î½üÒ»´ÎÊ§°ÜÔ­Òò
+// æœ€è¿‘ä¸€æ¬¡å¤±è´¥åŸå› 
 std::string ControlCardDeviceControl::lastError() const
 {
     return m_error;
 }
 
-// ¹¹ÔìÎ´´ò¿ªµÄ PLC ¿ØÖÆ
+// æ„é€ æœªæ‰“å¼€çš„ PLC æ§åˆ¶
 PlcDeviceControl::PlcDeviceControl()
     : m_open(false)
 {
 }
 
-// ·µ»ØÕ¼Î»Ïî£¬ÌáÊ¾ÏÈÅäÖÃÍ¨ĞÅÍ¨µÀ
+// è¿”å›å ä½é¡¹ï¼Œæç¤ºå…ˆé…ç½®é€šä¿¡é€šé“
 std::vector<DeviceProbeInfo> PlcDeviceControl::enumerate()
 {
     std::vector<DeviceProbeInfo> list;
     DeviceProbeInfo tip;
     tip.key = "stub.plc";
-    tip.title = std::string(Translate::tr("£¨ÇëÏÈÔÚÍ¨ĞÅ¹ÜÀíÅäÖÃ MODBUS Í¨µÀºóµÇ¼Ç PLC£©"));
+    tip.title = std::string(Translate::tr("ï¼ˆè¯·å…ˆåœ¨é€šä¿¡ç®¡ç†é…ç½® MODBUS é€šé“åç™»è®° PLCï¼‰"));
     tip.params.insert("commChannelId", std::string(""));
     tip.params.insert("slaveId", 1);
     list.push_back(tip);
     return list;
 }
 
-// Ğ£ÑéÖÖÀà£¬²¢ÒªÇóÒÑ°ó¶¨Í¨ĞÅÍ¨µÀ
+// æ ¡éªŒç§ç±»ï¼Œå¹¶è¦æ±‚å·²ç»‘å®šé€šä¿¡é€šé“
 bool PlcDeviceControl::open(const HardwareDevice& device)
 {
     m_open = false;
     m_error.clear();
     if (device.kind != DevicePlc) {
-        m_error = std::string(Translate::tr("²»ÊÇ PLC Éè±¸"));
+        m_error = std::string(Translate::tr("ä¸æ˜¯ PLC è®¾å¤‡"));
         return false;
     }
     if (channelIdOf(device).empty()) {
-        m_error = std::string(Translate::tr("Î´°ó¶¨Í¨ĞÅÍ¨µÀ"));
+        m_error = std::string(Translate::tr("æœªç»‘å®šé€šä¿¡é€šé“"));
         return false;
     }
     m_open = true;
     return true;
 }
 
-// ¹Ø±Õ PLC
+// å…³é—­ PLC
 void PlcDeviceControl::close()
 {
     m_open = false;
 }
 
-// ÊÇ·ñÒÑ´ò¿ª
+// æ˜¯å¦å·²æ‰“å¼€
 bool PlcDeviceControl::isOpen() const
 {
     return m_open;
 }
 
-// ×î½üÒ»´ÎÊ§°ÜÔ­Òò
+// æœ€è¿‘ä¸€æ¬¡å¤±è´¥åŸå› 
 std::string PlcDeviceControl::lastError() const
 {
     return m_error;
 }
 
-// ¶ÁÉè±¸°ó¶¨µÄÍ¨ĞÅÍ¨µÀ id
+// è¯»è®¾å¤‡ç»‘å®šçš„é€šä¿¡é€šé“ id
 std::string PlcDeviceControl::channelIdOf(const HardwareDevice& device)
 {
     return device.defaultParams.value("commChannelId").toString();

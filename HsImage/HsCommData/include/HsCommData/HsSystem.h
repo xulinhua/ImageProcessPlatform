@@ -1,6 +1,6 @@
 /**
  * @file HsSystem.h
- * @brief HsSystemͷ�ļ�
+ * @brief HsSystem头文件
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -16,51 +16,51 @@ namespace HsCommData {
 
 /**
  * @class HsSystem
- * @brief ȫ�ֻ���Լ����������ȫ���̹���
- * �����Ѵ�ļ��Ρ�ƽ����ڲ��ǻ��ȣ�������� +x ת�� +y������˳ʱ�룬�� OpenCV atan2 / RotatedRect һ�£�����λ�����������λֻ�ڶ��⻻�㡣��ά��������ϵ�����ס�Y ���ϡ�Z ���۲��ߡ�
- * ����ĵ�λ�����������Ժ��ᳯ��ֻ���ڰ��ⲿ��ֵ�����ڲ�������ڲ���ֵ����ȥ��
+ * @brief 全局换算约定。单例，全进程共用
+ * 不改已存的几何。平面角内部是弧度，正方向从 +x 转向 +y（画面顺时针，与 OpenCV atan2 / RotatedRect 一致）。单位、正方向和零位只在对外换算。三维仍是右手系、毫米、Y 向上、Z 朝观察者。
+ * 这里的单位、正方向、手性和轴朝向只用于把外部数值换进内部，或把内部数值换出去。
  */
 class HSCOMMDATA_EXPORT HsSystem {
 public:
-    /** @brief set_system / get_system �Ĳ����� */
+    /** @brief set_system / get_system 的参数项 */
     enum Param {
-        ParamAngleUnit = 0, ///< �Ƕȵ�λ
-        ParamAngleDir,      ///< �Ƕ�������
-        ParamAngleZero,     ///< ƽ�����λ
-        ParamLengthUnit,    ///< ���ȵ�λ
-        ParamHand,          ///< ����
-        ParamAxisFrame,     ///< �ᳯ��
-        ParamEulerOrder,    ///< ŷ��˳��
-        ParamTol,            ///< �Ƚ��ݲ�
-        ParamExceptionMode   ///< �쳣������ʽ
+        ParamAngleUnit = 0, ///< 角度单位
+        ParamAngleDir,      ///< 角度正方向
+        ParamAngleZero,     ///< 平面角零位
+        ParamLengthUnit,    ///< 长度单位
+        ParamHand,          ///< 手性
+        ParamAxisFrame,     ///< 轴朝向
+        ParamEulerOrder,    ///< 欧拉顺序
+        ParamTol,            ///< 比较容差
+        ParamExceptionMode   ///< 异常处理方式
     };
 
     /**
-     * @brief ����ʱ��ô��������Ӧ Halcon ���׳����ص�������
-     * Ĭ���׳��������ڵ�����һ��
+     * @brief 出错时怎么处理。对应 Halcon 的抛出、回调、忽略
+     * 默认抛出，和现在的算子一致
      */
     enum ExceptionMode {
-        ExModeThrow = 0, ///< �׳� HsException
-        ExModeCallback,  ///< ���ûص���������ص�Ϊ�������׳�
-        ExModeIgnore     ///< �����������÷�����ִ��
+        ExModeThrow = 0, ///< 抛出 HsException
+        ExModeCallback,  ///< 调用回调后继续。回调为空则仍抛出
+        ExModeIgnore     ///< 不处理，调用方继续执行
     };
 
-    /** @brief �쳣�ص������Է�ʽ�²��ᱻ���� */
+    /** @brief 异常回调。忽略方式下不会被调用 */
     typedef void (*ExceptionCallback)(const HsException& exception);
 
-    /** @brief ����Ƕȵ�λ���ڲ��洢�ǻ��� */
+    /** @brief 对外角度单位。内部存储是弧度 */
     enum AngleUnit {
-        UnitRadian = 0, ///< ����
-        UnitDegree      ///< ��
+        UnitRadian = 0, ///< 弧度
+        UnitDegree      ///< 度
     };
 
-    /** @brief ����Ƕ�������ƽ���ڲ��������Ǵ� +x ת�� +y��������Ϊ˳ʱ�롣ϵͳΪ��ʱ��Ϊ��ʱ����ȡ�� */
+    /** @brief 对外角度正方向。平面内部正方向是从 +x 转向 +y，画面上为顺时针。系统为逆时针为正时对外取反 */
     enum AngleDir {
-        DirCcw = 0, ///< ��ʱ��Ϊ��
-        DirCw       ///< ˳ʱ��Ϊ��
+        DirCcw = 0, ///< 逆时针为正
+        DirCw       ///< 顺时针为正
     };
 
-    /** @brief ����ƽ�����λ���ڲ���λ�� +X��ŷ���Ƿ����������� */
+    /** @brief 对外平面角零位。内部零位是 +X。欧拉角分量不用这项 */
     enum AngleZero {
         ZeroPosX = 0, ///< +X
         ZeroPosY,     ///< +Y
@@ -68,91 +68,91 @@ public:
         ZeroNegY      ///< -Y
     };
 
-    /** @brief ���ⳤ�ȵ�λ���ڲ���ά�Ǻ��ס���ά���ز������ﻻ */
+    /** @brief 对外长度单位。内部三维是毫米。二维像素不经这里换 */
     enum LengthUnit {
-        UnitMm = 0, ///< ����
-        UnitM,       ///< ��
-        UnitMax ///< ���������ǺϷ�ֵ
+        UnitMm = 0, ///< 毫米
+        UnitM,       ///< 米
+        UnitMax ///< 个数，不是合法值
     };
 
-    /** @brief �������ԡ��ڲ�������ϵ�������Ȱ��ⲿ Z ȡ����ӳ�� */
+    /** @brief 对外手性。内部是右手系。左手先把外部 Z 取反再映射 */
     enum Handedness {
-        HandRight = 0, ///< ����
-        HandLeft       ///< ����
+        HandRight = 0, ///< 右手
+        HandLeft       ///< 左手
     };
 
     /**
-     * @brief �����ᳯ��ӳ�䵽�ڲ��� X ���ҡ�Y ���ϡ�Z ���۲���
-     * FrameZUp �� Y ����ǰ���뿪�۲��ߣ���FrameCam �����ϵ��Y ���£�Z ��ǰ
+     * @brief 对外轴朝向。映射到内部的 X 向右、Y 向上、Z 朝观察者
+     * FrameZUp 的 Y 是向前（离开观察者）。FrameCam 是相机系：Y 向下，Z 向前
      */
     enum AxisFrame {
-        FrameYUp = 0, ///< Y ���ϣ�Z ���۲���
-        FrameZUp,     ///< Z ���ϣ�Y ��ǰ
-        FrameCam      ///< ���ϵ��Y ���£�Z ��ǰ
+        FrameYUp = 0, ///< Y 向上，Z 朝观察者
+        FrameZUp,     ///< Z 向上，Y 向前
+        FrameCam      ///< 相机系，Y 向下，Z 向前
     };
 
     /**
-     * @brief ŷ��˳��ֻ����λ�˻��㡣��ת�����������������ϣ��ȳ˵����ұ�
-     * EulerZyx �� Halcon abg ��ͬ��EulerXyz �� Halcon gba��˳���� 0����ͬ
+     * @brief 欧拉顺序，只用于位姿换算。旋转矩阵作用在列向量上，先乘的在右边
+     * EulerZyx 与 Halcon abg 相同；EulerXyz 与 Halcon gba（顺序码 0）相同
      */
     enum EulerOrder {
-        EulerZyx = 0, ///< R = Rz * Ry * Rx������ X
-        EulerXyz,     ///< R = Rx * Ry * Rz������ Z
-        EulerAbg,     ///< Halcon abg��ͬ EulerZyx
-        EulerGba      ///< Halcon gba��ͬ EulerXyz
+        EulerZyx = 0, ///< R = Rz * Ry * Rx，先绕 X
+        EulerXyz,     ///< R = Rx * Ry * Rz，先绕 Z
+        EulerAbg,     ///< Halcon abg，同 EulerZyx
+        EulerGba      ///< Halcon gba，同 EulerXyz
     };
 
-    AngleUnit angleUnit;   ///< �Ƕȵ�λ
-    AngleDir angleDir;     ///< �Ƕ�������
-    AngleZero angleZero;   ///< ƽ�����λ
-    LengthUnit lengthUnit; ///< ���ȵ�λ
-    Handedness hand;       ///< ����
-    AxisFrame axisFrame;   ///< �ᳯ��
-    EulerOrder eulerOrder; ///< ŷ��˳��
-    double tol;            ///< �Ƚ��ݲ���ļ��ο��ڲ����еıȽ�
-    ExceptionMode exceptionMode;         ///< �쳣������ʽ
-    ExceptionCallback exceptionCallback; ///< �쳣�ص����ձ�ʾû��
-    /** @brief ȫ����Ψһ��һ�ݡ��״ε���ʱ���ڲ�Լ������ */
+    AngleUnit angleUnit;   ///< 角度单位
+    AngleDir angleDir;     ///< 角度正方向
+    AngleZero angleZero;   ///< 平面角零位
+    LengthUnit lengthUnit; ///< 长度单位
+    Handedness hand;       ///< 手性
+    AxisFrame axisFrame;   ///< 轴朝向
+    EulerOrder eulerOrder; ///< 欧拉顺序
+    double tol;            ///< 比较容差。不改几何库内部已有的比较
+    ExceptionMode exceptionMode;         ///< 异常处理方式
+    ExceptionCallback exceptionCallback; ///< 异常回调。空表示没有
+    /** @brief 全进程唯一的一份。首次调用时按内部约定构造 */
     static HsSystem& instance();
 
 private:
-    /** @brief �ȡ���ʱ�롢+X�����ס����֡�Y ���ϡ�EulerZyx���ݲ� 1e-9 */
+    /** @brief 度、逆时针、+X、毫米、右手、Y 向上、EulerZyx，容差 1e-9 */
     HsSystem();
-    /** @brief ��ֹ������������ֵڶ���Լ�� */
+    /** @brief 禁止拷贝，避免出现第二份约定 */
     HsSystem(const HsSystem&);
-    /** @brief ��ֹ��ֵ */
+    /** @brief 禁止赋值 */
     HsSystem& operator=(const HsSystem&);
 };
 
 /**
- * @brief ��ȫ��Լ�����һ�ö��� int���ݲ double�����ȡֵ�Բ����� HsException
- * @param param ������
- * @param value ö��ֵ
+ * @brief 改全局约定里的一项。枚举项传 int，容差传 double。项和取值对不上抛 HsException
+ * @param param 参数项
+ * @param value 枚举值
  */
 HSCOMMDATA_EXPORT void set_system(HsSystem::Param param, int value);
 /**
- * @brief �����쳣�ص������������
- * ֻ�� ExModeCallback ʱʹ��
+ * @brief 设置异常回调。传空则清掉
+ * 只在 ExModeCallback 时使用
  */
 HSCOMMDATA_EXPORT void set_system(HsSystem::ExceptionCallback callback);
-/** @brief ��ǰ�쳣�ص���û����Ϊ�� */
+/** @brief 当前异常回调。没有则为空 */
 HSCOMMDATA_EXPORT HsSystem::ExceptionCallback get_exception_callback();
 /**
- * @brief �ıȽ��ݲ�����Ҫ���������
- * @param param ֻ���� ParamTol
- * @param value �ݲ�
+ * @brief 改比较容差。其它项不要用这个重载
+ * @param param 只能是 ParamTol
+ * @param value 容差
  */
 HSCOMMDATA_EXPORT void set_system(HsSystem::Param param, double value);
 /**
- * @brief ��ö���ָ��ջ��������ݲ��� HsException
- * @param param ������
- * @param value д��ö��ֵ
+ * @brief 读枚举项。指针空或拿它读容差抛 HsException
+ * @param param 参数项
+ * @param value 写出枚举值
  */
 HSCOMMDATA_EXPORT void get_system(HsSystem::Param param, int* value);
 /**
- * @brief ���Ƚ��ݲָ��ջ�������ö������ HsException
- * @param param ֻ���� ParamTol
- * @param value д���ݲ�
+ * @brief 读比较容差。指针空或拿它读枚举项抛 HsException
+ * @param param 只能是 ParamTol
+ * @param value 写出容差
  */
 HSCOMMDATA_EXPORT void get_system(HsSystem::Param param, double* value);
 

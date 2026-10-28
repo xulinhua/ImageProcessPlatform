@@ -1,6 +1,6 @@
 /**
  * @file ToolEditorBase.cpp
- * @brief ToolEditorBaseÊµÏÖ
+ * @brief ToolEditorBaseå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -13,7 +13,7 @@
 
 namespace Vision {
 
-// ²ÎÊıÒ³µ××ù£¬ÉÔºó°ó¶¨¹¤¾ß
+// å‚æ•°é¡µåº•åº§ï¼Œç¨åç»‘å®šå·¥å…·
 ToolEditorBase::ToolEditorBase(QWidget* parent)
     : QWidget(parent)
     , m_tool(nullptr)
@@ -24,7 +24,7 @@ ToolEditorBase::ToolEditorBase(QWidget* parent)
     initToolParamEditor(this);
 }
 
-// ¼ÇÏÂÖ¸Õë²¢¹àÈë
+// è®°ä¸‹æŒ‡é’ˆå¹¶çŒå…¥
 void ToolEditorBase::bind(ToolCfg* tool, Session* session, Solution* sol)
 {
     m_tool = tool;
@@ -36,7 +36,7 @@ void ToolEditorBase::bind(ToolCfg* tool, Session* session, Solution* sol)
     applyParamControlStyle(this);
 }
 
-// ´Ó ToolCfg ¹àÈë
+// ä» ToolCfg çŒå…¥
 void ToolEditorBase::reload()
 {
     m_block = true;
@@ -44,7 +44,7 @@ void ToolEditorBase::reload()
     m_block = false;
 }
 
-// Ğ´»Ø ToolCfg£¨²»±ê dirty£»ÓÃ»§¸Ä¿Ø¼şÊ±ÓÉ onEdited ±ê¼Ç£©
+// å†™å› ToolCfgï¼ˆä¸æ ‡ dirtyï¼›ç”¨æˆ·æ”¹æ§ä»¶æ—¶ç”± onEdited æ ‡è®°ï¼‰
 void ToolEditorBase::apply()
 {
     if (!m_tool || m_block) {
@@ -53,7 +53,7 @@ void ToolEditorBase::apply()
     saveToTool();
 }
 
-// ÓÃ»§¸Ä¿Ø¼ş
+// ç”¨æˆ·æ”¹æ§ä»¶
 void ToolEditorBase::onEdited()
 {
     if (m_block || !m_tool) {

@@ -1,6 +1,6 @@
 /**
  * @file CvBlob.h
- * @brief CvBlobÍ·ÎÄ¼ş
+ * @brief CvBlobå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -15,16 +15,30 @@ namespace Vision {
 
 /**
  * @class CvBlob
- * @brief ¾ø¶Ô¡¢Ïà¶Ô¡¢¶¯Ì¬ãĞÖµ Blob£¨OpenCV£©
+ * @brief ç»å¯¹ã€ç›¸å¯¹ã€åŠ¨æ€é˜ˆå€¼ Blobï¼ˆOpenCVï¼‰
  */
 class CvBlob : public AlgToolBase {
 public:
     std::string toolName() const { return "detect.blob"; }
     AlgLibKind algLib() const { return AlgLibCv; }
     std::string version() const;
-    /** @brief °æ±¾±ä¸ü£¬Ö»×·¼Ó */
+    /** @brief ç‰ˆæœ¬å˜æ›´ï¼Œåªè¿½åŠ  */
     std::vector<VerNote> versionNotes() const;
-    /** @brief ÔÚËÑË÷ÓòÀï×öãĞÖµ·Ö¸î²¢Êä³öÁ¬Í¨Óò */
+    /** @brief åœ¨æœç´¢åŸŸé‡Œåšé˜ˆå€¼åˆ†å‰²å¹¶è¾“å‡ºè¿é€šåŸŸ */
+    int execute(const AlgToolIn& in, AlgToolOut* out) override {
+        if (!out) {
+            return HS_ERR_NULL;
+        }
+        *out = run(in);
+        if (out->ok) {
+            out->errCode = HS_OK;
+            return HS_OK;
+        }
+        if (out->errCode == HS_OK || out->errCode == 1) {
+            out->errCode = HS_ERR_OPERATOR;
+        }
+        return out->errCode;
+    }
     AlgToolOut run(const AlgToolIn& in);
     AlgToolBase* clone() const { return new CvBlob(); }
 };

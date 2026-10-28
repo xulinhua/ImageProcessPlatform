@@ -1,6 +1,6 @@
 /**
  * @file Shape.cpp
- * @brief ShapeÊµÏÖ
+ * @brief Shapeå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -11,73 +11,73 @@
 
 namespace HsCommData {
 
-// ÄÚ²¿×ª½Ç£¬»¡¶È
+// å†…éƒ¨è½¬è§’ï¼Œå¼§åº¦
 double EllipseP::angRad() const
 {
     return phi;
 }
 
-// Ğ´ÈëÄÚ²¿»¡¶È
+// å†™å…¥å†…éƒ¨å¼§åº¦
 void EllipseP::setAngRad(double rad)
 {
     phi = rad;
 }
 
-// ×ª½ÇµÄ¶ÈÊı£¬Õı·½ÏòÓëÄÚ²¿ÏàÍ¬
+// è½¬è§’çš„åº¦æ•°ï¼Œæ­£æ–¹å‘ä¸å†…éƒ¨ç›¸åŒ
 double EllipseP::angDeg() const
 {
     return toDegree(phi);
 }
 
-// °´¶ÈÊıĞ´Èë£¬Õı·½ÏòÓëÄÚ²¿ÏàÍ¬
+// æŒ‰åº¦æ•°å†™å…¥ï¼Œæ­£æ–¹å‘ä¸å†…éƒ¨ç›¸åŒ
 void EllipseP::setAngDeg(double deg)
 {
     phi = toRadian(deg);
 }
 
-// °´ÏµÍ³½Ç¶Èµ¥Î»ºÍÕı·½Ïò¶ÁÈ¡
+// æŒ‰ç³»ç»Ÿè§’åº¦å•ä½å’Œæ­£æ–¹å‘è¯»å–
 double EllipseP::ang() const
 {
     return fromAngle(phi);
 }
 
-// °´ÏµÍ³½Ç¶Èµ¥Î»ºÍÕı·½ÏòĞ´Èë
+// æŒ‰ç³»ç»Ÿè§’åº¦å•ä½å’Œæ­£æ–¹å‘å†™å…¥
 void EllipseP::setAng(double external)
 {
     phi = toAngle(external);
 }
 
-// ÄÚ²¿×ª½Ç£¬»¡¶È
+// å†…éƒ¨è½¬è§’ï¼Œå¼§åº¦
 double Rect2P::angRad() const
 {
     return phi;
 }
 
-// Ğ´ÈëÄÚ²¿»¡¶È
+// å†™å…¥å†…éƒ¨å¼§åº¦
 void Rect2P::setAngRad(double rad)
 {
     phi = rad;
 }
 
-// ×ª½ÇµÄ¶ÈÊı£¬Õı·½ÏòÓëÄÚ²¿ÏàÍ¬
+// è½¬è§’çš„åº¦æ•°ï¼Œæ­£æ–¹å‘ä¸å†…éƒ¨ç›¸åŒ
 double Rect2P::angDeg() const
 {
     return toDegree(phi);
 }
 
-// °´¶ÈÊıĞ´Èë£¬Õı·½ÏòÓëÄÚ²¿ÏàÍ¬
+// æŒ‰åº¦æ•°å†™å…¥ï¼Œæ­£æ–¹å‘ä¸å†…éƒ¨ç›¸åŒ
 void Rect2P::setAngDeg(double deg)
 {
     phi = toRadian(deg);
 }
 
-// °´ÏµÍ³½Ç¶Èµ¥Î»ºÍÕı·½Ïò¶ÁÈ¡
+// æŒ‰ç³»ç»Ÿè§’åº¦å•ä½å’Œæ­£æ–¹å‘è¯»å–
 double Rect2P::ang() const
 {
     return fromAngle(phi);
 }
 
-// °´ÏµÍ³½Ç¶Èµ¥Î»ºÍÕı·½ÏòĞ´Èë
+// æŒ‰ç³»ç»Ÿè§’åº¦å•ä½å’Œæ­£æ–¹å‘å†™å…¥
 void Rect2P::setAng(double external)
 {
     phi = toAngle(external);

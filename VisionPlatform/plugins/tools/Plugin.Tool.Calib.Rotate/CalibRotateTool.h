@@ -1,6 +1,6 @@
 /**
  * @file CalibRotateTool.h
- * @brief CalibRotateToolÍ·ÎÄ¼ş
+ * @brief CalibRotateToolå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -16,33 +16,33 @@ namespace Vision {
 
 /**
  * @class CalibRotateTool
- * @brief Ğı×ªÖĞĞÄ¡£Ñ§Ï°Ê±°´µã±íÄâºÏ
+ * @brief æ—‹è½¬ä¸­å¿ƒã€‚å­¦ä¹ æ—¶æŒ‰ç‚¹è¡¨æ‹Ÿåˆ
  */
 class CalibRotateTool : public ToolBase {
 public:
-    /** @brief ×¢²áÃû */
+    /** @brief æ³¨å†Œå */
     std::string toolName() const;
-    /** @brief ¹¤¾ß´óÀà */
+    /** @brief å·¥å…·å¤§ç±» */
     ToolType type() const;
-    /** @brief ½çÃæÏÔÊ¾Ãû */
+    /** @brief ç•Œé¢æ˜¾ç¤ºå */
     std::string displayName() const;
-    /** @brief ¹¤¾ßËµÃ÷ */
+    /** @brief å·¥å…·è¯´æ˜ */
     std::string description() const;
-    /** @brief ¹¤¾ß°æ±¾ */
+    /** @brief å·¥å…·ç‰ˆæœ¬ */
     std::string version() const;
-    /** @brief °æ±¾±ä¸ü£¬Ö»×·¼Ó */
+    /** @brief ç‰ˆæœ¬å˜æ›´ï¼Œåªè¿½åŠ  */
     std::vector<VerNote> versionNotes() const;
-    /** @brief È±Ê¡²ÎÊı */
+    /** @brief ç¼ºçœå‚æ•° */
     ParamMap defaultParams() const;
-    /** @brief ²ÎÊıËµÃ÷ */
+    /** @brief å‚æ•°è¯´æ˜ */
     std::vector<ParamField> paramFields() const;
-    /** @brief »­²¼ÄÜÁ¦ */
+    /** @brief ç”»å¸ƒèƒ½åŠ› */
     ToolCaps capabilities() const;
-    /** @brief ¶Ë¿Ú */
+    /** @brief ç«¯å£ */
     std::vector<PortDesc> ports() const;
-    /** @brief Ö´ĞĞ */
+    /** @brief æ‰§è¡Œ */
     ToolOut execute(const ToolIn& in);
-    /** @brief ¿ËÂ¡±¾ÊµÀı */
+    /** @brief å…‹éš†æœ¬å®ä¾‹ */
     ToolBase* clone() const;
     const ToolParaBase* toolParam() const;
 private:

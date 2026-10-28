@@ -1,6 +1,6 @@
 /**
  * @file InvalidateScope.h
- * @brief InvalidateScopeÍ·ÎÄ¼ş
+ * @brief InvalidateScopeå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -14,29 +14,29 @@
 namespace HsCtrl {
 
 /**
- * @brief Ë¢ĞÂ·¶Î§¡£°´Î»×éºÏ£¬¸æËß´°¿ÚÕâ´ÎÒªÖØ»­ÄÄĞ©²ã¡£
+ * @brief åˆ·æ–°èŒƒå›´ã€‚æŒ‰ä½ç»„åˆï¼Œå‘Šè¯‰çª—å£è¿™æ¬¡è¦é‡ç”»å“ªäº›å±‚ã€‚
  */
 enum InvalidateScope {
-    InvalidateNone     = 0,       ///< ÎŞ
-    InvalidateImage    = 1u << 0, ///< µ×Í¼
+    InvalidateNone     = 0,       ///< æ— 
+    InvalidateImage    = 1u << 0, ///< åº•å›¾
     InvalidateOverlay  = 1u << 1, ///< Stack
     InvalidateDrawing  = 1u << 2, ///< Drawing
-    InvalidateViewport = 1u << 3  ///< ÊÓ¿Ú±ä»»
+    InvalidateViewport = 1u << 3  ///< è§†å£å˜æ¢
 };
 
-/** @brief °´Î»»ò */
+/** @brief æŒ‰ä½æˆ– */
 inline InvalidateScope operator|(InvalidateScope a, InvalidateScope b)
 {
     return static_cast<InvalidateScope>(static_cast<uint32_t>(a) | static_cast<uint32_t>(b));
 }
 
-/** @brief °´Î»Óë */
+/** @brief æŒ‰ä½ä¸ */
 inline InvalidateScope operator&(InvalidateScope a, InvalidateScope b)
 {
     return static_cast<InvalidateScope>(static_cast<uint32_t>(a) & static_cast<uint32_t>(b));
 }
 
-/** @brief °´Î»»ò²¢Ğ´»Ø */
+/** @brief æŒ‰ä½æˆ–å¹¶å†™å› */
 inline InvalidateScope& operator|=(InvalidateScope& a, InvalidateScope b)
 {
     a = a | b;

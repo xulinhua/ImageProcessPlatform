@@ -1,6 +1,6 @@
 /**
  * @file CompositeMgrDlg.cpp
- * @brief CompositeMgrDlg µœ÷
+ * @brief CompositeMgrDlgÂÆûÁé∞
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -32,10 +32,10 @@ namespace Vision {
 namespace {
 QString scopeText(CompositeScope scope)
 {
-    return scope == CompositeLibrary ? T("∂¿¡¢") : T("œÓƒø");
+    return scope == CompositeLibrary ? T("Áã¨Á´ã") : T("È°πÁõÆ");
 }
 
-// ¡–±Ì…œœ‘ æ√˚≥∆∫Õµ±«∞À„∑®ø‚
+// ÂàóË°®‰∏äÊòæÁ§∫ÂêçÁß∞ÂíåÂΩìÂâçÁÆóÊ≥ïÂ∫ì
 QString toolRowText(const ToolCfg& tool)
 {
     QString name = qs(tool.name);
@@ -57,17 +57,17 @@ CompositeMgrDlg::CompositeMgrDlg(Solution* sol, QWidget* parent)
     , m_sol(sol)
     , m_table(nullptr)
 {
-    setWindowTitle(T("◊È∫œπ§æﬂ"));
+    setWindowTitle(T("ÁªÑÂêàÂ∑•ÂÖ∑"));
     resize(720, 420);
     m_table = new QTableWidget(this);
     m_table->setColumnCount(4);
-    m_table->setHorizontalHeaderLabels(QStringList() << T("√˚≥∆") << T("∑∂Œß") << T("∞Ê±æ") << T("Àµ√˜"));
+    m_table->setHorizontalHeaderLabels(QStringList() << T("ÂêçÁß∞") << T("ËåÉÂõ¥") << T("ÁâàÊú¨") << T("ËØ¥Êòé"));
     m_table->setSelectionBehavior(QAbstractItemView::SelectRows);
     m_table->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    QPushButton* addBtn = new QPushButton(T("–¬Ω®"), this);
-    QPushButton* editBtn = new QPushButton(T("–ﬁ∏ƒ"), this);
-    QPushButton* delBtn = new QPushButton(T("…æ≥˝"), this);
-    QPushButton* closeBtn = new QPushButton(T("πÿ±’"), this);
+    QPushButton* addBtn = new QPushButton(T("Êñ∞Âª∫"), this);
+    QPushButton* editBtn = new QPushButton(T("‰øÆÊîπ"), this);
+    QPushButton* delBtn = new QPushButton(T("Âà†Èô§"), this);
+    QPushButton* closeBtn = new QPushButton(T("ÂÖ≥Èó≠"), this);
     connect(addBtn, SIGNAL(clicked()), this, SLOT(onNew()));
     connect(editBtn, SIGNAL(clicked()), this, SLOT(onEdit()));
     connect(delBtn, SIGNAL(clicked()), this, SLOT(onDelete()));
@@ -108,18 +108,18 @@ void CompositeMgrDlg::reload()
 void CompositeMgrDlg::onNew()
 {
     QDialog box(this);
-    box.setWindowTitle(T("–¬Ω®◊È∫œπ§æﬂ"));
+    box.setWindowTitle(T("Êñ∞Âª∫ÁªÑÂêàÂ∑•ÂÖ∑"));
     QLineEdit* name = new QLineEdit(&box);
-    QRadioButton* project = new QRadioButton(T("œÓƒø◊È∫œπ§æﬂ"), &box);
-    QRadioButton* library = new QRadioButton(T("∂¿¡¢◊È∫œπ§æﬂ"), &box);
+    QRadioButton* project = new QRadioButton(T("È°πÁõÆÁªÑÂêàÂ∑•ÂÖ∑"), &box);
+    QRadioButton* library = new QRadioButton(T("Áã¨Á´ãÁªÑÂêàÂ∑•ÂÖ∑"), &box);
     library->setChecked(true);
     project->setEnabled(m_sol != 0);
-    QPushButton* ok = new QPushButton(T("»∑∂®"), &box);
-    QPushButton* cancel = new QPushButton(T("»°œ˚"), &box);
+    QPushButton* ok = new QPushButton(T("Á°ÆÂÆö"), &box);
+    QPushButton* cancel = new QPushButton(T("ÂèñÊ∂à"), &box);
     connect(ok, SIGNAL(clicked()), &box, SLOT(accept()));
     connect(cancel, SIGNAL(clicked()), &box, SLOT(reject()));
     QVBoxLayout* lay = new QVBoxLayout(&box);
-    lay->addWidget(new QLabel(T("√˚≥∆"), &box));
+    lay->addWidget(new QLabel(T("ÂêçÁß∞"), &box));
     lay->addWidget(name);
     lay->addWidget(project);
     lay->addWidget(library);
@@ -135,7 +135,7 @@ void CompositeMgrDlg::onNew()
     const CompositeScope scope = project->isChecked() ? CompositeSolution : CompositeLibrary;
     const ObjectId id = CompositeMgr::instance().create(scope, ss(name->text()), &err);
     if (id.isNull()) {
-        QMessageBox::warning(this, T("◊È∫œπ§æﬂ"), qs(err));
+        QMessageBox::warning(this, T("ÁªÑÂêàÂ∑•ÂÖ∑"), qs(err));
         return;
     }
     if (scope == CompositeSolution && m_sol) {
@@ -166,12 +166,12 @@ void CompositeMgrDlg::onDelete()
     if (row < 0 || !m_table->item(row, 0)) {
         return;
     }
-    if (QMessageBox::question(this, T("…æ≥˝"), T("…æ≥˝¥À◊È∫œπ§æﬂ£ø")) != QMessageBox::Yes) {
+    if (QMessageBox::question(this, T("Âà†Èô§"), T("Âà†Èô§Ê≠§ÁªÑÂêàÂ∑•ÂÖ∑Ôºü")) != QMessageBox::Yes) {
         return;
     }
     std::string err;
     if (!CompositeMgr::instance().remove(ObjectId::fromString(ss(m_table->item(row, 0)->data(Qt::UserRole).toString())), &err)) {
-        QMessageBox::warning(this, T("◊È∫œπ§æﬂ"), err.empty() ? T("Œﬁ∑®…æ≥˝") : qs(err));
+        QMessageBox::warning(this, T("ÁªÑÂêàÂ∑•ÂÖ∑"), err.empty() ? T("Êó†Ê≥ïÂà†Èô§") : qs(err));
         return;
     }
     reload();
@@ -189,7 +189,7 @@ CompositeEditDlg::CompositeEditDlg(const QString& id, QWidget* parent)
     , m_ports(nullptr)
     , m_paras(nullptr)
 {
-    setWindowTitle(T("–ﬁ∏ƒ◊È∫œπ§æﬂ"));
+    setWindowTitle(T("‰øÆÊîπÁªÑÂêàÂ∑•ÂÖ∑"));
     resize(860, 520);
     m_name = new QLineEdit(this);
     m_desc = new QLineEdit(this);
@@ -197,12 +197,12 @@ CompositeEditDlg::CompositeEditDlg(const QString& id, QWidget* parent)
     m_algLib = new QComboBox(this);
     m_ports = new QListWidget(this);
     m_paras = new QListWidget(this);
-    QPushButton* addBtn = new QPushButton(T("ÃÌº”π§æﬂ"), this);
-    QPushButton* delBtn = new QPushButton(T("…æ≥˝π§æﬂ"), this);
-    QPushButton* upBtn = new QPushButton(T("…œ“∆"), this);
-    QPushButton* downBtn = new QPushButton(T("œ¬“∆"), this);
-    QPushButton* saveBtn = new QPushButton(T("±£¥Ê"), this);
-    QPushButton* closeBtn = new QPushButton(T("πÿ±’"), this);
+    QPushButton* addBtn = new QPushButton(T("Ê∑ªÂä†Â∑•ÂÖ∑"), this);
+    QPushButton* delBtn = new QPushButton(T("Âà†Èô§Â∑•ÂÖ∑"), this);
+    QPushButton* upBtn = new QPushButton(T("‰∏äÁßª"), this);
+    QPushButton* downBtn = new QPushButton(T("‰∏ãÁßª"), this);
+    QPushButton* saveBtn = new QPushButton(T("‰øùÂ≠ò"), this);
+    QPushButton* closeBtn = new QPushButton(T("ÂÖ≥Èó≠"), this);
     connect(addBtn, SIGNAL(clicked()), this, SLOT(onAddTool()));
     connect(delBtn, SIGNAL(clicked()), this, SLOT(onDelTool()));
     connect(saveBtn, SIGNAL(clicked()), this, SLOT(onSave()));
@@ -212,16 +212,16 @@ CompositeEditDlg::CompositeEditDlg(const QString& id, QWidget* parent)
     connect(upBtn, SIGNAL(clicked()), this, SLOT(onMoveUp()));
     connect(downBtn, SIGNAL(clicked()), this, SLOT(onMoveDown()));
     QHBoxLayout* top = new QHBoxLayout();
-    top->addWidget(new QLabel(T("√˚≥∆"), this));
+    top->addWidget(new QLabel(T("ÂêçÁß∞"), this));
     top->addWidget(m_name, 1);
-    top->addWidget(new QLabel(T("Àµ√˜"), this));
+    top->addWidget(new QLabel(T("ËØ¥Êòé"), this));
     top->addWidget(m_desc, 1);
     QHBoxLayout* mid = new QHBoxLayout();
     QVBoxLayout* left = new QVBoxLayout();
-    left->addWidget(new QLabel(T("ƒ⁄≤øπ§æﬂ"), this));
+    left->addWidget(new QLabel(T("ÂÜÖÈÉ®Â∑•ÂÖ∑"), this));
     left->addWidget(m_tools, 1);
     QHBoxLayout* libRow = new QHBoxLayout();
-    libRow->addWidget(new QLabel(T("À„∑®ø‚"), this));
+    libRow->addWidget(new QLabel(T("ÁÆóÊ≥ïÂ∫ì"), this));
     libRow->addWidget(m_algLib, 1);
     left->addLayout(libRow);
     QHBoxLayout* leftBtns = new QHBoxLayout();
@@ -231,10 +231,10 @@ CompositeEditDlg::CompositeEditDlg(const QString& id, QWidget* parent)
     leftBtns->addWidget(downBtn);
     left->addLayout(leftBtns);
     QVBoxLayout* midCol = new QVBoxLayout();
-    midCol->addWidget(new QLabel(T("π´ø™Ω”ø⁄"), this));
+    midCol->addWidget(new QLabel(T("ÂÖ¨ÂºÄÊé•Âè£"), this));
     midCol->addWidget(m_ports, 1);
     QVBoxLayout* right = new QVBoxLayout();
-    right->addWidget(new QLabel(T("π´ø™≤Œ ˝"), this));
+    right->addWidget(new QLabel(T("ÂÖ¨ÂºÄÂèÇÊï∞"), this));
     right->addWidget(m_paras, 1);
     mid->addLayout(left, 1);
     mid->addLayout(midCol, 1);
@@ -274,7 +274,7 @@ void CompositeEditDlg::onToolChanged()
     loadPubs();
 }
 
-// ∞—µ±«∞À„∑®ø‚–¥ªÿ—°÷–µƒƒ⁄≤øπ§æﬂ
+// ÊääÂΩìÂâçÁÆóÊ≥ïÂ∫ìÂÜôÂõûÈÄâ‰∏≠ÁöÑÂÜÖÈÉ®Â∑•ÂÖ∑
 void CompositeEditDlg::applyAlgLib()
 {
     if (m_filling || !m_algLib) {
@@ -306,7 +306,7 @@ void CompositeEditDlg::applyAlgLib()
     }
 }
 
-// ∞¥¡–±ÌÀ≥–Ú÷ÿ≈≈ƒ⁄≤øπ§æﬂ
+// ÊåâÂàóË°®È°∫Â∫èÈáçÊéíÂÜÖÈÉ®Â∑•ÂÖ∑
 void CompositeEditDlg::syncToolOrder()
 {
     CompositeDef* d = CompositeMgr::instance().find(ObjectId::fromString(ss(m_id)));
@@ -332,13 +332,13 @@ void CompositeEditDlg::syncToolOrder()
     }
 }
 
-// «–ªªÀ„∑®ø‚
+// ÂàáÊç¢ÁÆóÊ≥ïÂ∫ì
 void CompositeEditDlg::onAlgLibChanged(int)
 {
     applyAlgLib();
 }
 
-// …œ“∆ƒ⁄≤øπ§æﬂ
+// ‰∏äÁßªÂÜÖÈÉ®Â∑•ÂÖ∑
 void CompositeEditDlg::onMoveUp()
 {
     const int row = m_tools->currentRow();
@@ -352,7 +352,7 @@ void CompositeEditDlg::onMoveUp()
     syncToolOrder();
 }
 
-// œ¬“∆ƒ⁄≤øπ§æﬂ
+// ‰∏ãÁßªÂÜÖÈÉ®Â∑•ÂÖ∑
 void CompositeEditDlg::onMoveDown()
 {
     const int row = m_tools->currentRow();
@@ -400,7 +400,7 @@ void CompositeEditDlg::loadPubs()
         }
     }
     if (libs.empty()) {
-        m_algLib->addItem(T("Œﬁ"));
+        m_algLib->addItem(T("Êó†"));
         m_algLib->setEnabled(false);
     } else {
         if (pick < 0) {
@@ -417,7 +417,7 @@ void CompositeEditDlg::loadPubs()
     std::vector<PortDesc> ports = proto ? proto->ports() : defaultPortsForType(tool->type);
     for (size_t i = 0; i < ports.size(); ++i) {
         const QString label = QString::fromUtf8(portDataTitle(ports[i].data()).c_str())
-            + (ports[i].dir() == PortDir::In ? T("  ‰»Î") : T("  ‰≥ˆ"));
+            + (ports[i].dir() == PortDir::In ? T(" ËæìÂÖ•") : T(" ËæìÂá∫"));
         QListWidgetItem* it = new QListWidgetItem(label, m_ports);
         it->setFlags(it->flags() | Qt::ItemIsUserCheckable);
         bool on = false;
@@ -435,7 +435,7 @@ void CompositeEditDlg::loadPubs()
     }
     const std::vector<ParamField> fields = proto->paramFields();
     for (size_t i = 0; i < fields.size(); ++i) {
-        QListWidgetItem* it = new QListWidgetItem(QString::fromUtf8(acpToUtf8(fields[i].title).c_str()), m_paras);
+        QListWidgetItem* it = new QListWidgetItem(QString::fromUtf8(fields[i].title.c_str()), m_paras);
         it->setFlags(it->flags() | Qt::ItemIsUserCheckable);
         bool on = false;
         for (size_t k = 0; k < d->paras.size(); ++k) {
@@ -521,7 +521,7 @@ void CompositeEditDlg::onAddTool()
         names << (QLatin1String("composite:") + qs(defs[i]->id.toString()));
     }
     bool ok = false;
-    const QString pick = QInputDialog::getItem(this, T("ÃÌº”π§æﬂ"), T("◊¢≤·√˚"), names, 0, false, &ok);
+    const QString pick = QInputDialog::getItem(this, T("Ê∑ªÂä†Â∑•ÂÖ∑"), T("Ê≥®ÂÜåÂêç"), names, 0, false, &ok);
     if (!ok || pick.isEmpty()) {
         return;
     }
@@ -585,7 +585,7 @@ void CompositeEditDlg::onSave()
     d->description = ss(m_desc->text());
     std::string err;
     if (d->scope == CompositeLibrary && !CompositeMgr::instance().saveOne(d->id, &err)) {
-        QMessageBox::warning(this, T("◊È∫œπ§æﬂ"), qs(err));
+        QMessageBox::warning(this, T("ÁªÑÂêàÂ∑•ÂÖ∑"), qs(err));
         return;
     }
     accept();

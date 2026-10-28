@@ -1,6 +1,6 @@
 /**
  * @file CompositeMgr.h
- * @brief CompositeMgrÍ·ÎÄ¼ş
+ * @brief CompositeMgrå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -17,35 +17,35 @@
 
 namespace Vision {
 
-/** @class CompositeMgr @brief ×éºÏ¹¤¾ßÄ¿Â¼¡£½ø³ÌÄÚÎ¨Ò» */
+/** @class CompositeMgr @brief ç»„åˆå·¥å…·ç›®å½•ã€‚è¿›ç¨‹å†…å”¯ä¸€ */
 class VISION_CONFIG_API CompositeMgr {
 public:
     static CompositeMgr& instance();
-    /** @brief É¨Ãè data\composites\ */
+    /** @brief æ‰«æ data\composites\ */
     bool load(std::string* error);
-    /** @brief °ÑÕâÒ»·İ¶ÀÁ¢×éºÏĞ´³É×Ô¼ºµÄÎÄ¼ş */
+    /** @brief æŠŠè¿™ä¸€ä»½ç‹¬ç«‹ç»„åˆå†™æˆè‡ªå·±çš„æ–‡ä»¶ */
     bool saveOne(const ObjectId& id, std::string* error) const;
-    /** @brief ´ò¿ª·½°¸Ê±½»³ö·½°¸ÄÚµÄÄÇÒ»·İ£¬¹Ø±ÕÊ±´«¿Õ */
+    /** @brief æ‰“å¼€æ–¹æ¡ˆæ—¶äº¤å‡ºæ–¹æ¡ˆå†…çš„é‚£ä¸€ä»½ï¼Œå…³é—­æ—¶ä¼ ç©º */
     void setSolutionDefs(std::vector<CompositeDef>* defs);
-    /** @brief µ±Ç°´ò¿ªµÄ·½°¸£¬É¾³ıÊ±ÓÃÀ´²éÒıÓÃ */
+    /** @brief å½“å‰æ‰“å¼€çš„æ–¹æ¡ˆï¼Œåˆ é™¤æ—¶ç”¨æ¥æŸ¥å¼•ç”¨ */
     void setOpenSolution(Solution* sol);
-    /** @brief ĞÂ½¨¡£·¶Î§´´½¨ºó²»±ä */
+    /** @brief æ–°å»ºã€‚èŒƒå›´åˆ›å»ºåä¸å˜ */
     ObjectId create(CompositeScope scope, const std::string& name, std::string* error);
-    /** @brief °´ id È¡¶¨Òå */
+    /** @brief æŒ‰ id å–å®šä¹‰ */
     CompositeDef* find(const ObjectId& id);
     const CompositeDef* find(const ObjectId& id) const;
-    /** @brief É¾³ı¡£Á÷³ÌÀï»¹ÒıÓÃ×ÅµÄ²»ÔÊĞíÉ¾ */
+    /** @brief åˆ é™¤ã€‚æµç¨‹é‡Œè¿˜å¼•ç”¨ç€çš„ä¸å…è®¸åˆ  */
     bool remove(const ObjectId& id, std::string* error);
-    /** @brief Á½ÖÖ·¶Î§ºÏÔÚÒ»Æğ */
+    /** @brief ä¸¤ç§èŒƒå›´åˆåœ¨ä¸€èµ· */
     std::vector<CompositeDef*> all();
-    /** @brief ¹©Á÷³ÌÖ´ĞĞ×¢²áµÄ²éÕÒº¯Êı */
+    /** @brief ä¾›æµç¨‹æ‰§è¡Œæ³¨å†Œçš„æŸ¥æ‰¾å‡½æ•° */
     static const CompositeDef* findRaw(const ObjectId& id);
 
 private:
     CompositeMgr();
-    std::vector<CompositeDef> m_library;       ///< ¶ÀÁ¢×éºÏ
-    std::vector<CompositeDef>* m_solution;     ///< ÏîÄ¿×éºÏ£¬²»ÓµÓĞ
-    Solution* m_open;                          ///< µ±Ç°·½°¸£¬²»ÓµÓĞ
+    std::vector<CompositeDef> m_library;       ///< ç‹¬ç«‹ç»„åˆ
+    std::vector<CompositeDef>* m_solution;     ///< é¡¹ç›®ç»„åˆï¼Œä¸æ‹¥æœ‰
+    Solution* m_open;                          ///< å½“å‰æ–¹æ¡ˆï¼Œä¸æ‹¥æœ‰
 };
 
 }

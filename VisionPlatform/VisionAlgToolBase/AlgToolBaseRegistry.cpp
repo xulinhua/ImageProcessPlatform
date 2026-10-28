@@ -1,12 +1,16 @@
+
+
 /**
  * @file AlgToolBaseRegistry.cpp
- * @brief AlgToolBaseRegistryÊµÏÖ
+ * @brief AlgToolBaseRegistryå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
  */
 
 #include "AlgToolBase.h"
+#include <cstdio>
+#include <HsCommData/HsError.h>
 #include "TextEncoding.h"
 #include "VisionVersion.h"
 
@@ -15,7 +19,7 @@ namespace Vision {
 namespace {
 
 const Vision::VerNoteRaw kAlgNotes[] = {
-    { "1.0.0.0", "Ê×°æ" },
+    { "1.0.0.0", "é¦–ç‰ˆ" },
 };
 
 }
@@ -25,10 +29,116 @@ void AlgToolBase::saveLearn(const std::string&) {}
 void AlgToolBase::clearLearn() {}
 void AlgToolBase::destroy() { delete this; }
 
-// °æ±¾±ä¸ü£¬Ö»×·¼Ó
+// ç‰ˆæœ¬å˜æ›´ï¼Œåªè¿½åŠ 
 std::vector<VerNote> AlgToolBase::versionNotes() const
 {
     return verNotesFrom(kAlgNotes, static_cast<int>(sizeof(kAlgNotes) / sizeof(kAlgNotes[0])));
+}
+
+int AlgToolBase::shot_init(const AlgToolIn&, AlgToolOut* out)
+{
+    if (out) {
+        *out = AlgToolOut();
+    }
+    return HS_OK;
+}
+
+int AlgToolBase::settle_result(const AlgToolIn&, AlgToolOut* out)
+{
+    if (!out) {
+        return HS_ERR_NULL;
+    }
+    if (out->message.empty()) {
+        out->message = out->ok ? "OK" : "NG";
+    }
+    return HS_OK;
+}
+
+int AlgToolBase::fail(int code, const std::string& msg, AlgToolOut* out) const
+{
+    if (!out) {
+        return HS_ERR_NULL;
+    }
+    *out = AlgToolOut();
+    out->ok = false;
+    out->errCode = code == HS_OK ? HS_ERR_OPERATOR : code;
+    out->message = msg;
+    return out->errCode;
+}
+
+std::string AlgToolBase::tool_name() const { return toolName(); }
+AlgLibKind AlgToolBase::alg_lib() const { return algLib(); }
+std::vector<VerNote> AlgToolBase::version_notes() const { return versionNotes(); }
+
+int AlgToolBase::judge_tol(const AlgToolIn&)
+{
+    return HS_OK;
+}
+
+int AlgToolBase::action(const std::string&, const AlgToolIn&, AlgToolOut* out)
+{
+    return fail(HS_ERR_OPERATOR, "unknown action", out);
+}
+
+void AlgToolBase::init(const std::string&)
+{
+}
+
+void AlgToolBase::save(const std::string&)
+{
+}
+
+void AlgToolBase::clear(const std::string&)
+{
+}
+
+void AlgToolBase::write_alg_steps(AlgToolOut* out, const std::vector<Section>& sections, double totalMs) const
+{
+    if (out == nullptr) {
+        return;
+    }
+    std::string spread = "ç®—æ³•è€—æ—¶åˆ†å¸ƒï¼š";
+    for (size_t i = 0; i < sections.size(); ++i) {
+        if (i > 0) {
+            spread += " ";
+        }
+        char ms[32];
+        sprintf_s(ms, "%.1f ms", sections[i].ms);
+        spread += sections[i].label;
+        spread += "ï¼š";
+        spread += ms;
+    }
+    out->algMs = totalMs;
+    ToolTrace shown;
+    shown.action = "ç®—æ³•";
+    shown.detail = spread;
+    out->traces.push_back(shown);
+}
+
+int AlgToolBase::run(ExecMode, const AlgToolIn& in, AlgToolOut* out)
+{
+    const int code = execute(in, out);
+    if (!out) {
+        return code == HS_OK ? HS_ERR_NULL : code;
+    }
+    if (code != HS_OK && out->errCode == HS_OK) {
+        out->errCode = code;
+        out->ok = false;
+    }
+    out->runOk = out->errCode == HS_OK && out->ok;
+    out->judgeOk = out->runOk;
+    if (out->runOk) {
+        const int judged = judge_tol(in);
+        if (judged != HS_OK) {
+            out->judgeOk = false;
+            out->ok = false;
+            if (out->errCode == HS_OK) {
+                out->errCode = judged;
+            }
+        }
+    }
+    settle_result(in, out);
+    return out->errCode;
 }
 
 AlgToolBaseRegistry& AlgToolBaseRegistry::instance()
@@ -122,21 +232,23 @@ AlgToolBaseRegistry::~AlgToolBaseRegistry()
     m_dets.clear();
 }
 
-// °´¹¤¾ßÃûµ÷Ëã·¨£¬ÌîÍ¼Ïñ¡¢ÇøÓò²¢¸úËæÎ»×Ë
+// æŒ‰å·¥å…·åè°ƒç®—æ³•ï¼Œå¡«å›¾åƒã€åŒºåŸŸå¹¶è·Ÿéšä½å§¿
 ToolOut runAlgToolBase(const std::string& toolName, const ToolIn& in, bool passImage)
 {
     ToolOut out;
     AlgToolIn ain;
     ain.mode = in.mode;
     if (!in.inputIo.images.empty()) {
-        ain.image = in.inputIo.images[0];
+        ain.imagePtr = &in.inputIo.images[0].image;
+        ain.imageNative = in.inputIo.images[0].native;
         for (size_t i = 1; i < in.inputIo.images.size(); ++i) {
             ain.images.push_back(in.inputIo.images[i]);
         }
     } else {
-        ain.image.image = in.input;
-        ain.image.native = in.inputNative;
+        ain.imagePtr = &in.input;
+        ain.imageNative = in.inputNative;
     }
+    ain.teach = in.param.learn;
     if (in.ownRoisResolved) {
         ain.rois = in.ownRois;
     } else {
@@ -165,6 +277,9 @@ ToolOut runAlgToolBase(const std::string& toolName, const ToolIn& in, bool passI
         }
     }
     ain.contours = in.inputIo.contours;
+    ain.clouds = in.inputIo.clouds;
+    ain.poses3 = in.inputIo.poses3;
+    ain.shapes3 = in.inputIo.shapes3;
     ain.param = in.toolParam;
     ain.run = in.param.run;
     ain.judge = in.param.judge;
@@ -190,20 +305,31 @@ ToolOut runAlgToolBase(const std::string& toolName, const ToolIn& in, bool passI
     if (!det) {
         out.ok = false;
         out.error = true;
-        out.errCode = 1;
+        out.errCode = HS_ERR_NO_ALG;
         out.image = in.input;
-        out.message = acpToUtf8("Î´µÇ¼ÇÍ¼ÏñËã·¨");
+        out.message = "æœªç™»è®°å›¾åƒç®—æ³•";
         return out;
     }
-    const AlgToolOut r = det->run(ain);
-    out.ok = r.ok;
+    AlgToolOut r;
+    det->shot_init(ain, &r);
+    const int code = det->run(ExecMode::Auto, ain, &r);
+    if (code != HS_OK && r.errCode == HS_OK) {
+        r.errCode = code;
+        r.ok = false;
+    }
+    out.ok = r.ok && r.errCode == HS_OK;
     out.errCode = r.errCode;
-    out.error = r.errCode != 0;
+    out.error = r.errCode != HS_OK;
     out.message = r.message;
     out.values = r.values;
     out.objects = r.objects;
     out.traces = r.traces;
     out.infos = r.infos;
+    out.labels = r.labels;
+    out.io.clouds = r.clouds;
+    out.io.poses3 = r.poses3;
+    out.io.shapes3 = r.shapes3;
+    out.io.tuples = r.tuples;
     if (passImage && !r.image.image.isNull()) {
         out.image = r.image.image;
         out.imageNative = r.image.native;
@@ -216,14 +342,14 @@ ToolOut runAlgToolBase(const std::string& toolName, const ToolIn& in, bool passI
 }
 
 
-// µÚÒ»¿é ROI£»¿ÕÁĞ±íÊ±·µ»Ø¾²Ì¬¿Õ ROI
+// ç¬¬ä¸€å— ROIï¼›ç©ºåˆ—è¡¨æ—¶è¿”å›é™æ€ç©º ROI
 const HsCommData::HsObject& firstAlgRoi(const std::vector<HsCommData::HsObject>& rois)
 {
     static const HsCommData::HsObject kEmpty;
     return rois.empty() ? kEmpty : rois[0];
 }
 
-// µÚÒ»¿éÕı³£ËÑË÷Çø
+// ç¬¬ä¸€å—æ­£å¸¸æœç´¢åŒº
 const HsCommData::HsObject& firstAlgRoi(const std::vector<PortRoi>& rois)
 {
     static const HsCommData::HsObject kEmpty;
@@ -235,7 +361,7 @@ const HsCommData::HsObject& firstAlgRoi(const std::vector<PortRoi>& rois)
     return kEmpty;
 }
 
-// ×îºóÒ»¿éÎ»×Ë¡£¿ÕÔò·µ»Ø false
+// æœ€åä¸€å—ä½å§¿ã€‚ç©ºåˆ™è¿”å› false
 bool primaryAlgPose(const std::vector<HsCommData::Pose2>& poses, HsCommData::Pose2* out)
 {
     if (!out || poses.empty()) {

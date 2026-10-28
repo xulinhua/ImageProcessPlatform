@@ -1,6 +1,6 @@
 /**
  * @file FileDocument.cpp
- * @brief FileDocumentÊµÏÖ
+ * @brief FileDocumentå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -17,7 +17,7 @@ namespace Vision {
 
 namespace {
 
-// Ğ´Èë´íÎóÎÄ±¾£»error Îª¿ÕÔòºöÂÔ
+// å†™å…¥é”™è¯¯æ–‡æœ¬ï¼›error ä¸ºç©ºåˆ™å¿½ç•¥
 void setErr(std::string* error, const std::string& msg)
 {
     if (error) {
@@ -25,7 +25,7 @@ void setErr(std::string* error, const std::string& msg)
     }
 }
 
-// °´Â·¾¶Öğ¼¶½¨Ä¿Â¼
+// æŒ‰è·¯å¾„é€çº§å»ºç›®å½•
 bool mkdirDeep(const std::string& dir)
 {
     if (dir.empty()) {
@@ -43,7 +43,7 @@ bool mkdirDeep(const std::string& dir)
     return true;
 }
 
-// È¥µô×îºóÒ»¶Î£¬µÃµ½¸¸Ä¿Â¼
+// å»æ‰æœ€åä¸€æ®µï¼Œå¾—åˆ°çˆ¶ç›®å½•
 std::string parentDir(const std::string& path)
 {
     const size_t s = path.find_last_of("\\/");
@@ -55,7 +55,7 @@ std::string parentDir(const std::string& path)
 
 } // namespace
 
-// Ä¿Â¼²»´æÔÚÔòÖğ¼¶´´½¨
+// ç›®å½•ä¸å­˜åœ¨åˆ™é€çº§åˆ›å»º
 bool FileUtil::ensureDir(const std::string& dir, std::string* error)
 {
     if (dir.empty()) {
@@ -71,7 +71,7 @@ bool FileUtil::ensureDir(const std::string& dir, std::string* error)
     return true;
 }
 
-// ÏÈĞ´ÁÙÊ±ÎÄ¼şÔÙÌæ»»£¬±ÜÃâ°ë½ØÄÚÈİ
+// å…ˆå†™ä¸´æ—¶æ–‡ä»¶å†æ›¿æ¢ï¼Œé¿å…åŠæˆªå†…å®¹
 bool FileUtil::writeAtomic(const std::string& path, const std::string& bytes, std::string* error)
 {
     const std::string dir = parentDir(path);
@@ -96,7 +96,7 @@ bool FileUtil::writeAtomic(const std::string& path, const std::string& bytes, st
     return true;
 }
 
-// °´×îºóĞ´ÈëÊ±¼äÉ¾µô¹ıÆÚÎÄ¼ş
+// æŒ‰æœ€åå†™å…¥æ—¶é—´åˆ æ‰è¿‡æœŸæ–‡ä»¶
 int FileUtil::deleteOlderThanDays(const std::string& dir, const std::string& pattern, int days)
 {
     if (days <= 0) {
@@ -133,7 +133,7 @@ int FileUtil::deleteOlderThanDays(const std::string& dir, const std::string& pat
     return del;
 }
 
-// ¸²¸ÇĞ´³ö UTF-8 ÎÄ±¾
+// è¦†ç›–å†™å‡º UTF-8 æ–‡æœ¬
 bool TxtDocument::writeText(const std::string& path, const std::string& utf8, bool withBom, std::string* error)
 {
     std::string body;
@@ -144,7 +144,7 @@ bool TxtDocument::writeText(const std::string& path, const std::string& utf8, bo
     return FileUtil::writeAtomic(path, body, error);
 }
 
-// ÔÚÎÄ¼şÄ©Î²×·¼Ó UTF-8 ÎÄ±¾
+// åœ¨æ–‡ä»¶æœ«å°¾è¿½åŠ  UTF-8 æ–‡æœ¬
 bool TxtDocument::appendText(const std::string& path, const std::string& utf8, std::string* error)
 {
     const std::string dir = parentDir(path);
@@ -163,19 +163,19 @@ bool TxtDocument::appendText(const std::string& path, const std::string& utf8, s
     return true;
 }
 
-// ¼ÇÏÂÎÄ±¾±íµÄÁĞÃû
+// è®°ä¸‹æ–‡æœ¬è¡¨çš„åˆ—å
 void TxtDocument::setHeaders(const std::vector<std::string>& headers)
 {
     m_headers = headers;
 }
 
-// »º´æÒ»ĞĞµ¥Ôª¸ñ
+// ç¼“å­˜ä¸€è¡Œå•å…ƒæ ¼
 void TxtDocument::addRow(const std::vector<std::string>& cells)
 {
     m_rows.push_back(cells);
 }
 
-// °´ÖÆ±í·ûĞ´³ö£¬²¢´ø UTF-8 BOM
+// æŒ‰åˆ¶è¡¨ç¬¦å†™å‡ºï¼Œå¹¶å¸¦ UTF-8 BOM
 bool TxtDocument::save(const std::string& path, std::string* error)
 {
     std::string s;
@@ -201,7 +201,7 @@ bool TxtDocument::save(const std::string& path, std::string* error)
     return writeText(path, s, true, error);
 }
 
-// º¬¶ººÅ¡¢ÒıºÅ»ò»»ĞĞÊ±°´ CSV ¹æÔò¼ÓÒıºÅ
+// å«é€—å·ã€å¼•å·æˆ–æ¢è¡Œæ—¶æŒ‰ CSV è§„åˆ™åŠ å¼•å·
 std::string CsvDocument::escapeCell(const std::string& s)
 {
     bool need = false;
@@ -228,19 +228,19 @@ std::string CsvDocument::escapeCell(const std::string& s)
     return o;
 }
 
-// ¼ÇÏÂ CSV ÁĞÃû
+// è®°ä¸‹ CSV åˆ—å
 void CsvDocument::setHeaders(const std::vector<std::string>& headers)
 {
     m_headers = headers;
 }
 
-// »º´æÒ»ĞĞµ¥Ôª¸ñ
+// ç¼“å­˜ä¸€è¡Œå•å…ƒæ ¼
 void CsvDocument::addRow(const std::vector<std::string>& cells)
 {
     m_rows.push_back(cells);
 }
 
-// °´¶ººÅĞ´³ö CSV
+// æŒ‰é€—å·å†™å‡º CSV
 bool CsvDocument::save(const std::string& path, std::string* error)
 {
     std::string s;

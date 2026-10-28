@@ -1,6 +1,6 @@
 /**
  * @file HalFindLine.cpp
- * @brief HalFindLineÊµÏÖ
+ * @brief HalFindLineå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -8,7 +8,6 @@
 
 #include "HalFindLine.h"
 #include "TextEncoding.h"
-#include "HalAlgoHelpers.h"
 #include "HalImageConvert.h"
 #include "HalObjectConvert.h"
 #include "ParamKeys.h"
@@ -19,24 +18,24 @@
 namespace Vision {
 
 struct FittedLine {
-    double x1;      ///< ÆğµãÁĞ
-    double y1;      ///< ÆğµãĞĞ
-    double x2;      ///< ÖÕµãÁĞ
-    double y2;      ///< ÖÕµãĞĞ
-    double length;  ///< ³¤¶È
+    double x1;      ///< èµ·ç‚¹åˆ—
+    double y1;      ///< èµ·ç‚¹è¡Œ
+    double x2;      ///< ç»ˆç‚¹åˆ—
+    double y2;      ///< ç»ˆç‚¹è¡Œ
+    double length;  ///< é•¿åº¦
 };
 
-// °´³¤¶È´Ó´óµ½Ğ¡
+// æŒ‰é•¿åº¦ä»å¤§åˆ°å°
 static bool longerLine(const FittedLine& a, const FittedLine& b)
 {
     return a.length > b.length;
 }
 
-// Ã¿Ö» ROI ÄÚÄâºÏÖ±Ïß
+// æ¯åª ROI å†…æ‹Ÿåˆç›´çº¿
 namespace {
 const char kVer_HalFindLine[] = "1.0.0.0";
 const Vision::VerNoteRaw kNotes_HalFindLine[] = {
-    { "1.0.0.0", "Ê×°æ" },
+    { "1.0.0.0", "é¦–ç‰ˆ" },
 };
 }
 
@@ -45,7 +44,7 @@ std::string HalFindLine::version() const
     return kVer_HalFindLine;
 }
 
-// °æ±¾±ä¸ü£¬Ö»×·¼Ó
+// ç‰ˆæœ¬å˜æ›´ï¼Œåªè¿½åŠ 
 std::vector<VerNote> HalFindLine::versionNotes() const
 {
     return verNotesFrom(kNotes_HalFindLine, static_cast<int>(sizeof(kNotes_HalFindLine) / sizeof(kNotes_HalFindLine[0])));
@@ -58,8 +57,8 @@ AlgToolOut HalFindLine::run(const AlgToolIn& in)
         int h = 0;
         std::string err;
         HalconCpp::HImage* pGray = &gray;
-        if (!loadGrayFromAlgIn(in, pGray, &w, &h, &err)) {
-            return algorToolFail(err);
+        if (!hsImageToGray(inputImage(in), pGray, &w, &h, &err)) {
+            return AlgToolOut::fail(err);
         }
         const double sigma = in.run.value("sigma").toDouble(1.0);
         const double low = in.run.value("low").toDouble(20.0);
@@ -76,7 +75,7 @@ AlgToolOut HalFindLine::run(const AlgToolIn& in)
             rois.push_back(whole);
         }
         AlgToolOut out;
-        out.image.image = in.image.image;
+        out.image.image = inputImage(in);
         std::vector<FittedLine> all;
         for (int ri = 0; ri < static_cast<int>(rois.size()); ++ri) {
             const HsCommData::HsObject& roi = rois[static_cast<size_t>(ri)];
@@ -135,7 +134,7 @@ AlgToolOut HalFindLine::run(const AlgToolIn& in)
             }
         }
         if (all.empty()) {
-            out.message = Vision::acpToUtf8("Î´ÕÒµ½Ö±Ïß");
+            out.message = "æœªæ‰¾åˆ°ç›´çº¿";
             return out;
         }
         out.ok = true;
@@ -163,14 +162,14 @@ AlgToolOut HalFindLine::run(const AlgToolIn& in)
                 lineMask = uni;
             }
         }
-        // ¹©ÏÂÓÎ Blob¡¸ÇøÓò¡¹¶Ë¿ÚÊ¹ÓÃ£¨KindLine Ö»½ø rois£©
+        // ä¾›ä¸‹æ¸¸ Blobã€ŒåŒºåŸŸã€ç«¯å£ä½¿ç”¨ï¼ˆKindLine åªè¿› roisï¼‰
         if (!maskFirst && !hoIsEmpty(lineMask)) {
             out.objects.push_back(hObjectToRegionObject(lineMask));
         }
-        out.message = Vision::acpToUtf8("ÕÒÏßÍê³É");
+        out.message = "æ‰¾çº¿å®Œæˆ";
         return out;
     } catch (const HalconCpp::HException& e) {
-        return algorToolFail(hExceptionText(e));
+        return AlgToolOut::fail(hExceptionText(e));
     }
 }
 

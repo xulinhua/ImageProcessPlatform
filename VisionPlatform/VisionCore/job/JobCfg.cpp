@@ -1,6 +1,6 @@
 /**
  * @file JobCfg.cpp
- * @brief JobCfgÊµÏÖ
+ * @brief JobCfgå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -16,7 +16,7 @@
 #include <vector>
 
 namespace Vision {
-// ´Ó¸÷¹¤¾ßÊäÈëÁ¬Ïß»ã×ÜÈ«Á÷³ÌÊÓÍ¼£¨º¬ layout ÕÛÏß£©
+// ä»å„å·¥å…·è¾“å…¥è¿çº¿æ±‡æ€»å…¨æµç¨‹è§†å›¾ï¼ˆå« layout æŠ˜çº¿ï¼‰
 std::vector<ToolLink> JobCfg::collectLinks() const
 {
     std::vector<ToolLink> out;
@@ -44,19 +44,18 @@ std::vector<ToolLink> JobCfg::collectLinks() const
     return out;
 }
 
-// ¹¤¾ß links Ğ´Èë job.links »º´æ
+// å·¥å…· links å†™å…¥ job.links ç¼“å­˜
 void JobCfg::rebuildLinksCache()
 {
-    links = collectLinks();
 }
 
-// ¼æÈİ¾ÉÃû
+// å…¼å®¹æ—§å
 void JobCfg::syncLinksCache()
 {
     rebuildLinksCache();
 }
 
-// ÓÃ job.links »ØÌî¸÷¹¤¾ß links£¨¹¤¾ßÒÑÓĞÈë±ßÔòÌø¹ı¸Ã¶Ë¿Ú£©
+// ç”¨ job.links å›å¡«å„å·¥å…· linksï¼ˆå·¥å…·å·²æœ‰å…¥è¾¹åˆ™è·³è¿‡è¯¥ç«¯å£ï¼‰
 void JobCfg::distributeLinks()
 {
     for (size_t i = 0; i < links.size(); ++i) {
@@ -84,7 +83,7 @@ void JobCfg::distributeLinks()
     }
 }
 
-// ¹¤¾ß»­²¼¾µÏñÍ¬²½µ½ JobLayout.nodes
+// å·¥å…·ç”»å¸ƒé•œåƒåŒæ­¥åˆ° JobLayout.nodes
 void JobCfg::syncLayoutFromTools()
 {
     layout.nodes.clear();
@@ -97,7 +96,7 @@ void JobCfg::syncLayoutFromTools()
         n.canvasPlaced = t.canvasPlaced;
         layout.nodes.push_back(n);
     }
-    // ÕÛÏß£º´Ó links »º´æ¶Á route µÄĞ´Èë routes
+    // æŠ˜çº¿ï¼šä» links ç¼“å­˜è¯» route çš„å†™å…¥ routes
     layout.routes.clear();
     for (size_t i = 0; i < links.size(); ++i) {
         const ToolLink& L = links[i];
@@ -113,7 +112,7 @@ void JobCfg::syncLayoutFromTools()
     }
 }
 
-// JobLayout Ğ´»Ø¹¤¾ß»­²¼¾µÏñ
+// JobLayout å†™å›å·¥å…·ç”»å¸ƒé•œåƒ
 void JobCfg::applyLayoutToTools()
 {
     for (size_t i = 0; i < layout.nodes.size(); ++i) {
@@ -139,7 +138,7 @@ void JobCfg::applyLayoutToTools()
     }
 }
 
-// Ö¸ÏòÖ¸¶¨ÊäÈë¶Ë¿ÚµÄµÚÒ»ÌõÁ¬Ïß
+// æŒ‡å‘æŒ‡å®šè¾“å…¥ç«¯å£çš„ç¬¬ä¸€æ¡è¿çº¿
 const ToolLink* JobCfg::findLinkToPort(const ObjectId& toId, const PortSlot& toPort) const
 {
     for (int i = 0; i < static_cast<int>(links.size()); ++i) {
@@ -150,7 +149,7 @@ const ToolLink* JobCfg::findLinkToPort(const ObjectId& toId, const PortSlot& toP
     }
     return 0;
 }
-// °´ id ÔÚ±¾ JobCfg ¹¤¾ßÁĞ±íÖĞ²éÕÒ
+// æŒ‰ id åœ¨æœ¬ JobCfg å·¥å…·åˆ—è¡¨ä¸­æŸ¥æ‰¾
 const ToolCfg* JobCfg::findTool(const ObjectId& id) const
 {
     if (id.isNull()) {
@@ -164,13 +163,13 @@ const ToolCfg* JobCfg::findTool(const ObjectId& id) const
     return 0;
 }
 
-// °´ id ²éÕÒ£¨¿ÉĞ´£©
+// æŒ‰ id æŸ¥æ‰¾ï¼ˆå¯å†™ï¼‰
 ToolCfg* JobCfg::findTool(const ObjectId& id)
 {
     return const_cast<ToolCfg*>(static_cast<const JobCfg*>(this)->findTool(id));
 }
 
-// ÏÈ°´ÏÔÊ¾Ãû¡¢ÔÙ°´ toolName ²éÕÒ
+// å…ˆæŒ‰æ˜¾ç¤ºåã€å†æŒ‰ toolName æŸ¥æ‰¾
 const ToolCfg* JobCfg::findToolByName(const std::string& name) const
 {
     const std::string n = vpTrim(name);
@@ -190,13 +189,13 @@ const ToolCfg* JobCfg::findToolByName(const std::string& name) const
     return 0;
 }
 
-// °´Ãû³Æ²éÕÒ£¨¿ÉĞ´£©
+// æŒ‰åç§°æŸ¥æ‰¾ï¼ˆå¯å†™ï¼‰
 ToolCfg* JobCfg::findToolByName(const std::string& name)
 {
     return const_cast<ToolCfg*>(static_cast<const JobCfg*>(this)->findToolByName(name));
 }
 
-// °´ÁĞ±íÏÂ±êÈ¡¹¤¾ß
+// æŒ‰åˆ—è¡¨ä¸‹æ ‡å–å·¥å…·
 const ToolCfg* JobCfg::findToolAt(int index) const
 {
     if (index < 0 || index >= static_cast<int>(tools.size())) {
@@ -205,13 +204,13 @@ const ToolCfg* JobCfg::findToolAt(int index) const
     return &tools[static_cast<size_t>(index)];
 }
 
-// °´ÁĞ±íÏÂ±êÈ¡¹¤¾ß£¨¿ÉĞ´£©
+// æŒ‰åˆ—è¡¨ä¸‹æ ‡å–å·¥å…·ï¼ˆå¯å†™ï¼‰
 ToolCfg* JobCfg::findToolAt(int index)
 {
     return const_cast<ToolCfg*>(static_cast<const JobCfg*>(this)->findToolAt(index));
 }
 
-// ¹¤¾ß id ÔÚÁĞ±íÖĞµÄÏÂ±ê£¬ÕÒ²»µ½Îª -1
+// å·¥å…· id åœ¨åˆ—è¡¨ä¸­çš„ä¸‹æ ‡ï¼Œæ‰¾ä¸åˆ°ä¸º -1
 int JobCfg::indexOf(const ObjectId& id) const
 {
     if (id.isNull()) {
@@ -225,13 +224,13 @@ int JobCfg::indexOf(const ObjectId& id) const
     return -1;
 }
 
-// Ò¶×Ó£º¹ÒÁË¹¤¾ßÇÒÎŞ×Ó½Úµã
+// å¶å­ï¼šæŒ‚äº†å·¥å…·ä¸”æ— å­èŠ‚ç‚¹
 static bool isToolLeaf(const ToolGroup& g)
 {
     return !g.toolId.isNull() && g.children.empty();
 }
 
-// Îª¹¤¾ß½¨Ò»¸öË³Ğò×éÒ¶×Ó
+// ä¸ºå·¥å…·å»ºä¸€ä¸ªé¡ºåºç»„å¶å­
 static ToolGroup makeToolLeaf(const ToolCfg& t)
 {
     ToolGroup g;
@@ -242,7 +241,7 @@ static ToolGroup makeToolLeaf(const ToolCfg& t)
     return g;
 }
 
-// Éî¶ÈÓÅÏÈÊÕ¼¯×éÄÚÈ«²¿ toolId
+// æ·±åº¦ä¼˜å…ˆæ”¶é›†ç»„å†…å…¨éƒ¨ toolId
 static void collectToolIds(const ToolGroup& g, std::vector<ObjectId>* ids)
 {
     if (!g.toolId.isNull()) {
@@ -253,7 +252,7 @@ static void collectToolIds(const ToolGroup& g, std::vector<ObjectId>* ids)
     }
 }
 
-// ×éÄÚÈ«²¿ toolId
+// ç»„å†…å…¨éƒ¨ toolId
 std::vector<ObjectId> ToolGroup::toolIds() const
 {
     std::vector<ObjectId> ids;
@@ -261,13 +260,13 @@ std::vector<ObjectId> ToolGroup::toolIds() const
     return ids;
 }
 
-// ²¢ĞĞ»òÌõ¼ş×é£º×Ó½Úµã±Ë´Ë²»´®ĞĞ
+// å¹¶è¡Œæˆ–æ¡ä»¶ç»„ï¼šå­èŠ‚ç‚¹å½¼æ­¤ä¸ä¸²è¡Œ
 static bool isSplitKind(GroupKind k)
 {
     return k == GroupParallel || k == GroupIf;
 }
 
-// Ìõ¼ş×é²¹ Then/Else Á½Ö§£¬²¢µİ¹é×ÓÊ÷
+// æ¡ä»¶ç»„è¡¥ Then/Else ä¸¤æ”¯ï¼Œå¹¶é€’å½’å­æ ‘
 static void ensureIfShape(ToolGroup* g)
 {
     if (!g) {
@@ -295,7 +294,7 @@ static void ensureIfShape(ToolGroup* g)
     }
 }
 
-// ÏßĞÔ²é id ÊÇ·ñÔÚÁĞ±íÖĞ
+// çº¿æ€§æŸ¥ id æ˜¯å¦åœ¨åˆ—è¡¨ä¸­
 static bool containsToolId(const std::vector<ObjectId>& ids, const ObjectId& id)
 {
     for (int i = 0; i < static_cast<int>(ids.size()); ++i) {
@@ -306,7 +305,7 @@ static bool containsToolId(const std::vector<ObjectId>& ids, const ObjectId& id)
     return false;
 }
 
-// °´×é id Éî¶ÈÓÅÏÈ²éÕÒ
+// æŒ‰ç»„ id æ·±åº¦ä¼˜å…ˆæŸ¥æ‰¾
 static ToolGroup* findGroupIn(ToolGroup* g, const ObjectId& id)
 {
     if (!g) {
@@ -324,7 +323,7 @@ static ToolGroup* findGroupIn(ToolGroup* g, const ObjectId& id)
     return 0;
 }
 
-// °´ toolId ÕÒÒ¶×Ó×é
+// æŒ‰ toolId æ‰¾å¶å­ç»„
 static ToolGroup* findLeafIn(ToolGroup* g, const ObjectId& toolId)
 {
     if (!g) {
@@ -342,7 +341,7 @@ static ToolGroup* findLeafIn(ToolGroup* g, const ObjectId& toolId)
     return 0;
 }
 
-// ÕÒÖ±½Ó°üº¬ childId µÄ¸¸×é
+// æ‰¾ç›´æ¥åŒ…å« childId çš„çˆ¶ç»„
 static ToolGroup* findParentIn(ToolGroup* g, const ObjectId& childId)
 {
     if (!g) {
@@ -360,7 +359,7 @@ static ToolGroup* findParentIn(ToolGroup* g, const ObjectId& childId)
     return 0;
 }
 
-// ×Ó½ÚµãÔÚ¸¸×éÖĞµÄÏÂ±ê
+// å­èŠ‚ç‚¹åœ¨çˆ¶ç»„ä¸­çš„ä¸‹æ ‡
 static int childIndexOf(const ToolGroup& p, const ObjectId& id)
 {
     for (int i = 0; i < static_cast<int>(p.children.size()); ++i) {
@@ -371,13 +370,13 @@ static int childIndexOf(const ToolGroup& p, const ObjectId& id)
     return -1;
 }
 
-// JobCfg ¹¤¾ßÁĞ±íÊÇ·ñÈÔÓĞ¸Ã id
+// JobCfg å·¥å…·åˆ—è¡¨æ˜¯å¦ä»æœ‰è¯¥ id
 static bool toolExists(const JobCfg& job, const ObjectId& id)
 {
     return job.indexOf(id) >= 0;
 }
 
-// ×Ôµ×ÏòÉÏÉ¾µô¹¤¾ßÒÑ²»´æÔÚµÄÒ¶×Ó
+// è‡ªåº•å‘ä¸Šåˆ æ‰å·¥å…·å·²ä¸å­˜åœ¨çš„å¶å­
 static void pruneMissingLeaves(ToolGroup* g, const JobCfg& job)
 {
     if (!g) {
@@ -391,7 +390,7 @@ static void pruneMissingLeaves(ToolGroup* g, const JobCfg& job)
     }
 }
 
-// ÔÚ JobCfg Ê÷ÖĞ°´×é id ²éÕÒ
+// åœ¨ JobCfg æ ‘ä¸­æŒ‰ç»„ id æŸ¥æ‰¾
 ToolGroup* JobCfg::findGroup(const ObjectId& id)
 {
     if (id.isNull()) {
@@ -400,7 +399,7 @@ ToolGroup* JobCfg::findGroup(const ObjectId& id)
     return findGroupIn(&root, id);
 }
 
-// ÔÚ JobCfg Ê÷ÖĞ°´ toolId ÕÒÒ¶×Ó
+// åœ¨ JobCfg æ ‘ä¸­æŒ‰ toolId æ‰¾å¶å­
 ToolGroup* JobCfg::findLeaf(const ObjectId& toolId)
 {
     if (toolId.isNull()) {
@@ -409,7 +408,7 @@ ToolGroup* JobCfg::findLeaf(const ObjectId& toolId)
     return findLeafIn(&root, toolId);
 }
 
-// ÕÒ½ÚµãµÄ¸¸×é
+// æ‰¾èŠ‚ç‚¹çš„çˆ¶ç»„
 ToolGroup* JobCfg::findParent(const ObjectId& childId)
 {
     if (childId.isNull()) {
@@ -418,13 +417,13 @@ ToolGroup* JobCfg::findParent(const ObjectId& childId)
     return findParentIn(&root, childId);
 }
 
-// ²¹¸ù×é¡¢¼ôÊ§Ğ§Ò¶×Ó¡¢²¹ If ĞÎ×´£¬²¢°ÑÎ´ÈëÊ÷µÄ¹¤¾ß¹Òµ½¸ù
+// è¡¥æ ¹ç»„ã€å‰ªå¤±æ•ˆå¶å­ã€è¡¥ If å½¢çŠ¶ï¼Œå¹¶æŠŠæœªå…¥æ ‘çš„å·¥å…·æŒ‚åˆ°æ ¹
 void JobCfg::ensureTree()
 {
     if (root.id.isNull()) {
         root.id = ObjectId::create();
         root.kind = GroupSequence;
-        root.name = std::string(Translate::tr("Á÷³Ì"));
+        root.name = std::string(Translate::tr("æµç¨‹"));
     }
     pruneMissingLeaves(&root, *this);
     ensureIfShape(&root);
@@ -443,7 +442,7 @@ struct GroupEnds {
     std::vector<ObjectId> lasts;
 };
 
-// °´×éÀàĞÍÉú³É´®ĞĞ/²¢ĞĞÁ¬Ïß£¬²¢·µ»Ø¸Ã×éÈë¿Ú¡¢³ö¿Ú¹¤¾ß
+// æŒ‰ç»„ç±»å‹ç”Ÿæˆä¸²è¡Œ/å¹¶è¡Œè¿çº¿ï¼Œå¹¶è¿”å›è¯¥ç»„å…¥å£ã€å‡ºå£å·¥å…·
 static GroupEnds emitGroupLinks(const ToolGroup& g, std::vector<ToolLink>* links)
 {
     GroupEnds e;
@@ -453,7 +452,7 @@ static GroupEnds emitGroupLinks(const ToolGroup& g, std::vector<ToolLink>* links
         return e;
     }
     if (isSplitKind(g.kind)) {
-        // ²¢ĞĞ/Ìõ¼ş£º¸÷Ö§¶ÀÁ¢£¬Èë¿Ú³ö¿Ú²¢¼¯
+        // å¹¶è¡Œ/æ¡ä»¶ï¼šå„æ”¯ç‹¬ç«‹ï¼Œå…¥å£å‡ºå£å¹¶é›†
         for (int i = 0; i < static_cast<int>(g.children.size()); ++i) {
             const GroupEnds c = emitGroupLinks(g.children[static_cast<size_t>(i)], links);
             for (int k = 0; k < static_cast<int>(c.firsts.size()); ++k) {
@@ -492,13 +491,13 @@ static GroupEnds emitGroupLinks(const ToolGroup& g, std::vector<ToolLink>* links
     return e;
 }
 
-// °´ id È¡¹¤¾ß¼ÇÂ¼
+// æŒ‰ id å–å·¥å…·è®°å½•
 static const ToolCfg* ToolCfgOf(const JobCfg& job, const ObjectId& id)
 {
     return job.findTool(id);
 }
 
-// °´ÉÏÏÂÓÎÀàĞÍÕ¹¿ª¶Ë¿Ú£ºÍ¼Ïñ¡¢Î»×Ë¡¢ÇøÓò¡¢Âß¼­¿ÉÍ¬Ê±´æÔÚ£¨½öÊ¾Àı·½°¸³õÖµ£©
+// æŒ‰ä¸Šä¸‹æ¸¸ç±»å‹å±•å¼€ç«¯å£ï¼šå›¾åƒã€ä½å§¿ã€åŒºåŸŸã€é€»è¾‘å¯åŒæ—¶å­˜åœ¨ï¼ˆä»…ç¤ºä¾‹æ–¹æ¡ˆåˆå€¼ï¼‰
 static void fillLinkPorts(JobCfg* job)
 {
     std::vector<ToolLink> out;
@@ -539,39 +538,14 @@ static void fillLinkPorts(JobCfg* job)
             out.push_back(L);
         }
     }
-    for (size_t oi = 0; oi < out.size(); ++oi) {
-        const ToolLink& L = out[oi];
-        ToolCfg* dest = job->findTool(L.toId);
-        if (!dest) {
-            continue;
-        }
-        bool replaced = false;
-        for (size_t j = 0; j < dest->links.size(); ++j) {
-            if (dest->links[j].toPort == L.toPort) {
-                dest->links[j].fromToolId = L.fromId;
-                dest->links[j].fromPort = L.fromPort;
-                dest->links[j].index = L.index;
-                dest->links[j].use = L.use;
-                dest->links[j].origin = L.origin;
-                replaced = true;
-                break;
-            }
-        }
-        if (!replaced) {
-            ToolInputLink inLink;
-            inLink.fromToolId = L.fromId;
-            inLink.fromPort = L.fromPort;
-            inLink.toPort = L.toPort;
-            inLink.index = L.index;
-            inLink.use = L.use;
-            inLink.origin = L.origin;
-            dest->links.push_back(inLink);
-        }
+    job->links = out;
+    for (size_t ti = 0; ti < job->tools.size(); ++ti) {
+        job->tools[ti].links.clear();
     }
-    job->rebuildLinksCache();
+
 }
 
-// ¸ÃÊäÈë¶Ë¿ÚÊÇ·ñÒÑÓĞÀ´Ïß
+// è¯¥è¾“å…¥ç«¯å£æ˜¯å¦å·²æœ‰æ¥çº¿
 static bool hasLinkToPort(const std::vector<ToolLink>& links, const ObjectId& toId, const PortSlot& toPort)
 {
     for (int i = 0; i < static_cast<int>(links.size()); ++i) {
@@ -583,7 +557,7 @@ static bool hasLinkToPort(const std::vector<ToolLink>& links, const ObjectId& to
     return false;
 }
 
-// ¹¤¾ßÊÇ·ñ³öÏÖÔÚ¾ÉÁ¬ÏßÀï£¨ÓÃÀ´ÅĞ¶ÏÊÇ²»ÊÇ¸Õ²åÈëµÄĞÂ¹¤¾ß£©
+// å·¥å…·æ˜¯å¦å‡ºç°åœ¨æ—§è¿çº¿é‡Œï¼ˆç”¨æ¥åˆ¤æ–­æ˜¯ä¸æ˜¯åˆšæ’å…¥çš„æ–°å·¥å…·ï¼‰
 static bool toolInLinks(const std::vector<ToolLink>& links, const ObjectId& id)
 {
     for (int i = 0; i < static_cast<int>(links.size()); ++i) {
@@ -594,21 +568,13 @@ static bool toolInLinks(const std::vector<ToolLink>& links, const ObjectId& id)
     return false;
 }
 
-// Ê÷¸Ä½á¹¹ºó£º±£ÁôÓÃ»§ÍÏµÄÊı¾İ±ß£»Ö»¸øÈ«ĞÂ¹¤¾ß²¹Ä¬ÈÏÍ¼ÏñÈë£¨Ö»²¹È±Ê§£¬²»¸²¸Ç manual£©
+// æ ‘æ”¹ç»“æ„åï¼šä¿ç•™ç”¨æˆ·æ‹–çš„æ•°æ®è¾¹ï¼›åªç»™å…¨æ–°å·¥å…·è¡¥é»˜è®¤å›¾åƒå…¥ï¼ˆåªè¡¥ç¼ºå¤±ï¼Œä¸è¦†ç›– manualï¼‰
 void JobCfg::rebuildLinksFromTree()
 {
     // ensure tree matches tools
-    bool anyToolLinks = false;
-    for (size_t i = 0; i < tools.size(); ++i) {
-        if (!tools[i].links.empty()) {
-            anyToolLinks = true;
-            break;
-        }
+    if (links.empty()) {
+        links = collectLinks();
     }
-    if (!anyToolLinks && !links.empty()) {
-        distributeLinks();
-    }
-    syncLinksCache();
 
     const std::vector<ToolLink> old = links;
     std::vector<ToolLink> adj;
@@ -672,74 +638,35 @@ void JobCfg::rebuildLinksFromTree()
         }
         cleaned.push_back(L);
     }
-    // write back tool links (skip existing manual)
+        links = cleaned;
     for (size_t ti = 0; ti < tools.size(); ++ti) {
-        ToolCfg& t = tools[ti];
-        for (size_t li = 0; li < cleaned.size(); ++li) {
-            const ToolLink& L = cleaned[li];
-            if (L.toId != t.id) {
-                continue;
-            }
-            int found = -1;
-            for (size_t j = 0; j < t.links.size(); ++j) {
-                if (t.links[j].toPort == L.toPort) {
-                    found = static_cast<int>(j);
-                    break;
-                }
-            }
-            if (found >= 0) {
-                if (t.links[static_cast<size_t>(found)].origin == LinkOriginManual) {
-                    continue;
-                }
-                t.links[static_cast<size_t>(found)].fromToolId = L.fromId;
-                t.links[static_cast<size_t>(found)].fromPort = L.fromPort;
-                t.links[static_cast<size_t>(found)].origin = L.origin; t.links[static_cast<size_t>(found)].index = L.index; t.links[static_cast<size_t>(found)].use = L.use;
-            } else {
-                ToolInputLink in;
-                in.fromToolId = L.fromId;
-                in.fromPort = L.fromPort;
-                in.toPort = L.toPort;
-                in.index = L.index; in.use = L.use; in.origin = L.origin;
-                t.links.push_back(in);
-            }
-        }
-        // È¥µôÖ¸ÏòÒÑÉ¾¹¤¾ßµÄ±ß
-        std::vector<ToolInputLink> keepIn;
-        for (size_t j = 0; j < t.links.size(); ++j) {
-            if (findTool(t.links[j].fromToolId)) {
-                keepIn.push_back(t.links[j]);
-            }
-        }
-        t.links = keepIn;
+        tools[ti].links.clear();
     }
-    syncLinksCache();
 }
-
-// ÍÏÏß½Óµ½ÊäÈë£»Í¬ÊäÈëÖ»±£ÁôÒ»ÌõÀ´Ïß
 bool JobCfg::connectPorts(const ObjectId& fromId, const PortSlot& fromPort,
                       const ObjectId& toId, const PortSlot& toPort, std::string* err)
 {
     if (fromId == toId) {
         if (err) {
-            *err = std::string(Translate::tr("ÕÒ²»µ½¹¤¾ß"));
+            *err = std::string(Translate::tr("æ‰¾ä¸åˆ°å·¥å…·"));
         }
         return false;
     }
     if (!findTool(fromId) || !findTool(toId)) {
         if (err) {
-            *err = std::string(Translate::tr("ÕÒ²»µ½¹¤¾ß"));
+            *err = std::string(Translate::tr("æ‰¾ä¸åˆ°å·¥å…·"));
         }
         return false;
     }
     if (fromPort.dir != PortDir::Out || toPort.dir != PortDir::In) {
         if (err) {
-            *err = std::string(Translate::tr("ÕÒ²»µ½¹¤¾ß"));
+            *err = std::string(Translate::tr("æ‰¾ä¸åˆ°å·¥å…·"));
         }
         return false;
     }
     if (!portsTypeMatch(fromPort, toPort)) {
         if (err) {
-            std::string msg = std::string(Translate::tr("ÀàĞÍ²»Í¬£¬²»ÄÜÁ¬½Ó£º"));
+            std::string msg = std::string(Translate::tr("ç±»å‹ä¸åŒï¼Œä¸èƒ½è¿æ¥ï¼š"));
             msg += portDataTitle(fromPort.data);
             msg += " -> ";
             msg += portDataTitle(toPort.data);
@@ -747,79 +674,73 @@ bool JobCfg::connectPorts(const ObjectId& fromId, const PortSlot& fromPort,
         }
         return false;
     }
-    ToolCfg* to = findTool(toId);
-    std::vector<ToolInputLink> kept;
-    for (size_t i = 0; i < to->links.size(); ++i) {
-        if (to->links[i].toPort == toPort) {
+    std::vector<ToolLink> kept;
+    for (size_t i = 0; i < links.size(); ++i) {
+        if (links[i].toId == toId && links[i].toPort == toPort) {
             continue;
         }
-        kept.push_back(to->links[i]);
+        kept.push_back(links[i]);
     }
-    ToolInputLink in;
-    in.fromToolId = fromId;
-    in.fromPort = fromPort;
-    in.toPort = toPort;
-    in.origin = LinkOriginManual;
-    kept.push_back(in);
-    to->links = kept;
-    syncLinksCache();
+    ToolLink edge;
+    edge.fromId = fromId;
+    edge.fromPort = fromPort;
+    edge.toId = toId;
+    edge.toPort = toPort;
+    edge.origin = LinkOriginManual;
+    kept.push_back(edge);
+    links = kept;
+    for (size_t i = 0; i < tools.size(); ++i) {
+        tools[i].links.clear();
+    }
     return true;
 }
 
-// °´ÏÂ±êÉ¾Ò»ÌõÊı¾İ±ß
+// æŒ‰ä¸‹æ ‡åˆ ä¸€æ¡æ•°æ®è¾¹
 bool JobCfg::disconnectLink(int index)
 {
     if (index < 0 || index >= static_cast<int>(links.size())) {
         return false;
     }
-    const ToolLink L = links[static_cast<size_t>(index)];
-    ToolCfg* to = findTool(L.toId);
-    if (to) {
-        std::vector<ToolInputLink> kept;
-        for (size_t i = 0; i < to->links.size(); ++i) {
-            if (to->links[i].toPort == L.toPort) {
-                continue;
-            }
-            kept.push_back(to->links[i]);
-        }
-        to->links = kept;
+    links.erase(links.begin() + index);
+    for (size_t i = 0; i < tools.size(); ++i) {
+        tools[i].links.clear();
     }
-    syncLinksCache();
     return true;
 }
 
-// ¶Ï¿ªÖ¸ÏòÖ¸¶¨ÊäÈë¶Ë¿ÚµÄÁ¬Ïß
+// æ–­å¼€æŒ‡å‘æŒ‡å®šè¾“å…¥ç«¯å£çš„è¿çº¿
 bool JobCfg::disconnectPort(const ObjectId& toId, const PortSlot& toPort)
 {
-    ToolCfg* to = findTool(toId);
-    if (!to) {
+    if (!findTool(toId)) {
         return false;
     }
-    std::vector<ToolInputLink> kept;
+    std::vector<ToolLink> kept;
     bool removed = false;
-    for (size_t i = 0; i < to->links.size(); ++i) {
-        if (to->links[i].toPort == toPort) {
+    for (size_t i = 0; i < links.size(); ++i) {
+        if (links[i].toId == toId && links[i].toPort == toPort) {
             removed = true;
             continue;
         }
-        kept.push_back(to->links[i]);
+        kept.push_back(links[i]);
     }
     if (!removed) {
         return false;
     }
-    to->links = kept;
-    syncLinksCache();
+    links = kept;
+    for (size_t i = 0; i < tools.size(); ++i) {
+        tools[i].links.clear();
+    }
     return true;
 }
 
-// ÏÈ±£Ö¤Ê÷ÍêÕûÔÙÖØ½¨Á¬Ïß
+// å…ˆä¿è¯æ ‘å®Œæ•´å†é‡å»ºè¿çº¿
 void JobCfg::rebuildSerialLinks()
 {
     ensureTree();
     rebuildLinksFromTree();
 }
 
-// Ñ¡ÖĞÏî£ºid ÓÅÏÈ£¬·ñÔòµ±¹¤¾ßÒ¶×Ó
+// é€‰ä¸­é¡¹ï¼šid ä¼˜å…ˆï¼Œå¦åˆ™å½“å·¥å…·å¶å­
 static ToolGroup* resolveSelect(JobCfg* job, const ObjectId& selectId)
 {
     if (selectId.isNull()) {
@@ -832,7 +753,7 @@ static ToolGroup* resolveSelect(JobCfg* job, const ObjectId& selectId)
     return job->findLeaf(selectId);
 }
 
-// ÔÚÑ¡ÖĞ½Úµã¸½½ü²åÈëÒ¶×Ó£º¸ùºó×·¼Ó¡¢Ò¶×Óºó²åÈë¡¢²¢ĞĞÄ©Ö§¡¢If µÄ Then
+// åœ¨é€‰ä¸­èŠ‚ç‚¹é™„è¿‘æ’å…¥å¶å­ï¼šæ ¹åè¿½åŠ ã€å¶å­åæ’å…¥ã€å¹¶è¡Œæœ«æ”¯ã€If çš„ Then
 static void insertLeafNear(JobCfg* job, const ToolGroup& leaf, const ObjectId& selectId)
 {
     ToolGroup* sel = resolveSelect(job, selectId);
@@ -858,7 +779,7 @@ static void insertLeafNear(JobCfg* job, const ToolGroup& leaf, const ObjectId& s
             ToolGroup br;
             br.id = ObjectId::create();
             br.kind = GroupSequence;
-            br.name = std::string(Translate::tr("Ö§Â·1"));
+            br.name = std::string(Translate::tr("æ”¯è·¯1"));
             br.children.push_back(leaf);
             sel->children.push_back(br);
         } else {
@@ -876,7 +797,7 @@ static void insertLeafNear(JobCfg* job, const ToolGroup& leaf, const ObjectId& s
     sel->children.push_back(leaf);
 }
 
-// ×·¼Ó¹¤¾ß²¢ÔÚÑ¡ÖĞ´¦¹ÒÒ¶×Ó£¬ÔÙÖØ½¨Á¬Ïß
+// è¿½åŠ å·¥å…·å¹¶åœ¨é€‰ä¸­å¤„æŒ‚å¶å­ï¼Œå†é‡å»ºè¿çº¿
 bool JobCfg::insertTool(const ToolCfg& t, const ObjectId& selectId)
 {
     ToolCfg rec = t;
@@ -892,7 +813,7 @@ bool JobCfg::insertTool(const ToolCfg& t, const ObjectId& selectId)
     return true;
 }
 
-// ¹ÀËã¹¤¾ß½ÚµãÔÚ»­²¼ÉÏµÄ¸ß¶È£¨Óë JobCanvas ²¼¾Ö³£Á¿Ò»ÖÂ£©
+// ä¼°ç®—å·¥å…·èŠ‚ç‚¹åœ¨ç”»å¸ƒä¸Šçš„é«˜åº¦ï¼ˆä¸ JobCanvas å¸ƒå±€å¸¸é‡ä¸€è‡´ï¼‰
 static double estimateToolCanvasHeight(const ToolCfg* t)
 {
     if (!t) {
@@ -916,7 +837,7 @@ static double estimateToolCanvasHeight(const ToolCfg* t)
     return 22.0 + 18.0 + 4.0 + rows * 16.0 + 6.0;
 }
 
-// ²åÈëµãÊÇ·ñÔÚ²¢ĞĞ/Ìõ¼ş×é»òÆäÖ§Â·ÄÚ£¨Ó¦×ßÊ÷²¼¾Ö£¬²»ÄÜĞ´ canvasPlaced£©
+// æ’å…¥ç‚¹æ˜¯å¦åœ¨å¹¶è¡Œ/æ¡ä»¶ç»„æˆ–å…¶æ”¯è·¯å†…ï¼ˆåº”èµ°æ ‘å¸ƒå±€ï¼Œä¸èƒ½å†™ canvasPlacedï¼‰
 static bool insertTargetUsesTreeLayout(JobCfg* job, const ObjectId& selectId)
 {
     ToolGroup* sel = resolveSelect(job, selectId);
@@ -941,7 +862,7 @@ static bool insertTargetUsesTreeLayout(JobCfg* job, const ObjectId& selectId)
     return false;
 }
 
-// ĞÂ¹¤¾ß¼ÓÈë JobCfg Ê±·ÖÅäºÏÊÊ»­²¼×ø±ê
+// æ–°å·¥å…·åŠ å…¥ JobCfg æ—¶åˆ†é…åˆé€‚ç”»å¸ƒåæ ‡
 void JobCfg::assignNewToolCanvasPosition(ToolCfg* t, const ObjectId& selectId)
 {
     if (!t) {
@@ -995,7 +916,7 @@ void JobCfg::assignNewToolCanvasPosition(ToolCfg* t, const ObjectId& selectId)
     t->canvasPlaced = true;
 }
 
-// µİ¹éÇå³ı×éÓëÆäÄÚ¹¤¾ßµÄ×Ô¶¨Òå»­²¼×ø±ê
+// é€’å½’æ¸…é™¤ç»„ä¸å…¶å†…å·¥å…·çš„è‡ªå®šä¹‰ç”»å¸ƒåæ ‡
 static void clearGroupCanvasPlaced(JobCfg* job, ToolGroup* g)
 {
     if (!g) {
@@ -1018,7 +939,7 @@ static void clearGroupCanvasPlaced(JobCfg* job, ToolGroup* g)
     }
 }
 
-// ×Ô¶¯ÅÅÁĞ£ºÇå×Ô¶¨Òå×ø±êÓëÁ¬ÏßÂ·ÓÉ£¬½»ÓÉ»­²¼°´Ê÷Ë®Æ½¾ÓÖĞ¡¢×ÔÉÏ¶øÏÂÅÅ²¼£¨ºáÆ½ÊúÅÅ C ĞÎÏß£©
+// è‡ªåŠ¨æ’åˆ—ï¼šæ¸…è‡ªå®šä¹‰åæ ‡ä¸è¿çº¿è·¯ç”±ï¼Œäº¤ç”±ç”»å¸ƒæŒ‰æ ‘æ°´å¹³å±…ä¸­ã€è‡ªä¸Šè€Œä¸‹æ’å¸ƒï¼ˆæ¨ªå¹³ç«–æ’ C å½¢çº¿ï¼‰
 void JobCfg::autoLayoutCanvas()
 {
     ensureTree();
@@ -1036,7 +957,7 @@ void JobCfg::autoLayoutCanvas()
     }
 }
 
-// Í³¼ÆÄ³ÖÖ×éÀàĞÍ³öÏÖ´ÎÊı£¨²»º¬Ò¶×Ó£©
+// ç»Ÿè®¡æŸç§ç»„ç±»å‹å‡ºç°æ¬¡æ•°ï¼ˆä¸å«å¶å­ï¼‰
 static int countKind(const ToolGroup& g, GroupKind k)
 {
     int n = (g.kind == k && g.toolId.isNull()) ? 1 : 0;
@@ -1046,7 +967,7 @@ static int countKind(const ToolGroup& g, GroupKind k)
     return n;
 }
 
-// ÔÚÑ¡ÖĞ½Úµã¸½½ü²åÈë×é£¨¹æÔòÍ¬ insertLeafNear£©
+// åœ¨é€‰ä¸­èŠ‚ç‚¹é™„è¿‘æ’å…¥ç»„ï¼ˆè§„åˆ™åŒ insertLeafNearï¼‰
 static ObjectId insertGroupNear(JobCfg* job, ToolGroup g, const ObjectId& selectId)
 {
     const ObjectId nid = g.id;
@@ -1086,35 +1007,35 @@ static ObjectId insertGroupNear(JobCfg* job, ToolGroup g, const ObjectId& select
     return nid;
 }
 
-// ²åÈë´øÁ½Ìõ¿ÕÖ§Â·µÄ²¢ĞĞ×é
+// æ’å…¥å¸¦ä¸¤æ¡ç©ºæ”¯è·¯çš„å¹¶è¡Œç»„
 ObjectId JobCfg::addParallelGroup(const ObjectId& selectId)
 {
     ensureTree();
     ToolGroup g;
     g.id = ObjectId::create();
     g.kind = GroupParallel;
-    g.name = Translate::format("²¢ĞĞ×é{0}", std::to_string(countKind(root, GroupParallel) + 1));
+    g.name = Translate::format("å¹¶è¡Œç»„{0}", std::to_string(countKind(root, GroupParallel) + 1));
     ToolGroup a;
     a.id = ObjectId::create();
     a.kind = GroupSequence;
-    a.name = std::string(Translate::tr("Ö§Â·A"));
+    a.name = std::string(Translate::tr("æ”¯è·¯A"));
     ToolGroup b;
     b.id = ObjectId::create();
     b.kind = GroupSequence;
-    b.name = std::string(Translate::tr("Ö§Â·B"));
+    b.name = std::string(Translate::tr("æ”¯è·¯B"));
     g.children.push_back(a);
     g.children.push_back(b);
     return insertGroupNear(this, g, selectId);
 }
 
-// ²åÈë Then/Else Ìõ¼ş×é£»Ñ¡ÖĞÒ¶×ÓÊ±ÒÔ OK ÎªÌõ¼şÔ´
+// æ’å…¥ Then/Else æ¡ä»¶ç»„ï¼›é€‰ä¸­å¶å­æ—¶ä»¥ OK ä¸ºæ¡ä»¶æº
 ObjectId JobCfg::addIfGroup(const ObjectId& selectId)
 {
     ensureTree();
     ToolGroup g;
     g.id = ObjectId::create();
     g.kind = GroupIf;
-    g.name = Translate::format("Ìõ¼ş×é{0}", std::to_string(countKind(root, GroupIf) + 1));
+    g.name = Translate::format("æ¡ä»¶ç»„{0}", std::to_string(countKind(root, GroupIf) + 1));
     g.condWant = CondThenOnOk;
     ToolGroup* sel = resolveSelect(this, selectId);
     if (sel && isToolLeaf(*sel)) {
@@ -1134,7 +1055,7 @@ ObjectId JobCfg::addIfGroup(const ObjectId& selectId)
 }
 
 
-// ÉèÖÃÑ­»·×é´ÎÊı£»ÖÁÉÙÎª 1
+// è®¾ç½®å¾ªç¯ç»„æ¬¡æ•°ï¼›è‡³å°‘ä¸º 1
 bool JobCfg::setLoopCount(const ObjectId& loopId, int count)
 {
     ToolGroup* g = findGroup( loopId);
@@ -1145,19 +1066,19 @@ bool JobCfg::setLoopCount(const ObjectId& loopId, int count)
     return true;
 }
 
-// ²åÈëÑ­»·×é£¨¿Õ¿Ç£¬¹¤¾ßÔÙÍùÀï¼Ó£©
+// æ’å…¥å¾ªç¯ç»„ï¼ˆç©ºå£³ï¼Œå·¥å…·å†å¾€é‡ŒåŠ ï¼‰
 ObjectId JobCfg::addLoopGroup(const ObjectId& selectId)
 {
     ensureTree();
     ToolGroup g;
     g.id = ObjectId::create();
     g.kind = GroupLoop;
-    g.name = Translate::format("Ñ­»·×é{0}", std::to_string(countKind(root, GroupLoop) + 1));
+    g.name = Translate::format("å¾ªç¯ç»„{0}", std::to_string(countKind(root, GroupLoop) + 1));
     g.loopCount = 1;
     return insertGroupNear(this, g, selectId);
 }
 
-// ÉèÖÃÌõ¼ş×éµÄÔ´¹¤¾ßÓë Then ´¥·¢¼«ĞÔ
+// è®¾ç½®æ¡ä»¶ç»„çš„æºå·¥å…·ä¸ Then è§¦å‘ææ€§
 bool JobCfg::setIfCondition(const ObjectId& ifId, const ObjectId& sourceId, int want)
 {
     ToolGroup* g = findGroup( ifId);
@@ -1169,7 +1090,7 @@ bool JobCfg::setIfCondition(const ObjectId& ifId, const ObjectId& sourceId, int 
     return true;
 }
 
-// ¸ø²¢ĞĞ×é×·¼ÓÒ»Ìõ¿ÕË³ĞòÖ§Â·
+// ç»™å¹¶è¡Œç»„è¿½åŠ ä¸€æ¡ç©ºé¡ºåºæ”¯è·¯
 ObjectId JobCfg::addSequenceBranch(const ObjectId& parallelId)
 {
     ToolGroup* g = findGroup( parallelId);
@@ -1179,13 +1100,13 @@ ObjectId JobCfg::addSequenceBranch(const ObjectId& parallelId)
     ToolGroup br;
     br.id = ObjectId::create();
     br.kind = GroupSequence;
-    br.name = Translate::format("Ö§Â·{0}", std::to_string(static_cast<int>(g->children.size()) + 1));
+    br.name = Translate::format("æ”¯è·¯{0}", std::to_string(static_cast<int>(g->children.size()) + 1));
     g->children.push_back(br);
     rebuildLinksFromTree();
     return br.id;
 }
 
-// ÔÚÍ¬¼¶ÖĞ½»»»ÏàÁÚ×Ó½Úµã£»If ×Ó½Úµã²»¿Éµ÷
+// åœ¨åŒçº§ä¸­äº¤æ¢ç›¸é‚»å­èŠ‚ç‚¹ï¼›If å­èŠ‚ç‚¹ä¸å¯è°ƒ
 bool JobCfg::moveTreeNode(const ObjectId& nodeId, int delta)
 {
     if (delta == 0 || nodeId.isNull() || nodeId == root.id) {
@@ -1208,7 +1129,7 @@ bool JobCfg::moveTreeNode(const ObjectId& nodeId, int delta)
     return true;
 }
 
-// ÖØÃüÃû×é£¨¸ù×é³ıÍâ£©
+// é‡å‘½åç»„ï¼ˆæ ¹ç»„é™¤å¤–ï¼‰
 bool JobCfg::renameGroup(const ObjectId& id, const std::string& name)
 {
     ToolGroup* g = findGroup( id);
@@ -1223,7 +1144,7 @@ bool JobCfg::renameGroup(const ObjectId& id, const std::string& name)
     return true;
 }
 
-// É¾³ı×ÓÊ÷¶ÔÓ¦µÄÈ«²¿¹¤¾ß¼ÇÂ¼
+// åˆ é™¤å­æ ‘å¯¹åº”çš„å…¨éƒ¨å·¥å…·è®°å½•
 static void removeToolsListed(JobCfg* job, const ToolGroup& g)
 {
     std::vector<ObjectId> ids;
@@ -1236,7 +1157,7 @@ static void removeToolsListed(JobCfg* job, const ToolGroup& g)
     }
 }
 
-// É¾³ı×é¼°Æä¹¤¾ß£»If µÄ Then/Else ²»¿ÉÉ¾
+// åˆ é™¤ç»„åŠå…¶å·¥å…·ï¼›If çš„ Then/Else ä¸å¯åˆ 
 bool JobCfg::removeGroup(const ObjectId& id)
 {
     if (id.isNull() || id == root.id) {
@@ -1257,13 +1178,13 @@ bool JobCfg::removeGroup(const ObjectId& id)
     return true;
 }
 
-// Éî¿½±´×éÊ÷£ºÒ¶×Ó¹¤¾ß×ß×¢²á±í duplicate£¬²¢¼ÇÂ¼¾É¡úĞÂ toolId
+// æ·±æ‹·è´ç»„æ ‘ï¼šå¶å­å·¥å…·èµ°æ³¨å†Œè¡¨ duplicateï¼Œå¹¶è®°å½•æ—§â†’æ–° toolId
 static ToolGroup cloneGroupTree(JobCfg* job, const ToolGroup& src, bool top, std::map<ObjectId, ObjectId>* toolMap)
 {
     ToolGroup g;
     g.id = ObjectId::create();
     g.kind = src.kind;
-    g.name = top ? (src.name + std::string(Translate::tr(" ¸±±¾"))) : src.name;
+    g.name = top ? (src.name + std::string(Translate::tr(" å‰¯æœ¬"))) : src.name;
     g.condWant = src.condWant;
     g.condSourceId = src.condSourceId;
     g.loopCount = src.loopCount;
@@ -1271,7 +1192,7 @@ static ToolGroup cloneGroupTree(JobCfg* job, const ToolGroup& src, bool top, std
         const ToolCfg* srcTool = job->findTool(src.toolId);
         if (srcTool) {
             ToolCfg t = srcTool->duplicate();
-            t.name = t.name + std::string(Translate::tr(" ¸±±¾"));
+            t.name = t.name + std::string(Translate::tr(" å‰¯æœ¬"));
             job->tools.push_back(t);
             g.toolId = t.id;
             g.name = t.name;
@@ -1286,7 +1207,7 @@ static ToolGroup cloneGroupTree(JobCfg* job, const ToolGroup& src, bool top, std
     return g;
 }
 
-// °ÑÌõ¼şÔ´ id Ó³Éäµ½¸±±¾¹¤¾ß
+// æŠŠæ¡ä»¶æº id æ˜ å°„åˆ°å‰¯æœ¬å·¥å…·
 static void remapGroupConds(ToolGroup* g, const std::map<ObjectId, ObjectId>& map)
 {
     if (!g) {
@@ -1300,7 +1221,7 @@ static void remapGroupConds(ToolGroup* g, const std::map<ObjectId, ObjectId>& ma
     }
 }
 
-// ¸´ÖÆ×é²¢²åµ½Ô­½ÚµãÖ®ºó
+// å¤åˆ¶ç»„å¹¶æ’åˆ°åŸèŠ‚ç‚¹ä¹‹å
 ObjectId JobCfg::duplicateGroup(const ObjectId& id)
 {
     if (id.isNull() || id == root.id) {
@@ -1325,7 +1246,7 @@ ObjectId JobCfg::duplicateGroup(const ObjectId& id)
     return nid;
 }
 
-// ÒÆ¶¯¹¤¾ßÒ¶×ÓÔÚÍ¬¼¶µÄÎ»ÖÃ
+// ç§»åŠ¨å·¥å…·å¶å­åœ¨åŒçº§çš„ä½ç½®
 bool JobCfg::moveTool(const ObjectId& id, int delta)
 {
     ensureTree();
@@ -1336,7 +1257,7 @@ bool JobCfg::moveTool(const ObjectId& id, int delta)
     return moveTreeNode( leaf->id, delta);
 }
 
-// ´ÓÊ÷ºÍ¹¤¾ßÁĞ±íÖĞÉ¾³ı¸Ã¹¤¾ß
+// ä»æ ‘å’Œå·¥å…·åˆ—è¡¨ä¸­åˆ é™¤è¯¥å·¥å…·
 bool JobCfg::removeTool(const ObjectId& id)
 {
     ensureTree();
@@ -1360,7 +1281,7 @@ bool JobCfg::removeTool(const ObjectId& id)
     return true;
 }
 
-// ¸´ÖÆ¹¤¾ß²¢²åµ½Ô­Ò¶×Ó¸½½ü
+// å¤åˆ¶å·¥å…·å¹¶æ’åˆ°åŸå¶å­é™„è¿‘
 ObjectId JobCfg::duplicateTool(const ObjectId& id)
 {
     const ToolCfg* src = findTool(id);
@@ -1368,7 +1289,7 @@ ObjectId JobCfg::duplicateTool(const ObjectId& id)
         return ObjectId();
     }
     ToolCfg t = src->duplicate();
-    t.name = t.name + std::string(Translate::tr(" ¸±±¾"));
+    t.name = t.name + std::string(Translate::tr(" å‰¯æœ¬"));
     ensureTree();
     tools.push_back(t);
     insertLeafNear(this, makeToolLeaf(t), id);
@@ -1376,7 +1297,7 @@ ObjectId JobCfg::duplicateTool(const ObjectId& id)
     return t.id;
 }
 
-// Í¬²½¸Ä¹¤¾ßÏÔÊ¾ÃûÓë¶ÔÓ¦Ò¶×ÓÃû
+// åŒæ­¥æ”¹å·¥å…·æ˜¾ç¤ºåä¸å¯¹åº”å¶å­å
 bool JobCfg::renameTool(const ObjectId& id, const std::string& name)
 {
     ToolCfg* t = findTool(id);
@@ -1395,7 +1316,7 @@ bool JobCfg::renameTool(const ObjectId& id, const std::string& name)
     return true;
 }
 
-// Kahn ÍØÆËĞò£»ÓĞ»·ÔòÍË»Ø¹¤¾ßÁĞ±íË³Ğò
+// Kahn æ‹“æ‰‘åºï¼›æœ‰ç¯åˆ™é€€å›å·¥å…·åˆ—è¡¨é¡ºåº
 std::vector<ObjectId> JobCfg::execOrder() const
 {
     std::vector<ObjectId> order;
@@ -1443,7 +1364,7 @@ std::vector<ObjectId> JobCfg::execOrder() const
 }
 
 
-// JobCfg ÄÚ¿É²ÎÓë OK/NG ¾ØÕóµÄ¹¤¾ß id£¨ÍØÆËÖ´ĞĞĞò£©
+// JobCfg å†…å¯å‚ä¸ OK/NG çŸ©é˜µçš„å·¥å…· idï¼ˆæ‹“æ‰‘æ‰§è¡Œåºï¼‰
 std::vector<ObjectId> JobCfg::okNgToolIds() const
 {
     std::vector<ObjectId> out;
@@ -1457,7 +1378,7 @@ std::vector<ObjectId> JobCfg::okNgToolIds() const
     return out;
 }
 
-// ÇåÀí½á¹û¹æÔòÎŞĞ§ÒıÓÃ£»resultFromRuleId Ê§Ğ§Ê±¸ÄÎª×îºóÒ»ĞĞ»òÇå¿Õ
+// æ¸…ç†ç»“æœè§„åˆ™æ— æ•ˆå¼•ç”¨ï¼›resultFromRuleId å¤±æ•ˆæ—¶æ”¹ä¸ºæœ€åä¸€è¡Œæˆ–æ¸…ç©º
 void JobCfg::normalizeRstRules()
 {
     bool hasFrom = false;
@@ -1500,7 +1421,7 @@ void JobCfg::normalizeRstRules()
     }
 }
 
-// ¶Á¹æÔòÏîÈıÌ¬£»ÎŞÔò Ignore
+// è¯»è§„åˆ™é¡¹ä¸‰æ€ï¼›æ— åˆ™ Ignore
 int RstRule::termState(int kind, const ObjectId& sourceId) const
 {
     for (size_t i = 0; i < terms.size(); ++i) {
@@ -1511,7 +1432,7 @@ int RstRule::termState(int kind, const ObjectId& sourceId) const
     return RstTermIgnore;
 }
 
-// Ğ´¹æÔòÏîÈıÌ¬£»Ignore ÔòÒÆ³ıÏî
+// å†™è§„åˆ™é¡¹ä¸‰æ€ï¼›Ignore åˆ™ç§»é™¤é¡¹
 void RstRule::setTermState(int kind, const ObjectId& sourceId, int state)
 {
     if (sourceId.isNull()) {
@@ -1537,7 +1458,7 @@ void RstRule::setTermState(int kind, const ObjectId& sourceId, int state)
     terms.push_back(term);
 }
 
-// Çóµ¥ĞĞ¹æÔò£º·Ç Ignore ÓÃ AND£»Î´ÔËĞĞ¹¤¾ßºöÂÔ£»È« Ignore Ëã OK
+// æ±‚å•è¡Œè§„åˆ™ï¼šé Ignore ç”¨ ANDï¼›æœªè¿è¡Œå·¥å…·å¿½ç•¥ï¼›å…¨ Ignore ç®— OK
 static bool evalSingleRstRule(const RstRule& rule,
                                  const std::map<ObjectId, bool>& toolOk,
                                  const std::map<ObjectId, bool>& toolRan,
@@ -1578,12 +1499,12 @@ static bool evalSingleRstRule(const RstRule& rule,
         rowOk = true;
     }
     if (detail) {
-        *detail = parts.empty() ? std::string(Translate::tr("ÉĞÎŞÅĞ¶¨Ïî£¬Ä¬ÈÏ OK")) : parts;
+        *detail = parts.empty() ? std::string(Translate::tr("å°šæ— åˆ¤å®šé¡¹ï¼Œé»˜è®¤ OK")) : parts;
     }
     return rowOk;
 }
 
-// °´ĞĞË³ĞòÇóÖµ²¢·µ»ØÖ¸¶¨ OK/NG
+// æŒ‰è¡Œé¡ºåºæ±‚å€¼å¹¶è¿”å›æŒ‡å®š OK/NG
 bool JobCfg::evalRstRules(
                         const std::map<ObjectId, bool>& toolOk,
                         const std::map<ObjectId, bool>& toolRan,

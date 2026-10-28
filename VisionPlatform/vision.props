@@ -9,7 +9,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <MinimalRebuild>false</MinimalRebuild>
       <DisableSpecificWarnings>4251;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <!-- Source charset: system ANSI (GBK on Chinese Windows). Runtime std::string text stays UTF-8 via qs/fromUtf8. -->
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>
         $(ProjectDir);
         $(SolutionDir)third_party\HsCommData\include;
@@ -47,12 +47,17 @@
         $(SolutionDir)VisionPluginAPI;
         $(SolutionDir)VisionCfgMgr;
         $(SolutionDir)VisionCfgMgr\\store;
+        $(SolutionDir)VisionCfgCrypt;
+        $(SolutionDir)VisionLicense;
+        $(SolutionDir)VisionObfus;
         $(SolutionDir)VisionWidgets;
         $(SolutionDir)VisionWidgets\theme;
         $(SolutionDir)VisionUi;
         $(SolutionDir)VisionUi\main;
         $(SolutionDir)VisionUi\workspace;
         $(SolutionDir)VisionUi\dialog;
+        $(SolutionDir)VisionIpc;
+        $(SolutionDir)VisionRun;
         $(SolutionDir)VisionUi\runtime;
         $(SolutionDir)VisionToolUi;
         $(SolutionDir)VisionToolUi\editor;

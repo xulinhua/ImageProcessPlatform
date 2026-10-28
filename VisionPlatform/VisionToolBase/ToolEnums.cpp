@@ -1,6 +1,6 @@
 /**
  * @file ToolEnums.cpp
- * @brief ToolEnumsÊµÏÖ
+ * @brief ToolEnumså®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -11,19 +11,19 @@
 
 namespace Vision {
 
-// ×ª´æÅÌÕûÊı
+// è½¬å­˜ç›˜æ•´æ•°
 int toolTypeToInt(ToolType t)
 {
     return static_cast<int>(t);
 }
 
-// ¹¤¾ßÀàĞÍÖÖÊı
+// å·¥å…·ç±»å‹ç§æ•°
 int toolTypeCount()
 {
     return static_cast<int>(ToolType::Max);
 }
 
-// ÕûÊı×ª¹¤¾ßÀàĞÍ
+// æ•´æ•°è½¬å·¥å…·ç±»å‹
 ToolType toolTypeFromInt(int v)
 {
     if (v < 0 || v >= toolTypeCount()) {
@@ -32,7 +32,7 @@ ToolType toolTypeFromInt(int v)
     return static_cast<ToolType>(v);
 }
 
-// ¹¤¾ß¿âÕ¹Ê¾Ë³Ğò
+// å·¥å…·åº“å±•ç¤ºé¡ºåº
 ToolType toolTypeDisplayAt(int i)
 {
     static const ToolType kOrder[] = {
@@ -43,7 +43,9 @@ ToolType toolTypeDisplayAt(int i)
         ToolType::RstProcess,
         ToolType::Calib,
         ToolType::Logic,
-        ToolType::Comm
+        ToolType::Comm,
+        ToolType::Measure3D,
+        ToolType::Infer
     };
     const int n = static_cast<int>(sizeof(kOrder) / sizeof(kOrder[0]));
     if (i < 0 || i >= n) {
@@ -52,34 +54,59 @@ ToolType toolTypeDisplayAt(int i)
     return kOrder[i];
 }
 
-// ¹¤¾ßÀàĞÍ½çÃæÏÔÊ¾Ãû
+int toolTypeDisplayCount()
+{
+    static const ToolType kOrder[] = {
+        ToolType::Acquire,
+        ToolType::Preprocess,
+        ToolType::Locate,
+        ToolType::Detect,
+        ToolType::RstProcess,
+        ToolType::Calib,
+        ToolType::Logic,
+        ToolType::Comm,
+        ToolType::Measure3D,
+        ToolType::Infer
+    };
+    return static_cast<int>(sizeof(kOrder) / sizeof(kOrder[0]));
+}
+
+// å·¥å…·ç±»å‹ç•Œé¢æ˜¾ç¤ºå
 std::string toolTypeTitle(ToolType t)
 {
     switch (t) {
-    case ToolType::Acquire:        return Translate::tr("²É¼¯");
-    case ToolType::Preprocess:    return Translate::tr("Ô¤´¦Àí");
-    case ToolType::Locate:        return Translate::tr("¶¨Î»");
-    case ToolType::Detect:        return Translate::tr("¼ì²â");
-    case ToolType::Logic:         return Translate::tr("Âß¼­");
-    case ToolType::Comm:          return Translate::tr("Í¨ĞÅ");
-    case ToolType::RstProcess: return Translate::tr("½á¹û´¦Àí");
-    case ToolType::Calib:         return Translate::tr("±ê¶¨");
-    default:                      return Translate::tr("²É¼¯");
+    case ToolType::Acquire:        return Translate::tr("é‡‡é›†");
+    case ToolType::Preprocess:    return Translate::tr("é¢„å¤„ç†");
+    case ToolType::Locate:        return Translate::tr("å®šä½");
+    case ToolType::Detect:        return Translate::tr("æ£€æµ‹");
+    case ToolType::Logic:         return Translate::tr("é€»è¾‘");
+    case ToolType::Comm:          return Translate::tr("é€šä¿¡");
+    case ToolType::RstProcess: return Translate::tr("ç»“æœå¤„ç†");
+    case ToolType::Calib:         return Translate::tr("æ ‡å®š");
+    case ToolType::Acquire3D:     return Translate::tr("ä¸‰ç»´é‡‡é›†");
+    case ToolType::Prepare3D:     return Translate::tr("ç‚¹äº‘é¢„å¤„ç†");
+    case ToolType::Measure3D:     return Translate::tr("æµ‹é‡");
+    case ToolType::Align3D:       return Translate::tr("é…å‡†");
+    case ToolType::Infer:         return Translate::tr("æ·±åº¦å­¦ä¹ ");
+    default:                      return Translate::tr("é‡‡é›†");
     }
 }
 
-// ¶Ë¿ÚÊı¾İÀàĞÍ½çÃæÏÔÊ¾Ãû
+// ç«¯å£æ•°æ®ç±»å‹ç•Œé¢æ˜¾ç¤ºå
 std::string portDataTitle(PortData d)
 {
     switch (d) {
-    case PortData::Image:   return Translate::tr("Í¼Ïñ");
-    case PortData::Region:  return Translate::tr("ÇøÓò");
-    case PortData::Contour: return Translate::tr("ÂÖÀª");
+    case PortData::Image:   return Translate::tr("å›¾åƒ");
+    case PortData::Region:  return Translate::tr("åŒºåŸŸ");
+    case PortData::Contour: return Translate::tr("è½®å»“");
     case PortData::Roi:     return Translate::tr("ROI");
-    case PortData::Logic:   return Translate::tr("Âß¼­");
-    case PortData::Pose:    return Translate::tr("Î»×Ë");
-    case PortData::Tuple:   return Translate::tr("Ôª×é");
-    default:                return Translate::tr("Í¼Ïñ");
+    case PortData::Logic:   return Translate::tr("é€»è¾‘");
+    case PortData::Pose:    return Translate::tr("ä½å§¿");
+    case PortData::Tuple:   return Translate::tr("å…ƒç»„");
+    case PortData::Cloud:   return Translate::tr("ç‚¹äº‘");
+    case PortData::Pose3:   return Translate::tr("ä¸‰ç»´ä½å§¿");
+    case PortData::Shape3:  return Translate::tr("ä¸‰ç»´å½¢çŠ¶");
+    default:                return Translate::tr("å›¾åƒ");
     }
 }
 

@@ -1,6 +1,6 @@
 /**
  * @file CameraDeviceTool.h
- * @brief CameraDeviceToolÍ·ÎÄ¼ş
+ * @brief CameraDeviceToolå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -16,23 +16,23 @@ namespace Vision {
 
 /**
  * @class CameraDeviceTool
- * @brief Ïà»ú²É¼¯¡£ÕæÏà»ú SDK ÒÔºó×ß IGrabber£»ÏÖ°ó¶¨ÎÄ¼şÔ´Éè±¸ÈÔ¿É³öÍ¼
+ * @brief ç›¸æœºé‡‡é›†ã€‚çœŸç›¸æœº SDK ä»¥åèµ° IGrabberï¼›ç°ç»‘å®šæ–‡ä»¶æºè®¾å¤‡ä»å¯å‡ºå›¾
  */
 class CameraDeviceTool : public ToolBase {
 public:
-    /** @brief ×¢²áÃû */
+    /** @brief æ³¨å†Œå */
     std::string toolName() const { return "camera.device"; }
-    /** @brief ²É¼¯Àà */
+    /** @brief é‡‡é›†ç±» */
     ToolType type() const { return ToolType::Acquire; }
-    /** @brief ÖĞÎÄÃû */
-    std::string displayName() const { return std::string(Translate::tr("Ïà»ú")); }
-    /** @brief ¹¤¾ß°æ±¾ */
+    /** @brief ä¸­æ–‡å */
+    std::string displayName() const { return std::string(Translate::tr("ç›¸æœº")); }
+    /** @brief å·¥å…·ç‰ˆæœ¬ */
     std::string version() const { return VISION_MODULE_GRABFILE_VERSION; }
-    /** @brief ËµÃ÷ */
-    std::string description() const { return std::string(Translate::tr("ÒıÓÃ¹¤Õ¾°ó¶¨µÄÏà»ú»òÎÄ¼şÔ´Éè±¸£¬²ú³ö out.image")); }
-    /** @brief È±Ê¡²ÎÊı */
+    /** @brief è¯´æ˜ */
+    std::string description() const { return std::string(Translate::tr("å¼•ç”¨å·¥ç«™ç»‘å®šçš„ç›¸æœºæˆ–æ–‡ä»¶æºè®¾å¤‡ï¼Œäº§å‡º out.image")); }
+    /** @brief ç¼ºçœå‚æ•° */
     ParamMap defaultParams() const;
-    /** @brief °´°ó¶¨Éè±¸È¡Á÷ */
+    /** @brief æŒ‰ç»‘å®šè®¾å¤‡å–æµ */
     ToolOut execute(ToolContext& ctx);
 };
 

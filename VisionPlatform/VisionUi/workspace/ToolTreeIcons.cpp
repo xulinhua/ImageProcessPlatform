@@ -1,6 +1,6 @@
 /**
  * @file ToolTreeIcons.cpp
- * @brief ToolTreeIconsÊµÏÖ
+ * @brief ToolTreeIconså®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -49,7 +49,7 @@ QIcon g_cache[ToolTreeIconCount];
 bool g_cacheOk[ToolTreeIconCount] = { false };
 QHash<QString, QIcon> g_nameCache;
 
-// ´ÅÅÌÈ±Ê§Ê±£ºÏ¸Ïß·ç¸ñÕ¼Î»£¨½Ó½ü Lucide Ïß¿í£©
+// ç£ç›˜ç¼ºå¤±æ—¶ï¼šç»†çº¿é£æ ¼å ä½ï¼ˆæ¥è¿‘ Lucide çº¿å®½ï¼‰
 QIcon makeFallbackIcon(int key)
 {
     if (key < 0 || key >= ToolTreeIconCount) {
@@ -109,7 +109,7 @@ QIcon makeFallbackIcon(int key)
 
 } // namespace
 
-// ToolType ¡ú Í¼±ê¼ü
+// ToolType â†’ å›¾æ ‡é”®
 int toolTreeIconKeyForType(ToolType type)
 {
     switch (type) {
@@ -121,11 +121,16 @@ int toolTreeIconKeyForType(ToolType type)
     case ToolType::Comm: return ToolTreeIconComm;
     case ToolType::RstProcess: return ToolTreeIconResult;
     case ToolType::Calib: return ToolTreeIconResult;
+    case ToolType::Acquire3D: return ToolTreeIconCamera;
+    case ToolType::Prepare3D: return ToolTreeIconPreprocess;
+    case ToolType::Measure3D: return ToolTreeIconDetect;
+    case ToolType::Align3D: return ToolTreeIconLocate;
+    case ToolType::Infer: return ToolTreeIconDetect;
     }
     return ToolTreeIconCamera;
 }
 
-// ÓÅÏÈ icons/tools/*.svg£¬È±Ê§Ê±Ï¸ÏßÕ¼Î»
+// ä¼˜å…ˆ icons/tools/*.svgï¼Œç¼ºå¤±æ—¶ç»†çº¿å ä½
 QIcon toolTreeIcon(int key)
 {
     if (key < 0 || key >= ToolTreeIconCount) {
@@ -143,7 +148,7 @@ QIcon toolTreeIcon(int key)
     return g_cache[key];
 }
 
-// ÓÅÏÈ tools/<toolName>.svg£¬È±Ê§Ê±»ØÍËÀàĞÍÍ¼±ê
+// ä¼˜å…ˆ tools/<toolName>.svgï¼Œç¼ºå¤±æ—¶å›é€€ç±»å‹å›¾æ ‡
 QIcon toolTreeIconForName(const QString& toolName, int typeKeyFallback)
 {
     if (toolName.isEmpty()) {
@@ -163,7 +168,7 @@ QIcon toolTreeIconForName(const QString& toolName, int typeKeyFallback)
     return fallback;
 }
 
-// ¶ªµô¹¤¾ßÊ÷Í¼±ê»º´æ£¬ÏÂ´Î´Ó´ÅÅÌÖØÔØ
+// ä¸¢æ‰å·¥å…·æ ‘å›¾æ ‡ç¼“å­˜ï¼Œä¸‹æ¬¡ä»ç£ç›˜é‡è½½
 void clearToolTreeIconCache()
 {
     for (int i = 0; i < ToolTreeIconCount; ++i) {

@@ -1,6 +1,6 @@
 /**
  * @file VisionCoreExport.h
- * @brief VisionCoreExportͷ�ļ�
+ * @brief VisionCoreExport头文件
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.

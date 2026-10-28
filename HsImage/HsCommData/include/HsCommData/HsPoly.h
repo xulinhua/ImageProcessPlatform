@@ -1,6 +1,6 @@
 /**
  * @file HsPoly.h
- * @brief HsPolyÍ·ÎÄ¼ş
+ * @brief HsPolyå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -15,66 +15,66 @@ namespace HsCommData {
 
 /**
  * @class PolySeg
- * @brief ±Æ½üÕÛÏßµÄÒ»¶Î¡£¿ØÖÆµã£¬ÒÔ¼°Ëü¸Ç×¡µÄÔ­ÂÖÀªµãÏÂ±ê
+ * @brief é€¼è¿‘æŠ˜çº¿çš„ä¸€æ®µã€‚æ§åˆ¶ç‚¹ï¼Œä»¥åŠå®ƒç›–ä½çš„åŸè½®å»“ç‚¹ä¸‹æ ‡
  */
 struct HSCOMMDATA_EXPORT PolySeg {
-    Point2d pt; ///< ±¾¶Î¿ØÖÆµã
-    int first; ///< Ô­ÂÖÀªÆğµãÏÂ±ê£¬º¬
-    int last;  ///< Ô­ÂÖÀªÖÕµãÏÂ±ê£¬º¬
+    Point2d pt; ///< æœ¬æ®µæ§åˆ¶ç‚¹
+    int first; ///< åŸè½®å»“èµ·ç‚¹ä¸‹æ ‡ï¼Œå«
+    int last;  ///< åŸè½®å»“ç»ˆç‚¹ä¸‹æ ‡ï¼Œå«
 
-    PolySeg(); ///< ÏÂ±êÎª -1
+    PolySeg(); ///< ä¸‹æ ‡ä¸º -1
     PolySeg(const Point2d& pt, int first, int last);
 };
 
 /**
  * @class HsPoly
- * @brief Ò»Ìõ HsContour µÄÕÛÏß±Æ½ü¡£²»ÄÚÇ¶Ô­ÂÖÀª£¬first/last »ØÖ¸µ÷ÓÃ·½ÄÇÌõÂÖÀª¡£¶Î³¤ºÍ³¯ÏòÓÉÏàÁÚ¿ØÖÆµãËã³ö£¬²»Áí´æ
+ * @brief ä¸€æ¡ HsContour çš„æŠ˜çº¿é€¼è¿‘ã€‚ä¸å†…åµŒåŸè½®å»“ï¼Œfirst/last å›æŒ‡è°ƒç”¨æ–¹é‚£æ¡è½®å»“ã€‚æ®µé•¿å’Œæœå‘ç”±ç›¸é‚»æ§åˆ¶ç‚¹ç®—å‡ºï¼Œä¸å¦å­˜
  */
 struct HSCOMMDATA_EXPORT HsPoly {
-        bool closed;               ///< true Ê±¿ØÖÆµãÊ×Î²ÏàÁ¬
+        bool closed;               ///< true æ—¶æ§åˆ¶ç‚¹é¦–å°¾ç›¸è¿
 
-    HsPoly(); ///< Ä¬ÈÏ¿ªÕÛÏß
-    /** @brief ¿ØÖÆ¶Î°´¶ÎÊıÕû¶Î¸´ÖÆ¡£±ÕºÏ±êÖ¾Ò»²¢¿½±´ */
+    HsPoly(); ///< é»˜è®¤å¼€æŠ˜çº¿
+    /** @brief æ§åˆ¶æ®µæŒ‰æ®µæ•°æ•´æ®µå¤åˆ¶ã€‚é—­åˆæ ‡å¿—ä¸€å¹¶æ‹·è´ */
     HsPoly(const HsPoly& other);
-    /** @brief ¿ØÖÆ¶Î°´¶ÎÊıÕû¶Î¸´ÖÆ¡£±ÕºÏ±êÖ¾Ò»²¢¿½±´ */
+    /** @brief æ§åˆ¶æ®µæŒ‰æ®µæ•°æ•´æ®µå¤åˆ¶ã€‚é—­åˆæ ‡å¿—ä¸€å¹¶æ‹·è´ */
     HsPoly& operator=(const HsPoly& other);
-    /** @brief ÊÍ·Å¶Î»º³å */
+    /** @brief é‡Šæ”¾æ®µç¼“å†² */
     ~HsPoly();
-    /** @brief ¶ÎÊı */
+    /** @brief æ®µæ•° */
     size_t segCount() const;
-    /** @brief Ã»ÓĞ¿ØÖÆ¶Î */
+    /** @brief æ²¡æœ‰æ§åˆ¶æ®µ */
     bool segsEmpty() const;
-    /** @brief µÚ i ¶Î */
+    /** @brief ç¬¬ i æ®µ */
     PolySeg& segAt(size_t i);
-    /** @brief µÚ i ¶Î */
+    /** @brief ç¬¬ i æ®µ */
     const PolySeg& segAt(size_t i) const;
-    /** @brief ×·¼ÓÒ»¶Î */
+    /** @brief è¿½åŠ ä¸€æ®µ */
     void pushSeg(const PolySeg& seg);
-    /** @brief ¸Ä¶ÎÊı¡£±ä³¤µÄĞÂ¶ÎÏÂ±êÎª -1 */
+    /** @brief æ”¹æ®µæ•°ã€‚å˜é•¿çš„æ–°æ®µä¸‹æ ‡ä¸º -1 */
     void resizeSegs(size_t n);
 
-    /** @brief ÎŞ¿ØÖÆ¶ÎÔòÎª¿Õ */
+    /** @brief æ— æ§åˆ¶æ®µåˆ™ä¸ºç©º */
     bool isEmpty() const;
-    /** @brief ¿ØÖÆµã°üÎ§ºĞ */
+    /** @brief æ§åˆ¶ç‚¹åŒ…å›´ç›’ */
     Box2 bounds() const;
     /**
-     * @brief Ã¿¶ÎÏÂ±êÊÇ·ñÂäÔÚÂÖÀªµãÊıÄÚ£¬ÇÒ first ²»´óÓÚ last
-     * @return Ã»ÓĞ¿ØÖÆ¶Î¡¢Ô­ÂÖÀªÃ»µã£¬»òÈÎÒ»¶ÎÔ½½çÊ±Îª false
+     * @brief æ¯æ®µä¸‹æ ‡æ˜¯å¦è½åœ¨è½®å»“ç‚¹æ•°å†…ï¼Œä¸” first ä¸å¤§äº last
+     * @return æ²¡æœ‰æ§åˆ¶æ®µã€åŸè½®å»“æ²¡ç‚¹ï¼Œæˆ–ä»»ä¸€æ®µè¶Šç•Œæ—¶ä¸º false
      */
     bool fits(const HsContour& contour) const;
 private:
-    /** @brief °´¶ÎÊı·ÖÅä£¬²»Öğ¶Î¹¹Ôì */
+    /** @brief æŒ‰æ®µæ•°åˆ†é…ï¼Œä¸é€æ®µæ„é€  */
     void allocSegs(size_t n);
-    /** @brief ÈİÁ¿²»×ãÊ±»»Ò»¿é¸ü´óµÄ»º³å£¬¾É¶ÎÕû¶Î°á¹ıÈ¥ */
+    /** @brief å®¹é‡ä¸è¶³æ—¶æ¢ä¸€å—æ›´å¤§çš„ç¼“å†²ï¼Œæ—§æ®µæ•´æ®µæ¬è¿‡å» */
     void ensureSegs(size_t need);
-    /** @brief ÊÍ·Å¶Î»º³å */
+    /** @brief é‡Šæ”¾æ®µç¼“å†² */
     void releaseSegs();
-    /** @brief °´¶ÎÊıÕû¶Î¸´ÖÆ */
+    /** @brief æŒ‰æ®µæ•°æ•´æ®µå¤åˆ¶ */
     void copySegs(const PolySeg* src, size_t n);
 
-    PolySeg* m_segs;   ///< ¶Î»º³å
-    size_t m_segCount; ///< ¶ÎÊı
-    size_t m_segCap;   ///< ÈİÁ¿
+    PolySeg* m_segs;   ///< æ®µç¼“å†²
+    size_t m_segCount; ///< æ®µæ•°
+    size_t m_segCap;   ///< å®¹é‡
 };
 
 }

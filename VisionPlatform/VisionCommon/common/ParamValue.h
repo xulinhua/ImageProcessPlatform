@@ -1,6 +1,6 @@
 /**
  * @file ParamValue.h
- * @brief ParamValueÍ·ÎÄ¼ş
+ * @brief ParamValueå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -21,17 +21,17 @@ namespace Vision {
 
 /**
  * @class ParamValue
- * @brief ¹¤¾ß»òÉè±¸²ÎÊıÈ¡Öµ£¨ÎŞ Qt£©
+ * @brief å·¥å…·æˆ–è®¾å¤‡å‚æ•°å–å€¼ï¼ˆæ—  Qtï¼‰
  */
 class ParamValue {
 public:
-    /** @brief ´æÄÄÖÖ×ÖÃæÁ¿ */
+    /** @brief å­˜å“ªç§å­—é¢é‡ */
     enum Kind {
-        KindNull = 0, ///< Î´ÉèÖÃ
-        KindBool,     ///< ²¼¶û
-        KindInt,      ///< ÕûÊı
-        KindDouble,   ///< ¸¡µã
-        KindString    ///< ÎÄ±¾
+        KindNull = 0, ///< æœªè®¾ç½®
+        KindBool,     ///< å¸ƒå°”
+        KindInt,      ///< æ•´æ•°
+        KindDouble,   ///< æµ®ç‚¹
+        KindString    ///< æ–‡æœ¬
     };
 
     ParamValue() : m_kind(KindNull), m_b(false), m_i(0), m_d(0) {}
@@ -41,65 +41,65 @@ public:
     ParamValue(const char* v) : m_kind(KindString), m_b(false), m_i(0), m_d(0), m_s(v ? v : "") {}
     ParamValue(const std::string& v) : m_kind(KindString), m_b(false), m_i(0), m_d(0), m_s(v) {}
 
-    /** @brief µ±Ç°ÖÖÀà */
+    /** @brief å½“å‰ç§ç±» */
     Kind kind() const { return m_kind; }
-    /** @brief ÊÇ·ñÎ´ÉèÖÃ */
+    /** @brief æ˜¯å¦æœªè®¾ç½® */
     bool isNull() const { return m_kind == KindNull; }
 
     /**
-     * @brief ×ª²¼¶û£»¿ÕÖµ·µ»Ø def¡£×Ö·û´®ÈÏ "1"/"true"/"True"
+     * @brief è½¬å¸ƒå°”ï¼›ç©ºå€¼è¿”å› defã€‚å­—ç¬¦ä¸²è®¤ "1"/"true"/"True"
      */
     VISION_COMMON_API bool toBool(bool def = false) const;
 
     /**
-     * @brief ×ªÕûÊı£»¿ÕÖµ·µ»Ø def¡£×Ö·û´®×ß atoi
+     * @brief è½¬æ•´æ•°ï¼›ç©ºå€¼è¿”å› defã€‚å­—ç¬¦ä¸²èµ° atoi
      */
     VISION_COMMON_API int toInt(int def = 0) const;
 
     /**
-     * @brief ×ª¸¡µã£»¿ÕÖµ·µ»Ø def¡£×Ö·û´®×ß atof
+     * @brief è½¬æµ®ç‚¹ï¼›ç©ºå€¼è¿”å› defã€‚å­—ç¬¦ä¸²èµ° atof
      */
     VISION_COMMON_API double toDouble(double def = 0) const;
 
-    /** @brief ×ªÎÄ±¾£»¿ÕÖµÎª¿Õ´®£¬Êı×ÖÓÃ sprintf_s */
+    /** @brief è½¬æ–‡æœ¬ï¼›ç©ºå€¼ä¸ºç©ºä¸²ï¼Œæ•°å­—ç”¨ sprintf_s */
     VISION_COMMON_API std::string toString() const;
 
 
 private:
-    Kind m_kind;      ///< µ±Ç°ÖÖÀà
-    bool m_b;         ///< ²¼¶û/ÊıÖµ·ÇÁã
-    int m_i;          ///< ÕûÊı¾µÏñ
-    double m_d;       ///< ¸¡µã¾µÏñ
-    std::string m_s;  ///< ÎÄ±¾
+    Kind m_kind;      ///< å½“å‰ç§ç±»
+    bool m_b;         ///< å¸ƒå°”/æ•°å€¼éé›¶
+    int m_i;          ///< æ•´æ•°é•œåƒ
+    double m_d;       ///< æµ®ç‚¹é•œåƒ
+    std::string m_s;  ///< æ–‡æœ¬
 };
 
 /**
  * @class ParamMap
- * @brief ²ÎÊı±í£¨key µ½ ParamValue£©¡£¹¤¾ß params¡¢Éè±¸ defaultParams ÓÃ´Ë£¬Ìæ´ú QVariantMap
+ * @brief å‚æ•°è¡¨ï¼ˆkey åˆ° ParamValueï¼‰ã€‚å·¥å…· paramsã€è®¾å¤‡ defaultParams ç”¨æ­¤ï¼Œæ›¿ä»£ QVariantMap
  */
 class ParamMap {
 public:
-    /** @brief Ğ´Èë»ò¸²¸Ç */
+    /** @brief å†™å…¥æˆ–è¦†ç›– */
     void insert(const std::string& key, const ParamValue& v) { m[key] = v; }
-    /** @brief ¶ÁÈ¡£»È±¼ü·µ»Ø¿Õ ParamValue */
+    /** @brief è¯»å–ï¼›ç¼ºé”®è¿”å›ç©º ParamValue */
     VISION_COMMON_API ParamValue value(const std::string& key) const;
 
-    /** @brief ÊÇ·ñº¬¼ü */
+    /** @brief æ˜¯å¦å«é”® */
     bool contains(const std::string& key) const { return m.find(key) != m.end(); }
-    /** @brief Çå¿Õ */
+    /** @brief æ¸…ç©º */
     void clear() { m.clear(); }
-    /** @brief ÌõÄ¿Êı */
+    /** @brief æ¡ç›®æ•° */
     int size() const { return static_cast<int>(m.size()); }
-    /** @brief È«²¿¼ü£¨map Ğò£© */
+    /** @brief å…¨éƒ¨é”®ï¼ˆmap åºï¼‰ */
     VISION_COMMON_API std::vector<std::string> keys() const;
 
-    /** @brief ¿ÉĞ´µ×²ã map£¨ĞòÁĞ»¯ÓÃ£© */
+    /** @brief å¯å†™åº•å±‚ mapï¼ˆåºåˆ—åŒ–ç”¨ï¼‰ */
     std::map<std::string, ParamValue>& raw() { return m; }
-    /** @brief Ö»¶Áµ×²ã map */
+    /** @brief åªè¯»åº•å±‚ map */
     const std::map<std::string, ParamValue>& raw() const { return m; }
 
 private:
-    std::map<std::string, ParamValue> m; ///< ¼üÖµ±í
+    std::map<std::string, ParamValue> m; ///< é”®å€¼è¡¨
 };
 
 }

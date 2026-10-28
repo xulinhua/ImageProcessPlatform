@@ -1,6 +1,6 @@
 /**
  * @file ToolParaBase.h
- * @brief ToolParaBaseÍ·ÎÄ¼ş
+ * @brief ToolParaBaseå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -11,6 +11,7 @@
 
 #include "ToolExport.h"
 #include "ToolGeom.h"
+#include <cstring>
 #include <string>
 #include <vector>
 
@@ -22,45 +23,57 @@ enum AdaptDir {
 };
 
 struct ParaAdaptStep {
-    const char* fromVer; ///< ÕâÒ»²½µÄÆğµã
-    const char* toVer;   ///< ÕâÒ»²½µÄÖÕµã
-    bool needConfirm;    ///< ×Ô¶¯Ö´ĞĞÊ±ÒªÏÈÈË¹¤È·ÈÏ
+    const char* fromVer; ///< è¿™ä¸€æ­¥çš„èµ·ç‚¹
+    const char* toVer;   ///< è¿™ä¸€æ­¥çš„ç»ˆç‚¹
+    bool needConfirm;    ///< è‡ªåŠ¨æ‰§è¡Œæ—¶è¦å…ˆäººå·¥ç¡®è®¤
     ParaAdaptStep() : fromVer(""), toVer(""), needConfirm(false) {}
 };
 
 /**
  * @class ToolParaBase
- * @brief ÔËĞĞÊ±¹¤¾ß²ÎÊı»ùÀà¡£Ñ§Ï°¡¢ÔËĞĞÓÉ×ÓÀà×Ô¼ºµÄ½á¹¹Ìå³Ğµ£
+ * @brief è¿è¡Œæ—¶å·¥å…·å‚æ•°åŸºç±»ã€‚å­¦ä¹ ã€è¿è¡Œç”±å­ç±»è‡ªå·±çš„ç»“æ„ä½“æ‰¿æ‹…
  */
 class VISION_TOOL_API ToolParaBase {
 public:
     virtual ~ToolParaBase() {}
-    /** @brief ´ÓÂäÅÌµÄ ToolParam ÌîĞ´±¾¶ÔÏó */
+    /** @brief ä»è½ç›˜çš„ ToolParam å¡«å†™æœ¬å¯¹è±¡ */
     virtual void load(const ToolParam& src) = 0;
+    /** @brief å‚æ•°ç±»å‹åã€‚è·¨æ¨¡å—è¯†åˆ«ï¼Œç©ºä¸²è¡¨ç¤ºæœªç™»è®° */
+    virtual const char* typeName() const { return ""; }
     virtual const char* paraVersion() const { return "1.0.0.0"; }
     /**
-     * @brief °Ñ src ´Ó oldVer Á¬ĞøÊÊÅäµ½ newVer£¬²¢Ğ´»Ø src->paraVersion
-     * ¿Õ°æ±¾ºÍ 0.0.0.0 µ±³É 1.0.0.0¡£Ã»ÓĞµÇ¼Ç²½½øÇÒÁ½¶ËÏàÍ¬ÔòÖ±½ÓÍ¨¹ı¡£
+     * @brief æŠŠ src ä» oldVer è¿ç»­é€‚é…åˆ° newVerï¼Œå¹¶å†™å› src->paraVersion
+     * ç©ºç‰ˆæœ¬å’Œ 0.0.0.0 å½“æˆ 1.0.0.0ã€‚æ²¡æœ‰ç™»è®°æ­¥è¿›ä¸”ä¸¤ç«¯ç›¸åŒåˆ™ç›´æ¥é€šè¿‡ã€‚
      */
     bool adaptParam(ToolParam* src, const std::string& oldVer, const std::string& newVer, std::string* detail);
-    /** @brief ÁĞ³ö½«Òª×ßµÄ²½½øÃû¡£needConfirm ÈÎÒ»²½ĞèÒªÈ·ÈÏÔòÎª true */
+    /** @brief åˆ—å‡ºå°†è¦èµ°çš„æ­¥è¿›åã€‚needConfirm ä»»ä¸€æ­¥éœ€è¦ç¡®è®¤åˆ™ä¸º true */
     void preview(const std::string& fromVer, const std::string& toVer,
                  std::vector<std::string>* names, bool* needConfirm) const;
     static int compareVersion(const std::string& a, const std::string& b);
 
-    std::vector<JudgeParam> judge; ///< ÅĞ¶Ï²ÎÊı£¬´Ó ToolParam Ô­Ñù¿½±´
+    std::vector<JudgeParam> judge; ///< åˆ¤æ–­å‚æ•°ï¼Œä» ToolParam åŸæ ·æ‹·è´
 
 protected:
-    /** @brief ±¾¹¤¾ßµÇ¼ÇµÄ²ÎÊı²½½øÊı¡£Ã»ÓĞ¸Ä¹ı²ÎÊı²¼¾ÖÔòÎª 0 */
+    /** @brief æœ¬å·¥å…·ç™»è®°çš„å‚æ•°æ­¥è¿›æ•°ã€‚æ²¡æœ‰æ”¹è¿‡å‚æ•°å¸ƒå±€åˆ™ä¸º 0 */
     virtual int adaptStepCount() const { return 0; }
-    /** @brief µÚ index ²½µÄÆğÖ¹°æ±¾¡£Ô½½ç·µ»Ø¿Õ²½Öè */
+    /** @brief ç¬¬ index æ­¥çš„èµ·æ­¢ç‰ˆæœ¬ã€‚è¶Šç•Œè¿”å›ç©ºæ­¥éª¤ */
     virtual ParaAdaptStep adaptStepAt(int index) const;
     /**
-     * @brief Ö´ĞĞµÚ index ²½¡£×ÓÀàÔÚÕâÀïµ÷ÓÃ×Ô¼ºµÄ AdaptPara_xxxxxxxx_yyyyyyyy
-     * ÕâĞ©º¯ÊıÁôÔÚ×ÓÀàÀï£¬²»µ¼³ö¡£
+     * @brief æ‰§è¡Œç¬¬ index æ­¥ã€‚å­ç±»åœ¨è¿™é‡Œè°ƒç”¨è‡ªå·±çš„ AdaptPara_xxxxxxxx_yyyyyyyy
+     * è¿™äº›å‡½æ•°ç•™åœ¨å­ç±»é‡Œï¼Œä¸å¯¼å‡ºã€‚
      */
     virtual bool applyAdaptStep(int index, ToolParam* param, AdaptDir dir);
 };
+
+/** @brief æŒ‰ç±»å‹åå–å‡ºå­ç±»å‚æ•°ã€‚ä¸ç¬¦è¿”å› 0 */
+template <class T>
+const T* toolParaAs(const ToolParaBase* param)
+{
+    if (param == nullptr || std::strcmp(param->typeName(), T::typeId()) != 0) {
+        return nullptr;
+    }
+    return static_cast<const T*>(param);
+}
 
 }
 

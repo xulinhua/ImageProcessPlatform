@@ -1,6 +1,6 @@
 /**
  * @file Sha256.cpp
- * @brief Sha256ÊµÏÖ
+ * @brief Sha256å®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -11,13 +11,13 @@
 
 namespace Vision {
 
-// 32 Î»Ñ­»·ÓÒÒÆ
+// 32 ä½å¾ªç¯å³ç§»
 static uint32_t rotr(uint32_t x, uint32_t n)
 {
     return (x >> n) | (x << (32 - n));
 }
 
-// SHA-256£ºÊä³ö 32 ×Ö½ÚÕªÒª
+// SHA-256ï¼šè¾“å‡º 32 å­—èŠ‚æ‘˜è¦
 void sha256(const unsigned char* data, size_t len, unsigned char out[32])
 {
     static const uint32_t k[64] = {
@@ -39,7 +39,7 @@ void sha256(const unsigned char* data, size_t len, unsigned char out[32])
     size_t offset = 0;
     uint64_t bitLen = static_cast<uint64_t>(len) * 8;
 
-    // ÍêÕû 512-bit ¿é£ºÏûÏ¢À©Õ¹ºóÑ¹Ëõ½ø h[]
+    // å®Œæ•´ 512-bit å—ï¼šæ¶ˆæ¯æ‰©å±•åå‹ç¼©è¿› h[]
     while (offset + 64 <= len) {
         memcpy(block, data + offset, 64);
         offset += 64;
@@ -77,7 +77,7 @@ void sha256(const unsigned char* data, size_t len, unsigned char out[32])
         h[4] += e; h[5] += f; h[6] += g; h[7] += hh;
     }
 
-    // Ìî³ä£ºÊ£Óà×Ö½Ú + 0x80£»Èô²»¹»·ÅÏÂ 64-bit ³¤¶ÈÔòÏÈÑ¹Ò»¿é
+    // å¡«å……ï¼šå‰©ä½™å­—èŠ‚ + 0x80ï¼›è‹¥ä¸å¤Ÿæ”¾ä¸‹ 64-bit é•¿åº¦åˆ™å…ˆå‹ä¸€å—
     const size_t rem = len - offset;
     memset(block, 0, 64);
     if (rem > 0) {
@@ -121,7 +121,7 @@ void sha256(const unsigned char* data, size_t len, unsigned char out[32])
         memset(block, 0, 64);
     }
 
-    // Ä©¿éĞ´Èë´ó¶ËÎ»³¤¶È²¢Ñ¹Ëõ
+    // æœ«å—å†™å…¥å¤§ç«¯ä½é•¿åº¦å¹¶å‹ç¼©
     block[56] = static_cast<unsigned char>((bitLen >> 56) & 0xff);
     block[57] = static_cast<unsigned char>((bitLen >> 48) & 0xff);
     block[58] = static_cast<unsigned char>((bitLen >> 40) & 0xff);

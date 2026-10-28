@@ -1,6 +1,6 @@
 /**
  * @file HalTexture.h
- * @brief HalTextureÍ·ÎÄ¼ş
+ * @brief HalTextureå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -10,23 +10,43 @@
 #define VISION_HALCONTEXTURE_H
 
 #include "AlgToolBase.h"
+#include "HalconCpp.h"
 
 namespace Vision {
 
 /**
  * @class HalTexture
- * @brief ÓÃÎÆÀíÄ£ĞÍ±È½ÏÈ±Ïİ£¨Halcon£©
+ * @brief ç”¨çº¹ç†æ¨¡å‹æ¯”è¾ƒç¼ºé™·ï¼ˆHalconï¼‰
  */
 class HalTexture : public AlgToolBase {
 public:
     std::string toolName() const { return "detect.texture"; }
-    AlgLibKind algLib() const { return AlgLibHal; }
+    AlgLibKind algLib() const { return AlgLibHal; }
     std::string version() const;
-    /** @brief °æ±¾±ä¸ü£¬Ö»×·¼Ó */
+    /** @brief ç‰ˆæœ¬å˜æ›´ï¼Œåªè¿½åŠ  */
     std::vector<VerNote> versionNotes() const;
-    /** @brief ÓÃÎÆÀíÄ£ĞÍ±È½ÏÈ±Ïİ */
+    /** @brief ç”¨çº¹ç†æ¨¡å‹æ¯”è¾ƒç¼ºé™· */
+    int execute(const AlgToolIn& in, AlgToolOut* out) override {
+        if (!out) {
+            return HS_ERR_NULL;
+        }
+        *out = run(in);
+        if (out->ok) {
+            out->errCode = HS_OK;
+            return HS_OK;
+        }
+        if (out->errCode == HS_OK || out->errCode == 1) {
+            out->errCode = HS_ERR_OPERATOR;
+        }
+        return out->errCode;
+    }
     AlgToolOut run(const AlgToolIn& in);
     AlgToolBase* clone() const { return new HalTexture(); }
+
+private:
+    /** @brief è¿é€šã€æŒ‰é¢ç§¯ç­›é€‰å¹¶æ‰“åŒ… */
+    AlgToolOut packRegions(const HalconCpp::HObject& region, const AlgToolIn& in,
+                           double minArea, double maxArea, const std::string& okMsg) const;
 };
 
 }

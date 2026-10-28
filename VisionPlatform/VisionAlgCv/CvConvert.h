@@ -1,6 +1,6 @@
 /**
  * @file CvConvert.h
- * @brief CvConvertÍ·ÎÄ¼þ
+ * @brief CvConvertå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -8,16 +8,16 @@
 
 #ifndef VISION_OPENCVCONVERT_H
 #define VISION_OPENCVCONVERT_H
-/** @brief ¼æÈÝ¾ÉÍ·£ºÇë¸ÄÓÃ CvImageConvert.h */
+/** @brief å…¼å®¹æ—§å¤´ï¼šè¯·æ”¹ç”¨ CvImageConvert.h */
 #include "CvImageConvert.h"
 
 namespace Vision {
-/** @deprecated ÇëÓÃ hsImageToMatGray */
+/** @deprecated è¯·ç”¨ hsImageToMatGray */
 inline bool frameToMatGray(const HsCommData::HsImage& fb, cv::Mat*& out, std::string* err)
 {
     return hsImageToMatGray(fb, out, err);
 }
-/** @deprecated ÇëÓÃ matToHsImage */
+/** @deprecated è¯·ç”¨ matToHsImage */
 inline bool matToFrame(const cv::Mat& img, int64_t frameId, HsCommData::HsImage*& out, std::string* err)
 {
     return matToHsImage(img, frameId, out, err);

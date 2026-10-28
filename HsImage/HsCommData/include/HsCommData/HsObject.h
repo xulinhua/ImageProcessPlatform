@@ -1,6 +1,6 @@
 /**
  * @file HsObject.h
- * @brief HsObjectÍ·ÎÄ¼ş
+ * @brief HsObjectå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -22,64 +22,64 @@
 
 namespace HsCommData {
 
-/** @brief ¶ÔÏóÔªËØÖÖÀà¡£HsObject ÄÚÒ»¸ñ»òÕû×éÍ³Ò»Ê±µÄ¶ÔÍâÖÖÀà */
+/** @brief å¯¹è±¡å…ƒç´ ç§ç±»ã€‚HsObject å†…ä¸€æ ¼æˆ–æ•´ç»„ç»Ÿä¸€æ—¶çš„å¯¹å¤–ç§ç±» */
 enum ObjectKind {
-    ObjUndefined = -1, ///< Î´¶¨Òå
-    ObjEmpty = 0, ///< ¿Õ
-    ObjMixed,     ///< ¶àÖÖÀà»ì·Å
-    ObjImage,     ///< Í¼Ïñ
-    ObjRegion,    ///< ÇøÓò
-    ObjContour,   ///< ÂÖÀª
-    ObjPoly,      ///< ¶à±ßĞÎ
-    ObjCircle,    ///< Ô²
-    ObjEllipse,   ///< ÍÖÔ²
-    ObjRect1,     ///< Öá¶ÔÆë¾ØĞÎ
-    ObjRect2,     ///< Ğı×ª¾ØĞÎ
-    ObjLine,       ///< Ïß¶Î
-    ObjKindMax ///< ¸öÊı£¬²»ÊÇºÏ·¨Öµ
+    ObjUndefined = -1, ///< æœªå®šä¹‰
+    ObjEmpty = 0, ///< ç©º
+    ObjMixed,     ///< å¤šç§ç±»æ··æ”¾
+    ObjImage,     ///< å›¾åƒ
+    ObjRegion,    ///< åŒºåŸŸ
+    ObjContour,   ///< è½®å»“
+    ObjPoly,      ///< å¤šè¾¹å½¢
+    ObjCircle,    ///< åœ†
+    ObjEllipse,   ///< æ¤­åœ†
+    ObjRect1,     ///< è½´å¯¹é½çŸ©å½¢
+    ObjRect2,     ///< æ—‹è½¬çŸ©å½¢
+    ObjLine,       ///< çº¿æ®µ
+    ObjKindMax ///< ä¸ªæ•°ï¼Œä¸æ˜¯åˆæ³•å€¼
 };
 
 /**
  * @class ObjectUnion
- * @brief µ¥¸ñ¶ÔÏó´æ´¢¡£Í¬Ò»Ê±¿ÌÖ»ÓĞÒ»ÖÖÓĞĞ§£¬ÓÉ kind Çø·Ö
+ * @brief å•æ ¼å¯¹è±¡å­˜å‚¨ã€‚åŒä¸€æ—¶åˆ»åªæœ‰ä¸€ç§æœ‰æ•ˆï¼Œç”± kind åŒºåˆ†
  */
 class HSCOMMDATA_EXPORT ObjectUnion {
     friend class HsObject;
 
 public:
-    ObjectUnion(); ///< ¿Õ
+    ObjectUnion(); ///< ç©º
     ~ObjectUnion();
-    ObjectUnion(const ObjectUnion& other); ///< Éî¿½µ±Ç°ÖÖÀà
+    ObjectUnion(const ObjectUnion& other); ///< æ·±æ‹·å½“å‰ç§ç±»
     ObjectUnion& operator=(const ObjectUnion& other);
 
-    /** @brief µ±Ç°ÖÖÀà */
+    /** @brief å½“å‰ç§ç±» */
     ObjectKind kind() const;
 
 private:
-    /** @brief ¸ºÏÂ±êÊÕµ½ [0, count())¡£·Ç·¨ÔòÅ× */
+    /** @brief è´Ÿä¸‹æ ‡æ”¶åˆ° [0, count())ã€‚éæ³•åˆ™æŠ› */
     int resolveIndex(int index) const;
-    /** @brief ÊÍ·Å²¢ÖÃ¿Õ */
+    /** @brief é‡Šæ”¾å¹¶ç½®ç©º */
     void reset();
-    /** @brief »»³ÉÍ¼Ïñ£¬ÊÍ·Å¾ÉÄÚÈİ */
+    /** @brief æ¢æˆå›¾åƒï¼Œé‡Šæ”¾æ—§å†…å®¹ */
     void setImage(const HsImage& value);
-    /** @brief »»³ÉÇøÓò */
+    /** @brief æ¢æˆåŒºåŸŸ */
     void setRegion(const HsRegion& value);
-    /** @brief »»³ÉÂÖÀª */
+    /** @brief æ¢æˆè½®å»“ */
     void setContour(const HsContour& value);
-    /** @brief »»³É¶à±ßĞÎ */
+    /** @brief æ¢æˆå¤šè¾¹å½¢ */
     void setPoly(const HsPoly& value);
-    /** @brief »»³ÉÔ² */
+    /** @brief æ¢æˆåœ† */
     void setCircle(const CircleP& value);
-    /** @brief »»³ÉÍÖÔ² */
+    /** @brief æ¢æˆæ¤­åœ† */
     void setEllipse(const EllipseP& value);
-    /** @brief »»³ÉÖá¶ÔÆë¾ØĞÎ */
+    /** @brief æ¢æˆè½´å¯¹é½çŸ©å½¢ */
     void setRect1(const Rect1P& value);
-    /** @brief »»³ÉĞı×ª¾ØĞÎ */
+    /** @brief æ¢æˆæ—‹è½¬çŸ©å½¢ */
     void setRect2(const Rect2P& value);
-    /** @brief »»³ÉÏß¶Î */
+    /** @brief æ¢æˆçº¿æ®µ */
     void setLine(const LineP& value);
 
-    ObjectKind m_kind; ///< µ±Ç°ÖÖÀà
+    ObjectKind m_kind; ///< å½“å‰ç§ç±»
     union {
         HsImage* image;     ///< ObjImage
         HsRegion* region;   ///< ObjRegion
@@ -95,236 +95,236 @@ private:
 
 /**
  * @class HsObject
- * @brief Í¼ĞÎ¶ÔÏóÈİÆ÷¡£¿½±´¹²Ïí»º³å£¬clone ²ÅÉî¿½
- * ÏÂ±ê´Ó 0 Æğ£¬¿ÉÓÃ¸ºÏÂ±ê´ÓÄ©Î²Êı¡£»ì·ÅÊ± kind Îª ObjMixed£¬Öğ¸ñÓÃ kindAt
- * Ğ´Èë»á²ğ¿ª¹²Ïí£¬Ìæ»»Ò»¸ñÊ±ÆäËü¸ñÈÔ¿É¹²ÏíÖ»¶Á»º³å
+ * @brief å›¾å½¢å¯¹è±¡å®¹å™¨ã€‚æ‹·è´å…±äº«ç¼“å†²ï¼Œclone æ‰æ·±æ‹·
+ * ä¸‹æ ‡ä» 0 èµ·ï¼Œå¯ç”¨è´Ÿä¸‹æ ‡ä»æœ«å°¾æ•°ã€‚æ··æ”¾æ—¶ kind ä¸º ObjMixedï¼Œé€æ ¼ç”¨ kindAt
+ * å†™å…¥ä¼šæ‹†å¼€å…±äº«ï¼Œæ›¿æ¢ä¸€æ ¼æ—¶å…¶å®ƒæ ¼ä»å¯å…±äº«åªè¯»ç¼“å†²
  */
 class HSCOMMDATA_EXPORT HsObject {
 public:
-    HsObject(); ///< ¿Õ£¬Î´·ÖÅä
-    /** @brief ¹²Ïí»º³å¿½±´ */
+    HsObject(); ///< ç©ºï¼Œæœªåˆ†é…
+    /** @brief å…±äº«ç¼“å†²æ‹·è´ */
     HsObject(const HsObject& other);
-    /** @brief ¹²Ïí»º³å¸³Öµ¡£Éî¿½ÓÃ clone */
+    /** @brief å…±äº«ç¼“å†²èµ‹å€¼ã€‚æ·±æ‹·ç”¨ clone */
     HsObject& operator=(const HsObject& other);
 
-    /** @brief µ¥ÔªËØÍ¼Ïñ¶ÔÏó */
+    /** @brief å•å…ƒç´ å›¾åƒå¯¹è±¡ */
     HsObject(const HsImage& value);
-    /** @brief µ¥ÔªËØÇøÓò¶ÔÏó */
+    /** @brief å•å…ƒç´ åŒºåŸŸå¯¹è±¡ */
     HsObject(const HsRegion& value);
-    /** @brief µ¥ÔªËØÂÖÀª¶ÔÏó */
+    /** @brief å•å…ƒç´ è½®å»“å¯¹è±¡ */
     HsObject(const HsContour& value);
-    /** @brief µ¥ÔªËØ¶à±ßĞÎ¶ÔÏó */
+    /** @brief å•å…ƒç´ å¤šè¾¹å½¢å¯¹è±¡ */
     HsObject(const HsPoly& value);
-    /** @brief µ¥ÔªËØÔ²¶ÔÏó */
+    /** @brief å•å…ƒç´ åœ†å¯¹è±¡ */
     HsObject(const CircleP& value);
-    /** @brief µ¥ÔªËØÍÖÔ²¶ÔÏó */
+    /** @brief å•å…ƒç´ æ¤­åœ†å¯¹è±¡ */
     HsObject(const EllipseP& value);
-    /** @brief µ¥ÔªËØÖá¶ÔÆë¾ØĞÎ¶ÔÏó */
+    /** @brief å•å…ƒç´ è½´å¯¹é½çŸ©å½¢å¯¹è±¡ */
     HsObject(const Rect1P& value);
-    /** @brief µ¥ÔªËØĞı×ª¾ØĞÎ¶ÔÏó */
+    /** @brief å•å…ƒç´ æ—‹è½¬çŸ©å½¢å¯¹è±¡ */
     HsObject(const Rect2P& value);
-    /** @brief µ¥ÔªËØÏß¶Î¶ÔÏó */
+    /** @brief å•å…ƒç´ çº¿æ®µå¯¹è±¡ */
     HsObject(const LineP& value);
 
-    /** @brief »»³Éµ¥ÔªËØÍ¼Ïñ£¬²»×·¼Ó */
+    /** @brief æ¢æˆå•å…ƒç´ å›¾åƒï¼Œä¸è¿½åŠ  */
     HsObject& operator=(const HsImage& value);
-    /** @brief »»³Éµ¥ÔªËØÇøÓò£¬²»×·¼Ó */
+    /** @brief æ¢æˆå•å…ƒç´ åŒºåŸŸï¼Œä¸è¿½åŠ  */
     HsObject& operator=(const HsRegion& value);
-    /** @brief »»³Éµ¥ÔªËØÂÖÀª£¬²»×·¼Ó */
+    /** @brief æ¢æˆå•å…ƒç´ è½®å»“ï¼Œä¸è¿½åŠ  */
     HsObject& operator=(const HsContour& value);
-    /** @brief »»³Éµ¥ÔªËØ¶à±ßĞÎ£¬²»×·¼Ó */
+    /** @brief æ¢æˆå•å…ƒç´ å¤šè¾¹å½¢ï¼Œä¸è¿½åŠ  */
     HsObject& operator=(const HsPoly& value);
-    /** @brief »»³Éµ¥ÔªËØÔ²£¬²»×·¼Ó */
+    /** @brief æ¢æˆå•å…ƒç´ åœ†ï¼Œä¸è¿½åŠ  */
     HsObject& operator=(const CircleP& value);
-    /** @brief »»³Éµ¥ÔªËØÍÖÔ²£¬²»×·¼Ó */
+    /** @brief æ¢æˆå•å…ƒç´ æ¤­åœ†ï¼Œä¸è¿½åŠ  */
     HsObject& operator=(const EllipseP& value);
-    /** @brief »»³Éµ¥ÔªËØÖá¶ÔÆë¾ØĞÎ£¬²»×·¼Ó */
+    /** @brief æ¢æˆå•å…ƒç´ è½´å¯¹é½çŸ©å½¢ï¼Œä¸è¿½åŠ  */
     HsObject& operator=(const Rect1P& value);
-    /** @brief »»³Éµ¥ÔªËØĞı×ª¾ØĞÎ£¬²»×·¼Ó */
+    /** @brief æ¢æˆå•å…ƒç´ æ—‹è½¬çŸ©å½¢ï¼Œä¸è¿½åŠ  */
     HsObject& operator=(const Rect2P& value);
-    /** @brief »»³Éµ¥ÔªËØÏß¶Î£¬²»×·¼Ó */
+    /** @brief æ¢æˆå•å…ƒç´ çº¿æ®µï¼Œä¸è¿½åŠ  */
     HsObject& operator=(const LineP& value);
 
-    /** @brief ÎŞÔªËØ */
+    /** @brief æ— å…ƒç´  */
     bool isEmpty() const;
-    /** @brief ÒÑ·ÖÅäÇÒ·Ç¿Õ */
+    /** @brief å·²åˆ†é…ä¸”éç©º */
     bool isInitialized() const;
-    /** @brief ÔªËØ¸öÊı */
+    /** @brief å…ƒç´ ä¸ªæ•° */
     int count() const;
     /**
-     * @brief ÕûÌåÖÖÀà¡£¿ÕÎª ObjEmpty£¬»ì·ÅÎª ObjMixed
+     * @brief æ•´ä½“ç§ç±»ã€‚ç©ºä¸º ObjEmptyï¼Œæ··æ”¾ä¸º ObjMixed
      */
     ObjectKind kind() const;
-    /** @brief µÚ index ¸ñÖÖÀà¡£Ô½½çÅ× HsException */
+    /** @brief ç¬¬ index æ ¼ç§ç±»ã€‚è¶Šç•ŒæŠ› HsException */
     ObjectKind kindAt(int index) const;
 
-    /** @brief Çå¿ÕÈ«²¿ÔªËØ */
+    /** @brief æ¸…ç©ºå…¨éƒ¨å…ƒç´  */
     void clear();
-    /** @brief Éî¿½È«²¿ÔªËØ£¬²»¹²Ïí»º³å */
+    /** @brief æ·±æ‹·å…¨éƒ¨å…ƒç´ ï¼Œä¸å…±äº«ç¼“å†² */
     HsObject clone() const;
 
-    /** @brief ×·¼Ó other µÄÈ«²¿ÔªËØµ½Ä©Î² */
+    /** @brief è¿½åŠ  other çš„å…¨éƒ¨å…ƒç´ åˆ°æœ«å°¾ */
     void append(const HsObject& other);
-    /** @brief È¡³öÒ»¸ñÎªĞÂ¶ÔÏó¡£Ô½½çÅ× HsException */
+    /** @brief å–å‡ºä¸€æ ¼ä¸ºæ–°å¯¹è±¡ã€‚è¶Šç•ŒæŠ› HsException */
     HsObject select(int index) const;
     /**
-     * @brief È¡³ö°ë¿ªÇø¼ä [begin, end)¡£Ô½½çÅ× HsException¡£begin ¿É´óÓÚ end µÃ¿Õ
+     * @brief å–å‡ºåŠå¼€åŒºé—´ [begin, end)ã€‚è¶Šç•ŒæŠ› HsExceptionã€‚begin å¯å¤§äº end å¾—ç©º
      */
     HsObject slice(int begin, int end) const;
 
     /**
-     * @brief °´Ôª×éÏÂ±êÌôÑ¡¡£indices ÔªËØĞëÎªÕûÊıÏÂ±ê
+     * @brief æŒ‰å…ƒç»„ä¸‹æ ‡æŒ‘é€‰ã€‚indices å…ƒç´ é¡»ä¸ºæ•´æ•°ä¸‹æ ‡
      */
     HsObject select(const HsTuple& indices) const;
     /**
-     * @brief ÔÚ index Ç°²åÈë other µÄÈ«²¿ÔªËØ¡£index µÈÓÚ count() Ôò×·¼Ó
+     * @brief åœ¨ index å‰æ’å…¥ other çš„å…¨éƒ¨å…ƒç´ ã€‚index ç­‰äº count() åˆ™è¿½åŠ 
      */
     void insert(int index, const HsObject& other);
     /**
-     * @brief ÓÃ other Ìæ»»µÚ index ¸ñ¡£other ĞëÇ¡ºÃÒ»¸ñ
+     * @brief ç”¨ other æ›¿æ¢ç¬¬ index æ ¼ã€‚other é¡»æ°å¥½ä¸€æ ¼
      */
     void replace(int index, const HsObject& other);
     /**
-     * @brief É¾³ıµÚ index ¸ñ
+     * @brief åˆ é™¤ç¬¬ index æ ¼
      */
     void remove(int index);
     /**
-     * @brief °´Ôª×éÏÂ±êÅúÁ¿É¾³ı¡£indices ÎªÕûÊıÏÂ±ê
+     * @brief æŒ‰å…ƒç»„ä¸‹æ ‡æ‰¹é‡åˆ é™¤ã€‚indices ä¸ºæ•´æ•°ä¸‹æ ‡
      */
     void remove(const HsTuple& indices);
 
-    /** @brief °ÑµÚ index ¸ñ¸Ä³ÉÍ¼Ïñ */
+    /** @brief æŠŠç¬¬ index æ ¼æ”¹æˆå›¾åƒ */
     void setImage(int index, const HsImage& value);
-    /** @brief °ÑµÚ index ¸ñ¸Ä³ÉÇøÓò */
+    /** @brief æŠŠç¬¬ index æ ¼æ”¹æˆåŒºåŸŸ */
     void setRegion(int index, const HsRegion& value);
-    /** @brief °ÑµÚ index ¸ñ¸Ä³ÉÂÖÀª */
+    /** @brief æŠŠç¬¬ index æ ¼æ”¹æˆè½®å»“ */
     void setContour(int index, const HsContour& value);
-    /** @brief °ÑµÚ index ¸ñ¸Ä³É¶à±ßĞÎ */
+    /** @brief æŠŠç¬¬ index æ ¼æ”¹æˆå¤šè¾¹å½¢ */
     void setPoly(int index, const HsPoly& value);
-    /** @brief °ÑµÚ index ¸ñ¸Ä³ÉÔ² */
+    /** @brief æŠŠç¬¬ index æ ¼æ”¹æˆåœ† */
     void setCircle(int index, const CircleP& value);
-    /** @brief °ÑµÚ index ¸ñ¸Ä³ÉÍÖÔ² */
+    /** @brief æŠŠç¬¬ index æ ¼æ”¹æˆæ¤­åœ† */
     void setEllipse(int index, const EllipseP& value);
-    /** @brief °ÑµÚ index ¸ñ¸Ä³ÉÖá¶ÔÆë¾ØĞÎ */
+    /** @brief æŠŠç¬¬ index æ ¼æ”¹æˆè½´å¯¹é½çŸ©å½¢ */
     void setRect1(int index, const Rect1P& value);
-    /** @brief °ÑµÚ index ¸ñ¸Ä³ÉĞı×ª¾ØĞÎ */
+    /** @brief æŠŠç¬¬ index æ ¼æ”¹æˆæ—‹è½¬çŸ©å½¢ */
     void setRect2(int index, const Rect2P& value);
-    /** @brief °ÑµÚ index ¸ñ¸Ä³ÉÏß¶Î */
+    /** @brief æŠŠç¬¬ index æ ¼æ”¹æˆçº¿æ®µ */
     void setLine(int index, const LineP& value);
 
-    /** @brief ÓÉÍ¼Ïñ¹¹Ôì */
+    /** @brief ç”±å›¾åƒæ„é€  */
     static HsObject fromImage(const HsImage& value);
-    /** @brief ÓÉÇøÓò¹¹Ôì */
+    /** @brief ç”±åŒºåŸŸæ„é€  */
     static HsObject fromRegion(const HsRegion& value);
-    /** @brief ÓÉÂÖÀª¹¹Ôì */
+    /** @brief ç”±è½®å»“æ„é€  */
     static HsObject fromContour(const HsContour& value);
-    /** @brief ÓÉ¶à±ßĞÎ¹¹Ôì */
+    /** @brief ç”±å¤šè¾¹å½¢æ„é€  */
     static HsObject fromPoly(const HsPoly& value);
-    /** @brief ÓÉÔ²¹¹Ôì */
+    /** @brief ç”±åœ†æ„é€  */
     static HsObject fromCircle(const CircleP& value);
-    /** @brief ÓÉÍÖÔ²¹¹Ôì */
+    /** @brief ç”±æ¤­åœ†æ„é€  */
     static HsObject fromEllipse(const EllipseP& value);
-    /** @brief ÓÉÖá¶ÔÆë¾ØĞÎ¹¹Ôì */
+    /** @brief ç”±è½´å¯¹é½çŸ©å½¢æ„é€  */
     static HsObject fromRect1(const Rect1P& value);
-    /** @brief ÓÉĞı×ª¾ØĞÎ¹¹Ôì */
+    /** @brief ç”±æ—‹è½¬çŸ©å½¢æ„é€  */
     static HsObject fromRect2(const Rect2P& value);
-    /** @brief ÓÉÏß¶Î¹¹Ôì */
+    /** @brief ç”±çº¿æ®µæ„é€  */
     static HsObject fromLine(const LineP& value);
 
-    /** @brief Ö»¶ÁÈ¡Í¼Ïñ¡£ÖÖÀà²»·û»òÔ½½çÅ× HsException */
+    /** @brief åªè¯»å–å›¾åƒã€‚ç§ç±»ä¸ç¬¦æˆ–è¶Šç•ŒæŠ› HsException */
     const HsImage* imageAt(int index) const;
-    /** @brief Ö»¶ÁÈ¡ÇøÓò¡£ÖÖÀà²»·û»òÔ½½çÅ× HsException */
+    /** @brief åªè¯»å–åŒºåŸŸã€‚ç§ç±»ä¸ç¬¦æˆ–è¶Šç•ŒæŠ› HsException */
     const HsRegion* regionAt(int index) const;
-    /** @brief Ö»¶ÁÈ¡ÂÖÀª¡£ÖÖÀà²»·û»òÔ½½çÅ× HsException */
+    /** @brief åªè¯»å–è½®å»“ã€‚ç§ç±»ä¸ç¬¦æˆ–è¶Šç•ŒæŠ› HsException */
     const HsContour* contourAt(int index) const;
-    /** @brief Ö»¶ÁÈ¡¶à±ßĞÎ¡£ÖÖÀà²»·û»òÔ½½çÅ× HsException */
+    /** @brief åªè¯»å–å¤šè¾¹å½¢ã€‚ç§ç±»ä¸ç¬¦æˆ–è¶Šç•ŒæŠ› HsException */
     const HsPoly* polyAt(int index) const;
-    /** @brief Ö»¶ÁÈ¡Ô²¡£ÖÖÀà²»·û»òÔ½½çÅ× HsException */
+    /** @brief åªè¯»å–åœ†ã€‚ç§ç±»ä¸ç¬¦æˆ–è¶Šç•ŒæŠ› HsException */
     const CircleP* circleAt(int index) const;
-    /** @brief Ö»¶ÁÈ¡ÍÖÔ²¡£ÖÖÀà²»·û»òÔ½½çÅ× HsException */
+    /** @brief åªè¯»å–æ¤­åœ†ã€‚ç§ç±»ä¸ç¬¦æˆ–è¶Šç•ŒæŠ› HsException */
     const EllipseP* ellipseAt(int index) const;
-    /** @brief Ö»¶ÁÈ¡Öá¶ÔÆë¾ØĞÎ¡£ÖÖÀà²»·û»òÔ½½çÅ× HsException */
+    /** @brief åªè¯»å–è½´å¯¹é½çŸ©å½¢ã€‚ç§ç±»ä¸ç¬¦æˆ–è¶Šç•ŒæŠ› HsException */
     const Rect1P* rect1At(int index) const;
-    /** @brief Ö»¶ÁÈ¡Ğı×ª¾ØĞÎ¡£ÖÖÀà²»·û»òÔ½½çÅ× HsException */
+    /** @brief åªè¯»å–æ—‹è½¬çŸ©å½¢ã€‚ç§ç±»ä¸ç¬¦æˆ–è¶Šç•ŒæŠ› HsException */
     const Rect2P* rect2At(int index) const;
-    /** @brief Ö»¶ÁÈ¡Ïß¶Î¡£ÖÖÀà²»·û»òÔ½½çÅ× HsException */
+    /** @brief åªè¯»å–çº¿æ®µã€‚ç§ç±»ä¸ç¬¦æˆ–è¶Šç•ŒæŠ› HsException */
     const LineP* lineAt(int index) const;
 
     /**
-     * @brief ¿ÉĞ´È¡Í¼Ïñ¡£ÖÖÀà²»·û»òÔ½½çÅ× HsException
-     * Ğ´ÈëÇ°»á²ğ¿ª¹²Ïí£¬¸Ä¶¯Ö»Ó°Ïì±¾¶ÔÏó
+     * @brief å¯å†™å–å›¾åƒã€‚ç§ç±»ä¸ç¬¦æˆ–è¶Šç•ŒæŠ› HsException
+     * å†™å…¥å‰ä¼šæ‹†å¼€å…±äº«ï¼Œæ”¹åŠ¨åªå½±å“æœ¬å¯¹è±¡
      */
     HsImage* imageAt(int index);
-    /** @brief ¿ÉĞ´È¡ÇøÓò¡£ÖÖÀà²»·û»òÔ½½çÅ× HsException */
+    /** @brief å¯å†™å–åŒºåŸŸã€‚ç§ç±»ä¸ç¬¦æˆ–è¶Šç•ŒæŠ› HsException */
     HsRegion* regionAt(int index);
-    /** @brief ¿ÉĞ´È¡ÂÖÀª¡£ÖÖÀà²»·û»òÔ½½çÅ× HsException */
+    /** @brief å¯å†™å–è½®å»“ã€‚ç§ç±»ä¸ç¬¦æˆ–è¶Šç•ŒæŠ› HsException */
     HsContour* contourAt(int index);
-    /** @brief ¿ÉĞ´È¡¶à±ßĞÎ¡£ÖÖÀà²»·û»òÔ½½çÅ× HsException */
+    /** @brief å¯å†™å–å¤šè¾¹å½¢ã€‚ç§ç±»ä¸ç¬¦æˆ–è¶Šç•ŒæŠ› HsException */
     HsPoly* polyAt(int index);
-    /** @brief ¿ÉĞ´È¡Ô²¡£ÖÖÀà²»·û»òÔ½½çÅ× HsException */
+    /** @brief å¯å†™å–åœ†ã€‚ç§ç±»ä¸ç¬¦æˆ–è¶Šç•ŒæŠ› HsException */
     CircleP* circleAt(int index);
-    /** @brief ¿ÉĞ´È¡ÍÖÔ²¡£ÖÖÀà²»·û»òÔ½½çÅ× HsException */
+    /** @brief å¯å†™å–æ¤­åœ†ã€‚ç§ç±»ä¸ç¬¦æˆ–è¶Šç•ŒæŠ› HsException */
     EllipseP* ellipseAt(int index);
-    /** @brief ¿ÉĞ´È¡Öá¶ÔÆë¾ØĞÎ¡£ÖÖÀà²»·û»òÔ½½çÅ× HsException */
+    /** @brief å¯å†™å–è½´å¯¹é½çŸ©å½¢ã€‚ç§ç±»ä¸ç¬¦æˆ–è¶Šç•ŒæŠ› HsException */
     Rect1P* rect1At(int index);
-    /** @brief ¿ÉĞ´È¡Ğı×ª¾ØĞÎ¡£ÖÖÀà²»·û»òÔ½½çÅ× HsException */
+    /** @brief å¯å†™å–æ—‹è½¬çŸ©å½¢ã€‚ç§ç±»ä¸ç¬¦æˆ–è¶Šç•ŒæŠ› HsException */
     Rect2P* rect2At(int index);
-    /** @brief ¿ÉĞ´È¡Ïß¶Î¡£ÖÖÀà²»·û»òÔ½½çÅ× HsException */
+    /** @brief å¯å†™å–çº¿æ®µã€‚ç§ç±»ä¸ç¬¦æˆ–è¶Šç•ŒæŠ› HsException */
     LineP* lineAt(int index);
     /**
-     * @brief Ğ´³ö¶ÔÏóÎÄ¼ş£¬¶ÔÓ¦ write_object
-     * @param fileName Â·¾¶¡£¿Õ»ò´ò²»¿ªÊ±Å× HsException
+     * @brief å†™å‡ºå¯¹è±¡æ–‡ä»¶ï¼Œå¯¹åº” write_object
+     * @param fileName è·¯å¾„ã€‚ç©ºæˆ–æ‰“ä¸å¼€æ—¶æŠ› HsException
      */
     void writeObject(const char* fileName) const;
     /**
-     * @brief ¶ÁÈë¶ÔÏóÎÄ¼ş£¬¶ÔÓ¦ read_object¡£¸²¸Ç±¾¶ÔÏó
-     * @param fileName Â·¾¶
+     * @brief è¯»å…¥å¯¹è±¡æ–‡ä»¶ï¼Œå¯¹åº” read_objectã€‚è¦†ç›–æœ¬å¯¹è±¡
+     * @param fileName è·¯å¾„
      */
     void readObject(const char* fileName);
 
 private:
-    /** @brief ¸ºÏÂ±êÊÕµ½ [0, count())¡£·Ç·¨ÔòÅ× */
+    /** @brief è´Ÿä¸‹æ ‡æ”¶åˆ° [0, count())ã€‚éæ³•åˆ™æŠ› */
     int resolveIndex(int index) const;
-    /** @brief È·±£ÒÑ·ÖÅä»º³å */
+    /** @brief ç¡®ä¿å·²åˆ†é…ç¼“å†² */
     void ensure();
-    /** @brief Èô±»¹²ÏíÔò²ğ¿ª¿½±´ */
+    /** @brief è‹¥è¢«å…±äº«åˆ™æ‹†å¼€æ‹·è´ */
     void detach();
     /**
-     * @brief µ÷ÓÃ·½ÒÑ³ÖÓĞ m_guard¡£²ğ¿ªºó½âÎöÏÂ±ê
-     * @param allowEnd true Ê±ÏÂ±ê¿ÉµÈÓÚÔªËØ¸öÊı£¬¹©²åÈëÄ©Î²
-     * @param out ½âÎöºóµÄÏÂ±ê
-     * @return Ô½½çÊ±°´ÏµÍ³Òì³£´¦Àí²¢·µ»Ø false£¬²»¸Ä±í
+     * @brief è°ƒç”¨æ–¹å·²æŒæœ‰ m_guardã€‚æ‹†å¼€åè§£æä¸‹æ ‡
+     * @param allowEnd true æ—¶ä¸‹æ ‡å¯ç­‰äºå…ƒç´ ä¸ªæ•°ï¼Œä¾›æ’å…¥æœ«å°¾
+     * @param out è§£æåçš„ä¸‹æ ‡
+     * @return è¶Šç•Œæ—¶æŒ‰ç³»ç»Ÿå¼‚å¸¸å¤„ç†å¹¶è¿”å› falseï¼Œä¸æ”¹è¡¨
      */
     bool lockedIndex(int index, bool allowEnd, int* out);
-    /** @brief Ö»¶ÁÈ¡Ò»¸ñ¡£Ô½½ç·µ»Ø 0 */
+    /** @brief åªè¯»å–ä¸€æ ¼ã€‚è¶Šç•Œè¿”å› 0 */
     const ObjectUnion* item(int index) const;
-    /** @brief ¿ÉĞ´È¡Ò»¸ñ¡£Ô½½çÅ×Òì³£ */
+    /** @brief å¯å†™å–ä¸€æ ¼ã€‚è¶Šç•ŒæŠ›å¼‚å¸¸ */
     ObjectUnion* itemWrite(int index);
-    /** @brief Ëø×¡ÔªËØ±í¡£Î´·ÖÅäÔò¿ÕËø */
+    /** @brief é”ä½å…ƒç´ è¡¨ã€‚æœªåˆ†é…åˆ™ç©ºé” */
     std::unique_lock<std::recursive_mutex> lockItems() const;
 
     /**
-     * @brief ¹²ÏíÔªËØ±í¡£ÒıÓÃ¼ÆÊı¹éÁãÊ±ÊÍ·Å
+     * @brief å…±äº«å…ƒç´ è¡¨ã€‚å¼•ç”¨è®¡æ•°å½’é›¶æ—¶é‡Šæ”¾
      */
     struct Store {
-        mutable std::recursive_mutex mu; ///< ±£»¤ list ÓëÒıÓÃ¼ÆÊıÏà¹Ø²Ù×÷
-        std::vector<std::shared_ptr<ObjectUnion>> list; ///< ÔªËØ
+        mutable std::recursive_mutex mu; ///< ä¿æŠ¤ list ä¸å¼•ç”¨è®¡æ•°ç›¸å…³æ“ä½œ
+        std::vector<std::shared_ptr<ObjectUnion>> list; ///< å…ƒç´ 
     };
 
-    mutable std::recursive_mutex m_guard; ///< ±£»¤±¾¶ÔÏó¶Ô m_items µÄÌæ»»
-    std::shared_ptr<Store> m_items; ///< ÔªËØ±í¡£¿ÕÖ¸Õë±íÊ¾Î´·ÖÅä
+    mutable std::recursive_mutex m_guard; ///< ä¿æŠ¤æœ¬å¯¹è±¡å¯¹ m_items çš„æ›¿æ¢
+    std::shared_ptr<Store> m_items; ///< å…ƒç´ è¡¨ã€‚ç©ºæŒ‡é’ˆè¡¨ç¤ºæœªåˆ†é…
 };
 
 /**
- * @brief Ğ´³ö¶ÔÏóÎÄ¼ş£¬¶ÔÓ¦ write_object
- * @param object ´ıĞ´¶ÔÏó
- * @param fileName Â·¾¶¡£¿Õ»ò´ò²»¿ªÊ±Å× HsException
+ * @brief å†™å‡ºå¯¹è±¡æ–‡ä»¶ï¼Œå¯¹åº” write_object
+ * @param object å¾…å†™å¯¹è±¡
+ * @param fileName è·¯å¾„ã€‚ç©ºæˆ–æ‰“ä¸å¼€æ—¶æŠ› HsException
  */
 HSCOMMDATA_EXPORT void writeObject(const HsObject& object, const char* fileName);
 /**
- * @brief ¶ÁÈë¶ÔÏóÎÄ¼ş£¬¶ÔÓ¦ read_object¡£Ğ´Èë object
- * @param object Ä¿±ê¡£¿ÕÖ¸ÕëÅ× HsException
- * @param fileName Â·¾¶
+ * @brief è¯»å…¥å¯¹è±¡æ–‡ä»¶ï¼Œå¯¹åº” read_objectã€‚å†™å…¥ object
+ * @param object ç›®æ ‡ã€‚ç©ºæŒ‡é’ˆæŠ› HsException
+ * @param fileName è·¯å¾„
  */
 HSCOMMDATA_EXPORT void readObject(HsObject* object, const char* fileName);
 

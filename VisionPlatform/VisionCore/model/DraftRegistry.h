@@ -1,6 +1,6 @@
 /**
  * @file DraftRegistry.h
- * @brief DraftRegistryÍ·ÎÄ¼ş
+ * @brief DraftRegistryå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -16,28 +16,28 @@ namespace Vision {
 
 struct Solution;
 
-/** @class DraftRegistry @brief Åä·½²İ¸å´ò¿ª/Ôà±ê¼Ç£¬×èÖ¹Î´±£´æÊ±ÅÜ formal */
+/** @class DraftRegistry @brief é…æ–¹è‰ç¨¿æ‰“å¼€/è„æ ‡è®°ï¼Œé˜»æ­¢æœªä¿å­˜æ—¶è·‘ formal */
 class VISIONCORE_API DraftRegistry {
 public:
-    /** @brief ¹¤¾ßÏêÏ¸µ÷ÊÔÒ³´ò¿ª */
+    /** @brief å·¥å…·è¯¦ç»†è°ƒè¯•é¡µæ‰“å¼€ */
     static void registerToolDraft(const ObjectId& toolId);
-    /** @brief ¸üĞÂ¹¤¾ß²İ¸åÔà±ê¼Ç */
+    /** @brief æ›´æ–°å·¥å…·è‰ç¨¿è„æ ‡è®° */
     static void setToolDraftDirty(const ObjectId& toolId, bool dirty);
-    /** @brief ¹¤¾ßÏêÏ¸µ÷ÊÔÒ³¹Ø±Õ */
+    /** @brief å·¥å…·è¯¦ç»†è°ƒè¯•é¡µå…³é—­ */
     static void unregisterToolDraft(const ObjectId& toolId);
-    /** @brief ¹¤¾ß²İ¸åÊÇ·ñ×èÖ¹ÕıÊ½ÔËĞĞ */
+    /** @brief å·¥å…·è‰ç¨¿æ˜¯å¦é˜»æ­¢æ­£å¼è¿è¡Œ */
     static bool toolDraftBlocksFormalRun(const ObjectId& toolId);
 
-    /** @brief Á÷³ÌÅäÖÃÒ³´ò¿ª */
+    /** @brief æµç¨‹é…ç½®é¡µæ‰“å¼€ */
     static void registerJobDraft(const ObjectId& jobId);
-    /** @brief ¸üĞÂÁ÷³Ì²İ¸åÔà±ê¼Ç */
+    /** @brief æ›´æ–°æµç¨‹è‰ç¨¿è„æ ‡è®° */
     static void setJobDraftDirty(const ObjectId& jobId, bool dirty);
-    /** @brief Á÷³ÌÅäÖÃÒ³¹Ø±Õ */
+    /** @brief æµç¨‹é…ç½®é¡µå…³é—­ */
     static void unregisterJobDraft(const ObjectId& jobId);
-    /** @brief Á÷³Ì²İ¸åÊÇ·ñ×èÖ¹ÕıÊ½ÔËĞĞ */
+    /** @brief æµç¨‹è‰ç¨¿æ˜¯å¦é˜»æ­¢æ­£å¼è¿è¡Œ */
     static bool jobDraftBlocksFormalRun(const ObjectId& jobId);
 
-    /** @brief Á÷³ÌÄÚÊÇ·ñÓĞ¹¤¾ßÍ£ÔÚÎ´±£´æµ÷ÊÔ²İ¸å */
+    /** @brief æµç¨‹å†…æ˜¯å¦æœ‰å·¥å…·åœåœ¨æœªä¿å­˜è°ƒè¯•è‰ç¨¿ */
     static bool anyToolInJobBlocked(const Solution* sol, const ObjectId& jobId);
 };
 

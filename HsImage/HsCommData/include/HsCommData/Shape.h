@@ -1,6 +1,6 @@
 /**
  * @file Shape.h
- * @brief ShapeÍ·ÎÄ¼ş
+ * @brief Shapeå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -15,74 +15,74 @@ namespace HsCommData {
 
 /**
  * @class CircleP
- * @brief Ô²£ºÖĞĞÄ + °ë¾¶£¨ÏñËØ£©
+ * @brief åœ†ï¼šä¸­å¿ƒ + åŠå¾„ï¼ˆåƒç´ ï¼‰
  */
 struct HSCOMMDATA_EXPORT CircleP {
-    Point2d c;     ///< ÖĞĞÄ
-    double r = 0; ///< °ë¾¶
+    Point2d c;     ///< ä¸­å¿ƒ
+    double r = 0; ///< åŠå¾„
 };
 
 /**
  * @class EllipseP
- * @brief ÍÖÔ²£ºÖĞĞÄ¡¢³¤¶ÌÖá¡¢×ª½Ç
+ * @brief æ¤­åœ†ï¼šä¸­å¿ƒã€é•¿çŸ­è½´ã€è½¬è§’
  */
 struct HSCOMMDATA_EXPORT EllipseP {
-    Point2d c;        ///< ÖĞĞÄ
-    double ra = 0;   ///< °ëÖá a£¨ÏñËØ£©
-    double rb = 0;   ///< °ëÖá b£¨ÏñËØ£©
-    double phi = 0;  ///< ÄÚ²¿×ª½Ç£¬»¡¶È¡£Õı·½Ïò´Ó +x ×ªÏò +y¡£¶ÔÍâÓÃ ang¡¢angDeg
-    /** @brief ÄÚ²¿×ª½Ç£¬»¡¶È */
+    Point2d c;        ///< ä¸­å¿ƒ
+    double ra = 0;   ///< åŠè½´ aï¼ˆåƒç´ ï¼‰
+    double rb = 0;   ///< åŠè½´ bï¼ˆåƒç´ ï¼‰
+    double phi = 0;  ///< å†…éƒ¨è½¬è§’ï¼Œå¼§åº¦ã€‚æ­£æ–¹å‘ä» +x è½¬å‘ +yã€‚å¯¹å¤–ç”¨ angã€angDeg
+    /** @brief å†…éƒ¨è½¬è§’ï¼Œå¼§åº¦ */
     double angRad() const;
-    /** @brief Ğ´ÈëÄÚ²¿»¡¶È */
+    /** @brief å†™å…¥å†…éƒ¨å¼§åº¦ */
     void setAngRad(double rad);
-    /** @brief ×ª½ÇµÄ¶ÈÊı£¬Õı·½ÏòÓëÄÚ²¿ÏàÍ¬ */
+    /** @brief è½¬è§’çš„åº¦æ•°ï¼Œæ­£æ–¹å‘ä¸å†…éƒ¨ç›¸åŒ */
     double angDeg() const;
-    /** @brief °´¶ÈÊıĞ´Èë£¬Õı·½ÏòÓëÄÚ²¿ÏàÍ¬ */
+    /** @brief æŒ‰åº¦æ•°å†™å…¥ï¼Œæ­£æ–¹å‘ä¸å†…éƒ¨ç›¸åŒ */
     void setAngDeg(double deg);
-    /** @brief °´ÏµÍ³½Ç¶Èµ¥Î»ºÍÕı·½Ïò¶ÁÈ¡ */
+    /** @brief æŒ‰ç³»ç»Ÿè§’åº¦å•ä½å’Œæ­£æ–¹å‘è¯»å– */
     double ang() const;
-    /** @brief °´ÏµÍ³½Ç¶Èµ¥Î»ºÍÕı·½ÏòĞ´Èë */
+    /** @brief æŒ‰ç³»ç»Ÿè§’åº¦å•ä½å’Œæ­£æ–¹å‘å†™å…¥ */
     void setAng(double external);
 };
 
 /**
  * @class Rect1P
- * @brief Öá¶ÔÆë¾ØĞÎ
+ * @brief è½´å¯¹é½çŸ©å½¢
  */
 struct HSCOMMDATA_EXPORT Rect1P {
-    Box2 r; ///< Í¼Ïñ×ø±ê¿ò
+    Box2 r; ///< å›¾åƒåæ ‡æ¡†
 };
 
 /**
  * @class Rect2P
- * @brief Ğı×ª¾ØĞÎ£ºÖĞĞÄ¡¢°ë³¤¡¢°ë¿í¡¢×ª½Ç
+ * @brief æ—‹è½¬çŸ©å½¢ï¼šä¸­å¿ƒã€åŠé•¿ã€åŠå®½ã€è½¬è§’
  */
 struct HSCOMMDATA_EXPORT Rect2P {
-    Point2d c;       ///< ÖĞĞÄ
-    double l1 = 0;  ///< °ë³¤£¨ÏñËØ£©
-    double l2 = 0;  ///< °ë¿í£¨ÏñËØ£©
-    double phi = 0; ///< ÄÚ²¿×ª½Ç£¬»¡¶È¡£Õı·½Ïò´Ó +x ×ªÏò +y¡£¶ÔÍâÓÃ ang¡¢angDeg
-    /** @brief ÄÚ²¿×ª½Ç£¬»¡¶È */
+    Point2d c;       ///< ä¸­å¿ƒ
+    double l1 = 0;  ///< åŠé•¿ï¼ˆåƒç´ ï¼‰
+    double l2 = 0;  ///< åŠå®½ï¼ˆåƒç´ ï¼‰
+    double phi = 0; ///< å†…éƒ¨è½¬è§’ï¼Œå¼§åº¦ã€‚æ­£æ–¹å‘ä» +x è½¬å‘ +yã€‚å¯¹å¤–ç”¨ angã€angDeg
+    /** @brief å†…éƒ¨è½¬è§’ï¼Œå¼§åº¦ */
     double angRad() const;
-    /** @brief Ğ´ÈëÄÚ²¿»¡¶È */
+    /** @brief å†™å…¥å†…éƒ¨å¼§åº¦ */
     void setAngRad(double rad);
-    /** @brief ×ª½ÇµÄ¶ÈÊı£¬Õı·½ÏòÓëÄÚ²¿ÏàÍ¬ */
+    /** @brief è½¬è§’çš„åº¦æ•°ï¼Œæ­£æ–¹å‘ä¸å†…éƒ¨ç›¸åŒ */
     double angDeg() const;
-    /** @brief °´¶ÈÊıĞ´Èë£¬Õı·½ÏòÓëÄÚ²¿ÏàÍ¬ */
+    /** @brief æŒ‰åº¦æ•°å†™å…¥ï¼Œæ­£æ–¹å‘ä¸å†…éƒ¨ç›¸åŒ */
     void setAngDeg(double deg);
-    /** @brief °´ÏµÍ³½Ç¶Èµ¥Î»ºÍÕı·½Ïò¶ÁÈ¡ */
+    /** @brief æŒ‰ç³»ç»Ÿè§’åº¦å•ä½å’Œæ­£æ–¹å‘è¯»å– */
     double ang() const;
-    /** @brief °´ÏµÍ³½Ç¶Èµ¥Î»ºÍÕı·½ÏòĞ´Èë */
+    /** @brief æŒ‰ç³»ç»Ÿè§’åº¦å•ä½å’Œæ­£æ–¹å‘å†™å…¥ */
     void setAng(double external);
 };
 
 /**
  * @class LineP
- * @brief Ïß¶ÎÁ½¶Ëµã
+ * @brief çº¿æ®µä¸¤ç«¯ç‚¹
  */
 struct HSCOMMDATA_EXPORT LineP {
-    Point2d a; ///< Æğµã
-    Point2d b; ///< ÖÕµã
+    Point2d a; ///< èµ·ç‚¹
+    Point2d b; ///< ç»ˆç‚¹
 };
 
 }

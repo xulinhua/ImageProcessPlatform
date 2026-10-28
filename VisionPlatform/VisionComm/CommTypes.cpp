@@ -1,6 +1,6 @@
 /**
  * @file CommTypes.cpp
- * @brief CommTypesÊµÏÖ
+ * @brief CommTypeså®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -10,7 +10,7 @@
 
 namespace Vision {
 
-// ÕûÊı×ªÍ¨µÀÀàĞÍ£»ÎŞ·¨Ê¶±ğÊ±»Ø´®¿Ú
+// æ•´æ•°è½¬é€šé“ç±»å‹ï¼›æ— æ³•è¯†åˆ«æ—¶å›ä¸²å£
 CommChannelType commChannelTypeFromInt(int v)
 {
     if (v < 0 || v >= static_cast<int>(CommChannelTypeMax)) {

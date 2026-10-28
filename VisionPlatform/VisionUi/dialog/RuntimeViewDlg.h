@@ -1,6 +1,6 @@
 /**
  * @file RuntimeViewDlg.h
- * @brief RuntimeViewDlgÍ·ÎÄ¼ş
+ * @brief RuntimeViewDlgå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -26,85 +26,85 @@ struct Solution;
 
 /**
  * @class RuntimePaneDlg
- * @brief µ¥¸öÔËĞĞ´°£ºÒ»ÕÅµ×Í¼£¬µş¼Ó¿É¹´Ñ¡¶à¸ö³öÍ¼ĞÎµÄ¹¤¾ß£¨½ö±¾¹¤Õ¾£©
+ * @brief å•ä¸ªè¿è¡Œçª—ï¼šä¸€å¼ åº•å›¾ï¼Œå åŠ å¯å‹¾é€‰å¤šä¸ªå‡ºå›¾å½¢çš„å·¥å…·ï¼ˆä»…æœ¬å·¥ç«™ï¼‰
  */
 class VISION_UI_API RuntimePaneDlg : public QDialog {
 public:
     /**
-     * @brief ±à¼­Ò»¸ñµÄµ×Í¼Óëµş¼Ó
-     * @param sol ·½°¸£¨²»ÓµÓĞ£©
-     * @param st ¹¤Õ¾£¨¹¤¾ßÁĞ±í·¶Î§£¬²»ÓµÓĞ£©
-     * @param index ´°¿ÚĞòºÅ£¨´Ó 0 Æğ£©
-     * @param pane µ±Ç°ÅäÖÃ
+     * @brief ç¼–è¾‘ä¸€æ ¼çš„åº•å›¾ä¸å åŠ 
+     * @param sol æ–¹æ¡ˆï¼ˆä¸æ‹¥æœ‰ï¼‰
+     * @param st å·¥ç«™ï¼ˆå·¥å…·åˆ—è¡¨èŒƒå›´ï¼Œä¸æ‹¥æœ‰ï¼‰
+     * @param index çª—å£åºå·ï¼ˆä» 0 èµ·ï¼‰
+     * @param pane å½“å‰é…ç½®
      */
     RuntimePaneDlg(Solution* sol, StationCfg* st, int index, const RuntimePane& pane,
                       QWidget* parent = 0);
 
-    /** @brief ¶Ô»°¿òÀïµÄ´°¸ñÅäÖÃ£¨º¬µ×Í¼Óë¶àÂ·µş¼Ó£© */
+    /** @brief å¯¹è¯æ¡†é‡Œçš„çª—æ ¼é…ç½®ï¼ˆå«åº•å›¾ä¸å¤šè·¯å åŠ ï¼‰ */
     RuntimePane pane() const;
 
 private:
-    /** @brief µ×Í¼ÏÂÀ­£º¹¤Õ¾½á¹û + ²É¼¯¡¢Ô¤´¦Àí */
+    /** @brief åº•å›¾ä¸‹æ‹‰ï¼šå·¥ç«™ç»“æœ + é‡‡é›†ã€é¢„å¤„ç† */
     void fillImageCombo();
-    /** @brief µş¼ÓÁĞ±í£º¹¤Õ¾Í¼ĞÎ + ¶¨Î»¡¢¼ì²â¡¢½á¹û´¦Àí */
+    /** @brief å åŠ åˆ—è¡¨ï¼šå·¥ç«™å›¾å½¢ + å®šä½ã€æ£€æµ‹ã€ç»“æœå¤„ç† */
     void fillOverlayList();
 
-    Solution* m_sol;          ///< ·½°¸£¨²»ÓµÓĞ£©
-    StationCfg* m_station; ///< ¹¤Õ¾£¨²»ÓµÓĞ£©
-    RuntimePane m_pane;       ///< ±à¼­ÖĞµÄ´°¸ñ
-    QComboBox* m_img;         ///< µ×Í¼
-    QListWidget* m_ovList;    ///< µş¼Ó¹¤¾ß£¨¿É¶àÑ¡£©
-    QCheckBox* m_showOv;      ///< ÊÇ·ñ»­µş¼Ó
+    Solution* m_sol;          ///< æ–¹æ¡ˆï¼ˆä¸æ‹¥æœ‰ï¼‰
+    StationCfg* m_station; ///< å·¥ç«™ï¼ˆä¸æ‹¥æœ‰ï¼‰
+    RuntimePane m_pane;       ///< ç¼–è¾‘ä¸­çš„çª—æ ¼
+    QComboBox* m_img;         ///< åº•å›¾
+    QListWidget* m_ovList;    ///< å åŠ å·¥å…·ï¼ˆå¯å¤šé€‰ï¼‰
+    QCheckBox* m_showOv;      ///< æ˜¯å¦ç”»å åŠ 
 };
 
 /**
  * @class RuntimeViewDlg
- * @brief ÅäÖÃ¶à¹¤Õ¾¿Ç²¼¾ÖÓëµ¥Õ¾ runtimeView£ºÃæ°åÏÔÒş¡¢ĞĞÁĞ¡¢Ã¿¸ñµ×Í¼
+ * @brief é…ç½®å¤šå·¥ç«™å£³å¸ƒå±€ä¸å•ç«™ runtimeViewï¼šé¢æ¿æ˜¾éšã€è¡Œåˆ—ã€æ¯æ ¼åº•å›¾
  */
 class VISION_UI_API RuntimeViewDlg : public QDialog {
     Q_OBJECT
 public:
     /**
-     * @brief ±à¼­·½°¸¼¶²¼¾ÖÓëÖ¸¶¨¹¤Õ¾µÄ runtimeView
-     * @param sol ·½°¸£¨Ğ´ runtimeStationLayout£¬²»ÓµÓĞ£©
-     * @param st ³õÊ¼±à¼­¹¤Õ¾£¨²»ÓµÓĞ£©
+     * @brief ç¼–è¾‘æ–¹æ¡ˆçº§å¸ƒå±€ä¸æŒ‡å®šå·¥ç«™çš„ runtimeView
+     * @param sol æ–¹æ¡ˆï¼ˆå†™ runtimeStationLayoutï¼Œä¸æ‹¥æœ‰ï¼‰
+     * @param st åˆå§‹ç¼–è¾‘å·¥ç«™ï¼ˆä¸æ‹¥æœ‰ï¼‰
      */
     RuntimeViewDlg(Solution* sol, StationCfg* st, QWidget* parent = 0);
 
 private slots:
-    /** @brief ÇĞ»»±à¼­¹¤Õ¾Ê±¼ÓÔØÆä runtimeView */
+    /** @brief åˆ‡æ¢ç¼–è¾‘å·¥ç«™æ—¶åŠ è½½å…¶ runtimeView */
     void onStationChanged();
-    /** @brief °´ĞĞÁĞÊıÒş²Ø¶àÓà´°¸ñĞĞ */
+    /** @brief æŒ‰è¡Œåˆ—æ•°éšè—å¤šä½™çª—æ ¼è¡Œ */
     void onLayoutChanged();
-    /** @brief ´ò¿ªµ±Ç°ĞĞµÄ´°¿ÚÅäÖÃ */
+    /** @brief æ‰“å¼€å½“å‰è¡Œçš„çª—å£é…ç½® */
     void onConfigPane();
-    /** @brief Ğ´»Ø·½°¸²¼¾ÖÓëµ±Ç°¹¤Õ¾²¢¹Ø±Õ */
+    /** @brief å†™å›æ–¹æ¡ˆå¸ƒå±€ä¸å½“å‰å·¥ç«™å¹¶å…³é—­ */
     void onSave();
 
 private:
-    /** @brief °Ñ UI Ğ´»Ø m_station µÄ runtimeView£¨ÇĞÕ¾Ç°µ÷ÓÃ£© */
+    /** @brief æŠŠ UI å†™å› m_station çš„ runtimeViewï¼ˆåˆ‡ç«™å‰è°ƒç”¨ï¼‰ */
     void flushCurrentStation();
-    /** @brief ´Ó m_station Ìî³ä´°¸ñ UI */
+    /** @brief ä» m_station å¡«å……çª—æ ¼ UI */
     void loadStationView();
-    /** @brief Ë¢ĞÂÒ»ĞĞµÄµ×Í¼Óëµş¼ÓÕªÒª */
+    /** @brief åˆ·æ–°ä¸€è¡Œçš„åº•å›¾ä¸å åŠ æ‘˜è¦ */
     void refreshSummary(int index);
-    /** @brief Ö»ÏÔÊ¾µ±Ç°²¼¾ÖÓÃµÃµ½µÄĞĞ */
+    /** @brief åªæ˜¾ç¤ºå½“å‰å¸ƒå±€ç”¨å¾—åˆ°çš„è¡Œ */
     void applyRowVisible();
 
-    Solution* m_sol;          ///< ·½°¸£¨²»ÓµÓĞ£©
-    StationCfg* m_station; ///< µ±Ç°±à¼­¹¤Õ¾£¨²»ÓµÓĞ£©
-    QComboBox* m_shellLayout; ///< ¶à¹¤Õ¾£º·ÖÒ³Ç© / Æ´Ìù
-    QComboBox* m_stationCombo;///< ±à¼­ÄÄ¸ö¹¤Õ¾
-    QComboBox* m_rowCombo;    ///< ĞĞÊı 1 ÖÁ 3
-    QComboBox* m_colCombo;    ///< ÁĞÊı 1 ÖÁ 3
-    QCheckBox* m_stats;       ///< ²úÁ¿Í³¼Æ
-    QCheckBox* m_hist;        ///< ½á¹ûÀúÊ·
-    QCheckBox* m_side;        ///< ¿ªÊ¼Í£Ö¹ÁĞ
-    RuntimePane m_panes[9];   ///< ¸÷¸ñÅäÖÃ
-    QCheckBox* m_en[9];       ///< ¸÷¸ñÊ¹ÄÜ
-    QLabel* m_summary[9];     ///< ¸÷¸ñÕªÒª
-    QPushButton* m_config[9];    ///< ¸÷¸ñ¡¸ÅäÖÃ¡¹
-    QWidget* m_lines[9];      ///< ´°¸ñĞĞÈİÆ÷
+    Solution* m_sol;          ///< æ–¹æ¡ˆï¼ˆä¸æ‹¥æœ‰ï¼‰
+    StationCfg* m_station; ///< å½“å‰ç¼–è¾‘å·¥ç«™ï¼ˆä¸æ‹¥æœ‰ï¼‰
+    QComboBox* m_shellLayout; ///< å¤šå·¥ç«™ï¼šåˆ†é¡µç­¾ / æ‹¼è´´
+    QComboBox* m_stationCombo;///< ç¼–è¾‘å“ªä¸ªå·¥ç«™
+    QComboBox* m_rowCombo;    ///< è¡Œæ•° 1 è‡³ 3
+    QComboBox* m_colCombo;    ///< åˆ—æ•° 1 è‡³ 3
+    QCheckBox* m_stats;       ///< äº§é‡ç»Ÿè®¡
+    QCheckBox* m_hist;        ///< ç»“æœå†å²
+    QCheckBox* m_side;        ///< å¼€å§‹åœæ­¢åˆ—
+    RuntimePane m_panes[9];   ///< å„æ ¼é…ç½®
+    QCheckBox* m_en[9];       ///< å„æ ¼ä½¿èƒ½
+    QLabel* m_summary[9];     ///< å„æ ¼æ‘˜è¦
+    QPushButton* m_config[9];    ///< å„æ ¼ã€Œé…ç½®ã€
+    QWidget* m_lines[9];      ///< çª—æ ¼è¡Œå®¹å™¨
 };
 
 }

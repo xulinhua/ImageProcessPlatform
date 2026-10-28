@@ -1,6 +1,6 @@
 /**
  * @file Shape3.cpp
- * @brief Shape3ÊµÏÖ
+ * @brief Shape3å®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -15,7 +15,7 @@ namespace HsCommData {
 
 namespace {
 
-// µ¥Î»·½ÏòÔÚ¸÷ÖáÉÏµÄÔ²½ØÃæ°ë¾¶ÏµÊı
+// å•ä½æ–¹å‘åœ¨å„è½´ä¸Šçš„åœ†æˆªé¢åŠå¾„ç³»æ•°
 double ringExtent(double axisComponent, double radius)
 {
     const double rest = 1.0 - axisComponent * axisComponent;
@@ -27,21 +27,21 @@ double ringExtent(double axisComponent, double radius)
 
 }
 
-// ¹ıÔ­µã¡¢·¨ÏòÎª +Z
+// è¿‡åŸç‚¹ã€æ³•å‘ä¸º +Z
 Plane3::Plane3()
     : origin()
     , normal(0.0, 0.0, 1.0)
 {
 }
 
-// Ö¸¶¨Æ½ÃæÉÏÒ»µãºÍ·¨Ïò
+// æŒ‡å®šå¹³é¢ä¸Šä¸€ç‚¹å’Œæ³•å‘
 Plane3::Plane3(const Point3d& origin_, const Point3d& normal_)
     : origin(origin_)
     , normal(normal_)
 {
 }
 
-// ·¨Ïò³¤¶ÈÊÇ·ñ½Ó½ü 1
+// æ³•å‘é•¿åº¦æ˜¯å¦æ¥è¿‘ 1
 bool Plane3::isNormalUnit(double eps) const
 {
     const double n = length(normal);
@@ -49,13 +49,13 @@ bool Plane3::isNormalUnit(double eps) const
     return d <= eps && d >= -eps;
 }
 
-// ÓĞ·ûºÅ¾àÀë
+// æœ‰ç¬¦å·è·ç¦»
 double Plane3::signedDistance(const Point3d& p) const
 {
     return dot(p - origin, normal);
 }
 
-// ¿ÕºĞ
+// ç©ºç›’
 Box3::Box3()
     : pose()
     , hx(-1.0)
@@ -64,7 +64,7 @@ Box3::Box3()
 {
 }
 
-// Ö¸¶¨ÖĞĞÄÎ»×ËºÍÈı¸ö°ë³¤
+// æŒ‡å®šä¸­å¿ƒä½å§¿å’Œä¸‰ä¸ªåŠé•¿
 Box3::Box3(const Pose3& pose_, double hx_, double hy_, double hz_)
     : pose(pose_)
     , hx(hx_)
@@ -73,13 +73,13 @@ Box3::Box3(const Pose3& pose_, double hx_, double hy_, double hz_)
 {
 }
 
-// ÈÎÒ»°ë³¤Ğ¡ÓÚ 0 ÔòÎª¿Õ
+// ä»»ä¸€åŠé•¿å°äº 0 åˆ™ä¸ºç©º
 bool Box3::isEmpty() const
 {
     return hx < 0.0 || hy < 0.0 || hz < 0.0;
 }
 
-// ÊÀ½ç×ø±êÖá¶ÔÆë°üÎ§ºĞ
+// ä¸–ç•Œåæ ‡è½´å¯¹é½åŒ…å›´ç›’
 Aabb3 Box3::bounds() const
 {
     if (isEmpty()) {
@@ -99,27 +99,27 @@ Aabb3 Box3::bounds() const
     return box;
 }
 
-// ¿ÕÇò
+// ç©ºçƒ
 Sphere3::Sphere3()
     : center()
     , radius(-1.0)
 {
 }
 
-// Ö¸¶¨ÇòĞÄºÍ°ë¾¶
+// æŒ‡å®šçƒå¿ƒå’ŒåŠå¾„
 Sphere3::Sphere3(const Point3d& center_, double radius_)
     : center(center_)
     , radius(radius_)
 {
 }
 
-// °ë¾¶Ğ¡ÓÚ 0 ÔòÎª¿Õ
+// åŠå¾„å°äº 0 åˆ™ä¸ºç©º
 bool Sphere3::isEmpty() const
 {
     return radius < 0.0;
 }
 
-// Öá¶ÔÆë°üÎ§ºĞ
+// è½´å¯¹é½åŒ…å›´ç›’
 Aabb3 Sphere3::bounds() const
 {
     if (isEmpty()) {
@@ -129,7 +129,7 @@ Aabb3 Sphere3::bounds() const
     return Aabb3(center - r, center + r);
 }
 
-// ¿ÕÔ²Öù
+// ç©ºåœ†æŸ±
 Cylinder3::Cylinder3()
     : center()
     , axis(0.0, 0.0, 1.0)
@@ -138,7 +138,7 @@ Cylinder3::Cylinder3()
 {
 }
 
-// Ö¸¶¨Öá¡¢°ë¾¶ºÍ°ë¸ß
+// æŒ‡å®šè½´ã€åŠå¾„å’ŒåŠé«˜
 Cylinder3::Cylinder3(const Point3d& center_, const Point3d& axis_, double radius_, double halfHeight_)
     : center(center_)
     , axis(axis_)
@@ -147,19 +147,19 @@ Cylinder3::Cylinder3(const Point3d& center_, const Point3d& axis_, double radius
 {
 }
 
-// °ë¾¶Ğ¡ÓÚ 0 ÔòÎª¿Õ
+// åŠå¾„å°äº 0 åˆ™ä¸ºç©º
 bool Cylinder3::isEmpty() const
 {
     return radius < 0.0;
 }
 
-// °ë¸ßĞ¡ÓÚ 0 ÎªÎŞÏŞÔ²Öù
+// åŠé«˜å°äº 0 ä¸ºæ— é™åœ†æŸ±
 bool Cylinder3::isInfinite() const
 {
     return !isEmpty() && halfHeight < 0.0;
 }
 
-// ÓĞÏŞÔ²ÖùµÄÖá¶ÔÆë°üÎ§ºĞ
+// æœ‰é™åœ†æŸ±çš„è½´å¯¹é½åŒ…å›´ç›’
 Aabb3 Cylinder3::bounds() const
 {
     if (isEmpty() || isInfinite()) {
@@ -181,27 +181,27 @@ Aabb3 Cylinder3::bounds() const
         Point3d(center.x + ex, center.y + ey, center.z + ez));
 }
 
-// Á½¶Ë¶¼ÔÚÔ­µã
+// ä¸¤ç«¯éƒ½åœ¨åŸç‚¹
 Line3::Line3()
     : a()
     , b()
 {
 }
 
-// Ö¸¶¨Á½¶Ë
+// æŒ‡å®šä¸¤ç«¯
 Line3::Line3(const Point3d& a_, const Point3d& b_)
     : a(a_)
     , b(b_)
 {
 }
 
-// Á½¶Ë¾àÀë
+// ä¸¤ç«¯è·ç¦»
 double Line3::length() const
 {
     return dist(a, b);
 }
 
-// Á½¶ËµÄÖá¶ÔÆë°üÎ§ºĞ
+// ä¸¤ç«¯çš„è½´å¯¹é½åŒ…å›´ç›’
 Aabb3 Line3::bounds() const
 {
     Aabb3 box = Aabb3::fromPoint(a);
@@ -209,7 +209,7 @@ Aabb3 Line3::bounds() const
     return box;
 }
 
-// Ïß¶ÎÉÏµÄµã
+// çº¿æ®µä¸Šçš„ç‚¹
 Point3d Line3::pointAt(double t) const
 {
     return Point3d(
@@ -218,7 +218,7 @@ Point3d Line3::pointAt(double t) const
         a.z + (b.z - a.z) * t);
 }
 
-// ¿ÕÔ²
+// ç©ºåœ†
 Circle3::Circle3()
     : center()
     , normal(0.0, 0.0, 1.0)
@@ -226,7 +226,7 @@ Circle3::Circle3()
 {
 }
 
-// Ö¸¶¨Ô²ĞÄ¡¢·¨ÏòºÍ°ë¾¶
+// æŒ‡å®šåœ†å¿ƒã€æ³•å‘å’ŒåŠå¾„
 Circle3::Circle3(const Point3d& center_, const Point3d& normal_, double radius_)
     : center(center_)
     , normal(normal_)
@@ -234,13 +234,13 @@ Circle3::Circle3(const Point3d& center_, const Point3d& normal_, double radius_)
 {
 }
 
-// °ë¾¶Ğ¡ÓÚ 0 ÔòÎª¿Õ
+// åŠå¾„å°äº 0 åˆ™ä¸ºç©º
 bool Circle3::isEmpty() const
 {
     return radius < 0.0;
 }
 
-// Öá¶ÔÆë°üÎ§ºĞ
+// è½´å¯¹é½åŒ…å›´ç›’
 Aabb3 Circle3::bounds() const
 {
     if (isEmpty()) {

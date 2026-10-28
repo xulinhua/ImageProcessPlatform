@@ -1,6 +1,6 @@
 /**
  * @file VisionCommonExport.h
- * @brief VisionCommonExportͷ�ļ�
+ * @brief VisionCommonExport头文件
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.

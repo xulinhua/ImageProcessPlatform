@@ -1,6 +1,6 @@
 /**
  * @file CvObjectConvert.h
- * @brief CvObjectConvertÍ·ÎÄ¼ş
+ * @brief CvObjectConvertå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -18,37 +18,37 @@
 
 namespace Vision {
 
-/** @brief ÑÚÄ¤ÊÇ·ñÎŞÓĞĞ§Ç°¾°ÏñËØ */
+/** @brief æ©è†œæ˜¯å¦æ— æœ‰æ•ˆå‰æ™¯åƒç´  */
 VISION_CVCOM_API bool maskIsEmpty(const cv::Mat& mask);
 
-/** @brief Õû·ù°×ÑÚÄ¤ */
+/** @brief æ•´å¹…ç™½æ©è†œ */
 VISION_CVCOM_API cv::Mat fullImageMask(int imgW, int imgH);
 
 /**
- * @brief µ¥¸ñ»òÕû´ü HsObject ×ªÑÚÄ¤£¨²¢¼¯£»Ô²/¾Ø/Ïß/ÂÖÀª/ÇøÓò£©
- * @note Í¼Ïñ¸ñÇëÓÃ CvImageConvert£¬±¾º¯ÊıÌø¹ı ObjImage
+ * @brief å•æ ¼æˆ–æ•´è¢‹ HsObject è½¬æ©è†œï¼ˆå¹¶é›†ï¼›åœ†/çŸ©/çº¿/è½®å»“/åŒºåŸŸï¼‰
+ * @note å›¾åƒæ ¼è¯·ç”¨ CvImageConvertï¼Œæœ¬å‡½æ•°è·³è¿‡ ObjImage
  */
 VISION_CVCOM_API cv::Mat hsObjectToMask(const HsCommData::HsObject& obj, int imgW, int imgH);
 
-/** @brief HsRegion ĞĞ³Ì×ªÑÚÄ¤ */
+/** @brief HsRegion è¡Œç¨‹è½¬æ©è†œ */
 VISION_CVCOM_API cv::Mat hsRegionToMask(const HsCommData::HsRegion& reg, int imgW, int imgH);
 
-/** @brief ¶àÖ»ÉÏÓÎÇøÓò¶ÔÏó²¢¼¯£»¿ÕÔòÕû·ùÍ¼ */
+/** @brief å¤šåªä¸Šæ¸¸åŒºåŸŸå¯¹è±¡å¹¶é›†ï¼›ç©ºåˆ™æ•´å¹…å›¾ */
 VISION_CVCOM_API cv::Mat hsRegionsToMask(const std::vector<HsCommData::HsObject>& regs, int imgW, int imgH);
 
-/** @brief µ¥Ö» HsObject ×ªÑÚÄ¤£»ÎŞĞ§ÔòÕû·ùÍ¼ */
+/** @brief å•åª HsObject è½¬æ©è†œï¼›æ— æ•ˆåˆ™æ•´å¹…å›¾ */
 VISION_CVCOM_API cv::Mat toolRoiToMask(const HsCommData::HsObject& roi, int imgW, int imgH);
 
-/** @brief ¶à ROI ²¢¼¯£»¿ÕÔòÕû·ùÍ¼ */
+/** @brief å¤š ROI å¹¶é›†ï¼›ç©ºåˆ™æ•´å¹…å›¾ */
 VISION_CVCOM_API cv::Mat toolRoisToMask(const std::vector<HsCommData::HsObject>& rois, int imgW, int imgH);
 
-/** @brief ¶şÖµÑÚÄ¤×ª HsObject(ObjRegion) */
+/** @brief äºŒå€¼æ©è†œè½¬ HsObject(ObjRegion) */
 VISION_CVCOM_API HsCommData::HsObject maskToRegionObject(const cv::Mat& mask);
 
-/** @brief ½á¹ûÔ²×ª HsObject */
+/** @brief ç»“æœåœ†è½¬ HsObject */
 VISION_CVCOM_API HsCommData::HsObject circleObject(double cx, double cy, double r);
 
-/** @brief ½á¹ûÏß¶Î×ª HsObject */
+/** @brief ç»“æœçº¿æ®µè½¬ HsObject */
 VISION_CVCOM_API HsCommData::HsObject lineObject(double x1, double y1, double x2, double y2);
 
 }

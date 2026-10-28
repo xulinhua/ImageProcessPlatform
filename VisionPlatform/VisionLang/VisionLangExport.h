@@ -1,6 +1,6 @@
 /**
  * @file VisionLangExport.h
- * @brief VisionLangExportͷ�ļ�
+ * @brief VisionLangExport头文件
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.

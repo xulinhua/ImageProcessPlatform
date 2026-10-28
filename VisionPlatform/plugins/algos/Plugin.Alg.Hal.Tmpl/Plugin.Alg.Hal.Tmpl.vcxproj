@@ -30,7 +30,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir)VisionPluginAPI;$(SolutionDir)VisionAlgHal;$(SolutionDir)Plugin.VisionHalCom;$(HALCONROOT)\include;$(HALCONROOT)\include\halconcpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)VisionPluginAPI;$(SolutionDir)VisionAlgHal;$(SolutionDir)Plugin.VisionHalCom;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       
     </ClCompile>
     <Link>
@@ -41,7 +41,6 @@
   <ItemGroup>
     <ClCompile Include="PluginEntry.cpp" />
     <ClCompile Include="..\..\..\VisionAlgHal\HalTmpl.cpp" />
-    <ClCompile Include="..\..\..\VisionAlgHal\HalAlgoHelpers.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\VisionAlgHal\HalTmpl.h" />

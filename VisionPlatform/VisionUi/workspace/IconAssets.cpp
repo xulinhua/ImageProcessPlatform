@@ -1,6 +1,6 @@
 /**
  * @file IconAssets.cpp
- * @brief IconAssetsÊµÏÖ
+ * @brief IconAssetså®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -17,7 +17,7 @@ namespace Vision {
 
 namespace {
 
-// ½âÎö exe/icons ÏÂ¾ø¶ÔÂ·¾¶
+// è§£æ exe/icons ä¸‹ç»å¯¹è·¯å¾„
 QString iconAbsPath(const QString& relativePath)
 {
     return QString::fromUtf8(AppPaths::exeDir().c_str())
@@ -27,7 +27,7 @@ QString iconAbsPath(const QString& relativePath)
 
 } // namespace
 
-// ÓÅÏÈ SVG£¨QSvgRenderer£©£¬Æä´ÎÍ¬Ãû PNG
+// ä¼˜å…ˆ SVGï¼ˆQSvgRendererï¼‰ï¼Œå…¶æ¬¡åŒå PNG
 QIcon loadVisionIcon(const QString& relativePath, int px)
 {
     if (relativePath.isEmpty() || px <= 0) {
@@ -42,7 +42,7 @@ QIcon loadVisionIcon(const QString& relativePath, int px)
             QPainter p(&pm);
             p.setRenderHint(QPainter::Antialiasing, true);
             p.setRenderHint(QPainter::SmoothPixmapTransform, true);
-            // ÂÔÁô±ß¾à£¬±ÜÃâÃè±ßÌù±ß·¢ºı
+            // ç•¥ç•™è¾¹è·ï¼Œé¿å…æè¾¹è´´è¾¹å‘ç³Š
             const qreal pad = px * 0.08;
             renderer.render(&p, QRectF(pad, pad, px - 2 * pad, px - 2 * pad));
             p.end();
@@ -65,7 +65,7 @@ QIcon loadVisionIcon(const QString& relativePath, int px)
     return QIcon();
 }
 
-// Ç³É«Ô²½Çµ× + ¾ÓÖĞÍ¼±ê
+// æµ…è‰²åœ†è§’åº• + å±…ä¸­å›¾æ ‡
 QIcon badgeVisionIcon(const QIcon& icon, const QColor& bg, int px)
 {
     if (icon.isNull() || px <= 0) {

@@ -1,6 +1,6 @@
 /**
  * @file Session.cpp
- * @brief SessionÊµÏÖ
+ * @brief Sessionå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -20,7 +20,7 @@
 
 namespace Vision {
 
-// µ±Ç°±¾µØÊ±¼ä£¬ISO-8601 µ½Ãë
+// å½“å‰æœ¬åœ°æ—¶é—´ï¼ŒISO-8601 åˆ°ç§’
 static std::string sessionIsoNow()
 {
     time_t t = time(0);
@@ -33,7 +33,7 @@ static std::string sessionIsoNow()
     return std::string(buf);
 }
 
-// ×¼±¸Ä¿Â¼¡¢ÄÚÖÃÈ¨ÏŞºÍ³ö³§ÓÃ»§
+// å‡†å¤‡ç›®å½•ã€å†…ç½®æƒé™å’Œå‡ºå‚ç”¨æˆ·
 Session::Session()
     : m_listener(nullptr)
     , m_perms(0)
@@ -45,13 +45,13 @@ Session::Session()
     m_users.ensureDefaults();
 }
 
-// ÉèÖÃ½çÃæ»Øµ÷£¬¿É¿Õ
+// è®¾ç½®ç•Œé¢å›è°ƒï¼Œå¯ç©º
 void Session::setListener(ISessionListener* listener)
 {
     m_listener = listener;
 }
 
-// Ğ´Èëµ±Ç°ÓÃ»§¡¢Ë¢ĞÂÑÚÂë²¢»Øµ÷
+// å†™å…¥å½“å‰ç”¨æˆ·ã€åˆ·æ–°æ©ç å¹¶å›è°ƒ
 void Session::applyUser(const UserAccount& u)
 {
     m_user = u;
@@ -63,7 +63,7 @@ void Session::applyUser(const UserAccount& u)
     }
 }
 
-// °´½ÇÉ«´Ó¿âË¢ĞÂÑÚÂë£¬²¢²¢ÉÏ²»ÄÜ¹ØµôµÄÈ¨ÏŞ
+// æŒ‰è§’è‰²ä»åº“åˆ·æ–°æ©ç ï¼Œå¹¶å¹¶ä¸Šä¸èƒ½å…³æ‰çš„æƒé™
 void Session::reloadPerms()
 {
     if (m_user.id.empty()) {
@@ -78,7 +78,7 @@ void Session::reloadPerms()
     m_settings.setPermMask(m_user.role, m_perms);
 }
 
-// µã·Ö±êÊ¶ÊÇ·ñÂäÔÚµ±Ç°È¨ÏŞÑÚÂëÀï
+// ç‚¹åˆ†æ ‡è¯†æ˜¯å¦è½åœ¨å½“å‰æƒé™æ©ç é‡Œ
 bool Session::has(const std::string& permId) const
 {
     if (permId.empty() || !PermMgr::instance().contains(permId)) {
@@ -91,25 +91,25 @@ bool Session::has(const std::string& permId) const
     return (m_perms & static_cast<uint32_t>(bit)) != 0;
 }
 
-// È¨ÏŞÎ»ÊÇ·ñÂäÔÚµ±Ç°ÑÚÂëÀï
+// æƒé™ä½æ˜¯å¦è½åœ¨å½“å‰æ©ç é‡Œ
 bool Session::has(Perm p) const
 {
     return has(std::string(permissionId(p)));
 }
 
-// °ÑÄÚ´æÓÃ»§¿âÕû±íĞ´»Ø
+// æŠŠå†…å­˜ç”¨æˆ·åº“æ•´è¡¨å†™å›
 bool Session::persistUsers()
 {
     return AuthDb::instance().saveUsers(m_users, 0);
 }
 
-// ÓÃ¸ø¶¨ÕË»§Ìæ»»µ±Ç°ÓÃ»§£¬²»º¬¿ÚÁî¹şÏ£
+// ç”¨ç»™å®šè´¦æˆ·æ›¿æ¢å½“å‰ç”¨æˆ·ï¼Œä¸å«å£ä»¤å“ˆå¸Œ
 void Session::touchUser(const UserAccount& u)
 {
     applyUser(u);
 }
 
-// °´ id ´ÓÓÃ»§¿âÖØĞÂÌ×ÓÃµ±Ç°ÓÃ»§
+// æŒ‰ id ä»ç”¨æˆ·åº“é‡æ–°å¥—ç”¨å½“å‰ç”¨æˆ·
 void Session::refreshCurrentUser()
 {
     UserAccount* u = m_users.findById(m_user.id);
@@ -118,7 +118,7 @@ void Session::refreshCurrentUser()
     }
 }
 
-// Ğ£Ñé¿ÚÁîºó½øÈë£»Ê§°Ü°ÑÔ­ÒòĞ´µ½ error
+// æ ¡éªŒå£ä»¤åè¿›å…¥ï¼›å¤±è´¥æŠŠåŸå› å†™åˆ° error
 bool Session::login(const std::string& loginName, const std::string& password, std::string* error)
 {
     UserAccount* u = m_users.findByLogin(loginName);
@@ -177,7 +177,7 @@ bool Session::login(const std::string& loginName, const std::string& password, s
     return true;
 }
 
-// ²»Ğ£Ñé¿ÚÁî£¬Ö±½ÓÒÔ¸ÃÆôÓÃÓÃ»§½øÈë
+// ä¸æ ¡éªŒå£ä»¤ï¼Œç›´æ¥ä»¥è¯¥å¯ç”¨ç”¨æˆ·è¿›å…¥
 bool Session::enterAs(const std::string& loginName)
 {
     UserAccount* u = m_users.findByLogin(loginName);
@@ -189,14 +189,14 @@ bool Session::enterAs(const std::string& loginName)
     return true;
 }
 
-// Èı½ÇÉ«È¨ÏŞ»Ö¸´³ö³§²¢ÖØĞÂÌ×ÓÃ
+// ä¸‰è§’è‰²æƒé™æ¢å¤å‡ºå‚å¹¶é‡æ–°å¥—ç”¨
 void Session::resetDevPerms()
 {
     m_settings.resetPermsToDefault();
     reloadPerms();
 }
 
-// ¿ª·¢Ì¬½øÈë¹ÜÀíÔ±£¬²¢°Ñ½ÇÉ«È¨ÏŞ»Ö¸´³ö³§
+// å¼€å‘æ€è¿›å…¥ç®¡ç†å‘˜ï¼Œå¹¶æŠŠè§’è‰²æƒé™æ¢å¤å‡ºå‚
 bool Session::enterAdminForDev()
 {
     m_users.ensureDefaults();
@@ -220,7 +220,7 @@ bool Session::enterAdminForDev()
     return isLoggedIn();
 }
 
-// Ğ£Ñé¿ÚÁîºóÁÙÊ±»»³É¸ÃÓÃ»§£¬²¢¼Ç×¡ÌáÈ¨Ç°µÄ»á»°
+// æ ¡éªŒå£ä»¤åä¸´æ—¶æ¢æˆè¯¥ç”¨æˆ·ï¼Œå¹¶è®°ä½ææƒå‰çš„ä¼šè¯
 bool Session::elevate(const std::string& loginName, const std::string& password,
                       const std::string& neededPerm, std::string* error)
 {
@@ -253,7 +253,7 @@ bool Session::elevate(const std::string& loginName, const std::string& password,
     return true;
 }
 
-// ½áÊøÌáÈ¨£¬»Øµ½ÌáÈ¨Ç°µÄÓÃ»§
+// ç»“æŸææƒï¼Œå›åˆ°ææƒå‰çš„ç”¨æˆ·
 void Session::dropElevate()
 {
     if (!m_elevated) {
@@ -267,7 +267,7 @@ void Session::dropElevate()
     m_savedPerms = 0;
 }
 
-// ÉèÖÃÔÊĞíÊ±£¬ÒÔ²Ù×÷Ô±ÕË»§½øÈë
+// è®¾ç½®å…è®¸æ—¶ï¼Œä»¥æ“ä½œå‘˜è´¦æˆ·è¿›å…¥
 bool Session::autoLoginOperator()
 {
     if (!m_settings.autoLoginOperator) {
@@ -282,7 +282,7 @@ bool Session::autoLoginOperator()
     return true;
 }
 
-// Í¨Öª½çÃæË¢ĞÂµ±Ç°ÓÃ»§
+// é€šçŸ¥ç•Œé¢åˆ·æ–°å½“å‰ç”¨æˆ·
 void Session::notifyChanged()
 {
     if (m_listener) {
@@ -290,7 +290,7 @@ void Session::notifyChanged()
     }
 }
 
-// Í¨Öª½çÃæÓïÑÔÒÑÇĞ»»
+// é€šçŸ¥ç•Œé¢è¯­è¨€å·²åˆ‡æ¢
 void Session::notifyUiLocaleChanged()
 {
     if (m_listener) {
@@ -298,7 +298,7 @@ void Session::notifyUiLocaleChanged()
     }
 }
 
-// Çå³ıµ±Ç°ÓÃ»§²¢Í¨Öª½çÃæ
+// æ¸…é™¤å½“å‰ç”¨æˆ·å¹¶é€šçŸ¥ç•Œé¢
 void Session::logout()
 {
     if (isLoggedIn()) {
@@ -313,55 +313,55 @@ void Session::logout()
     }
 }
 
-// ÓÃ»§¿â
+// ç”¨æˆ·åº“
 AuthMgr& Session::users()
 {
     return m_users;
 }
 
-// ÓÃ»§¿â
+// ç”¨æˆ·åº“
 const AuthMgr& Session::users() const
 {
     return m_users;
 }
 
-// Ó¦ÓÃÉèÖÃ
+// åº”ç”¨è®¾ç½®
 AppSettings& Session::settings()
 {
     return m_settings;
 }
 
-// Ó¦ÓÃÉèÖÃ
+// åº”ç”¨è®¾ç½®
 const AppSettings& Session::settings() const
 {
     return m_settings;
 }
 
-// ÊÇ·ñÒÑµÇÂ¼
+// æ˜¯å¦å·²ç™»å½•
 bool Session::isLoggedIn() const
 {
     return !m_user.id.empty();
 }
 
-// µ±Ç°ÓÃ»§
+// å½“å‰ç”¨æˆ·
 const UserAccount& Session::user() const
 {
     return m_user;
 }
 
-// µ±Ç°½ÇÉ«
+// å½“å‰è§’è‰²
 UserRole Session::role() const
 {
     return m_user.role;
 }
 
-// µ±Ç°È¨ÏŞÑÚÂë
+// å½“å‰æƒé™æ©ç 
 uint32_t Session::perms() const
 {
     return m_perms;
 }
 
-// ÊÇ·ñ´¦ÓÚÌáÈ¨
+// æ˜¯å¦å¤„äºææƒ
 bool Session::isElevated() const
 {
     return m_elevated;

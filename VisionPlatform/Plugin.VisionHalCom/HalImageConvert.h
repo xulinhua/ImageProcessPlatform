@@ -1,6 +1,6 @@
 /**
  * @file HalImageConvert.h
- * @brief HalImageConvertÍ·ÎÄ¼ş
+ * @brief HalImageConvertå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -17,21 +17,27 @@
 
 namespace Vision {
 
-/** @brief Halcon Òì³£×ªËµÃ÷×Ö·û´® */
+/** @brief Halcon å¼‚å¸¸è½¬è¯´æ˜å­—ç¬¦ä¸² */
 VISION_HALCOM_API std::string hExceptionText(const HalconCpp::HException& e);
 
 /**
- * @brief HsImage ×ª HObject
- * byte µ¥Í¨µÀÓÃ GenImage1£¬byte Èı/ËÄÍ¨µÀÓÃ GenImageInterleaved£¨Halcon ÄÚ²¿¿½±´£©
- * int16/uint16/int32/real32/complex °´¶ÔÓ¦ Halcon ÀàĞÍ£»real64 ÊÕ³É real
+ * @brief HsImage è½¬ HObject
+ * byte å•é€šé“ç”¨ GenImage1ï¼Œbyte ä¸‰/å››é€šé“ç”¨ GenImageInterleavedï¼ˆHalcon å†…éƒ¨æ‹·è´ï¼‰
+ * int16/uint16/int32/real32/complex æŒ‰å¯¹åº” Halcon ç±»å‹ï¼›real64 æ”¶æˆ real
  */
 VISION_HALCOM_API bool hsImageToHObject(const HsCommData::HsImage& img, HalconCpp::HObject*& out, std::string* err);
 
 /**
- * @brief HObject ×ª HsImage
- * µ¥Í¨µÀ°´ÀàĞÍ memcpy£»ÈıÍ¨µÀÓÃ InterleaveChannels ÊÕ³É rgb ÔÙ memcpy
+ * @brief HObject è½¬ HsImage
+ * å•é€šé“æŒ‰ç±»å‹ memcpyï¼›ä¸‰é€šé“ç”¨ InterleaveChannels æ”¶æˆ rgb å† memcpy
  */
 VISION_HALCOM_API bool hObjectToHsImage(const HalconCpp::HObject& himg, int64_t frameId, HsCommData::HsImage*& out, std::string* err);
+
+/** @brief HsImage è½¬ç°åº¦ HImageï¼Œå¹¶å†™å‡ºå®½é«˜ã€‚ç©ºå›¾å¤±è´¥ã€‚ */
+VISION_HALCOM_API bool hsImageToGray(const HsCommData::HsImage& img, HalconCpp::HImage*& gray, int* w, int* h, std::string* err);
+
+/** @brief åŒåº“æŒ‡é’ˆä¼˜å…ˆï¼Œå¦åˆ™ä» HsImage è½¬ç°åº¦ï¼Œå¹¶å†™å‡ºå®½é«˜ */
+VISION_HALCOM_API bool inputToGray(void* native, int algLib, const HsCommData::HsImage& img, HalconCpp::HObject*& gray, int* w, int* h, std::string* err);
 
 }
 

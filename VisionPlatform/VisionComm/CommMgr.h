@@ -1,6 +1,6 @@
 /**
  * @file CommMgr.h
- * @brief CommMgrÍ·ÎÄ¼ş
+ * @brief CommMgrå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -20,59 +20,59 @@ namespace Vision {
 
 /**
  * @class CommMgr
- * @brief Í¨ĞÅÍ¨µÀ¹ÜÀí¡£°´Ì¨ÕË´´½¨´«Êä£¬Modbus Ö÷´Ó¹ÒÔÚÍ¨µÀÉÏ
+ * @brief é€šä¿¡é€šé“ç®¡ç†ã€‚æŒ‰å°è´¦åˆ›å»ºä¼ è¾“ï¼ŒModbus ä¸»ä»æŒ‚åœ¨é€šé“ä¸Š
  */
 class VISION_COMM_API CommMgr {
 public:
-    /** @brief ½ø³ÌÄÚÎ¨Ò»Í¨ĞÅ¹ÜÀí */
+    /** @brief è¿›ç¨‹å†…å”¯ä¸€é€šä¿¡ç®¡ç† */
     static CommMgr& instance();
 
-    /** @brief ±¾»ú´®¿ÚÃû */
+    /** @brief æœ¬æœºä¸²å£å */
     std::vector<std::string> listSerialPorts() const;
 
-    /** @brief °´Í¨µÀÅäÖÃ´ò¿ª£»ÒÑ´ò¿ªÔòÏÈ¹ØÔÙ¿ª */
+    /** @brief æŒ‰é€šé“é…ç½®æ‰“å¼€ï¼›å·²æ‰“å¼€åˆ™å…ˆå…³å†å¼€ */
     bool openChannel(const CommChannel& ch, std::string* err);
-    /** @brief ¹Ø±ÕÍ¨µÀ */
+    /** @brief å…³é—­é€šé“ */
     void closeChannel(const ObjectId& id);
-    /** @brief ÊÇ·ñÒÑ´ò¿ª¡£·şÎñ¶Ë±íÊ¾ÕıÔÚ¼àÌı */
+    /** @brief æ˜¯å¦å·²æ‰“å¼€ã€‚æœåŠ¡ç«¯è¡¨ç¤ºæ­£åœ¨ç›‘å¬ */
     bool isOpen(const ObjectId& id) const;
-    /** @brief µ±Ç°¶Ô¶Ë¡£TCP ·şÎñ¶ËÎªÒÑ½ÓÈëµÄ¿Í»§¶Ë */
+    /** @brief å½“å‰å¯¹ç«¯ã€‚TCP æœåŠ¡ç«¯ä¸ºå·²æ¥å…¥çš„å®¢æˆ·ç«¯ */
     std::vector<CommPeer> peers(const ObjectId& id) const;
 
     /**
-     * @brief Ğ´Ô­Ê¼×Ö½Ú
-     * @param peerId TCP ·şÎñ¶ËÌîĞ´¿Í»§¶Ë id£¬ÆäËüÍ¨µÀÁô¿Õ
+     * @brief å†™åŸå§‹å­—èŠ‚
+     * @param peerId TCP æœåŠ¡ç«¯å¡«å†™å®¢æˆ·ç«¯ idï¼Œå…¶å®ƒé€šé“ç•™ç©º
      */
     bool writeBytes(const ObjectId& id, const std::string& peerId, const CommBytes& data, std::string* err);
-    /** @brief ¶ÁÔ­Ê¼×Ö½Ú */
+    /** @brief è¯»åŸå§‹å­—èŠ‚ */
     CommBytes readBytes(const ObjectId& id, const std::string& peerId, int maxBytes, int timeoutMs, std::string* err);
 
-    /** @brief ¶ÁÏßÈ¦»òÀëÉ¢ÊäÈë¡£´ÓÕ¾¶Á±¾»úÓ³Ïñ£¬Ö÷Õ¾·¢×ÜÏßÇëÇó */
+    /** @brief è¯»çº¿åœˆæˆ–ç¦»æ•£è¾“å…¥ã€‚ä»ç«™è¯»æœ¬æœºæ˜ åƒï¼Œä¸»ç«™å‘æ€»çº¿è¯·æ±‚ */
     bool modbusReadBits(const ObjectId& id, const std::string& peerId, int slave, ModbusTable table,
                         int address, int count, std::vector<unsigned char>* bits, std::string* err);
-    /** @brief ¶Á±£³Ö¼Ä´æÆ÷»òÊäÈë¼Ä´æÆ÷ */
+    /** @brief è¯»ä¿æŒå¯„å­˜å™¨æˆ–è¾“å…¥å¯„å­˜å™¨ */
     bool modbusReadRegs(const ObjectId& id, const std::string& peerId, int slave, ModbusTable table,
                         int address, int count, std::vector<uint16_t>* regs, std::string* err);
-    /** @brief Ğ´ÏßÈ¦¡£´ÓÕ¾Ğ´±¾»úÓ³Ïñ */
+    /** @brief å†™çº¿åœˆã€‚ä»ç«™å†™æœ¬æœºæ˜ åƒ */
     bool modbusWriteBits(const ObjectId& id, const std::string& peerId, int slave, ModbusTable table,
                          int address, const std::vector<unsigned char>& bits, std::string* err);
-    /** @brief Ğ´¼Ä´æÆ÷¡£´ÓÕ¾Ğ´±¾»úÓ³Ïñ */
+    /** @brief å†™å¯„å­˜å™¨ã€‚ä»ç«™å†™æœ¬æœºæ˜ åƒ */
     bool modbusWriteRegs(const ObjectId& id, const std::string& peerId, int slave, ModbusTable table,
                          int address, const std::vector<uint16_t>& regs, std::string* err);
 
 private:
-    /** @brief Ö»ÔÊĞí instance ¹¹Ôì */
+    /** @brief åªå…è®¸ instance æ„é€  */
     CommMgr();
-    /** @brief ¹Ø±ÕÈ«²¿ÒÑ¿ªÍ¨µÀ */
+    /** @brief å…³é—­å…¨éƒ¨å·²å¼€é€šé“ */
     ~CommMgr();
-    /** @brief ½ûÖ¹¿½±´ */
+    /** @brief ç¦æ­¢æ‹·è´ */
     CommMgr(const CommMgr&);
-    /** @brief ½ûÖ¹¸³Öµ */
+    /** @brief ç¦æ­¢èµ‹å€¼ */
     CommMgr& operator=(const CommMgr&);
 
-    /** @class Impl @brief ÒÑ´ò¿ªÍ¨µÀµÄ»á»°±í */
+    /** @class Impl @brief å·²æ‰“å¼€é€šé“çš„ä¼šè¯è¡¨ */
     struct Impl;
-    Impl* m_impl; ///< »á»°±í
+    Impl* m_impl; ///< ä¼šè¯è¡¨
 };
 
 }

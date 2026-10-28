@@ -1,6 +1,6 @@
 /**
  * @file ToolParaEnhance.hpp
- * @brief ToolParaEnhanceÍ·ÎÄ¼ş
+ * @brief ToolParaEnhanceå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -16,22 +16,22 @@ namespace Vision {
 
 /**
  * @class ToolParaEnhance
- * @brief EnhanceTool ÔËĞĞ²ÎÊı
+ * @brief EnhanceTool è¿è¡Œå‚æ•°
  */
 class ToolParaEnhance : public ToolParaBase {
 public:
-    /** @brief Ñ§Ï°²ÎÊı£¬Ã»ÓĞÔòÎª¿Õ */
+    /** @brief å­¦ä¹ å‚æ•°ï¼Œæ²¡æœ‰åˆ™ä¸ºç©º */
     struct Learn {
     };
-    /** @brief ÔËĞĞ²ÎÊı */
+    /** @brief è¿è¡Œå‚æ•° */
     struct Run {
-        int pl_n;                   ///< ²½ÖèÊı
-        int pl_0_op;                ///< Ëã×Ó
-        int pl_0_w;                 ///< ÑÚÄ¤¿í
-        int pl_0_h;                 ///< ÑÚÄ¤¸ß
-        double pl_0_c0;             ///< ÏµÊı
-        double pl_0_c1;             ///< ÏµÊı2
-        int pl_0_f;                 ///< Ëõ·Åµ½×î´ó
+        int pl_n;                   ///< æ­¥éª¤æ•°
+        int pl_0_op;                ///< ç®—å­
+        int pl_0_w;                 ///< æ©è†œå®½
+        int pl_0_h;                 ///< æ©è†œé«˜
+        double pl_0_c0;             ///< ç³»æ•°
+        double pl_0_c1;             ///< ç³»æ•°2
+        int pl_0_f;                 ///< ç¼©æ”¾åˆ°æœ€å¤§
         Run()
             : pl_n(1)
             , pl_0_op(0)
@@ -43,10 +43,10 @@ public:
         {}
     };
 
-    Learn learn; ///< Ñ§Ï°²ÎÊı£¬Ã»ÓĞÔòÎª¿Õ
-    Run run;     ///< ÔËĞĞ²ÎÊı
+    Learn learn; ///< å­¦ä¹ å‚æ•°ï¼Œæ²¡æœ‰åˆ™ä¸ºç©º
+    Run run;     ///< è¿è¡Œå‚æ•°
 
-    /** @brief ´Ó ToolParam ÌîĞ´ */
+    /** @brief ä» ToolParam å¡«å†™ */
     void load(const ToolParam& src)
     {
         const ParamMap& m = src.run;

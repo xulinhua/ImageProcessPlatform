@@ -1,6 +1,6 @@
 /**
  * @file Perm.h
- * @brief PermÍ·ÎÄ¼ş
+ * @brief Permå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -16,94 +16,94 @@
 
 namespace Vision {
 
-/** @brief ÓÃ»§½ÇÉ«¡£È¨ÏŞ±í¿É¸Ä£¬½ÇÉ«±¾Éí²»¿ÉÉ¾ */
+/** @brief ç”¨æˆ·è§’è‰²ã€‚æƒé™è¡¨å¯æ”¹ï¼Œè§’è‰²æœ¬èº«ä¸å¯åˆ  */
 enum UserRole {
-    RoleOperator = 0, ///< ²Ù×÷Ô±
-    RoleEngineer,     ///< ¹¤³ÌÊ¦
-    RoleAdmin         ///< ¹ÜÀíÔ±
+    RoleOperator = 0, ///< æ“ä½œå‘˜
+    RoleEngineer,     ///< å·¥ç¨‹å¸ˆ
+    RoleAdmin         ///< ç®¡ç†å‘˜
 };
 
-/** @brief Ï¸Á£¶ÈÈ¨ÏŞÎ»¡£ÓëÏµÍ³ÉèÖÃÀïµÄ½ÇÉ«È¨ÏŞ±í¶ÔÓ¦ */
+/** @brief ç»†ç²’åº¦æƒé™ä½ã€‚ä¸ç³»ç»Ÿè®¾ç½®é‡Œçš„è§’è‰²æƒé™è¡¨å¯¹åº” */
 enum Perm {
-    PermNone                 = 0,       ///< ÎŞ
-    PermRuntimeView          = 1u << 0, ///< ²é¿´ÔËĞĞ½çÃæ
-    PermRuntimeStartStop     = 1u << 1, ///< ¿ªÊ¼/Í£Ö¹
-    PermRuntimeResetCount    = 1u << 2, ///< ÇåÁã²úÁ¿
-    PermRuntimeSwitchSolution= 1u << 3, ///< ÔËĞĞÌ¬ÇĞ»»·½°¸
-    PermEnterDesign          = 1u << 4, ///< ½øÈëÉè¼ÆÌ¬
-    PermEditSolution         = 1u << 5, ///< ±à¼­·½°¸/¹¤Õ¾/Á÷³Ì
-    PermEditDevice           = 1u << 6, ///< Éè±¸¹ÜÀí
-    PermRunJobDebug          = 1u << 7, ///< µ÷ÊÔÔËĞĞ±¾¹¤¾ß/Á÷³Ì
-    PermManageUsers          = 1u << 8, ///< ÓÃ»§¹ÜÀí
-    PermEditAppSettings      = 1u << 9, ///< ÏµÍ³ÉèÖÃ¡¢¿Ø¼şÈ¨ÏŞ
-    PermViewLogs             = 1u << 10, ///< ²é¿´²Ù×÷Óëµ÷ÊÔÈÕÖ¾
-    PermManageLogs           = 1u << 11, ///< É¾³ıÈÕÖ¾ÎÄ¼ş
-    PermEditComm             = 1u << 12  ///< Í¨ĞÅ¹ÜÀí
+    PermNone                 = 0,       ///< æ— 
+    PermRuntimeView          = 1u << 0, ///< æŸ¥çœ‹è¿è¡Œç•Œé¢
+    PermRuntimeStartStop     = 1u << 1, ///< å¼€å§‹/åœæ­¢
+    PermRuntimeResetCount    = 1u << 2, ///< æ¸…é›¶äº§é‡
+    PermRuntimeSwitchSolution= 1u << 3, ///< è¿è¡Œæ€åˆ‡æ¢æ–¹æ¡ˆ
+    PermEnterDesign          = 1u << 4, ///< è¿›å…¥è®¾è®¡æ€
+    PermEditSolution         = 1u << 5, ///< ç¼–è¾‘æ–¹æ¡ˆ/å·¥ç«™/æµç¨‹
+    PermEditDevice           = 1u << 6, ///< è®¾å¤‡ç®¡ç†
+    PermRunJobDebug          = 1u << 7, ///< è°ƒè¯•è¿è¡Œæœ¬å·¥å…·/æµç¨‹
+    PermManageUsers          = 1u << 8, ///< ç”¨æˆ·ç®¡ç†
+    PermEditAppSettings      = 1u << 9, ///< ç³»ç»Ÿè®¾ç½®ã€æ§ä»¶æƒé™
+    PermViewLogs             = 1u << 10, ///< æŸ¥çœ‹æ“ä½œä¸è°ƒè¯•æ—¥å¿—
+    PermManageLogs           = 1u << 11, ///< åˆ é™¤æ—¥å¿—æ–‡ä»¶
+    PermEditComm             = 1u << 12  ///< é€šä¿¡ç®¡ç†
 };
 
 
 /**
  * @class PermPageDesc
- * @brief È¨ÏŞ±íµÄÒ»Ò³£ºÒ³ÃæÃû + ¸ÃÒ³ÏÂµÄ¿Ø¼şÈ¨ÏŞÁĞ±í
+ * @brief æƒé™è¡¨çš„ä¸€é¡µï¼šé¡µé¢å + è¯¥é¡µä¸‹çš„æ§ä»¶æƒé™åˆ—è¡¨
  */
 struct PermPageDesc {
-    std::string title;       ///< Ò³ÃæÃû
-    std::string hint;        ///< Ò³ÃæËµÃ÷
-    const Perm* items; ///< ±¾Ò³¿Ø¼ş
-    int itemCount;           ///< ¿Ø¼şÊı
+    std::string title;       ///< é¡µé¢å
+    std::string hint;        ///< é¡µé¢è¯´æ˜
+    const Perm* items; ///< æœ¬é¡µæ§ä»¶
+    int itemCount;           ///< æ§ä»¶æ•°
 };
 
 
-/** @brief ¿ÉÅäÖÃÈ¨ÏŞÌõÊı£¨²»º¬ PermNone£© */
+/** @brief å¯é…ç½®æƒé™æ¡æ•°ï¼ˆä¸å« PermNoneï¼‰ */
 inline int permissionCount()
 {
     return 13;
 }
 
-/** @brief µÚ i ÌõÈ¨ÏŞ£»Ô½½ç·µ»Ø PermNone */
+/** @brief ç¬¬ i æ¡æƒé™ï¼›è¶Šç•Œè¿”å› PermNone */
 VISION_AUTH_API Perm permissionAt(int i);
 
-/** @brief µã·ÖÈ¨ÏŞ±êÊ¶£¨ÓëÎ»Ã¶¾Ù¶ÔÕÕ£© */
+/** @brief ç‚¹åˆ†æƒé™æ ‡è¯†ï¼ˆä¸ä½æšä¸¾å¯¹ç…§ï¼‰ */
 VISION_AUTH_API const char* permissionId(Perm p);
 
-/** @brief ±êÊ¶ ¡ú Î»£»Î´Öª·µ»Ø PermNone */
+/** @brief æ ‡è¯† â†’ ä½ï¼›æœªçŸ¥è¿”å› PermNone */
 VISION_AUTH_API Perm permissionFromId(const char* id);
 
-/** @brief È¨ÏŞÖĞÎÄ±êÌâ£¨ÉèÖÃ±í×ó²à£© */
+/** @brief æƒé™ä¸­æ–‡æ ‡é¢˜ï¼ˆè®¾ç½®è¡¨å·¦ä¾§ï¼‰ */
 VISION_AUTH_API std::string permissionTitle(Perm p);
 
-/** @brief È¨ÏŞËµÃ÷£¨ÉèÖÃ±íÌáÊ¾£© */
+/** @brief æƒé™è¯´æ˜ï¼ˆè®¾ç½®è¡¨æç¤ºï¼‰ */
 VISION_AUTH_API std::string permissionHint(Perm p);
 
-/** @brief ½ÇÉ«³ö³§È¨ÏŞÑÚÂë */
+/** @brief è§’è‰²å‡ºå‚æƒé™æ©ç  */
 VISION_AUTH_API uint32_t defaultPerms(UserRole role);
 
-/** @brief ½ÇÉ«Ëø¶¨Î»£º²»ÄÜÔÚÉèÖÃÀï¹Øµô */
+/** @brief è§’è‰²é”å®šä½ï¼šä¸èƒ½åœ¨è®¾ç½®é‡Œå…³æ‰ */
 VISION_AUTH_API uint32_t lockedPerms(UserRole role);
 
 /**
- * @brief ½áºÏ²Ù×÷Ô±Á½Ïî¿ª¹ØºóµÄÓĞĞ§ÑÚÂë
- * @param operatorReset ²Ù×÷Ô±ÊÇ·ñÔÊĞíÇåÁã
- * @param operatorSwitch ²Ù×÷Ô±ÊÇ·ñÔÊĞíÇĞ»»·½°¸
+ * @brief ç»“åˆæ“ä½œå‘˜ä¸¤é¡¹å¼€å…³åçš„æœ‰æ•ˆæ©ç 
+ * @param operatorReset æ“ä½œå‘˜æ˜¯å¦å…è®¸æ¸…é›¶
+ * @param operatorSwitch æ“ä½œå‘˜æ˜¯å¦å…è®¸åˆ‡æ¢æ–¹æ¡ˆ
  */
 VISION_AUTH_API uint32_t permissionsForRole(UserRole role, bool operatorReset, bool operatorSwitch);
 
-/** @brief È¨ÏŞÒ³ÃæÊı */
+/** @brief æƒé™é¡µé¢æ•° */
 inline int permPageCount()
 {
     return 5;
 }
 
-/** @brief µÚ page ¸öÈ¨ÏŞÒ³Ãæ£»Ô½½ç·µ»Ø¿ÕÒ³ */
+/** @brief ç¬¬ page ä¸ªæƒé™é¡µé¢ï¼›è¶Šç•Œè¿”å›ç©ºé¡µ */
 VISION_AUTH_API PermPageDesc permPageAt(int page);
 
-/** @brief ¾ÉÉèÖÃÃ»ÓĞÈÕÖ¾Î»Ê±£¬¸ø¹¤³ÌÊ¦¡¢¹ÜÀíÔ±²¹ÉÏ³ö³§ÈÕÖ¾È¨ÏŞ */
+/** @brief æ—§è®¾ç½®æ²¡æœ‰æ—¥å¿—ä½æ—¶ï¼Œç»™å·¥ç¨‹å¸ˆã€ç®¡ç†å‘˜è¡¥ä¸Šå‡ºå‚æ—¥å¿—æƒé™ */
 VISION_AUTH_API void migrateLogPermBits(uint32_t* op, uint32_t* eng, uint32_t* admin);
 
-/** @brief ½ÇÉ«ÖĞÎÄÃû */
+/** @brief è§’è‰²ä¸­æ–‡å */
 VISION_AUTH_API std::string roleTitle(UserRole role);
 
-/** @brief ÕûÊı×ª½ÇÉ«£»Ô½½ç»ØÍË²Ù×÷Ô± */
+/** @brief æ•´æ•°è½¬è§’è‰²ï¼›è¶Šç•Œå›é€€æ“ä½œå‘˜ */
 inline UserRole roleFromInt(int v)
 {
     if (v == RoleAdmin || v == RoleEngineer) {

@@ -1,6 +1,6 @@
 /**
  * @file ToolRegistry.cpp
- * @brief ToolRegistryÊµÏÖ
+ * @brief ToolRegistryå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -11,7 +11,7 @@
 
 namespace Vision {
 
-// °´¹¤¾ßÀàĞÍ¸ø³öÄ¬ÈÏ¶Ë¿Ú±í
+// æŒ‰å·¥å…·ç±»å‹ç»™å‡ºé»˜è®¤ç«¯å£è¡¨
 std::vector<PortDesc> defaultPortsForType(ToolType type)
 {
     std::vector<PortDesc> p;
@@ -59,25 +59,25 @@ std::vector<PortDesc> defaultPortsForType(ToolType type)
     return p;
 }
 
-// Ä¬ÈÏÎŞËµÃ÷
+// é»˜è®¤æ— è¯´æ˜
 std::string ToolBase::description() const
 {
     return std::string();
 }
 
-// Ä¬ÈÏÎŞ²ÎÊı
+// é»˜è®¤æ— å‚æ•°
 ParamMap ToolBase::defaultParams() const
 {
     return ParamMap();
 }
 
-// Ä¬ÈÏ¶Ë¿ÚÓÉÀàĞÍ¾ö¶¨
+// é»˜è®¤ç«¯å£ç”±ç±»å‹å†³å®š
 std::vector<PortDesc> ToolBase::ports() const
 {
     return defaultPortsForType(type());
 }
 
-// ×é×°¹¤¾ßÏäÌõÄ¿
+// ç»„è£…å·¥å…·ç®±æ¡ç›®
 ToolDesc ToolBase::desc() const
 {
     ToolDesc d;
@@ -91,7 +91,7 @@ ToolDesc ToolBase::desc() const
     return d;
 }
 
-// ÓÃÃèÊöÓëÄ¬ÈÏ²ÎÊıĞÂ½¨Ò»Ìõ¹¤¾ß¼ÇÂ¼
+// ç”¨æè¿°ä¸é»˜è®¤å‚æ•°æ–°å»ºä¸€æ¡å·¥å…·è®°å½•
 ToolCfg ToolBase::createInstance(const ObjectId& deviceId) const
 {
     ToolCfg t;
@@ -106,14 +106,14 @@ ToolCfg ToolBase::createInstance(const ObjectId& deviceId) const
     return t;
 }
 
-// ½ø³ÌÄÚµ¥Àı
+// è¿›ç¨‹å†…å•ä¾‹
 ToolRegistry& ToolRegistry::instance()
 {
     static ToolRegistry g;
     return g;
 }
 
-// ÊÍ·ÅÈ«²¿ÒÑ×¢²á ToolBase
+// é‡Šæ”¾å…¨éƒ¨å·²æ³¨å†Œ ToolBase
 ToolRegistry::~ToolRegistry()
 {
     for (int i = 0; i < static_cast<int>(m_tools.size()); ++i) {
@@ -125,7 +125,7 @@ ToolRegistry::~ToolRegistry()
     m_tools.clear();
 }
 
-// °´ toolName È¥ÖØºó½Ó¹ÜËùÓĞÈ¨£»ÖØ¸´ÔòÉ¾³ı´«ÈëÖ¸Õë
+// æŒ‰ toolName å»é‡åæ¥ç®¡æ‰€æœ‰æƒï¼›é‡å¤åˆ™åˆ é™¤ä¼ å…¥æŒ‡é’ˆ
 void ToolRegistry::add(ToolBase* tool)
 {
     if (!tool) {
@@ -141,13 +141,13 @@ void ToolRegistry::add(ToolBase* tool)
     m_tools.push_back(tool);
 }
 
-// °´Ãû³Æ²éÕÒ£¨±ğÃû£©
+// æŒ‰åç§°æŸ¥æ‰¾ï¼ˆåˆ«åï¼‰
 ToolBase* ToolRegistry::findByName(const std::string& toolName) const
 {
     return find(toolName);
 }
 
-// °´ toolName ¾«È·²éÕÒ
+// æŒ‰ toolName ç²¾ç¡®æŸ¥æ‰¾
 ToolBase* ToolRegistry::find(const std::string& toolName) const
 {
     for (int i = 0; i < static_cast<int>(m_tools.size()); ++i) {
@@ -158,7 +158,7 @@ ToolBase* ToolRegistry::find(const std::string& toolName) const
     return 0;
 }
 
-// ·µ»Ø¸ÃÀàĞÍµÄµÚÒ»¸öÊµÏÖ
+// è¿”å›è¯¥ç±»å‹çš„ç¬¬ä¸€ä¸ªå®ç°
 ToolBase* ToolRegistry::findByType(ToolType type) const
 {
     for (int i = 0; i < static_cast<int>(m_tools.size()); ++i) {
@@ -169,13 +169,13 @@ ToolBase* ToolRegistry::findByType(ToolType type) const
     return 0;
 }
 
-// È«²¿ÒÑ×¢²áÊµÏÖ
+// å…¨éƒ¨å·²æ³¨å†Œå®ç°
 std::vector<ToolBase*> ToolRegistry::all() const
 {
     return m_tools;
 }
 
-// °´Ãû³Æ´´½¨ÊµÀı£»Î´×¢²á·µ»Ø¿Õ¼ÇÂ¼
+// æŒ‰åç§°åˆ›å»ºå®ä¾‹ï¼›æœªæ³¨å†Œè¿”å›ç©ºè®°å½•
 ToolCfg ToolRegistry::create(const std::string& toolName, const ObjectId& deviceId) const
 {
     ToolBase* t = find(toolName);
@@ -185,7 +185,7 @@ ToolCfg ToolRegistry::create(const std::string& toolName, const ObjectId& device
     return t->createInstance(deviceId);
 }
 
-// ¸´ÖÆ¼ÇÂ¼²¢»»ĞÂ id£»ÒÑ°Ú¹ıµÄ½Úµã´í¿ªÒ»µãÒÔÃâµşÔÚÔ­´¦
+// å¤åˆ¶è®°å½•å¹¶æ¢æ–° idï¼›å·²æ‘†è¿‡çš„èŠ‚ç‚¹é”™å¼€ä¸€ç‚¹ä»¥å…å åœ¨åŸå¤„
 ToolCfg ToolRegistry::duplicate(const ToolCfg& src) const
 {
     ToolCfg t = src;
@@ -197,7 +197,7 @@ ToolCfg ToolRegistry::duplicate(const ToolCfg& src) const
     return t;
 }
 
-// ÒÑ×¢²á¹¤¾ß°æ±¾±í£¨¹©¹ØÓÚ¶Ô»°¿ò£©
+// å·²æ³¨å†Œå·¥å…·ç‰ˆæœ¬è¡¨ï¼ˆä¾›å…³äºå¯¹è¯æ¡†ï¼‰
 std::vector<VersionInfo> toolVersions()
 {
     std::vector<VersionInfo> out;

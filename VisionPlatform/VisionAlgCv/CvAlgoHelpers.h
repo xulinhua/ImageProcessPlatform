@@ -1,6 +1,6 @@
 /**
  * @file CvAlgoHelpers.h
- * @brief CvAlgoHelpersÍ·ÎÄ¼ş
+ * @brief CvAlgoHelperså¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -17,43 +17,43 @@
 namespace Vision {
 
 /**
- * @brief ´Ó AlgToolIn È¡»Ò¶ÈÍ¼Óë¿í¸ß
- * @param in Ëã·¨ÊäÈë
- * @param gray Êä³ö»Ò¶È
- * @param w Í¼¿í
- * @param h Í¼¸ß
- * @param err Ê§°ÜÔ­Òò
+ * @brief ä» AlgToolIn å–ç°åº¦å›¾ä¸å®½é«˜
+ * @param in ç®—æ³•è¾“å…¥
+ * @param gray è¾“å‡ºç°åº¦
+ * @param w å›¾å®½
+ * @param h å›¾é«˜
+ * @param err å¤±è´¥åŸå› 
  */
 bool loadGrayFromAlgIn(const AlgToolIn& in, cv::Mat*& gray, int* w, int* h, std::string* err);
 
 /**
- * @brief ËÑË÷Óò£º±¾µØ ROI ÓëÉÏÓÎÇøÓòµÄ²¢¼¯¡£ÎŞÉÏÓÎÔò½ö±¾µØ£¬ÎŞ±¾µØ ROI Ôò½öÉÏÓÎ
+ * @brief æœç´¢åŸŸï¼šæœ¬åœ° ROI ä¸ä¸Šæ¸¸åŒºåŸŸçš„å¹¶é›†ã€‚æ— ä¸Šæ¸¸åˆ™ä»…æœ¬åœ°ï¼Œæ— æœ¬åœ° ROI åˆ™ä»…ä¸Šæ¸¸
  */
 cv::Mat searchDomainFromAlgIn(const std::vector<HsCommData::HsObject>& rois,
                                 const std::vector<HsCommData::HsObject>& regions,
                                 int imgW, int imgH);
 
 /**
- * @brief Á¬Í¨¡¢°´Ãæ»ı/Ô²¶ÈÉ¸Ñ¡ºó´ò°üÊä³ö
+ * @brief è¿é€šã€æŒ‰é¢ç§¯/åœ†åº¦ç­›é€‰åæ‰“åŒ…è¾“å‡º
  */
 AlgToolOut packConnectedBlobs(const cv::Mat& bin, const AlgToolIn& in,
                                 double minArea, double maxArea, double minCirc, double maxCirc,
                                 const std::string& okMsg);
 
 /**
- * @brief Ô¤´¦Àí£º»Ò¶È¼Ó ROI ÑÚÄ¤£¨work ÎªÕûÍ¼¿½±´£©
+ * @brief é¢„å¤„ç†ï¼šç°åº¦åŠ  ROI æ©è†œï¼ˆwork ä¸ºæ•´å›¾æ‹·è´ï¼‰
  */
 bool preparePreprocessWork(const AlgToolIn& in, cv::Mat*& gray, cv::Mat*& work,
                            cv::Mat*& roiMask, std::string* err);
 
 /**
- * @brief Ô¤´¦ÀíĞ´»Ø£º½ö ROI ÄÚÏñËØ¸²¸Çµ½Ô­Í¼
+ * @brief é¢„å¤„ç†å†™å›ï¼šä»… ROI å†…åƒç´ è¦†ç›–åˆ°åŸå›¾
  */
 AlgToolOut finishPreprocessWork(const AlgToolIn& in, const cv::Mat& gray,
                                   const cv::Mat& work, const cv::Mat& roiMask,
                                   const std::string& okMsg);
 
-/** @brief Ê§°ÜÊä³ö£¨ÎŞÍ¼£© */
+/** @brief å¤±è´¥è¾“å‡ºï¼ˆæ— å›¾ï¼‰ */
 AlgToolOut algorToolFail(const std::string& msg);
 
 }

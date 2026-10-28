@@ -1,6 +1,6 @@
 /**
  * @file ToolParaRstMerge.hpp
- * @brief ToolParaRstMergeÍ·ÎÄ¼ş
+ * @brief ToolParaRstMergeå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -16,27 +16,27 @@ namespace Vision {
 
 /**
  * @class ToolParaRstMerge
- * @brief RstMergeTool ÔËĞĞ²ÎÊı
+ * @brief RstMergeTool è¿è¡Œå‚æ•°
  */
 class ToolParaRstMerge : public ToolParaBase {
 public:
-    /** @brief Ñ§Ï°²ÎÊı£¬Ã»ÓĞÔòÎª¿Õ */
+    /** @brief å­¦ä¹ å‚æ•°ï¼Œæ²¡æœ‰åˆ™ä¸ºç©º */
     struct Learn {
     };
-    /** @brief ÔËĞĞ²ÎÊı */
+    /** @brief è¿è¡Œå‚æ•° */
     struct Run {
-        double minArea;             ///< ×îĞ¡Ãæ»ı
-        int maxCount;               ///< ×î´óÊıÁ¿
+        double minArea;             ///< æœ€å°é¢ç§¯
+        int maxCount;               ///< æœ€å¤§æ•°é‡
         Run()
             : minArea(0.0)
             , maxCount(0)
         {}
     };
 
-    Learn learn; ///< Ñ§Ï°²ÎÊı£¬Ã»ÓĞÔòÎª¿Õ
-    Run run;     ///< ÔËĞĞ²ÎÊı
+    Learn learn; ///< å­¦ä¹ å‚æ•°ï¼Œæ²¡æœ‰åˆ™ä¸ºç©º
+    Run run;     ///< è¿è¡Œå‚æ•°
 
-    /** @brief ´Ó ToolParam ÌîĞ´ */
+    /** @brief ä» ToolParam å¡«å†™ */
     void load(const ToolParam& src)
     {
         const ParamMap& m = src.run;

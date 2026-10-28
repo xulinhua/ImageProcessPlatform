@@ -1,6 +1,6 @@
 /**
  * @file OverlayRender.cpp
- * @brief OverlayRenderÊµÏÖ
+ * @brief OverlayRenderå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -25,7 +25,7 @@
 
 namespace HsCtrl {
 
-// Ğı×ª¾ØĞÎËÄ½Ç£¨Í¼Ïñ×ø±ê£©
+// æ—‹è½¬çŸ©å½¢å››è§’ï¼ˆå›¾åƒåæ ‡ï¼‰
 static QPolygonF rect2Polygon(const HsCommData::Rect2P& r)
 {
     const qreal c = qCos(r.phi);
@@ -38,7 +38,7 @@ static QPolygonF rect2Polygon(const HsCommData::Rect2P& r)
     return poly;
 }
 
-// ÂÖÀªÕÛÏß×ª³É path
+// è½®å»“æŠ˜çº¿è½¬æˆ path
 static QPainterPath contourPath(const HsCommData::HsContour& c)
 {
     QPainterPath path;
@@ -55,7 +55,7 @@ static QPainterPath contourPath(const HsCommData::HsContour& c)
     return path;
 }
 
-// °´ HsCommData::GeomStyle Éè pen/brush¡£selected Ê±»»¸ßÁÁ±Ê
+// æŒ‰ HsCommData::GeomStyle è®¾ pen/brushã€‚selected æ—¶æ¢é«˜äº®ç¬”
 static void applyStyle(QPainter* painter, const HsCommData::Graphic& g, bool selected)
 {
     const HsCommData::GeomStyle& st = g.geomStyle;
@@ -77,7 +77,7 @@ static void applyStyle(QPainter* painter, const HsCommData::Graphic& g, bool sel
     painter->setRenderHint(QPainter::Antialiasing, true);
 }
 
-// HsCommData::KindMask£º·Ç 0 ÏñËØÍ¿ fill
+// HsCommData::KindMaskï¼šé 0 åƒç´ æ¶‚ fill
 static void paintMask(QPainter* painter, const HsCommData::Graphic& g)
 {
     if (g.mask.isEmpty()) {
@@ -110,7 +110,7 @@ static void paintMask(QPainter* painter, const HsCommData::Graphic& g)
     painter->drawImage(QPointF(0, 0), img);
 }
 
-// HsCommData::KindTextBadge£ºÉ«¿é¼ÓÎÄ×Ö£¬×ÖºÅ±£³ÖÆÁÄ»ÏñËØ
+// HsCommData::KindTextBadgeï¼šè‰²å—åŠ æ–‡å­—ï¼Œå­—å·ä¿æŒå±å¹•åƒç´ 
 static void paintTextBadge(QPainter* painter, const HsCommData::Graphic& g, const HsCommData::HsText& text)
 {
     const QString s = toQ(text.content);
@@ -139,7 +139,7 @@ static void paintTextBadge(QPainter* painter, const HsCommData::Graphic& g, cons
     painter->drawText(br.adjusted(pad, 0, -pad, 0), Qt::AlignVCenter | Qt::AlignLeft, shown);
 }
 
-// HsCommData::KindText£ºÃªµãÔÚÍ¼Ïñ×ø±ê£¬×ÖºÅ±£³ÖÆÁÄ»ÏñËØ
+// HsCommData::KindTextï¼šé”šç‚¹åœ¨å›¾åƒåæ ‡ï¼Œå­—å·ä¿æŒå±å¹•åƒç´ 
 static void paintKindText(QPainter* painter, const HsCommData::Graphic& g, const HsCommData::HsText& text)
 {
     painter->save();
@@ -167,7 +167,7 @@ static void paintKindText(QPainter* painter, const HsCommData::Graphic& g, const
     painter->restore();
 }
 
-// Ã¿ÌõÏÒÒ»¸ö¾ØĞÎ£¬Æ´³ÉÌî³ä path
+// æ¯æ¡å¼¦ä¸€ä¸ªçŸ©å½¢ï¼Œæ‹¼æˆå¡«å…… path
 static void paintRegionRuns(QPainter* painter, const HsCommData::HsRegion& region)
 {
     QPainterPath path;
@@ -183,7 +183,7 @@ static void paintRegionRuns(QPainter* painter, const HsCommData::HsRegion& regio
     painter->drawPath(path);
 }
 
-// »­¶à±ßĞÎ»òÕÛÏß
+// ç”»å¤šè¾¹å½¢æˆ–æŠ˜çº¿
 static void paintPoly(QPainter* painter, const HsCommData::HsPoly& poly)
 {
     if (poly.segsEmpty()) {
@@ -200,7 +200,7 @@ static void paintPoly(QPainter* painter, const HsCommData::HsPoly& poly)
     painter->drawPath(path);
 }
 
-// »­Ò»Ìõ¼ıÍ·£¬º¬ HsArrow µÄÒí
+// ç”»ä¸€æ¡ç®­å¤´ï¼Œå« HsArrow çš„ç¿¼
 static void paintOneArrow(QPainter* painter, const HsCommData::HsArrow& arrow)
 {
     const QPointF a = toQ(arrow.tail);
@@ -215,7 +215,7 @@ static void paintOneArrow(QPainter* painter, const HsCommData::HsArrow& arrow)
     painter->drawLine(b, toQ(right));
 }
 
-// Stack »ì·ÅÊ±°´ geom ÏÂ±ê»­Ò»¸öÔªËØ£¬±ÊÉ«ÈÔ¸ú Graphic.kind
+// Stack æ··æ”¾æ—¶æŒ‰ geom ä¸‹æ ‡ç”»ä¸€ä¸ªå…ƒç´ ï¼Œç¬”è‰²ä»è·Ÿ Graphic.kind
 static void paintObjectAt(QPainter* painter, const HsCommData::Graphic& g, int index, const QPen& pen)
 {
     switch (g.geom.kindAt(index)) {
@@ -304,7 +304,7 @@ static void paintObjectAt(QPainter* painter, const HsCommData::Graphic& g, int i
     }
 }
 
-// °Ñ¹ıÖĞĞÄµÄÖ±Ïß²Ãµ½ÊÓ¿Ú¾ØĞÎ£¬¹©´©´°Ê®×Ö
+// æŠŠè¿‡ä¸­å¿ƒçš„ç›´çº¿è£åˆ°è§†å£çŸ©å½¢ï¼Œä¾›ç©¿çª—åå­—
 static bool clipLine(const QRectF& vr, const QPointF& p, qreal ang, QPointF* a, QPointF* b)
 {
     if (!a || !b || vr.isEmpty()) {
@@ -348,7 +348,7 @@ static bool clipLine(const QRectF& vr, const QPointF& p, qreal ang, QPointF* a, 
     return true;
 }
 
-// ³ß´çĞ¡ÓÚ 0 Ê±»­´©´°Ê®×Ö£¬·ñÔò»­ÓĞÏŞ°ë¿í
+// å°ºå¯¸å°äº 0 æ—¶ç”»ç©¿çª—åå­—ï¼Œå¦åˆ™ç”»æœ‰é™åŠå®½
 static void paintOneCross(QPainter* painter, const HsCommData::HsCross& c)
 {
     const QPointF p = toQ(c.center);
@@ -377,7 +377,7 @@ static void paintOneCross(QPainter* painter, const HsCommData::HsCross& c)
     painter->drawLine(p - ay, p + ay);
 }
 
-// ÔÚµ±Ç°±ä»»ÏÂ»­Ò»Ìõ HsCommData::Graphic
+// åœ¨å½“å‰å˜æ¢ä¸‹ç”»ä¸€æ¡ HsCommData::Graphic
 void OverlayRender::paintScene(QPainter* painter, const HsCommData::Graphic& g, bool selected)
 {
     if (!painter || !g.visible) {
@@ -506,7 +506,7 @@ void OverlayRender::paintScene(QPainter* painter, const HsCommData::Graphic& g, 
     }
 }
 
-// Ì×ÉÏ image¡údevice ºó»­Ò»Åú HsCommData::Graphic
+// å¥—ä¸Š imageâ†’device åç”»ä¸€æ‰¹ HsCommData::Graphic
 void OverlayRender::paintList(QPainter* painter, const std::vector<HsCommData::Graphic>& items,
                               const QTransform& imageToDevice)
 {

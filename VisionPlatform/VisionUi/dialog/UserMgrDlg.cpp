@@ -1,6 +1,6 @@
 /**
  * @file UserMgrDlg.cpp
- * @brief UserMgrDlgÊµÏÖ
+ * @brief UserMgrDlgå®žçŽ°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -25,22 +25,22 @@
 
 namespace Vision {
 
-// ÓÃ»§ÁÐ±í£ºÌí¼Ó¡¢±à¼­¡¢É¾³ý¡¢ÖØÖÃ¿ÚÁî¡¢ÆôÓÃ/½ûÓÃ
+// ç”¨æˆ·åˆ—è¡¨ï¼šæ·»åŠ ã€ç¼–è¾‘ã€åˆ é™¤ã€é‡ç½®å£ä»¤ã€å¯ç”¨/ç¦ç”¨
 UserMgrDlg::UserMgrDlg(Session* session, QWidget* parent)
     : QDialog(parent)
     , m_session(session)
 {
-    setWindowTitle(T("ÓÃ»§¹ÜÀí"));
+    setWindowTitle(T("ç”¨æˆ·ç®¡ç†"));
     resize(820, 480);
 
-    QLabel* hint = new QLabel(T("±¾µØÕË»§£¬Óë·½°¸ÎÄ¼þÎÞ¹Ø¡£¹ÜÀíÔ±¿ÉÌí¼Ó¡¢±à¼­¡¢½ûÓÃ¡¢É¾³ýÓÃ»§²¢ÖØÖÃ¿ÚÁî¡£"), this);
+    QLabel* hint = new QLabel(T("æœ¬åœ°è´¦æˆ·ï¼Œä¸Žæ–¹æ¡ˆæ–‡ä»¶æ— å…³ã€‚ç®¡ç†å‘˜å¯æ·»åŠ ã€ç¼–è¾‘ã€ç¦ç”¨ã€åˆ é™¤ç”¨æˆ·å¹¶é‡ç½®å£ä»¤ã€‚"), this);
     hint->setWordWrap(true);
     hint->setObjectName(QLatin1String("hint"));
 
     m_table = new QTableWidget(this);
     m_table->setColumnCount(5);
     QStringList headers;
-    headers << T("µÇÂ¼Ãû") << T("ÏÔÊ¾Ãû") << T("½ÇÉ«") << T("ÆôÓÃ") << T("ÉÏ´ÎµÇÂ¼");
+    headers << T("ç™»å½•å") << T("æ˜¾ç¤ºå") << T("è§’è‰²") << T("å¯ç”¨") << T("ä¸Šæ¬¡ç™»å½•");
     m_table->setHorizontalHeaderLabels(headers);
     m_table->horizontalHeader()->setStretchLastSection(true);
     m_table->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -49,11 +49,11 @@ UserMgrDlg::UserMgrDlg(Session* session, QWidget* parent)
     m_table->verticalHeader()->setVisible(false);
     connect(m_table, SIGNAL(cellDoubleClicked(int,int)), this, SLOT(onEdit()));
 
-    QPushButton* addBtn = new QPushButton(T("Ìí¼Ó"), this);
-    QPushButton* editBtn = new QPushButton(T("±à¼­"), this);
-    QPushButton* delBtn = new QPushButton(T("É¾³ý"), this);
-    QPushButton* resetBtn = new QPushButton(T("ÖØÖÃ¿ÚÁî"), this);
-    QPushButton* enBtn = new QPushButton(T("ÆôÓÃ/½ûÓÃ"), this);
+    QPushButton* addBtn = new QPushButton(T("æ·»åŠ "), this);
+    QPushButton* editBtn = new QPushButton(T("ç¼–è¾‘"), this);
+    QPushButton* delBtn = new QPushButton(T("åˆ é™¤"), this);
+    QPushButton* resetBtn = new QPushButton(T("é‡ç½®å£ä»¤"), this);
+    QPushButton* enBtn = new QPushButton(T("å¯ç”¨/ç¦ç”¨"), this);
     setButtonRole(addBtn, "primary");
     connect(addBtn, SIGNAL(clicked()), this, SLOT(onAdd()));
     connect(editBtn, SIGNAL(clicked()), this, SLOT(onEdit()));
@@ -86,7 +86,7 @@ UserMgrDlg::UserMgrDlg(Session* session, QWidget* parent)
     refresh();
 }
 
-// µ±Ç°Ñ¡ÖÐÐÐµÄµÇÂ¼Ãû
+// å½“å‰é€‰ä¸­è¡Œçš„ç™»å½•å
 QString UserMgrDlg::selectedLogin() const
 {
     const int r = m_table->currentRow();
@@ -96,7 +96,7 @@ QString UserMgrDlg::selectedLogin() const
     return m_table->item(r, 0)->text();
 }
 
-// Ë¢ÐÂÓÃ»§±í²¢¾¡Á¿±£³ÖÔ­Ñ¡ÖÐÐÐ
+// åˆ·æ–°ç”¨æˆ·è¡¨å¹¶å°½é‡ä¿æŒåŽŸé€‰ä¸­è¡Œ
 void UserMgrDlg::refresh()
 {
     const QString keep = selectedLogin();
@@ -110,7 +110,7 @@ void UserMgrDlg::refresh()
         m_table->setItem(r, 0, new QTableWidgetItem(qs(u.loginName)));
         m_table->setItem(r, 1, new QTableWidgetItem(qs(u.displayName)));
         m_table->setItem(r, 2, new QTableWidgetItem(QString::fromUtf8(roleTitle(u.role).c_str())));
-        m_table->setItem(r, 3, new QTableWidgetItem(u.enabled ? T("ÊÇ") : T("·ñ")));
+        m_table->setItem(r, 3, new QTableWidgetItem(u.enabled ? T("æ˜¯") : T("å¦")));
         m_table->setItem(r, 4, new QTableWidgetItem(
                              u.lastLoginAt.empty() ? QLatin1String("-") : qs(u.lastLoginAt)));
         if (u.loginName == ss(keep)) {
@@ -122,7 +122,7 @@ void UserMgrDlg::refresh()
     }
 }
 
-// ´ò¿ªÌí¼ÓÓÃ»§¶Ô»°¿ò
+// æ‰“å¼€æ·»åŠ ç”¨æˆ·å¯¹è¯æ¡†
 void UserMgrDlg::onAdd()
 {
     UserEditDlg dlg(m_session, QString(), this);
@@ -131,7 +131,7 @@ void UserMgrDlg::onAdd()
     }
 }
 
-// ±à¼­Ñ¡ÖÐÓÃ»§
+// ç¼–è¾‘é€‰ä¸­ç”¨æˆ·
 void UserMgrDlg::onEdit()
 {
     const QString login = selectedLogin();
@@ -144,7 +144,7 @@ void UserMgrDlg::onEdit()
     }
 }
 
-// É¾³ýÓÃ»§£º½ûÖ¹É¾×Ô¼ººÍÄ©¸öÆôÓÃ¹ÜÀíÔ±
+// åˆ é™¤ç”¨æˆ·ï¼šç¦æ­¢åˆ è‡ªå·±å’Œæœ«ä¸ªå¯ç”¨ç®¡ç†å‘˜
 void UserMgrDlg::onDelete()
 {
     const QString login = selectedLogin();
@@ -153,14 +153,14 @@ void UserMgrDlg::onDelete()
         return;
     }
     if (u->id == m_session->user().id) {
-        QMessageBox::warning(this, T("ÓÃ»§"), T("²»ÄÜÉ¾³ýµ±Ç°µÇÂ¼ÕË»§¡£"));
+        QMessageBox::warning(this, T("ç”¨æˆ·"), T("ä¸èƒ½åˆ é™¤å½“å‰ç™»å½•è´¦æˆ·ã€‚"));
         return;
     }
     if (u->role == RoleAdmin && m_session->users().countRole(RoleAdmin, true) <= 1 && u->enabled) {
-        QMessageBox::warning(this, T("ÓÃ»§"), T("²»ÄÜÉ¾³ý×îºóÒ»¸öÆôÓÃµÄ¹ÜÀíÔ±¡£"));
+        QMessageBox::warning(this, T("ç”¨æˆ·"), T("ä¸èƒ½åˆ é™¤æœ€åŽä¸€ä¸ªå¯ç”¨çš„ç®¡ç†å‘˜ã€‚"));
         return;
     }
-    if (QMessageBox::question(this, T("É¾³ý"), T("É¾³ýÓÃ»§ ") + login + T(" £¿")) != QMessageBox::Yes) {
+    if (QMessageBox::question(this, T("åˆ é™¤"), T("åˆ é™¤ç”¨æˆ· ") + login + T(" ï¼Ÿ")) != QMessageBox::Yes) {
         return;
     }
     m_session->users().removeById(u->id);
@@ -169,7 +169,7 @@ void UserMgrDlg::onDelete()
     refresh();
 }
 
-// ¹ÜÀíÔ±ÖØÖÃÑ¡ÖÐÓÃ»§¿ÚÁî
+// ç®¡ç†å‘˜é‡ç½®é€‰ä¸­ç”¨æˆ·å£ä»¤
 void UserMgrDlg::onResetPwd()
 {
     const QString login = selectedLogin();
@@ -182,7 +182,7 @@ void UserMgrDlg::onResetPwd()
     }
 }
 
-// ÇÐ»»ÆôÓÃ×´Ì¬£¬¹æÔòÍ¬É¾³ý±£»¤
+// åˆ‡æ¢å¯ç”¨çŠ¶æ€ï¼Œè§„åˆ™åŒåˆ é™¤ä¿æŠ¤
 void UserMgrDlg::onToggleEnabled()
 {
     const QString login = selectedLogin();
@@ -191,11 +191,11 @@ void UserMgrDlg::onToggleEnabled()
         return;
     }
     if (u->id == m_session->user().id) {
-        QMessageBox::warning(this, T("ÓÃ»§"), T("²»ÄÜ½ûÓÃµ±Ç°µÇÂ¼ÕË»§¡£"));
+        QMessageBox::warning(this, T("ç”¨æˆ·"), T("ä¸èƒ½ç¦ç”¨å½“å‰ç™»å½•è´¦æˆ·ã€‚"));
         return;
     }
     if (u->enabled && u->role == RoleAdmin && m_session->users().countRole(RoleAdmin, true) <= 1) {
-        QMessageBox::warning(this, T("ÓÃ»§"), T("²»ÄÜ½ûÓÃ×îºóÒ»¸öÆôÓÃµÄ¹ÜÀíÔ±¡£"));
+        QMessageBox::warning(this, T("ç”¨æˆ·"), T("ä¸èƒ½ç¦ç”¨æœ€åŽä¸€ä¸ªå¯ç”¨çš„ç®¡ç†å‘˜ã€‚"));
         return;
     }
     u->enabled = !u->enabled;

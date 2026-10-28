@@ -1,6 +1,6 @@
 /**
  * @file CommTool.cpp
- * @brief CommToolÊµÏÖ
+ * @brief CommToolå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -17,21 +17,21 @@
 #include <windows.h>
 
 namespace {
-// µ±Ç°°æ±¾¡£±ØĞëµÈÓÚ±ä¸ü±í×îºóÒ»ĞĞ
+// å½“å‰ç‰ˆæœ¬ã€‚å¿…é¡»ç­‰äºå˜æ›´è¡¨æœ€åä¸€è¡Œ
 const char kToolVersion[] = "1.0.0.0";
-// ±ä¸ü±í¡£Ö»×·¼Ó£¬²»É¾¾ÉĞĞ
+// å˜æ›´è¡¨ã€‚åªè¿½åŠ ï¼Œä¸åˆ æ—§è¡Œ
 const Vision::VerNoteRaw kVerNotes[] = {
-    { "1.0.0.0", "Ê×°æ" },
+    { "1.0.0.0", "é¦–ç‰ˆ" },
 };
 
-// ×¢²áÃû
+// æ³¨å†Œå
 const char kToolName[] = "comm.plc";
-// ½çÃæÏÔÊ¾Ãû
-const char kDisplayName[] = "PLCÍ¨ĞÅ";
-// ¹¤¾ßËµÃ÷
-const char kDescription[] = "Ğ´±£³Ö¼Ä´æÆ÷¡¢µÈµ½Î»¡¢»ò°ÑÉÏÓÎÎ»×ËĞ´Èë¼Ä´æÆ÷";
+// ç•Œé¢æ˜¾ç¤ºå
+const char kDisplayName[] = "PLCé€šä¿¡";
+// å·¥å…·è¯´æ˜
+const char kDescription[] = "å†™ä¿æŒå¯„å­˜å™¨ã€ç­‰åˆ°ä½ã€æˆ–æŠŠä¸Šæ¸¸ä½å§¿å†™å…¥å¯„å­˜å™¨";
 
-// ¶ººÅ·Ö¸ôÕûÊı½âÎöÎª¼Ä´æÆ÷Öµ
+// é€—å·åˆ†éš”æ•´æ•°è§£æä¸ºå¯„å­˜å™¨å€¼
 bool parseRegs(const std::string& s, std::vector<uint16_t>* out, std::string* err)
 {
     out->clear();
@@ -50,7 +50,7 @@ bool parseRegs(const std::string& s, std::vector<uint16_t>* out, std::string* er
         int v = 0;
         if (sscanf(part.c_str(), "%d", &v) != 1) {
             if (err) {
-                *err = Vision::acpToUtf8("¼Ä´æÆ÷Öµ¸ñÊ½´íÎó");
+                *err = "å¯„å­˜å™¨å€¼æ ¼å¼é”™è¯¯";
             }
             return false;
         }
@@ -65,7 +65,7 @@ bool parseRegs(const std::string& s, std::vector<uint16_t>* out, std::string* er
     return true;
 }
 
-// Ë«¾«¶È°´±ÈÀıÑ¹³ÉÓĞ·ûºÅ int16 ÔÙ×ª uint16
+// åŒç²¾åº¦æŒ‰æ¯”ä¾‹å‹æˆæœ‰ç¬¦å· int16 å†è½¬ uint16
 uint16_t scaleToReg(double v, double scale)
 {
     double s = v * scale;
@@ -81,44 +81,44 @@ uint16_t scaleToReg(double v, double scale)
 
 } // namespace
 
-// ×¢²áÃû
+// æ³¨å†Œå
 std::string Vision::CommTool::toolName() const
 {
     return kToolName;
 }
 
-// ¹¤¾ß´óÀà
+// å·¥å…·å¤§ç±»
 Vision::ToolType Vision::CommTool::type() const
 {
     return Vision::ToolType::Comm;
 }
 
-// ½çÃæÏÔÊ¾Ãû
+// ç•Œé¢æ˜¾ç¤ºå
 std::string Vision::CommTool::displayName() const
 {
-    return Vision::acpToUtf8(kDisplayName);
+    return kDisplayName;
 }
 
-// ¹¤¾ß°æ±¾
+// å·¥å…·ç‰ˆæœ¬
 std::string Vision::CommTool::version() const
 {
     return std::string(kToolVersion);
 }
 
-// °æ±¾±ä¸ü£¬Ö»×·¼Ó
+// ç‰ˆæœ¬å˜æ›´ï¼Œåªè¿½åŠ 
 std::vector<Vision::VerNote> Vision::CommTool::versionNotes() const
 {
     return Vision::verNotesFrom(kVerNotes, static_cast<int>(sizeof(kVerNotes) / sizeof(kVerNotes[0])));
 }
 
 
-// ¹¤¾ßËµÃ÷
+// å·¥å…·è¯´æ˜
 std::string Vision::CommTool::description() const
 {
-    return Vision::acpToUtf8(kDescription);
+    return kDescription;
 }
 
-// È±Ê¡²ÎÊı
+// ç¼ºçœå‚æ•°
 Vision::ParamMap Vision::CommTool::defaultParams() const
 {
     Vision::ParamMap p;
@@ -135,26 +135,26 @@ Vision::ParamMap Vision::CommTool::defaultParams() const
     return p;
 }
 
-// ²ÎÊıËµÃ÷
+// å‚æ•°è¯´æ˜
 std::vector<Vision::ParamField> Vision::CommTool::paramFields() const
 {
     std::vector<Vision::ParamField> f;
-    f.push_back(Vision::paramDevice("deviceId", "PLCÉè±¸"));
-    f.push_back(Vision::paramString("action", "¶¯×÷", std::string("writeRegs"),
+    f.push_back(Vision::paramDevice("deviceId", "PLCè®¾å¤‡"));
+    f.push_back(Vision::paramString("action", "åŠ¨ä½œ", std::string("writeRegs"),
                                     Vision::paramChoices("writeRegs", "waitRegs", "writePose")));
-    f.push_back(Vision::paramInt("address", "ÆğÊ¼µØÖ·", 0, true, 0, true, 65535));
-    f.push_back(Vision::paramString("values", "Ğ´Öµ(¶ººÅ·Ö¸ô)", std::string(), std::vector<std::string>()));
-    f.push_back(Vision::paramString("expect", "ÆÚÍûÖµ(¶ººÅ·Ö¸ô)", std::string(), std::vector<std::string>()));
-    f.push_back(Vision::paramInt("timeoutMs", "³¬Ê±ms", 5000, true, 0, true, 600000));
-    f.push_back(Vision::paramInt("pollMs", "ÂÖÑ¯ms", 50, true, 1, true, 10000));
-    f.push_back(Vision::paramDouble("scale", "Î»×Ë±ÈÀı", 1000.0, true, 0.001, true, 1e6));
-    f.push_back(Vision::paramInt("slaveId", "´ÓÕ¾ºÅ", 1, true, 1, true, 247));
-    f.push_back(Vision::paramString("peerId", "¶Ô¶Ëid", std::string(), std::vector<std::string>()));
-    f.push_back(Vision::paramString("commChannelId", "Í¨µÀid", std::string(), std::vector<std::string>()));
+    f.push_back(Vision::paramInt("address", "èµ·å§‹åœ°å€", 0, true, 0, true, 65535));
+    f.push_back(Vision::paramString("values", "å†™å€¼(é€—å·åˆ†éš”)", std::string(), std::vector<std::string>()));
+    f.push_back(Vision::paramString("expect", "æœŸæœ›å€¼(é€—å·åˆ†éš”)", std::string(), std::vector<std::string>()));
+    f.push_back(Vision::paramInt("timeoutMs", "è¶…æ—¶ms", 5000, true, 0, true, 600000));
+    f.push_back(Vision::paramInt("pollMs", "è½®è¯¢ms", 50, true, 1, true, 10000));
+    f.push_back(Vision::paramDouble("scale", "ä½å§¿æ¯”ä¾‹", 1000.0, true, 0.001, true, 1e6));
+    f.push_back(Vision::paramInt("slaveId", "ä»ç«™å·", 1, true, 1, true, 247));
+    f.push_back(Vision::paramString("peerId", "å¯¹ç«¯id", std::string(), std::vector<std::string>()));
+    f.push_back(Vision::paramString("commChannelId", "é€šé“id", std::string(), std::vector<std::string>()));
     return f;
 }
 
-// Ğ´¼Ä´æÆ÷¡¢µÈµ½Î»»òĞ´Î»×Ë
+// å†™å¯„å­˜å™¨ã€ç­‰åˆ°ä½æˆ–å†™ä½å§¿
 Vision::ToolOut Vision::CommTool::execute(const Vision::ToolIn& in)
 {
     Vision::ToolOut out;
@@ -168,7 +168,7 @@ Vision::ToolOut Vision::CommTool::execute(const Vision::ToolIn& in)
     const std::string chStr = in.param.run.value("commChannelId").toString();
     if (chStr.empty()) {
         out.error = true;
-        out.message = Vision::acpToUtf8("Î´°ó¶¨Í¨ĞÅÍ¨µÀ£¨ÇëÑ¡ PLC Éè±¸£©");
+        out.message = "æœªç»‘å®šé€šä¿¡é€šé“ï¼ˆè¯·é€‰ PLC è®¾å¤‡ï¼‰";
         return out;
     }
     const Vision::ObjectId chId(chStr);
@@ -178,7 +178,7 @@ Vision::ToolOut Vision::CommTool::execute(const Vision::ToolIn& in)
     Vision::CommMgr& hub = Vision::CommMgr::instance();
     if (!hub.isOpen(chId)) {
         out.error = true;
-        out.message = Vision::acpToUtf8("Í¨ĞÅÍ¨µÀÎ´´ò¿ª");
+        out.message = "é€šä¿¡é€šé“æœªæ‰“å¼€";
         return out;
     }
 
@@ -186,7 +186,7 @@ Vision::ToolOut Vision::CommTool::execute(const Vision::ToolIn& in)
     if (action == "writePose") {
         if (in.inputIo.poses.empty()) {
             out.error = true;
-            out.message = Vision::acpToUtf8("ÎŞÓĞĞ§ÉÏÓÎÎ»×Ë");
+            out.message = "æ— æœ‰æ•ˆä¸Šæ¸¸ä½å§¿";
             return out;
         }
         const double scale = in.param.run.value("scale").toDouble(1000.0);
@@ -198,14 +198,14 @@ Vision::ToolOut Vision::CommTool::execute(const Vision::ToolIn& in)
         regs.push_back(scaleToReg(angDeg, scale));
         if (!hub.modbusWriteRegs(chId, peerId, slave, Vision::ModbusHolding, address, regs, &err)) {
             out.error = true;
-            out.message = err.empty() ? Vision::acpToUtf8("Ğ´Î»×ËÊ§°Ü") : err;
+            out.message = err.empty() ? "å†™ä½å§¿å¤±è´¥" : err;
             return out;
         }
         out.ok = true;
         out.values.insert("x", pose.tx);
         out.values.insert("y", pose.ty);
         out.values.insert("angle", pose.ang());
-        out.message = Vision::acpToUtf8("ÒÑĞ´Î»×Ëµ½¼Ä´æÆ÷");
+        out.message = "å·²å†™ä½å§¿åˆ°å¯„å­˜å™¨";
         return out;
     }
 
@@ -218,16 +218,16 @@ Vision::ToolOut Vision::CommTool::execute(const Vision::ToolIn& in)
         }
         if (regs.empty()) {
             out.error = true;
-            out.message = Vision::acpToUtf8("Ğ´ÖµÎª¿Õ");
+            out.message = "å†™å€¼ä¸ºç©º";
             return out;
         }
         if (!hub.modbusWriteRegs(chId, peerId, slave, Vision::ModbusHolding, address, regs, &err)) {
             out.error = true;
-            out.message = err.empty() ? Vision::acpToUtf8("Ğ´¼Ä´æÆ÷Ê§°Ü") : err;
+            out.message = err.empty() ? "å†™å¯„å­˜å™¨å¤±è´¥" : err;
             return out;
         }
         out.ok = true;
-        out.message = Vision::acpToUtf8("ÒÑĞ´¼Ä´æÆ÷");
+        out.message = "å·²å†™å¯„å­˜å™¨";
         return out;
     }
 
@@ -240,7 +240,7 @@ Vision::ToolOut Vision::CommTool::execute(const Vision::ToolIn& in)
         }
         if (expect.empty()) {
             out.error = true;
-            out.message = Vision::acpToUtf8("ÆÚÍûÖµÎª¿Õ");
+            out.message = "æœŸæœ›å€¼ä¸ºç©º";
             return out;
         }
         const int timeoutMs = in.param.run.value("timeoutMs").toInt(5000);
@@ -254,7 +254,7 @@ Vision::ToolOut Vision::CommTool::execute(const Vision::ToolIn& in)
             if (!hub.modbusReadRegs(chId, peerId, slave, Vision::ModbusHolding, address,
                                     static_cast<int>(expect.size()), &regs, &err)) {
                 out.error = true;
-                out.message = err.empty() ? Vision::acpToUtf8("¶Á¼Ä´æÆ÷Ê§°Ü") : err;
+                out.message = err.empty() ? "è¯»å¯„å­˜å™¨å¤±è´¥" : err;
                 return out;
             }
             bool match = (regs.size() >= expect.size());
@@ -265,13 +265,13 @@ Vision::ToolOut Vision::CommTool::execute(const Vision::ToolIn& in)
             }
             if (match) {
                 out.ok = true;
-                out.message = Vision::acpToUtf8("¼Ä´æÆ÷ÒÑµ½Î»");
+                out.message = "å¯„å­˜å™¨å·²åˆ°ä½";
                 return out;
             }
             const DWORD elapsed = GetTickCount() - t0;
             if (timeoutMs >= 0 && static_cast<int>(elapsed) >= timeoutMs) {
                 out.ok = false;
-                out.message = Vision::acpToUtf8("µÈ´ı¼Ä´æÆ÷³¬Ê±");
+                out.message = "ç­‰å¾…å¯„å­˜å™¨è¶…æ—¶";
                 return out;
             }
             Sleep(static_cast<DWORD>(pollMs));
@@ -279,18 +279,18 @@ Vision::ToolOut Vision::CommTool::execute(const Vision::ToolIn& in)
     }
 
     out.error = true;
-    out.message = Vision::acpToUtf8("Î´Öª¶¯×÷");
+    out.message = "æœªçŸ¥åŠ¨ä½œ";
     return out;
 }
 
-// ¿ËÂ¡±¾ÊµÀı
+// å…‹éš†æœ¬å®ä¾‹
 Vision::ToolBase* Vision::CommTool::clone() const
 {
     CommTool* p = new CommTool();
     p->copyInstanceDataFrom(*this);
     return p;
 }
-// ·µ»Ø±¾¹¤¾ß²ÎÊı¶ÔÏó
+// è¿”å›æœ¬å·¥å…·å‚æ•°å¯¹è±¡
 
 const Vision::ToolParaBase* Vision::CommTool::toolParam() const
 {

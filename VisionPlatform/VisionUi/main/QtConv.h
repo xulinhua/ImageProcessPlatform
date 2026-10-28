@@ -1,6 +1,6 @@
 /**
  * @file QtConv.h
- * @brief QtConvÍ·ÎÄ¼ş
+ * @brief QtConvå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -25,32 +25,32 @@
 
 namespace Vision {
 
-/** @brief UTF-8 std::string ×ª QString */
+/** @brief UTF-8 std::string è½¬ QString */
 inline QString qs(const std::string& s)
 {
     return QString::fromUtf8(s.data(), static_cast<int>(s.size()));
 }
 
-/** @brief UTF-8 std::string ×ª QString */
+/** @brief UTF-8 std::string è½¬ QString */
 inline std::string ss(const QString& s)
 {
     const QByteArray b = s.toUtf8();
     return std::string(b.constData(), static_cast<size_t>(b.size()));
 }
 
-/** @brief ObjectId ×ª QString */
+/** @brief ObjectId è½¬ QString */
 inline QString qs(const ObjectId& id)
 {
     return qs(id.toString());
 }
 
-/** @brief ObjectId ×ª QString */
+/** @brief ObjectId è½¬ QString */
 inline ObjectId oid(const QString& s)
 {
     return ObjectId::fromString(ss(s));
 }
 
-/** @brief Graphic ÏòÁ¿×ª QVector£¬¸ø HsImageWindow */
+/** @brief Graphic å‘é‡è½¬ QVectorï¼Œç»™ HsImageWindow */
     inline QVector<HsCommData::Graphic> qg(const std::vector<HsCommData::Graphic>& v) {
     QVector<HsCommData::Graphic> o;
     o.reserve(static_cast<int>(v.size()));
@@ -61,13 +61,13 @@ inline ObjectId oid(const QString& s)
 }
 
 
-/** @brief ½á¹û¼¸ºÎ×ª´°¿Úµş¼Ó */
+/** @brief ç»“æœå‡ ä½•è½¬çª—å£å åŠ  */
 inline QVector<HsCommData::Graphic> qg(const std::vector<HsCommData::HsObject>& v)
 {
     return qg(objectsToGraphics(v));
 }
 
-/** @brief QVector ×ª std::vector£¨¸ø HsImageWindow::setOverlays£© */
+/** @brief QVector è½¬ std::vectorï¼ˆç»™ HsImageWindow::setOverlaysï¼‰ */
     inline std::vector<HsCommData::Graphic> toStd(const QVector<HsCommData::Graphic>& v) {
     std::vector<HsCommData::Graphic> o;
     o.reserve(static_cast<size_t>(v.size()));
@@ -78,7 +78,7 @@ inline QVector<HsCommData::Graphic> qg(const std::vector<HsCommData::HsObject>& 
 }
 
 
-/** @brief ÏñËØÅÅÁĞ×ª´°¿Úµ×Í¼±àÂë¡£·Ç 8bit ½»´í²»ÔÚÕâÀïÏÔÊ¾ */
+/** @brief åƒç´ æ’åˆ—è½¬çª—å£åº•å›¾ç¼–ç ã€‚é 8bit äº¤é”™ä¸åœ¨è¿™é‡Œæ˜¾ç¤º */
     inline QString frameEncoding(const HsCommData::HsImage& fb) {
     if (fb.kind != HsCommData::PixelByte) {
         return QString();
@@ -94,7 +94,7 @@ inline QVector<HsCommData::Graphic> qg(const std::vector<HsCommData::HsObject>& 
 }
 
 
-/** @brief °Ñ HsImage ÍÆµ½ HsImageWindow µ×Í¼¡£´°¿Ú×Ô¼º¹ÜÖ¡ºÅ */
+/** @brief æŠŠ HsImage æ¨åˆ° HsImageWindow åº•å›¾ã€‚çª—å£è‡ªå·±ç®¡å¸§å· */
     inline void applyFrame(HsCtrl::HsImageWindow* w, const HsCommData::HsImage& fb) {
     if (!w) {
         return;
@@ -111,15 +111,15 @@ inline QVector<HsCommData::Graphic> qg(const std::vector<HsCommData::HsObject>& 
 }
 
 
-/** @brief HsImage ×ª QImage£¨ÀúÊ·ËõÂÔÍ¼µÈ£© */
+/** @brief HsImage è½¬ QImageï¼ˆå†å²ç¼©ç•¥å›¾ç­‰ï¼‰ */
     VISION_UI_API QImage toQImage(const HsCommData::HsImage& frame);
 
 
-/** @brief QImage ×ª HsImage */
+/** @brief QImage è½¬ HsImage */
     VISION_UI_API HsCommData::HsImage fromQImage(const QImage& img, int64_t frameId);
 
 
-/** @brief Ïà»úÓĞÉúĞ§±ÈÀı³ßÊ±Ğ´³ÉºÁÃ×£¬·ñÔòÏñËØ1:1 */
+/** @brief ç›¸æœºæœ‰ç”Ÿæ•ˆæ¯”ä¾‹å°ºæ—¶å†™æˆæ¯«ç±³ï¼Œå¦åˆ™åƒç´ 1:1 */
     VISION_UI_API HsCommData::ImageCalib imageCalibForCamera(const ObjectId& cameraId);
 
 }

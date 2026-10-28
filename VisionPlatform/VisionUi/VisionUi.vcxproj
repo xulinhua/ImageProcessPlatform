@@ -68,7 +68,7 @@
       <PreprocessorDefinitions>VISION_UI_EXPORTS;QT_SVG_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>VisionWidgets.lib;VisionToolUi.lib;VisionCore.lib;VisionToolBase.lib;VisionAlgToolBase.lib;VisionComm.lib;VisionCalib.lib;VisionAuth.lib;VisionLog.lib;VisionCfgMgr.lib;VisionLang.lib;VisionCommon.lib;VisionGrabFile.lib;VisionPluginAPI.lib;HsImageCtrl.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>VisionWidgets.lib;VisionToolUi.lib;VisionCore.lib;VisionToolBase.lib;VisionAlgToolBase.lib;VisionComm.lib;VisionCalib.lib;VisionAuth.lib;VisionLog.lib;VisionCfgMgr.lib;VisionLang.lib;VisionCommon.lib;VisionGrabFile.lib;VisionPluginAPI.lib;VisionIpc.lib;VisionRun.lib;HsImageCtrl.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(OutDir);$(SolutionDir)third_party\HsImageCtrl\lib\$(Platform)\$(Configuration);$(SolutionDir)..\HsImage\bin\$(Platform)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PreBuildEvent>
@@ -89,7 +89,6 @@
   <ItemGroup>
     <ClCompile Include="main\MainWindow.cpp" />
     <ClCompile Include="main\VisionLogRunSink.cpp" />
-    <ClCompile Include="runtime\StationLoop.cpp" />
     <ClCompile Include="workspace\DesignWorkspace.cpp" />
     <ClCompile Include="workspace\RuntimeWorkspace.cpp" />
     <ClCompile Include="workspace\StationRuntimePanel.cpp" />
@@ -130,7 +129,6 @@
 <ClInclude Include="main\QtConv.h" />
     <ClInclude Include="main\MainWindow.h" />
     <ClInclude Include="main\VisionLogRunSink.h" />
-    <ClInclude Include="runtime\StationLoop.h" />
     <ClInclude Include="workspace\DesignWorkspace.h" />
     <ClInclude Include="workspace\RuntimeWorkspace.h" />
     <ClInclude Include="workspace\StationRuntimePanel.h" />
@@ -196,6 +194,12 @@
     </ProjectReference>
     <ProjectReference Include="..\VisionLang\VisionLang.vcxproj">
       <Project>{B4E91A10-7C22-4F18-9A01-A0B1C2D3E40C}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\VisionIpc\VisionIpc.vcxproj">
+      <Project>{B4E91A10-7C22-4F18-9A01-A0B1C2D3E4B0}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\VisionRun\VisionRun.vcxproj">
+      <Project>{B4E91A10-7C22-4F18-9A01-A0B1C2D3E4B1}</Project>
     </ProjectReference>
     <ProjectReference Include="..\VisionGrabFile\VisionGrabFile.vcxproj">
       <Project>{B4E91A10-7C22-4F18-9A01-A0B1C2D3E40A}</Project>

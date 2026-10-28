@@ -1,6 +1,6 @@
 /**
  * @file HalMerge.cpp
- * @brief HalMergeÊµÏÖ
+ * @brief HalMergeå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -9,7 +9,6 @@
 #include "HalMerge.h"
 #include "TextEncoding.h"
 #include "ToolGeom.h"
-#include "HalAlgoHelpers.h"
 #include "HalImageConvert.h"
 #include "HalObjectConvert.h"
 
@@ -24,7 +23,7 @@ namespace Vision {
 
 namespace {
 
-// °ÑÇøÓò¶ÔÏó²¢³ÉÒ»Ö» HObject£»Ã»ÓĞÔò·µ»Ø¿Õ
+// æŠŠåŒºåŸŸå¯¹è±¡å¹¶æˆä¸€åª HObjectï¼›æ²¡æœ‰åˆ™è¿”å›ç©º
 bool unionRegionObjects(const std::vector<HsCommData::HsObject>& objs, HObject* out)
 {
     if (!out) {
@@ -79,11 +78,11 @@ bool unionRegionObjects(const std::vector<HsCommData::HsObject>& objs, HObject* 
 
 }
 
-// ºÏ²¢ÉÏÓÎÇøÓò¡¢ÂÖÀªÓë ROI
+// åˆå¹¶ä¸Šæ¸¸åŒºåŸŸã€è½®å»“ä¸ ROI
 namespace {
 const char kVer_HalMerge[] = "1.0.0.0";
 const Vision::VerNoteRaw kNotes_HalMerge[] = {
-    { "1.0.0.0", "Ê×°æ" },
+    { "1.0.0.0", "é¦–ç‰ˆ" },
 };
 }
 
@@ -92,7 +91,7 @@ std::string HalMerge::version() const
     return kVer_HalMerge;
 }
 
-// °æ±¾±ä¸ü£¬Ö»×·¼Ó
+// ç‰ˆæœ¬å˜æ›´ï¼Œåªè¿½åŠ 
 std::vector<VerNote> HalMerge::versionNotes() const
 {
     return verNotesFrom(kNotes_HalMerge, static_cast<int>(sizeof(kNotes_HalMerge) / sizeof(kNotes_HalMerge[0])));
@@ -101,8 +100,8 @@ AlgToolOut HalMerge::run(const AlgToolIn& in)
 {
     try {
         AlgToolOut out;
-        if (!in.image.image.isNull()) {
-            out.image.image = in.image.image;
+        if (!inputImage(in).isNull()) {
+            out.image.image = inputImage(in);
         }
         std::vector<HsCommData::HsObject> merged;
         { const std::vector<HsCommData::HsObject> regs = plainRegions(in.regions); merged.insert(merged.end(), regs.begin(), regs.end()); }
@@ -153,15 +152,15 @@ AlgToolOut HalMerge::run(const AlgToolIn& in)
         out.values.insert("area", area);
         out.ok = ok;
         if (count == 0) {
-            out.message = Vision::acpToUtf8("ÎŞÉÏÓÎÈ±ÏİÇøÓò");
+            out.message = "æ— ä¸Šæ¸¸ç¼ºé™·åŒºåŸŸ";
         } else if (!ok) {
-            out.message = Vision::acpToUtf8("Ãæ»ı»òÊıÁ¿³¬ÏŞ");
+            out.message = "é¢ç§¯æˆ–æ•°é‡è¶…é™";
         } else {
-            out.message = Vision::acpToUtf8("ÒÑºÏ²¢ÉÏÓÎÈ±ÏİÇøÓò");
+            out.message = "å·²åˆå¹¶ä¸Šæ¸¸ç¼ºé™·åŒºåŸŸ";
         }
         return out;
     } catch (const HException& e) {
-        return algorToolFail(hExceptionText(e));
+        return AlgToolOut::fail(hExceptionText(e));
     }
 }
 

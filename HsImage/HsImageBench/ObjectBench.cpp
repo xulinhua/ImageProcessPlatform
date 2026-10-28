@@ -1,6 +1,6 @@
 /**
  * @file ObjectBench.cpp
- * @brief ObjectBenchÊµÏÖ
+ * @brief ObjectBenchå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -29,7 +29,7 @@ struct Cell {
     int h;
 };
 
-// °ÑµÚ index ¸ö¶ÔÏó·Å½ø»­²¼¸ñ×Ó£¬±ãÓÚ Stack ÄÜ¿´¼û
+// æŠŠç¬¬ index ä¸ªå¯¹è±¡æ”¾è¿›ç”»å¸ƒæ ¼å­ï¼Œä¾¿äº Stack èƒ½çœ‹è§
 Cell cellAt(int index, int count)
 {
     int cols = 1;

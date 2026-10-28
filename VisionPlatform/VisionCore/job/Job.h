@@ -1,6 +1,6 @@
 /**
  * @file Job.h
- * @brief JobÍ·ÎÄ¼ş
+ * @brief Jobå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -25,200 +25,200 @@ namespace Vision {
 
 /**
  * @class JobRuntime
- * @brief µ¥ÌõÁ÷³ÌµÄÔËĞĞÌ¬£º¹¤¾ß¼¶Í¼/OK/ÊıÖµ»º´æ£¨²»½øÅä·½ JSON£©
+ * @brief å•æ¡æµç¨‹çš„è¿è¡Œæ€ï¼šå·¥å…·çº§å›¾/OK/æ•°å€¼ç¼“å­˜ï¼ˆä¸è¿›é…æ–¹ JSONï¼‰
  */
 struct VISIONCORE_API JobRuntime {
-    std::map<ObjectId, std::shared_ptr<HsCommData::HsImage> > images;              ///< ¹¤¾ßÊä³öÍ¼
-    std::map<ObjectId, std::shared_ptr<std::vector<HsCommData::HsObject> > > overlays; ///< ¹¤¾ß½á¹û¼¸ºÎ
-    std::map<ObjectId, bool> ok;                                  ///< ¹¤¾ß OK
-    std::map<ObjectId, std::shared_ptr<ParamMap> > values;                          ///< ¹¤¾ßÊıÖµ
-    std::map<ObjectId, std::shared_ptr<ToolIo> > io;                                ///< ¹¤¾ß·ÖÀàÊä³ö
-    std::map<ObjectId, int> elapsedMs;                          ///< ¹¤¾ßºÄÊ± ms
-    std::map<ObjectId, std::vector<ToolTrace> > traces;         ///< ±¾ÅÄÈÕÖ¾ºÍµ÷ÊÔ¼ÇÂ¼
-    std::map<ObjectId, std::vector<ToolInfoItem> > infos;       ///< ±¾ÅÄĞÅÏ¢¼ÇÂ¼£¬µ÷ÊÔÒ³¶ÁÈ¡
-    std::map<ObjectId, std::vector<ToolInfoItem> > prodInfos;   ///< ×Ô¶¯ÔËĞĞµÄĞÅÏ¢£¬´ıĞ´Èë prod.db
-    std::shared_ptr<HsCommData::HsImage> source;                                  ///< ±¾Á÷³ÌÔ´Í¼
-    ToolOut lastOut;                                              ///< ×î½üÒ»´Î run ½á¹û
-    int64_t frameSeq;                                             ///< Ö¡ĞòºÅ
-    int loopIndex;                                                ///< µ±Ç°Ñ­»·ÏÂ±ê£»-1 ±íÊ¾²»ÔÚÑ­»·ÄÚ
-    int loopCount;                                                ///< µ±Ç°Ñ­»·×Ü´ÎÊı
+    std::map<ObjectId, std::shared_ptr<HsCommData::HsImage> > images;              ///< å·¥å…·è¾“å‡ºå›¾
+    std::map<ObjectId, std::shared_ptr<std::vector<HsCommData::HsObject> > > overlays; ///< å·¥å…·ç»“æœå‡ ä½•
+    std::map<ObjectId, bool> ok;                                  ///< å·¥å…· OK
+    std::map<ObjectId, std::shared_ptr<ParamMap> > values;                          ///< å·¥å…·æ•°å€¼
+    std::map<ObjectId, std::shared_ptr<ToolIo> > io;                                ///< å·¥å…·åˆ†ç±»è¾“å‡º
+    std::map<ObjectId, int> elapsedMs;                          ///< å·¥å…·è€—æ—¶ ms
+    std::map<ObjectId, std::vector<ToolTrace> > traces;         ///< æœ¬æ‹æ—¥å¿—å’Œè°ƒè¯•è®°å½•
+    std::map<ObjectId, std::vector<ToolInfoItem> > infos;       ///< æœ¬æ‹ä¿¡æ¯è®°å½•ï¼Œè°ƒè¯•é¡µè¯»å–
+    std::map<ObjectId, std::vector<ToolInfoItem> > prodInfos;   ///< è‡ªåŠ¨è¿è¡Œçš„ä¿¡æ¯ï¼Œå¾…å†™å…¥ prod.db
+    std::shared_ptr<HsCommData::HsImage> source;                                  ///< æœ¬æµç¨‹æºå›¾
+    ToolOut lastOut;                                              ///< æœ€è¿‘ä¸€æ¬¡ run ç»“æœ
+    int64_t frameSeq;                                             ///< å¸§åºå·
+    int loopIndex;                                                ///< å½“å‰å¾ªç¯ä¸‹æ ‡ï¼›-1 è¡¨ç¤ºä¸åœ¨å¾ªç¯å†…
+    int loopCount;                                                ///< å½“å‰å¾ªç¯æ€»æ¬¡æ•°
     JobRuntime() : frameSeq(1), loopIndex(-1), loopCount(0) {}
-    /** @brief Çå¿Õ»º´æ */
+    /** @brief æ¸…ç©ºç¼“å­˜ */
     void clear();
 };
 
 /**
  * @class Job
- * @brief Á÷³Ì×ÛºÏÌå£ºÅäÖÃ + ÔËĞĞÌ¬ + Ö´ĞĞ£¨¿É¶ÀÁ¢ÓÚ¹¤Õ¾ÊÔÅÜ£©
- * @note ²»¶ÁĞ´ JSON¡¢²»Åö´°¿Ú£»config ²»ÓµÓĞ£»ÏÂÊô ToolBase* ÓÉ±¾Àà clone/destroy
- * @note ²»³ÖÓĞ/²»·ÃÎÊÉÏ¼¶ Station£»Á÷³Ì¼¶ source/ÈÕÖ¾ÓÉ±¾²ãÊÕÎ²
+ * @brief æµç¨‹ç»¼åˆä½“ï¼šé…ç½® + è¿è¡Œæ€ + æ‰§è¡Œï¼ˆå¯ç‹¬ç«‹äºå·¥ç«™è¯•è·‘ï¼‰
+ * @note ä¸è¯»å†™ JSONã€ä¸ç¢°çª—å£ï¼›config ä¸æ‹¥æœ‰ï¼›ä¸‹å± ToolBase* ç”±æœ¬ç±» clone/destroy
+ * @note ä¸æŒæœ‰/ä¸è®¿é—®ä¸Šçº§ Stationï¼›æµç¨‹çº§ source/æ—¥å¿—ç”±æœ¬å±‚æ”¶å°¾
  */
 class VISIONCORE_API Job {
 public:
-    /************************************************** ÅäÖÃ **************************************************/
+    /************************************************** é…ç½® **************************************************/
     /**
-     * @brief °ó¶¨Á÷³ÌÅäÖÃ
-     * @param config ·½°¸ÄÚ»ò²İ¸å JobCfg£¬²»ÓµÓĞ£¬Ğë³¤ÓÚ±¾¶ÔÏó
+     * @brief ç»‘å®šæµç¨‹é…ç½®
+     * @param config æ–¹æ¡ˆå†…æˆ–è‰ç¨¿ JobCfgï¼Œä¸æ‹¥æœ‰ï¼Œé¡»é•¿äºæœ¬å¯¹è±¡
      */
     explicit Job(JobCfg* config);
-    /** @brief ÊÍ·ÅÏÂÊô ToolBase ÊµÀı */
+    /** @brief é‡Šæ”¾ä¸‹å± ToolBase å®ä¾‹ */
     ~Job();
 
-    /** @brief µ±Ç°ÅäÖÃ£¨¿É¿Õ£© */
+    /** @brief å½“å‰é…ç½®ï¼ˆå¯ç©ºï¼‰ */
     JobCfg* config() const;
-    /** @brief »»°óÅäÖÃ²¢ÖØ½¨¹¤¾ßÊµÀı£¨¹¤Õ¾ÖØ½¨×ÓÁ÷³ÌÊ±ÓÃ£© */
+    /** @brief æ¢ç»‘é…ç½®å¹¶é‡å»ºå·¥å…·å®ä¾‹ï¼ˆå·¥ç«™é‡å»ºå­æµç¨‹æ—¶ç”¨ï¼‰ */
     void setConfig(JobCfg* config);
-    /** @brief ÔËĞĞÌ¬ */
+    /** @brief è¿è¡Œæ€ */
     JobRuntime& runtime();
-    /** @brief ÔËĞĞÌ¬£¨Ö»¶Á£© */
+    /** @brief è¿è¡Œæ€ï¼ˆåªè¯»ï¼‰ */
     std::shared_ptr<const JobRuntime> publishedRuntime() const;
 
-    /************************************************** ÈÕÖ¾ **************************************************/
-    /** @brief ÉèÖÃÈÕÖ¾¼àÌı£¬²»ÓµÓĞ */
+    /************************************************** æ—¥å¿— **************************************************/
+    /** @brief è®¾ç½®æ—¥å¿—ç›‘å¬ï¼Œä¸æ‹¥æœ‰ */
     void setListener(IRunListener* listener);
     /**
-     * @brief ÉèÖÃÈÕÖ¾ÓÃµÄ¹¤Õ¾ id£¨·Ç Station*£»ÓÉ Station ×¢Èë£¬½ö´ò±êÇ©£©
-     * @param stationId ¹¤Õ¾ÅäÖÃ id£¬¿É¿Õ
+     * @brief è®¾ç½®æ—¥å¿—ç”¨çš„å·¥ç«™ idï¼ˆé Station*ï¼›ç”± Station æ³¨å…¥ï¼Œä»…æ‰“æ ‡ç­¾ï¼‰
+     * @param stationId å·¥ç«™é…ç½® idï¼Œå¯ç©º
      */
     void setStationId(const ObjectId& stationId);
-    /** @brief Ğ´Ò»ĞĞÔËĞĞÈÕÖ¾£¨Info£»×Ô¶¯Ìî job/station id£© */
+    /** @brief å†™ä¸€è¡Œè¿è¡Œæ—¥å¿—ï¼ˆInfoï¼›è‡ªåŠ¨å¡« job/station idï¼‰ */
     void emitLog(const std::string& line);
     /**
-     * @brief Ğ´½á¹¹»¯ÔËĞĞÈÕÖ¾
-     * @param level ¼¶±ğ
-     * @param message ÕıÎÄ
-     * @param toolId Ïà¹Ø¹¤¾ß£¬¿É¿Õ
-     * @param elapsedMs ºÄÊ±£¬Î´Öª´« -1
+     * @brief å†™ç»“æ„åŒ–è¿è¡Œæ—¥å¿—
+     * @param level çº§åˆ«
+     * @param message æ­£æ–‡
+     * @param toolId ç›¸å…³å·¥å…·ï¼Œå¯ç©º
+     * @param elapsedMs è€—æ—¶ï¼ŒæœªçŸ¥ä¼  -1
      */
     void emitLog(RunLogLevel level, const std::string& message,
                  const ObjectId& toolId = ObjectId(), int elapsedMs = -1);
 
-    /************************************************** ¹¤¾ßÊµÀı **************************************************/
-    /** @brief °´ÅäÖÃ¶ÔÆë¹¤¾ßÊµÀı¡£Í¬ id Í¬ÀàĞÍÁôÏÂ£¬È±µÄ´´½¨£¬¶àµÄÏú»Ù */
+    /************************************************** å·¥å…·å®ä¾‹ **************************************************/
+    /** @brief æŒ‰é…ç½®å¯¹é½å·¥å…·å®ä¾‹ã€‚åŒ id åŒç±»å‹ç•™ä¸‹ï¼Œç¼ºçš„åˆ›å»ºï¼Œå¤šçš„é”€æ¯ */
     void rebuildTools();
-    /** @brief °Ñµ±Ç°ÊµÀı info/links/param/runtime »ØĞ´µ½ JobCfg.tools */
+    /** @brief æŠŠå½“å‰å®ä¾‹ info/links/param/runtime å›å†™åˆ° JobCfg.tools */
     void syncToolsToConfig();
-    /** @brief °´ id ²éÕÒ¹¤¾ßÊµÀı */
+    /** @brief æŒ‰ id æŸ¥æ‰¾å·¥å…·å®ä¾‹ */
     ToolBase* findTool(const ObjectId& id) const;
-    /** @brief ¹¤¾ßÊµÀı¸öÊı */
+    /** @brief å·¥å…·å®ä¾‹ä¸ªæ•° */
     int toolCount() const;
-    /** @brief °´ÏÂ±êÈ¡¹¤¾ß */
+    /** @brief æŒ‰ä¸‹æ ‡å–å·¥å…· */
     ToolBase* toolAt(int index) const;
 
-    /************************************************** »º´æ **************************************************/
-    /** @brief Çå¿Õ¹¤¾ß»º´æÓëÔ´Í¼ */
+    /************************************************** ç¼“å­˜ **************************************************/
+    /** @brief æ¸…ç©ºå·¥å…·ç¼“å­˜ä¸æºå›¾ */
     void clearRuntime();
-    /** @brief Ä³¹¤¾ßÉÏ´ÎÊä³öÍ¼ */
+    /** @brief æŸå·¥å…·ä¸Šæ¬¡è¾“å‡ºå›¾ */
     HsCommData::HsImage cachedImage(const ObjectId& toolId) const;
-    /** @brief ±¾Á÷³ÌÔ´Í¼ */
+    /** @brief æœ¬æµç¨‹æºå›¾ */
     HsCommData::HsImage sourceImage() const;
-    /** @brief Ä³¹¤¾ßÉÏ´Î½á¹û¼¸ºÎ */
+    /** @brief æŸå·¥å…·ä¸Šæ¬¡ç»“æœå‡ ä½• */
     std::vector<HsCommData::HsObject> cachedOverlay(const ObjectId& toolId) const;
-    /** @brief ÊÇ·ñÒÑÓĞ¸Ã¹¤¾ß»º´æ */
+    /** @brief æ˜¯å¦å·²æœ‰è¯¥å·¥å…·ç¼“å­˜ */
     bool hasCache(const ObjectId& toolId) const;
-    /** @brief ¸Ã¹¤¾ßÊÇ·ñÔÚ±¾ÖÜÆÚÄÚÅÜ¹ı */
+    /** @brief è¯¥å·¥å…·æ˜¯å¦åœ¨æœ¬å‘¨æœŸå†…è·‘è¿‡ */
     bool hasToolRun(const ObjectId& toolId) const;
-    /** @brief ¸Ã¹¤¾ß×î½üÒ»´Î OK/NG£»Î´ÅÜ¹ı·µ»Ø false */
+    /** @brief è¯¥å·¥å…·æœ€è¿‘ä¸€æ¬¡ OK/NGï¼›æœªè·‘è¿‡è¿”å› false */
     bool cachedToolOk(const ObjectId& toolId, bool* ok) const;
-    /** @brief ¸Ã¹¤¾ß×î½üÒ»´ÎºÄÊ± ms£»Î´ÅÜ¹ı·µ»Ø -1 */
+    /** @brief è¯¥å·¥å…·æœ€è¿‘ä¸€æ¬¡è€—æ—¶ msï¼›æœªè·‘è¿‡è¿”å› -1 */
     int cachedElapsedMs(const ObjectId& toolId) const;
-    /** @brief °´Á¬Ïß½âÎöµÄÊäÈëÍ¼ */
+    /** @brief æŒ‰è¿çº¿è§£æçš„è¾“å…¥å›¾ */
     HsCommData::HsImage cachedInputImage(const JobCfg& job, const ObjectId& toolId) const;
-    /** @brief °´ in.pose ½âÎöµÄÉÏÓÎÎ»×Ë */
+    /** @brief æŒ‰ in.pose è§£æçš„ä¸Šæ¸¸ä½å§¿ */
     bool cachedInputPose(const JobCfg& job, const ObjectId& toolId, HsCommData::Pose2* pose) const;
-    /** @brief Ä³¹¤¾ßÉÏ´ÎÊä³öÊıÖµ */
+    /** @brief æŸå·¥å…·ä¸Šæ¬¡è¾“å‡ºæ•°å€¼ */
     ParamMap cachedValues(const ObjectId& toolId) const;
-    /** @brief Ä³¹¤¾ßÉÏ´Î·ÖÀàÊä³ö */
+    /** @brief æŸå·¥å…·ä¸Šæ¬¡åˆ†ç±»è¾“å‡º */
     ToolIo cachedIo(const ObjectId& toolId) const;
 
-    /************************************************** Ö´ĞĞ **************************************************/
-    /** @brief ÅÜµ¥¸ö¹¤¾ß£»recipeTool ·Ç¿ÕÊ±ÓÃÆäÅä·½×Ö¶ÎÊÔÅÜ */
+    /************************************************** æ‰§è¡Œ **************************************************/
+    /** @brief è·‘å•ä¸ªå·¥å…·ï¼›recipeTool éç©ºæ—¶ç”¨å…¶é…æ–¹å­—æ®µè¯•è·‘ */
     ToolOut runTool(Solution* sol, const ObjectId& toolId, const ToolCfg* recipeTool = 0);
     /**
-     * @brief °´Ö´ĞĞĞòÏÈÅÜÉÏÓÎÔÙÅÜ±¾¹¤¾ß
-     * @param recipeJob ÕûÁ÷³Ì²İ¸å£¨ÓÅÏÈÓÚ recipeTool Í¬ id£©
+     * @brief æŒ‰æ‰§è¡Œåºå…ˆè·‘ä¸Šæ¸¸å†è·‘æœ¬å·¥å…·
+     * @param recipeJob æ•´æµç¨‹è‰ç¨¿ï¼ˆä¼˜å…ˆäº recipeTool åŒ idï¼‰
      */
     ToolOut runToolChain(Solution* sol, const ObjectId& toolId, const ToolCfg* recipeTool = 0,
                          const JobCfg* recipeJob = 0);
-    /** @brief ÅÜÕûÌõÁ÷³Ì£»recipe ·Ç¿ÕÊ±ÓÃ²İ¸åÅäÖÃÊÔÅÜ */
-    ToolOut run(Solution* sol, const JobCfg* recipe = 0);
-    /** @brief ×Ô¶¯ÔËĞĞÇ°°Ñ¸÷¹¤¾ß²ÎÊı´Ó map Ìîµ½²ÎÊıÀà£¬±¾´ÎÁ÷³ÌÖ»µ÷Ò»´Î */
+    /** @brief è·‘æ•´æ¡æµç¨‹ï¼›recipe éç©ºæ—¶ç”¨è‰ç¨¿é…ç½®è¯•è·‘ */
+    ToolOut run(Solution* sol, const JobCfg* recipe = 0, int depth = 0);
+    /** @brief è‡ªåŠ¨è¿è¡Œå‰æŠŠå„å·¥å…·å‚æ•°ä» map å¡«åˆ°å‚æ•°ç±»ï¼Œæœ¬æ¬¡æµç¨‹åªè°ƒä¸€æ¬¡ */
     void initAutoParas();
 
     /**
-     * @brief ³¢ÊÔÕ¼ÓÃ±¾Á÷³Ì£¨·ÀÖØÈë£»Éè¼Æ/¸´¼ì/ÔËĞĞ»¥³â£©
-     * @return false ±íÊ¾ÒÑÔÚÖ´ĞĞ
+     * @brief å°è¯•å ç”¨æœ¬æµç¨‹ï¼ˆé˜²é‡å…¥ï¼›è®¾è®¡/å¤æ£€/è¿è¡Œäº’æ–¥ï¼‰
+     * @return false è¡¨ç¤ºå·²åœ¨æ‰§è¡Œ
      */
     bool tryBeginRun();
-    /** @brief ½áÊøÕ¼ÓÃ£¨Óë tryBeginRun ³É¶Ô£© */
+    /** @brief ç»“æŸå ç”¨ï¼ˆä¸ tryBeginRun æˆå¯¹ï¼‰ */
     void endRun();
-    /** @brief ÊÇ·ñÕıÔÚÖ´ĞĞ */
+    /** @brief æ˜¯å¦æ­£åœ¨æ‰§è¡Œ */
     bool isRunning() const;
 
 private:
-    /************************************************** ÈÕÖ¾ **************************************************/
-    /** @brief Ğ´ÈÕÖ¾¸ø¼àÌıÆ÷ */
+    /************************************************** æ—¥å¿— **************************************************/
+    /** @brief å†™æ—¥å¿—ç»™ç›‘å¬å™¨ */
     void log(const std::string& line);
-    /** @brief Ğ´½á¹¹»¯ÈÕÖ¾¸ø¼àÌıÆ÷£¨²¹È« station/job id£© */
+    /** @brief å†™ç»“æ„åŒ–æ—¥å¿—ç»™ç›‘å¬å™¨ï¼ˆè¡¥å…¨ station/job idï¼‰ */
     void log(const RunLogEvent& ev);
 
-    /************************************************** ÊäÈë **************************************************/
-    /** @brief ÓÅÏÈÍ¼ÏñÁ¬ÏßµÄÉÏÓÎÍ¼£»·ñÔòÈ¡Ö´ĞĞĞòÖĞÉÏÒ»ÕÅ»º´æÍ¼ */
+    /************************************************** è¾“å…¥ **************************************************/
+    /** @brief ä¼˜å…ˆå›¾åƒè¿çº¿çš„ä¸Šæ¸¸å›¾ï¼›å¦åˆ™å–æ‰§è¡Œåºä¸­ä¸Šä¸€å¼ ç¼“å­˜å›¾ */
     HsCommData::HsImage inputImage(const JobCfg& job, const ObjectId& toolId) const;
-    /** @brief ºÏ²¢ÇøÓò¡¢ÂÖÀª¡¢ROI Á¬ÏßµÄÉÏÓÎ¼¸ºÎ */
+    /** @brief åˆå¹¶åŒºåŸŸã€è½®å»“ã€ROI è¿çº¿çš„ä¸Šæ¸¸å‡ ä½• */
     std::vector<HsCommData::HsObject> inputGraphics(const JobCfg& job, const ObjectId& toolId) const;
-    /** @brief ºÏ²¢Î»×ËÁ¬ÏßµÄÉÏÓÎÎ»×Ë£¨ºóĞ´¸²¸Ç£© */
+    /** @brief åˆå¹¶ä½å§¿è¿çº¿çš„ä¸Šæ¸¸ä½å§¿ï¼ˆåå†™è¦†ç›–ï¼‰ */
     bool inputPose(const JobCfg& job, const ObjectId& toolId, HsCommData::Pose2* pose) const;
-    /** @brief ºÏ²¢Âß¼­Á¬ÏßµÄÉÏÓÎÊıÖµ */
+    /** @brief åˆå¹¶é€»è¾‘è¿çº¿çš„ä¸Šæ¸¸æ•°å€¼ */
     ParamMap upstreamValues(const JobCfg& job, const ObjectId& toolId) const;
-    /** @brief °´Á¬Ïß°ÑÉÏÓÎ·ÖÀàÏòÁ¿»ã×Üµ½±¾¹¤¾ßÊäÈë */
+    /** @brief æŒ‰è¿çº¿æŠŠä¸Šæ¸¸åˆ†ç±»å‘é‡æ±‡æ€»åˆ°æœ¬å·¥å…·è¾“å…¥ */
     ToolIo inputIo(const JobCfg& job, const ObjectId& toolId) const;
-    /** @brief ÓÃ¾É»º´æÆ´Ò»·İ·ÖÀàÊı¾İ */
+    /** @brief ç”¨æ—§ç¼“å­˜æ‹¼ä¸€ä»½åˆ†ç±»æ•°æ® */
     ToolIo ioFromLegacyCache(const ObjectId& toolId) const;
 
-    /************************************************** Ö´ĞĞ **************************************************/
-    /** @brief °´×éµİ¹éÖ´ĞĞ£ºÒ¶×ÓÅÜ¹¤¾ß£¬Ìõ¼şÑ¡Ö§£¬²¢ĞĞÈ«ÅÜ£¬Ñ­»·°´´ÎÊıÖØÅÜ */
-    ToolOut runGroup(Solution* sol, JobCfg* job, const ToolGroup& g, bool fallbackOk);
-    /** @brief È¡Ìõ¼şÔ´ÅĞ¶¨£»ÆÚÍû NG Ê±È¡·´ */
+    /************************************************** æ‰§è¡Œ **************************************************/
+    /** @brief æŒ‰ç»„é€’å½’æ‰§è¡Œï¼šå¶å­è·‘å·¥å…·ï¼Œæ¡ä»¶é€‰æ”¯ï¼Œå¹¶è¡Œå…¨è·‘ï¼Œå¾ªç¯æŒ‰æ¬¡æ•°é‡è·‘ */
+    ToolOut runGroup(Solution* sol, JobCfg* job, const ToolGroup& g, bool fallbackOk, int depth);
+    /** @brief å–æ¡ä»¶æºåˆ¤å®šï¼›æœŸæœ› NG æ—¶å–å */
     bool evalIf(const ToolGroup& g, bool fallbackOk) const;
-    /** @brief °Ñ²İ¸åÅä·½ºÏ²¢½øÕıÊ½¹¤¾ß¸±±¾£¬¹©±¾´ÎÖ´ĞĞÊ¹ÓÃ */
+    /** @brief æŠŠè‰ç¨¿é…æ–¹åˆå¹¶è¿›æ­£å¼å·¥å…·å‰¯æœ¬ï¼Œä¾›æœ¬æ¬¡æ‰§è¡Œä½¿ç”¨ */
     ToolCfg resolveRecipeTool(const ToolCfg* formal, const ToolCfg* recipeTool,
                                const JobCfg* recipeJob) const;
-    /** @brief µ¥¹¤¾ßÖ´ĞĞÌå£¨µ÷ÓÃ·½ÒÑÕ¼ÓÃ m_executing£© */
+    /** @brief å•å·¥å…·æ‰§è¡Œä½“ï¼ˆè°ƒç”¨æ–¹å·²å ç”¨ m_executingï¼‰ */
     ToolOut runToolBody(Solution* sol, const ObjectId& toolId, const ToolCfg* recipeTool);
 
-    /************************************************** ÊµÀıÊı¾İ **************************************************/
-    /** @brief °Ñ ToolCfg ËÄ¼şÌ×Ğ´Èë¹¤¾ßÊµÀı */
+    /************************************************** å®ä¾‹æ•°æ® **************************************************/
+    /** @brief æŠŠ ToolCfg å››ä»¶å¥—å†™å…¥å·¥å…·å®ä¾‹ */
     std::string paramStamp(const ToolParam& param) const;
     void applyToolConfig(ToolBase* inst, const ToolCfg& config);
-    /** @brief °ÑÊµÀıËÄ¼şÌ×ÊÕ»ØÅäÖÃ£¬²»¶¯»­²¼×ø±ê */
+    /** @brief æŠŠå®ä¾‹å››ä»¶å¥—æ”¶å›é…ç½®ï¼Œä¸åŠ¨ç”»å¸ƒåæ ‡ */
     void harvestToolConfig(const ToolBase* inst, ToolCfg* config);
-    /** @brief Ö´ĞĞ¹¤¾ßÊµÀı£¬Ã»ÓĞÊµÀıÊ±ÓÃ×¢²á±íÔ­ĞÍ */
+    /** @brief æ‰§è¡Œå·¥å…·å®ä¾‹ï¼Œæ²¡æœ‰å®ä¾‹æ—¶ç”¨æ³¨å†Œè¡¨åŸå‹ */
     ToolOut runToolInstance(ToolBase* inst, const ToolIn& in, ToolCfg* formal);
 
-    /************************************************** ³ÉÔ± **************************************************/
+    /************************************************** æˆå‘˜ **************************************************/
     struct RtView {
-        const JobRuntime* rt; ///< ¿É¶ÁµÄÔËĞĞÌ¬
-        std::shared_ptr<const JobRuntime> keep; ///< ÎÕ×¡ÒÑ·¢²¼¿ìÕÕ
+        const JobRuntime* rt; ///< å¯è¯»çš„è¿è¡Œæ€
+        std::shared_ptr<const JobRuntime> keep; ///< æ¡ä½å·²å‘å¸ƒå¿«ç…§
         RtView() : rt(0) {}
     };
-    /** @brief Ö´ĞĞÏß³Ì¶Á²İ¸å£¬ÆäËüÏß³Ì¶ÁÒÑ·¢²¼¿ìÕÕ */
+    /** @brief æ‰§è¡Œçº¿ç¨‹è¯»è‰ç¨¿ï¼Œå…¶å®ƒçº¿ç¨‹è¯»å·²å‘å¸ƒå¿«ç…§ */
     RtView viewRuntime() const;
-    /** @brief °Ñ²İ¸å»»³É½çÃæ¿É¼ûµÄ¿ìÕÕ */
+    /** @brief æŠŠè‰ç¨¿æ¢æˆç•Œé¢å¯è§çš„å¿«ç…§ */
     void publishRuntime();
 
-    JobCfg* m_config;                 ///< ÕıÊ½ÅäÖÃ£¬²»ÓµÓĞ
-    JobRuntime m_runtime;             ///< ±¾Á÷³ÌÔËĞĞÌ¬
-    mutable std::mutex m_publishMu; ///< Ö»±£»¤¿ìÕÕÖ¸Õë
-    std::shared_ptr<const JobRuntime> m_published; ///< ½çÃæ¿É¼ûµÄÉÏÒ»ÅÄ
-    std::vector<ToolBase*> m_tools;   ///< ÏÂÊô¹¤¾ßÊµÀı£¨ÓµÓĞ£»¾­ destroy ÊÍ·Å£©
-    IRunListener* m_listener;         ///< ÈÕÖ¾¼àÌı£¨³£Îª RunLogHub£©
-    ObjectId m_stationId;             ///< ÈÕÖ¾±êÇ©ÓÃ¹¤Õ¾ id£¨·ÇÉÏ¼¶Ö¸Õë£©
-    std::atomic<bool> m_executing;    ///< Ö´ĞĞÕ¼ÓÃ£¨·ÀÖØÈë£©
-    bool m_autoPrepared;              ///< ×Ô¶¯ÔËĞĞ²ÎÊıÊÇ·ñÒÑÌîºÃ
+    JobCfg* m_config;                 ///< æ­£å¼é…ç½®ï¼Œä¸æ‹¥æœ‰
+    JobRuntime m_runtime;             ///< æœ¬æµç¨‹è¿è¡Œæ€
+    mutable std::mutex m_publishMu; ///< åªä¿æŠ¤å¿«ç…§æŒ‡é’ˆ
+    std::shared_ptr<const JobRuntime> m_published; ///< ç•Œé¢å¯è§çš„ä¸Šä¸€æ‹
+    std::vector<ToolBase*> m_tools;   ///< ä¸‹å±å·¥å…·å®ä¾‹ï¼ˆæ‹¥æœ‰ï¼›ç» destroy é‡Šæ”¾ï¼‰
+    IRunListener* m_listener;         ///< æ—¥å¿—ç›‘å¬ï¼ˆå¸¸ä¸º RunLogHubï¼‰
+    ObjectId m_stationId;             ///< æ—¥å¿—æ ‡ç­¾ç”¨å·¥ç«™ idï¼ˆéä¸Šçº§æŒ‡é’ˆï¼‰
+    std::atomic<bool> m_executing;    ///< æ‰§è¡Œå ç”¨ï¼ˆé˜²é‡å…¥ï¼‰
+    bool m_autoPrepared;              ///< è‡ªåŠ¨è¿è¡Œå‚æ•°æ˜¯å¦å·²å¡«å¥½
     std::map<std::string, std::string> m_paramStamp;
-    const JobCfg* m_recipeJob;        ///< µ±Ç°ÊÔÅÜÓÃµÄÁ÷³Ì²İ¸å
-    const ToolCfg* m_recipeTool;      ///< µ±Ç°ÊÔÅÜÓÃµÄµ¥¹¤¾ß²İ¸å
+    const JobCfg* m_recipeJob;        ///< å½“å‰è¯•è·‘ç”¨çš„æµç¨‹è‰ç¨¿
+    const ToolCfg* m_recipeTool;      ///< å½“å‰è¯•è·‘ç”¨çš„å•å·¥å…·è‰ç¨¿
 };
 
 }

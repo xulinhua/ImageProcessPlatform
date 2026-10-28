@@ -1,6 +1,6 @@
 /**
  * @file LogMgr.cpp
- * @brief LogMgrÊµÏÖ
+ * @brief LogMgrå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -17,7 +17,7 @@ namespace Vision {
 
 namespace {
 
-// ±¾µØÊ±¼äµÄ ISO ÎÄ±¾
+// æœ¬åœ°æ—¶é—´çš„ ISO æ–‡æœ¬
 std::string nowIso()
 {
     time_t t = time(0);
@@ -32,19 +32,19 @@ std::string nowIso()
 
 } // namespace
 
-// Æô¶¯Òì²½Ğ´¿âÏß³Ì
+// å¯åŠ¨å¼‚æ­¥å†™åº“çº¿ç¨‹
 void LogMgr::startup()
 {
     detail::logSink().start();
 }
 
-// Í£Ïß³Ì²¢Ë¢Íê¶ÓÁĞ
+// åœçº¿ç¨‹å¹¶åˆ·å®Œé˜Ÿåˆ—
 void LogMgr::shutdown()
 {
     detail::logSink().stop();
 }
 
-// Ğ´Ò»ÌõÏµÍ³Í¨µÀÈÕÖ¾
+// å†™ä¸€æ¡ç³»ç»Ÿé€šé“æ—¥å¿—
 void LogMgr::writeSystem(LogLevel level, const std::string& action, const std::string& detail)
 {
     LogRecord rec;
@@ -57,7 +57,7 @@ void LogMgr::writeSystem(LogLevel level, const std::string& action, const std::s
     detail::logSink().enqueue(rec);
 }
 
-// ²¹ÉÏÊ±¼äºóÒì²½Èë¿â
+// è¡¥ä¸Šæ—¶é—´åå¼‚æ­¥å…¥åº“
 void LogMgr::append(const LogRecord& rec)
 {
     LogRecord r = rec;
@@ -70,7 +70,7 @@ void LogMgr::append(const LogRecord& rec)
     detail::logSink().enqueue(r);
 }
 
-// Ğ´Ò»Ìõ²Ù×÷ÈÕÖ¾
+// å†™ä¸€æ¡æ“ä½œæ—¥å¿—
 void LogMgr::appendOp(const std::string& user, const std::string& role,
                          const std::string& action, const std::string& target,
                          const std::string& detail, const std::string& result)
@@ -88,7 +88,7 @@ void LogMgr::appendOp(const std::string& user, const std::string& role,
     append(r);
 }
 
-// Ğ´Ò»Ìõµ÷ÊÔÈÕÖ¾
+// å†™ä¸€æ¡è°ƒè¯•æ—¥å¿—
 void LogMgr::appendDebug(const std::string& user, const std::string& role,
                             const std::string& action, const std::string& target,
                             const std::string& detail, const std::string& result)
@@ -106,85 +106,85 @@ void LogMgr::appendDebug(const std::string& user, const std::string& role,
     append(r);
 }
 
-// ÏÈË¢¶ÓÁĞ£¬ÔÙ°´Ìõ¼ş²éÑ¯
+// å…ˆåˆ·é˜Ÿåˆ—ï¼Œå†æŒ‰æ¡ä»¶æŸ¥è¯¢
 std::vector<LogRecord> LogMgr::query(const LogQuery& q)
 {
     detail::logSink().flush();
     return LogDb::instance().query(q);
 }
 
-// ÏÈË¢¶ÓÁĞ£¬ÔÙÁĞ³öÓĞ¼ÇÂ¼µÄÈÕÆÚ
+// å…ˆåˆ·é˜Ÿåˆ—ï¼Œå†åˆ—å‡ºæœ‰è®°å½•çš„æ—¥æœŸ
 std::vector<LogFileInfo> LogMgr::listFiles()
 {
     detail::logSink().flush();
     return LogDb::instance().listDays();
 }
 
-// ÏÈË¢¶ÓÁĞ£¬ÔÙ°´ÈÕÆÚ¼üÉ¾³ı
+// å…ˆåˆ·é˜Ÿåˆ—ï¼Œå†æŒ‰æ—¥æœŸé”®åˆ é™¤
 int LogMgr::deleteFiles(const std::vector<std::string>& paths)
 {
     detail::logSink().flush();
     return LogDb::instance().deleteDays(paths);
 }
 
-// ¶¯×÷¼üµÄÖĞÎÄÃû£¬¹©½çÃæ±í¸ñ
+// åŠ¨ä½œé”®çš„ä¸­æ–‡åï¼Œä¾›ç•Œé¢è¡¨æ ¼
 std::string LogMgr::actionTitle(const std::string& action)
 {
     if (action == "login") {
-        return Translate::tr("µÇÂ¼");
+        return Translate::tr("ç™»å½•");
     }
     if (action == "login_fail") {
-        return Translate::tr("µÇÂ¼Ê§°Ü");
+        return Translate::tr("ç™»å½•å¤±è´¥");
     }
     if (action == "logout") {
-        return Translate::tr("×¢Ïú");
+        return Translate::tr("æ³¨é”€");
     }
     if (action == "start_station") {
-        return Translate::tr("¿ªÊ¼¹¤Õ¾");
+        return Translate::tr("å¼€å§‹å·¥ç«™");
     }
     if (action == "stop_station") {
-        return Translate::tr("Í£Ö¹¹¤Õ¾");
+        return Translate::tr("åœæ­¢å·¥ç«™");
     }
     if (action == "reset_count") {
-        return Translate::tr("ÇåÁã²úÁ¿");
+        return Translate::tr("æ¸…é›¶äº§é‡");
     }
     if (action == "load_solution") {
-        return Translate::tr("´ò¿ª·½°¸");
+        return Translate::tr("æ‰“å¼€æ–¹æ¡ˆ");
     }
     if (action == "save_solution") {
-        return Translate::tr("±£´æ·½°¸");
+        return Translate::tr("ä¿å­˜æ–¹æ¡ˆ");
     }
     if (action == "debug_tool") {
-        return Translate::tr("µ÷ÊÔ±¾¹¤¾ß");
+        return Translate::tr("è°ƒè¯•æœ¬å·¥å…·");
     }
     if (action == "debug_job") {
-        return Translate::tr("µ÷ÊÔ±¾Á÷³Ì");
+        return Translate::tr("è°ƒè¯•æœ¬æµç¨‹");
     }
     if (action == "run_log") {
-        return Translate::tr("ÔËĞĞÈÕÖ¾");
+        return Translate::tr("è¿è¡Œæ—¥å¿—");
     }
     if (action == "perm_save") {
-        return Translate::tr("±£´æ¿Ø¼şÈ¨ÏŞ");
+        return Translate::tr("ä¿å­˜æ§ä»¶æƒé™");
     }
     if (action == "user_create") {
-        return Translate::tr("ĞÂ½¨ÓÃ»§");
+        return Translate::tr("æ–°å»ºç”¨æˆ·");
     }
     if (action == "user_edit") {
-        return Translate::tr("±à¼­ÓÃ»§");
+        return Translate::tr("ç¼–è¾‘ç”¨æˆ·");
     }
     if (action == "user_delete") {
-        return Translate::tr("É¾³ıÓÃ»§");
+        return Translate::tr("åˆ é™¤ç”¨æˆ·");
     }
     if (action == "user_reset_pwd") {
-        return Translate::tr("ÖØÖÃ¿ÚÁî");
+        return Translate::tr("é‡ç½®å£ä»¤");
     }
     if (action == "user_change_pwd") {
-        return Translate::tr("ĞŞ¸Ä¿ÚÁî");
+        return Translate::tr("ä¿®æ”¹å£ä»¤");
     }
     if (action == "log_delete") {
-        return Translate::tr("É¾³ıÈÕÖ¾");
+        return Translate::tr("åˆ é™¤æ—¥å¿—");
     }
-    return Translate::tr("ÆäËû");
+    return Translate::tr("å…¶ä»–");
 }
 
 }

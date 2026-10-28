@@ -1,6 +1,6 @@
 /**
  * @file VisionVersion.cpp
- * @brief VisionVersionÊµÏÖ
+ * @brief VisionVersionå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -11,68 +11,68 @@
 
 namespace Vision {
 
-// ²úÆ·ÏÔÊ¾Ãû
+// äº§å“æ˜¾ç¤ºå
 const char* appProductName()
 {
-    static const std::string name = acpToUtf8("Í¨ÓÃÊÓ¾õÆ½Ì¨");
+    static const std::string name = "é€šç”¨è§†è§‰å¹³å°";
     return name.c_str();
 }
 
-// Èí¼ş°æ±¾
+// è½¯ä»¶ç‰ˆæœ¬
 const char* appVersion()
 {
     return VISION_VERSION_STRING;
 }
 
-// ±àÒëÈÕÆÚÊ±¼ä
+// ç¼–è¯‘æ—¥æœŸæ—¶é—´
 std::string buildStamp()
 {
     return std::string(__DATE__) + " " + __TIME__;
 }
 
-// ¾²Ì¬Ä£¿é±í£¨Óëµ±Ç°Á´½ÓµÄ¿â¶ÔÓ¦£©
+// é™æ€æ¨¡å—è¡¨ï¼ˆä¸å½“å‰é“¾æ¥çš„åº“å¯¹åº”ï¼‰
 std::vector<VersionInfo> moduleVersions()
 {
     std::vector<VersionInfo> out;
     VersionInfo a;
     a.id = "vision.platform";
-    a.name = acpToUtf8("Ö÷³ÌĞò VisionPlatform");
+    a.name = "ä¸»ç¨‹åº VisionPlatform";
     a.version = VISION_VERSION_STRING;
     out.push_back(a);
 
     VersionInfo core;
     core.id = "vision.core";
-    core.name = acpToUtf8("ºËĞÄ VisionCore");
+    core.name = "æ ¸å¿ƒ VisionCore";
     core.version = VISION_MODULE_CORE_VERSION;
     out.push_back(core);
 
     VersionInfo comm;
     comm.id = "vision.comm";
-    comm.name = acpToUtf8("Í¨ĞÅ VisionComm");
+    comm.name = "é€šä¿¡ VisionComm";
     comm.version = VISION_MODULE_COMM_VERSION;
     out.push_back(comm);
 
     VersionInfo base;
     base.id = "vision.algobase";
-    base.name = acpToUtf8("Ëã·¨»ùÀà VisionAlgToolBase");
+    base.name = "ç®—æ³•åŸºç±» VisionAlgToolBase";
     base.version = VISION_MODULE_ALGOBASE_VERSION;
     out.push_back(base);
 
     VersionInfo hal;
     hal.id = "vision.algohalcon";
-    hal.name = acpToUtf8("Halcon Ëã·¨²å¼ş");
+    hal.name = "Halcon ç®—æ³•æ’ä»¶";
     hal.version = VISION_MODULE_HALCON_VERSION;
     out.push_back(hal);
 
     VersionInfo grab;
     grab.id = "vision.grabfile";
-    grab.name = acpToUtf8("ÎÄ¼ş²É¼¯ VisionGrabFile");
+    grab.name = "æ–‡ä»¶é‡‡é›† VisionGrabFile";
     grab.version = VISION_MODULE_GRABFILE_VERSION;
     out.push_back(grab);
 
     VersionInfo img;
     img.id = "hsimage";
-    img.name = acpToUtf8("Í¼Ïñ¿Ø¼ş HsImage");
+    img.name = "å›¾åƒæ§ä»¶ HsImage";
     img.version = VISION_MODULE_HSIMAGE_VERSION;
     out.push_back(img);
 
@@ -80,7 +80,7 @@ std::vector<VersionInfo> moduleVersions()
 }
 
 
-// È¡ËÄ¶ÎÀïµÄÒ»¶Î¡£È±¶Îµ± 0
+// å–å››æ®µé‡Œçš„ä¸€æ®µã€‚ç¼ºæ®µå½“ 0
 static int verPart(const std::string& s, int index)
 {
     int cur = 0;
@@ -103,7 +103,7 @@ static int verPart(const std::string& s, int index)
     return 0;
 }
 
-// ËÄ¶Î´Ó×óµ½ÓÒ±È½Ï
+// å››æ®µä»å·¦åˆ°å³æ¯”è¾ƒ
 static int cmpVerText(const std::string& a, const std::string& b)
 {
     for (int i = 0; i < 4; ++i) {
@@ -119,7 +119,7 @@ static int cmpVerText(const std::string& a, const std::string& b)
     return 0;
 }
 
-// ±ä¸ü±í×ª³É½çÃæÓÃµÄ UTF-8
+// å˜æ›´è¡¨è½¬æˆç•Œé¢ç”¨çš„ UTF-8
 std::vector<VerNote> verNotesFrom(const VerNoteRaw* rows, int count)
 {
     std::vector<VerNote> out;
@@ -132,20 +132,20 @@ std::vector<VerNote> verNotesFrom(const VerNoteRaw* rows, int count)
             n.ver = rows[i].ver;
         }
         if (rows[i].note) {
-            n.note = acpToUtf8(rows[i].note);
+            n.note = rows[i].note;
         }
         out.push_back(n);
     }
     return out;
 }
 
-// ·½°¸ºÅÖ®ºó¡¢µ±Ç°ºÅÎªÖ¹µÄËµÃ÷
+// æ–¹æ¡ˆå·ä¹‹åã€å½“å‰å·ä¸ºæ­¢çš„è¯´æ˜
 std::string verNotesBetween(const std::vector<VerNote>& notes, const std::string& saved, const std::string& current)
 {
     const std::string from = saved.empty() ? std::string("0.0.0.0") : saved;
     const std::string to = current.empty() ? std::string("0.0.0.0") : current;
     if (cmpVerText(from, to) > 0) {
-        return acpToUtf8("±¾³ÌĞòÖ»µ½ ") + to;
+        return "æœ¬ç¨‹åºåªåˆ° " + to;
     }
     std::string out;
     for (size_t i = 0; i < notes.size(); ++i) {

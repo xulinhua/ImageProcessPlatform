@@ -1,6 +1,6 @@
 /**
  * @file HalFindCircle.cpp
- * @brief HalFindCircle实现
+ * @brief HalFindCircle瀹炵幇
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -8,18 +8,17 @@
 
 #include "HalFindCircle.h"
 #include "TextEncoding.h"
-#include "HalAlgoHelpers.h"
 #include "HalImageConvert.h"
 #include "HalObjectConvert.h"
 #include "ParamKeys.h"
 
 namespace Vision {
 
-// 亚像素圆
+// 浜氬儚绱犲渾
 namespace {
 const char kVer_HalFindCircle[] = "1.0.0.0";
 const Vision::VerNoteRaw kNotes_HalFindCircle[] = {
-    { "1.0.0.0", "首版" },
+    { "1.0.0.0", "棣栫増" },
 };
 }
 
@@ -28,7 +27,7 @@ std::string HalFindCircle::version() const
     return kVer_HalFindCircle;
 }
 
-// 版本变更，只追加
+// 鐗堟湰鍙樻洿锛屽彧杩藉姞
 std::vector<VerNote> HalFindCircle::versionNotes() const
 {
     return verNotesFrom(kNotes_HalFindCircle, static_cast<int>(sizeof(kNotes_HalFindCircle) / sizeof(kNotes_HalFindCircle[0])));
@@ -41,8 +40,8 @@ AlgToolOut HalFindCircle::run(const AlgToolIn& in)
         int h = 0;
         std::string err;
         HalconCpp::HImage* pGray = &gray;
-        if (!loadGrayFromAlgIn(in, pGray, &w, &h, &err)) {
-            return algorToolFail(err);
+        if (!hsImageToGray(inputImage(in), pGray, &w, &h, &err)) {
+            return AlgToolOut::fail(err);
         }
         const double sigma = in.run.value("sigma").toDouble(1.0);
         const double low = in.run.value("low").toDouble(20.0);
@@ -93,9 +92,9 @@ AlgToolOut HalFindCircle::run(const AlgToolIn& in)
             }
         }
         AlgToolOut out;
-        out.image.image = in.image.image;
+        out.image.image = inputImage(in);
         if (!found) {
-            out.message = Vision::acpToUtf8("未找到圆");
+            out.message = "鏈壘鍒板渾";
             return out;
         }
         out.ok = true;
@@ -107,10 +106,10 @@ AlgToolOut HalFindCircle::run(const AlgToolIn& in)
         paramSet(&out.values, ValueKey::Angle, 0.0);
         paramSet(&out.values, ValueKey::Score, 1.0);
         out.objects.push_back(circleObject(bestCx, bestCy, bestR));
-        out.message = Vision::acpToUtf8("找圆完成");
+        out.message = "鎵惧渾瀹屾垚";
         return out;
     } catch (const HalconCpp::HException& e) {
-        return algorToolFail(hExceptionText(e));
+        return AlgToolOut::fail(hExceptionText(e));
     }
 }
 

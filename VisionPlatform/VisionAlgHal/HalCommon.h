@@ -1,6 +1,6 @@
 /**
  * @file HalCommon.h
- * @brief HalCommonÍ·ÎÄ¼ş
+ * @brief HalCommonå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -8,12 +8,11 @@
 
 #ifndef VISION_HALCONCOMMON_H
 #define VISION_HALCONCOMMON_H
-/** @brief ¼æÈİ¾ÉÍ·£º±àÅÅÇëÓÃ HalAlgoHelpers.h£»ĞÎÌ¬Ñ§ÇëÓÃ HalOps.h */
-#include "HalAlgoHelpers.h"
+/** @brief å…¼å®¹æ—§å¤´ï¼šå½¢æ€å­¦è¯·ç”¨ HalOps.h */
 #include "HalOps.h"
 
 namespace Vision {
-/** @deprecated ÇëÓÃ morphOpenClose */
+/** @deprecated è¯·ç”¨ morphOpenClose */
 inline void morphRegion(const HalconCpp::HObject& bin, double openR, double closeR, HalconCpp::HObject*& out)
 {
     morphOpenClose(bin, openR, closeR, out);

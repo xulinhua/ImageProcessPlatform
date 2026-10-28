@@ -1,6 +1,6 @@
 /**
  * @file ToolExport.h
- * @brief ToolExportͷ�ļ�
+ * @brief ToolExport头文件
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.

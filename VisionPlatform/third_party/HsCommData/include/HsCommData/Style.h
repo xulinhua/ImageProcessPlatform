@@ -1,6 +1,6 @@
 /**
  * @file Style.h
- * @brief Í¼ĞÎÑùyºÍÎÄ±¾Ñùy
+ * @brief å›¾å½¢æ ·å¼å’Œæ–‡æœ¬æ ·å¼
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -13,57 +13,57 @@
 
 namespace HsCommData {
 
-/** @brief Æº–s±ß£¬»òÌî³ä²¢Å÷´ø–s±ß */
+/** @brief åªæè¾¹ï¼Œæˆ–å¡«å……å¹¶å¯å¸¦æè¾¹ */
 enum DrawMode {
-    DrawMargin = 0, ///< Æº–s±ß
-    DrawFill   = 1  ///< Ìî³ä£¬Å÷ÛĞÊ±–s±ß
+    DrawMargin = 0, ///< åªæè¾¹
+    DrawFill   = 1  ///< å¡«å……ï¼Œå¯åŒæ—¶æè¾¹
 };
 
-/** @brief ÕûÌõÍ¼ÔªµÄÏßĞÍ¡£¹Ç¼ÜÊÅ±ßĞéÏßÙÚÓÃ Graphic::edgeDashed */
+/** @brief æ•´æ¡å›¾å…ƒçš„çº¿å‹ã€‚éª¨æ¶é€è¾¹è™šçº¿ä»ç”¨ Graphic::edgeDashed */
 enum LineStyle {
-    LineSolid = 0, ///< ÊµÏß
-    LineDash,      ///< ĞéÏß
-    LineDot,       ///< µãÏß
-    LineDashDot    ///< µã»®Ïß
+    LineSolid = 0, ///< å®çº¿
+    LineDash,      ///< è™šçº¿
+    LineDot,       ///< ç‚¹çº¿
+    LineDashDot    ///< ç‚¹åˆ’çº¿
 };
 
 /**
  * @class GeomStyle
- * @brief »­ HsObject¨”°Ó×Ö¨”¼ıÍ·¨”µã¡£¼¸ºÎ±¾ÉíË¿´øÑÕÉ«
+ * @brief ç”» HsObjectã€åå­—ã€ç®­å¤´ã€ç‚¹ã€‚å‡ ä½•æœ¬èº«ä¸å¸¦é¢œè‰²
  */
 struct HSCOMMDATA_EXPORT GeomStyle {
-    Color4   stroke;   ///< –s±ß
-    Color4   fill;     ///< Ìî³ä
-    double   widthPx;  ///< Ïß¿í
-    LineStyle line;    ///< ÏßĞÍ
-    DrawMode draw;     ///< –s±ß»òÌî³ä
-    double   opacity;  ///< Ë¿ÊÅÃ÷¶È£¬0 µ½ 1
-    bool     cosmetic; ///< ÎªÕæÊ±Ïß¿íÊÇŒĞÄ»ƒ]ËØ
+    Color4   stroke;   ///< æè¾¹
+    Color4   fill;     ///< å¡«å……
+    double   widthPx;  ///< çº¿å®½
+    LineStyle line;    ///< çº¿å‹
+    DrawMode draw;     ///< æè¾¹æˆ–å¡«å……
+    double   opacity;  ///< ä¸é€æ˜åº¦ï¼Œ0 åˆ° 1
+    bool     cosmetic; ///< ä¸ºçœŸæ—¶çº¿å®½æ˜¯å±å¹•åƒç´ 
 
-    GeomStyle(); ///< ÂÌ–s±ß¨”µ­ÂÌÌî³ä¨”ÊµÏß¨”Æº–s±ß
+    GeomStyle(); ///< ç»¿æè¾¹ã€æ·¡ç»¿å¡«å……ã€å®çº¿ã€åªæè¾¹
 
-    /** @brief ½á¹û×¹¼ÓµÄÈ±±v */
+    /** @brief ç»“æœå åŠ çš„ç¼ºçœ */
     static GeomStyle stackStyle();
-    /** @brief Å÷ÍÏ ROI µÄÈ±±v */
+    /** @brief å¯æ‹– ROI çš„ç¼ºçœ */
     static GeomStyle drawingStyle();
-    /** @brief Ñ¡ÖĞ¸ßÁÁ */
+    /** @brief é€‰ä¸­é«˜äº® */
     static GeomStyle highlightStyle();
-    /** @brief ±ê×¢ */
+    /** @brief æ ‡æ³¨ */
     static GeomStyle annotationStyle();
 };
 
 /**
  * @class TextStyle
- * @brief »­ÎÄ×Ö¡£×ÖÉ«¨”µ×É«ºÍ×Ö¿ÀÔÚÕâÒ»·İÀï£¬ÕıÎÄºÍÃªµãÙÚÔÚ HsText
+ * @brief ç”»æ–‡å­—ã€‚å­—è‰²ã€åº•è‰²å’Œå­—å·åœ¨è¿™ä¸€ä»½é‡Œï¼Œæ­£æ–‡å’Œé”šç‚¹ä»åœ¨ HsText
  */
 struct HSCOMMDATA_EXPORT TextStyle {
-    Color4 color;  ///< ×ÖÉ«
-    Color4 back;   ///< µ×É«¡£Î´ÉèÖÃÔòË¿»­µ×
-    double fontPx; ///< ŒĞÄ»×Ö¿À
+    Color4 color;  ///< å­—è‰²
+    Color4 back;   ///< åº•è‰²ã€‚æœªè®¾ç½®åˆ™ä¸ç”»åº•
+    double fontPx; ///< å±å¹•å­—å·
 
-    TextStyle(); ///< ÂÌ×Ö¨”ÎŞµ×¨”16 ƒ]ËØ
+    TextStyle(); ///< ç»¿å­—ã€æ— åº•ã€16 åƒç´ 
 
-    /** @brief ½á¹ûÎÄ×ÖµÄÈ±±v */
+    /** @brief ç»“æœæ–‡å­—çš„ç¼ºçœ */
     static TextStyle stackStyle();
 };
 

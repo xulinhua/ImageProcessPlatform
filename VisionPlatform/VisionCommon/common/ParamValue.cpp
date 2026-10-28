@@ -1,6 +1,6 @@
 /**
  * @file ParamValue.cpp
- * @brief ParamValueÊµÏÖ
+ * @brief ParamValueå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -10,7 +10,7 @@
 
 namespace Vision {
 
-// ×ª²¼¶û£»¿ÕÖµ·µ»Ø def¡£×Ö·û´®ÈÏ "1"/"true"/"True"
+// è½¬å¸ƒå°”ï¼›ç©ºå€¼è¿”å› defã€‚å­—ç¬¦ä¸²è®¤ "1"/"true"/"True"
 bool ParamValue::toBool(bool def) const
 {
         if (m_kind == KindNull) {
@@ -22,7 +22,7 @@ bool ParamValue::toBool(bool def) const
         return m_b;
     }
 
-// ×ªÕûÊı£»¿ÕÖµ·µ»Ø def¡£×Ö·û´®×ß atoi
+// è½¬æ•´æ•°ï¼›ç©ºå€¼è¿”å› defã€‚å­—ç¬¦ä¸²èµ° atoi
 int ParamValue::toInt(int def) const
 {
         if (m_kind == KindNull) {
@@ -34,7 +34,7 @@ int ParamValue::toInt(int def) const
         return m_i;
     }
 
-// ×ª¸¡µã£»¿ÕÖµ·µ»Ø def¡£×Ö·û´®×ß atof
+// è½¬æµ®ç‚¹ï¼›ç©ºå€¼è¿”å› defã€‚å­—ç¬¦ä¸²èµ° atof
 double ParamValue::toDouble(double def) const
 {
         if (m_kind == KindNull) {
@@ -46,7 +46,7 @@ double ParamValue::toDouble(double def) const
         return m_d;
     }
 
-// ×ªÎÄ±¾£»¿ÕÖµÎª¿Õ´®£¬Êı×ÖÓÃ sprintf_s
+// è½¬æ–‡æœ¬ï¼›ç©ºå€¼ä¸ºç©ºä¸²ï¼Œæ•°å­—ç”¨ sprintf_s
 std::string ParamValue::toString() const
 {
         if (m_kind == KindString) {
@@ -68,7 +68,7 @@ std::string ParamValue::toString() const
         return std::string();
     }
 
-// ¶ÁÈ¡£»È±¼ü·µ»Ø¿Õ ParamValue
+// è¯»å–ï¼›ç¼ºé”®è¿”å›ç©º ParamValue
 ParamValue ParamMap::value(const std::string& key) const
 {
         std::map<std::string, ParamValue>::const_iterator it = m.find(key);
@@ -78,7 +78,7 @@ ParamValue ParamMap::value(const std::string& key) const
         return it->second;
     }
 
-// È«²¿¼ü£¨map Ğò£©
+// å…¨éƒ¨é”®ï¼ˆmap åºï¼‰
 std::vector<std::string> ParamMap::keys() const
 {
         std::vector<std::string> k;

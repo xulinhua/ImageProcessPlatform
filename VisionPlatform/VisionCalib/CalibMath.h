@@ -1,6 +1,6 @@
 /**
  * @file CalibMath.h
- * @brief CalibMathÍ·ÎÄ¼ş
+ * @brief CalibMathå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -12,16 +12,16 @@
 
 namespace Vision {
 
-/** @brief ÓÃµã¶ÔÄâºÏÆ½ÃæÓ³Éä£¬²¢ÌîĞ´²Ğ²îÓëÄæ¾ØÕó */
+/** @brief ç”¨ç‚¹å¯¹æ‹Ÿåˆå¹³é¢æ˜ å°„ï¼Œå¹¶å¡«å†™æ®‹å·®ä¸é€†çŸ©é˜µ */
 bool fitPlaneMap(CalibPlaneFit fit, const std::vector<PlaneSample>& samples, PlaneMap* out, std::string* err);
 
-/** @brief ÓÃ½Ç¶ÈÑù±¾ÄâºÏÏñËØĞı×ªÖĞĞÄ */
+/** @brief ç”¨è§’åº¦æ ·æœ¬æ‹Ÿåˆåƒç´ æ—‹è½¬ä¸­å¿ƒ */
 VISION_CALIB_API bool fitRotateCenter(const std::vector<RotateSample>& samples, RotateCenter* out, std::string* err);
 
-/** @brief ÏñËØµã¾­Æ½ÃæÓ³Éäµ½ºÁÃ×¡£¾ØÕó²»¿ÉÓÃÊ±·µ»Ø¼Ù */
+/** @brief åƒç´ ç‚¹ç»å¹³é¢æ˜ å°„åˆ°æ¯«ç±³ã€‚çŸ©é˜µä¸å¯ç”¨æ—¶è¿”å›å‡ */
 bool mapImageToWorld(const double imageToWorld[9], double imageX, double imageY, double* worldX, double* worldY);
 
-/** @brief ÈÆÖĞĞÄĞı×ªÒ»¸öµã¡£½Ç¶ÈÎª¶È£¬ÄæÊ±ÕëÎªÕı */
+/** @brief ç»•ä¸­å¿ƒæ—‹è½¬ä¸€ä¸ªç‚¹ã€‚è§’åº¦ä¸ºåº¦ï¼Œé€†æ—¶é’ˆä¸ºæ­£ */
 void rotatePoint(double cx, double cy, double angleDeg, double x, double y, double* outX, double* outY);
 
 }

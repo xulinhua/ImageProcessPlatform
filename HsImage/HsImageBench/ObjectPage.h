@@ -1,6 +1,6 @@
 /**
  * @file ObjectPage.h
- * @brief ObjectPageÍ·ÎÄ¼ş
+ * @brief ObjectPageå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -27,14 +27,14 @@ class ImageWidgetApi;
 
 /**
  * @class ObjectWorker
- * @brief Éú³É¡¢Éî¿½¡¢Ëø²âÊÔ¶¼ÔÚ¹¤×÷Ïß³Ì¡£²»Åö¿Ø¼ş
+ * @brief ç”Ÿæˆã€æ·±æ‹·ã€é”æµ‹è¯•éƒ½åœ¨å·¥ä½œçº¿ç¨‹ã€‚ä¸ç¢°æ§ä»¶
  */
 class ObjectWorker : public QObject {
     Q_OBJECT
 public:
     explicit ObjectWorker(QObject* parent = 0);
 
-    /** @brief µ±Ç°Ñù±¾µÄ¾ä±ú¿½±´¡£Ö»ÔÚÈÎÎñ½áÊøºó´Ó½çÃæÏß³Ìµ÷ÓÃ */
+    /** @brief å½“å‰æ ·æœ¬çš„å¥æŸ„æ‹·è´ã€‚åªåœ¨ä»»åŠ¡ç»“æŸåä»ç•Œé¢çº¿ç¨‹è°ƒç”¨ */
     HsCommData::HsObject sample() const;
 
 public slots:
@@ -54,7 +54,7 @@ private:
 
 /**
  * @class ObjectPage
- * @brief ½á¹¹ÆÀ²âÒ³£ºÉî¿½¡¢Stack Ë¢ĞÂ¡¢¶àÏß³ÌËø
+ * @brief ç»“æ„è¯„æµ‹é¡µï¼šæ·±æ‹·ã€Stack åˆ·æ–°ã€å¤šçº¿ç¨‹é”
  */
 class ObjectPage : public QWidget {
     Q_OBJECT

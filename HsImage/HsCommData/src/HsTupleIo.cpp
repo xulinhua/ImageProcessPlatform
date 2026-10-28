@@ -1,6 +1,6 @@
 /**
  * @file HsTupleIo.cpp
- * @brief HsTupleIoÊµÏÖ
+ * @brief HsTupleIoå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -110,7 +110,7 @@ std::string getStr(FILE* f, const char* proc)
 
 }
 
-// Ğ´Èë±¾µØÔª×éÎÄ¼ş
+// å†™å…¥æœ¬åœ°å…ƒç»„æ–‡ä»¶
 void HsTuple::writeTuple(const char* fileName) const
 {
     const char* proc = "writeTuple";
@@ -152,7 +152,7 @@ void HsTuple::writeTuple(const char* fileName) const
     }
 }
 
-// ´Ó±¾µØÎÄ¼ş¶ÁÈëÔª×é
+// ä»æœ¬åœ°æ–‡ä»¶è¯»å…¥å…ƒç»„
 void HsTuple::readTuple(const char* fileName)
 {
     const char* proc = "readTuple";
@@ -200,13 +200,13 @@ void HsTuple::readTuple(const char* fileName)
     }
 }
 
-// ×ÔÓÉº¯Êı×ªµ÷³ÉÔ±
+// è‡ªç”±å‡½æ•°è½¬è°ƒæˆå‘˜
 void writeTuple(const HsTuple& tuple, const char* fileName)
 {
     tuple.writeTuple(fileName);
 }
 
-// ×ÔÓÉº¯Êı×ªµ÷³ÉÔ±¡£¿ÕÖ¸ÕëÅ×ÀàĞÍ´í
+// è‡ªç”±å‡½æ•°è½¬è°ƒæˆå‘˜ã€‚ç©ºæŒ‡é’ˆæŠ›ç±»å‹é”™
 void readTuple(HsTuple* tuple, const char* fileName)
 {
     if (!tuple) {

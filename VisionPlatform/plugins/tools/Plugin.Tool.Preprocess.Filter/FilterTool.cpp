@@ -1,6 +1,6 @@
 /**
  * @file FilterTool.cpp
- * @brief Í¼ÏñÂË²¨£ºµÇ¼Ç²ÎÊı£¬Ö´ĞĞ½»¸øËã·¨²å¼ş
+ * @brief å›¾åƒæ»¤æ³¢ï¼šç™»è®°å‚æ•°ï¼Œæ‰§è¡Œäº¤ç»™ç®—æ³•æ’ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -15,11 +15,11 @@
 namespace {
 const char kToolVersion[] = "1.0.0.0";
 const Vision::VerNoteRaw kVerNotes[] = {
-    { "1.0.0.0", "Ê×°æ£º¶à²½ÖèÂË²¨£¬Ö§³ÖĞÎÌ¬Ñ§ºÍ²½Öè°ó¶¨ÇøÓò" },
+    { "1.0.0.0", "é¦–ç‰ˆï¼šå¤šæ­¥éª¤æ»¤æ³¢ï¼Œæ”¯æŒå½¢æ€å­¦å’Œæ­¥éª¤ç»‘å®šåŒºåŸŸ" },
 };
 const char kToolName[] = "preprocess.filter";
-const char kDisplayName[] = "Í¼ÏñÂË²¨";
-const char kDescription[] = "°´Ë³Ğò×öÔöÇ¿¡¢Æ½»¬ºÍ»Ò¶ÈĞÎÌ¬Ñ§£¬Ã¿²½¿É°ó¶¨Ò»¿éÇøÓò";
+const char kDisplayName[] = "å›¾åƒæ»¤æ³¢";
+const char kDescription[] = "æŒ‰é¡ºåºåšå¢å¼ºã€å¹³æ»‘å’Œç°åº¦å½¢æ€å­¦ï¼Œæ¯æ­¥å¯ç»‘å®šä¸€å—åŒºåŸŸ";
 
 std::string stepKey(int index, const char* suffix)
 {
@@ -51,7 +51,7 @@ Vision::ToolType Vision::FilterTool::type() const
 
 std::string Vision::FilterTool::displayName() const
 {
-    return Vision::acpToUtf8(kDisplayName);
+    return kDisplayName;
 }
 
 std::string Vision::FilterTool::version() const
@@ -66,24 +66,24 @@ std::vector<Vision::VerNote> Vision::FilterTool::versionNotes() const
 
 std::string Vision::FilterTool::description() const
 {
-    return Vision::acpToUtf8(kDescription);
+    return kDescription;
 }
 
 std::vector<Vision::ParamField> Vision::FilterTool::paramFields() const
 {
     std::vector<Vision::ParamField> f;
-    f.push_back(Vision::paramInt(FilterKey::stepCount, "²½ÖèÊı", 1, true, 1, true, 16));
+    f.push_back(Vision::paramInt(FilterKey::stepCount, "æ­¥éª¤æ•°", 1, true, 1, true, 16));
     const std::string p = stepKey(0, "");
-    f.push_back(Vision::paramString((p + FilterKey::op).c_str(), "Ëã×Ó", FilterKey::opEquHisto,
+    f.push_back(Vision::paramString((p + FilterKey::op).c_str(), "ç®—å­", FilterKey::opEquHisto,
         Vision::paramChoices(FilterKey::opEquHisto, FilterKey::opEmphasize, FilterKey::opIlluminate, FilterKey::opScale)));
-    f.push_back(Vision::paramInt((p + FilterKey::w).c_str(), "ÑÚÄ¤¿í", 7, true, 1, true, 101));
-    f.push_back(Vision::paramInt((p + FilterKey::h).c_str(), "ÑÚÄ¤¸ß", 7, true, 1, true, 101));
-    f.push_back(Vision::paramDouble((p + FilterKey::c0).c_str(), "²ÎÊı1", 1.0, false, 0, false, 0));
-    f.push_back(Vision::paramDouble((p + FilterKey::c1).c_str(), "²ÎÊı2", 3.0, false, 0, false, 0));
-    f.push_back(Vision::paramBool((p + FilterKey::scaleMax).c_str(), "À­Éìµ½×î´ó", false));
-    f.push_back(Vision::paramString((p + FilterKey::shape).c_str(), "ÑÚÄ¤ĞÎ×´", FilterKey::shapeRect,
+    f.push_back(Vision::paramInt((p + FilterKey::w).c_str(), "æ©è†œå®½", 7, true, 1, true, 101));
+    f.push_back(Vision::paramInt((p + FilterKey::h).c_str(), "æ©è†œé«˜", 7, true, 1, true, 101));
+    f.push_back(Vision::paramDouble((p + FilterKey::c0).c_str(), "å‚æ•°1", 1.0, false, 0, false, 0));
+    f.push_back(Vision::paramDouble((p + FilterKey::c1).c_str(), "å‚æ•°2", 3.0, false, 0, false, 0));
+    f.push_back(Vision::paramBool((p + FilterKey::scaleMax).c_str(), "æ‹‰ä¼¸åˆ°æœ€å¤§", false));
+    f.push_back(Vision::paramString((p + FilterKey::shape).c_str(), "æ©è†œå½¢çŠ¶", FilterKey::shapeRect,
         Vision::paramChoices(FilterKey::shapeRect, FilterKey::shapeOctagon, FilterKey::shapeRhombus)));
-    f.push_back(Vision::paramInt((p + FilterKey::roiIndex).c_str(), "°ó¶¨ÇøÓò", -1, true, -1, true, 49));
+    f.push_back(Vision::paramInt((p + FilterKey::roiIndex).c_str(), "ç»‘å®šåŒºåŸŸ", -1, true, -1, true, 49));
     return f;
 }
 
@@ -97,7 +97,7 @@ Vision::ToolCaps Vision::FilterTool::capabilities() const
     Vision::ToolCaps c;
     Vision::RoiSlotRule slot;
     slot.slot = FilterKey::roi;
-    slot.title = "ÂË²¨ÇøÓò";
+    slot.title = "æ»¤æ³¢åŒºåŸŸ";
     slot.maxCount = 50;
     slot.shapes.push_back(Vision::RoiShapeRule(HsCommData::ObjCircle, 0));
     slot.shapes.push_back(Vision::RoiShapeRule(HsCommData::ObjRect1, 0));

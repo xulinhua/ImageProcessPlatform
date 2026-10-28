@@ -1,6 +1,6 @@
 /**
  * @file JobDlg.h
- * @brief JobDlgÍ·ÎÄ¼ş
+ * @brief JobDlgå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -38,212 +38,212 @@ struct Solution;
 
 /**
  * @class JobDlg
- * @brief Á÷³ÌÊµÀı±à¼­£º¹¤¾ß¿â¡¢¹¤¾ßÊ÷¡¢»­²¼£¬ÒÔ¼°²¢ĞĞ×é / Ìõ¼ş×é
+ * @brief æµç¨‹å®ä¾‹ç¼–è¾‘ï¼šå·¥å…·åº“ã€å·¥å…·æ ‘ã€ç”»å¸ƒï¼Œä»¥åŠå¹¶è¡Œç»„ / æ¡ä»¶ç»„
  */
 class VISION_UI_API JobDlg : public QDialog {
     Q_OBJECT
     friend class JobToolTreeDelegate;
 public:
     /**
-     * @brief ¹¹Ôì JobCfg ±à¼­¶Ô»°¿ò
-     * @param job Á÷³ÌÔËĞĞÊµÀı£¨²»ÓµÓĞ£»¿ÉÎª¿ÕÔòÊÔÅÜ²»¿ÉÓÃ£©
-     * @param jobId Òª±à¼­µÄÁ÷³ÌÊµÀı
+     * @brief æ„é€  JobCfg ç¼–è¾‘å¯¹è¯æ¡†
+     * @param job æµç¨‹è¿è¡Œå®ä¾‹ï¼ˆä¸æ‹¥æœ‰ï¼›å¯ä¸ºç©ºåˆ™è¯•è·‘ä¸å¯ç”¨ï¼‰
+     * @param jobId è¦ç¼–è¾‘çš„æµç¨‹å®ä¾‹
      */
     JobDlg(Session* session, Solution* solution, Job* job, const QString& jobId,
               QWidget* parent = 0);
 
 signals:
     /**
-     * @brief ÇëÇóÖ´ĞĞ±¾ JobCfg£¨±£´æ±íÍ·ºó·¢³ö£©
-     * @param jobId µ±Ç° JobCfg
+     * @brief è¯·æ±‚æ‰§è¡Œæœ¬ JobCfgï¼ˆä¿å­˜è¡¨å¤´åå‘å‡ºï¼‰
+     * @param jobId å½“å‰ JobCfg
      */
     void runJobRequested(const QString& jobId);
 
 private slots:
-    /** @brief ´Ó¹¤¾ß¿â°ÑÑ¡ÖĞ¹¤¾ß£¨»ò²¢ĞĞ/Ìõ¼ş×é£©²åÈëµ±Ç°½Úµã */
+    /** @brief ä»å·¥å…·åº“æŠŠé€‰ä¸­å·¥å…·ï¼ˆæˆ–å¹¶è¡Œ/æ¡ä»¶ç»„ï¼‰æ’å…¥å½“å‰èŠ‚ç‚¹ */
     void onAdd();
-    /** @brief É¾³ıÑ¡ÖĞ¹¤¾ß»ò×é */
+    /** @brief åˆ é™¤é€‰ä¸­å·¥å…·æˆ–ç»„ */
     void onDel();
-    /** @brief ÔÚĞÖµÜ½ÚµãÖĞÉÏÒÆ */
+    /** @brief åœ¨å…„å¼ŸèŠ‚ç‚¹ä¸­ä¸Šç§» */
     void onMoveUp();
-    /** @brief ÔÚĞÖµÜ½ÚµãÖĞÏÂÒÆ */
+    /** @brief åœ¨å…„å¼ŸèŠ‚ç‚¹ä¸­ä¸‹ç§» */
     void onMoveDown();
-    /** @brief ÖØÃüÃûÑ¡ÖĞ¹¤¾ß»ò×é */
+    /** @brief é‡å‘½åé€‰ä¸­å·¥å…·æˆ–ç»„ */
     void onRename();
-    /** @brief ¸´ÖÆÑ¡ÖĞ¹¤¾ß»ò×é */
+    /** @brief å¤åˆ¶é€‰ä¸­å·¥å…·æˆ–ç»„ */
     void onCopy();
-    /** @brief ÇĞ»»Ñ¡ÖĞ¹¤¾ßÊ¹ÄÜ */
+    /** @brief åˆ‡æ¢é€‰ä¸­å·¥å…·ä½¿èƒ½ */
     void onToggleToolEnabled();
-    /** @brief ÔÚµ±Ç°½Úµã²åÈë²¢ĞĞ×é */
+    /** @brief åœ¨å½“å‰èŠ‚ç‚¹æ’å…¥å¹¶è¡Œç»„ */
     void onParallel();
-    /** @brief ÔÚµ±Ç°½Úµã²åÈëÌõ¼ş×é */
+    /** @brief åœ¨å½“å‰èŠ‚ç‚¹æ’å…¥æ¡ä»¶ç»„ */
     void onIf();
-    /** @brief ÔÚµ±Ç°½Úµã²åÈëÑ­»·×é */
+    /** @brief åœ¨å½“å‰èŠ‚ç‚¹æ’å…¥å¾ªç¯ç»„ */
     void onLoop();
-    /** @brief Ñ­»·´ÎÊı±ä¸üĞ´»Ø */
+    /** @brief å¾ªç¯æ¬¡æ•°å˜æ›´å†™å› */
     void onLoopCountChanged(int value);
-    /** @brief ¸øÑ¡ÖĞµÄ²¢ĞĞ×éÌí¼ÓÒ»Ìõ´®ĞĞÖ§Â· */
+    /** @brief ç»™é€‰ä¸­çš„å¹¶è¡Œç»„æ·»åŠ ä¸€æ¡ä¸²è¡Œæ”¯è·¯ */
     void onAddBranch();
-    /** @brief °ÑÌõ¼ş×éµÄÔ´½Úµã / Then Ìõ¼şĞ´»Ø·½°¸Ä£ĞÍ */
+    /** @brief æŠŠæ¡ä»¶ç»„çš„æºèŠ‚ç‚¹ / Then æ¡ä»¶å†™å›æ–¹æ¡ˆæ¨¡å‹ */
     void onCondChanged();
-    /** @brief ±£´æ JobCfg draft ²¢¹Ø±Õ */
+    /** @brief ä¿å­˜ JobCfg draft å¹¶å…³é—­ */
     void onSave();
-    /** @brief Ò³ÄÚÊÔÅÜ±¾Á÷³Ì£¨ÓÃ draft£© */
+    /** @brief é¡µå†…è¯•è·‘æœ¬æµç¨‹ï¼ˆç”¨ draftï¼‰ */
     void onRun();
-    /** @brief Ò³ÄÚÒì²½ÊÔÅÜÍê³É */
+    /** @brief é¡µå†…å¼‚æ­¥è¯•è·‘å®Œæˆ */
     void onAsyncJobRunDone(void* outPtr);
     /**
-     * @brief ¹¤¾ßÊ÷ÓÒ¼ü²Ëµ¥
-     * @param pos Ïà¶Ô m_tools µÄµã»÷Î»ÖÃ
+     * @brief å·¥å…·æ ‘å³é”®èœå•
+     * @param pos ç›¸å¯¹ m_tools çš„ç‚¹å‡»ä½ç½®
      */
     void onToolMenu(const QPoint& pos);
     /**
-     * @brief »­²¼Ñ¡ÖĞ¹¤¾ß£¬Í¬²½Ê÷Ñ¡ÖĞ
-     * @param toolId ¹¤¾ß id
+     * @brief ç”»å¸ƒé€‰ä¸­å·¥å…·ï¼ŒåŒæ­¥æ ‘é€‰ä¸­
+     * @param toolId å·¥å…· id
      */
     void onCanvasTool(const QString& toolId);
     /**
-     * @brief »­²¼Ë«»÷¹¤¾ß£¬´ò¿ªÏêÏ¸µ÷ÊÔ
-     * @param toolId ¹¤¾ß id
+     * @brief ç”»å¸ƒåŒå‡»å·¥å…·ï¼Œæ‰“å¼€è¯¦ç»†è°ƒè¯•
+     * @param toolId å·¥å…· id
      */
     void onCanvasToolDouble(const QString& toolId);
     /**
-     * @brief ¹¤¾ßÊ÷Ë«»÷£º¹¤¾ß½øÏêÏ¸µ÷ÊÔ£¬×é/Ö§Â·ÈÔÖØÃüÃû
+     * @brief å·¥å…·æ ‘åŒå‡»ï¼šå·¥å…·è¿›è¯¦ç»†è°ƒè¯•ï¼Œç»„/æ”¯è·¯ä»é‡å‘½å
      */
     void onTreeDouble(QTreeWidgetItem* item, int column);
-    /** @brief ÏêÏ¸µ÷ÊÔ´°ÇëÇóÔËĞĞ±¾¹¤¾ß */
+    /** @brief è¯¦ç»†è°ƒè¯•çª—è¯·æ±‚è¿è¡Œæœ¬å·¥å…· */
     void onDebugRun();
-    /** @brief ÏêÏ¸µ÷ÊÔ´° ROI ±ä¸ü */
+    /** @brief è¯¦ç»†è°ƒè¯•çª— ROI å˜æ›´ */
     void onDebugRoiChanged();
-    /** @brief ÏêÏ¸µ÷ÊÔ´° draft ÒÑ±£´æµ½ formal */
+    /** @brief è¯¦ç»†è°ƒè¯•çª— draft å·²ä¿å­˜åˆ° formal */
     void onDebugSaved();
-    /** @brief ±íÍ·×Ö¶Î±ä»¯ */
+    /** @brief è¡¨å¤´å­—æ®µå˜åŒ– */
     void onHeaderEdited();
-    /** @brief Á÷³Ì½á¹ûÑ¡Ôñ±ä¸ü */
+    /** @brief æµç¨‹ç»“æœé€‰æ‹©å˜æ›´ */
     void onFromRuleChanged();
-    /** @brief Êä³ö½á¹û¹æÔò±ä¸ü£¨ÅäÖÃÒ³È·¶¨ºó£© */
+    /** @brief è¾“å‡ºç»“æœè§„åˆ™å˜æ›´ï¼ˆé…ç½®é¡µç¡®å®šåï¼‰ */
     void onRstRulesChanged();
-    /** @brief ´ò¿ªÊä³ö½á¹ûÅäÖÃÒ³ */
+    /** @brief æ‰“å¼€è¾“å‡ºç»“æœé…ç½®é¡µ */
     void onOpenRstRules();
     /**
-     * @brief »­²¼Ñ¡ÖĞ×é£¬Í¬²½Ê÷Ñ¡ÖĞ
-     * @param groupId ×é id
+     * @brief ç”»å¸ƒé€‰ä¸­ç»„ï¼ŒåŒæ­¥æ ‘é€‰ä¸­
+     * @param groupId ç»„ id
      */
     void onCanvasGroup(const QString& groupId);
     /**
-     * @brief »­²¼ÓÒ¼ü£ºÓë¹¤¾ßÊ÷ÏàÍ¬µÄ½á¹¹²Ù×÷£¬Á¬Ïß¿É¶Ï¿ª
+     * @brief ç”»å¸ƒå³é”®ï¼šä¸å·¥å…·æ ‘ç›¸åŒçš„ç»“æ„æ“ä½œï¼Œè¿çº¿å¯æ–­å¼€
      */
     void onCanvasMenu(const QString& id, int kind, const QPoint& globalPos);
-    /** @brief °´Ñ¡ÖĞ½ÚµãË¢ĞÂÉÏÒÆ/ÏÂÒÆ/¸´ÖÆ/É¾³ı/Ö§Â·°´Å¥ÓëÌõ¼şÃæ°å */
+    /** @brief æŒ‰é€‰ä¸­èŠ‚ç‚¹åˆ·æ–°ä¸Šç§»/ä¸‹ç§»/å¤åˆ¶/åˆ é™¤/æ”¯è·¯æŒ‰é’®ä¸æ¡ä»¶é¢æ¿ */
     void updateToolButtons();
 
 protected:
-    /** @brief È¡Ïû¹Ø±ÕÇ°È·ÈÏÊÇ·ñ±£´æ */
+    /** @brief å–æ¶ˆå…³é—­å‰ç¡®è®¤æ˜¯å¦ä¿å­˜ */
     void reject();
-    /** @brief ¹Ø±ÕÇ°È·ÈÏÊÇ·ñ±£´æ */
+    /** @brief å…³é—­å‰ç¡®è®¤æ˜¯å¦ä¿å­˜ */
     void closeEvent(QCloseEvent* event);
 
 private:
-    /** @brief ¹¤¾ßÊ÷»ò»­²¼¹²ÓÃµÄ½Úµã²Ëµ¥ */
+    /** @brief å·¥å…·æ ‘æˆ–ç”»å¸ƒå…±ç”¨çš„èŠ‚ç‚¹èœå• */
     void popupFlowMenu(const QPoint& globalPos);
     /**
-     * @brief °´ JobCfg Ê÷ÖØ½¨¹¤¾ßÁĞ±í²¢Ë¢ĞÂ»­²¼
-     * @param selectId ÖØ½¨ºóÒªÑ¡ÖĞµÄ½Úµã£»¿ÕÔò¾¡Á¿±£³Öµ±Ç°Ñ¡ÖĞ
+     * @brief æŒ‰ JobCfg æ ‘é‡å»ºå·¥å…·åˆ—è¡¨å¹¶åˆ·æ–°ç”»å¸ƒ
+     * @param selectId é‡å»ºåè¦é€‰ä¸­çš„èŠ‚ç‚¹ï¼›ç©ºåˆ™å°½é‡ä¿æŒå½“å‰é€‰ä¸­
      */
     void reloadTools(const QString& selectId = QString());
-    /** @brief °ÑÃû³Æ¡¢³¬Ê±¡¢Ê§°Ü²ßÂÔ¡¢Á÷³Ì½á¹ûĞ´»Ø draft JobCfg */
+    /** @brief æŠŠåç§°ã€è¶…æ—¶ã€å¤±è´¥ç­–ç•¥ã€æµç¨‹ç»“æœå†™å› draft JobCfg */
     void flushHeaderToDraft();
-    /** @brief Ë¢ĞÂ¡¸Á÷³Ì½á¹ûÑ¡Ôñ¡¹ÏÂÀ­ */
+    /** @brief åˆ·æ–°ã€Œæµç¨‹ç»“æœé€‰æ‹©ã€ä¸‹æ‹‰ */
     void refreshFromRuleCombo();
-    /** @brief ¸üĞÂ draft Ôà±ê¼ÇÓë±êÌâ */
+    /** @brief æ›´æ–° draft è„æ ‡è®°ä¸æ ‡é¢˜ */
     void markDraftDirty();
-    /** @brief Ğ´»Ø draft ²¢Ìá½»µ½ formal£»Ê§°ÜÊ±µ¯´°²¢·µ»Ø false */
+    /** @brief å†™å› draft å¹¶æäº¤åˆ° formalï¼›å¤±è´¥æ—¶å¼¹çª—å¹¶è¿”å› false */
     bool trySave();
     /**
-     * @brief ¹Ø±ÕÇ°Ñ¯ÎÊ±£´æ
-     * @return 0 È¡Ïû£»1 ²»±£´æÖ±½Ó¹Ø£»2 ÒÑ±£´æ¿É¹Ø
+     * @brief å…³é—­å‰è¯¢é—®ä¿å­˜
+     * @return 0 å–æ¶ˆï¼›1 ä¸ä¿å­˜ç›´æ¥å…³ï¼›2 å·²ä¿å­˜å¯å…³
      */
     int askCloseAction();
-    /** @brief Ë¢ĞÂ´°¿Ú±êÌâ */
+    /** @brief åˆ·æ–°çª—å£æ ‡é¢˜ */
     void updateWindowTitle();
     /**
-     * @brief ÔÚ¹¤¾ßÊ÷ÖĞÑ¡ÖĞÖ¸¶¨ id
-     * @param id ¹¤¾ß»ò×é id
+     * @brief åœ¨å·¥å…·æ ‘ä¸­é€‰ä¸­æŒ‡å®š id
+     * @param id å·¥å…·æˆ–ç»„ id
      */
     void selectInTree(const QString& id);
     /**
-     * @brief °Ñ ToolGroup µİ¹éÌîÈëÊ÷
-     * @param parent ¸¸Ïî£»0 ±íÊ¾¶¥²ã
+     * @brief æŠŠ ToolGroup é€’å½’å¡«å…¥æ ‘
+     * @param parent çˆ¶é¡¹ï¼›0 è¡¨ç¤ºé¡¶å±‚
      */
     void fillTree(QTreeWidgetItem* parent, const ToolGroup& g, const JobCfg* job);
-    /** @brief °´ Job ÔËĞĞ»º´æË¢ĞÂÊ÷ÉÏÂÌ/ºì×´Ì¬µã */
+    /** @brief æŒ‰ Job è¿è¡Œç¼“å­˜åˆ·æ–°æ ‘ä¸Šç»¿/çº¢çŠ¶æ€ç‚¹ */
     void refreshToolRunStatus();
     /**
-     * @brief Ğ´»Ø½ÚµãÊ¹ÄÜ£¨¹¤¾ßÒ¶×Ó»ò×éÄÚÈ«²¿Ò¶×Ó£©
-     * @param item Ê÷½Úµã
-     * @param enabled Ä¿±êÊ¹ÄÜ
+     * @brief å†™å›èŠ‚ç‚¹ä½¿èƒ½ï¼ˆå·¥å…·å¶å­æˆ–ç»„å†…å…¨éƒ¨å¶å­ï¼‰
+     * @param item æ ‘èŠ‚ç‚¹
+     * @param enabled ç›®æ ‡ä½¿èƒ½
      */
     void applyTreeNodeEnabled(QTreeWidgetItem* item, bool enabled);
-    /** @brief Ñ¡ÖĞÌõ¼ş×éÊ±Ìî³äÌõ¼şÔ´Óë Then Ìõ¼ş */
+    /** @brief é€‰ä¸­æ¡ä»¶ç»„æ—¶å¡«å……æ¡ä»¶æºä¸ Then æ¡ä»¶ */
     void fillCondUi();
-    /** @brief Ñ¡ÖĞÑ­»·×éÊ±Ìî³ä´ÎÊı */
+    /** @brief é€‰ä¸­å¾ªç¯ç»„æ—¶å¡«å……æ¬¡æ•° */
     void fillLoopUi();
     /**
-     * @brief µ±Ç°Ê÷½Úµã id
-     * @return ÎŞÑ¡ÖĞÊ±Îª¿Õ
+     * @brief å½“å‰æ ‘èŠ‚ç‚¹ id
+     * @return æ— é€‰ä¸­æ—¶ä¸ºç©º
      */
     QString currentNodeId() const;
     /**
-     * @brief µ±Ç°Ê÷½ÚµãÖÖÀà£¨¹¤¾ß / ²¢ĞĞ×é / Ìõ¼ş / Ö§Â·£©
-     * @return ÎŞÑ¡ÖĞÎª -1
+     * @brief å½“å‰æ ‘èŠ‚ç‚¹ç§ç±»ï¼ˆå·¥å…· / å¹¶è¡Œç»„ / æ¡ä»¶ / æ”¯è·¯ï¼‰
+     * @return æ— é€‰ä¸­ä¸º -1
      */
     int currentKind() const;
     /**
-     * @brief ÓÃÓÚÉÏÒÆ/ÏÂÒÆµÄ×é½Úµã id£¨Ñ¡ÖĞ¹¤¾ßÊ±È¡ÆäÒ¶×Ó×é£©
+     * @brief ç”¨äºä¸Šç§»/ä¸‹ç§»çš„ç»„èŠ‚ç‚¹ idï¼ˆé€‰ä¸­å·¥å…·æ—¶å–å…¶å¶å­ç»„ï¼‰
      */
     ObjectId moveId() const;
-    /** @brief µ±Ç°±à¼­µÄ JobCfg draft */
+    /** @brief å½“å‰ç¼–è¾‘çš„ JobCfg draft */
     JobCfg* currentJob();
-    /** @brief µ±Ç°±à¼­µÄ JobCfg draft£¨const£© */
+    /** @brief å½“å‰ç¼–è¾‘çš„ JobCfg draftï¼ˆconstï¼‰ */
     const JobCfg* currentJob() const;
-    /** @brief ÊÇ·ñÓĞ PermEditSolution */
+    /** @brief æ˜¯å¦æœ‰ PermEditSolution */
     bool canEdit() const;
     /**
-     * @brief ´ò¿ªÖ¸¶¨¹¤¾ßµÄÏêÏ¸µ÷ÊÔ´°
-     * @param toolId ¹¤¾ß id
+     * @brief æ‰“å¼€æŒ‡å®šå·¥å…·çš„è¯¦ç»†è°ƒè¯•çª—
+     * @param toolId å·¥å…· id
      */
     void openToolDebug(const QString& toolId);
 
-    Session* m_session;      ///< »á»°£¨²»ÓµÓĞ£©
-    Solution* m_sol;         ///< µ±Ç°·½°¸£¨²»ÓµÓĞ£©
-    Job* m_job;              ///< Á÷³ÌÔËĞĞÊµÀı£¨²»ÓµÓĞ£©
-    QString m_jobId;         ///< µ±Ç° JobCfg
-    JobCfg m_draftJob;          ///< ±¾»á»° JobCfg draft
-    JobCfg m_formalSnapshot;    ///< Open Ê± formal ¿ìÕÕ
-    QLineEdit* m_name;       ///< JobCfg Ãû³Æ
-    QCheckBox* m_enabled;    ///< Á÷³ÌÊÇ·ñÊ¹ÄÜ
-    QSpinBox* m_timeout;     ///< ³¬Ê± ms
-    QComboBox* m_fail;       ///< Ê§°Ü²ßÂÔ
-    QComboBox* m_fromRule;   ///< Á÷³Ì½á¹ûÑ¡Ôñ
-    QTreeWidget* m_lib;      ///< ×ó²à¹¤¾ß¿â
-    QTreeWidget* m_tools;    ///< JobCfg ¹¤¾ßÊ÷
-    JobFlowCanvasPanel* m_flowCanvas; ///< Á÷³Ì»­²¼£¨º¬Á¬ÏßĞ´»Ø£©
-    ToolDebugHost* m_debug;  ///< ÏêÏ¸µ÷ÊÔ´°£¨º¬²ÎÊıÓë ROI£©
-    QString m_debugToolId;   ///< µ±Ç°µ÷ÊÔ´°¶ÔÓ¦¹¤¾ß id
-    QPushButton* m_up;       ///< ÉÏÒÆ
-    QPushButton* m_down;     ///< ÏÂÒÆ
-    QPushButton* m_rename;   ///< ÖØÃüÃû
-    QPushButton* m_copy;     ///< ¸´ÖÆ
-    QPushButton* m_del;      ///< É¾³ı
-    QPushButton* m_branch;   ///< Ìí¼Ó²¢ĞĞÖ§Â·
-    QPushButton* m_ifBtn;    ///< ²åÈëÌõ¼ş×é
-    QPushButton* m_loopBtn;  ///< ²åÈëÑ­»·×é
-    QPushButton* m_btnRstRules; ///< ´ò¿ªÊä³ö½á¹ûÅäÖÃÒ³
-    QWidget* m_condPanel;    ///< Ìõ¼ş×éÊôĞÔÃæ°å
-    QComboBox* m_condSrc;    ///< Ìõ¼şÔ´½Úµã
-    QComboBox* m_condWant;   ///< Then µ± OK »ò NG
-    QWidget* m_loopPanel;    ///< Ñ­»·×éÊôĞÔÃæ°å
-    QSpinBox* m_loopCount;   ///< Ñ­»·´ÎÊı
+    Session* m_session;      ///< ä¼šè¯ï¼ˆä¸æ‹¥æœ‰ï¼‰
+    Solution* m_sol;         ///< å½“å‰æ–¹æ¡ˆï¼ˆä¸æ‹¥æœ‰ï¼‰
+    Job* m_job;              ///< æµç¨‹è¿è¡Œå®ä¾‹ï¼ˆä¸æ‹¥æœ‰ï¼‰
+    QString m_jobId;         ///< å½“å‰ JobCfg
+    JobCfg m_draftJob;          ///< æœ¬ä¼šè¯ JobCfg draft
+    JobCfg m_formalSnapshot;    ///< Open æ—¶ formal å¿«ç…§
+    QLineEdit* m_name;       ///< JobCfg åç§°
+    QCheckBox* m_enabled;    ///< æµç¨‹æ˜¯å¦ä½¿èƒ½
+    QSpinBox* m_timeout;     ///< è¶…æ—¶ ms
+    QComboBox* m_fail;       ///< å¤±è´¥ç­–ç•¥
+    QComboBox* m_fromRule;   ///< æµç¨‹ç»“æœé€‰æ‹©
+    QTreeWidget* m_lib;      ///< å·¦ä¾§å·¥å…·åº“
+    QTreeWidget* m_tools;    ///< JobCfg å·¥å…·æ ‘
+    JobFlowCanvasPanel* m_flowCanvas; ///< æµç¨‹ç”»å¸ƒï¼ˆå«è¿çº¿å†™å›ï¼‰
+    ToolDebugHost* m_debug;  ///< è¯¦ç»†è°ƒè¯•çª—ï¼ˆå«å‚æ•°ä¸ ROIï¼‰
+    QString m_debugToolId;   ///< å½“å‰è°ƒè¯•çª—å¯¹åº”å·¥å…· id
+    QPushButton* m_up;       ///< ä¸Šç§»
+    QPushButton* m_down;     ///< ä¸‹ç§»
+    QPushButton* m_rename;   ///< é‡å‘½å
+    QPushButton* m_copy;     ///< å¤åˆ¶
+    QPushButton* m_del;      ///< åˆ é™¤
+    QPushButton* m_branch;   ///< æ·»åŠ å¹¶è¡Œæ”¯è·¯
+    QPushButton* m_ifBtn;    ///< æ’å…¥æ¡ä»¶ç»„
+    QPushButton* m_loopBtn;  ///< æ’å…¥å¾ªç¯ç»„
+    QPushButton* m_btnRstRules; ///< æ‰“å¼€è¾“å‡ºç»“æœé…ç½®é¡µ
+    QWidget* m_condPanel;    ///< æ¡ä»¶ç»„å±æ€§é¢æ¿
+    QComboBox* m_condSrc;    ///< æ¡ä»¶æºèŠ‚ç‚¹
+    QComboBox* m_condWant;   ///< Then å½“ OK æˆ– NG
+    QWidget* m_loopPanel;    ///< å¾ªç¯ç»„å±æ€§é¢æ¿
+    QSpinBox* m_loopCount;   ///< å¾ªç¯æ¬¡æ•°
 };
 
 }

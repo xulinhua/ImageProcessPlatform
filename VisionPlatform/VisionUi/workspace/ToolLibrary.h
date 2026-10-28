@@ -1,6 +1,6 @@
 /**
  * @file ToolLibrary.h
- * @brief ToolLibraryÍ·ÎÄ¼ş
+ * @brief ToolLibraryå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -15,8 +15,8 @@ class QTreeWidget;
 namespace Vision {
 
 /**
- * @brief °´ ToolType ·Ö×éÌî³äÒÑ×¢²áµÄ¾ßÌå¹¤¾ß¡£¸¸½ÚµãÊÇÀàĞÍ£¬×Ó½ÚµãÊÇ toolName
- * @param withFlowStructure ÊÇ·ñ¸½´ø²¢ĞĞ/If µÈÁ÷³Ì½á¹¹½Úµã
+ * @brief æŒ‰ ToolType åˆ†ç»„å¡«å……å·²æ³¨å†Œçš„å…·ä½“å·¥å…·ã€‚çˆ¶èŠ‚ç‚¹æ˜¯ç±»å‹ï¼Œå­èŠ‚ç‚¹æ˜¯ toolName
+ * @param withFlowStructure æ˜¯å¦é™„å¸¦å¹¶è¡Œ/If ç­‰æµç¨‹ç»“æ„èŠ‚ç‚¹
  */
 VISION_UI_API void fillRegisteredToolTree(QTreeWidget* lib, bool withFlowStructure);
 

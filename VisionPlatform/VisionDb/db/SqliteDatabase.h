@@ -1,6 +1,6 @@
 /**
  * @file SqliteDatabase.h
- * @brief SqliteDatabaseÍ·ÎÄ¼ş
+ * @brief SqliteDatabaseå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -18,55 +18,55 @@ namespace Vision {
 
 /**
  * @class SqliteDatabase
- * @brief IDatabase µÄ SQLite ÊµÏÖ£¨WAL¡¢Ã¦µÈ´ı³¬Ê±£©
+ * @brief IDatabase çš„ SQLite å®ç°ï¼ˆWALã€å¿™ç­‰å¾…è¶…æ—¶ï¼‰
  */
 class VISION_DB_API SqliteDatabase : public IDatabase {
 public:
-    /** @brief ÉĞÎ´´ò¿ªµÄÁ¬½Ó */
+    /** @brief å°šæœªæ‰“å¼€çš„è¿æ¥ */
     SqliteDatabase();
-    /** @brief ¹Ø±ÕÁ¬½Ó */
+    /** @brief å…³é—­è¿æ¥ */
     ~SqliteDatabase();
 
-    /** @brief ´ò¿ª»ò´´½¨¿â£¬²¢ÆôÓÃ WAL */
+    /** @brief æ‰“å¼€æˆ–åˆ›å»ºåº“ï¼Œå¹¶å¯ç”¨ WAL */
     bool open(const std::string& path, std::string* error);
-    /** @brief ¹Ø±ÕÁ¬½Ó */
+    /** @brief å…³é—­è¿æ¥ */
     void close();
     bool isOpen() const;
-    /** @brief Ö´ĞĞ²»·µ»ØĞĞµÄÓï¾ä */
+    /** @brief æ‰§è¡Œä¸è¿”å›è¡Œçš„è¯­å¥ */
     bool exec(const std::string& sql, std::string* error);
-    /** @brief ´ø°ó¶¨²ÎÊıÖ´ĞĞ£¬²»·µ»ØĞĞ */
+    /** @brief å¸¦ç»‘å®šå‚æ•°æ‰§è¡Œï¼Œä¸è¿”å›è¡Œ */
     bool exec(const std::string& sql, const std::vector<DbValue>& args, std::string* error);
-    /** @brief ²éÑ¯È«²¿½á¹ûĞĞ */
+    /** @brief æŸ¥è¯¢å…¨éƒ¨ç»“æœè¡Œ */
     bool query(const std::string& sql, const std::vector<DbValue>& args,
                std::vector<std::vector<DbValue> >* rows, std::string* error);
-    /** @brief ÏÈ¼ÆÊı£¬ÔÙ×·¼ÓÅÅĞòÓë LIMIT/OFFSET */
+    /** @brief å…ˆè®¡æ•°ï¼Œå†è¿½åŠ æ’åºä¸ LIMIT/OFFSET */
     bool queryPage(const std::string& countSql, const std::string& dataSql,
                    const std::vector<DbValue>& args, const PageQuery& page,
                    PageRst* out, std::string* error);
-    /** @brief ¿ªÊ¼Á¢¼´ÊÂÎñ */
+    /** @brief å¼€å§‹ç«‹å³äº‹åŠ¡ */
     bool begin(std::string* error);
-    /** @brief Ìá½»ÊÂÎñ */
+    /** @brief æäº¤äº‹åŠ¡ */
     bool commit(std::string* error);
-    /** @brief »Ø¹öÊÂÎñ */
+    /** @brief å›æ»šäº‹åŠ¡ */
     bool rollback(std::string* error);
-    /** @brief ×î½üÒ»´Î²åÈëµÄ rowid */
+    /** @brief æœ€è¿‘ä¸€æ¬¡æ’å…¥çš„ rowid */
     int64_t lastInsertId() const;
     std::string engineId() const;
 
 private:
-    /** @brief ½ûÖ¹¿½±´ */
+    /** @brief ç¦æ­¢æ‹·è´ */
     SqliteDatabase(const SqliteDatabase&);
-    /** @brief ½ûÖ¹¸³Öµ */
+    /** @brief ç¦æ­¢èµ‹å€¼ */
     SqliteDatabase& operator=(const SqliteDatabase&);
     /**
-     * @brief °´Ë³Ğò°ó¶¨²ÎÊı£¬´Ó ?1 Æğ
-     * @param stmt sqlite3_stmt Ö¸Õë
+     * @brief æŒ‰é¡ºåºç»‘å®šå‚æ•°ï¼Œä» ?1 èµ·
+     * @param stmt sqlite3_stmt æŒ‡é’ˆ
      */
     bool bindArgs(void* stmt, const std::vector<DbValue>& args, std::string* error);
-    /** @brief °ÑÒıÇæ´íÎóĞ´µ½ error */
+    /** @brief æŠŠå¼•æ“é”™è¯¯å†™åˆ° error */
     void fail(std::string* error, const char* what) const;
 
-    sqlite3* m_db; ///< ÒÑ´ò¿ªµÄÁ¬½Ó£»¿Õ±íÊ¾Î´´ò¿ª
+    sqlite3* m_db; ///< å·²æ‰“å¼€çš„è¿æ¥ï¼›ç©ºè¡¨ç¤ºæœªæ‰“å¼€
 };
 
 }

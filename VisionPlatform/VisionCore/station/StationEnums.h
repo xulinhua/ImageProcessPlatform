@@ -1,6 +1,6 @@
 /**
  * @file StationEnums.h
- * @brief StationEnumsÍ·ÎÄ¼ş
+ * @brief StationEnumså¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -13,54 +13,54 @@
 
 namespace Vision {
 
-/** @brief Ó²¼şÉè±¸ÖÖÀà£¨·½°¸¼¶Ì¨ÕË¶¥²ãÈıÀà£© */
+/** @brief ç¡¬ä»¶è®¾å¤‡ç§ç±»ï¼ˆæ–¹æ¡ˆçº§å°è´¦é¡¶å±‚ä¸‰ç±»ï¼‰ */
 enum DeviceKind {
-    DeviceKindUndefined = -1, ///< Î´¶¨Òå
-    DeviceCamera = 0,      ///< Ïà»ú£¨º¬ÎÄ¼şÔ´×ÓÀàĞÍ£©
-    DeviceControlCard = 1, ///< ¿ØÖÆ¿¨£¨º¬Ô­ IO/¹âÔ´Ç¨ÒÆ£©
+    DeviceKindUndefined = -1, ///< æœªå®šä¹‰
+    DeviceCamera = 0,      ///< ç›¸æœºï¼ˆå«æ–‡ä»¶æºå­ç±»å‹ï¼‰
+    DeviceControlCard = 1, ///< æ§åˆ¶å¡ï¼ˆå«åŸ IO/å…‰æºè¿ç§»ï¼‰
     DevicePlc = 2,         ///< PLC
-    DeviceFolder = 3,      ///< ÎÄ¼ş¼Ğ
-    DeviceImage = 4,        ///< Í¼Ïñ£¬¼ÇÂ¼Ã¿ÕÅÍ¼µÄÂ·¾¶
-    DeviceKindMax ///< ¸öÊı£¬²»ÊÇºÏ·¨Öµ
+    DeviceFolder = 3,      ///< æ–‡ä»¶å¤¹
+    DeviceImage = 4,        ///< å›¾åƒï¼Œè®°å½•æ¯å¼ å›¾çš„è·¯å¾„
+    DeviceKindMax ///< ä¸ªæ•°ï¼Œä¸æ˜¯åˆæ³•å€¼
 };
 
-/** @brief Ïà»úºó¶Ë£ºÎÄ¼şÔ´»òÕæÏà»ú SDK */
+/** @brief ç›¸æœºåç«¯ï¼šæ–‡ä»¶æºæˆ–çœŸç›¸æœº SDK */
 enum CameraBackend {
-    CameraBackendUndefined = -1, ///< Î´¶¨Òå
-    CameraBackendFile = 0, ///< ÎÄ¼ş¼Ğ·ÂÕæÔ´
-    CameraBackendSdk = 1   ///< ÕæÏà»ú SDK£¨Ê×°æ¿ÉÎª¿Ç£©
+    CameraBackendUndefined = -1, ///< æœªå®šä¹‰
+    CameraBackendFile = 0, ///< æ–‡ä»¶å¤¹ä»¿çœŸæº
+    CameraBackendSdk = 1   ///< çœŸç›¸æœº SDKï¼ˆé¦–ç‰ˆå¯ä¸ºå£³ï¼‰
 };
 
-/** @brief ¹¤Õ¾ÄÚ¶àÌõÁ÷³ÌÊµÀı£¨JobCfg£©µÄÖ´ĞĞ±àÅÅ */
+/** @brief å·¥ç«™å†…å¤šæ¡æµç¨‹å®ä¾‹ï¼ˆJobCfgï¼‰çš„æ‰§è¡Œç¼–æ’ */
 enum JobSchedule {
-    ScheduleSequence = 0, ///< ´®ĞĞ
-    ScheduleParallel      ///< ²¢ĞĞ
+    ScheduleSequence = 0, ///< ä¸²è¡Œ
+    ScheduleParallel      ///< å¹¶è¡Œ
 };
 
-/** @brief ÔËĞĞÌ¬¶à¹¤Õ¾»­Ãæ¿Ç²¼¾Ö£¨·½°¸¼¶£© */
+/** @brief è¿è¡Œæ€å¤šå·¥ç«™ç”»é¢å£³å¸ƒå±€ï¼ˆæ–¹æ¡ˆçº§ï¼‰ */
 enum RuntimeStationLayout {
-    RuntimeStationsTabs = 0,  ///< ·ÖÒ³Ç©£ºÒ»´Î¿´Ò»¸ö¹¤Õ¾
-    RuntimeStationsTiles = 1  ///< Ò»ÆÁÆ´Ìù£º¸÷¹¤Õ¾Í¬Ê±¿É¼û
+    RuntimeStationsTabs = 0,  ///< åˆ†é¡µç­¾ï¼šä¸€æ¬¡çœ‹ä¸€ä¸ªå·¥ç«™
+    RuntimeStationsTiles = 1  ///< ä¸€å±æ‹¼è´´ï¼šå„å·¥ç«™åŒæ—¶å¯è§
 };
 
-VISIONCORE_API /** @brief Éè±¸ÖÖÀà½çÃæÏÔÊ¾Ãû */
+VISIONCORE_API /** @brief è®¾å¤‡ç§ç±»ç•Œé¢æ˜¾ç¤ºå */
 std::string deviceKindTitle(DeviceKind k);
-VISIONCORE_API /** @brief Ïà»úºó¶ËÏÔÊ¾Ãû */
+VISIONCORE_API /** @brief ç›¸æœºåç«¯æ˜¾ç¤ºå */
 std::string cameraBackendTitle(CameraBackend b);
 VISIONCORE_API /**
- * @brief ¾É·½°¸ kind ÕûĞÍÇ¨ÒÆµ½ĞÂÈıÀà£¨format&lt;2£©
- * @param legacyKind ¾ÉÃ¶¾ÙÕûĞÍ£¨º¬ File/Io/Light£©
- * @param outKind Êä³öÖÖÀà
- * @param outBackend Êä³öÏà»úºó¶Ë£¨·ÇÏà»úÊ±ºöÂÔ£©
+ * @brief æ—§æ–¹æ¡ˆ kind æ•´å‹è¿ç§»åˆ°æ–°ä¸‰ç±»ï¼ˆformat&lt;2ï¼‰
+ * @param legacyKind æ—§æšä¸¾æ•´å‹ï¼ˆå« File/Io/Lightï¼‰
+ * @param outKind è¾“å‡ºç§ç±»
+ * @param outBackend è¾“å‡ºç›¸æœºåç«¯ï¼ˆéç›¸æœºæ—¶å¿½ç•¥ï¼‰
  */
 void migrateLegacyDeviceKind(int legacyKind, DeviceKind* outKind, CameraBackend* outBackend);
-VISIONCORE_API /** @brief ¹¤Õ¾Á÷³ÌÖ´ĞĞ·½Ê½µÄ½çÃæÏÔÊ¾Ãû */
+VISIONCORE_API /** @brief å·¥ç«™æµç¨‹æ‰§è¡Œæ–¹å¼çš„ç•Œé¢æ˜¾ç¤ºå */
 std::string scheduleTitle(JobSchedule s);
-VISIONCORE_API /** @brief ÕûÊı×ª¹¤Õ¾±àÅÅ£»Ô½½ç»Ø´®ĞĞ */
+VISIONCORE_API /** @brief æ•´æ•°è½¬å·¥ç«™ç¼–æ’ï¼›è¶Šç•Œå›ä¸²è¡Œ */
 JobSchedule jobScheduleFromInt(int v);
-VISIONCORE_API /** @brief ¶à¹¤Õ¾»­Ãæ²¼¾ÖÏÔÊ¾Ãû */
+VISIONCORE_API /** @brief å¤šå·¥ç«™ç”»é¢å¸ƒå±€æ˜¾ç¤ºå */
 std::string runtimeStationLayoutTitle(RuntimeStationLayout layout);
-VISIONCORE_API /** @brief ÕûÊı×ª¶à¹¤Õ¾²¼¾Ö£»Ô½½ç»Ø·ÖÒ³Ç© */
+VISIONCORE_API /** @brief æ•´æ•°è½¬å¤šå·¥ç«™å¸ƒå±€ï¼›è¶Šç•Œå›åˆ†é¡µç­¾ */
 RuntimeStationLayout runtimeStationLayoutFromInt(int v);
 
 }

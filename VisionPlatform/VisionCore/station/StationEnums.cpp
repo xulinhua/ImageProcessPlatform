@@ -1,6 +1,6 @@
 /**
  * @file StationEnums.cpp
- * @brief StationEnumsÊµÏÖ
+ * @brief StationEnumså®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -12,30 +12,30 @@
 
 namespace Vision {
 
-// Éè±¸ÖÖÀà½çÃæÏÔÊ¾Ãû
+// è®¾å¤‡ç§ç±»ç•Œé¢æ˜¾ç¤ºå
 std::string deviceKindTitle(DeviceKind k)
 {
     switch (k) {
-    case DeviceCamera: return Translate::tr("Ïà»ú");
-    case DeviceControlCard: return Translate::tr("¿ØÖÆ¿¨");
+    case DeviceCamera: return Translate::tr("ç›¸æœº");
+    case DeviceControlCard: return Translate::tr("æ§åˆ¶å¡");
     case DevicePlc: return Translate::tr("PLC");
-    case DeviceFolder: return Translate::tr("ÎÄ¼ş¼Ğ");
-    case DeviceImage: return Translate::tr("Í¼Ïñ");
-    default: return Translate::tr("Ïà»ú");
+    case DeviceFolder: return Translate::tr("æ–‡ä»¶å¤¹");
+    case DeviceImage: return Translate::tr("å›¾åƒ");
+    default: return Translate::tr("ç›¸æœº");
     }
 }
 
-// Ïà»úºó¶ËÏÔÊ¾Ãû
+// ç›¸æœºåç«¯æ˜¾ç¤ºå
 std::string cameraBackendTitle(CameraBackend b)
 {
     switch (b) {
-    case CameraBackendFile: return Translate::tr("ÎÄ¼şÔ´");
-    case CameraBackendSdk: return Translate::tr("ÕæÏà»ú");
-    default: return Translate::tr("ÎÄ¼şÔ´");
+    case CameraBackendFile: return Translate::tr("æ–‡ä»¶æº");
+    case CameraBackendSdk: return Translate::tr("çœŸç›¸æœº");
+    default: return Translate::tr("æ–‡ä»¶æº");
     }
 }
 
-// ¾É kind£º0Ïà»ú 1IO 2¹âÔ´ 3PLC 4ÎÄ¼ş ¡ú ĞÂÈıÀà
+// æ—§ kindï¼š0ç›¸æœº 1IO 2å…‰æº 3PLC 4æ–‡ä»¶ â†’ æ–°ä¸‰ç±»
 void migrateLegacyDeviceKind(int legacyKind, DeviceKind* outKind, CameraBackend* outBackend)
 {
     if (!outKind || !outBackend) {
@@ -65,17 +65,17 @@ void migrateLegacyDeviceKind(int legacyKind, DeviceKind* outKind, CameraBackend*
     }
 }
 
-// ¹¤Õ¾ JobCfg ±àÅÅÏÔÊ¾Ãû
+// å·¥ç«™ JobCfg ç¼–æ’æ˜¾ç¤ºå
 std::string scheduleTitle(JobSchedule s)
 {
     switch (s) {
-    case ScheduleParallel: return Translate::tr("²¢ĞĞ");
-    case ScheduleSequence: return Translate::tr("´®ĞĞ");
-    default:               return Translate::tr("´®ĞĞ");
+    case ScheduleParallel: return Translate::tr("å¹¶è¡Œ");
+    case ScheduleSequence: return Translate::tr("ä¸²è¡Œ");
+    default:               return Translate::tr("ä¸²è¡Œ");
     }
 }
 
-// ÕûÊı×ª¹¤Õ¾±àÅÅ
+// æ•´æ•°è½¬å·¥ç«™ç¼–æ’
 JobSchedule jobScheduleFromInt(int v)
 {
     if (v == ScheduleParallel) {
@@ -84,17 +84,17 @@ JobSchedule jobScheduleFromInt(int v)
     return ScheduleSequence;
 }
 
-// ¶à¹¤Õ¾»­Ãæ²¼¾ÖÏÔÊ¾Ãû
+// å¤šå·¥ç«™ç”»é¢å¸ƒå±€æ˜¾ç¤ºå
 std::string runtimeStationLayoutTitle(RuntimeStationLayout layout)
 {
     switch (layout) {
-    case RuntimeStationsTiles: return Translate::tr("Ò»ÆÁÆ´Ìù");
-    case RuntimeStationsTabs:  return Translate::tr("·ÖÒ³Ç©");
-    default:                   return Translate::tr("·ÖÒ³Ç©");
+    case RuntimeStationsTiles: return Translate::tr("ä¸€å±æ‹¼è´´");
+    case RuntimeStationsTabs:  return Translate::tr("åˆ†é¡µç­¾");
+    default:                   return Translate::tr("åˆ†é¡µç­¾");
     }
 }
 
-// ÕûÊı×ª¶à¹¤Õ¾²¼¾Ö
+// æ•´æ•°è½¬å¤šå·¥ç«™å¸ƒå±€
 RuntimeStationLayout runtimeStationLayoutFromInt(int v)
 {
     if (v == RuntimeStationsTiles) {
@@ -103,15 +103,15 @@ RuntimeStationLayout runtimeStationLayoutFromInt(int v)
     return RuntimeStationsTabs;
 }
 
-// Í¨µÀÀàĞÍÏÔÊ¾Ãû
+// é€šé“ç±»å‹æ˜¾ç¤ºå
 std::string commChannelTypeTitle(CommChannelType t)
 {
     switch (t) {
-    case CommSerial: return Translate::tr("´®¿Ú");
-    case CommTcpClient: return Translate::tr("TCP¿Í»§¶Ë");
-    case CommTcpServer: return Translate::tr("TCP·şÎñ¶Ë");
+    case CommSerial: return Translate::tr("ä¸²å£");
+    case CommTcpClient: return Translate::tr("TCPå®¢æˆ·ç«¯");
+    case CommTcpServer: return Translate::tr("TCPæœåŠ¡ç«¯");
     case CommUdp: return Translate::tr("UDP");
-    default: return Translate::tr("´®¿Ú");
+    default: return Translate::tr("ä¸²å£");
     }
 }
 }

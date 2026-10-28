@@ -1,6 +1,6 @@
 /**
  * @file UdpChannel.h
- * @brief UdpChannelÍ·ÎÄ¼ş
+ * @brief UdpChannelå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -16,38 +16,38 @@
 
 namespace Vision {
 
-/** @class UdpChannel @brief UDP¡£°ó¶¨±¾»ú¶Ë¿Ú£¬Ğ´·¢Íù params ÀïµÄ¶Ô¶Ë */
+/** @class UdpChannel @brief UDPã€‚ç»‘å®šæœ¬æœºç«¯å£ï¼Œå†™å‘å¾€ params é‡Œçš„å¯¹ç«¯ */
 class VISION_COMM_API UdpChannel : public ICommChannel {
 public:
-    /** @brief ¹¹ÔìÎ´°ó¶¨µÄÌ×½Ó×Ö */
+    /** @brief æ„é€ æœªç»‘å®šçš„å¥—æ¥å­— */
     UdpChannel();
-    /** @brief Îö¹¹Ê±¹Ø±ÕÌ×½Ó×Ö */
+    /** @brief ææ„æ—¶å…³é—­å¥—æ¥å­— */
     ~UdpChannel();
 
-    /** @brief ´«ÊäÖÖÀàÎª UDP */
+    /** @brief ä¼ è¾“ç§ç±»ä¸º UDP */
     CommTransport transport() const;
-    /** @brief °ó¶¨±¾»ú¶Ë¿Ú£¬²¢¼ÇÏÂ¶Ô¶Ë */
+    /** @brief ç»‘å®šæœ¬æœºç«¯å£ï¼Œå¹¶è®°ä¸‹å¯¹ç«¯ */
     bool open(const ParamMap& params, std::string* err);
-    /** @brief ¹Ø±ÕÌ×½Ó×Ö */
+    /** @brief å…³é—­å¥—æ¥å­— */
     void close();
-    /** @brief Ì×½Ó×ÖÊÇ·ñÓĞĞ§ */
+    /** @brief å¥—æ¥å­—æ˜¯å¦æœ‰æ•ˆ */
     bool isOpen() const;
-    /** @brief ÒÑÅäÖÃ¶Ô¶ËÊ±·µ»ØÆäµØÖ· */
+    /** @brief å·²é…ç½®å¯¹ç«¯æ—¶è¿”å›å…¶åœ°å€ */
     std::vector<CommPeer> peers() const;
-    /** @brief ·¢Íù´ò¿ªÊ±¼ÇÏÂµÄ¶Ô¶Ë */
+    /** @brief å‘å¾€æ‰“å¼€æ—¶è®°ä¸‹çš„å¯¹ç«¯ */
     bool write(const std::string& peerId, const CommBytes& data, int timeoutMs, std::string* err);
-    /** @brief ÊÕÒ»°ü£»À´Ô´¼Ç³ÉÏÂÒ»´Î·¢ËÍÄ¿±ê */
+    /** @brief æ”¶ä¸€åŒ…ï¼›æ¥æºè®°æˆä¸‹ä¸€æ¬¡å‘é€ç›®æ ‡ */
     CommBytes read(const std::string& peerId, int maxBytes, int timeoutMs, std::string* err);
-    /** @brief °Ñ½ÓÊÕ¶ÓÁĞ¶Á¿Õ */
+    /** @brief æŠŠæ¥æ”¶é˜Ÿåˆ—è¯»ç©º */
     void drain(const std::string& peerId);
-    /** @brief UDP ²»Çø·Ö½ÓÈë¶Ë£¬Ê¼ÖÕ·µ»Ø¿Õ */
+    /** @brief UDP ä¸åŒºåˆ†æ¥å…¥ç«¯ï¼Œå§‹ç»ˆè¿”å›ç©º */
     std::string waitIncoming(int timeoutMs);
 
 private:
-    SOCKET m_sock;           ///< °ó¶¨Ì×½Ó×Ö
-    sockaddr_in m_remote;    ///< ·¢ËÍÄ¿±ê
-    bool m_hasRemote;        ///< ÊÇ·ñÒÑÓĞ¶Ô¶Ë
-    std::string m_remoteText; ///< ¶Ô¶ËµØÖ·ÎÄ±¾
+    SOCKET m_sock;           ///< ç»‘å®šå¥—æ¥å­—
+    sockaddr_in m_remote;    ///< å‘é€ç›®æ ‡
+    bool m_hasRemote;        ///< æ˜¯å¦å·²æœ‰å¯¹ç«¯
+    std::string m_remoteText; ///< å¯¹ç«¯åœ°å€æ–‡æœ¬
 };
 
 }

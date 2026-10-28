@@ -1,6 +1,6 @@
 /**
  * @file RunLogHub.cpp
- * @brief RunLogHubÊµÏÖ
+ * @brief RunLogHubå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -16,7 +16,7 @@ namespace Vision {
 
 namespace {
 
-// ½øÈëÁÙ½çÇø
+// è¿›å…¥ä¸´ç•ŒåŒº
 void enterCs(void* cs)
 {
     if (cs) {
@@ -24,7 +24,7 @@ void enterCs(void* cs)
     }
 }
 
-// Àë¿ªÁÙ½çÇø
+// ç¦»å¼€ä¸´ç•ŒåŒº
 void leaveCs(void* cs)
 {
     if (cs) {
@@ -34,7 +34,7 @@ void leaveCs(void* cs)
 
 } // namespace
 
-// ¹¹Ôì²¢³õÊ¼»¯Ëø
+// æ„é€ å¹¶åˆå§‹åŒ–é”
 RunLogHub::RunLogHub()
     : m_cs(nullptr)
 {
@@ -43,7 +43,7 @@ RunLogHub::RunLogHub()
     m_cs = cs;
 }
 
-// ÊÍ·ÅËø
+// é‡Šæ”¾é”
 RunLogHub::~RunLogHub()
 {
     clearSinks();
@@ -54,7 +54,7 @@ RunLogHub::~RunLogHub()
     }
 }
 
-// ×·¼Ó sink
+// è¿½åŠ  sink
 void RunLogHub::addSink(IRunListener* sink)
 {
     if (!sink) {
@@ -67,7 +67,7 @@ void RunLogHub::addSink(IRunListener* sink)
     leaveCs(m_cs);
 }
 
-// ÒÆ³ı sink
+// ç§»é™¤ sink
 void RunLogHub::removeSink(IRunListener* sink)
 {
     enterCs(m_cs);
@@ -75,7 +75,7 @@ void RunLogHub::removeSink(IRunListener* sink)
     leaveCs(m_cs);
 }
 
-// Çå¿Õ
+// æ¸…ç©º
 void RunLogHub::clearSinks()
 {
     enterCs(m_cs);
@@ -83,7 +83,7 @@ void RunLogHub::clearSinks()
     leaveCs(m_cs);
 }
 
-// sink ¸öÊı
+// sink ä¸ªæ•°
 int RunLogHub::sinkCount() const
 {
     enterCs(m_cs);
@@ -92,7 +92,7 @@ int RunLogHub::sinkCount() const
     return n;
 }
 
-// ÉÈ³ö£ºÏÈ¿½±´ÔÙ»Øµ÷£¬±ÜÃâ³ÖËøµ÷ÓÃÒµÎñ
+// æ‰‡å‡ºï¼šå…ˆæ‹·è´å†å›è°ƒï¼Œé¿å…æŒé”è°ƒç”¨ä¸šåŠ¡
 void RunLogHub::onRunLog(const RunLogEvent& ev)
 {
     std::vector<IRunListener*> copy;
@@ -106,7 +106,7 @@ void RunLogHub::onRunLog(const RunLogEvent& ev)
     }
 }
 
-// ¼¶±ğ¶Ì±êÇ©
+// çº§åˆ«çŸ­æ ‡ç­¾
 const char* RunLogEvent::levelTag(RunLogLevel level)
 {
     switch (level) {
@@ -123,7 +123,7 @@ const char* RunLogEvent::levelTag(RunLogLevel level)
     }
 }
 
-// ½çÃæÕıÎÄ£ºÖ»ÁôÏûÏ¢ÓëºÄÊ±
+// ç•Œé¢æ­£æ–‡ï¼šåªç•™æ¶ˆæ¯ä¸è€—æ—¶
 std::string RunLogEvent::formatMessage() const
 {
     std::string s = message;
@@ -135,7 +135,7 @@ std::string RunLogEvent::formatMessage() const
     return s;
 }
 
-// Æ´ÍêÕûÕï¶ÏĞĞ£¨ÂäÅÌ£©
+// æ‹¼å®Œæ•´è¯Šæ–­è¡Œï¼ˆè½ç›˜ï¼‰
 std::string RunLogEvent::formatLine() const
 {
     std::string s("[");

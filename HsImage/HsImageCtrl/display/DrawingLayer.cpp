@@ -1,6 +1,6 @@
 /**
  * @file DrawingLayer.cpp
- * @brief DrawingLayerÊµÏÖ
+ * @brief DrawingLayerå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -70,31 +70,31 @@ GraphicItem* DrawingLayer::hit(const QPointF& scenePos, qreal tol, const QString
     return 0;
 }
 
-// Í¼²ã½Úµã
+// å›¾å±‚èŠ‚ç‚¹
 LayerItem* DrawingLayer::node() const
 {
     return m_node;
 }
 
-// Í¼Ôª±í
+// å›¾å…ƒè¡¨
 QHash<QString, GraphicItem*>& DrawingLayer::items()
 {
     return m_items;
 }
 
-// Í¼Ôª±í£¨Ö»¶Á£©
+// å›¾å…ƒè¡¨ï¼ˆåªè¯»ï¼‰
 const QHash<QString, GraphicItem*>& DrawingLayer::items() const
 {
     return m_items;
 }
 
-// ¿É¼ûĞÔ±êÖ¾
+// å¯è§æ€§æ ‡å¿—
 bool& DrawingLayer::wantVisible()
 {
     return m_visible;
 }
 
-// »­±ÊÑùÊ½
+// ç”»ç¬”æ ·å¼
 HsCommData::GeomStyle& DrawingLayer::pen()
 {
     return m_pen;

@@ -1,6 +1,6 @@
 /**
  * @file ForegroundLayer.cpp
- * @brief ForegroundLayerÊµÏÖ
+ * @brief ForegroundLayerå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -23,37 +23,37 @@ void ForegroundLayer::clearInfos(DrawInfoSpace space)
     else m_imageInfos.clear();
 }
 
-// HUD¿É¼û
+// HUDå¯è§
 bool& ForegroundLayer::hudVisible()
 {
     return m_hud;
 }
 
-// HUD¿É¼û£¨Ö»¶Á£©
+// HUDå¯è§ï¼ˆåªè¯»ï¼‰
 bool ForegroundLayer::hudVisible() const
 {
     return m_hud;
 }
 
-// ĞÅÏ¢ÎÄ±¾
+// ä¿¡æ¯æ–‡æœ¬
 QString& ForegroundLayer::infoText()
 {
     return m_info;
 }
 
-// ĞÅÏ¢ÎÄ±¾£¨Ö»¶Á£©
+// ä¿¡æ¯æ–‡æœ¬ï¼ˆåªè¯»ï¼‰
 const QString& ForegroundLayer::infoText() const
 {
     return m_info;
 }
 
-// Í¼ÏñĞÅÏ¢Ïî
+// å›¾åƒä¿¡æ¯é¡¹
 QVector<DrawInfoEntry>& ForegroundLayer::imageInfos()
 {
     return m_imageInfos;
 }
 
-// ´°¿ÚĞÅÏ¢Ïî
+// çª—å£ä¿¡æ¯é¡¹
 QVector<DrawInfoEntry>& ForegroundLayer::windowInfos()
 {
     return m_windowInfos;

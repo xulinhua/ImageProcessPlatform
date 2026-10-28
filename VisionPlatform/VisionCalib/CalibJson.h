@@ -1,6 +1,6 @@
 /**
  * @file CalibJson.h
- * @brief CalibJsonÍ·ÎÄ¼ş
+ * @brief CalibJsonå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -14,32 +14,32 @@
 
 namespace Vision {
 
-/** @brief ¶ÁÕû¸öÎÄ±¾ÎÄ¼ş£»path Îª UTF-8 */
+/** @brief è¯»æ•´ä¸ªæ–‡æœ¬æ–‡ä»¶ï¼›path ä¸º UTF-8 */
 bool calibReadText(const std::string& path, std::string* text);
-/** @brief Ğ´ÎÄ±¾ÎÄ¼ş£»¸¸Ä¿Â¼²»´æÔÚÔò´´½¨ */
+/** @brief å†™æ–‡æœ¬æ–‡ä»¶ï¼›çˆ¶ç›®å½•ä¸å­˜åœ¨åˆ™åˆ›å»º */
 bool calibWriteText(const std::string& path, const std::string& text);
 
-/** @brief ±ê¶¨²ÎÊıĞ´³É JSON ¶ÔÏó */
+/** @brief æ ‡å®šå‚æ•°å†™æˆ JSON å¯¹è±¡ */
 JsonValue paramToJson(const std::string& name, int imageWidth, int imageHeight, const CalibParam& p);
 /**
- * @brief ´Ó JSON ¶ÔÏóÌî±ê¶¨²ÎÊı
- * @return ²»ÊÇ¶ÔÏóÊ±·µ»Ø false
+ * @brief ä» JSON å¯¹è±¡å¡«æ ‡å®šå‚æ•°
+ * @return ä¸æ˜¯å¯¹è±¡æ—¶è¿”å› false
  */
 bool paramFromJson(const JsonValue& j, std::string* name, int* imageWidth, int* imageHeight, CalibParam* p);
 
-/** @brief Ïà»úÄ£ĞÍĞ´³É JSON ¶ÔÏó */
+/** @brief ç›¸æœºæ¨¡å‹å†™æˆ JSON å¯¹è±¡ */
 JsonValue cameraToJson(const CamModel& m);
-/** @brief ´Ó JSON ¶ÔÏóÌîÏà»úÄ£ĞÍ£»È± fx ·µ»Ø false */
+/** @brief ä» JSON å¯¹è±¡å¡«ç›¸æœºæ¨¡å‹ï¼›ç¼º fx è¿”å› false */
 bool cameraFromJson(const JsonValue& j, CamModel* m);
 
-/** @brief Æ½ÃæÓ³ÉäĞ´³É JSON ¶ÔÏó */
+/** @brief å¹³é¢æ˜ å°„å†™æˆ JSON å¯¹è±¡ */
 JsonValue planeToJson(const PlaneMap& m);
-/** @brief ´Ó JSON ¶ÔÏóÌîÆ½ÃæÓ³Éä£»È±¾ØÕó·µ»Ø false */
+/** @brief ä» JSON å¯¹è±¡å¡«å¹³é¢æ˜ å°„ï¼›ç¼ºçŸ©é˜µè¿”å› false */
 bool planeFromJson(const JsonValue& j, PlaneMap* m);
 
-/** @brief Ğı×ªÖĞĞÄĞ´³É JSON ¶ÔÏó */
+/** @brief æ—‹è½¬ä¸­å¿ƒå†™æˆ JSON å¯¹è±¡ */
 JsonValue rotateToJson(const RotateCenter& m);
-/** @brief ´Ó JSON ¶ÔÏóÌîĞı×ªÖĞĞÄ£»È±°ë¾¶·µ»Ø false */
+/** @brief ä» JSON å¯¹è±¡å¡«æ—‹è½¬ä¸­å¿ƒï¼›ç¼ºåŠå¾„è¿”å› false */
 bool rotateFromJson(const JsonValue& j, RotateCenter* m);
 
 }

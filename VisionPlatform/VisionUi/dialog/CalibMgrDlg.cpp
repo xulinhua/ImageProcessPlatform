@@ -1,6 +1,6 @@
 /**
  * @file CalibMgrDlg.cpp
- * @brief CalibMgrDlgÊµÏÖ
+ * @brief CalibMgrDlgå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -38,23 +38,23 @@ namespace {
 QString statusName(CalibStatus s)
 {
     if (s == CalibValid) {
-        return T("ÉúĞ§");
+        return T("ç”Ÿæ•ˆ");
     }
     if (s == CalibExpired) {
-        return T("Ê§Ğ§");
+        return T("å¤±æ•ˆ");
     }
-    return T("²İ¸å");
+    return T("è‰ç¨¿");
 }
 
 QString fitName(CalibPlaneFit f)
 {
     if (f == CalibFitScale) {
-        return T("±ÈÀı³ß");
+        return T("æ¯”ä¾‹å°º");
     }
     if (f == CalibFitHomography) {
-        return T("Í¸ÊÓ");
+        return T("é€è§†");
     }
-    return T("·ÂÉä");
+    return T("ä»¿å°„");
 }
 
 QDoubleSpinBox* makeDouble(double minV, double maxV, int decimals)
@@ -67,7 +67,7 @@ QDoubleSpinBox* makeDouble(double minV, double maxV, int decimals)
 
 }
 
-// ´ò¿ª±ê¶¨¹ÜÀí£¬×ó±ßÑ¡Ïà»ú£¬ÓÒ±ß¸Ä²ÎÊı²¢¿´½á¹û
+// æ‰“å¼€æ ‡å®šç®¡ç†ï¼Œå·¦è¾¹é€‰ç›¸æœºï¼Œå³è¾¹æ”¹å‚æ•°å¹¶çœ‹ç»“æœ
 CalibMgrDlg::CalibMgrDlg(Solution* solution, QWidget* parent)
     : QDialog(parent)
     , m_solution(solution)
@@ -93,23 +93,23 @@ CalibMgrDlg::CalibMgrDlg(Solution* solution, QWidget* parent)
     , m_height(nullptr)
     , m_result(nullptr)
 {
-    setWindowTitle(T("±ê¶¨¹ÜÀí"));
+    setWindowTitle(T("æ ‡å®šç®¡ç†"));
     setModal(true);
     resize(920, 560);
 
     m_list = new QListWidget(this);
     connect(m_list, SIGNAL(currentRowChanged(int)), this, SLOT(onCameraChanged()));
 
-    QPushButton* addBtn = new QPushButton(T("Ìí¼ÓÁÙÊ±Ïà»ú"), this);
+    QPushButton* addBtn = new QPushButton(T("æ·»åŠ ä¸´æ—¶ç›¸æœº"), this);
     connect(addBtn, SIGNAL(clicked()), this, SLOT(onAddCamera()));
     m_bindTarget = new QComboBox(this);
-    m_bindBtn = new QPushButton(T("°ó¶¨"), this);
+    m_bindBtn = new QPushButton(T("ç»‘å®š"), this);
     connect(m_bindBtn, SIGNAL(clicked()), this, SLOT(onBindCamera()));
 
     m_plate = new QComboBox(this);
-    m_plate->addItem(T("ÆåÅÌ¸ñ"), CalibPlateCheckerboard);
-    m_plate->addItem(T("Ô²µãÕó"), CalibPlateCircleGrid);
-    m_plate->addItem(T("Halcon ÃèÊöÎÄ¼ş"), CalibPlateHalconCaltab);
+    m_plate->addItem(T("æ£‹ç›˜æ ¼"), CalibPlateCheckerboard);
+    m_plate->addItem(T("åœ†ç‚¹é˜µ"), CalibPlateCircleGrid);
+    m_plate->addItem(T("Halcon æè¿°æ–‡ä»¶"), CalibPlateHalconCaltab);
     m_rows = new QSpinBox(this);
     m_rows->setRange(0, 200);
     m_cols = new QSpinBox(this);
@@ -117,9 +117,9 @@ CalibMgrDlg::CalibMgrDlg(Solution* solution, QWidget* parent)
     m_spacing = makeDouble(0.0, 10000.0, 4);
     m_thickness = makeDouble(0.0, 1000.0, 3);
     m_fit = new QComboBox(this);
-    m_fit->addItem(T("±ÈÀı³ß"), CalibFitScale);
-    m_fit->addItem(T("·ÂÉä"), CalibFitAffine);
-    m_fit->addItem(T("Í¸ÊÓ"), CalibFitHomography);
+    m_fit->addItem(T("æ¯”ä¾‹å°º"), CalibFitScale);
+    m_fit->addItem(T("ä»¿å°„"), CalibFitAffine);
+    m_fit->addItem(T("é€è§†"), CalibFitHomography);
     m_resPx = makeDouble(0.0, 1000.0, 3);
     m_resMm = makeDouble(0.0, 1000.0, 4);
     m_angle = makeDouble(-360.0, 360.0, 3);
@@ -133,31 +133,31 @@ CalibMgrDlg::CalibMgrDlg(Solution* solution, QWidget* parent)
     m_height->setRange(0, 20000);
 
     m_kind = new QComboBox(this);
-    m_kind->addItem(T("±ê¶¨°å"), 0);
-    m_kind->addItem(T("¾Åµã±ê¶¨"), 1);
-    m_kind->addItem(T("Ğı×ª±ê¶¨"), 2);
+    m_kind->addItem(T("æ ‡å®šæ¿"), 0);
+    m_kind->addItem(T("ä¹ç‚¹æ ‡å®š"), 1);
+    m_kind->addItem(T("æ—‹è½¬æ ‡å®š"), 2);
     connect(m_kind, SIGNAL(currentIndexChanged(int)), this, SLOT(onKindChanged()));
 
     QFormLayout* plateForm = new QFormLayout();
-    plateForm->addRow(T("°åĞÍ"), m_plate);
-    plateForm->addRow(T("ĞĞ"), m_rows);
-    plateForm->addRow(T("ÁĞ"), m_cols);
-    plateForm->addRow(T("¼ä¾à mm"), m_spacing);
-    plateForm->addRow(T("°åºñ mm"), m_thickness);
-    plateForm->addRow(T("ÏñËØ²Ğ²îÉÏÏŞ"), m_resPx);
-    plateForm->addRow(T("±ê¶¨°å×îÉÙÕÅÊı"), m_minImages);
+    plateForm->addRow(T("æ¿å‹"), m_plate);
+    plateForm->addRow(T("è¡Œ"), m_rows);
+    plateForm->addRow(T("åˆ—"), m_cols);
+    plateForm->addRow(T("é—´è· mm"), m_spacing);
+    plateForm->addRow(T("æ¿åš mm"), m_thickness);
+    plateForm->addRow(T("åƒç´ æ®‹å·®ä¸Šé™"), m_resPx);
+    plateForm->addRow(T("æ ‡å®šæ¿æœ€å°‘å¼ æ•°"), m_minImages);
     QWidget* platePage = new QWidget(this);
     platePage->setLayout(plateForm);
 
     QFormLayout* pointForm = new QFormLayout();
-    pointForm->addRow(T("ÄâºÏ"), m_fit);
-    pointForm->addRow(T("ºÁÃ×²Ğ²îÉÏÏŞ"), m_resMm);
+    pointForm->addRow(T("æ‹Ÿåˆ"), m_fit);
+    pointForm->addRow(T("æ¯«ç±³æ®‹å·®ä¸Šé™"), m_resMm);
     QWidget* pointPage = new QWidget(this);
     pointPage->setLayout(pointForm);
 
     QFormLayout* rotForm = new QFormLayout();
-    rotForm->addRow(T("Ê¾½Ì½Ç¶È"), m_angle);
-    rotForm->addRow(T("Ğı×ª×îÉÙ½Ç¶È"), m_minAngles);
+    rotForm->addRow(T("ç¤ºæ•™è§’åº¦"), m_angle);
+    rotForm->addRow(T("æ—‹è½¬æœ€å°‘è§’åº¦"), m_minAngles);
     QWidget* rotPage = new QWidget(this);
     rotPage->setLayout(rotForm);
 
@@ -167,13 +167,13 @@ CalibMgrDlg::CalibMgrDlg(Solution* solution, QWidget* parent)
     m_pages->addWidget(rotPage);
 
     QFormLayout* form = new QFormLayout();
-    form->addRow(T("·½Ê½"), m_kind);
+    form->addRow(T("æ–¹å¼"), m_kind);
     form->addRow(m_pages);
-    form->addRow(T("Í¼Ïñ¿í"), m_width);
-    form->addRow(T("Í¼Ïñ¸ß"), m_height);
-    QPushButton* saveBtn = new QPushButton(T("±£´æ²ÎÊı"), this);
-    m_tableBtn = new QPushButton(T("µ¼Èëµã±í"), this);
-    QPushButton* resultBtn = new QPushButton(T("µ¼Èë½á¹û"), this);
+    form->addRow(T("å›¾åƒå®½"), m_width);
+    form->addRow(T("å›¾åƒé«˜"), m_height);
+    QPushButton* saveBtn = new QPushButton(T("ä¿å­˜å‚æ•°"), this);
+    m_tableBtn = new QPushButton(T("å¯¼å…¥ç‚¹è¡¨"), this);
+    QPushButton* resultBtn = new QPushButton(T("å¯¼å…¥ç»“æœ"), this);
     connect(saveBtn, SIGNAL(clicked()), this, SLOT(onSaveParam()));
     connect(m_tableBtn, SIGNAL(clicked()), this, SLOT(onImportTable()));
     connect(resultBtn, SIGNAL(clicked()), this, SLOT(onImportResult()));
@@ -184,20 +184,20 @@ CalibMgrDlg::CalibMgrDlg(Solution* solution, QWidget* parent)
     btns->addStretch();
     form->addRow(btns);
 
-    QGroupBox* paramBox = new QGroupBox(T("²ÎÊı"), this);
+    QGroupBox* paramBox = new QGroupBox(T("å‚æ•°"), this);
     paramBox->setLayout(form);
     onKindChanged();
     m_result = new QPlainTextEdit(this);
     m_result->setReadOnly(true);
-    QGroupBox* resultBox = new QGroupBox(T("ÉúĞ§½á¹û"), this);
+    QGroupBox* resultBox = new QGroupBox(T("ç”Ÿæ•ˆç»“æœ"), this);
     QVBoxLayout* resultLay = new QVBoxLayout(resultBox);
     resultLay->addWidget(m_result);
 
     QVBoxLayout* left = new QVBoxLayout();
-    left->addWidget(new QLabel(T("Ïà»ú"), this));
+    left->addWidget(new QLabel(T("ç›¸æœº"), this));
     left->addWidget(m_list, 1);
     left->addWidget(addBtn);
-    left->addWidget(new QLabel(T("°ó¶¨µ½Ì¨ÕËÏà»ú"), this));
+    left->addWidget(new QLabel(T("ç»‘å®šåˆ°å°è´¦ç›¸æœº"), this));
     left->addWidget(m_bindTarget);
     left->addWidget(m_bindBtn);
     QWidget* leftW = new QWidget(this);
@@ -222,7 +222,7 @@ CalibMgrDlg::CalibMgrDlg(Solution* solution, QWidget* parent)
     reloadCameras(QString());
 }
 
-// µ±Ç°ÁĞ±íÑ¡ÖĞµÄÏà»ú id
+// å½“å‰åˆ—è¡¨é€‰ä¸­çš„ç›¸æœº id
 QString CalibMgrDlg::currentId() const
 {
     QListWidgetItem* item = m_list->currentItem();
@@ -232,7 +232,7 @@ QString CalibMgrDlg::currentId() const
     return item->data(Qt::UserRole).toString();
 }
 
-// Ì¨ÕËÏà»úÔÚÇ°£¬»¹Ã»°ó¶¨µÄ±ê¶¨½ÓÔÚºóÃæ
+// å°è´¦ç›¸æœºåœ¨å‰ï¼Œè¿˜æ²¡ç»‘å®šçš„æ ‡å®šæ¥åœ¨åé¢
 void CalibMgrDlg::reloadCameras(const QString& selectId)
 {
     m_loading = true;
@@ -263,7 +263,7 @@ void CalibMgrDlg::reloadCameras(const QString& selectId)
         if (title.isEmpty()) {
             title = id;
         }
-        title = T("ÁÙÊ±¡¤") + title;
+        title = T("ä¸´æ—¶Â·") + title;
         QListWidgetItem* item = new QListWidgetItem(title, m_list);
         item->setData(Qt::UserRole, id);
     }
@@ -285,7 +285,7 @@ void CalibMgrDlg::reloadCameras(const QString& selectId)
     }
 }
 
-// °ÑÕâÂ·Ïà»úµÄ²ÎÊıÌîÈë±íµ¥
+// æŠŠè¿™è·¯ç›¸æœºçš„å‚æ•°å¡«å…¥è¡¨å•
 void CalibMgrDlg::loadForm()
 {
     const QString id = currentId();
@@ -326,27 +326,27 @@ void CalibMgrDlg::loadForm()
     m_bindBtn->setEnabled(!inLedger && m_bindTarget->count() > 0);
 }
 
-// ÏÔÊ¾Èı·İÉúĞ§½á¹û
+// æ˜¾ç¤ºä¸‰ä»½ç”Ÿæ•ˆç»“æœ
 void CalibMgrDlg::showResult()
 {
     if (m_currentId.isEmpty()) {
-        m_result->setPlainText(T("ÇëÏÈÑ¡ÔñÏà»ú"));
+        m_result->setPlainText(T("è¯·å…ˆé€‰æ‹©ç›¸æœº"));
         return;
     }
     const ObjectId oid(ss(m_currentId));
     const CalibRst r = CalibMgr::instance().active(oid);
     QString text;
-    text += T("Ïà»úÄ£ĞÍ£º");
+    text += T("ç›¸æœºæ¨¡å‹ï¼š");
     if (!r.camera.present) {
-        text += T("Î´±ê¶¨");
+        text += T("æœªæ ‡å®š");
     } else {
         text += statusName(r.camera.status);
         text += QString("  rms=%1  max=%2").arg(r.camera.rms, 0, 'f', 3).arg(r.camera.maxResidual, 0, 'f', 3);
     }
     text += QLatin1Char('\n');
-    text += T("Æ½ÃæÓ³Éä£º");
+    text += T("å¹³é¢æ˜ å°„ï¼š");
     if (!r.plane.present) {
-        text += T("Î´±ê¶¨");
+        text += T("æœªæ ‡å®š");
     } else {
         text += fitName(r.plane.fit) + QLatin1Char(' ') + statusName(r.plane.status);
         text += QString("  rms=%1 mm").arg(r.plane.rms, 0, 'f', 4);
@@ -355,9 +355,9 @@ void CalibMgrDlg::showResult()
         }
     }
     text += QLatin1Char('\n');
-    text += T("Ğı×ªÖĞĞÄ£º");
+    text += T("æ—‹è½¬ä¸­å¿ƒï¼š");
     if (!r.rotate.present) {
-        text += T("Î´±ê¶¨");
+        text += T("æœªæ ‡å®š");
     } else {
         text += statusName(r.rotate.status);
         text += QString("  (%1, %2)  r=%3").arg(r.rotate.imageX, 0, 'f', 2).arg(r.rotate.imageY, 0, 'f', 2).arg(r.rotate.radius, 0, 'f', 2);
@@ -395,7 +395,7 @@ void CalibMgrDlg::showResult()
 }
 
 
-// Ö»ÏÔÊ¾µ±Ç°±ê¶¨·½Ê½µÄ²ÎÊı¡£µã±íÓÃÓÚ¾ÅµãºÍĞı×ª
+// åªæ˜¾ç¤ºå½“å‰æ ‡å®šæ–¹å¼çš„å‚æ•°ã€‚ç‚¹è¡¨ç”¨äºä¹ç‚¹å’Œæ—‹è½¬
 void CalibMgrDlg::onKindChanged()
 {
     if (!m_kind || !m_pages) {
@@ -427,11 +427,11 @@ void CalibMgrDlg::onKindChanged()
         }
     }
     if (!lab) {
-        lab = new QLabel(T("ÏñËØ²Ğ²îÉÏÏŞ"), this);
+        lab = new QLabel(T("åƒç´ æ®‹å·®ä¸Šé™"), this);
     }
     form->addRow(lab, m_resPx);
 }
-// »»Ò»Â·Ïà»ú
+// æ¢ä¸€è·¯ç›¸æœº
 void CalibMgrDlg::onCameraChanged()
 {
     if (m_loading) {
@@ -440,12 +440,12 @@ void CalibMgrDlg::onCameraChanged()
     loadForm();
 }
 
-// ±£´æµ±Ç°Ïà»úµÄ±ê¶¨²ÎÊı
+// ä¿å­˜å½“å‰ç›¸æœºçš„æ ‡å®šå‚æ•°
 void CalibMgrDlg::onSaveParam()
 {
     const QString id = currentId();
     if (id.isEmpty()) {
-        QMessageBox::warning(this, windowTitle(), T("ÇëÏÈÑ¡ÔñÏà»ú"));
+        QMessageBox::warning(this, windowTitle(), T("è¯·å…ˆé€‰æ‹©ç›¸æœº"));
         return;
     }
     CalibParam p;
@@ -474,15 +474,15 @@ void CalibMgrDlg::onSaveParam()
     showResult();
 }
 
-// µ¼Èëµã±í²¢°´µ±Ç°ÄâºÏ·½Ê½Ìá½»
+// å¯¼å…¥ç‚¹è¡¨å¹¶æŒ‰å½“å‰æ‹Ÿåˆæ–¹å¼æäº¤
 void CalibMgrDlg::onImportTable()
 {
     const QString id = currentId();
     if (id.isEmpty()) {
-        QMessageBox::warning(this, windowTitle(), T("ÇëÏÈÑ¡ÔñÏà»ú"));
+        QMessageBox::warning(this, windowTitle(), T("è¯·å…ˆé€‰æ‹©ç›¸æœº"));
         return;
     }
-    const QString path = QFileDialog::getOpenFileName(this, T("µ¼Èëµã±í"), QString(), T("µã±í (*.csv *.txt);;ËùÓĞÎÄ¼ş (*.*)"));
+    const QString path = QFileDialog::getOpenFileName(this, T("å¯¼å…¥ç‚¹è¡¨"), QString(), T("ç‚¹è¡¨ (*.csv *.txt);;æ‰€æœ‰æ–‡ä»¶ (*.*)"));
     if (path.isEmpty()) {
         return;
     }
@@ -498,15 +498,15 @@ void CalibMgrDlg::onImportTable()
     showResult();
 }
 
-// µ¼ÈëÒÑËãºÃµÄÏà»úÄ£ĞÍ¡¢Æ½ÃæÓ³Éä»òĞı×ªÖĞĞÄ
+// å¯¼å…¥å·²ç®—å¥½çš„ç›¸æœºæ¨¡å‹ã€å¹³é¢æ˜ å°„æˆ–æ—‹è½¬ä¸­å¿ƒ
 void CalibMgrDlg::onImportResult()
 {
     const QString id = currentId();
     if (id.isEmpty()) {
-        QMessageBox::warning(this, windowTitle(), T("ÇëÏÈÑ¡ÔñÏà»ú"));
+        QMessageBox::warning(this, windowTitle(), T("è¯·å…ˆé€‰æ‹©ç›¸æœº"));
         return;
     }
-    const QString path = QFileDialog::getOpenFileName(this, T("µ¼Èë½á¹û"), QString(), T("json (*.json);;ËùÓĞÎÄ¼ş (*.*)"));
+    const QString path = QFileDialog::getOpenFileName(this, T("å¯¼å…¥ç»“æœ"), QString(), T("json (*.json);;æ‰€æœ‰æ–‡ä»¶ (*.*)"));
     if (path.isEmpty()) {
         return;
     }
@@ -522,11 +522,11 @@ void CalibMgrDlg::onImportResult()
     showResult();
 }
 
-// Ìí¼ÓÒ»Â·»¹Ã»½øÌ¨ÕËµÄÁÙÊ±Ïà»ú
+// æ·»åŠ ä¸€è·¯è¿˜æ²¡è¿›å°è´¦çš„ä¸´æ—¶ç›¸æœº
 void CalibMgrDlg::onAddCamera()
 {
     bool ok = false;
-    const QString name = QInputDialog::getText(this, windowTitle(), T("Ãû³Æ"), QLineEdit::Normal, T("ÁÙÊ±Ïà»ú"), &ok);
+    const QString name = QInputDialog::getText(this, windowTitle(), T("åç§°"), QLineEdit::Normal, T("ä¸´æ—¶ç›¸æœº"), &ok);
     if (!ok) {
         return;
     }
@@ -543,7 +543,7 @@ void CalibMgrDlg::onAddCamera()
     reloadCameras(qs(id));
 }
 
-// °Ñµ±Ç°ÁÙÊ±±ê¶¨°óµ½Ñ¡ÖĞµÄÌ¨ÕËÏà»ú
+// æŠŠå½“å‰ä¸´æ—¶æ ‡å®šç»‘åˆ°é€‰ä¸­çš„å°è´¦ç›¸æœº
 void CalibMgrDlg::onBindCamera()
 {
     const QString from = currentId();

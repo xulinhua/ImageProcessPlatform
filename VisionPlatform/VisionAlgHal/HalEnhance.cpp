@@ -1,6 +1,6 @@
 /**
  * @file HalEnhance.cpp
- * @brief HalEnhanceÊµÏÖ
+ * @brief HalEnhanceå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -8,16 +8,16 @@
 
 #include "HalEnhance.h"
 #include "TextEncoding.h"
-#include "HalAlgoHelpers.h"
 #include "HalImageConvert.h"
+#include "HalObjectConvert.h"
 namespace Vision {
-// µÚi²½²ÎÊı¼ü
+// ç¬¬iæ­¥å‚æ•°é”®
 static std::string stepKey(int i, const char* suffix)
 {
     return std::string("pl_") + std::to_string(static_cast<long long>(i)) + "_" + suffix;
 }
 
-// ÔöÇ¿Ëã×Ó
+// å¢å¼ºç®—å­
 enum class EnhanceOp {
     EquHisto = 0,
     Emphasize,
@@ -26,7 +26,7 @@ enum class EnhanceOp {
     Invert
 };
 
-// ÔöÇ¿¹ÜÏßÒ»²½
+// å¢å¼ºç®¡çº¿ä¸€æ­¥
 struct EnhanceStep {
     EnhanceOp op;
     int maskW;
@@ -44,7 +44,7 @@ struct EnhanceStep {
     {}
 };
 
-// ÕûĞÍ×ªÔöÇ¿Ëã×Ó
+// æ•´å‹è½¬å¢å¼ºç®—å­
 static EnhanceOp enhanceOpFromInt(int v)
 {
     switch (v) {
@@ -57,7 +57,7 @@ static EnhanceOp enhanceOpFromInt(int v)
     }
 }
 
-// ´Ó²ÎÊı½â¿ªÔöÇ¿²½Öè
+// ä»å‚æ•°è§£å¼€å¢å¼ºæ­¥éª¤
 static std::vector<EnhanceStep> enhanceStepsFromParams(const ParamMap& p)
 {
     std::vector<EnhanceStep> out;
@@ -79,7 +79,7 @@ static std::vector<EnhanceStep> enhanceStepsFromParams(const ParamMap& p)
     return out;
 }
 
-// ÔöÇ¿Ò»²½
+// å¢å¼ºä¸€æ­¥
 static bool applyEnhanceOp(HalconCpp::HImage* img, const EnhanceStep& st, std::string* err)
 {
     switch (st.op) {
@@ -110,17 +110,17 @@ static bool applyEnhanceOp(HalconCpp::HImage* img, const EnhanceStep& st, std::s
         return true;
     default:
         if (err) {
-            *err = Vision::acpToUtf8("Î´ÖªÔöÇ¿Ëã×Ó");
+            *err = "æœªçŸ¥å¢å¼ºç®—å­";
         }
         return false;
     }
 }
 
-// ÔöÇ¿¹ÜÏß
+// å¢å¼ºç®¡çº¿
 namespace {
 const char kVer_HalEnhance[] = "1.0.0.0";
 const Vision::VerNoteRaw kNotes_HalEnhance[] = {
-    { "1.0.0.0", "Ê×°æ" },
+    { "1.0.0.0", "é¦–ç‰ˆ" },
 };
 }
 
@@ -129,11 +129,25 @@ std::string HalEnhance::version() const
     return kVer_HalEnhance;
 }
 
-// °æ±¾±ä¸ü£¬Ö»×·¼Ó
+// ç‰ˆæœ¬å˜æ›´ï¼Œåªè¿½åŠ 
 std::vector<VerNote> HalEnhance::versionNotes() const
 {
     return verNotesFrom(kNotes_HalEnhance, static_cast<int>(sizeof(kNotes_HalEnhance) / sizeof(kNotes_HalEnhance[0])));
 }
+AlgToolOut HalEnhance::writeFullImage(const AlgToolIn& in, const HalconCpp::HImage& work, const std::string& okMsg) const
+{
+    AlgToolOut out;
+    const HalconCpp::HImage full = work.FullDomain();
+    std::string err;
+    HsCommData::HsImage* pImage = &out.image.image;
+    if (!hObjectToHsImage(full, inputImage(in).frameId, pImage, &err)) {
+        return AlgToolOut::fail(err);
+    }
+    out.ok = true;
+    out.message = okMsg;
+    return out;
+}
+
 AlgToolOut HalEnhance::run(const AlgToolIn& in)
 {
     try {
@@ -141,10 +155,15 @@ AlgToolOut HalEnhance::run(const AlgToolIn& in)
         HalconCpp::HImage work;
         std::string err;
         HalconCpp::HImage* pGray = &gray;
-        HalconCpp::HImage* pWork = &work;
-        if (!preparePreprocessWork(in, pGray, pWork, &err)) {
-            return algorToolFail(err);
+        int w = 0;
+        int h = 0;
+        if (!hsImageToGray(inputImage(in), pGray, &w, &h, &err)) {
+            return AlgToolOut::fail(err);
         }
+        const HalconCpp::HObject roi = toolRoisToHObject(plainRois(in.rois), w, h);
+        HalconCpp::HObject reduced;
+        HalconCpp::ReduceDomain(gray, roi, &reduced);
+        work = HalconCpp::HImage(reduced);
         std::vector<EnhanceStep> steps = enhanceStepsFromParams(in.run);
         if (steps.empty()) {
             EnhanceStep one;
@@ -152,12 +171,12 @@ AlgToolOut HalEnhance::run(const AlgToolIn& in)
         }
         for (int i = 0; i < static_cast<int>(steps.size()); ++i) {
             if (!applyEnhanceOp(&work, steps[static_cast<size_t>(i)], &err)) {
-                return algorToolFail(err);
+                return AlgToolOut::fail(err);
             }
         }
-        return finishPreprocessWork(in, work, Vision::acpToUtf8("Í¼ÏñÔöÇ¿Íê³É"));
+        return writeFullImage(in, work, "å›¾åƒå¢å¼ºå®Œæˆ");
     } catch (const HalconCpp::HException& e) {
-        return algorToolFail(hExceptionText(e));
+        return AlgToolOut::fail(hExceptionText(e));
     }
 }
 

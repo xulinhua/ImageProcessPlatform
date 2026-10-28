@@ -1,6 +1,6 @@
 /**
  * @file ToolIo.h
- * @brief ToolIoÍ·ÎÄ¼ş
+ * @brief ToolIoå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -17,6 +17,8 @@
 #include <HsCommData/HsImage.h>
 #include <HsCommData/HsObject.h>
 #include <HsCommData/HsTuple.h>
+#include <HsCommData/HsCloud.h>
+#include <HsCommData/Shape3.h>
 #include <HsCommData/Graphic.h>
 #include <map>
 #include <stdint.h>
@@ -25,19 +27,19 @@
 
 namespace Vision {
 
-/** @brief ÈÕÖ¾»¹ÊÇµ÷ÊÔ¼ÇÂ¼¡£ÊıÖµÓë LogKind Ò»ÖÂ */
+/** @brief æ—¥å¿—è¿˜æ˜¯è°ƒè¯•è®°å½•ã€‚æ•°å€¼ä¸ LogKind ä¸€è‡´ */
 enum ToolTraceKind {
-    ToolTraceLog = 0, ///< ²Ù×÷ÈÕÖ¾
-    ToolTraceDebug    ///< µ÷ÊÔ¼ÇÂ¼
+    ToolTraceLog = 0, ///< æ“ä½œæ—¥å¿—
+    ToolTraceDebug    ///< è°ƒè¯•è®°å½•
 };
 
 
-/** @class PortDesc @brief ¹¤¾ß¶Ë¿Ú£º²ÛÎ»ÓëĞòÁĞ»¯¼ü */
+/** @class PortDesc @brief å·¥å…·ç«¯å£ï¼šæ§½ä½ä¸åºåˆ—åŒ–é”® */
 struct VISION_COMMON_API PortDesc {
-    PortSlot slot; ///< ·½Ïò¡¢Êı¾İÀàĞÍ¡¢¿ÚÃû
+    PortSlot slot; ///< æ–¹å‘ã€æ•°æ®ç±»å‹ã€å£å
     PortDesc() {}
     PortDesc(PortDir d, PortData t) : slot(d, t) {}
-    /** @brief ÓÉ²ÛÎ»Éú³É in.xxx / out.xxx£¬ÓĞ¿ÚÃûÊ±´øÉÏ¿ÚÃû */
+    /** @brief ç”±æ§½ä½ç”Ÿæˆ in.xxx / out.xxxï¼Œæœ‰å£åæ—¶å¸¦ä¸Šå£å */
     std::string key() const;
     PortDir dir() const;
     PortData data() const;
@@ -45,193 +47,247 @@ struct VISION_COMMON_API PortDesc {
 
 /**
  * @class NativeRef
- * @brief Í¬¿âÁ÷×ªÓÃµÄËã·¨¿â¶ÔÏó¡£²»ÓµÓĞ£¬²»Ğ´ÈëÅäÖÃ
+ * @brief åŒåº“æµè½¬ç”¨çš„ç®—æ³•åº“å¯¹è±¡ã€‚ä¸æ‹¥æœ‰ï¼Œä¸å†™å…¥é…ç½®
  */
 struct NativeRef {
-    AlgLibKind algLib; ///< Ô­Éú¶ÔÏóËùÊô¿â
-    void* ptr;           ///< Í¬¿â×ÔĞĞ×ª»»£»¿ç¿âºÍ½çÃæÖ»ÓÃÅÔ±ßµÄ Hs ¶ÔÏó
+    AlgLibKind algLib; ///< åŸç”Ÿå¯¹è±¡æ‰€å±åº“
+    void* ptr;           ///< åŒåº“è‡ªè¡Œè½¬æ¢ï¼›è·¨åº“å’Œç•Œé¢åªç”¨æ—è¾¹çš„ Hs å¯¹è±¡
     NativeRef() : algLib(AlgLibHal), ptr(nullptr) {}
 };
 
-/** @class PortImage @brief ´ø¿ÚÃûµÄÒ»ÕÅÍ¼ */
+/** @class PortImage @brief å¸¦å£åçš„ä¸€å¼ å›¾ */
 struct PortImage {
-    std::string port;              ///< ¿ÚÃû£»¿ÕÎªÈ±Ê¡¿Ú
-    int index;                     ///< ¸Ã¿ÚÉÏµÄĞòºÅ
-    HsCommData::HsImage image;     ///< ¹²ÓÃÍ¼Ïñ
-    NativeRef native;              ///< Í¬¿âÖ¸Õë£¬¿É¿Õ
+    std::string port;              ///< å£åï¼›ç©ºä¸ºç¼ºçœå£
+    int index;                     ///< è¯¥å£ä¸Šçš„åºå·
+    HsCommData::HsImage image;     ///< å…±ç”¨å›¾åƒ
+    NativeRef native;              ///< åŒåº“æŒ‡é’ˆï¼Œå¯ç©º
     PortImage() : index(0) {}
 };
 
-/** @class PortRegion @brief ´ø¿ÚÃûºÍÓÃÍ¾µÄÒ»¿éÇøÓò */
+/** @class PortRegion @brief å¸¦å£åå’Œç”¨é€”çš„ä¸€å—åŒºåŸŸ */
 struct PortRegion {
-    std::string port;              ///< ¿ÚÃû£»¿ÕÎªÈ±Ê¡¿Ú
-    int index;                     ///< ¸Ã¿ÚÉÏµÄĞòºÅ
-    RegionUse use;                 ///< Õı³£¡¢ÆÁ±Î»òÎŞĞ§
-    HsCommData::HsObject object;   ///< ¹²ÓÃÇøÓò
-    NativeRef native;              ///< Í¬¿âÖ¸Õë£¬¿É¿Õ
+    std::string port;              ///< å£åï¼›ç©ºä¸ºç¼ºçœå£
+    int index;                     ///< è¯¥å£ä¸Šçš„åºå·
+    RegionUse use;                 ///< æ­£å¸¸ã€å±è”½æˆ–æ— æ•ˆ
+    HsCommData::HsObject object;   ///< å…±ç”¨åŒºåŸŸ
+    NativeRef native;              ///< åŒåº“æŒ‡é’ˆï¼Œå¯ç©º
     PortRegion() : index(0), use(RegionUse::Normal) {}
 };
 
-/** @class PortContour @brief ´ø¿ÚÃûµÄÒ»ÌõÂÖÀª */
+/** @class PortContour @brief å¸¦å£åçš„ä¸€æ¡è½®å»“ */
 struct PortContour {
-    std::string port;              ///< ¿ÚÃû£»¿ÕÎªÈ±Ê¡¿Ú
-    int index;                     ///< ¸Ã¿ÚÉÏµÄĞòºÅ
-    HsCommData::HsObject object;   ///< ¹²ÓÃÂÖÀª
-    NativeRef native;              ///< Í¬¿âÖ¸Õë£¬¿É¿Õ
+    std::string port;              ///< å£åï¼›ç©ºä¸ºç¼ºçœå£
+    int index;                     ///< è¯¥å£ä¸Šçš„åºå·
+    HsCommData::HsObject object;   ///< å…±ç”¨è½®å»“
+    NativeRef native;              ///< åŒåº“æŒ‡é’ˆï¼Œå¯ç©º
     PortContour() : index(0) {}
 };
 
-/** @class PortRoi @brief ´ø¿ÚÃûºÍÓÃÍ¾µÄÒ»¿éËÑË÷Çø */
+/** @class PortRoi @brief å¸¦å£åå’Œç”¨é€”çš„ä¸€å—æœç´¢åŒº */
 struct PortRoi {
-    std::string port;  ///< ¿ÚÃû£»¿ÕÎªÈ±Ê¡¿Ú
-    int index;         ///< ¸Ã¿ÚÉÏµÄĞòºÅ
-    RegionUse use;     ///< Õı³£¡¢ÆÁ±Î»òÎŞĞ§
-    HsCommData::HsObject roi;       ///< ËÑË÷Çø
+    std::string port;  ///< å£åï¼›ç©ºä¸ºç¼ºçœå£
+    int index;         ///< è¯¥å£ä¸Šçš„åºå·
+    RegionUse use;     ///< æ­£å¸¸ã€å±è”½æˆ–æ— æ•ˆ
+    HsCommData::HsObject roi;       ///< æœç´¢åŒº
     PortRoi() : index(0), use(RegionUse::Normal) {}
 };
 
-/** @class PortPose @brief ´ø¿ÚÃûµÄÒ»¸öÎ»×Ë */
+/** @class PortPose @brief å¸¦å£åçš„ä¸€ä¸ªä½å§¿ */
 struct PortPose {
-    std::string port;  ///< ¿ÚÃû£»¿ÕÎªÈ±Ê¡¿Ú
-    int index;         ///< ¸Ã¿ÚÉÏµÄĞòºÅ
-    HsCommData::Pose2 pose;     ///< Î»×Ë
+    std::string port;  ///< å£åï¼›ç©ºä¸ºç¼ºçœå£
+    int index;         ///< è¯¥å£ä¸Šçš„åºå·
+    HsCommData::Pose2 pose;     ///< ä½å§¿
     PortPose() : index(0) {}
 };
 
-/** @class PortTuple @brief ´ø¿ÚÃûµÄÒ»¸öÊıÖµÔª×é */
+/** @class PortTuple @brief å¸¦å£åçš„ä¸€ä¸ªæ•°å€¼å…ƒç»„ */
 struct PortTuple {
-    std::string port;       ///< ¿ÚÃû£»¿ÕÎªÈ±Ê¡¿Ú
-    int index;              ///< ¸Ã¿ÚÉÏµÄĞòºÅ
-    HsCommData::HsTuple value; ///< ÊıÖµ
+    std::string port;       ///< å£åï¼›ç©ºä¸ºç¼ºçœå£
+    int index;              ///< è¯¥å£ä¸Šçš„åºå·
+    HsCommData::HsTuple value; ///< æ•°å€¼
     PortTuple() : index(0) {}
 };
 
-/** @class NamedObject @brief Ëã·¨Êä³öµÄÒ»Ö»¼¸ºÎ£¬¿É¹ÒÍ¬¿âÖ¸Õë */
+/** @brief ä¸‰ç»´å½¢çŠ¶ç§ç±»ã€‚åªåœ¨æœ«å°¾è¿½åŠ  */
+enum class Shape3Kind {
+    Plane = 0, ///< å¹³é¢
+    Box,       ///< æœ‰å‘ç›’å­
+    Sphere,    ///< çƒ
+    Cylinder,  ///< åœ†æŸ±
+    Line,      ///< çº¿æ®µ
+    Circle,    ///< ä¸‰ç»´åœ†
+    Max ///< ä¸ªæ•°ï¼Œä¸æ˜¯åˆæ³•å€¼
+};
+
+/** @class PortCloud @brief å¸¦å£åçš„ä¸€å¹…ç‚¹äº‘ */
+struct PortCloud {
+    std::string port;            ///< å£åï¼›ç©ºä¸ºç¼ºçœå£
+    int index;                   ///< è¯¥å£ä¸Šçš„åºå·
+    HsCommData::Cloud3 cloud;    ///< ç‚¹äº‘ï¼Œæ¯«ç±³
+    NativeRef native;            ///< åŒåº“æŒ‡é’ˆï¼Œå¯ç©º
+    PortCloud() : index(0) {}
+};
+
+/** @class PortPose3 @brief å¸¦å£åçš„ä¸€ä¸ªä¸‰ç»´ä½å§¿ */
+struct PortPose3 {
+    std::string port;     ///< å£åï¼›ç©ºä¸ºç¼ºçœå£
+    int index;            ///< è¯¥å£ä¸Šçš„åºå·
+    HsCommData::Pose3 pose; ///< å¹³ç§»åŠ å››å…ƒæ•°
+    PortPose3() : index(0) {}
+};
+
+/** @class PortShape3 @brief å¸¦å£åçš„ä¸€ä¸ªä¸‰ç»´å½¢çŠ¶ã€‚kind å†³å®šå“ªä¸€ä¸ªå‡ ä½•æœ‰æ•ˆ */
+struct PortShape3 {
+    std::string port;              ///< å£åï¼›ç©ºä¸ºç¼ºçœå£
+    int index;                     ///< è¯¥å£ä¸Šçš„åºå·
+    Shape3Kind kind;               ///< å¹³é¢ã€ç›’å­ã€çƒã€åœ†æŸ±ã€çº¿æ®µã€åœ†
+    HsCommData::Plane3 plane;      ///< kind ä¸º Plane
+    HsCommData::Box3 box;          ///< kind ä¸º Box
+    HsCommData::Sphere3 sphere;    ///< kind ä¸º Sphere
+    HsCommData::Cylinder3 cylinder;///< kind ä¸º Cylinder
+    HsCommData::Line3 line;        ///< kind ä¸º Line
+    HsCommData::Circle3 circle;    ///< kind ä¸º Circle
+    PortShape3() : index(0), kind(Shape3Kind::Plane) {}
+};
+
+/** @class ResultLabel @brief å›¾åƒä¸Šçš„ä¸€è¡Œå­—ã€‚ä¸è¿›ç«¯å£ */
+struct ResultLabel {
+    double x;          ///< å›¾åƒåæ ‡ï¼Œå‘å³
+    double y;          ///< å›¾åƒåæ ‡ï¼Œå‘ä¸‹
+    std::string text;  ///< å·²æ‹¼å¥½çš„æ–‡å­—
+    ResultLabel() : x(0), y(0) {}
+};
+
+/** @class NamedObject @brief ç®—æ³•è¾“å‡ºçš„ä¸€åªå‡ ä½•ï¼Œå¯æŒ‚åŒåº“æŒ‡é’ˆ */
 struct NamedObject {
-    std::string port;            ///< ¿ÚÃû£»¿ÕÎªÈ±Ê¡¿Ú
-    int index;                   ///< ¸Ã¿ÚÉÏµÄĞòºÅ
-    HsCommData::HsObject object; ///< ¹²ÓÃ¼¸ºÎ
-    NativeRef native;            ///< Í¬¿âÖ¸Õë£¬¿É¿Õ
+    std::string port;            ///< å£åï¼›ç©ºä¸ºç¼ºçœå£
+    int index;                   ///< è¯¥å£ä¸Šçš„åºå·
+    HsCommData::HsObject object; ///< å…±ç”¨å‡ ä½•
+    NativeRef native;            ///< åŒåº“æŒ‡é’ˆï¼Œå¯ç©º
     NamedObject() : index(0) {}
 };
 
 
 /**
  * @class ToolIo
- * @brief ¹¤¾ß²ãÒ»·İÊäÈë»òÊä³ö¡£°´¿ÚÃû´æ·Å£¬Ò»ÀàÒ»¸öÊı×é
+ * @brief å·¥å…·å±‚ä¸€ä»½è¾“å…¥æˆ–è¾“å‡ºã€‚æŒ‰å£åå­˜æ”¾ï¼Œä¸€ç±»ä¸€ä¸ªæ•°ç»„
  */
 struct VISION_COMMON_API ToolIo {
-    std::vector<PortImage> images;     ///< Í¼Ïñ
-    std::vector<PortRegion> regions;   ///< ÇøÓò
-    std::vector<PortContour> contours; ///< ÂÖÀª
-    std::vector<PortRoi> rois;         ///< ËÑË÷Çø
-    std::vector<PortLogic> logics;      ///< Âß¼­½á¹û
-    std::vector<PortPose> poses;       ///< Î»×Ë
-    std::vector<PortTuple> tuples;     ///< ÊıÖµÔª×é
+    std::vector<PortImage> images;     ///< å›¾åƒ
+    std::vector<PortRegion> regions;   ///< åŒºåŸŸ
+    std::vector<PortContour> contours; ///< è½®å»“
+    std::vector<PortRoi> rois;         ///< æœç´¢åŒº
+    std::vector<PortLogic> logics;      ///< é€»è¾‘ç»“æœ
+    std::vector<PortPose> poses;       ///< ä½å§¿
+    std::vector<PortTuple> tuples;     ///< æ•°å€¼å…ƒç»„
+    std::vector<PortCloud> clouds;     ///< ç‚¹äº‘
+    std::vector<PortPose3> poses3;     ///< ä¸‰ç»´ä½å§¿
+    std::vector<PortShape3> shapes3;   ///< ä¸‰ç»´å½¢çŠ¶
 
-    /** @brief ·ÖÀàÊı¾İ×ª»­Ãæµş¼Ó¡£Ö»¸øÍ¼Ïñ´°¡£ÎŞĞ§Ïî²»»­ */
+    /** @brief åˆ†ç±»æ•°æ®è½¬ç”»é¢å åŠ ã€‚åªç»™å›¾åƒçª—ã€‚æ— æ•ˆé¡¹ä¸ç”» */
     std::vector<HsCommData::Graphic> toGraphics() const;
-    /** @brief »æÖÆÍ¼ÔªÀïµÄ¼¸ºÎ²ğ½øÇøÓò¡¢ÂÖÀª¡¢ROI */
+    /** @brief ç»˜åˆ¶å›¾å…ƒé‡Œçš„å‡ ä½•æ‹†è¿›åŒºåŸŸã€è½®å»“ã€ROI */
     void appendFromGraphics(const std::vector<HsCommData::Graphic>& gfx);
-    /** @brief °´ÖÖÀà°ÑÍ¼±ê¶ÔÏó²ğ½øÇøÓò¡¢ÂÖÀª¡¢ROI */
+    /** @brief æŒ‰ç§ç±»æŠŠå›¾æ ‡å¯¹è±¡æ‹†è¿›åŒºåŸŸã€è½®å»“ã€ROI */
     void appendObjects(const std::vector<HsCommData::HsObject>& objs);
-    /** @brief °´¶Ë¿ÚÀàĞÍ°Ñ src ÖĞÈ±Ê¡¿ÚµÄÈ«²¿Ïî×·¼Ó¹ıÀ´ */
+    /** @brief æŒ‰ç«¯å£ç±»å‹æŠŠ src ä¸­ç¼ºçœå£çš„å…¨éƒ¨é¡¹è¿½åŠ è¿‡æ¥ */
     void appendByType(const ToolIo& src, PortData kind);
     /**
-     * @brief °´Á¬Ïß´Ó src ÊÕÒ»Ïî»òÕû¿Ú
-     * @param index Ğ¡ÓÚ 0 ±íÊ¾Õû¿Ú
-     * @param use Ğ´µ½ÇøÓòºÍ ROI ÉÏ£»ÆäËüÀàĞÍºöÂÔ
+     * @brief æŒ‰è¿çº¿ä» src æ”¶ä¸€é¡¹æˆ–æ•´å£
+     * @param index å°äº 0 è¡¨ç¤ºæ•´å£
+     * @param use å†™åˆ°åŒºåŸŸå’Œ ROI ä¸Šï¼›å…¶å®ƒç±»å‹å¿½ç•¥
      */
     void appendByType(const ToolIo& src, const PortSlot& fromPort, const PortSlot& toPort, int index, RegionUse use);
 };
 
 /**
  * @class ToolIn
- * @brief execute Èë²Î¡£µ÷¶ÈÌîºÃ£¬¹¤¾ß¿´²»¼û·½°¸¡¢¹¤Õ¾¡¢Á÷³Ì
+ * @brief execute å…¥å‚ã€‚è°ƒåº¦å¡«å¥½ï¼Œå·¥å…·çœ‹ä¸è§æ–¹æ¡ˆã€å·¥ç«™ã€æµç¨‹
  */
 class ToolParaBase;
 
 struct ToolIn {
-    RunMode mode;                                      ///< ±¾ÅÄÔËĞĞÄ£Ê½
-    const ToolParaBase* toolParam;                      ///< ±¾ÅÄ²ÎÊı¶ÔÏó£¬²»ÓµÓĞ
-    HsCommData::HsImage input;                         ///< È±Ê¡ÊäÈëÍ¼
-    NativeRef inputNative;                             ///< È±Ê¡Í¼µÄÍ¬¿âÖ¸Õë£¬¿É¿Õ
-    ToolIo inputIo;                                    ///< °´Á¬ÏßÊÕºÃµÄÉÏÓÎÊı¾İ
-    ToolParam param;                                     ///< Ñ§Ï°¡¢ÔËĞĞ¡¢ÅĞ¶ÏµÄ±¾ÅÄ¸±±¾
-    std::string solutionDir;                           ///< ·½°¸Ä¿Â¼£»Î´±£´æ¿É¿Õ
-    std::string toolDataDir;                           ///< ±¾¹¤¾ßÊı¾İÄ¿Â¼£»Î´±£´æ¿É¿Õ
-    AlgLibKind algLib;                               ///< ±¾ÅÄÑ¡ÓÃµÄËã·¨¿â
-    std::vector<HsCommData::HsObject> rois;            ///< ±¾¹¤¾ß×Ô¼ºµÄËÑË÷Çø
-    bool ownRoisResolved;                              ///< ±¾¹¤¾ß ROI ÒÑ°´·ÖÇø½âÎö£¬²»ÔÙÕû±í¸úËæÎ»×Ë
-    std::vector<PortRoi> ownRois;                      ///< ½âÎöºóµÄ±ê×¼Í¼ĞÎ£¬port Îª·ÖÇø
-    std::vector<PortRegion> ownRegions;                ///< ½âÎöºóµÄÇøÓò£¬port Îª·ÖÇø
-    ParamMap runtime;                                  ///< ToolCfg.runtime µÄ¸±±¾
-    ParamMap upstream;                                 ///< ÉÏÓÎÊıÖµ¡£Tuple ¿Ú½ÓÉÏÖ®Ç°ÅĞ¶Ï¹¤¾ßÈÔ¶Á
-    std::map<std::string, ParamMap> refValues;         ///< ÆäËû¹¤¾ßÊıÖµ£¬¼üÎª¹¤¾ß id
-    std::map<std::string, std::string> refNames;       ///< ÆäËû¹¤¾ßÏÔÊ¾Ãû£¬¼üÎª¹¤¾ß id
+    RunMode mode;                                      ///< æœ¬æ‹è¿è¡Œæ¨¡å¼
+    const ToolParaBase* toolParam;                      ///< æœ¬æ‹å‚æ•°å¯¹è±¡ï¼Œä¸æ‹¥æœ‰
+    HsCommData::HsImage input;                         ///< ç¼ºçœè¾“å…¥å›¾
+    NativeRef inputNative;                             ///< ç¼ºçœå›¾çš„åŒåº“æŒ‡é’ˆï¼Œå¯ç©º
+    ToolIo inputIo;                                    ///< æŒ‰è¿çº¿æ”¶å¥½çš„ä¸Šæ¸¸æ•°æ®
+    ToolParam param;                                     ///< å­¦ä¹ ã€è¿è¡Œã€åˆ¤æ–­çš„æœ¬æ‹å‰¯æœ¬
+    std::string solutionDir;                           ///< æ–¹æ¡ˆç›®å½•ï¼›æœªä¿å­˜å¯ç©º
+    std::string toolDataDir;                           ///< æœ¬å·¥å…·æ•°æ®ç›®å½•ï¼›æœªä¿å­˜å¯ç©º
+    AlgLibKind algLib;                               ///< æœ¬æ‹é€‰ç”¨çš„ç®—æ³•åº“
+    std::vector<HsCommData::HsObject> rois;            ///< æœ¬å·¥å…·è‡ªå·±çš„æœç´¢åŒº
+    bool ownRoisResolved;                              ///< æœ¬å·¥å…· ROI å·²æŒ‰åˆ†åŒºè§£æï¼Œä¸å†æ•´è¡¨è·Ÿéšä½å§¿
+    std::vector<PortRoi> ownRois;                      ///< è§£æåçš„æ ‡å‡†å›¾å½¢ï¼Œport ä¸ºåˆ†åŒº
+    std::vector<PortRegion> ownRegions;                ///< è§£æåçš„åŒºåŸŸï¼Œport ä¸ºåˆ†åŒº
+    ParamMap runtime;                                  ///< ToolCfg.runtime çš„å‰¯æœ¬
+    ParamMap upstream;                                 ///< ä¸Šæ¸¸æ•°å€¼ã€‚Tuple å£æ¥ä¸Šä¹‹å‰åˆ¤æ–­å·¥å…·ä»è¯»
+    std::map<std::string, ParamMap> refValues;         ///< å…¶ä»–å·¥å…·æ•°å€¼ï¼Œé”®ä¸ºå·¥å…· id
+    std::map<std::string, std::string> refNames;       ///< å…¶ä»–å·¥å…·æ˜¾ç¤ºåï¼Œé”®ä¸ºå·¥å…· id
     ToolIn() : mode(RunMode::Auto), toolParam(nullptr), algLib(AlgLibHal), ownRoisResolved(false) {}
 };
 
 
 /**
  * @class ToolTrace
- * @brief ¹¤¾ß»òËã·¨µÄÒ»ÌõÈÕÖ¾¡¢µ÷ÊÔ¼ÇÂ¼¡£ÓÃ»§ºÍ¹¤Õ¾ÓÉÁ÷³Ì»ã×ÜÊ±²¹ÉÏ
+ * @brief å·¥å…·æˆ–ç®—æ³•çš„ä¸€æ¡æ—¥å¿—ã€è°ƒè¯•è®°å½•ã€‚ç”¨æˆ·å’Œå·¥ç«™ç”±æµç¨‹æ±‡æ€»æ—¶è¡¥ä¸Š
  */
 struct ToolTrace {
-    int level;            ///< Óë LogLevel ÏàÍ¬£º0 ¸ú×Ùµ½ 4 ´íÎó
-    ToolTraceKind kind;   ///< ²Ù×÷ÈÕÖ¾»òµ÷ÊÔ¼ÇÂ¼
-    std::string action;   ///< ¶Ì¼ü
-    std::string detail;   ///< ÕıÎÄ
+    int level;            ///< ä¸ LogLevel ç›¸åŒï¼š0 è·Ÿè¸ªåˆ° 4 é”™è¯¯
+    ToolTraceKind kind;   ///< æ“ä½œæ—¥å¿—æˆ–è°ƒè¯•è®°å½•
+    std::string action;   ///< çŸ­é”®
+    std::string detail;   ///< æ­£æ–‡
     ToolTrace() : level(2), kind(ToolTraceLog) {}
 };
 
 /**
  * @class ToolInfoItem
- * @brief Ëã·¨ÄÚ²¿Ã÷Ï¸¡£²»½ø¶ÔÍâ values
+ * @brief ç®—æ³•å†…éƒ¨æ˜ç»†ã€‚ä¸è¿›å¯¹å¤– values
  */
 struct ToolInfoItem {
-    std::string name; ///< Õâ×éÃ÷Ï¸µÄÃû×Ö
-    ParamMap fields;  ///< ÊıÁ¿¡¢Ãæ»ı¡¢³¤¡¢¿íµÈ
+    std::string name; ///< è¿™ç»„æ˜ç»†çš„åå­—
+    ParamMap fields;  ///< æ•°é‡ã€é¢ç§¯ã€é•¿ã€å®½ç­‰
 };
 
 /**
  * @class ToolOut
- * @brief Ò»´Î execute µÄÊä³ö
+ * @brief ä¸€æ¬¡ execute çš„è¾“å‡º
  */
 struct VISION_COMMON_API ToolOut {
-    ObjectId toolId;                                ///< ¹¤¾ß id£¨µ÷¶È»ØÌî£©
-    int64_t frameId;                                ///< Ö¡ºÅ
-    bool ok;                                        ///< ÅĞ¶¨¡£NG Ê±ÈÔ¿ÉÎª false ÇÒ errCode Îª 0
-    bool error;                                     ///< ÔËĞĞÒì³££¨·ÇÆÕÍ¨ NG£©
-    int errCode;                                    ///< 0 ±íÊ¾Ã»ÓĞÔËĞĞÊ§°Ü
-    int elapsedMs;                                  ///< ºÄÊ±
-    HsCommData::HsImage image;                      ///< È±Ê¡Êä³öÍ¼
-    NativeRef imageNative;                          ///< È±Ê¡Êä³öÍ¼µÄÍ¬¿âÖ¸Õë£¬¿É¿Õ
-    std::vector<HsCommData::HsObject> objects;      ///< ½á¹û¼¸ºÎ£¬ÏÔÊ¾Ç°ÔÙ×ª Graphic
-    std::string message;                            ///< ËµÃ÷
-    ParamMap values;                                ///< ±¾ÅÄ²âÖµ£¬¼üÓë JudgeParam.name ¶ÔÓ¦
-    HsCommData::HsImage source;                     ///< Ô´Í¼
-    ToolIo io;                                      ///< ·ÖÀàºóµÄ¹¤¾ß²ãÊı¾İ
-    ParamMap runtime;                               ///< Ğ´»Ø ToolCfg.runtime£»¿ÕÔòµ÷¶È²»¸²¸Ç
-    std::vector<ToolTrace> traces;                  ///< ÈÕÖ¾ºÍµ÷ÊÔ¼ÇÂ¼
-    std::vector<ToolInfoItem> infos;                ///< ĞÅÏ¢¼ÇÂ¼£¬²»½ø¶Ë¿Ú
+    ObjectId toolId;                                ///< å·¥å…· idï¼ˆè°ƒåº¦å›å¡«ï¼‰
+    int64_t frameId;                                ///< å¸§å·
+    bool ok;                                        ///< åˆ¤å®šã€‚NG æ—¶ä»å¯ä¸º false ä¸” errCode ä¸º 0
+    bool error;                                     ///< è¿è¡Œå¼‚å¸¸ï¼ˆéæ™®é€š NGï¼‰
+    int errCode;                                    ///< 0 è¡¨ç¤ºæ²¡æœ‰è¿è¡Œå¤±è´¥
+    int elapsedMs;                                  ///< è€—æ—¶
+    HsCommData::HsImage image;                      ///< ç¼ºçœè¾“å‡ºå›¾
+    NativeRef imageNative;                          ///< ç¼ºçœè¾“å‡ºå›¾çš„åŒåº“æŒ‡é’ˆï¼Œå¯ç©º
+    std::vector<HsCommData::HsObject> objects;      ///< ç»“æœå‡ ä½•ï¼Œæ˜¾ç¤ºå‰å†è½¬ Graphic
+    std::string message;                            ///< è¯´æ˜
+    ParamMap values;                                ///< æœ¬æ‹æµ‹å€¼ï¼Œé”®ä¸ JudgeParam.name å¯¹åº”
+    HsCommData::HsImage source;                     ///< æºå›¾
+    ToolIo io;                                      ///< åˆ†ç±»åçš„å·¥å…·å±‚æ•°æ®
+    ParamMap runtime;                               ///< å†™å› ToolCfg.runtimeï¼›ç©ºåˆ™è°ƒåº¦ä¸è¦†ç›–
+    std::vector<ToolTrace> traces;                  ///< æ—¥å¿—å’Œè°ƒè¯•è®°å½•
+    std::vector<ToolInfoItem> infos;                ///< ä¿¡æ¯è®°å½•ï¼Œä¸è¿›ç«¯å£
+    std::vector<ResultLabel> labels;                ///< å›¾åƒæ–‡å­—ã€‚ä¸è¿›ç«¯å£
     ToolOut() : frameId(0), ok(false), error(false), errCode(0), elapsedMs(0) {}
 
-    /** @brief ²¹Æë io Óë image¡¢objects¡¢ok »¥ÏàÍ¬²½ */
+    /** @brief è¡¥é½ io ä¸ imageã€objectsã€ok äº’ç›¸åŒæ­¥ */
     void syncIo();
 };
 
 
-/** @brief Õı³£ËÑË÷Çø£¬¶ªµôÆÁ±ÎºÍÎŞĞ§ */
+/** @brief æ­£å¸¸æœç´¢åŒºï¼Œä¸¢æ‰å±è”½å’Œæ— æ•ˆ */
 VISION_COMMON_API std::vector<HsCommData::HsObject> plainRois(const std::vector<PortRoi>& items);
 
-/** @brief Õı³£ÇøÓò¶ÔÏó */
+/** @brief æ­£å¸¸åŒºåŸŸå¯¹è±¡ */
 VISION_COMMON_API std::vector<HsCommData::HsObject> plainRegions(const std::vector<PortRegion>& items);
 
-/** @brief ÂÖÀª¶ÔÏó */
+/** @brief è½®å»“å¯¹è±¡ */
 VISION_COMMON_API std::vector<HsCommData::HsObject> plainContours(const std::vector<PortContour>& items);
 
-/** @brief Î»×ËÁĞ±í */
+/** @brief ä½å§¿åˆ—è¡¨ */
 VISION_COMMON_API std::vector<HsCommData::Pose2> plainPoses(const std::vector<PortPose>& items);
 
 }

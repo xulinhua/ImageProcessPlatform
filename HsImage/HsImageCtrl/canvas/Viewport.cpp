@@ -1,6 +1,6 @@
 /**
  * @file Viewport.cpp
- * @brief ViewportÊµÏÖ
+ * @brief Viewportå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -12,21 +12,21 @@
 
 namespace HsCtrl {
 
-// ¿ÕÊÓ¿Ú
+// ç©ºè§†å£
 Viewport::Viewport()
 {
 }
 
-// µ×Í¼³ß´çÓë part ¾ùÓĞĞ§
+// åº•å›¾å°ºå¯¸ä¸ part å‡æœ‰æ•ˆ
 bool Viewport::isValid() const
 {
     return imageSize.width() > 0 && imageSize.height() > 0 && part.width() > 1e-6 && part.height() > 1e-6;
 }
 
-// Õû·ùÍ¼µÈ±È×°Èë´°¿Ú£¬¸üĞÂ part
+// æ•´å¹…å›¾ç­‰æ¯”è£…å…¥çª—å£ï¼Œæ›´æ–° part
 void Viewport::fit(const QSize& viewportSize)
 {
-    // Õû·ùÍ¼µÈ±È×°Èë´°¿Ú£¬¸üĞÂ part¡£
+    // æ•´å¹…å›¾ç­‰æ¯”è£…å…¥çª—å£ï¼Œæ›´æ–° partã€‚
     if (imageSize.isEmpty() || viewportSize.isEmpty()) {
         return;
     }
@@ -43,7 +43,7 @@ void Viewport::fit(const QSize& viewportSize)
     part = p;
 }
 
-// ±£³ÖÖĞĞÄ£¬Ê¹ part ¿í¸ß±ÈµÈÓÚ´°¿Ú
+// ä¿æŒä¸­å¿ƒï¼Œä½¿ part å®½é«˜æ¯”ç­‰äºçª—å£
 void Viewport::syncAspect(const QSize& viewportSize)
 {
     if (viewportSize.isEmpty() || part.height() <= 1e-6) {
@@ -55,10 +55,10 @@ void Viewport::syncAspect(const QSize& viewportSize)
     part.moveCenter(c);
 }
 
-// ÒÔÍ¼ÏñµãÎªÃªËõ·Å part£¬²»ÖØ²ÉÑùÎ»Í¼
+// ä»¥å›¾åƒç‚¹ä¸ºé”šç¼©æ”¾ partï¼Œä¸é‡é‡‡æ ·ä½å›¾
 void Viewport::zoomAt(const QPointF& imagePt, const QPointF& relInPart, qreal factor, const QSize& viewportSize)
 {
-    // ÒÔ¹â±ê¶ÔÓ¦µÄÍ¼ÏñµãÎªÃªËõ·Å part£¬²»ÖØ²ÉÑùÎ»Í¼¡£
+    // ä»¥å…‰æ ‡å¯¹åº”çš„å›¾åƒç‚¹ä¸ºé”šç¼©æ”¾ partï¼Œä¸é‡é‡‡æ ·ä½å›¾ã€‚
     if (factor <= 0.0 || !isValid()) {
         return;
     }
@@ -83,13 +83,13 @@ void Viewport::zoomAt(const QPointF& imagePt, const QPointF& relInPart, qreal fa
     syncAspect(viewportSize);
 }
 
-// Æ½ÒÆ part£¨Í¼Ïñ×ø±êÔöÁ¿£©
+// å¹³ç§» partï¼ˆå›¾åƒåæ ‡å¢é‡ï¼‰
 void Viewport::panImage(const QPointF& imageDelta)
 {
     part.translate(imageDelta);
 }
 
-// ÆÁÄ»ÏñËØ / Í¼ÏñÏñËØ
+// å±å¹•åƒç´  / å›¾åƒåƒç´ 
 qreal Viewport::scale(const QSize& viewportSize) const
 {
     if (!isValid() || viewportSize.isEmpty()) {
@@ -100,7 +100,7 @@ qreal Viewport::scale(const QSize& viewportSize) const
     return qMin(sx, sy);
 }
 
-// ³¡¾°µ½ÊÓ¿ÚµÄ QTransform
+// åœºæ™¯åˆ°è§†å£çš„ QTransform
 QTransform Viewport::viewTransform(const QSize& viewportSize) const
 {
     QTransform t;

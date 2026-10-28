@@ -1,6 +1,6 @@
 /**
  * @file StationDlg.h
- * @brief StationDlgÍ·ÎÄ¼ş
+ * @brief StationDlgå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -29,73 +29,73 @@ struct Solution;
 
 /**
  * @class StationDlg
- * @brief µ¥¹¤Õ¾ÅäÖÃ£ºÃû³Æ¡¢±àºÅ¡¢±àÅÅ¡¢³¬Ê±¡¢°ó¶¨Éè±¸¡¢JobCfg ÁĞ±í
+ * @brief å•å·¥ç«™é…ç½®ï¼šåç§°ã€ç¼–å·ã€ç¼–æ’ã€è¶…æ—¶ã€ç»‘å®šè®¾å¤‡ã€JobCfg åˆ—è¡¨
  */
 class VISION_UI_API StationDlg : public QDialog {
     Q_OBJECT
 public:
     /**
-     * @brief ¹¹Ôì¹¤Õ¾ÅäÖÃ¶Ô»°¿ò
-     * @param stationId Òª±à¼­µÄ¹¤Õ¾
+     * @brief æ„é€ å·¥ç«™é…ç½®å¯¹è¯æ¡†
+     * @param stationId è¦ç¼–è¾‘çš„å·¥ç«™
      */
     StationDlg(Session* session, Solution* solution, const QString& stationId, QWidget* parent = 0);
 
 signals:
     /**
-     * @brief ÇëÇó´ò¿ªÑ¡ÖĞ JobCfg µÄÁ÷³ÌÅäÖÃ
-     * @param jobId Á÷³Ì id
+     * @brief è¯·æ±‚æ‰“å¼€é€‰ä¸­ JobCfg çš„æµç¨‹é…ç½®
+     * @param jobId æµç¨‹ id
      */
     void openJobRequested(const QString& jobId);
 
 private slots:
-    /** @brief °Ñ draft Ìá½»µ½ formal ²¢¹Ø±Õ */
+    /** @brief æŠŠ draft æäº¤åˆ° formal å¹¶å…³é—­ */
     void onSave();
-    /** @brief ±íµ¥±ä»¯ */
+    /** @brief è¡¨å•å˜åŒ– */
     void onEdited();
-    /** @brief ĞÂ½¨Ä¬ÈÏ JobCfg£¨Ïà»ú+¼ì²â£© */
+    /** @brief æ–°å»ºé»˜è®¤ JobCfgï¼ˆç›¸æœº+æ£€æµ‹ï¼‰ */
     void onAddJob();
-    /** @brief É¾³ıµ±Ç°Ñ¡ÖĞ JobCfg */
+    /** @brief åˆ é™¤å½“å‰é€‰ä¸­ JobCfg */
     void onDelJob();
-    /** @brief ÏÈĞ´»Ø¹¤Õ¾ÊôĞÔ£¬ÔÙ·¢³ö openJobRequested */
+    /** @brief å…ˆå†™å›å·¥ç«™å±æ€§ï¼Œå†å‘å‡º openJobRequested */
     void onOpenJob();
-    /** @brief ÇĞ»»µ±Ç°Á÷³ÌÊ¹ÄÜ */
+    /** @brief åˆ‡æ¢å½“å‰æµç¨‹ä½¿èƒ½ */
     void onToggleJobEnabled();
 
 protected:
-    /** @brief È¡Ïû¹Ø±ÕÇ°È·ÈÏ */
+    /** @brief å–æ¶ˆå…³é—­å‰ç¡®è®¤ */
     void reject();
-    /** @brief ¹Ø±ÕÇ°È·ÈÏ */
+    /** @brief å…³é—­å‰ç¡®è®¤ */
     void closeEvent(QCloseEvent* event);
 
 private:
-    /** @brief ´Ó draft Ìî³ä±íµ¥¡¢Éè±¸¹´Ñ¡Óë JobCfg ±í */
+    /** @brief ä» draft å¡«å……è¡¨å•ã€è®¾å¤‡å‹¾é€‰ä¸ JobCfg è¡¨ */
     void load();
-    /** @brief °Ñ±íµ¥Ğ´»Ø draft */
+    /** @brief æŠŠè¡¨å•å†™å› draft */
     void flushUiToDraft();
-    /** @brief ¸üĞÂÔà±ê¼Ç */
+    /** @brief æ›´æ–°è„æ ‡è®° */
     void markDraftDirty();
-    /** @brief ¹Ø´°Ç°ÈıÑ¡Ò»£ºÈ¡Ïû=0£¬²»±£´æ=1£¬ÒÑ±£´æ=2 */
+    /** @brief å…³çª—å‰ä¸‰é€‰ä¸€ï¼šå–æ¶ˆ=0ï¼Œä¸ä¿å­˜=1ï¼Œå·²ä¿å­˜=2 */
     int askCloseAction();
-    /** @brief Ğ´»Ø formal£¬²»¹Ø´° */
+    /** @brief å†™å› formalï¼Œä¸å…³çª— */
     bool trySave();
     /**
-     * @brief µ±Ç°Ñ¡ÖĞµÄ JobCfg ĞĞ
-     * @return ÎŞÑ¡ÖĞÎª -1
+     * @brief å½“å‰é€‰ä¸­çš„ JobCfg è¡Œ
+     * @return æ— é€‰ä¸­ä¸º -1
      */
     int currentJobRow() const;
 
-    Session* m_session;        ///< »á»°£¨²»ÓµÓĞ£©
-    Solution* m_sol;          ///< µ±Ç°·½°¸£¨²»ÓµÓĞ£©
-    QString m_stationId;      ///< µ±Ç°¹¤Õ¾
-    StationRecipe m_draft;    ///< ¹¤Õ¾ draft
-    StationRecipe m_formalSnapshot; ///< Open Ê± formal ¿ìÕÕ
-    QLineEdit* m_name;       ///< ¹¤Õ¾Ãû³Æ
-    QCheckBox* m_enabled;    ///< ¹¤Õ¾ÊÇ·ñÊ¹ÄÜ
-    QLineEdit* m_code;       ///< ¹¤Î»±àºÅ
-    QComboBox* m_schedule;   ///< ´®ĞĞ/²¢ĞĞÖ´ĞĞ
-    QSpinBox* m_timeout;      ///< Ä¬ÈÏ³¬Ê± ms
-    QTableWidget* m_jobs;    ///< ±¾¹¤Õ¾ JobCfg ±í
-    QListWidget* m_devices;   ///< °ó¶¨Éè±¸¹´Ñ¡
+    Session* m_session;        ///< ä¼šè¯ï¼ˆä¸æ‹¥æœ‰ï¼‰
+    Solution* m_sol;          ///< å½“å‰æ–¹æ¡ˆï¼ˆä¸æ‹¥æœ‰ï¼‰
+    QString m_stationId;      ///< å½“å‰å·¥ç«™
+    StationRecipe m_draft;    ///< å·¥ç«™ draft
+    StationRecipe m_formalSnapshot; ///< Open æ—¶ formal å¿«ç…§
+    QLineEdit* m_name;       ///< å·¥ç«™åç§°
+    QCheckBox* m_enabled;    ///< å·¥ç«™æ˜¯å¦ä½¿èƒ½
+    QLineEdit* m_code;       ///< å·¥ä½ç¼–å·
+    QComboBox* m_schedule;   ///< ä¸²è¡Œ/å¹¶è¡Œæ‰§è¡Œ
+    QSpinBox* m_timeout;      ///< é»˜è®¤è¶…æ—¶ ms
+    QTableWidget* m_jobs;    ///< æœ¬å·¥ç«™ JobCfg è¡¨
+    QListWidget* m_devices;   ///< ç»‘å®šè®¾å¤‡å‹¾é€‰
 };
 
 }

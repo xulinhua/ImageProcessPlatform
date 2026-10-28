@@ -1,6 +1,6 @@
 /**
  * @file MiscEditors.cpp
- * @brief MiscEditorsÊµÏÖ
+ * @brief MiscEditorså®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -36,8 +36,8 @@ public:
         m_maxC = new QSpinBox(this);
         m_maxC->setRange(0, 100000);
         QFormLayout* f = new QFormLayout(this);
-        f->addRow(T("×îĞ¡Ãæ»ı"), m_minA);
-        f->addRow(T("×î´óÊıÁ¿(0²»ÏŞ)"), m_maxC);
+        f->addRow(T("æœ€å°é¢ç§¯"), m_minA);
+        f->addRow(T("æœ€å¤§æ•°é‡(0ä¸é™)"), m_maxC);
         connect(m_minA, SIGNAL(valueChanged(int)), this, SLOT(onEdited()));
         connect(m_maxC, SIGNAL(valueChanged(int)), this, SLOT(onEdited()));
     }
@@ -68,21 +68,21 @@ public:
     explicit JudgeEditor(QWidget* parent)
         : ToolEditorBase(parent)
     {
-        m_useOk = new QCheckBox(T("Í¬Ê±»ã×ÜÉÏÓÎ¹¤¾ß OK/NG"), this);
+        m_useOk = new QCheckBox(T("åŒæ—¶æ±‡æ€»ä¸Šæ¸¸å·¥å…· OK/NG"), this);
         m_useOk->setChecked(true);
         m_table = new QTableWidget(0, 4, this);
-        m_table->setHorizontalHeaderLabels(QStringList() << T("Ô´¹¤¾ß") << T("×Ö¶Î") << T("±È½Ï") << T("ãĞÖµ"));
+        m_table->setHorizontalHeaderLabels(QStringList() << T("æºå·¥å…·") << T("å­—æ®µ") << T("æ¯”è¾ƒ") << T("é˜ˆå€¼"));
         m_table->horizontalHeader()->setStretchLastSection(true);
         m_table->setSelectionBehavior(QAbstractItemView::SelectRows);
         m_table->setSelectionMode(QAbstractItemView::SingleSelection);
-        QPushButton* addBtn = new QPushButton(T("Ìí¼ÓÌõ¼ş"), this);
-        QPushButton* delBtn = new QPushButton(T("É¾³ı"), this);
+        QPushButton* addBtn = new QPushButton(T("æ·»åŠ æ¡ä»¶"), this);
+        QPushButton* delBtn = new QPushButton(T("åˆ é™¤"), this);
         QHBoxLayout* btns = new QHBoxLayout();
         btns->addWidget(addBtn);
         btns->addWidget(delBtn);
         btns->addStretch(1);
         QLabel* tip = new QLabel(
-            T("×Ö¶Î³£ÓÃ£ºscore / x / y / angle / area / count / width / r / ok¡£±È½Ï£º>= <= > < == !="), this);
+            T("å­—æ®µå¸¸ç”¨ï¼šscore / x / y / angle / area / count / width / r / okã€‚æ¯”è¾ƒï¼š>= <= > < == !="), this);
         tip->setWordWrap(true);
         tip->setStyleSheet(QStringLiteral("color:#666;"));
         QVBoxLayout* lay = new QVBoxLayout(this);
@@ -120,7 +120,7 @@ protected:
                       qs(m_tool->params.value(opKey).toString()),
                       m_tool->params.value(valKey).toDouble(0.0));
         }
-        // ¼æÈİ¾É expr£ºÓĞÎÄ±¾ÇÒÎŞÌõ¼şÊ±ÈûÒ»ĞĞÌáÊ¾µ½¿Õ±í
+        // å…¼å®¹æ—§ exprï¼šæœ‰æ–‡æœ¬ä¸”æ— æ¡ä»¶æ—¶å¡ä¸€è¡Œæç¤ºåˆ°ç©ºè¡¨
         if (n <= 0) {
             const QString old = qs(m_tool->params.value("expr").toString());
             if (!old.isEmpty()) {
@@ -198,12 +198,12 @@ private:
     }
     void tipFromExpr(const QString&)
     {
-        // ¾É×ÔÓÉ±í´ïÊ½²»ÔÙ½âÎö£¬¸ÄÓÃ±í¸ñÌõ¼ş
+        // æ—§è‡ªç”±è¡¨è¾¾å¼ä¸å†è§£æï¼Œæ”¹ç”¨è¡¨æ ¼æ¡ä»¶
     }
     void fillSrcCombo(QComboBox* c, const ObjectId& selected)
     {
         c->clear();
-        c->addItem(T("(Ñ¡Ôñ¹¤¾ß)"), QString());
+        c->addItem(T("(é€‰æ‹©å·¥å…·)"), QString());
         if (!m_sol || !m_tool) {
             return;
         }
@@ -291,8 +291,8 @@ public:
         m_port = new QSpinBox(this);
         m_port->setRange(0, 65535);
         QFormLayout* f = new QFormLayout(this);
-        f->addRow(T("Ö÷»ú"), m_host);
-        f->addRow(T("¶Ë¿Ú"), m_port);
+        f->addRow(T("ä¸»æœº"), m_host);
+        f->addRow(T("ç«¯å£"), m_port);
         connect(m_host, SIGNAL(editingFinished()), this, SLOT(onEdited()));
         connect(m_port, SIGNAL(valueChanged(int)), this, SLOT(onEdited()));
     }
@@ -318,13 +318,13 @@ protected:
     QSpinBox* m_port;
 };
 
-/** @brief Î´µÇ¼Ç×¨ÓÃÒ³Ê±µÄÕ¼Î»±à¼­Æ÷ */
+/** @brief æœªç™»è®°ä¸“ç”¨é¡µæ—¶çš„å ä½ç¼–è¾‘å™¨ */
 class GenericEditor : public ToolEditorBase {
 public:
     explicit GenericEditor(QWidget* parent)
         : ToolEditorBase(parent)
     {
-        QLabel* tip = new QLabel(T("¸Ã¹¤¾ßÔİÎŞ×¨ÓÃ²ÎÊıÒ³¡£"), this);
+        QLabel* tip = new QLabel(T("è¯¥å·¥å…·æš‚æ— ä¸“ç”¨å‚æ•°é¡µã€‚"), this);
         tip->setWordWrap(true);
         QVBoxLayout* lay = new QVBoxLayout(this);
         lay->addWidget(tip);
@@ -336,13 +336,13 @@ protected:
     void saveToTool() {}
 };
 
-// ½á¹ûºÏ²¢²ÎÊıÒ³
+// ç»“æœåˆå¹¶å‚æ•°é¡µ
 ToolEditorBase* createMergeEditor(QWidget* parent) { return new MergeEditor(parent); }
-// Âß¼­ÅĞ¶Ï²ÎÊıÒ³
+// é€»è¾‘åˆ¤æ–­å‚æ•°é¡µ
 ToolEditorBase* createJudgeEditor(QWidget* parent) { return new JudgeEditor(parent); }
-// PLC Í¨ĞÅ²ÎÊıÒ³
+// PLC é€šä¿¡å‚æ•°é¡µ
 ToolEditorBase* createPlcEditor(QWidget* parent) { return new PlcEditor(parent); }
-// ÎŞ×¨ÓÃÒ³Ê±µÄÕ¼Î»²ÎÊıÒ³
+// æ— ä¸“ç”¨é¡µæ—¶çš„å ä½å‚æ•°é¡µ
 ToolEditorBase* createGenericEditor(QWidget* parent) { return new GenericEditor(parent); }
 
 }

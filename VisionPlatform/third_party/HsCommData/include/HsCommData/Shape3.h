@@ -1,6 +1,6 @@
 /**
  * @file Shape3.h
- * @brief Shape3Í·ÎÄ¼ş
+ * @brief Shape3å¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -15,161 +15,161 @@ namespace HsCommData {
 
 /**
  * @class Plane3
- * @brief ÎŞÏŞÆ½Ãæ¡£¹ı origin£¬·¨ÏòÓ¦Îªµ¥Î»ÏòÁ¿¡£Ã»ÓĞÓĞÏŞ°üÎ§ºĞ
+ * @brief æ— é™å¹³é¢ã€‚è¿‡ originï¼Œæ³•å‘åº”ä¸ºå•ä½å‘é‡ã€‚æ²¡æœ‰æœ‰é™åŒ…å›´ç›’
  */
 struct HSCOMMDATA_EXPORT Plane3 {
-    Point3d origin; ///< Æ½ÃæÉÏÒ»µã£¬ºÁÃ×
-    Point3d normal; ///< ·¨Ïò¡£Ô¼¶¨µ¥Î»ÏòÁ¿£¬Ö¸ÏòÕı²à
+    Point3d origin; ///< å¹³é¢ä¸Šä¸€ç‚¹ï¼Œæ¯«ç±³
+    Point3d normal; ///< æ³•å‘ã€‚çº¦å®šå•ä½å‘é‡ï¼ŒæŒ‡å‘æ­£ä¾§
 
-    /** @brief ¹ıÔ­µã¡¢·¨ÏòÎª +Z */
+    /** @brief è¿‡åŸç‚¹ã€æ³•å‘ä¸º +Z */
     Plane3();
     /**
-     * @brief Ö¸¶¨Æ½ÃæÉÏÒ»µãºÍ·¨Ïò¡£²»ÔÚÕâÀï¹éÒ»»¯
-     * @param origin Æ½ÃæÉÏÒ»µã
-     * @param normal ·¨Ïò
+     * @brief æŒ‡å®šå¹³é¢ä¸Šä¸€ç‚¹å’Œæ³•å‘ã€‚ä¸åœ¨è¿™é‡Œå½’ä¸€åŒ–
+     * @param origin å¹³é¢ä¸Šä¸€ç‚¹
+     * @param normal æ³•å‘
      */
     Plane3(const Point3d& origin, const Point3d& normal);
 
     /**
-     * @brief ·¨Ïò³¤¶ÈÊÇ·ñ½Ó½ü 1
-     * @param eps Ä£³¤Óë 1 µÄÔÊĞíÆ«²î
+     * @brief æ³•å‘é•¿åº¦æ˜¯å¦æ¥è¿‘ 1
+     * @param eps æ¨¡é•¿ä¸ 1 çš„å…è®¸åå·®
      */
     bool isNormalUnit(double eps = 1e-6) const;
-    /** @brief ÓĞ·ûºÅ¾àÀë¡£·¨ÏòÎ´¹éÒ»»¯Ê±½á¹û°´µ±Ç°·¨ÏòËõ·Å */
+    /** @brief æœ‰ç¬¦å·è·ç¦»ã€‚æ³•å‘æœªå½’ä¸€åŒ–æ—¶ç»“æœæŒ‰å½“å‰æ³•å‘ç¼©æ”¾ */
     double signedDistance(const Point3d& p) const;
 };
 
 /**
  * @class Box3
- * @brief ÓĞÏò³¤·½Ìå¡£Î»×ËÆ½ÒÆÊÇÖĞĞÄ£¬¾Ö²¿ÖáÓÉËÄÔªÊı¸ø³ö¡£
- * hx¡¢hy¡¢hz ÊÇ°ë³¤£¬²»ÊÇÈ«±ß¡£½Óµ½ HALCON Ê±È«±ß³¤Òª³Ë 2¡£
+ * @brief æœ‰å‘é•¿æ–¹ä½“ã€‚ä½å§¿å¹³ç§»æ˜¯ä¸­å¿ƒï¼Œå±€éƒ¨è½´ç”±å››å…ƒæ•°ç»™å‡ºã€‚
+ * hxã€hyã€hz æ˜¯åŠé•¿ï¼Œä¸æ˜¯å…¨è¾¹ã€‚æ¥åˆ° HALCON æ—¶å…¨è¾¹é•¿è¦ä¹˜ 2ã€‚
  */
 struct HSCOMMDATA_EXPORT Box3 {
-    Pose3 pose; ///< ÖĞĞÄÎ»×Ë¡£Æ½ÒÆÎªÖĞĞÄ£¬Ğı×ª°Ñ¾Ö²¿Öá±äµ½ÊÀ½ç
-    double hx;  ///< ¾Ö²¿ X °ë³¤£¬ºÁÃ×¡£¸ºÖµ±íÊ¾¿Õ
-    double hy;  ///< ¾Ö²¿ Y °ë³¤£¬ºÁÃ×¡£¸ºÖµ±íÊ¾¿Õ
-    double hz;  ///< ¾Ö²¿ Z °ë³¤£¬ºÁÃ×¡£¸ºÖµ±íÊ¾¿Õ
+    Pose3 pose; ///< ä¸­å¿ƒä½å§¿ã€‚å¹³ç§»ä¸ºä¸­å¿ƒï¼Œæ—‹è½¬æŠŠå±€éƒ¨è½´å˜åˆ°ä¸–ç•Œ
+    double hx;  ///< å±€éƒ¨ X åŠé•¿ï¼Œæ¯«ç±³ã€‚è´Ÿå€¼è¡¨ç¤ºç©º
+    double hy;  ///< å±€éƒ¨ Y åŠé•¿ï¼Œæ¯«ç±³ã€‚è´Ÿå€¼è¡¨ç¤ºç©º
+    double hz;  ///< å±€éƒ¨ Z åŠé•¿ï¼Œæ¯«ç±³ã€‚è´Ÿå€¼è¡¨ç¤ºç©º
 
-    /** @brief ¿ÕºĞ£º°ë³¤¾ùÎª -1£¬Î»×ËÎªµ¥Î»Ôª */
+    /** @brief ç©ºç›’ï¼šåŠé•¿å‡ä¸º -1ï¼Œä½å§¿ä¸ºå•ä½å…ƒ */
     Box3();
     /**
-     * @brief Ö¸¶¨ÖĞĞÄÎ»×ËºÍÈı¸ö°ë³¤
-     * @param pose ÖĞĞÄÎ»×Ë
-     * @param hx ¾Ö²¿ X °ë³¤
-     * @param hy ¾Ö²¿ Y °ë³¤
-     * @param hz ¾Ö²¿ Z °ë³¤
+     * @brief æŒ‡å®šä¸­å¿ƒä½å§¿å’Œä¸‰ä¸ªåŠé•¿
+     * @param pose ä¸­å¿ƒä½å§¿
+     * @param hx å±€éƒ¨ X åŠé•¿
+     * @param hy å±€éƒ¨ Y åŠé•¿
+     * @param hz å±€éƒ¨ Z åŠé•¿
      */
     Box3(const Pose3& pose, double hx, double hy, double hz);
 
-    /** @brief ÈÎÒ»°ë³¤Ğ¡ÓÚ 0 ÔòÎª¿Õ¡£0 ÊÇÑ¹±â£¬²»Ëã¿Õ */
+    /** @brief ä»»ä¸€åŠé•¿å°äº 0 åˆ™ä¸ºç©ºã€‚0 æ˜¯å‹æ‰ï¼Œä¸ç®—ç©º */
     bool isEmpty() const;
-    /** @brief ÊÀ½ç×ø±êÖá¶ÔÆë°üÎ§ºĞ¡£¿ÕºĞ·µ»Ø¿Õ Aabb3 */
+    /** @brief ä¸–ç•Œåæ ‡è½´å¯¹é½åŒ…å›´ç›’ã€‚ç©ºç›’è¿”å›ç©º Aabb3 */
     Aabb3 bounds() const;
 };
 
 /**
  * @class Sphere3
- * @brief Çò¡£°ë¾¶Ğ¡ÓÚ 0 Îª¿Õ£¬°ë¾¶ 0 ÊÇÒ»¸öµã
+ * @brief çƒã€‚åŠå¾„å°äº 0 ä¸ºç©ºï¼ŒåŠå¾„ 0 æ˜¯ä¸€ä¸ªç‚¹
  */
 struct HSCOMMDATA_EXPORT Sphere3 {
-    Point3d center; ///< ÇòĞÄ£¬ºÁÃ×
-    double radius; ///< °ë¾¶£¬ºÁÃ×¡£Ğ¡ÓÚ 0 ±íÊ¾¿Õ
+    Point3d center; ///< çƒå¿ƒï¼Œæ¯«ç±³
+    double radius; ///< åŠå¾„ï¼Œæ¯«ç±³ã€‚å°äº 0 è¡¨ç¤ºç©º
 
-    /** @brief ¿ÕÇò£º°ë¾¶ -1 */
+    /** @brief ç©ºçƒï¼šåŠå¾„ -1 */
     Sphere3();
     /**
-     * @brief Ö¸¶¨ÇòĞÄºÍ°ë¾¶
-     * @param center ÇòĞÄ
-     * @param radius °ë¾¶
+     * @brief æŒ‡å®šçƒå¿ƒå’ŒåŠå¾„
+     * @param center çƒå¿ƒ
+     * @param radius åŠå¾„
      */
     Sphere3(const Point3d& center, double radius);
 
-    /** @brief °ë¾¶Ğ¡ÓÚ 0 ÔòÎª¿Õ */
+    /** @brief åŠå¾„å°äº 0 åˆ™ä¸ºç©º */
     bool isEmpty() const;
-    /** @brief Öá¶ÔÆë°üÎ§ºĞ¡£¿ÕÇò·µ»Ø¿Õ Aabb3 */
+    /** @brief è½´å¯¹é½åŒ…å›´ç›’ã€‚ç©ºçƒè¿”å›ç©º Aabb3 */
     Aabb3 bounds() const;
 };
 
 /**
  * @class Cylinder3
- * @brief Ô²Öù¡£center ÔÚÖáÉÏ£¬axis Ó¦Îªµ¥Î»·½Ïò¡£
- * halfHeight Ğ¡ÓÚ 0 ±íÊ¾ÎŞÏŞÔ²Öù£¬´ËÊ±Ã»ÓĞÓĞÏŞ°üÎ§ºĞ¡£
+ * @brief åœ†æŸ±ã€‚center åœ¨è½´ä¸Šï¼Œaxis åº”ä¸ºå•ä½æ–¹å‘ã€‚
+ * halfHeight å°äº 0 è¡¨ç¤ºæ— é™åœ†æŸ±ï¼Œæ­¤æ—¶æ²¡æœ‰æœ‰é™åŒ…å›´ç›’ã€‚
  */
 struct HSCOMMDATA_EXPORT Cylinder3 {
-    Point3d center;    ///< ÖáÉÏÒ»µã¡£ÓĞÏŞÔ²ÖùÊ±ÎªÖù¶ÎÖĞĞÄ
-    Point3d axis;      ///< ÖáÏò¡£Ô¼¶¨µ¥Î»ÏòÁ¿
-    double radius;    ///< °ë¾¶£¬ºÁÃ×¡£Ğ¡ÓÚ 0 ±íÊ¾¿Õ
-    double halfHeight; ///< °ë¸ß£¬ºÁÃ×¡£Ğ¡ÓÚ 0 ±íÊ¾ÑØÖáÏòÎŞÏŞÑÓÉì
+    Point3d center;    ///< è½´ä¸Šä¸€ç‚¹ã€‚æœ‰é™åœ†æŸ±æ—¶ä¸ºæŸ±æ®µä¸­å¿ƒ
+    Point3d axis;      ///< è½´å‘ã€‚çº¦å®šå•ä½å‘é‡
+    double radius;    ///< åŠå¾„ï¼Œæ¯«ç±³ã€‚å°äº 0 è¡¨ç¤ºç©º
+    double halfHeight; ///< åŠé«˜ï¼Œæ¯«ç±³ã€‚å°äº 0 è¡¨ç¤ºæ²¿è½´å‘æ— é™å»¶ä¼¸
 
-    /** @brief ¿ÕÔ²Öù£º°ë¾¶ -1£¬ÖáÏò +Z */
+    /** @brief ç©ºåœ†æŸ±ï¼šåŠå¾„ -1ï¼Œè½´å‘ +Z */
     Cylinder3();
     /**
-     * @brief Ö¸¶¨Öá¡¢°ë¾¶ºÍ°ë¸ß
-     * @param center ÖáÉÏÒ»µã
-     * @param axis ÖáÏò
-     * @param radius °ë¾¶
-     * @param halfHeight °ë¸ß¡£Ğ¡ÓÚ 0 ÎªÎŞÏŞ
+     * @brief æŒ‡å®šè½´ã€åŠå¾„å’ŒåŠé«˜
+     * @param center è½´ä¸Šä¸€ç‚¹
+     * @param axis è½´å‘
+     * @param radius åŠå¾„
+     * @param halfHeight åŠé«˜ã€‚å°äº 0 ä¸ºæ— é™
      */
     Cylinder3(const Point3d& center, const Point3d& axis, double radius, double halfHeight);
 
-    /** @brief °ë¾¶Ğ¡ÓÚ 0 ÔòÎª¿Õ */
+    /** @brief åŠå¾„å°äº 0 åˆ™ä¸ºç©º */
     bool isEmpty() const;
-    /** @brief °ë¸ßĞ¡ÓÚ 0 ÎªÎŞÏŞÔ²Öù¡£¿ÕÔ²Öù²»ËãÎŞÏŞ */
+    /** @brief åŠé«˜å°äº 0 ä¸ºæ— é™åœ†æŸ±ã€‚ç©ºåœ†æŸ±ä¸ç®—æ— é™ */
     bool isInfinite() const;
-    /** @brief ÓĞÏŞÔ²ÖùµÄÖá¶ÔÆë°üÎ§ºĞ¡£¿Õ»òÎŞÏŞÊ±·µ»Ø¿Õ Aabb3¡£ÖáÏò½Ó½ü 0 Ò²·µ»Ø¿Õ */
+    /** @brief æœ‰é™åœ†æŸ±çš„è½´å¯¹é½åŒ…å›´ç›’ã€‚ç©ºæˆ–æ— é™æ—¶è¿”å›ç©º Aabb3ã€‚è½´å‘æ¥è¿‘ 0 ä¹Ÿè¿”å›ç©º */
     Aabb3 bounds() const;
 };
 
 /**
  * @class Line3
- * @brief ÈıÎ¬Ïß¶Î£¬¶Ëµã a µ½ b¡£²»ÊÇÎŞÏŞÖ±Ïß
+ * @brief ä¸‰ç»´çº¿æ®µï¼Œç«¯ç‚¹ a åˆ° bã€‚ä¸æ˜¯æ— é™ç›´çº¿
  */
 struct HSCOMMDATA_EXPORT Line3 {
-    Point3d a; ///< Æğµã£¬ºÁÃ×
-    Point3d b; ///< ÖÕµã£¬ºÁÃ×
+    Point3d a; ///< èµ·ç‚¹ï¼Œæ¯«ç±³
+    Point3d b; ///< ç»ˆç‚¹ï¼Œæ¯«ç±³
 
-    /** @brief Á½¶Ë¶¼ÔÚÔ­µãµÄÍË»¯Ïß¶Î */
+    /** @brief ä¸¤ç«¯éƒ½åœ¨åŸç‚¹çš„é€€åŒ–çº¿æ®µ */
     Line3();
     /**
-     * @brief Ö¸¶¨Á½¶Ë
-     * @param a Æğµã
-     * @param b ÖÕµã
+     * @brief æŒ‡å®šä¸¤ç«¯
+     * @param a èµ·ç‚¹
+     * @param b ç»ˆç‚¹
      */
     Line3(const Point3d& a, const Point3d& b);
 
-    /** @brief Á½¶Ë¾àÀë¡£ÖØºÏÊ±Îª 0£¬ÈÔÊÇÒ»ÌõÍË»¯Ïß¶Î£¬²»Ëã¿Õ¼¸ºÎ */
+    /** @brief ä¸¤ç«¯è·ç¦»ã€‚é‡åˆæ—¶ä¸º 0ï¼Œä»æ˜¯ä¸€æ¡é€€åŒ–çº¿æ®µï¼Œä¸ç®—ç©ºå‡ ä½• */
     double length() const;
-    /** @brief Á½¶ËµÄÖá¶ÔÆë°üÎ§ºĞ */
+    /** @brief ä¸¤ç«¯çš„è½´å¯¹é½åŒ…å›´ç›’ */
     Aabb3 bounds() const;
     /**
-     * @brief Ïß¶ÎÉÏµÄµã¡£t Îª 0 ÔÚ a£¬Îª 1 ÔÚ b£¬²»Ç¿ÖÆ¼Ğµ½ [0,1]
-     * @param t ²ÎÊı
+     * @brief çº¿æ®µä¸Šçš„ç‚¹ã€‚t ä¸º 0 åœ¨ aï¼Œä¸º 1 åœ¨ bï¼Œä¸å¼ºåˆ¶å¤¹åˆ° [0,1]
+     * @param t å‚æ•°
      */
     Point3d pointAt(double t) const;
 };
 
 /**
  * @class Circle3
- * @brief ÈıÎ¬Ô²¡£Ô²ĞÄ¡¢µ¥Î»·¨ÏòºÍ°ë¾¶¡£²»ÊÇÍÖÔ²£¬Ò²²»ÊÇÔ²»¡
+ * @brief ä¸‰ç»´åœ†ã€‚åœ†å¿ƒã€å•ä½æ³•å‘å’ŒåŠå¾„ã€‚ä¸æ˜¯æ¤­åœ†ï¼Œä¹Ÿä¸æ˜¯åœ†å¼§
  */
 struct HSCOMMDATA_EXPORT Circle3 {
-    Point3d center; ///< Ô²ĞÄ£¬ºÁÃ×
-    Point3d normal; ///< ËùÔÚÆ½Ãæ·¨Ïò¡£Ô¼¶¨µ¥Î»ÏòÁ¿
-    double radius; ///< °ë¾¶£¬ºÁÃ×¡£Ğ¡ÓÚ 0 ±íÊ¾¿Õ
+    Point3d center; ///< åœ†å¿ƒï¼Œæ¯«ç±³
+    Point3d normal; ///< æ‰€åœ¨å¹³é¢æ³•å‘ã€‚çº¦å®šå•ä½å‘é‡
+    double radius; ///< åŠå¾„ï¼Œæ¯«ç±³ã€‚å°äº 0 è¡¨ç¤ºç©º
 
-    /** @brief ¿ÕÔ²£º°ë¾¶ -1£¬·¨Ïò +Z */
+    /** @brief ç©ºåœ†ï¼šåŠå¾„ -1ï¼Œæ³•å‘ +Z */
     Circle3();
     /**
-     * @brief Ö¸¶¨Ô²ĞÄ¡¢·¨ÏòºÍ°ë¾¶
-     * @param center Ô²ĞÄ
-     * @param normal ·¨Ïò
-     * @param radius °ë¾¶
+     * @brief æŒ‡å®šåœ†å¿ƒã€æ³•å‘å’ŒåŠå¾„
+     * @param center åœ†å¿ƒ
+     * @param normal æ³•å‘
+     * @param radius åŠå¾„
      */
     Circle3(const Point3d& center, const Point3d& normal, double radius);
 
-    /** @brief °ë¾¶Ğ¡ÓÚ 0 ÔòÎª¿Õ */
+    /** @brief åŠå¾„å°äº 0 åˆ™ä¸ºç©º */
     bool isEmpty() const;
-    /** @brief Öá¶ÔÆë°üÎ§ºĞ¡£¿ÕÔ²»ò·¨Ïò½Ó½ü 0 Ê±·µ»Ø¿Õ Aabb3 */
+    /** @brief è½´å¯¹é½åŒ…å›´ç›’ã€‚ç©ºåœ†æˆ–æ³•å‘æ¥è¿‘ 0 æ—¶è¿”å›ç©º Aabb3 */
     Aabb3 bounds() const;
 };
 

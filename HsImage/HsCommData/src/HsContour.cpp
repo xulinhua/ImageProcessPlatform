@@ -1,6 +1,6 @@
 /**
  * @file HsContour.cpp
- * @brief HsContourÊµÏÖ
+ * @brief HsContourå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -14,7 +14,7 @@
 
 namespace HsCommData {
 
-// Ä¬ÈÏ¿ªÕÛÏß
+// é»˜è®¤å¼€æŠ˜çº¿
 HsContour::HsContour()
     : closed(false)
     , m_pts(nullptr)
@@ -23,7 +23,7 @@ HsContour::HsContour()
 {
 }
 
-// Éî¿½£ºµãÁĞ°´¸öÊıÕû¶Î¸´ÖÆ£¬±ÕºÏ±êÖ¾ºÍÊôĞÔÖğ·İ¿½±´
+// æ·±æ‹·ï¼šç‚¹åˆ—æŒ‰ä¸ªæ•°æ•´æ®µå¤åˆ¶ï¼Œé—­åˆæ ‡å¿—å’Œå±æ€§é€ä»½æ‹·è´
 HsContour::HsContour(const HsContour& other)
     : closed(other.closed)
     , angle(other.angle)
@@ -35,7 +35,7 @@ HsContour::HsContour(const HsContour& other)
     copyPts(other.m_pts, other.m_ptCount);
 }
 
-// Éî¿½¸³Öµ£ºµãÁĞ°´¸öÊıÕû¶Î¸´ÖÆ£¬±ÕºÏ±êÖ¾ºÍÊôĞÔÖğ·İ¿½±´
+// æ·±æ‹·èµ‹å€¼ï¼šç‚¹åˆ—æŒ‰ä¸ªæ•°æ•´æ®µå¤åˆ¶ï¼Œé—­åˆæ ‡å¿—å’Œå±æ€§é€ä»½æ‹·è´
 HsContour& HsContour::operator=(const HsContour& other)
 {
     if (this != &other) {
@@ -46,37 +46,37 @@ HsContour& HsContour::operator=(const HsContour& other)
     }
     return *this;
 }
-// ÊÍ·Åµã»º³å
+// é‡Šæ”¾ç‚¹ç¼“å†²
 HsContour::~HsContour()
 {
     releasePts();
 }
 
-// µãÊı
+// ç‚¹æ•°
 size_t HsContour::ptCount() const
 {
     return m_ptCount;
 }
 
-// Ã»ÓĞµã
+// æ²¡æœ‰ç‚¹
 bool HsContour::ptsEmpty() const
 {
     return m_ptCount == 0;
 }
 
-// µÚ i ¸öµã
+// ç¬¬ i ä¸ªç‚¹
 Point2d& HsContour::ptAt(size_t i)
 {
     return m_pts[i];
 }
 
-// µÚ i ¸öµã
+// ç¬¬ i ä¸ªç‚¹
 const Point2d& HsContour::ptAt(size_t i) const
 {
     return m_pts[i];
 }
 
-// ¿ÕÂÖÀªÃ»ÓĞµã¡£ºöÂÔ»ò»Øµ÷·µ»Øºó¸ø³ö¾²Ì¬Ô­µã£¬±ÜÃâ½âÒıÓÃ¿Õ»º³å
+// ç©ºè½®å»“æ²¡æœ‰ç‚¹ã€‚å¿½ç•¥æˆ–å›è°ƒè¿”å›åç»™å‡ºé™æ€åŸç‚¹ï¼Œé¿å…è§£å¼•ç”¨ç©ºç¼“å†²
 static Point2d& emptyPoint()
 {
     static Point2d point;
@@ -85,7 +85,7 @@ static Point2d& emptyPoint()
     return point;
 }
 
-// µÚÒ»¸öµã¡£¿ÕÂÖÀª½»¸øÏµÍ³Òì³£´¦Àí
+// ç¬¬ä¸€ä¸ªç‚¹ã€‚ç©ºè½®å»“äº¤ç»™ç³»ç»Ÿå¼‚å¸¸å¤„ç†
 Point2d& HsContour::ptFront()
 {
     if (m_ptCount == 0) {
@@ -95,7 +95,7 @@ Point2d& HsContour::ptFront()
     return m_pts[0];
 }
 
-// µÚÒ»¸öµã¡£¿ÕÂÖÀª½»¸øÏµÍ³Òì³£´¦Àí
+// ç¬¬ä¸€ä¸ªç‚¹ã€‚ç©ºè½®å»“äº¤ç»™ç³»ç»Ÿå¼‚å¸¸å¤„ç†
 const Point2d& HsContour::ptFront() const
 {
     if (m_ptCount == 0) {
@@ -105,7 +105,7 @@ const Point2d& HsContour::ptFront() const
     return m_pts[0];
 }
 
-// ×îºóÒ»¸öµã¡£¿ÕÂÖÀª½»¸øÏµÍ³Òì³£´¦Àí
+// æœ€åä¸€ä¸ªç‚¹ã€‚ç©ºè½®å»“äº¤ç»™ç³»ç»Ÿå¼‚å¸¸å¤„ç†
 Point2d& HsContour::ptBack()
 {
     if (m_ptCount == 0) {
@@ -115,7 +115,7 @@ Point2d& HsContour::ptBack()
     return m_pts[m_ptCount - 1];
 }
 
-// ×îºóÒ»¸öµã¡£¿ÕÂÖÀª½»¸øÏµÍ³Òì³£´¦Àí
+// æœ€åä¸€ä¸ªç‚¹ã€‚ç©ºè½®å»“äº¤ç»™ç³»ç»Ÿå¼‚å¸¸å¤„ç†
 const Point2d& HsContour::ptBack() const
 {
     if (m_ptCount == 0) {
@@ -125,7 +125,7 @@ const Point2d& HsContour::ptBack() const
     return m_pts[m_ptCount - 1];
 }
 
-// ×·¼ÓÒ»¸öµã
+// è¿½åŠ ä¸€ä¸ªç‚¹
 void HsContour::pushPt(const Point2d& point)
 {
     ensurePts(m_ptCount + 1);
@@ -133,7 +133,7 @@ void HsContour::pushPt(const Point2d& point)
     ++m_ptCount;
 }
 
-// ¸ÄµãÊı¡£±ä³¤µÄĞÂµãÎªÔ­µã
+// æ”¹ç‚¹æ•°ã€‚å˜é•¿çš„æ–°ç‚¹ä¸ºåŸç‚¹
 void HsContour::resizePts(size_t n)
 {
     if (n > m_ptCount) {
@@ -146,13 +146,13 @@ void HsContour::resizePts(size_t n)
     m_ptCount = n;
 }
 
-// ÓÃÏòÁ¿Õû¶ÎÌîÈë
+// ç”¨å‘é‡æ•´æ®µå¡«å…¥
 void HsContour::setPts(const std::vector<Point2d>& src)
 {
     copyPts(src.empty() ? nullptr : src.data(), src.size());
 }
 
-// °´¸öÊı·ÖÅä£¬²»Öğµã¹¹Ôì
+// æŒ‰ä¸ªæ•°åˆ†é…ï¼Œä¸é€ç‚¹æ„é€ 
 void HsContour::allocPts(size_t n)
 {
     if (n > m_ptCap) {
@@ -167,7 +167,7 @@ void HsContour::allocPts(size_t n)
     m_ptCount = n;
 }
 
-// ÈİÁ¿²»×ãÊ±»»Ò»¿é¸ü´óµÄ»º³å£¬¾ÉµãÕû¶Î°á¹ıÈ¥
+// å®¹é‡ä¸è¶³æ—¶æ¢ä¸€å—æ›´å¤§çš„ç¼“å†²ï¼Œæ—§ç‚¹æ•´æ®µæ¬è¿‡å»
 void HsContour::ensurePts(size_t need)
 {
     if (need <= m_ptCap) {
@@ -189,7 +189,7 @@ void HsContour::ensurePts(size_t need)
     m_ptCap = cap;
 }
 
-// ÊÍ·Åµã»º³å
+// é‡Šæ”¾ç‚¹ç¼“å†²
 void HsContour::releasePts()
 {
     if (m_pts) {
@@ -200,7 +200,7 @@ void HsContour::releasePts()
     m_ptCap = 0;
 }
 
-// °´¸öÊıÕû¶Î¸´ÖÆ
+// æŒ‰ä¸ªæ•°æ•´æ®µå¤åˆ¶
 void HsContour::copyPts(const Point2d* src, size_t n)
 {
     allocPts(n);
@@ -209,13 +209,13 @@ void HsContour::copyPts(const Point2d* src, size_t n)
     }
 }
 
-// ÎŞ¶¥µãÔòÎª¿Õ
+// æ— é¡¶ç‚¹åˆ™ä¸ºç©º
 bool HsContour::isEmpty() const
 {
     return m_ptCount == 0;
 }
 
-// ¶¥µã°üÎ§ºĞ
+// é¡¶ç‚¹åŒ…å›´ç›’
 Box2 HsContour::bounds() const
 {
     if (m_ptCount == 0) {
@@ -228,7 +228,7 @@ Box2 HsContour::bounds() const
     return r;
 }
 
-// ½Ç¶È»òÏìÓ¦Èô¸ø³ö£¬³¤¶È±ØĞëÓëµãÊıÏàÍ¬
+// è§’åº¦æˆ–å“åº”è‹¥ç»™å‡ºï¼Œé•¿åº¦å¿…é¡»ä¸ç‚¹æ•°ç›¸åŒ
 bool HsContour::attribsOk() const
 {
     if (!angle.empty() && angle.size() != m_ptCount) {
@@ -239,7 +239,7 @@ bool HsContour::attribsOk() const
     }
     return true;
 }
-// ÏÂ±ê±ØĞëÂäÔÚÇĞÏò½ÇÊı×éÄÚ
+// ä¸‹æ ‡å¿…é¡»è½åœ¨åˆ‡å‘è§’æ•°ç»„å†…
 static void checkAngleIndex(const HsContour& c, int index, const char* proc)
 {
     if (index < 0 || index >= static_cast<int>(c.angle.size())) {
@@ -247,39 +247,39 @@ static void checkAngleIndex(const HsContour& c, int index, const char* proc)
     }
 }
 
-// µÚ index µãµÄÄÚ²¿ÇĞÏò½Ç
+// ç¬¬ index ç‚¹çš„å†…éƒ¨åˆ‡å‘è§’
 double HsContour::angRadAt(int index) const
 {
     checkAngleIndex(*this, index, "HsContour::angRadAt");
     return angle[static_cast<size_t>(index)];
 }
 
-// Ğ´ÈëÄÚ²¿»¡¶È
+// å†™å…¥å†…éƒ¨å¼§åº¦
 void HsContour::setAngRadAt(int index, double rad)
 {
     checkAngleIndex(*this, index, "HsContour::setAngRadAt");
     angle[static_cast<size_t>(index)] = static_cast<float>(rad);
 }
 
-// ×ª½ÇµÄ¶ÈÊı£¬Õı·½ÏòÓëÄÚ²¿ÏàÍ¬
+// è½¬è§’çš„åº¦æ•°ï¼Œæ­£æ–¹å‘ä¸å†…éƒ¨ç›¸åŒ
 double HsContour::angDegAt(int index) const
 {
     return toDegree(angRadAt(index));
 }
 
-// °´¶ÈÊıĞ´Èë£¬Õı·½ÏòÓëÄÚ²¿ÏàÍ¬
+// æŒ‰åº¦æ•°å†™å…¥ï¼Œæ­£æ–¹å‘ä¸å†…éƒ¨ç›¸åŒ
 void HsContour::setAngDegAt(int index, double deg)
 {
     setAngRadAt(index, toRadian(deg));
 }
 
-// °´ÏµÍ³½Ç¶Èµ¥Î»ºÍÕı·½Ïò¶ÁÈ¡
+// æŒ‰ç³»ç»Ÿè§’åº¦å•ä½å’Œæ­£æ–¹å‘è¯»å–
 double HsContour::angAt(int index) const
 {
     return fromAngle(angRadAt(index));
 }
 
-// °´ÏµÍ³½Ç¶Èµ¥Î»ºÍÕı·½ÏòĞ´Èë
+// æŒ‰ç³»ç»Ÿè§’åº¦å•ä½å’Œæ­£æ–¹å‘å†™å…¥
 void HsContour::setAngAt(int index, double external)
 {
     setAngRadAt(index, toAngle(external));

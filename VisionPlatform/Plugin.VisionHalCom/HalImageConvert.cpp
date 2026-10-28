@@ -1,6 +1,6 @@
 /**
  * @file HalImageConvert.cpp
- * @brief HalImageConvertÊµÏÖ
+ * @brief HalImageConvertå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -8,6 +8,8 @@
 
 #include "HalImageConvert.h"
 
+#include "AlgLibKind.h"
+#include "TextEncoding.h"
 #include <cstdint>
 #include <cstring>
 #include <vector>
@@ -16,7 +18,7 @@ namespace Vision {
 
 namespace {
 
-// °Ñ Halcon Òì³£Ğ´Èë err£¨¿É¿Õ£©
+// æŠŠ Halcon å¼‚å¸¸å†™å…¥ errï¼ˆå¯ç©ºï¼‰
 void setHalconErr(std::string* err, const HalconCpp::HException& e)
 {
     if (!err) {
@@ -46,7 +48,7 @@ int channelCount(HsCommData::PixelEncoding enc)
     return 0;
 }
 
-// ĞĞ·½ÏòÁ¬ĞøÊ±Ö±½ÓÓÃÔ­»º³å£¬·ñÔò°´ĞĞÊÕ³ÉÒ»¿é
+// è¡Œæ–¹å‘è¿ç»­æ—¶ç›´æ¥ç”¨åŸç¼“å†²ï¼Œå¦åˆ™æŒ‰è¡Œæ”¶æˆä¸€å—
 bool contiguousOrPack(const HsCommData::HsImage& img, int rowBytes, const unsigned char** ptr,
                       std::vector<unsigned char>* pack)
 {
@@ -66,7 +68,7 @@ bool contiguousOrPack(const HsCommData::HsImage& img, int rowBytes, const unsign
     return true;
 }
 
-// byte µ¥Í¨µÀ / ÈıÍ¨µÀ / ËÄÍ¨µÀ£¬¶ÔÆë Machine ConvertMat2Halcon
+// byte å•é€šé“ / ä¸‰é€šé“ / å››é€šé“ï¼Œå¯¹é½ Machine ConvertMat2Halcon
 bool byteToHObject(const HsCommData::HsImage& img, HalconCpp::HObject* out, std::string* err)
 {
     if (img.pixels.empty()) {
@@ -126,7 +128,7 @@ const char* halconTypeOf(HsCommData::PixelKind kind)
     }
 }
 
-// ½»´íÈıÆ½Ãæ²ğ¿ª¡£rOff/gOff/bOff ÊÇÑù±¾ÏÂ±ê
+// äº¤é”™ä¸‰å¹³é¢æ‹†å¼€ã€‚rOff/gOff/bOff æ˜¯æ ·æœ¬ä¸‹æ ‡
 void splitPlanes(const unsigned char* src, int stride, int w, int h, int sb, int ch,
                  int rOff, int gOff, int bOff,
                  std::vector<unsigned char>* r, std::vector<unsigned char>* g, std::vector<unsigned char>* b)
@@ -147,7 +149,7 @@ void splitPlanes(const unsigned char* src, int stride, int w, int h, int sb, int
     }
 }
 
-// real64 ÊÕ³É float ÔÙ½»¸ø Halcon£¨Ã»ÓĞ double Í¼ÏñÀàĞÍ£©
+// real64 æ”¶æˆ float å†äº¤ç»™ Halconï¼ˆæ²¡æœ‰ double å›¾åƒç±»å‹ï¼‰
 bool real64ToHObject(const HsCommData::HsImage& img, HalconCpp::HObject* out, std::string* err)
 {
     const int ch = channelCount(img.encoding);
@@ -320,14 +322,14 @@ bool kindFromHalconType(const HalconCpp::HString& type, HsCommData::PixelKind* k
 
 } // namespace
 
-// Halcon Òì³£×ªËµÃ÷×Ö·û´®
+// Halcon å¼‚å¸¸è½¬è¯´æ˜å­—ç¬¦ä¸²
 std::string hExceptionText(const HalconCpp::HException& e)
 {
     const char* t = e.ErrorMessage().Text();
     return t ? std::string(t) : std::string("Halcon error");
 }
 
-// HsImage ×ª HObject
+// HsImage è½¬ HObject
 bool hsImageToHObject(const HsCommData::HsImage& img, HalconCpp::HObject*& out, std::string* err)
 {
     if (!out) {
@@ -350,7 +352,7 @@ bool hsImageToHObject(const HsCommData::HsImage& img, HalconCpp::HObject*& out, 
     }
 }
 
-// HObject ×ª HsImage¡£µ¥Í¨µÀ GetImagePointer1£»ÈıÍ¨µÀ InterleaveChannels ÊÕ³É rgb
+// HObject è½¬ HsImageã€‚å•é€šé“ GetImagePointer1ï¼›ä¸‰é€šé“ InterleaveChannels æ”¶æˆ rgb
 bool hObjectToHsImage(const HalconCpp::HObject& himg, int64_t frameId, HsCommData::HsImage*& out, std::string* err)
 {
     if (!out) {
@@ -453,6 +455,81 @@ bool hObjectToHsImage(const HalconCpp::HObject& himg, int64_t frameId, HsCommDat
             setErr(err, "unsupported channel count");
             return false;
         }
+    } catch (const HalconCpp::HException& e) {
+        setHalconErr(err, e);
+        return false;
+    }
+}
+
+bool hsImageToGray(const HsCommData::HsImage& img, HalconCpp::HImage*& gray, int* w, int* h, std::string* err)
+{
+    if (!gray || !w || !h || img.isNull()) {
+        if (err) {
+            *err = "æ— è¾“å…¥å›¾";
+        }
+        return false;
+    }
+    HalconCpp::HObject ho;
+    HalconCpp::HObject* pHo = &ho;
+    if (!hsImageToHObject(img, pHo, err)) {
+        return false;
+    }
+    try {
+        HalconCpp::HTuple ch;
+        HalconCpp::CountChannels(ho, &ch);
+        if (ch.Length() >= 1 && ch[0].L() >= 3) {
+            HalconCpp::HObject grayHo;
+            HalconCpp::Rgb1ToGray(ho, &grayHo);
+            ho = grayHo;
+        }
+        *gray = HalconCpp::HImage(ho);
+        HalconCpp::HTuple tw;
+        HalconCpp::HTuple th;
+        gray->GetImageSize(&tw, &th);
+        *w = static_cast<int>(tw.L());
+        *h = static_cast<int>(th.L());
+        return true;
+    } catch (const HalconCpp::HException& e) {
+        setHalconErr(err, e);
+        return false;
+    }
+}
+
+bool inputToGray(void* native, int algLib, const HsCommData::HsImage& img, HalconCpp::HObject*& gray, int* w, int* h, std::string* err)
+{
+    if (!gray || !w || !h) {
+        setErr(err, "no input image");
+        return false;
+    }
+    HalconCpp::HObject ho;
+    if (native != nullptr && algLib == static_cast<int>(AlgLibHal)) {
+        try {
+            ho = *static_cast<const HalconCpp::HObject*>(native);
+        } catch (const HalconCpp::HException& e) {
+            setHalconErr(err, e);
+            return false;
+        }
+    } else {
+        HalconCpp::HObject* held = &ho;
+        if (!hsImageToHObject(img, held, err)) {
+            return false;
+        }
+    }
+    try {
+        HalconCpp::HTuple ch;
+        HalconCpp::CountChannels(ho, &ch);
+        if (ch.Length() >= 1 && ch[0].L() >= 3) {
+            HalconCpp::HObject grayHo;
+            HalconCpp::Rgb1ToGray(ho, &grayHo);
+            ho = grayHo;
+        }
+        *gray = ho;
+        HalconCpp::HTuple tw;
+        HalconCpp::HTuple th;
+        HalconCpp::GetImageSize(*gray, &tw, &th);
+        *w = static_cast<int>(tw.L());
+        *h = static_cast<int>(th.L());
+        return true;
     } catch (const HalconCpp::HException& e) {
         setHalconErr(err, e);
         return false;

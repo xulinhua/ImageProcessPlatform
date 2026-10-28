@@ -1,6 +1,6 @@
 /**
  * @file StackLayer.cpp
- * @brief StackLayerÊµÏÖ
+ * @brief StackLayerå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -43,7 +43,7 @@ void StackLayer::rebuild(qreal scale)
                 g.geomStyle = HsCommData::GeomStyle::stackStyle();
             }
             g.updateBounds();
-            // ÏÔÊ¾²»°´Í¼ĞÎ id ºÏ²¢¡£¸÷¹¤¾ß¶¼»áĞ´³ö resultRoi.0£¬Í¬ÃûµÄ¶¼Òª»­
+            // æ˜¾ç¤ºä¸æŒ‰å›¾å½¢ id åˆå¹¶ã€‚å„å·¥å…·éƒ½ä¼šå†™å‡º resultRoi.0ï¼ŒåŒåçš„éƒ½è¦ç”»
             const QString key = QString::number(static_cast<qlonglong>(i));
             seen.insert(key);
             GraphicItem* item = m_items.value(key, 0);
@@ -90,43 +90,43 @@ GraphicItem* StackLayer::hit(const QPointF& scenePos, qreal tol) const
     return 0;
 }
 
-// Í¼²ã½Úµã
+// å›¾å±‚èŠ‚ç‚¹
 LayerItem* StackLayer::node() const
 {
     return m_node;
 }
 
-// Í¼Ôª±í
+// å›¾å…ƒè¡¨
 QHash<QString, GraphicItem*>& StackLayer::items()
 {
     return m_items;
 }
 
-// Í¼Ôª±í£¨Ö»¶Á£©
+// å›¾å…ƒè¡¨ï¼ˆåªè¯»ï¼‰
 const QHash<QString, GraphicItem*>& StackLayer::items() const
 {
     return m_items;
 }
 
-// µş¼Ó³¡¾°
+// å åŠ åœºæ™¯
 std::shared_ptr<const HsCommData::FrameOverlay>& StackLayer::overlay()
 {
     return m_overlay;
 }
 
-// µş¼Ó³¡¾°£¨Ö»¶Á£©
+// å åŠ åœºæ™¯ï¼ˆåªè¯»ï¼‰
 const std::shared_ptr<const HsCommData::FrameOverlay>& StackLayer::overlay() const
 {
     return m_overlay;
 }
 
-// ¿É¼ûĞÔ±êÖ¾
+// å¯è§æ€§æ ‡å¿—
 bool& StackLayer::wantVisible()
 {
     return m_visible;
 }
 
-// ÑùÊ½
+// æ ·å¼
 HsCommData::GeomStyle& StackLayer::style()
 {
     return m_style;

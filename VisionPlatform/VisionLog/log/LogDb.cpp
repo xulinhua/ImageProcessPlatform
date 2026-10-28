@@ -1,6 +1,6 @@
 /**
  * @file LogDb.cpp
- * @brief LogDbÊµÏÖ
+ * @brief LogDbå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -19,7 +19,7 @@ namespace Vision {
 
 namespace {
 
-// ´Óµ¥Ôª¸ñÈ¡³öÎÄ±¾
+// ä»å•å…ƒæ ¼å–å‡ºæ–‡æœ¬
 std::string asText(const DbValue& v)
 {
     if (v.kind == DbValue::Text) {
@@ -33,7 +33,7 @@ std::string asText(const DbValue& v)
     return std::string();
 }
 
-// ´Óµ¥Ôª¸ñÈ¡³öÕûÊı
+// ä»å•å…ƒæ ¼å–å‡ºæ•´æ•°
 int64_t asInt(const DbValue& v)
 {
     if (v.kind == DbValue::Int) {
@@ -45,7 +45,7 @@ int64_t asInt(const DbValue& v)
     return 0;
 }
 
-// ±¾µØÊ±¼äµÄ ISO ÎÄ±¾
+// æœ¬åœ°æ—¶é—´çš„ ISO æ–‡æœ¬
 std::string nowIso()
 {
     time_t t = time(0);
@@ -58,7 +58,7 @@ std::string nowIso()
     return std::string(buf);
 }
 
-// ±£ÁôÌìÊıÖ®Ç°µÄ½ØÖ¹ÈÕÆÚ
+// ä¿ç•™å¤©æ•°ä¹‹å‰çš„æˆªæ­¢æ—¥æœŸ
 std::string cutDay(int keepDays)
 {
     time_t now = time(0);
@@ -73,13 +73,13 @@ std::string cutDay(int keepDays)
     return std::string(buf);
 }
 
-// ÖÖÀà¶ÔÓ¦µÄÉ¾³ı¼üÇ°×º
+// ç§ç±»å¯¹åº”çš„åˆ é™¤é”®å‰ç¼€
 const char* kindKey(LogKind k)
 {
     return k == LogKindDebug ? "debug" : "op";
 }
 
-// ²ğ¿ª op|ÈÕÆÚ »ò debug|ÈÕÆÚ
+// æ‹†å¼€ op|æ—¥æœŸ æˆ– debug|æ—¥æœŸ
 bool splitKey(const std::string& key, LogKind* kind, std::string* day)
 {
     const size_t bar = key.find('|');
@@ -95,7 +95,7 @@ bool splitKey(const std::string& key, LogKind* kind, std::string* day)
     return ks == "debug" || ks == "op";
 }
 
-// ²éÑ¯ĞĞ»¹Ô­³ÉÒ»ÌõÈÕÖ¾
+// æŸ¥è¯¢è¡Œè¿˜åŸæˆä¸€æ¡æ—¥å¿—
 LogRecord rowToRecord(const std::vector<DbValue>& r)
 {
     LogRecord rec;
@@ -122,9 +122,9 @@ LogRecord rowToRecord(const std::vector<DbValue>& r)
 } // namespace
 
 struct LogDb::Impl {
-    CRITICAL_SECTION cs; ///< ±£»¤Á¬½Ó
-    SqliteDatabase db;   ///< ¹²ÓÃ vision.db
-    bool ready;          ///< ±íÒÑ¾ÍĞ÷
+    CRITICAL_SECTION cs; ///< ä¿æŠ¤è¿æ¥
+    SqliteDatabase db;   ///< å…±ç”¨ vision.db
+    bool ready;          ///< è¡¨å·²å°±ç»ª
 
     Impl()
         : ready(false)
@@ -137,20 +137,20 @@ struct LogDb::Impl {
     }
 };
 
-// ½ø³ÌÄÚÎ¨Ò»ÈÕÖ¾¿â
+// è¿›ç¨‹å†…å”¯ä¸€æ—¥å¿—åº“
 LogDb& LogDb::instance()
 {
     static LogDb g;
     return g;
 }
 
-// ·ÖÅäÊµÏÖ
+// åˆ†é…å®ç°
 LogDb::LogDb()
     : m(new Impl())
 {
 }
 
-// ÊÍ·ÅÊµÏÖ
+// é‡Šæ”¾å®ç°
 LogDb::~LogDb()
 {
     if (m) {
@@ -159,7 +159,7 @@ LogDb::~LogDb()
     }
 }
 
-// ´ò¿ª¹²ÓÃ¿â²¢È·±£ app_log ±í´æÔÚ
+// æ‰“å¼€å…±ç”¨åº“å¹¶ç¡®ä¿ app_log è¡¨å­˜åœ¨
 bool LogDb::ensureOpen()
 {
     if (m->ready) {
@@ -200,7 +200,7 @@ bool LogDb::ensureOpen()
     return true;
 }
 
-// ²åÈëÒ»ÌõÈÕÖ¾
+// æ’å…¥ä¸€æ¡æ—¥å¿—
 static bool insertOne(SqliteDatabase& db, const LogRecord& in)
 {
     LogRecord r = in;
@@ -232,7 +232,7 @@ static bool insertOne(SqliteDatabase& db, const LogRecord& in)
         a, 0);
 }
 
-// ÔÚÒ»¸öÊÂÎñÀïÅúÁ¿²åÈë
+// åœ¨ä¸€ä¸ªäº‹åŠ¡é‡Œæ‰¹é‡æ’å…¥
 bool LogDb::insertMany(const std::vector<LogRecord>& rows)
 {
     if (rows.empty()) {
@@ -262,7 +262,7 @@ bool LogDb::insertMany(const std::vector<LogRecord>& rows)
     return ok;
 }
 
-// °´ÖÖÀàºÍÈÕÆÚ²éÑ¯£¬ĞÂµÄÔÚÇ°
+// æŒ‰ç§ç±»å’Œæ—¥æœŸæŸ¥è¯¢ï¼Œæ–°çš„åœ¨å‰
 std::vector<LogRecord> LogDb::query(const LogQuery& q)
 {
     std::vector<LogRecord> out;
@@ -310,7 +310,7 @@ std::vector<LogRecord> LogDb::query(const LogQuery& q)
     return out;
 }
 
-// ÁĞ³öÓĞ¼ÇÂ¼µÄÈÕÆÚ
+// åˆ—å‡ºæœ‰è®°å½•çš„æ—¥æœŸ
 std::vector<LogFileInfo> LogDb::listDays()
 {
     std::vector<LogFileInfo> out;
@@ -342,7 +342,7 @@ std::vector<LogFileInfo> LogDb::listDays()
     return out;
 }
 
-// °´ÈÕÆÚ¼üÉ¾³ı¸ÃÈÕ¸ÃÖÖÀà
+// æŒ‰æ—¥æœŸé”®åˆ é™¤è¯¥æ—¥è¯¥ç§ç±»
 int LogDb::deleteDays(const std::vector<std::string>& keys)
 {
     int n = 0;
@@ -370,7 +370,7 @@ int LogDb::deleteDays(const std::vector<std::string>& keys)
     return n;
 }
 
-// É¾µôÔçÓÚ±£ÁôÌìÊıµÄ¼ÇÂ¼
+// åˆ æ‰æ—©äºä¿ç•™å¤©æ•°çš„è®°å½•
 void LogDb::pruneOlderThanDays(int days)
 {
     EnterCriticalSection(&m->cs);

@@ -122,6 +122,9 @@
     <ProjectReference Include="..\VisionToolBase\VisionToolBase.vcxproj">
       <Project>{B4E91A10-7C22-4F18-9A01-A0B1C2D3E440}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\VisionAlgToolBase\VisionAlgToolBase.vcxproj">
+      <Project>{B4E91A10-7C22-4F18-9A01-A0B1C2D3E441}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
 </Project>

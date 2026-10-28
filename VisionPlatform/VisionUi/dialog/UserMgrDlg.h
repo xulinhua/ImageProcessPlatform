@@ -1,6 +1,6 @@
 /**
  * @file UserMgrDlg.h
- * @brief UserMgrDlgÍ·ÎÄ¼ş
+ * @brief UserMgrDlgå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -20,40 +20,40 @@ class Session;
 
 /**
  * @class UserMgrDlg
- * @brief ±¾µØÓÃ»§¹ÜÀí£ºÌí¼Ó¡¢±à¼­¡¢É¾³ı¡¢ÖØÖÃ¿ÚÁî¡¢ÆôÓÃ/½ûÓÃ¡£Óë·½°¸ÎÄ¼şÎŞ¹Ø
+ * @brief æœ¬åœ°ç”¨æˆ·ç®¡ç†ï¼šæ·»åŠ ã€ç¼–è¾‘ã€åˆ é™¤ã€é‡ç½®å£ä»¤ã€å¯ç”¨/ç¦ç”¨ã€‚ä¸æ–¹æ¡ˆæ–‡ä»¶æ— å…³
  */
 class VISION_UI_API UserMgrDlg : public QDialog {
     Q_OBJECT
 public:
     /**
-     * @brief ¹¹ÔìÓÃ»§¹ÜÀí¶Ô»°¿ò
-     * @param session »á»°£¨²»ÓµÓĞ£©£¬Ìá¹© AuthMgr ÓëÈ¨ÏŞ
+     * @brief æ„é€ ç”¨æˆ·ç®¡ç†å¯¹è¯æ¡†
+     * @param session ä¼šè¯ï¼ˆä¸æ‹¥æœ‰ï¼‰ï¼Œæä¾› AuthMgr ä¸æƒé™
      */
     explicit UserMgrDlg(Session* session, QWidget* parent = 0);
 
 private slots:
-    /** @brief ´Ó AuthMgr ÖØÌîÓÃ»§±í£¬¾¡Á¿±£³Öµ±Ç°Ñ¡ÖĞĞĞ */
+    /** @brief ä» AuthMgr é‡å¡«ç”¨æˆ·è¡¨ï¼Œå°½é‡ä¿æŒå½“å‰é€‰ä¸­è¡Œ */
     void refresh();
-    /** @brief µ¯³ö UserEditDlg Ìí¼ÓÓÃ»§ */
+    /** @brief å¼¹å‡º UserEditDlg æ·»åŠ ç”¨æˆ· */
     void onAdd();
-    /** @brief ±à¼­µ±Ç°Ñ¡ÖĞÓÃ»§ */
+    /** @brief ç¼–è¾‘å½“å‰é€‰ä¸­ç”¨æˆ· */
     void onEdit();
-    /** @brief É¾³ıÑ¡ÖĞÓÃ»§£¨²»¿ÉÉ¾µ±Ç°µÇÂ¼/Ä©¸öÆôÓÃ¹ÜÀíÔ±£© */
+    /** @brief åˆ é™¤é€‰ä¸­ç”¨æˆ·ï¼ˆä¸å¯åˆ å½“å‰ç™»å½•/æœ«ä¸ªå¯ç”¨ç®¡ç†å‘˜ï¼‰ */
     void onDelete();
-    /** @brief ¹ÜÀíÔ±ÖØÖÃÑ¡ÖĞÓÃ»§¿ÚÁî */
+    /** @brief ç®¡ç†å‘˜é‡ç½®é€‰ä¸­ç”¨æˆ·å£ä»¤ */
     void onResetPwd();
-    /** @brief ÇĞ»»Ñ¡ÖĞÓÃ»§ÆôÓÃÌ¬ */
+    /** @brief åˆ‡æ¢é€‰ä¸­ç”¨æˆ·å¯ç”¨æ€ */
     void onToggleEnabled();
 
 private:
     /**
-     * @brief µ±Ç°Ñ¡ÖĞĞĞµÄµÇÂ¼Ãû
-     * @return ÎŞÑ¡ÖĞÊ±Îª¿Õ
+     * @brief å½“å‰é€‰ä¸­è¡Œçš„ç™»å½•å
+     * @return æ— é€‰ä¸­æ—¶ä¸ºç©º
      */
     QString selectedLogin() const;
 
-    Session* m_session;      ///< »á»°£¨²»ÓµÓĞ£©
-    QTableWidget* m_table;  ///< ÓÃ»§ÁĞ±í
+    Session* m_session;      ///< ä¼šè¯ï¼ˆä¸æ‹¥æœ‰ï¼‰
+    QTableWidget* m_table;  ///< ç”¨æˆ·åˆ—è¡¨
 };
 
 }

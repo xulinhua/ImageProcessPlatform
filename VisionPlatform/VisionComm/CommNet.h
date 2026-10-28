@@ -1,6 +1,6 @@
 /**
  * @file CommNet.h
- * @brief CommNetÍ·ÎÄ¼ş
+ * @brief CommNetå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -16,28 +16,28 @@
 
 namespace Vision {
 
-/** @brief ½ø³ÌÄÚ³õÊ¼»¯ Winsock£¬¿ÉÖØ¸´µ÷ÓÃ */
+/** @brief è¿›ç¨‹å†…åˆå§‹åŒ– Winsockï¼Œå¯é‡å¤è°ƒç”¨ */
 VISION_COMM_API void commNetEnsure();
 
-/** @brief ½âÎö IPv4 Ö÷»úÃû»òµã·ÖµØÖ· */
+/** @brief è§£æ IPv4 ä¸»æœºåæˆ–ç‚¹åˆ†åœ°å€ */
 VISION_COMM_API bool commResolveIpv4(const std::string& host, unsigned long* addr, std::string* err);
 
 /**
- * @brief µÈ´ıÌ×½Ó×Ö¿É¶Á»ò¿ÉĞ´
- * @return 1 ¾ÍĞ÷£¬0 ³¬Ê±£¬-1 Ê§°Ü
+ * @brief ç­‰å¾…å¥—æ¥å­—å¯è¯»æˆ–å¯å†™
+ * @return 1 å°±ç»ªï¼Œ0 è¶…æ—¶ï¼Œ-1 å¤±è´¥
  */
 VISION_COMM_API int commWaitSocket(SOCKET sock, bool wantRead, int timeoutMs);
 
-/** @brief ·¢Íê data »òÊ§°Ü */
+/** @brief å‘å®Œ data æˆ–å¤±è´¥ */
 VISION_COMM_API bool commSendAll(SOCKET sock, const CommBytes& data, int timeoutMs, std::string* err);
 
 /**
- * @brief ¶ÁÒ»Åú
- * @return 1 ÓĞÊı¾İ£¬0 ³¬Ê±£¬-1 Ê§°Ü£¬-2 ¶Ô¶Ë¹Ø±Õ
+ * @brief è¯»ä¸€æ‰¹
+ * @return 1 æœ‰æ•°æ®ï¼Œ0 è¶…æ—¶ï¼Œ-1 å¤±è´¥ï¼Œ-2 å¯¹ç«¯å…³é—­
  */
 VISION_COMM_API int commRecvSome(SOCKET sock, int maxBytes, int timeoutMs, CommBytes* out, std::string* err);
 
-/** @brief µã·ÖµØÖ·¼Ó¶Ë¿Ú */
+/** @brief ç‚¹åˆ†åœ°å€åŠ ç«¯å£ */
 VISION_COMM_API std::string commEndpointText(const sockaddr_in& addr);
 
 }

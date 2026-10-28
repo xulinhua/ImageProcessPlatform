@@ -1,6 +1,6 @@
 /**
  * @file AuthMgr.cpp
- * @brief AuthMgrÊµÏÖ
+ * @brief AuthMgrå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -21,7 +21,7 @@
 
 namespace Vision {
 
-// ±¾µØÊ±¼ä ISO-8601£¨ÎŞÊ±Çø£©
+// æœ¬åœ°æ—¶é—´ ISO-8601ï¼ˆæ— æ—¶åŒºï¼‰
 static std::string isoNow()
 {
     time_t t = time(0);
@@ -34,7 +34,7 @@ static std::string isoNow()
     return std::string(buf);
 }
 
-// ÓÃ UUID 16 ×Ö½Ú×÷ÑÎ
+// ç”¨ UUID 16 å­—èŠ‚ä½œç›
 static std::vector<unsigned char> randomSalt()
 {
     UUID u;
@@ -53,7 +53,7 @@ std::vector<unsigned char> AuthMgr::hashPassword(const std::vector<unsigned char
     return std::vector<unsigned char>(dig, dig + 32);
 }
 
-// ½«³ö³§ÈıÕË»§¿ÚÁîÖØÖÃÎª¿Õ
+// å°†å‡ºå‚ä¸‰è´¦æˆ·å£ä»¤é‡ç½®ä¸ºç©º
 UserAccount AuthMgr::makeUser(const std::string& login, const std::string& display, UserRole role, const std::string& password)
 {
     UserAccount u;
@@ -69,20 +69,20 @@ UserAccount AuthMgr::makeUser(const std::string& login, const std::string& displ
     return u;
 }
 
-// ½«³ö³§ÈıÕË»§¿ÚÁîÖØÖÃÎª¿Õ
+// å°†å‡ºå‚ä¸‰è´¦æˆ·å£ä»¤é‡ç½®ä¸ºç©º
 bool AuthMgr::verifyPassword(const UserAccount& u, const std::string& password) const
 {
     const std::vector<unsigned char> h = hashPassword(u.salt, password);
     return h == u.pwdHash;
 }
 
-// ½«³ö³§ÈıÕË»§¿ÚÁîÖØÖÃÎª¿Õ
+// å°†å‡ºå‚ä¸‰è´¦æˆ·å£ä»¤é‡ç½®ä¸ºç©º
 void AuthMgr::clear()
 {
     m_users.clear();
 }
 
-// °´ id É¾³ı
+// æŒ‰ id åˆ é™¤
 UserAccount* AuthMgr::findById(const std::string& id)
 {
     for (int i = 0; i < static_cast<int>(m_users.size()); ++i) {
@@ -93,7 +93,7 @@ UserAccount* AuthMgr::findById(const std::string& id)
     return 0;
 }
 
-// ½«³ö³§ÈıÕË»§¿ÚÁîÖØÖÃÎª¿Õ
+// å°†å‡ºå‚ä¸‰è´¦æˆ·å£ä»¤é‡ç½®ä¸ºç©º
 UserAccount* AuthMgr::findByLogin(const std::string& loginName)
 {
     const std::string key = vpLower(loginName);
@@ -105,7 +105,7 @@ UserAccount* AuthMgr::findByLogin(const std::string& loginName)
     return 0;
 }
 
-// ½«³ö³§ÈıÕË»§¿ÚÁîÖØÖÃÎª¿Õ
+// å°†å‡ºå‚ä¸‰è´¦æˆ·å£ä»¤é‡ç½®ä¸ºç©º
 const UserAccount* AuthMgr::findByLogin(const std::string& loginName) const
 {
     const std::string key = vpLower(loginName);
@@ -117,7 +117,7 @@ const UserAccount* AuthMgr::findByLogin(const std::string& loginName) const
     return 0;
 }
 
-// ½«³ö³§ÈıÕË»§¿ÚÁîÖØÖÃÎª¿Õ
+// å°†å‡ºå‚ä¸‰è´¦æˆ·å£ä»¤é‡ç½®ä¸ºç©º
 bool AuthMgr::addUser(const UserAccount& u)
 {
     if (u.loginName.empty() || findByLogin(u.loginName)) {
@@ -127,7 +127,7 @@ bool AuthMgr::addUser(const UserAccount& u)
     return true;
 }
 
-// °´ id É¾³ı
+// æŒ‰ id åˆ é™¤
 bool AuthMgr::removeById(const std::string& id)
 {
     for (int i = 0; i < static_cast<int>(m_users.size()); ++i) {
@@ -139,7 +139,7 @@ bool AuthMgr::removeById(const std::string& id)
     return false;
 }
 
-// ½«³ö³§ÈıÕË»§¿ÚÁîÖØÖÃÎª¿Õ
+// å°†å‡ºå‚ä¸‰è´¦æˆ·å£ä»¤é‡ç½®ä¸ºç©º
 bool AuthMgr::setPassword(UserAccount* u, const std::string& password)
 {
     if (!u) {
@@ -151,7 +151,7 @@ bool AuthMgr::setPassword(UserAccount* u, const std::string& password)
     return true;
 }
 
-// ½«³ö³§ÈıÕË»§¿ÚÁîÖØÖÃÎª¿Õ
+// å°†å‡ºå‚ä¸‰è´¦æˆ·å£ä»¤é‡ç½®ä¸ºç©º
 int AuthMgr::countRole(UserRole role, bool enabledOnly) const
 {
     int n = 0;
@@ -167,7 +167,7 @@ int AuthMgr::countRole(UserRole role, bool enabledOnly) const
     return n;
 }
 
-// ½«³ö³§ÈıÕË»§¿ÚÁîÖØÖÃÎª¿Õ
+// å°†å‡ºå‚ä¸‰è´¦æˆ·å£ä»¤é‡ç½®ä¸ºç©º
 UserAccount* AuthMgr::findFirstByRole(UserRole role, bool enabledOnly)
 {
     for (int i = 0; i < static_cast<int>(m_users.size()); ++i) {
@@ -183,7 +183,7 @@ UserAccount* AuthMgr::findFirstByRole(UserRole role, bool enabledOnly)
     return 0;
 }
 
-// ½«³ö³§ÈıÕË»§¿ÚÁîÖØÖÃÎª¿Õ
+// å°†å‡ºå‚ä¸‰è´¦æˆ·å£ä»¤é‡ç½®ä¸ºç©º
 bool AuthMgr::ensureAdminAccount()
 {
     if (findFirstByRole(RoleAdmin, true)) {
@@ -195,22 +195,22 @@ bool AuthMgr::ensureAdminAccount()
         a->enabled = true;
         return true;
     }
-    return addUser(makeUser("admin", std::string(Translate::tr("¹ÜÀíÔ±")), RoleAdmin, std::string()));
+    return addUser(makeUser("admin", std::string(Translate::tr("ç®¡ç†å‘˜")), RoleAdmin, std::string()));
 }
 
-// ¿Õ¿âÊ±Ğ´Èë admin/engineer/operator£¬Ä¬ÈÏÎŞ¿ÚÁî
+// ç©ºåº“æ—¶å†™å…¥ admin/engineer/operatorï¼Œé»˜è®¤æ— å£ä»¤
 bool AuthMgr::ensureDefaults()
 {
     if (!m_users.empty()) {
         return true;
     }
-    addUser(makeUser("admin", std::string(Translate::tr("¹ÜÀíÔ±")), RoleAdmin, std::string()));
-    addUser(makeUser("engineer", std::string(Translate::tr("¹¤³ÌÊ¦")), RoleEngineer, std::string()));
-    addUser(makeUser("operator", std::string(Translate::tr("²Ù×÷Ô±")), RoleOperator, std::string()));
+    addUser(makeUser("admin", std::string(Translate::tr("ç®¡ç†å‘˜")), RoleAdmin, std::string()));
+    addUser(makeUser("engineer", std::string(Translate::tr("å·¥ç¨‹å¸ˆ")), RoleEngineer, std::string()));
+    addUser(makeUser("operator", std::string(Translate::tr("æ“ä½œå‘˜")), RoleOperator, std::string()));
     return true;
 }
 
-// ½«³ö³§ÈıÕË»§¿ÚÁîÖØÖÃÎª¿Õ
+// å°†å‡ºå‚ä¸‰è´¦æˆ·å£ä»¤é‡ç½®ä¸ºç©º
 bool AuthMgr::ensureBuiltinEmptyPasswords()
 {
     static const char* kBuiltin[] = { "admin", "engineer", "operator" };
@@ -228,26 +228,26 @@ bool AuthMgr::ensureBuiltinEmptyPasswords()
     return changed;
 }
 
-// ´ÓÓÃ»§¿â¶ÁÈë
+// ä»ç”¨æˆ·åº“è¯»å…¥
 bool AuthMgr::load(std::string* error)
 {
     return AuthDb::instance().loadUsers(this, error);
 }
 
-// °ÑÄÚ´æÓÃ»§Õû±íĞ´»Ø
+// æŠŠå†…å­˜ç”¨æˆ·æ•´è¡¨å†™å›
 bool AuthMgr::save(std::string* error) const
 {
     return AuthDb::instance().saveUsers(*this, error);
 }
 
 
-// ÓÃ»§Êı
+// ç”¨æˆ·æ•°
 int AuthMgr::count() const
 {
     return static_cast<int>(m_users.size());
 }
 
-// µÚ i ¸öÓÃ»§
+// ç¬¬ i ä¸ªç”¨æˆ·
 const UserAccount& AuthMgr::at(int i) const
 {
     return m_users[static_cast<size_t>(i)];

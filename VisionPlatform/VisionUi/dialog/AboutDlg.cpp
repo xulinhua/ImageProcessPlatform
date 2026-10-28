@@ -1,6 +1,6 @@
 /**
  * @file AboutDlg.cpp
- * @brief AboutDlgÊµÏÖ
+ * @brief AboutDlgå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -21,15 +21,15 @@
 
 namespace Vision {
 
-// ¹ØÓÚ£ºCV-X Æ·ÅÆÍ· + ²úÆ·ËµÃ÷ + °æ±¾ÕªÒª + °æÈ¨
+// å…³äºï¼šCV-X å“ç‰Œå¤´ + äº§å“è¯´æ˜ + ç‰ˆæœ¬æ‘˜è¦ + ç‰ˆæƒ
 AboutDlg::AboutDlg(QWidget* parent)
     : QDialog(parent)
 {
-    setWindowTitle(T("¹ØÓÚ"));
+    setWindowTitle(T("å…³äº"));
     setModal(true);
     resize(480, 360);
 
-    // Æ·ÅÆÇø£º´óºÅ±êÊ¶ + ²úÆ·Ãû
+    // å“ç‰ŒåŒºï¼šå¤§å·æ ‡è¯† + äº§å“å
     QLabel* logo = new QLabel(QLatin1String("V"), this);
     logo->setObjectName(QLatin1String("toolDebugLogo"));
     logo->setAlignment(Qt::AlignCenter);
@@ -45,7 +45,7 @@ AboutDlg::AboutDlg(QWidget* parent)
     QLabel* product = new QLabel(QString::fromUtf8(appProductName()), this);
     product->setStyleSheet(QLatin1String("font-size: 18px; font-weight: bold; color: #1F1F1F;"));
 
-    QLabel* tagline = new QLabel(T("»úÆ÷ÊÓ¾õÍ¨ÓÃ¹¤¾ßÆ½Ì¨"), this);
+    QLabel* tagline = new QLabel(T("æœºå™¨è§†è§‰é€šç”¨å·¥å…·å¹³å°"), this);
     tagline->setObjectName(QLatin1String("hint"));
     tagline->setWordWrap(true);
 
@@ -60,43 +60,43 @@ AboutDlg::AboutDlg(QWidget* parent)
     hero->addWidget(logo, 0, Qt::AlignTop);
     hero->addLayout(nameCol, 1);
 
-    // ·Ö¸ôÏß
+    // åˆ†éš”çº¿
     QFrame* line = new QFrame(this);
     line->setFrameShape(QFrame::HLine);
     line->setObjectName(QLatin1String("toolDebugHeaderSep"));
 
-    // °æ±¾Óë¹¹½¨£¨ÕªÒª£»Ã÷Ï¸ÔÚ°æ±¾¹ÜÀí£©
-    QLabel* ver = new QLabel(T("°æ±¾ ") + QString::fromLatin1(appVersion()), this);
+    // ç‰ˆæœ¬ä¸æ„å»ºï¼ˆæ‘˜è¦ï¼›æ˜ç»†åœ¨ç‰ˆæœ¬ç®¡ç†ï¼‰
+    QLabel* ver = new QLabel(T("ç‰ˆæœ¬ ") + QString::fromLatin1(appVersion()), this);
     ver->setStyleSheet(QLatin1String("font-size: 14px; color: #1F1F1F;"));
 
-    QLabel* build = new QLabel(T("¹¹½¨Ê±¼ä£º") + QString::fromUtf8(buildStamp().c_str()), this);
+    QLabel* build = new QLabel(T("æ„å»ºæ—¶é—´ï¼š") + QString::fromUtf8(buildStamp().c_str()), this);
     build->setObjectName(QLatin1String("hint"));
     build->setWordWrap(true);
 
-    QLabel* runtime = new QLabel(T("ÔËĞĞ»·¾³£ºQt ") + QString::fromLatin1(qVersion())
-                                 + T(" / VS2015 (v140) / C++11"), this);
+    QLabel* runtime = new QLabel(T("è¿è¡Œç¯å¢ƒï¼šQt ") + QString::fromLatin1(qVersion())
+                                 + T(" / VS2022 (v143) / C++17"), this);
     runtime->setObjectName(QLatin1String("hint"));
     runtime->setWordWrap(true);
 
     QLabel* desc = new QLabel(
-        T("ÃæÏò²úÏßÊÓ¾õ¼ì²â£º·½°¸Éè¼Æ¡¢¶à¹¤Õ¾ÔËĞĞ¡¢¹¤¾ßµ÷ÊÔÓëÈ¨ÏŞ¹Ü¿Ø¡£"
-          "Ëã·¨Óë²É¼¯ÒÔ²å¼ş·½Ê½×¢²á£¬·½°¸ÒÔ *.vpsol ÂäÅÌ¡£"), this);
+        T("é¢å‘äº§çº¿è§†è§‰æ£€æµ‹ï¼šæ–¹æ¡ˆè®¾è®¡ã€å¤šå·¥ç«™è¿è¡Œã€å·¥å…·è°ƒè¯•ä¸æƒé™ç®¡æ§ã€‚"
+          "ç®—æ³•ä¸é‡‡é›†ä»¥æ’ä»¶æ–¹å¼æ³¨å†Œï¼Œæ–¹æ¡ˆä»¥ *.vpsol è½ç›˜ã€‚"), this);
     desc->setWordWrap(true);
     desc->setObjectName(QLatin1String("hint"));
 
-    QPushButton* moreVer = new QPushButton(T("²é¿´°æ±¾ÏêÇé¡­"), this);
+    QPushButton* moreVer = new QPushButton(T("æŸ¥çœ‹ç‰ˆæœ¬è¯¦æƒ…â€¦"), this);
     moreVer->setFlat(true);
     moreVer->setCursor(Qt::PointingHandCursor);
     moreVer->setStyleSheet(QLatin1String("QPushButton { color: #1677FF; text-align: left; padding: 0; }"));
     connect(moreVer, SIGNAL(clicked()), this, SLOT(onOpenVersions()));
 
-    // °æÈ¨
+    // ç‰ˆæƒ
     QLabel* copy = new QLabel(T("Copyright (c) 2026 VisionPlatform. All rights reserved."), this);
     copy->setObjectName(QLatin1String("hint"));
     copy->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
 
     QDialogButtonBox* box = new QDialogButtonBox(QDialogButtonBox::Ok, this);
-    box->button(QDialogButtonBox::Ok)->setText(T("È·¶¨"));
+    box->button(QDialogButtonBox::Ok)->setText(T("ç¡®å®š"));
     setButtonRole(box->button(QDialogButtonBox::Ok), "primary");
     connect(box, SIGNAL(accepted()), this, SLOT(accept()));
 
@@ -116,7 +116,7 @@ AboutDlg::AboutDlg(QWidget* parent)
     lay->addWidget(box);
 }
 
-// Ìø×ª°æ±¾¹ÜÀí
+// è·³è½¬ç‰ˆæœ¬ç®¡ç†
 void AboutDlg::onOpenVersions()
 {
     VersionDlg dlg(this);

@@ -1,6 +1,6 @@
 /**
  * @file ThreadPool.cpp
- * @brief ThreadPoolÊµÏÖ
+ * @brief ThreadPoolå®žçŽ°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -16,14 +16,14 @@
 namespace Vision {
 
 struct ThreadPool::Impl {
-    std::mutex mutex;                       ///< ¶ÓÁÐËø
-    std::condition_variable cv;             ///< ÓÐÈÎÎñ»òÍ£Ö¹
-    std::condition_variable idleCv;         ///< ¿ÕÏÐÍ¨Öª
-    std::queue<std::function<void()> > tasks; ///< ´ýÖ´ÐÐ
-    std::vector<std::thread> workers;       ///< ¹¤×÷Ïß³Ì
-    int inflight;                           ///< ÕýÔÚÖ´ÐÐµÄÈÎÎñÊý
-    bool stop;                              ///< Îö¹¹Í£Ö¹
-    bool accepting;                         ///< ÊÇ·ñ½ÓÊÜ enqueue
+    std::mutex mutex;                       ///< é˜Ÿåˆ—é”
+    std::condition_variable cv;             ///< æœ‰ä»»åŠ¡æˆ–åœæ­¢
+    std::condition_variable idleCv;         ///< ç©ºé—²é€šçŸ¥
+    std::queue<std::function<void()> > tasks; ///< å¾…æ‰§è¡Œ
+    std::vector<std::thread> workers;       ///< å·¥ä½œçº¿ç¨‹
+    int inflight;                           ///< æ­£åœ¨æ‰§è¡Œçš„ä»»åŠ¡æ•°
+    bool stop;                              ///< æžæž„åœæ­¢
+    bool accepting;                         ///< æ˜¯å¦æŽ¥å— enqueue
     Impl()
         : inflight(0)
         , stop(false)
@@ -33,7 +33,7 @@ struct ThreadPool::Impl {
 
 namespace {
 
-// Ä¬ÈÏÏß³ÌÊý£ºÓ²¼þ²¢·¢£¬¼ÐÔÚ [2, 8]
+// é»˜è®¤çº¿ç¨‹æ•°ï¼šç¡¬ä»¶å¹¶å‘ï¼Œå¤¹åœ¨ [2, 8]
 std::size_t defaultThreadCount()
 {
     std::size_t n = std::thread::hardware_concurrency();
@@ -48,7 +48,7 @@ std::size_t defaultThreadCount()
 
 } // namespace
 
-// ´´½¨²¢À­Æð¹¤×÷Ïß³Ì
+// åˆ›å»ºå¹¶æ‹‰èµ·å·¥ä½œçº¿ç¨‹
 ThreadPool::ThreadPool(std::size_t threadCount)
     : m_impl(new Impl)
     , m_threadCount(threadCount == 0 ? defaultThreadCount() : threadCount)
@@ -58,7 +58,7 @@ ThreadPool::ThreadPool(std::size_t threadCount)
     }
 }
 
-// Í£Ö¹²¢»ØÊÕ
+// åœæ­¢å¹¶å›žæ”¶
 ThreadPool::~ThreadPool()
 {
     if (!m_impl) {
@@ -84,7 +84,7 @@ ThreadPool::~ThreadPool()
     }
 }
 
-// Èë¶Ó
+// å…¥é˜Ÿ
 void ThreadPool::enqueue(const std::function<void()>& task)
 {
     if (!m_impl || !task) {
@@ -100,7 +100,7 @@ void ThreadPool::enqueue(const std::function<void()>& task)
     m_impl->cv.notify_one();
 }
 
-// ¿ª¹Ø½ÓÊÕ
+// å¼€å…³æŽ¥æ”¶
 void ThreadPool::setAccepting(bool on)
 {
     if (!m_impl) {
@@ -110,7 +110,7 @@ void ThreadPool::setAccepting(bool on)
     m_impl->accepting = on;
 }
 
-// Çå¿ÕÅÅ¶Ó
+// æ¸…ç©ºæŽ’é˜Ÿ
 void ThreadPool::clearPending()
 {
     if (!m_impl) {
@@ -125,7 +125,7 @@ void ThreadPool::clearPending()
     }
 }
 
-// µÈ´ý¿ÕÏÐ
+// ç­‰å¾…ç©ºé—²
 void ThreadPool::waitIdle()
 {
     if (!m_impl) {
@@ -137,7 +137,7 @@ void ThreadPool::waitIdle()
     });
 }
 
-// ÍË³öÈí¼þ£º¾ÜÊÕ + ÇåÅÅ¶Ó + µÈÔÚ·É
+// é€€å‡ºè½¯ä»¶ï¼šæ‹’æ”¶ + æ¸…æŽ’é˜Ÿ + ç­‰åœ¨é£ž
 void ThreadPool::drainForShutdown()
 {
     setAccepting(false);
@@ -145,7 +145,7 @@ void ThreadPool::drainForShutdown()
     waitIdle();
 }
 
-// ¹¤×÷Ïß³ÌÑ­»·
+// å·¥ä½œçº¿ç¨‹å¾ªçŽ¯
 void ThreadPool::workerLoop()
 {
     for (;;) {
@@ -176,14 +176,14 @@ void ThreadPool::workerLoop()
     }
 }
 
-// ½ø³Ì¹²Ïí³Ø
+// è¿›ç¨‹å…±äº«æ± 
 ThreadPool& ThreadPool::shared()
 {
     static ThreadPool pool(0);
     return pool;
 }
 
-// Ïß³ÌÊý
+// çº¿ç¨‹æ•°
 std::size_t ThreadPool::threadCount() const
 {
     return m_threadCount;

@@ -1,6 +1,6 @@
 /**
  * @file VersionDlg.h
- * @brief VersionDlgÍ·ÎÄ¼ş
+ * @brief VersionDlgå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -19,21 +19,21 @@ namespace Vision {
 
 /**
  * @class VersionDlg
- * @brief °æ±¾¹ÜÀí£ºÈí¼ş / Ä£¿é / ÒÑ×¢²á¹¤¾ß°æ±¾
+ * @brief ç‰ˆæœ¬ç®¡ç†ï¼šè½¯ä»¶ / æ¨¡å— / å·²æ³¨å†Œå·¥å…·ç‰ˆæœ¬
  */
 class VISION_UI_API VersionDlg : public QDialog {
     Q_OBJECT
 public:
-    /** @brief ¹¹Ôì²¢Ìî³ä°æ±¾±í */
+    /** @brief æ„é€ å¹¶å¡«å……ç‰ˆæœ¬è¡¨ */
     explicit VersionDlg(QWidget* parent = 0);
 
 private:
-    /** @brief Ìî³äÄ£¿éÓë¹¤¾ß±í */
+    /** @brief å¡«å……æ¨¡å—ä¸å·¥å…·è¡¨ */
     void fillTables();
 
-    QLabel* m_summary;          ///< ²úÆ·Ãû¡¢°æ±¾¡¢¹¹½¨Ê±¼ä
-    QTableWidget* m_modules;    ///< Ä£¿é°æ±¾±í
-    QTableWidget* m_tools;      ///< ¹¤¾ß°æ±¾±í
+    QLabel* m_summary;          ///< äº§å“åã€ç‰ˆæœ¬ã€æ„å»ºæ—¶é—´
+    QTableWidget* m_modules;    ///< æ¨¡å—ç‰ˆæœ¬è¡¨
+    QTableWidget* m_tools;      ///< å·¥å…·ç‰ˆæœ¬è¡¨
 };
 
 }

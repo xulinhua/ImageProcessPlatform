@@ -1,6 +1,6 @@
 /**
  * @file FrameOverlay.cpp
- * @brief FrameOverlayÊµÏÖ
+ * @brief FrameOverlayå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -10,19 +10,19 @@
 
 namespace HsCommData {
 
-// ¿Õµş¼Ó£¬Ö¡ºÅÎª 0
+// ç©ºå åŠ ï¼Œå¸§å·ä¸º 0
 FrameOverlay::FrameOverlay()
     : frameId(0)
 {
 }
 
-// Ö¸¶¨Ö¡ºÅ
+// æŒ‡å®šå¸§å·
 FrameOverlay::FrameOverlay(int64_t id)
     : frameId(id)
 {
 }
 
-// ´´½¨¹²Ïí¿ìÕÕ
+// åˆ›å»ºå…±äº«å¿«ç…§
 std::shared_ptr<FrameOverlay> FrameOverlay::create(int64_t frameId)
 {
     return std::shared_ptr<FrameOverlay>(new FrameOverlay(frameId));

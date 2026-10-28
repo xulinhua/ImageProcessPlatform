@@ -1,6 +1,6 @@
 /**
  * @file HardwareDevice.h
- * @brief HardwareDeviceÍ·ÎÄ¼þ
+ * @brief HardwareDeviceå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -16,20 +16,20 @@
 
 namespace Vision {
 
-/** @class DeviceRef @brief ¹¤Õ¾°ó¶¨µÄÉè±¸ÒýÓÃ */
+/** @class DeviceRef @brief å·¥ç«™ç»‘å®šçš„è®¾å¤‡å¼•ç”¨ */
 struct DeviceRef {
-    ObjectId deviceId; ///< Éè±¸ id
-    bool enabled;      ///< ÊÇ·ñÆôÓÃ
+    ObjectId deviceId; ///< è®¾å¤‡ id
+    bool enabled;      ///< æ˜¯å¦å¯ç”¨
     DeviceRef() : enabled(true) {}
 };
 
-/** @class HardwareDevice @brief ·½°¸¼¶Ó²¼þÉè±¸Ì¨ÕËÏî */
+/** @class HardwareDevice @brief æ–¹æ¡ˆçº§ç¡¬ä»¶è®¾å¤‡å°è´¦é¡¹ */
 struct HardwareDevice {
-    ObjectId id;                    ///< Éè±¸ id
-    std::string name;               ///< ÏÔÊ¾Ãû
-    DeviceKind kind;                ///< ¶¥²ãÖÖÀà£ºÏà»ú/¿ØÖÆ¿¨/PLC
-    CameraBackend cameraBackend;    ///< ½öÏà»úÓÐÐ§£ºÎÄ¼þÔ´»ò SDK
-    ParamMap defaultParams;         ///< È±Ê¡²ÎÊý
+    ObjectId id;                    ///< è®¾å¤‡ id
+    std::string name;               ///< æ˜¾ç¤ºå
+    DeviceKind kind;                ///< é¡¶å±‚ç§ç±»ï¼šç›¸æœº/æŽ§åˆ¶å¡/PLC
+    CameraBackend cameraBackend;    ///< ä»…ç›¸æœºæœ‰æ•ˆï¼šæ–‡ä»¶æºæˆ– SDK
+    ParamMap defaultParams;         ///< ç¼ºçœå‚æ•°
     HardwareDevice()
         : kind(DeviceKindUndefined)
         , cameraBackend(CameraBackendUndefined)

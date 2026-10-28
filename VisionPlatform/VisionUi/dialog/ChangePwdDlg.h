@@ -1,6 +1,6 @@
 /**
  * @file ChangePwdDlg.h
- * @brief ChangePwdDlgÍ·ÎÄ¼ş
+ * @brief ChangePwdDlgå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -21,32 +21,32 @@ class Session;
 
 /**
  * @class ChangePwdDlg
- * @brief ĞŞ¸Ä¿ÚÁî»ò¹ÜÀíÔ±ÖØÖÃ¿ÚÁî¡£¿ÚÁî¿ÉÎª¿Õ
+ * @brief ä¿®æ”¹å£ä»¤æˆ–ç®¡ç†å‘˜é‡ç½®å£ä»¤ã€‚å£ä»¤å¯ä¸ºç©º
  */
 class VISION_UI_API ChangePwdDlg : public QDialog {
     Q_OBJECT
 public:
     /**
-     * @brief ¹¹Ôì¸ÄÃÜ¶Ô»°¿ò
-     * @param loginName Ä¿±êµÇÂ¼Ãû
-     * @param requireOld true ĞëĞ£Ñéµ±Ç°¿ÚÁî£¨×ÔÖú¸ÄÃÜ£©
-     * @param resetByAdmin true Îª¹ÜÀíÔ±ÖØÖÃ
+     * @brief æ„é€ æ”¹å¯†å¯¹è¯æ¡†
+     * @param loginName ç›®æ ‡ç™»å½•å
+     * @param requireOld true é¡»æ ¡éªŒå½“å‰å£ä»¤ï¼ˆè‡ªåŠ©æ”¹å¯†ï¼‰
+     * @param resetByAdmin true ä¸ºç®¡ç†å‘˜é‡ç½®
      */
     ChangePwdDlg(Session* session, const QString& loginName, bool requireOld,
                          QWidget* parent = 0, bool resetByAdmin = false);
 
 private slots:
-    /** @brief Ğ£ÑéÁ½´ÎĞÂ¿ÚÁîÒ»ÖÂºóĞ´Èë²¢±£´æ */
+    /** @brief æ ¡éªŒä¸¤æ¬¡æ–°å£ä»¤ä¸€è‡´åå†™å…¥å¹¶ä¿å­˜ */
     void onOk();
 
 private:
-    Session* m_session;     ///< »á»°£¨²»ÓµÓĞ£©
-    QString m_login;        ///< Ä¿±êµÇÂ¼Ãû
-    bool m_requireOld;     ///< ÊÇ·ñÒªÇóÊäÈëµ±Ç°¿ÚÁî
-    bool m_resetByAdmin;    ///< ÊÇ·ñ¹ÜÀíÔ±ÖØÖÃ
-    QLineEdit* m_old;     ///< µ±Ç°¿ÚÁî£»²»ÒªÇóÊ±Îª 0
-    QLineEdit* m_n1;      ///< ĞÂ¿ÚÁî
-    QLineEdit* m_n2;      ///< È·ÈÏĞÂ¿ÚÁî
+    Session* m_session;     ///< ä¼šè¯ï¼ˆä¸æ‹¥æœ‰ï¼‰
+    QString m_login;        ///< ç›®æ ‡ç™»å½•å
+    bool m_requireOld;     ///< æ˜¯å¦è¦æ±‚è¾“å…¥å½“å‰å£ä»¤
+    bool m_resetByAdmin;    ///< æ˜¯å¦ç®¡ç†å‘˜é‡ç½®
+    QLineEdit* m_old;     ///< å½“å‰å£ä»¤ï¼›ä¸è¦æ±‚æ—¶ä¸º 0
+    QLineEdit* m_n1;      ///< æ–°å£ä»¤
+    QLineEdit* m_n2;      ///< ç¡®è®¤æ–°å£ä»¤
 };
 
 }

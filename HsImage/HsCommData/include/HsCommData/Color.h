@@ -1,6 +1,6 @@
 /**
  * @file Color.h
- * @brief ��ɫ��RGBA�����α���������ɫ
+ * @brief 颜色。RGBA，几何本身不带颜色
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -13,7 +13,7 @@
 
 namespace HsCommData {
 
-/** @brief ���ô�ɫ���� Halcon set_color �Ľ���ɫһ�¡�ͨ���벻ͨ������ɫ����ʾ������ */
+/** @brief 常用纯色。与 Halcon set_color 的建议色一致。通过与不通过的颜色在显示配置里 */
 enum ColorId {
     ColorBlack = 0,       ///< 00 00 00
     ColorWhite,           ///< FF FF FF
@@ -39,22 +39,22 @@ enum ColorId {
 
 /**
  * @class Color4
- * @brief RGBA��ÿ��ͨ�� 0 �� 255�����α���������ɫ
+ * @brief RGBA，每个通道 0 到 255。几何本身不带颜色
  */
 struct HSCOMMDATA_EXPORT Color4 {
-    unsigned char r; ///< ��
-    unsigned char g; ///< ��
-    unsigned char b; ///< ��
-    unsigned char a; ///< ͸���ȣ�255 Ϊ��͸��
+    unsigned char r; ///< 红
+    unsigned char g; ///< 绿
+    unsigned char b; ///< 蓝
+    unsigned char a; ///< 透明度，255 为不透明
 
-    Color4() : r(0), g(0), b(0), a(0) {} ///< ȫ 0 ��ʾδ����
+    Color4() : r(0), g(0), b(0), a(0) {} ///< 全 0 表示未设置
     Color4(unsigned char r_, unsigned char g_, unsigned char b_, unsigned char a_ = 255)
         : r(r_), g(g_), b(b_), a(a_) {}
 
-    /** @brief ȫ 0 ʱΪ�棬��ʾδ���� */
+    /** @brief 全 0 时为真，表示未设置 */
     bool isUnset() const { return r == 0 && g == 0 && b == 0 && a == 0; }
 
-    /** @brief ������ɫȡֵ��a ��͸���� */
+    /** @brief 按常用色取值。a 是透明度 */
     static Color4 of(ColorId id, unsigned char a = 255)
     {
         switch (id) {

@@ -1,6 +1,6 @@
 /**
  * @file CameraFileTool.h
- * @brief CameraFileToolÍ·ÎÄ¼ş
+ * @brief CameraFileToolå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -16,23 +16,23 @@ namespace Vision {
 
 /**
  * @class CameraFileTool
- * @brief Í¼ÏñÎÄ¼ş»òÎÄ¼ş¼ĞÑ­»·²É¼¯
+ * @brief å›¾åƒæ–‡ä»¶æˆ–æ–‡ä»¶å¤¹å¾ªç¯é‡‡é›†
  */
 class CameraFileTool : public ToolBase {
 public:
-    /** @brief ×¢²áÃû */
+    /** @brief æ³¨å†Œå */
     std::string toolName() const { return "camera.file"; }
-    /** @brief ¹¤¾ßÏä·Ö×é */
+    /** @brief å·¥å…·ç®±åˆ†ç»„ */
     ToolType type() const { return ToolType::Acquire; }
-    /** @brief ÖĞÎÄÃû */
-    std::string displayName() const { return std::string(Translate::tr("Í¼ÏñÎÄ¼ş/ÎÄ¼ş¼Ğ")); }
-    /** @brief ¹¤¾ß°æ±¾ */
+    /** @brief ä¸­æ–‡å */
+    std::string displayName() const { return std::string(Translate::tr("å›¾åƒæ–‡ä»¶/æ–‡ä»¶å¤¹")); }
+    /** @brief å·¥å…·ç‰ˆæœ¬ */
     std::string version() const { return VISION_MODULE_GRABFILE_VERSION; }
-    /** @brief ËµÃ÷ */
-    std::string description() const { return std::string(Translate::tr("´Óµ¥¸öÎÄ¼ş»òÄ¿Â¼Ñ­»·¶ÁÈ¡Í¼Ïñ£¬²ú³ö out.image")); }
-    /** @brief Â·¾¶¡¢Ñ­»·µÈÈ±Ê¡²ÎÊı */
+    /** @brief è¯´æ˜ */
+    std::string description() const { return std::string(Translate::tr("ä»å•ä¸ªæ–‡ä»¶æˆ–ç›®å½•å¾ªç¯è¯»å–å›¾åƒï¼Œäº§å‡º out.image")); }
+    /** @brief è·¯å¾„ã€å¾ªç¯ç­‰ç¼ºçœå‚æ•° */
     ParamMap defaultParams() const;
-    /** @brief µ÷ FileGrabber::grab */
+    /** @brief è°ƒ FileGrabber::grab */
     ToolOut execute(ToolContext& ctx);
 };
 

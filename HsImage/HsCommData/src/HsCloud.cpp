@@ -1,6 +1,6 @@
 /**
  * @file HsCloud.cpp
- * @brief HsCloudÊµÏÖ
+ * @brief HsCloudå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -10,7 +10,7 @@
 
 namespace HsCommData {
 
-// ºÚÉ«
+// é»‘è‰²
 Rgb8::Rgb8()
     : r(0)
     , g(0)
@@ -18,7 +18,7 @@ Rgb8::Rgb8()
 {
 }
 
-// Ö¸¶¨Èı·ÖÁ¿
+// æŒ‡å®šä¸‰åˆ†é‡
 Rgb8::Rgb8(unsigned char r_, unsigned char g_, unsigned char b_)
     : r(r_)
     , g(g_)
@@ -26,14 +26,14 @@ Rgb8::Rgb8(unsigned char r_, unsigned char g_, unsigned char b_)
 {
 }
 
-// ¿ÕµãÔÆ
+// ç©ºç‚¹äº‘
 Cloud3::Cloud3()
     : width(0)
     , height(0)
 {
 }
 
-// Í¬ÀàĞÍ¿½±´£¬×ø±êºÍÊôĞÔÕû·İ¸´ÖÆ
+// åŒç±»å‹æ‹·è´ï¼Œåæ ‡å’Œå±æ€§æ•´ä»½å¤åˆ¶
 Cloud3::Cloud3(const Cloud3& other)
     : xyz(other.xyz)
     , normals(other.normals)
@@ -44,7 +44,7 @@ Cloud3::Cloud3(const Cloud3& other)
 {
 }
 
-// Í¬ÀàĞÍ¸³Öµ£¬×ø±êºÍÊôĞÔÕû·İ¸´ÖÆ
+// åŒç±»å‹èµ‹å€¼ï¼Œåæ ‡å’Œå±æ€§æ•´ä»½å¤åˆ¶
 Cloud3& Cloud3::operator=(const Cloud3& other)
 {
     if (this != &other) {
@@ -58,13 +58,13 @@ Cloud3& Cloud3::operator=(const Cloud3& other)
     return *this;
 }
 
-// Ã»ÓĞµãÔòÎª¿Õ
+// æ²¡æœ‰ç‚¹åˆ™ä¸ºç©º
 bool Cloud3::isEmpty() const
 {
     return xyz.empty();
 }
 
-// ÓĞĞòÇÒ¿í¸ß³Ë»ıµÈÓÚµãÊı
+// æœ‰åºä¸”å®½é«˜ä¹˜ç§¯ç­‰äºç‚¹æ•°
 bool Cloud3::isOrganized() const
 {
     if (width <= 0 || height <= 0) {
@@ -74,7 +74,7 @@ bool Cloud3::isOrganized() const
     return cells == static_cast<long long>(xyz.size());
 }
 
-// ¿ÉÑ¡Êı×éÓëÓĞĞò³ß´çÊÇ·ñ×ÔÇ¢
+// å¯é€‰æ•°ç»„ä¸æœ‰åºå°ºå¯¸æ˜¯å¦è‡ªæ´½
 bool Cloud3::attribsOk() const
 {
     if (!normals.empty() && normals.size() != xyz.size()) {
@@ -92,7 +92,7 @@ bool Cloud3::attribsOk() const
     return isOrganized();
 }
 
-// µã×ø±êµÄÖá¶ÔÆë°üÎ§ºĞ
+// ç‚¹åæ ‡çš„è½´å¯¹é½åŒ…å›´ç›’
 Aabb3 Cloud3::bounds() const
 {
     if (xyz.empty()) {

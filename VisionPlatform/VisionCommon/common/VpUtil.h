@@ -1,6 +1,6 @@
 /**
  * @file VpUtil.h
- * @brief VpUtilÍ·ÎÄ¼ş
+ * @brief VpUtilå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -17,7 +17,7 @@
 
 namespace Vision {
 
-/// È¥µôÊ×Î²¿Õ°×
+/// å»æ‰é¦–å°¾ç©ºç™½
 inline std::string vpTrim(const std::string& s)
 {
     size_t a = 0;
@@ -31,7 +31,7 @@ inline std::string vpTrim(const std::string& s)
     return s.substr(a, b - a);
 }
 
-/** @brief ASCII Ğ¡Ğ´»¯ */
+/** @brief ASCII å°å†™åŒ– */
 inline std::string vpLower(const std::string& s)
 {
     std::string o = s;
@@ -41,7 +41,7 @@ inline std::string vpLower(const std::string& s)
     return o;
 }
 
-/// ÔÚ index ´¦²åÈë
+/// åœ¨ index å¤„æ’å…¥
 template<typename T>
 inline void vpInsertAt(std::vector<T>& v, int i, const T& x)
 {
@@ -54,7 +54,7 @@ inline void vpInsertAt(std::vector<T>& v, int i, const T& x)
     v.insert(v.begin() + static_cast<size_t>(i), x);
 }
 
-/** @brief °´ÏÂ±êÉ¾³ı£»Ô½½çºöÂÔ */
+/** @brief æŒ‰ä¸‹æ ‡åˆ é™¤ï¼›è¶Šç•Œå¿½ç•¥ */
 template<typename T>
 inline void vpRemoveAt(std::vector<T>& v, int i)
 {
@@ -63,7 +63,7 @@ inline void vpRemoveAt(std::vector<T>& v, int i)
     }
 }
 
-/** @brief map È¡Öµ£¬È±¼ü·µ»Ø def */
+/** @brief map å–å€¼ï¼Œç¼ºé”®è¿”å› def */
 template<typename K, typename V>
 inline V vpMapValue(const std::map<K, V>& m, const K& k, const V& def)
 {

@@ -1,6 +1,6 @@
 /**
  * @file HsImageWindowMenu.h
- * @brief HsImageWindowMenuÍ·ÎÄ¼ş
+ * @brief HsImageWindowMenuå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -13,15 +13,15 @@
 class QWidget;
 namespace HsCtrl {
 class HsImageWindow;
-/** @class HsImageWindowMenu @brief Í¼Ïñ´°¿ÚÓÒ¼ü²Ëµ¥ */
+/** @class HsImageWindowMenu @brief å›¾åƒçª—å£å³é”®èœå• */
 class HsImageWindowMenu {
 public:
     /**
-     * @brief µ¯³ö²Ëµ¥²¢Ö´ĞĞÑ¡ÖĞÏî
-     * @param hasImage ÊÇ·ñÓĞµ×Í¼
-     * @param viewReady ÊÓ¿ÚÊÇ·ñ¿ÉËõ·Å
-     * @param canCancelDraw ÊÇ·ñÓĞÎ´Ìá½»µÄÏğÆ¤½î
-     * @param measureId ÓÒ¼üÃüÖĞµÄ²âÁ¿ id£¬µãÔÚ¿Õ°×ÔòÎª¿Õ
+     * @brief å¼¹å‡ºèœå•å¹¶æ‰§è¡Œé€‰ä¸­é¡¹
+     * @param hasImage æ˜¯å¦æœ‰åº•å›¾
+     * @param viewReady è§†å£æ˜¯å¦å¯ç¼©æ”¾
+     * @param canCancelDraw æ˜¯å¦æœ‰æœªæäº¤çš„æ©¡çš®ç­‹
+     * @param measureId å³é”®å‘½ä¸­çš„æµ‹é‡ idï¼Œç‚¹åœ¨ç©ºç™½åˆ™ä¸ºç©º
      */
     static void popup(HsImageWindow* window, const QPoint& globalPos,
                       bool hasImage, bool viewReady, bool canCancelDraw,

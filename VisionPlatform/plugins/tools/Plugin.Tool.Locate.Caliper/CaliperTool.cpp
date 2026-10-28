@@ -1,6 +1,6 @@
 /**
  * @file CaliperTool.cpp
- * @brief CaliperToolÊµÏÖ
+ * @brief CaliperToolå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -14,30 +14,30 @@
 #include <vector>
 
 namespace {
-// µ±Ç°°æ±¾¡£±ØĞëµÈÓÚ±ä¸ü±í×îºóÒ»ĞĞ
+// å½“å‰ç‰ˆæœ¬ã€‚å¿…é¡»ç­‰äºå˜æ›´è¡¨æœ€åä¸€è¡Œ
 const char kToolVersion[] = "1.0.0.0";
-// ±ä¸ü±í¡£Ö»×·¼Ó£¬²»É¾¾ÉĞĞ
+// å˜æ›´è¡¨ã€‚åªè¿½åŠ ï¼Œä¸åˆ æ—§è¡Œ
 const Vision::VerNoteRaw kVerNotes[] = {
-    { "1.0.0.0", "Ê×°æ" },
+    { "1.0.0.0", "é¦–ç‰ˆ" },
 };
 
-// ×¢²áÃû
+// æ³¨å†Œå
 const char kToolName[] = "locate.caliper";
-// ½çÃæÏÔÊ¾Ãû
-const char kDisplayName[] = "¿¨³ß";
-// ¹¤¾ßËµÃ÷
-const char kDescription[] = "²â¿í»òÕÒ±ß£¬Ö§³Ö¶à¿¨³ß ROI";
+// ç•Œé¢æ˜¾ç¤ºå
+const char kDisplayName[] = "å¡å°º";
+// å·¥å…·è¯´æ˜
+const char kDescription[] = "æµ‹å®½æˆ–æ‰¾è¾¹ï¼Œæ”¯æŒå¤šå¡å°º ROI";
 
-// ²ÎÊıËµÃ÷
+// å‚æ•°è¯´æ˜
 std::vector<Vision::ParamField> fields()
 {
     std::vector<Vision::ParamField> f;
-    f.push_back(Vision::paramString("mode", "Ä£Ê½", "width", Vision::paramChoices("width", "edge")));
-    f.push_back(Vision::paramDouble("sigma", "Æ½»¬", 1.0, true, 0.4, true, 20.0));
-    f.push_back(Vision::paramDouble("threshold", "ãĞÖµ", 20.0, true, 0.0, false, 0));
-    f.push_back(Vision::paramString("transition", "¼«ĞÔ", "all", Vision::paramChoices("all", "positive", "negative")));
-    f.push_back(Vision::paramString("select", "Ñ¡Ôñ", "all", Vision::paramChoices("all", "first", "last")));
-    f.push_back(Vision::paramInt("searchCount", "²éÕÒÌõÊı", 1, true, 1, true, 50));
+    f.push_back(Vision::paramString("mode", "æ¨¡å¼", "width", Vision::paramChoices("width", "edge")));
+    f.push_back(Vision::paramDouble("sigma", "å¹³æ»‘", 1.0, true, 0.4, true, 20.0));
+    f.push_back(Vision::paramDouble("threshold", "é˜ˆå€¼", 20.0, true, 0.0, false, 0));
+    f.push_back(Vision::paramString("transition", "ææ€§", "all", Vision::paramChoices("all", "positive", "negative")));
+    f.push_back(Vision::paramString("select", "é€‰æ‹©", "all", Vision::paramChoices("all", "first", "last")));
+    f.push_back(Vision::paramInt("searchCount", "æŸ¥æ‰¾æ¡æ•°", 1, true, 1, true, 50));
     return f;
 }
 Vision::ToolCaps caps()
@@ -52,7 +52,7 @@ Vision::ToolCaps caps()
     return c;
 }
 
-// ÓÉ²ÎÊıËµÃ÷Éú³ÉÈ±Ê¡ ParamMap
+// ç”±å‚æ•°è¯´æ˜ç”Ÿæˆç¼ºçœ ParamMap
 Vision::ParamMap defaultsFrom(const std::vector<Vision::ParamField>& fields)
 {
     Vision::ParamMap m;
@@ -67,62 +67,62 @@ Vision::ParamMap defaultsFrom(const std::vector<Vision::ParamField>& fields)
 
 }
 
-// ×¢²áÃû
+// æ³¨å†Œå
 std::string Vision::CaliperTool::toolName() const
 {
     return kToolName;
 }
 
-// ¹¤¾ß´óÀà
+// å·¥å…·å¤§ç±»
 Vision::ToolType Vision::CaliperTool::type() const
 {
     return Vision::ToolType::Locate;
 }
 
-// ½çÃæÏÔÊ¾Ãû
+// ç•Œé¢æ˜¾ç¤ºå
 std::string Vision::CaliperTool::displayName() const
 {
-    return Vision::acpToUtf8(kDisplayName);
+    return kDisplayName;
 }
 
-// ¹¤¾ß°æ±¾
+// å·¥å…·ç‰ˆæœ¬
 std::string Vision::CaliperTool::version() const
 {
     return std::string(kToolVersion);
 }
 
-// °æ±¾±ä¸ü£¬Ö»×·¼Ó
+// ç‰ˆæœ¬å˜æ›´ï¼Œåªè¿½åŠ 
 std::vector<Vision::VerNote> Vision::CaliperTool::versionNotes() const
 {
     return Vision::verNotesFrom(kVerNotes, static_cast<int>(sizeof(kVerNotes) / sizeof(kVerNotes[0])));
 }
 
 
-// ¹¤¾ßËµÃ÷
+// å·¥å…·è¯´æ˜
 std::string Vision::CaliperTool::description() const
 {
-    return Vision::acpToUtf8(kDescription);
+    return kDescription;
 }
 
-// È±Ê¡²ÎÊı
+// ç¼ºçœå‚æ•°
 Vision::ParamMap Vision::CaliperTool::defaultParams() const
 {
     return defaultsFrom(fields());
 }
 
-// ²ÎÊıËµÃ÷
+// å‚æ•°è¯´æ˜
 std::vector<Vision::ParamField> Vision::CaliperTool::paramFields() const
 {
     return fields();
 }
 
-// »­²¼ÄÜÁ¦
+// ç”»å¸ƒèƒ½åŠ›
 Vision::ToolCaps Vision::CaliperTool::capabilities() const
 {
     return caps();
 }
 
-// µ÷Ëã·¨²å¼şÖ´ĞĞ
+// è°ƒç®—æ³•æ’ä»¶æ‰§è¡Œ
 Vision::ToolOut Vision::CaliperTool::execute(const Vision::ToolIn& in)
 {
     Vision::ToolOut out = Vision::runAlgToolBase(toolName(), in, false);
@@ -135,13 +135,13 @@ Vision::ToolOut Vision::CaliperTool::execute(const Vision::ToolIn& in)
     return out;
 }
 
-// ¿ËÂ¡±¾ÊµÀı
+// å…‹éš†æœ¬å®ä¾‹
 Vision::ToolBase* Vision::CaliperTool::clone() const
 {
     CaliperTool* p = new CaliperTool();
     p->copyInstanceDataFrom(*this);
     return p;
-}// ·µ»Ø±¾¹¤¾ß²ÎÊı¶ÔÏó
+}// è¿”å›æœ¬å·¥å…·å‚æ•°å¯¹è±¡
 
 const Vision::ToolParaBase* Vision::CaliperTool::toolParam() const
 {

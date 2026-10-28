@@ -3,9 +3,9 @@
 
 /**
  * @file VisionPluginApiExport.h
- * @brief VisionPluginAPI.dll µ¼³öºê
- * @note ËÞÖ÷Á´½Ó±¾ DLL Ê±ÓÃ dllimport£»±àÒë±¾¹¤³ÌÊ±¶¨Òå VISION_PLUGINAPI_EXPORTS¡£
- *       ²å¼þ DLL Ò»°ãÖ»°üº¬ IPluginHost / PluginEntry Í·£¬²»±ØÁ´½Ó±¾ DLL¡£
+ * @brief VisionPluginAPI.dll å¯¼å‡ºå®
+ * @note å®¿ä¸»é“¾æŽ¥æœ¬ DLL æ—¶ç”¨ dllimportï¼›ç¼–è¯‘æœ¬å·¥ç¨‹æ—¶å®šä¹‰ VISION_PLUGINAPI_EXPORTSã€‚
+ *       æ’ä»¶ DLL ä¸€èˆ¬åªåŒ…å« IPluginHost / PluginEntry å¤´ï¼Œä¸å¿…é“¾æŽ¥æœ¬ DLLã€‚
  */
 
 #ifdef VISION_PLUGINAPI_EXPORTS

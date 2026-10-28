@@ -1,6 +1,6 @@
 /**
  * @file DbTypes.h
- * @brief DbTypesÍ·ÎÄ¼ş
+ * @brief DbTypeså¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -18,19 +18,19 @@ namespace Vision {
 
 /**
  * @class DbValue
- * @brief SQL °ó¶¨»ò¶ÁÈ¡µÄÒ»¸öµ¥Ôª¸ñ
+ * @brief SQL ç»‘å®šæˆ–è¯»å–çš„ä¸€ä¸ªå•å…ƒæ ¼
  */
 struct VISION_DB_API DbValue {
     enum Kind {
-        Null = 0, ///< ¿Õ
-        Int,      ///< ÕûÊı
-        Text,     ///< ÎÄ±¾
-        Blob      ///< ¶ş½øÖÆ
+        Null = 0, ///< ç©º
+        Int,      ///< æ•´æ•°
+        Text,     ///< æ–‡æœ¬
+        Blob      ///< äºŒè¿›åˆ¶
     };
-    Kind kind;                       ///< µ¥Ôª¸ñÀàĞÍ
-    int64_t i;                       ///< ÕûÊıÖµ
-    std::string text;                ///< ÎÄ±¾
-    std::vector<unsigned char> blob; ///< ¶ş½øÖÆ
+    Kind kind;                       ///< å•å…ƒæ ¼ç±»å‹
+    int64_t i;                       ///< æ•´æ•°å€¼
+    std::string text;                ///< æ–‡æœ¬
+    std::vector<unsigned char> blob; ///< äºŒè¿›åˆ¶
     DbValue() : kind(Null), i(0) {}
     static DbValue fromInt(int64_t v)
     {
@@ -57,22 +57,22 @@ struct VISION_DB_API DbValue {
 
 /**
  * @class PageQuery
- * @brief ·ÖÒ³²éÑ¯£ºÒ³Âë¡¢Ò³´óĞ¡¡¢ÅÅĞò
+ * @brief åˆ†é¡µæŸ¥è¯¢ï¼šé¡µç ã€é¡µå¤§å°ã€æ’åº
  */
 struct PageQuery {
-    int page;            ///< ´Ó 1 Æğ
-    int pageSize;        ///< Ã¿Ò³ĞĞÊı
-    std::string orderBy; ///< ¿É¿Õ
+    int page;            ///< ä» 1 èµ·
+    int pageSize;        ///< æ¯é¡µè¡Œæ•°
+    std::string orderBy; ///< å¯ç©º
     PageQuery() : page(1), pageSize(50) {}
 };
 
 /**
  * @class PageRst
- * @brief ·ÖÒ³½á¹û£º×ÜĞĞÊıºÍ±¾Ò³ĞĞ
+ * @brief åˆ†é¡µç»“æœï¼šæ€»è¡Œæ•°å’Œæœ¬é¡µè¡Œ
  */
 struct PageRst {
-    int total;                              ///< ·ûºÏÌõ¼şµÄ×ÜĞĞÊı
-    std::vector<std::vector<DbValue> > rows; ///< ±¾Ò³ĞĞ
+    int total;                              ///< ç¬¦åˆæ¡ä»¶çš„æ€»è¡Œæ•°
+    std::vector<std::vector<DbValue> > rows; ///< æœ¬é¡µè¡Œ
     PageRst() : total(0) {}
 };
 

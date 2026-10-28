@@ -1,6 +1,6 @@
 /**
  * @file CommTypes.h
- * @brief CommTypesÍ·ÎÄ¼ş
+ * @brief CommTypeså¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -19,42 +19,42 @@
 namespace Vision {
 
 /**
- * @brief Í¨ĞÅ´«ÊäÀàĞÍ¡£Ğ­Òé²»ÔÚÕâÀïÇø·Ö
- * params["protocol"]£ºraw »ò modbus
- * params["role"]£ºmaster »ò slave£¨½ö modbus£©
- * params["slaveId"]£º´ÓÕ¾ºÅ
- * ´®¿Ú£ºport¡¢baud¡¢dataBits¡¢parity£¨none/even/odd£©¡¢stopBits
- * TCP ¿Í»§¶Ë£ºhost¡¢port
- * TCP ·şÎñ¶Ë£ºport
- * UDP£ºport£¨±¾»ú£©¡¢host¡¢remotePort
+ * @brief é€šä¿¡ä¼ è¾“ç±»å‹ã€‚åè®®ä¸åœ¨è¿™é‡ŒåŒºåˆ†
+ * params["protocol"]ï¼šraw æˆ– modbus
+ * params["role"]ï¼šmaster æˆ– slaveï¼ˆä»… modbusï¼‰
+ * params["slaveId"]ï¼šä»ç«™å·
+ * ä¸²å£ï¼športã€baudã€dataBitsã€parityï¼ˆnone/even/oddï¼‰ã€stopBits
+ * TCP å®¢æˆ·ç«¯ï¼šhostã€port
+ * TCP æœåŠ¡ç«¯ï¼šport
+ * UDPï¼športï¼ˆæœ¬æœºï¼‰ã€hostã€remotePort
  */
 enum CommChannelType {
-    CommChannelTypeUndefined = -1, ///< Î´¶¨Òå
-    CommSerial = 0,    ///< ´®¿Ú
-    CommTcpClient = 1, ///< TCP ¿Í»§¶Ë
-    CommTcpServer = 2, ///< TCP ·şÎñ¶Ë
+    CommChannelTypeUndefined = -1, ///< æœªå®šä¹‰
+    CommSerial = 0,    ///< ä¸²å£
+    CommTcpClient = 1, ///< TCP å®¢æˆ·ç«¯
+    CommTcpServer = 2, ///< TCP æœåŠ¡ç«¯
     CommUdp = 3,        ///< UDP
-    CommChannelTypeMax ///< ¸öÊı£¬²»ÊÇºÏ·¨Öµ
+    CommChannelTypeMax ///< ä¸ªæ•°ï¼Œä¸æ˜¯åˆæ³•å€¼
 };
 
-/** @class CommChannel @brief ·½°¸¼¶Í¨ĞÅÍ¨µÀÌ¨ÕËÏî */
+/** @class CommChannel @brief æ–¹æ¡ˆçº§é€šä¿¡é€šé“å°è´¦é¡¹ */
 struct CommChannel {
-    ObjectId id;            ///< Í¨µÀ id
-    std::string name;       ///< ÏÔÊ¾Ãû
-    CommChannelType type;   ///< ÀàĞÍ
-    bool enabled;           ///< ÊÇ·ñÆôÓÃ
-    ParamMap params;        ///< ÀàĞÍÏà¹Ø²ÎÊı
+    ObjectId id;            ///< é€šé“ id
+    std::string name;       ///< æ˜¾ç¤ºå
+    CommChannelType type;   ///< ç±»å‹
+    bool enabled;           ///< æ˜¯å¦å¯ç”¨
+    ParamMap params;        ///< ç±»å‹ç›¸å…³å‚æ•°
     CommChannel()
         : type(CommChannelTypeUndefined)
         , enabled(true)
     {}
 };
 
-/** @brief ÕûÊı×ªÍ¨µÀÀàĞÍ£»Ô½½ç»Ø´®¿Ú */
+/** @brief æ•´æ•°è½¬é€šé“ç±»å‹ï¼›è¶Šç•Œå›ä¸²å£ */
 VISION_COMM_API CommChannelType commChannelTypeFromInt(int v);
 VISIONCORE_API /**
- * @brief Í¨µÀÀàĞÍÏÔÊ¾Ãû
- * ÉùÃ÷ÔÚÕâÀï£¬ÊµÏÖÔÚ VisionCore£ºÎÄ°¸×ß·­Òë£¬²»Á´½ø±¾¿â
+ * @brief é€šé“ç±»å‹æ˜¾ç¤ºå
+ * å£°æ˜åœ¨è¿™é‡Œï¼Œå®ç°åœ¨ VisionCoreï¼šæ–‡æ¡ˆèµ°ç¿»è¯‘ï¼Œä¸é“¾è¿›æœ¬åº“
  */
 std::string commChannelTypeTitle(CommChannelType t);
 

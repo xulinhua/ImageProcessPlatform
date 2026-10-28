@@ -55,14 +55,17 @@
   <ImportGroup Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <PropertyGroup Condition="'$(Platform)'=='Win32'">
-    <QTDIR Condition="'$(QTDIR)'==''">C:\Qt\Qt5.9.9\5.9.9\msvc2015</QTDIR>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Platform)'=='x64'">
-    <QTDIR Condition="'$(QTDIR)'==''">C:\Qt\Qt5.9.9\5.9.9\msvc2015_64</QTDIR>
-  </PropertyGroup>
+  <Import Project="$(SolutionDir)..\QtEnv.props" />
   <PropertyGroup>
-    <OPENCV_DIR Condition="'$(OPENCV_DIR)'==''">C:\opencv\build</OPENCV_DIR>
+    <OPENCV_DIR>$(SolutionDir)..\VisionPlatform\third_party\OpenCV</OPENCV_DIR>
+    <OPENCV_LIB Condition="'$(Platform)'=='x64'">hsvisbasall64.lib</OPENCV_LIB>
+    <OPENCV_LIB Condition="'$(Platform)'!='x64'">hsvisbasall.lib</OPENCV_LIB>
+    <OPENCV_LIB_DEBUG Condition="'$(Platform)'=='x64'">hsvisbasall64d.lib</OPENCV_LIB_DEBUG>
+    <OPENCV_LIB_DEBUG Condition="'$(Platform)'!='x64'">hsvisbasalld.lib</OPENCV_LIB_DEBUG>
+    <OpenCVBinDll Condition="'$(Configuration)'=='Debug' And '$(Platform)'=='x64'">hsvisbasall64d.dll</OpenCVBinDll>
+    <OpenCVBinDll Condition="'$(Configuration)'=='Debug' And '$(Platform)'!='x64'">hsvisbasalld.dll</OpenCVBinDll>
+    <OpenCVBinDll Condition="'$(Configuration)'!='Debug' And '$(Platform)'=='x64'">hsvisbasall64.dll</OpenCVBinDll>
+    <OpenCVBinDll Condition="'$(Configuration)'!='Debug' And '$(Platform)'!='x64'">hsvisbasall.dll</OpenCVBinDll>
     <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)obj\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>HsImageCtrl</TargetName>
@@ -75,7 +78,7 @@
       <AdditionalIncludeDirectories>$(ProjectDir)include;$(ProjectDir);$(ProjectDir)canvas;$(ProjectDir)display;$(ProjectDir)protocol;$(SolutionDir)HsCommData\include;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtWidgets;$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>HSCTRL_LIB;UNICODE;_UNICODE;WIN32;QT_CORE_LIB;QT_GUI_LIB;QT_WIDGETS_LIB;QT_DEPRECATED_WARNINGS;HSIMAGE_MOC_FROM_INTDIR;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <!-- Align with VisionPlatform: source use system ANSI (Chinese Windows=GBK), no /utf-8 -->
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <WarningLevel>Level3</WarningLevel>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
@@ -126,10 +129,13 @@
       <PreprocessorDefinitions>HSIMAGE_HAS_OPENCV;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(OPENCV_DIR)\x64\vc14\lib;$(OPENCV_DIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(OPENCV_DIR)\lib\$(Platform)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies Condition="'$(Configuration)'=='Debug'">$(OPENCV_LIB_DEBUG);%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalDependencies Condition="'$(Configuration)'!='Debug'">$(OPENCV_LIB);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>if exist "$(OPENCV_DIR)\bin\$(Platform)\$(Configuration)\$(OpenCVBinDll)" copy /Y "$(OPENCV_DIR)\bin\$(Platform)\$(Configuration)\$(OpenCVBinDll)" "$(OutDir)"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="canvas\Viewport.cpp" />

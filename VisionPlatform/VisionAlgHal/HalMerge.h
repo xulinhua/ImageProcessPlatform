@@ -1,6 +1,6 @@
 /**
  * @file HalMerge.h
- * @brief HalMergeÍ·ÎÄ¼ş
+ * @brief HalMergeå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -15,16 +15,30 @@ namespace Vision {
 
 /**
  * @class HalMerge
- * @brief ºÏ²¢ÇøÓò²¢Í³¼ÆÊıÁ¿ºÍÃæ»ı£¨Halcon£©
+ * @brief åˆå¹¶åŒºåŸŸå¹¶ç»Ÿè®¡æ•°é‡å’Œé¢ç§¯ï¼ˆHalconï¼‰
  */
 class HalMerge : public AlgToolBase {
 public:
     std::string toolName() const { return "result.merge"; }
     AlgLibKind algLib() const { return AlgLibHal; }
     std::string version() const;
-    /** @brief °æ±¾±ä¸ü£¬Ö»×·¼Ó */
+    /** @brief ç‰ˆæœ¬å˜æ›´ï¼Œåªè¿½åŠ  */
     std::vector<VerNote> versionNotes() const;
-    /** @brief ºÏ²¢ÇøÓò²¢Êä³ö½á¹û ROI */
+    /** @brief åˆå¹¶åŒºåŸŸå¹¶è¾“å‡ºç»“æœ ROI */
+    int execute(const AlgToolIn& in, AlgToolOut* out) override {
+        if (!out) {
+            return HS_ERR_NULL;
+        }
+        *out = run(in);
+        if (out->ok) {
+            out->errCode = HS_OK;
+            return HS_OK;
+        }
+        if (out->errCode == HS_OK || out->errCode == 1) {
+            out->errCode = HS_ERR_OPERATOR;
+        }
+        return out->errCode;
+    }
     AlgToolOut run(const AlgToolIn& in);
     AlgToolBase* clone() const { return new HalMerge(); }
 };

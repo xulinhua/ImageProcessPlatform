@@ -1,6 +1,6 @@
 /**
  * @file AlgLibKind.h
- * @brief AlgLibKindÍ·ÎÄ¼ş
+ * @brief AlgLibKindå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -15,27 +15,30 @@
 namespace Vision {
 
 /**
- * @brief Ëã·¨¿âÖÖÀà£¨Óë²å¼ş algLib() µÇ¼ÇÃû¶ÔÓ¦£»UI ÁĞÃûÓÃ¶Ì±êÌâ£©
- * @note Ôİ¶¨ËÄÖÖ£»ĞÂÔöÊ±Í¬²½ AlgLibKindMax Óë×¢²áÃû±í
+ * @brief ç®—æ³•åº“ç§ç±»ï¼ˆä¸æ’ä»¶ algLib() ç™»è®°åå¯¹åº”ï¼›UI åˆ—åç”¨çŸ­æ ‡é¢˜ï¼‰
+ * @note æ–°å¢æ—¶åŒæ­¥ AlgLibKindMax ä¸æ³¨å†Œåè¡¨
  */
 enum AlgLibKind {
-    AlgLibHal = 0,   ///< Halcon£¬µÇ¼ÇÃû halcon£¬ÁĞÃû Hal
-    AlgLibHik = 1,   ///< º£¿µ£¬µÇ¼ÇÃû hik£¬ÁĞÃû Hik
-    AlgLibHray = 2,  ///< »ªî£µÈ£¬µÇ¼ÇÃû hray£¬ÁĞÃû Hray
-    AlgLibCv = 3,    ///< OpenCV£¬µÇ¼ÇÃû opencv£¬ÁĞÃû CV
-    AlgLibKindMax ///< ÖÖÀà¸öÊı£¨ÉÚ±ø£¬²»×÷ºÏ·¨Öµ£©
+    AlgLibHal = 0,   ///< Halconï¼Œç™»è®°å halconï¼Œåˆ—å Hal
+    AlgLibHik = 1,   ///< æµ·åº·ï¼Œç™»è®°å hikï¼Œåˆ—å Hik
+    AlgLibHray = 2,  ///< åç¿ç­‰ï¼Œç™»è®°å hrayï¼Œåˆ—å Hray
+    AlgLibCv = 3,    ///< OpenCVï¼Œç™»è®°å opencvï¼Œåˆ—å CV
+    AlgLibPcl = 4,   ///< PCLï¼Œç™»è®°å pclï¼Œåˆ—å PCL
+    AlgLibOpen3d = 5,///< Open3Dï¼Œç™»è®°å open3dï¼Œåˆ—å Open3Dã€‚æœ¬æœºå…ˆä¸æ”¾æ’ä»¶
+    AlgLibOnnx = 6,  ///< ONNX Runtimeï¼Œç™»è®°å onnxï¼Œåˆ—å Onnx
+    AlgLibKindMax ///< ç§ç±»ä¸ªæ•°ï¼ˆå“¨å…µï¼Œä¸ä½œåˆæ³•å€¼ï¼‰
 };
 
-/** @brief UI/±íÍ·¶Ì±êÌâ£ºHal / Hik / Hray / CV£»·Ç·¨·µ»Ø¿Õ´® */
+/** @brief UI/è¡¨å¤´çŸ­æ ‡é¢˜ï¼šHal / Hik / Hray / CVï¼›éæ³•è¿”å›ç©ºä¸² */
 VISION_COMMON_API const char* algLibKindTitle(AlgLibKind k);
-/** @brief ²å¼şµÇ¼ÇÃû£ºhalcon / hik / hray / opencv£»·Ç·¨·µ»Ø¿Õ´® */
+/** @brief æ’ä»¶ç™»è®°åï¼šhalcon / hik / hray / opencvï¼›éæ³•è¿”å›ç©ºä¸² */
 VISION_COMMON_API const char* algLibKindRegName(AlgLibKind k);
 /**
- * @brief µÇ¼ÇÃû×ªÃ¶¾Ù£¨´óĞ¡Ğ´²»Ãô¸Ğ£»¼æÈİ cv¡úopencv£©
- * @return ³É¹¦Îª true
+ * @brief ç™»è®°åè½¬æšä¸¾ï¼ˆå¤§å°å†™ä¸æ•æ„Ÿï¼›å…¼å®¹ cvâ†’opencvï¼‰
+ * @return æˆåŠŸä¸º true
  */
 VISION_COMMON_API bool algLibKindFromRegName(const std::string& regName, AlgLibKind* out);
-/** @brief ÏÂ±êÊÇ·ñÎªºÏ·¨ AlgLibKind£¨²»º¬ Count£© */
+/** @brief ä¸‹æ ‡æ˜¯å¦ä¸ºåˆæ³• AlgLibKindï¼ˆä¸å« Countï¼‰ */
 VISION_COMMON_API bool algLibKindValid(int k);
 
 }

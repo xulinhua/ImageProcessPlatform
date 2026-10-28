@@ -1,6 +1,6 @@
 /**
  * @file HsObjectIo.cpp
- * @brief HsObjectIoÊµÏÖ
+ * @brief HsObjectIoå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -391,7 +391,7 @@ void readOne(FILE* f, HsObject* object, const char* proc)
 
 }
 
-// Ğ´Èë±¾µØÍ¼±ê¶ÔÏóÎÄ¼ş
+// å†™å…¥æœ¬åœ°å›¾æ ‡å¯¹è±¡æ–‡ä»¶
 void HsObject::writeObject(const char* fileName) const
 {
     const char* proc = "writeObject";
@@ -419,7 +419,7 @@ void HsObject::writeObject(const char* fileName) const
     }
 }
 
-// ´Ó±¾µØÎÄ¼ş¶ÁÈëÍ¼±ê¶ÔÏó
+// ä»æœ¬åœ°æ–‡ä»¶è¯»å…¥å›¾æ ‡å¯¹è±¡
 void HsObject::readObject(const char* fileName)
 {
     const char* proc = "readObject";
@@ -457,13 +457,13 @@ void HsObject::readObject(const char* fileName)
     }
 }
 
-// ×ÔÓÉº¯Êı×ªµ÷³ÉÔ±
+// è‡ªç”±å‡½æ•°è½¬è°ƒæˆå‘˜
 void writeObject(const HsObject& object, const char* fileName)
 {
     object.writeObject(fileName);
 }
 
-// ×ÔÓÉº¯Êı×ªµ÷³ÉÔ±¡£¿ÕÖ¸ÕëÅ×ÀàĞÍ´í
+// è‡ªç”±å‡½æ•°è½¬è°ƒæˆå‘˜ã€‚ç©ºæŒ‡é’ˆæŠ›ç±»å‹é”™
 void readObject(HsObject* object, const char* fileName)
 {
     if (!object) {

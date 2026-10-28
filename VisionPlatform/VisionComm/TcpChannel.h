@@ -1,6 +1,6 @@
 /**
  * @file TcpChannel.h
- * @brief TcpChannelÍ·ÎÄ¼ş
+ * @brief TcpChannelå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -12,6 +12,7 @@
 
 #include "CommWin.h"
 #include "ICommChannel.h"
+#include <atomic>
 #include <condition_variable>
 #include <map>
 #include <mutex>
@@ -20,90 +21,105 @@
 
 namespace Vision {
 
-/** @class TcpClientChannel @brief TCP ¿Í»§¶Ë¡£±¾»úÈ¥Á¬¶Ô·½ */
+/** @class TcpClientChannel @brief TCP å®¢æˆ·ç«¯ã€‚æœ¬æœºå»è¿å¯¹æ–¹ */
 class VISION_COMM_API TcpClientChannel : public ICommChannel {
 public:
-    /** @brief ¹¹ÔìÎ´Á¬½ÓµÄ¿Í»§¶Ë */
+    /** @brief æ„é€ æœªè¿æ¥çš„å®¢æˆ·ç«¯ */
     TcpClientChannel();
-    /** @brief Îö¹¹Ê±¶Ï¿ª */
+    /** @brief ææ„æ—¶æ–­å¼€ */
     ~TcpClientChannel();
 
-    /** @brief ´«ÊäÖÖÀàÎª TCP ¿Í»§¶Ë */
+    /** @brief ä¼ è¾“ç§ç±»ä¸º TCP å®¢æˆ·ç«¯ */
     CommTransport transport() const;
-    /** @brief Á¬µ½²ÎÊıÀïµÄÖ÷»úºÍ¶Ë¿Ú */
+    /** @brief è¿åˆ°å‚æ•°é‡Œçš„ä¸»æœºå’Œç«¯å£ */
     bool open(const ParamMap& params, std::string* err);
-    /** @brief ¶Ï¿ªÁ¬½Ó */
+    /** @brief æ–­å¼€è¿æ¥ */
     void close();
-    /** @brief Ì×½Ó×ÖÊÇ·ñÓĞĞ§ */
+    /** @brief å¥—æ¥å­—æ˜¯å¦æœ‰æ•ˆ */
     bool isOpen() const;
-    /** @brief ÒÑÁ¬½ÓÊ±·µ»Ø¶Ô¶ËµØÖ· */
+    /** @brief å·²è¿æ¥æ—¶è¿”å›å¯¹ç«¯åœ°å€ */
     std::vector<CommPeer> peers() const;
-    /** @brief °ÑÕû¶Î×Ö½Ú·¢¸øÒÑÁ¬½Ó¶Ô¶Ë */
+    /** @brief æŠŠæ•´æ®µå­—èŠ‚å‘ç»™å·²è¿æ¥å¯¹ç«¯ */
     bool write(const std::string& peerId, const CommBytes& data, int timeoutMs, std::string* err);
-    /** @brief ¶ÁÒ»Åú£»¶Ô¶Ë¹Ø±ÕÔò¶Ï¿ª */
+    /** @brief è¯»ä¸€æ‰¹ï¼›å¯¹ç«¯å…³é—­åˆ™æ–­å¼€ */
     CommBytes read(const std::string& peerId, int maxBytes, int timeoutMs, std::string* err);
-    /** @brief ¶ªµôµ±Ç°¿É¶ÁÊı¾İ */
+    /** @brief ä¸¢æ‰å½“å‰å¯è¯»æ•°æ® */
     void drain(const std::string& peerId);
-    /** @brief ¿Í»§¶ËÃ»ÓĞ¶àÁ¬½Ó£¬Ê¼ÖÕ·µ»Ø¿Õ */
+    /** @brief å®¢æˆ·ç«¯æ²¡æœ‰å¤šè¿æ¥ï¼Œå§‹ç»ˆè¿”å›ç©º */
     std::string waitIncoming(int timeoutMs);
 
 private:
-    SOCKET m_sock;        ///< ÒÑÁ¬½ÓÌ×½Ó×Ö
-    std::string m_remote; ///< ¶Ô¶ËµØÖ·ÎÄ±¾
+    /** @brief æŒ‰å·²è®°ä¸‹çš„ä¸»æœºå’Œç«¯å£è¿ä¸€æ¬¡ã€‚è‡ªåŠ¨é‡è¿çº¿ç¨‹è°ƒç”¨ */
+    bool connectOnce(std::string* err);
+    /** @brief è‡ªåŠ¨é‡è¿å¾ªç¯ã€‚é»˜è®¤ä¸å¯åŠ¨ï¼ŒèŠ‚ç‚¹å®¢æˆ·ç«¯æ‰å¼€ */
+    void reconnectMain();
+
+    mutable std::mutex m_mu;     ///< ä¿æŠ¤å¥—æ¥å­—ï¼Œé‡è¿å’Œæ”¶å‘ä¸è¦åŒæ—¶å…³
+    SOCKET m_sock;                ///< å·²è¿æ¥å¥—æ¥å­—
+    std::string m_remote;         ///< å¯¹ç«¯åœ°å€æ–‡æœ¬
+    std::string m_host;           ///< ä¸Šæ¬¡ open çš„ä¸»æœº
+    int m_port;                   ///< ä¸Šæ¬¡ open çš„ç«¯å£
+    int m_timeoutMs;              ///< è¿æ¥è¶…æ—¶
+    bool m_autoReconnect;         ///< æ–­å¼€åæŒ‰é€€é¿é‡è¿ã€‚PLC é»˜è®¤å…³
+    std::atomic<bool> m_stopReconnect; ///< åœæ­¢é‡è¿çº¿ç¨‹
+    std::thread m_reconnectThread; ///< é‡è¿çº¿ç¨‹
 };
 
 /**
  * @class TcpServerChannel
- * @brief TCP ·şÎñ¶Ë¡£¼àÌıÒ»¸ö¶Ë¿Ú£¬Í¬Ê±±£Áô¶à¸ö¿Í»§¶Ë£¨ÉÏÏŞ FD_SETSIZE-1£©
+ * @brief TCP æœåŠ¡ç«¯ã€‚ç­‰å¾…å¯è¯»ç”¨ WSAPollï¼Œä¸å†è¢« FD_SETSIZE å¡ä½
+ * @note æœªå†™ maxClients æ—¶ä»æŒ‰ FD_SETSIZE-1 é™åˆ¶æ¥å…¥æ•°ï¼Œè®¾å¤‡é€šé“è¡Œä¸ºä¸å˜
  */
 class VISION_COMM_API TcpServerChannel : public ICommChannel {
 public:
-    /** @brief ¹¹ÔìÎ´¼àÌıµÄ·şÎñ¶Ë */
+    /** @brief æ„é€ æœªç›‘å¬çš„æœåŠ¡ç«¯ */
     TcpServerChannel();
-    /** @brief Îö¹¹Ê±Í£Ö¹¼àÌı */
+    /** @brief ææ„æ—¶åœæ­¢ç›‘å¬ */
     ~TcpServerChannel();
 
-    /** @brief ´«ÊäÖÖÀàÎª TCP ·şÎñ¶Ë */
+    /** @brief ä¼ è¾“ç§ç±»ä¸º TCP æœåŠ¡ç«¯ */
     CommTransport transport() const;
-    /** @brief °ó¶¨¶Ë¿Ú²¢¿ªÊ¼½ÓÈë */
+    /** @brief ç»‘å®šç«¯å£å¹¶å¼€å§‹æ¥å…¥ */
     bool open(const ParamMap& params, std::string* err);
-    /** @brief Í£Ö¹¼àÌı²¢¶Ï¿ªÈ«²¿¿Í»§¶Ë */
+    /** @brief åœæ­¢ç›‘å¬å¹¶æ–­å¼€å…¨éƒ¨å®¢æˆ·ç«¯ */
     void close();
-    /** @brief ÊÇ·ñÈÔÔÚ¼àÌı */
+    /** @brief æ˜¯å¦ä»åœ¨ç›‘å¬ */
     bool isOpen() const;
-    /** @brief ÁĞ³öÒÑ½ÓÈëµÄ¿Í»§¶Ë */
+    /** @brief åˆ—å‡ºå·²æ¥å…¥çš„å®¢æˆ·ç«¯ */
     std::vector<CommPeer> peers() const;
-    /** @brief ÏòÖ¸¶¨¿Í»§¶ËĞ´Õû¶Î×Ö½Ú */
+    /** @brief å‘æŒ‡å®šå®¢æˆ·ç«¯å†™æ•´æ®µå­—èŠ‚ */
     bool write(const std::string& peerId, const CommBytes& data, int timeoutMs, std::string* err);
-    /** @brief ´ÓÖ¸¶¨¿Í»§¶Ë»º³åÈ¡×Ö½Ú£¬Ã»ÓĞÔòµÈµ½³¬Ê± */
+    /** @brief ä»æŒ‡å®šå®¢æˆ·ç«¯ç¼“å†²å–å­—èŠ‚ï¼Œæ²¡æœ‰åˆ™ç­‰åˆ°è¶…æ—¶ */
     CommBytes read(const std::string& peerId, int maxBytes, int timeoutMs, std::string* err);
-    /** @brief ¶ªµôÖ¸¶¨¿Í»§¶Ë»òÈ«²¿¿Í»§¶ËµÄ½ÓÊÕ»º³å */
+    /** @brief ä¸¢æ‰æŒ‡å®šå®¢æˆ·ç«¯æˆ–å…¨éƒ¨å®¢æˆ·ç«¯çš„æ¥æ”¶ç¼“å†² */
     void drain(const std::string& peerId);
-    /** @brief µÈµ½ÈÎÒ»¿Í»§¶ËÓĞÊı¾İ£¬·µ»ØÆä id */
+    /** @brief ç­‰åˆ°ä»»ä¸€å®¢æˆ·ç«¯æœ‰æ•°æ®ï¼Œè¿”å›å…¶ id */
     std::string waitIncoming(int timeoutMs);
 
 private:
-    /** @class Client @brief ÒÑ½ÓÈëµÄÒ»¸ö¿Í»§¶Ë */
+    /** @class Client @brief å·²æ¥å…¥çš„ä¸€ä¸ªå®¢æˆ·ç«¯ */
     struct Client {
         Client() : sock(INVALID_SOCKET) {}
-        SOCKET sock;       ///< Ì×½Ó×Ö
-        std::string remote; ///< ¶Ô¶ËµØÖ·ÎÄ±¾
-        CommBytes rx;      ///< ÉĞÎ´È¡×ßµÄ½ÓÊÕ»º³å
+        SOCKET sock;       ///< å¥—æ¥å­—
+        std::string remote; ///< å¯¹ç«¯åœ°å€æ–‡æœ¬
+        CommBytes rx;      ///< å°šæœªå–èµ°çš„æ¥æ”¶ç¼“å†²
     };
 
-    /** @brief ½ÓÈëĞÂ¿Í»§¶Ë£¬²¢°ÑÊÕµ½µÄ×Ö½Ú·Å½ø»º³å */
+    /** @brief æ¥å…¥æ–°å®¢æˆ·ç«¯ï¼Œå¹¶æŠŠæ”¶åˆ°çš„å­—èŠ‚æ”¾è¿›ç¼“å†² */
     void threadMain();
-    /** @brief ¹Øµô²¢ÒÆ³ıÒ»¸ö¿Í»§¶Ë */
+    /** @brief å…³æ‰å¹¶ç§»é™¤ä¸€ä¸ªå®¢æˆ·ç«¯ */
     void dropClient(const std::string& id);
 
-    mutable std::mutex m_mu; ///< ±£»¤¿Í»§¶Ë±í
-    std::condition_variable m_cv; ///< ÓĞÊı¾İ»òÁ¬½Ó±ä»¯Ê±»½ĞÑ
-    SOCKET m_listen; ///< ¼àÌıÌ×½Ó×Ö
-    bool m_open;     ///< ÊÇ·ñÔÚ¼àÌı
-    bool m_run;      ///< ½ÓÊÕÏß³ÌÊÇ·ñ¼ÌĞø
-    int m_nextId;    ///< ÏÂÒ»¸ö¿Í»§¶Ë±àºÅ
-    std::map<std::string, Client> m_clients; ///< ÒÑ½ÓÈë¿Í»§¶Ë
-    std::thread m_thread; ///< ½ÓÈëÓëÊÕ°üÏß³Ì
+    mutable std::mutex m_mu; ///< ä¿æŠ¤å®¢æˆ·ç«¯è¡¨
+    std::condition_variable m_cv; ///< æœ‰æ•°æ®æˆ–è¿æ¥å˜åŒ–æ—¶å”¤é†’
+    SOCKET m_listen; ///< ç›‘å¬å¥—æ¥å­—
+    bool m_open;     ///< æ˜¯å¦åœ¨ç›‘å¬
+    bool m_run;      ///< æ¥æ”¶çº¿ç¨‹æ˜¯å¦ç»§ç»­
+    int m_nextId;    ///< ä¸‹ä¸€ä¸ªå®¢æˆ·ç«¯ç¼–å·
+    int m_maxClients; ///< æ¥å…¥ä¸Šé™ã€‚æœªé…ç½®æ—¶ä¸º FD_SETSIZE-1
+    int m_rxLimit;    ///< å•ä¸ªå®¢æˆ·ç«¯æ¥æ”¶ç¼“å†²ä¸Šé™ï¼Œè¶…è¿‡å°±ä¸¢æ‰è¿™ä¸ªå®¢æˆ·ç«¯
+    std::map<std::string, Client> m_clients; ///< å·²æ¥å…¥å®¢æˆ·ç«¯
+    std::thread m_thread; ///< æ¥å…¥ä¸æ”¶åŒ…çº¿ç¨‹
 };
 
 }

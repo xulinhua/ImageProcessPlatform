@@ -1,6 +1,6 @@
 /**
  * @file HsImage.h
- * @brief HsImageÍ·ÎÄ¼ş
+ * @brief HsImageå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -17,47 +17,47 @@
 
 namespace HsCommData {
 
-/** @brief ÏñËØÑù±¾ÀàĞÍ¡£¾ö¶¨Ã¿¸öÑù±¾Õ¼¼¸¸ö×Ö½Ú¼°ÓĞÎŞ·ûºÅ */
+/** @brief åƒç´ æ ·æœ¬ç±»å‹ã€‚å†³å®šæ¯ä¸ªæ ·æœ¬å å‡ ä¸ªå­—èŠ‚åŠæœ‰æ— ç¬¦å· */
 enum PixelKind {
-    PixelKindUnknown = 0, ///< Î´Ö¸¶¨
-    PixelByte,            ///< 8bit ÎŞ·ûºÅ
-    PixelInt16,           ///< 16bit ÓĞ·ûºÅ
-    PixelUInt16,          ///< 16bit ÎŞ·ûºÅ
-    PixelInt32,           ///< 32bit ÓĞ·ûºÅ
-    PixelReal32,          ///< 32bit ¸¡µã
-    PixelReal64,          ///< 64bit ¸¡µã
-    PixelComplex64,        ///< 64bit ¸´Êı¡£ĞëÅäºÏ EncodeMono
-    PixelKindMax ///< ¸öÊı£¬²»ÊÇºÏ·¨Öµ
+    PixelKindUnknown = 0, ///< æœªæŒ‡å®š
+    PixelByte,            ///< 8bit æ— ç¬¦å·
+    PixelInt16,           ///< 16bit æœ‰ç¬¦å·
+    PixelUInt16,          ///< 16bit æ— ç¬¦å·
+    PixelInt32,           ///< 32bit æœ‰ç¬¦å·
+    PixelReal32,          ///< 32bit æµ®ç‚¹
+    PixelReal64,          ///< 64bit æµ®ç‚¹
+    PixelComplex64,        ///< 64bit å¤æ•°ã€‚é¡»é…åˆ EncodeMono
+    PixelKindMax ///< ä¸ªæ•°ï¼Œä¸æ˜¯åˆæ³•å€¼
 };
 
-/** @brief ÏñËØÅÅ²¼¡£¾ö¶¨Í¨µÀË³ĞòÓëÆ½Ãæ²¼¾Ö£¬Óë PixelKind ×éºÏÊ¹ÓÃ */
+/** @brief åƒç´ æ’å¸ƒã€‚å†³å®šé€šé“é¡ºåºä¸å¹³é¢å¸ƒå±€ï¼Œä¸ PixelKind ç»„åˆä½¿ç”¨ */
 enum PixelEncoding {
-    EncodeUnknown = 0, ///< Î´Ö¸¶¨
-    EncodeMono,        ///< µ¥Í¨µÀ
-    EncodeRgb,         ///< R,G,B ½»´í
-    EncodeBgr,         ///< B,G,R ½»´í
-    EncodeRgba,        ///< R,G,B,A ½»´í
-    EncodeBgra,        ///< B,G,R,A ½»´í
-    EncodeYuyv,        ///< Y0,U,Y1,V¡£½ö PixelByte¡£Ã¿Á½ÏñËØ 4 ×Ö½Ú
-    EncodeUyvy,        ///< U,Y0,V,Y1¡£½ö PixelByte
-    EncodeYvyu,        ///< Y0,V,Y1,U¡£½ö PixelByte
-    EncodeYuv444,      ///< Y,U,V ½»´í
-    EncodeUyv,         ///< U,Y,V¡£PFNC YUV8_UYV
-    EncodeYuv411,      ///< U,Y,Y,V,Y,Y¡£Ã¿ËÄÏñËØ 6 ×Ö½Ú
-    EncodeBayerRG,     ///< Bayer ÆğÊ¼ R G
-    EncodeBayerGR,     ///< Bayer ÆğÊ¼ G R
-    EncodeBayerGB,     ///< Bayer ÆğÊ¼ G B
-    EncodeBayerBG,     ///< Bayer ÆğÊ¼ B G
-    EncodeRgb565,      ///< RGB 5-6-5¡£½ö PixelByte
-    EncodeBgr565,      ///< BGR 5-6-5¡£½ö PixelByte
-    EncodeNv12,        ///< Y Æ½Ãæ + UV ½»´í
-    EncodeNv21,        ///< Y Æ½Ãæ + VU ½»´í
-    EncodeI420,        ///< Y¡¢U¡¢V Èı·ÖÁ¿
-    EncodeYv12,         ///< Y¡¢V¡¢U Èı·ÖÁ¿
-    EncodeMax ///< ¸öÊı£¬²»ÊÇºÏ·¨Öµ
+    EncodeUnknown = 0, ///< æœªæŒ‡å®š
+    EncodeMono,        ///< å•é€šé“
+    EncodeRgb,         ///< R,G,B äº¤é”™
+    EncodeBgr,         ///< B,G,R äº¤é”™
+    EncodeRgba,        ///< R,G,B,A äº¤é”™
+    EncodeBgra,        ///< B,G,R,A äº¤é”™
+    EncodeYuyv,        ///< Y0,U,Y1,Vã€‚ä»… PixelByteã€‚æ¯ä¸¤åƒç´  4 å­—èŠ‚
+    EncodeUyvy,        ///< U,Y0,V,Y1ã€‚ä»… PixelByte
+    EncodeYvyu,        ///< Y0,V,Y1,Uã€‚ä»… PixelByte
+    EncodeYuv444,      ///< Y,U,V äº¤é”™
+    EncodeUyv,         ///< U,Y,Vã€‚PFNC YUV8_UYV
+    EncodeYuv411,      ///< U,Y,Y,V,Y,Yã€‚æ¯å››åƒç´  6 å­—èŠ‚
+    EncodeBayerRG,     ///< Bayer èµ·å§‹ R G
+    EncodeBayerGR,     ///< Bayer èµ·å§‹ G R
+    EncodeBayerGB,     ///< Bayer èµ·å§‹ G B
+    EncodeBayerBG,     ///< Bayer èµ·å§‹ B G
+    EncodeRgb565,      ///< RGB 5-6-5ã€‚ä»… PixelByte
+    EncodeBgr565,      ///< BGR 5-6-5ã€‚ä»… PixelByte
+    EncodeNv12,        ///< Y å¹³é¢ + UV äº¤é”™
+    EncodeNv21,        ///< Y å¹³é¢ + VU äº¤é”™
+    EncodeI420,        ///< Yã€Uã€V ä¸‰åˆ†é‡
+    EncodeYv12,         ///< Yã€Vã€U ä¸‰åˆ†é‡
+    EncodeMax ///< ä¸ªæ•°ï¼Œä¸æ˜¯åˆæ³•å€¼
 };
 
-/** @brief ´æÍ¼ÎÄ¼ş¸ñÊ½¡£ÓÉ save µÄÃ¶¾Ù¾ö¶¨±àÂëÆ÷£¬²»µ¥¿¿À©Õ¹Ãû */
+/** @brief å­˜å›¾æ–‡ä»¶æ ¼å¼ã€‚ç”± save çš„æšä¸¾å†³å®šç¼–ç å™¨ï¼Œä¸å•é æ‰©å±•å */
 enum ImageFileFormat {
     ImageFormatBmp = 0, ///< .bmp
     ImageFormatPng,     ///< .png
@@ -67,72 +67,72 @@ enum ImageFileFormat {
 
 /**
  * @class HsImage
- * @brief Í¼Ïñ»º³å¡£kind ¹ÜÑù±¾¿í¶È£¬encoding ¹ÜÍ¨µÀ²¼¾Ö¡£²»ÒÀÀµ Qt
+ * @brief å›¾åƒç¼“å†²ã€‚kind ç®¡æ ·æœ¬å®½åº¦ï¼Œencoding ç®¡é€šé“å¸ƒå±€ã€‚ä¸ä¾èµ– Qt
  */
 class HSCOMMDATA_EXPORT HsImage {
 public:
-    int64_t frameId; ///< Ö¡ºÅ
-    int width;       ///< ¿í£¬ÏñËØ
-    int height;      ///< ¸ß£¬ÏñËØ
-    int stride;      ///< ĞĞ×Ö½ÚÊı
-    PixelKind kind;  ///< Ñù±¾ÀàĞÍ
-    PixelEncoding encoding; ///< Í¨µÀÅÅ²¼
-    std::vector<unsigned char> pixels; ///< ÏñËØ¡£4:2:0 µÈ¿É¶àÆ½Ãæ½ô°¤
+    int64_t frameId; ///< å¸§å·
+    int width;       ///< å®½ï¼Œåƒç´ 
+    int height;      ///< é«˜ï¼Œåƒç´ 
+    int stride;      ///< è¡Œå­—èŠ‚æ•°
+    PixelKind kind;  ///< æ ·æœ¬ç±»å‹
+    PixelEncoding encoding; ///< é€šé“æ’å¸ƒ
+    std::vector<unsigned char> pixels; ///< åƒç´ ã€‚4:2:0 ç­‰å¯å¤šå¹³é¢ç´§æŒ¨
 
-    HsImage(); ///< ¿ÕÍ¼
-    /** @brief Éî¿½ÏñËØÓëÔªÊı¾İ */
+    HsImage(); ///< ç©ºå›¾
+    /** @brief æ·±æ‹·åƒç´ ä¸å…ƒæ•°æ® */
     HsImage(const HsImage& other);
-    /** @brief Éî¿½¸³Öµ */
+    /** @brief æ·±æ‹·èµ‹å€¼ */
     HsImage& operator=(const HsImage& other);
 
-    /** @brief ¿í¸ß·Ç·¨»òÎŞ»º³å */
+    /** @brief å®½é«˜éæ³•æˆ–æ— ç¼“å†² */
     bool isNull() const;
-    /** @brief Ã¿ÏñËØ×Ö½ÚÊı¡£422/565 Îª 2£¬411 µÈ°´²¼¾Ö£»Î´ÖªÎª 0 */
+    /** @brief æ¯åƒç´ å­—èŠ‚æ•°ã€‚422/565 ä¸º 2ï¼Œ411 ç­‰æŒ‰å¸ƒå±€ï¼›æœªçŸ¥ä¸º 0 */
     int bytesPerPixel() const;
-    /** @brief µÚ y ĞĞÖ»¶ÁÖ¸Õë¡£Ô½½çÅ× HsException */
+    /** @brief ç¬¬ y è¡Œåªè¯»æŒ‡é’ˆã€‚è¶Šç•ŒæŠ› HsException */
     const unsigned char* scanLine(int y) const;
-    /** @brief µÚ y ĞĞ¿ÉĞ´Ö¸Õë¡£Ô½½çÅ× HsException */
+    /** @brief ç¬¬ y è¡Œå¯å†™æŒ‡é’ˆã€‚è¶Šç•ŒæŠ› HsException */
     unsigned char* scanLine(int y);
 
-    /** @brief µ¥Ñù±¾×Ö½ÚÊı¡£Î´Öª kind ·µ»Ø 0 */
+    /** @brief å•æ ·æœ¬å­—èŠ‚æ•°ã€‚æœªçŸ¥ kind è¿”å› 0 */
     static int sampleBytes(PixelKind kind);
-    /** @brief kind Óë encoding ×éºÏºóµÄÃ¿ÏñËØ×Ö½ÚÊı¡£·Ç·¨Îª 0 */
+    /** @brief kind ä¸ encoding ç»„åˆåçš„æ¯åƒç´ å­—èŠ‚æ•°ã€‚éæ³•ä¸º 0 */
     static int bytesPerPixel(PixelKind kind, PixelEncoding encoding);
     /**
-     * @brief ·ÖÅä¿ÕÍ¼Ïñ£¨ÏñËØÌîÁã£©
-     * @param frameId Ö¡ºÅ£¬µ÷ÓÃ·½¿É×Ô¶¨
+     * @brief åˆ†é…ç©ºå›¾åƒï¼ˆåƒç´ å¡«é›¶ï¼‰
+     * @param frameId å¸§å·ï¼Œè°ƒç”¨æ–¹å¯è‡ªå®š
      */
     static HsImage make(int width, int height, PixelKind kind, PixelEncoding encoding, int64_t frameId);
     /**
-     * @brief ´ÓÔ­Ê¼»º³å¿½±´
-     * encoding Èç mono8/8uc1¡¢rgb8/bgr8/rgba8/bgra8¡¢yuyv/uyvy/yvyu/yuv444/uyv/yuv411/bayerrg8/rgb565/nv12/nv21/i420/yv12¡¢
-     * mono10/12/14/rgb16/bgr16/mono16¡¢mono16s¡¢mono32s¡¢real32/mono32f¡¢real64/mono64f/complex64¡¢rgb32f
-     * @return Ê§°ÜÊ±Îª¿ÕÍ¼£¬²»Å×Òì³£
+     * @brief ä»åŸå§‹ç¼“å†²æ‹·è´
+     * encoding å¦‚ mono8/8uc1ã€rgb8/bgr8/rgba8/bgra8ã€yuyv/uyvy/yvyu/yuv444/uyv/yuv411/bayerrg8/rgb565/nv12/nv21/i420/yv12ã€
+     * mono10/12/14/rgb16/bgr16/mono16ã€mono16sã€mono32sã€real32/mono32fã€real64/mono64f/complex64ã€rgb32f
+     * @return å¤±è´¥æ—¶ä¸ºç©ºå›¾ï¼Œä¸æŠ›å¼‚å¸¸
      */
     static HsImage fromRaw(const unsigned char* data, int width, int height, int strideBytes,
                            const char* encoding, int64_t frameId);
 
     /**
-     * @brief È¡»Ò¶È¡£byte °´ BT.601 Ñ¹µ½ 0-255£»YUV È¡ Y£»int/real Ö±½Ó×ª double
-     * @param gray Êä³ö£¬²»¿É¿Õ
+     * @brief å–ç°åº¦ã€‚byte æŒ‰ BT.601 å‹åˆ° 0-255ï¼›YUV å– Yï¼›int/real ç›´æ¥è½¬ double
+     * @param gray è¾“å‡ºï¼Œä¸å¯ç©º
      */
     bool sampleGray(int x, int y, double* gray) const;
-    /** @brief Ë«ÏßĞÔÈ¡»Ò¶È¡£Ô½½ç·µ»Ø false */
+    /** @brief åŒçº¿æ€§å–ç°åº¦ã€‚è¶Šç•Œè¿”å› false */
     bool sampleGray(double x, double y, double* gray) const;
     /**
-     * @brief È¡ RGB¡£µ¥Í¨µÀÔòÈıÍ¨µÀÏàÍ¬£»Bayer ÏÖ³¡½âµ½ 0-255
-     * @param r ºì¡£int/real °´Ñù±¾×ª int
-     * @param g ÂÌ
-     * @param b À¶
+     * @brief å– RGBã€‚å•é€šé“åˆ™ä¸‰é€šé“ç›¸åŒï¼›Bayer ç°åœºè§£åˆ° 0-255
+     * @param r çº¢ã€‚int/real æŒ‰æ ·æœ¬è½¬ int
+     * @param g ç»¿
+     * @param b è“
      */
     bool sampleRgb(int x, int y, int* r, int* g, int* b) const;
-    /** @brief Ë«ÏßĞÔÈ¡ RGB */
+    /** @brief åŒçº¿æ€§å– RGB */
     bool sampleRgb(double x, double y, int* r, int* g, int* b) const;
 
     /**
-     * @brief ´æ³É³£¼ûÍ¼ÏñÎÄ¼ş¡£Â·¾¶Îª UTF-8
-     * ÎŞÀ©Õ¹ÃûÊ±°´ format ²¹ÉÏ¡£ÓĞÀ©Õ¹ÃûÊ±±ØĞëºÍ format Ò»ÖÂ£¬jpg/jpeg¡¢tif/tiff ÊÓÎªÍ¬Ò»ÖÖ
-     * @param jpegQuality ½ö Jpeg Ê¹ÓÃ£¬1 µ½ 100
+     * @brief å­˜æˆå¸¸è§å›¾åƒæ–‡ä»¶ã€‚è·¯å¾„ä¸º UTF-8
+     * æ— æ‰©å±•åæ—¶æŒ‰ format è¡¥ä¸Šã€‚æœ‰æ‰©å±•åæ—¶å¿…é¡»å’Œ format ä¸€è‡´ï¼Œjpg/jpegã€tif/tiff è§†ä¸ºåŒä¸€ç§
+     * @param jpegQuality ä»… Jpeg ä½¿ç”¨ï¼Œ1 åˆ° 100
      */
     bool save(const std::string& utf8Path, ImageFileFormat format, int jpegQuality = 95) const;
 };

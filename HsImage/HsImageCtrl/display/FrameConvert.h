@@ -1,6 +1,6 @@
 /**
  * @file FrameConvert.h
- * @brief FrameConvertÍ·ÎÄ¼ş
+ * @brief FrameConvertå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -17,19 +17,19 @@
 
 namespace HsCtrl {
 
-/** @brief ÏñËØ³ß´ç¡£Óë HsCommData::HsImage ¿í¸ßÒ»ÖÂ£¬¹© Qt Ê¹ÓÃ */
+/** @brief åƒç´ å°ºå¯¸ã€‚ä¸ HsCommData::HsImage å®½é«˜ä¸€è‡´ï¼Œä¾› Qt ä½¿ç”¨ */
 inline QSize bufferPixelSize(const HsCommData::HsImage& fb)
 {
     return QSize(fb.width, fb.height);
 }
 
 /**
- * @brief QImage ×ªÏÔÊ¾»º³å¡£»Ò¶ÈÎª byte+Mono£¬²ÊÉ«Îª byte+RGB
- * @param frameId Ö¡ºÅ£¬ÓÉµ÷ÓÃ·½´«Èë
+ * @brief QImage è½¬æ˜¾ç¤ºç¼“å†²ã€‚ç°åº¦ä¸º byte+Monoï¼Œå½©è‰²ä¸º byte+RGB
+ * @param frameId å¸§å·ï¼Œç”±è°ƒç”¨æ–¹ä¼ å…¥
  */
 HsCommData::HsImage frameFromQImage(const QImage& img, int64_t frameId);
 
-/** @brief ÏÔÊ¾»º³å×ª QImage¡£byte µÄ BGR/BGRA µÈ×ª³É Qt ¿É»­¸ñÊ½ */
+/** @brief æ˜¾ç¤ºç¼“å†²è½¬ QImageã€‚byte çš„ BGR/BGRA ç­‰è½¬æˆ Qt å¯ç”»æ ¼å¼ */
 QImage qImageFromFrame(const HsCommData::HsImage& fb);
 
 }

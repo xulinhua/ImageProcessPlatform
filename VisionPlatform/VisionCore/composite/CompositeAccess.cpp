@@ -1,6 +1,6 @@
 /**
  * @file CompositeAccess.cpp
- * @brief CompositeAccessÊµÏÖ
+ * @brief CompositeAccesså®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -14,13 +14,13 @@ namespace {
 CompositeFindFn g_find = nullptr;
 }
 
-// ×¢²á¶¨Òå²éÕÒ
+// æ³¨å†Œå®šä¹‰æŸ¥æ‰¾
 void setCompositeFinder(CompositeFindFn fn)
 {
     g_find = fn;
 }
 
-// °´ id È¡×éºÏ¶¨Òå
+// æŒ‰ id å–ç»„åˆå®šä¹‰
 const CompositeDef* findComposite(const ObjectId& id)
 {
     if (!g_find || id.isNull()) {
@@ -29,7 +29,7 @@ const CompositeDef* findComposite(const ObjectId& id)
     return g_find(id);
 }
 
-// °ÑÒÑ¹«¿ª×Ö¶Î³­½øÒ»ÌõÆÕÍ¨¹¤¾ß¼ÇÂ¼
+// æŠŠå·²å…¬å¼€å­—æ®µæŠ„è¿›ä¸€æ¡æ™®é€šå·¥å…·è®°å½•
 ToolCfg CompositeDef::makeNode() const
 {
     ToolCfg t;

@@ -1,6 +1,6 @@
 /**
  * @file Sha256.h
- * @brief Sha256Í·ÎÄ¼ş
+ * @brief Sha256å¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -16,10 +16,10 @@
 namespace Vision {
 
 /**
- * @brief SHA-256¡£¿ÚÁî¹şÏ£ÓÃ£¬²»ÒÀÀµ Qt / CryptoAPI
- * @param data ÊäÈë×Ö½Ú
- * @param len ³¤¶È
- * @param out 32 ×Ö½ÚÕªÒª
+ * @brief SHA-256ã€‚å£ä»¤å“ˆå¸Œç”¨ï¼Œä¸ä¾èµ– Qt / CryptoAPI
+ * @param data è¾“å…¥å­—èŠ‚
+ * @param len é•¿åº¦
+ * @param out 32 å­—èŠ‚æ‘˜è¦
  */
 VISION_AUTH_API void sha256(const unsigned char* data, size_t len, unsigned char out[32]);
 

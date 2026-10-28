@@ -1,6 +1,6 @@
 /**
  * @file CvCalibPlate.cpp
- * @brief CvCalibPlateÊµÏÖ
+ * @brief CvCalibPlateå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -140,11 +140,11 @@ std::string packPoints(const std::vector<cv::Point2f>& img, const std::vector<cv
 
 }
 
-// ÕÒ±ê¶¨°å²¢ÇóÄÚ²Î£¬»òÖ»µ¼³öÒ»ÕÅ°åµÄµã
+// æ‰¾æ ‡å®šæ¿å¹¶æ±‚å†…å‚ï¼Œæˆ–åªå¯¼å‡ºä¸€å¼ æ¿çš„ç‚¹
 namespace {
 const char kVer_CvCalibPlate[] = "1.0.0.0";
 const Vision::VerNoteRaw kNotes_CvCalibPlate[] = {
-    { "1.0.0.0", "Ê×°æ" },
+    { "1.0.0.0", "é¦–ç‰ˆ" },
 };
 }
 
@@ -153,7 +153,7 @@ std::string Vision::CvCalibPlate::version() const
     return kVer_CvCalibPlate;
 }
 
-// °æ±¾±ä¸ü£¬Ö»×·¼Ó
+// ç‰ˆæœ¬å˜æ›´ï¼Œåªè¿½åŠ 
 std::vector<Vision::VerNote> Vision::CvCalibPlate::versionNotes() const
 {
     return Vision::verNotesFrom(kNotes_CvCalibPlate, static_cast<int>(sizeof(kNotes_CvCalibPlate) / sizeof(kNotes_CvCalibPlate[0])));
@@ -235,11 +235,11 @@ Vision::AlgToolOut Vision::CvCalibPlate::run(const Vision::AlgToolIn& in)
     return out;
 }
 
-// Ö»ÓÃµÚÒ»ÕÅÄÜÕÒµ½°åµÄÍ¼£¬¸ø³öÏñËØµãºÍºÁÃ×µã
+// åªç”¨ç¬¬ä¸€å¼ èƒ½æ‰¾åˆ°æ¿çš„å›¾ï¼Œç»™å‡ºåƒç´ ç‚¹å’Œæ¯«ç±³ç‚¹
 namespace {
 const char kVer_CvCalibPlane[] = "1.0.0.0";
 const Vision::VerNoteRaw kNotes_CvCalibPlane[] = {
-    { "1.0.0.0", "Ê×°æ" },
+    { "1.0.0.0", "é¦–ç‰ˆ" },
 };
 }
 
@@ -248,7 +248,7 @@ std::string Vision::CvCalibPlane::version() const
     return kVer_CvCalibPlane;
 }
 
-// °æ±¾±ä¸ü£¬Ö»×·¼Ó
+// ç‰ˆæœ¬å˜æ›´ï¼Œåªè¿½åŠ 
 std::vector<Vision::VerNote> Vision::CvCalibPlane::versionNotes() const
 {
     return Vision::verNotesFrom(kNotes_CvCalibPlane, static_cast<int>(sizeof(kNotes_CvCalibPlane) / sizeof(kNotes_CvCalibPlane[0])));

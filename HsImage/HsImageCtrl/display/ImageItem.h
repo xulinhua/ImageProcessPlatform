@@ -1,6 +1,6 @@
 /**
  * @file ImageItem.h
- * @brief ImageItemÍ·ÎÄ¼ş
+ * @brief ImageItemå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -18,39 +18,39 @@ namespace HsCtrl {
 
 /**
  * @class ImageItem
- * @brief µ×Í¼¡£³¡¾°±ä»»ÓÃ QTransform£¬paint Àï drawPixmap£¬²»ÔÚÉÏÒ»Ö¡ÉÏÔÙ²ÉÑù¡£
+ * @brief åº•å›¾ã€‚åœºæ™¯å˜æ¢ç”¨ QTransformï¼Œpaint é‡Œ drawPixmapï¼Œä¸åœ¨ä¸Šä¸€å¸§ä¸Šå†é‡‡æ ·ã€‚
  */
 class ImageItem : public QGraphicsItem {
 public:
-    /** @brief µ×Í¼ Item£¬z=0 */
+    /** @brief åº•å›¾ Itemï¼Œz=0 */
     explicit ImageItem(QGraphicsItem* parent = 0);
 
-    /** @brief »»³ÉĞÂÖ¡¡£Ö»±£´æÍ¼Ïñ£¬»æÖÆÊ±ÔÙÌù */
+    /** @brief æ¢æˆæ–°å¸§ã€‚åªä¿å­˜å›¾åƒï¼Œç»˜åˆ¶æ—¶å†è´´ */
     void setFrame(const HsCommData::HsImage& frame);
-    /** @brief Ö±½Ó»»ÉÏÒÑ¾­±¸ºÃµÄÍ¼ */
+    /** @brief ç›´æ¥æ¢ä¸Šå·²ç»å¤‡å¥½çš„å›¾ */
     void setImage(const QImage& image);
-    /** @brief Çåµôµ×Í¼ */
+    /** @brief æ¸…æ‰åº•å›¾ */
     void clear();
-    /** @brief ÊÓ¿ÚËõ·Å£¬ÓÃÀ´¾ö¶¨ÊÇ·ñ¿ª DeviceCoordinateCache */
+    /** @brief è§†å£ç¼©æ”¾ï¼Œç”¨æ¥å†³å®šæ˜¯å¦å¼€ DeviceCoordinateCache */
     void setViewScale(qreal s);
-    /** @brief ÏñËØ¼ìÑé»ò½Ó½ü 1:1 Ê±¹Øµô»º´æ£¬±ÜÃâ HUD È¡Ñù´íÎ» */
+    /** @brief åƒç´ æ£€éªŒæˆ–æ¥è¿‘ 1:1 æ—¶å…³æ‰ç¼“å­˜ï¼Œé¿å… HUD å–æ ·é”™ä½ */
     void setPixelInspect(bool on);
 
-    /** @brief Í¼Ïñ¿í¸ß¶ÔÓ¦µÄ³¡¾°¾ØĞÎ */
+    /** @brief å›¾åƒå®½é«˜å¯¹åº”çš„åœºæ™¯çŸ©å½¢ */
     QRectF boundingRect() const override;
-    /** @brief °´Ğè drawImage¡£1:1 Ö»Ìù¿É¼ûÏñËØ */
+    /** @brief æŒ‰éœ€ drawImageã€‚1:1 åªè´´å¯è§åƒç´  */
     void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
 
-    static const int kLodMaxEdge = 4096; ///< ³¤±ß³¬¹ı´ËÖµ²Å×öËõĞ¡ LOD
+    static const int kLodMaxEdge = 4096; ///< é•¿è¾¹è¶…è¿‡æ­¤å€¼æ‰åšç¼©å° LOD
 
 private:
-    /** @brief °´Ãæ»ıºÍ¼ìÑé¿ª¹ØÑ¡Ôñ»º´æÄ£Ê½ */
+    /** @brief æŒ‰é¢ç§¯å’Œæ£€éªŒå¼€å…³é€‰æ‹©ç¼“å­˜æ¨¡å¼ */
     void updateCacheMode();
 
-    QImage m_image;      ///< µ×Í¼ÏñËØ¡£»»Í¼Ê±²»ÔÚÖ÷Ïß³Ì×ö³É QPixmap
-    QSize m_imageSize;   ///< µ×Í¼ÏñËØ³ß´ç
-    qreal m_viewScale;   ///< ÊÓ¿ÚËõ·Å
-    bool m_pixelInspect; ///< ÏñËØ¼ìÑéÊÇ·ñ´ò¿ª
+    QImage m_image;      ///< åº•å›¾åƒç´ ã€‚æ¢å›¾æ—¶ä¸åœ¨ä¸»çº¿ç¨‹åšæˆ QPixmap
+    QSize m_imageSize;   ///< åº•å›¾åƒç´ å°ºå¯¸
+    qreal m_viewScale;   ///< è§†å£ç¼©æ”¾
+    bool m_pixelInspect; ///< åƒç´ æ£€éªŒæ˜¯å¦æ‰“å¼€
 };
 
 }

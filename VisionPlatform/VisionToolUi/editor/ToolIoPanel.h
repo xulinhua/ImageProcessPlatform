@@ -1,6 +1,6 @@
 /**
  * @file ToolIoPanel.h
- * @brief ToolIoPanelÍ·ÎÄ¼ş
+ * @brief ToolIoPanelå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -32,138 +32,138 @@ class Job;
 struct Solution;
 struct ToolCfg;
 
-/** @brief ToolIoPanel ×ÓÒ³£ºÁ¬½ÓÓë ROI ·ÖÇø */
+/** @brief ToolIoPanel å­é¡µï¼šè¿æ¥ä¸ ROI åˆ†åŒº */
 enum class ToolIoPage {
-    Link = 0, ///< ÊäÈëÁ¬½Ó
-    Roi = 1   ///< ¼ì²âÇøÓò
+    Link = 0, ///< è¾“å…¥è¿æ¥
+    Roi = 1   ///< æ£€æµ‹åŒºåŸŸ
 };
 
 /**
  * @class ToolIoPanel
- * @brief ¹¤¾ßÊäÈë£ºÁ¬½ÓÒ³Óë ROI Ò³£¬¹©µ÷ÊÔ´°·ÖÀ¸Õ¹Ê¾
+ * @brief å·¥å…·è¾“å…¥ï¼šè¿æ¥é¡µä¸ ROI é¡µï¼Œä¾›è°ƒè¯•çª—åˆ†æ å±•ç¤º
  */
 class VISION_TOOLUI_API ToolIoPanel : public QWidget {
     Q_OBJECT
 public:
-    /** @brief Á¬½ÓÒ³Óë ROI Ò³ */
+    /** @brief è¿æ¥é¡µä¸ ROI é¡µ */
     explicit ToolIoPanel(QWidget* parent = 0);
 
     /**
-     * @brief °´µ±Ç°¹¤¾ßÓëÁ÷³Ì»º´æË¢ĞÂ¿Ø¼ş
-     * @param canEdit ÓĞ·½°¸±à¼­È¨ÏŞÊ±²ÅÔÊĞí¸ÄÁ¬ÏßÓë ROI
+     * @brief æŒ‰å½“å‰å·¥å…·ä¸æµç¨‹ç¼“å­˜åˆ·æ–°æ§ä»¶
+     * @param canEdit æœ‰æ–¹æ¡ˆç¼–è¾‘æƒé™æ—¶æ‰å…è®¸æ”¹è¿çº¿ä¸ ROI
      */
     void refresh(Solution* sol, ToolCfg* tool, Job* job, bool canEdit);
 
-    /** @brief ROI ±íµ±Ç°Ñ¡ÖĞĞĞ£»ÎŞÑ¡ÖĞÊ± -1 */
+    /** @brief ROI è¡¨å½“å‰é€‰ä¸­è¡Œï¼›æ— é€‰ä¸­æ—¶ -1 */
     int selectedRoiRow() const;
 
-    /** @brief È¡Ïû±í¸ñÑ¡ÖĞ£¨²»´¥·¢ roiSelectionChanged£© */
+    /** @brief å–æ¶ˆè¡¨æ ¼é€‰ä¸­ï¼ˆä¸è§¦å‘ roiSelectionChangedï¼‰ */
     void clearRoiSelection();
 
     /**
-     * @brief Ñ¡ÖĞÖ¸¶¨ĞĞ£¨²»´¥·¢ roiSelectionChanged£©
-     * @param row ´Ó 0 Æğ£»Ô½½çÔòÇå¿ÕÑ¡ÖĞ
+     * @brief é€‰ä¸­æŒ‡å®šè¡Œï¼ˆä¸è§¦å‘ roiSelectionChangedï¼‰
+     * @param row ä» 0 èµ·ï¼›è¶Šç•Œåˆ™æ¸…ç©ºé€‰ä¸­
      */
     void selectRoiRow(int row);
 
-    /** @brief Ö¸¶¨×ÓÒ³¸ù¿Ø¼ş£¨²»ÓµÓĞ£¬ÉúÃüÖÜÆÚÍ¬±¾ panel£© */
+    /** @brief æŒ‡å®šå­é¡µæ ¹æ§ä»¶ï¼ˆä¸æ‹¥æœ‰ï¼Œç”Ÿå‘½å‘¨æœŸåŒæœ¬ panelï¼‰ */
     QWidget* pageWidget(ToolIoPage page) const;
 
 signals:
-    /** @brief Çå¿Õ±¾¹¤¾ß ROI */
+    /** @brief æ¸…ç©ºæœ¬å·¥å…· ROI */
     void clearRoiRequested();
-    /** @brief ĞÂÔö ROI£¨½øÈë»æÖÆ£© */
+    /** @brief æ–°å¢ ROIï¼ˆè¿›å…¥ç»˜åˆ¶ï¼‰ */
     void addRoiRequested();
-    /** @brief É¾³ı×îºóÒ»¸ö ROI */
+    /** @brief åˆ é™¤æœ€åä¸€ä¸ª ROI */
     void removeLastRoiRequested();
     /**
-     * @brief É¾³ıÖ¸¶¨ĞĞ ROI
-     * @param index ±íÖĞ´Ó 0 ÆğµÄĞĞºÅ
+     * @brief åˆ é™¤æŒ‡å®šè¡Œ ROI
+     * @param index è¡¨ä¸­ä» 0 èµ·çš„è¡Œå·
      */
     void removeRoiRequested(int index);
     /**
-     * @brief ±íÖĞÑ¡ÖĞĞĞ±ä»¯
-     * @param index ´Ó 0 ÆğµÄĞĞºÅ£»ÎŞÑ¡ÖĞÊ±Îª -1
+     * @brief è¡¨ä¸­é€‰ä¸­è¡Œå˜åŒ–
+     * @param index ä» 0 èµ·çš„è¡Œå·ï¼›æ— é€‰ä¸­æ—¶ä¸º -1
      */
     void roiSelectionChanged(int index);
     /**
-     * @brief ÊäÈë¶Ë¿ÚÁ¬Ïß±ä¸ü
-     * @param portData PortData ÕûĞÍÖµ
-     * @param fromId ÉÏÓÎ¹¤¾ß id£»¿Õ±íÊ¾¶Ï¿ª
-     * @param fromPort ÉÏÓÎ¶Ë¿Ú¼ü£¬Èç out.image
+     * @brief è¾“å…¥ç«¯å£è¿çº¿å˜æ›´
+     * @param portData PortData æ•´å‹å€¼
+     * @param fromId ä¸Šæ¸¸å·¥å…· idï¼›ç©ºè¡¨ç¤ºæ–­å¼€
+     * @param fromPort ä¸Šæ¸¸ç«¯å£é”®ï¼Œå¦‚ out.image
      */
     void inputLinkChanged(int portData, const QString& fromId, const QString& fromPort);
 
 private slots:
-    /** @brief É¾³ıÑ¡ÖĞĞĞ£»ÎŞÑ¡ÖĞÔòÉ¾Ä©¸ö */
+    /** @brief åˆ é™¤é€‰ä¸­è¡Œï¼›æ— é€‰ä¸­åˆ™åˆ æœ«ä¸ª */
     void onDeleteClicked();
-    /** @brief ±íÄÚĞĞÉ¾³ı°´Å¥ */
+    /** @brief è¡¨å†…è¡Œåˆ é™¤æŒ‰é’® */
     void onDeleteRowClicked();
-    /** @brief ±íÑ¡ÖĞĞĞ±ä»¯Ê±Í¨ÖªÍâ²¿Ë¢ĞÂÍ¼ÉÏ ROI */
+    /** @brief è¡¨é€‰ä¸­è¡Œå˜åŒ–æ—¶é€šçŸ¥å¤–éƒ¨åˆ·æ–°å›¾ä¸Š ROI */
     void onRoiSelectionChanged();
-    /** @brief ÊäÈëÏÂÀ­Ñ¡ÖĞ±ä»¯ */
+    /** @brief è¾“å…¥ä¸‹æ‹‰é€‰ä¸­å˜åŒ– */
     void onLinkComboChanged(int index);
 
 protected:
-    /** @brief ±í¸ñ viewport£ºÔÙµãÒÑÑ¡ĞĞÔòÈ¡ÏûÑ¡ÖĞ */
+    /** @brief è¡¨æ ¼ viewportï¼šå†ç‚¹å·²é€‰è¡Œåˆ™å–æ¶ˆé€‰ä¸­ */
     bool eventFilter(QObject* watched, QEvent* event);
 
 private:
     /**
-     * @brief °´ ROI ÖÖÀàÌî±í
-     * @param rs µ±Ç°¹¤¾ßÓĞĞ§ ROI
+     * @brief æŒ‰ ROI ç§ç±»å¡«è¡¨
+     * @param rs å½“å‰å·¥å…·æœ‰æ•ˆ ROI
      */
     void fillRoiTable(const std::vector<HsCommData::HsObject>& rs);
-    /** @brief Ë¢ĞÂµ¥¸öÊäÈë¶Ë¿ÚÏÂÀ­Óë×´Ì¬ĞĞ */
+    /** @brief åˆ·æ–°å•ä¸ªè¾“å…¥ç«¯å£ä¸‹æ‹‰ä¸çŠ¶æ€è¡Œ */
     void refreshLinkRow(QComboBox* combo, QLabel* hint, QLabel* camText,
                         const JobCfg* jobConfig, const ToolCfg* tool, Job* job,
                         PortData data, bool canEdit, bool showRow);
-    /** @brief Ìî³äÊäÈë¶Ë¿ÚºòÑ¡À´Ô´ */
+    /** @brief å¡«å……è¾“å…¥ç«¯å£å€™é€‰æ¥æº */
     void fillLinkCombo(QComboBox* combo, const JobCfg& job, const ObjectId& toId, PortData data);
-    /** @brief Ñ¡ÖĞµ±Ç°ÒÑÁ¬ÏßµÄÏî */
+    /** @brief é€‰ä¸­å½“å‰å·²è¿çº¿çš„é¡¹ */
     void selectCurrentLink(QComboBox* combo, const JobCfg& job, const ObjectId& toId, const PortSlot& toPort);
 
-    QWidget* m_linkPage;     ///< Á¬½ÓÒ³¸ù
-    QWidget* m_roiPage;      ///< ROI Ò³¸ù
-    QLabel* m_imgRowLabel;   ///< Í¼ÏñÔ´ĞĞ±êÌâ
-    QLabel* m_imgCamText;    ///< ²É¼¯¹¤¾ß¹Ì¶¨ËµÃ÷
-    QComboBox* m_imgCombo;   ///< Í¼ÏñÊäÈëÀ´Ô´
-    QLabel* m_imgHint;       ///< Í¼Ïñ³ß´ç»òÔËĞĞ×´Ì¬
-    QLabel* m_poseRowLabel;  ///< Î»×Ë/Âß¼­ĞĞ±êÌâ
-    QComboBox* m_poseCombo;  ///< Î»×Ë»òÂß¼­ÊäÈë
-    QLabel* m_poseHint;      ///< Î»×Ë/Âß¼­»º´æÕªÒª
-    QLabel* m_regionRowLabel; ///< ÇøÓòÔ´ĞĞ±êÌâ
-    QComboBox* m_regionCombo; ///< ÇøÓòÊäÈëÀ´Ô´
-    QLabel* m_regionHint;    ///< ÇøÓòÁ¬Ïß×´Ì¬
-    QTableWidget* m_roiTable;  ///< ROI ±í
-    QPushButton* m_btnAdd;     ///< ĞÂÔö ROI
-    QPushButton* m_btnRedraw;  ///< µ¥ ROI ¹¤¾ßÖØ»­
-    QPushButton* m_btnClear;   ///< Çå¿Õ ROI
-    QPushButton* m_btnDel;     ///< É¾³ıÑ¡ÖĞ ROI
-    bool m_fillingRoiTable;    ///< ÕıÔÚÌî±í£¬±ÜÃâ selectRow µİ¹é´¥·¢
-    bool m_fillingLinks;       ///< ÕıÔÚÌîÏÂÀ­£¬±ÜÃâ currentIndexChanged µİ¹é
-    int m_pressSelectedRow;    ///< °´ÏÂÊ±ÒÑÑ¡ÖĞµÄĞĞ£¬ÓÃÓÚ toggle È¡Ïû
+    QWidget* m_linkPage;     ///< è¿æ¥é¡µæ ¹
+    QWidget* m_roiPage;      ///< ROI é¡µæ ¹
+    QLabel* m_imgRowLabel;   ///< å›¾åƒæºè¡Œæ ‡é¢˜
+    QLabel* m_imgCamText;    ///< é‡‡é›†å·¥å…·å›ºå®šè¯´æ˜
+    QComboBox* m_imgCombo;   ///< å›¾åƒè¾“å…¥æ¥æº
+    QLabel* m_imgHint;       ///< å›¾åƒå°ºå¯¸æˆ–è¿è¡ŒçŠ¶æ€
+    QLabel* m_poseRowLabel;  ///< ä½å§¿/é€»è¾‘è¡Œæ ‡é¢˜
+    QComboBox* m_poseCombo;  ///< ä½å§¿æˆ–é€»è¾‘è¾“å…¥
+    QLabel* m_poseHint;      ///< ä½å§¿/é€»è¾‘ç¼“å­˜æ‘˜è¦
+    QLabel* m_regionRowLabel; ///< åŒºåŸŸæºè¡Œæ ‡é¢˜
+    QComboBox* m_regionCombo; ///< åŒºåŸŸè¾“å…¥æ¥æº
+    QLabel* m_regionHint;    ///< åŒºåŸŸè¿çº¿çŠ¶æ€
+    QTableWidget* m_roiTable;  ///< ROI è¡¨
+    QPushButton* m_btnAdd;     ///< æ–°å¢ ROI
+    QPushButton* m_btnRedraw;  ///< å• ROI å·¥å…·é‡ç”»
+    QPushButton* m_btnClear;   ///< æ¸…ç©º ROI
+    QPushButton* m_btnDel;     ///< åˆ é™¤é€‰ä¸­ ROI
+    bool m_fillingRoiTable;    ///< æ­£åœ¨å¡«è¡¨ï¼Œé¿å… selectRow é€’å½’è§¦å‘
+    bool m_fillingLinks;       ///< æ­£åœ¨å¡«ä¸‹æ‹‰ï¼Œé¿å… currentIndexChanged é€’å½’
+    int m_pressSelectedRow;    ///< æŒ‰ä¸‹æ—¶å·²é€‰ä¸­çš„è¡Œï¼Œç”¨äº toggle å–æ¶ˆ
 };
 
 /**
- * @brief °Ñ ROI Ã÷Ï¸µşµ½Í¼Ïñ´°£¨Í¼Ïñ×ø±ê£©
- * @param onlyIndex ·Ç¸ºÊ±Ö»ÏÔÊ¾¸ÃĞĞÃ÷Ï¸£»-1 ÏÔÊ¾È«²¿
- * @param showLabels Îª false Ê±Ö»Çå±ê×¢£¬²»»æÖÆÎÄ×Ö£¨ä¯ÀÀ/·Ç»æÖÆÄ£Ê½£©
+ * @brief æŠŠ ROI æ˜ç»†å åˆ°å›¾åƒçª—ï¼ˆå›¾åƒåæ ‡ï¼‰
+ * @param onlyIndex éè´Ÿæ—¶åªæ˜¾ç¤ºè¯¥è¡Œæ˜ç»†ï¼›-1 æ˜¾ç¤ºå…¨éƒ¨
+ * @param showLabels ä¸º false æ—¶åªæ¸…æ ‡æ³¨ï¼Œä¸ç»˜åˆ¶æ–‡å­—ï¼ˆæµè§ˆ/éç»˜åˆ¶æ¨¡å¼ï¼‰
  */
 VISION_TOOLUI_API void overlayRoiDetails(HsCtrl::HsImageWindow* view, const ToolCfg* tool, int onlyIndex = -1,
                        bool showLabels = false);
 
 /**
- * @brief µ÷ÊÔ´°µ×Í¼£º²É¼¯¹¤¾ßÓÃ±¾¹¤¾ß»º´æ£¬ÆäÓàÓÃÁ¬ÏßÊäÈëÍ¼
- * @return ÎŞºÏÊÊÊäÈëÊ±·µ»Ø¿ÕÖ¡
+ * @brief è°ƒè¯•çª—åº•å›¾ï¼šé‡‡é›†å·¥å…·ç”¨æœ¬å·¥å…·ç¼“å­˜ï¼Œå…¶ä½™ç”¨è¿çº¿è¾“å…¥å›¾
+ * @return æ— åˆé€‚è¾“å…¥æ—¶è¿”å›ç©ºå¸§
  */
 VISION_TOOLUI_API HsCommData::HsImage debugBaseFrame(ToolCfg* tool, JobCfg* jobConfig, Job* job);
 
 /**
- * @brief °´Ñ¡ÖĞ ROI ÓëÊÇ·ñ¿É±à¼­Í¬²½ Drawing ²ã
- * @param editable »æÖÆÄ£Ê½¿ª£º¿ÉÍÏ¶¯ÊÖ±ú£»¹Ø£ºÖ»¶ÁÏÔÊ¾
- * @param selectedIndex ±íÖĞÑ¡ÖĞĞĞ£»-1 ±íÊ¾²»ÏŞ¶¨µ¥Ìõ£¨Ö÷¹¤×÷ÇøÏÔÊ¾È«²¿£©
- * @param hasDrawings ÊÇ·ñÓĞ ROI ĞèÒªÏÔÊ¾
+ * @brief æŒ‰é€‰ä¸­ ROI ä¸æ˜¯å¦å¯ç¼–è¾‘åŒæ­¥ Drawing å±‚
+ * @param editable ç»˜åˆ¶æ¨¡å¼å¼€ï¼šå¯æ‹–åŠ¨æ‰‹æŸ„ï¼›å…³ï¼šåªè¯»æ˜¾ç¤º
+ * @param selectedIndex è¡¨ä¸­é€‰ä¸­è¡Œï¼›-1 è¡¨ç¤ºä¸é™å®šå•æ¡ï¼ˆä¸»å·¥ä½œåŒºæ˜¾ç¤ºå…¨éƒ¨ï¼‰
+ * @param hasDrawings æ˜¯å¦æœ‰ ROI éœ€è¦æ˜¾ç¤º
  */
 VISION_TOOLUI_API void syncDrawingInteraction(HsCtrl::HsImageWindow* view, bool editable,
                             int selectedIndex, bool hasDrawings);

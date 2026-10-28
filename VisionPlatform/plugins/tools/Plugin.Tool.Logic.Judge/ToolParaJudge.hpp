@@ -1,6 +1,6 @@
 /**
  * @file ToolParaJudge.hpp
- * @brief ToolParaJudgeÍ·ÎÄ¼ş
+ * @brief ToolParaJudgeå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -16,27 +16,27 @@ namespace Vision {
 
 /**
  * @class ToolParaJudge
- * @brief JudgeTool ÔËĞĞ²ÎÊı
+ * @brief JudgeTool è¿è¡Œå‚æ•°
  */
 class ToolParaJudge : public ToolParaBase {
 public:
-    /** @brief Ñ§Ï°²ÎÊı£¬Ã»ÓĞÔòÎª¿Õ */
+    /** @brief å­¦ä¹ å‚æ•°ï¼Œæ²¡æœ‰åˆ™ä¸ºç©º */
     struct Learn {
     };
-    /** @brief ÔËĞĞ²ÎÊı */
+    /** @brief è¿è¡Œå‚æ•° */
     struct Run {
-        bool useOkAnd;              ///< »ã×ÜÉÏÓÎOK
-        int termCount;              ///< ÊıÖµÌõ¼şÊı
+        bool useOkAnd;              ///< æ±‡æ€»ä¸Šæ¸¸OK
+        int termCount;              ///< æ•°å€¼æ¡ä»¶æ•°
         Run()
             : useOkAnd(true)
             , termCount(0)
         {}
     };
 
-    Learn learn; ///< Ñ§Ï°²ÎÊı£¬Ã»ÓĞÔòÎª¿Õ
-    Run run;     ///< ÔËĞĞ²ÎÊı
+    Learn learn; ///< å­¦ä¹ å‚æ•°ï¼Œæ²¡æœ‰åˆ™ä¸ºç©º
+    Run run;     ///< è¿è¡Œå‚æ•°
 
-    /** @brief ´Ó ToolParam ÌîĞ´ */
+    /** @brief ä» ToolParam å¡«å†™ */
     void load(const ToolParam& src)
     {
         const ParamMap& m = src.run;

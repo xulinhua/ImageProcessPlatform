@@ -1,6 +1,6 @@
 /**
  * @file VisionHalComExport.h
- * @brief VisionHalComExportͷ�ļ�
+ * @brief VisionHalComExport头文件
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.

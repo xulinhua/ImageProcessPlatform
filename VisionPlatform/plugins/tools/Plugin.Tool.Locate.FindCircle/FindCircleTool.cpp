@@ -1,6 +1,6 @@
 /**
  * @file FindCircleTool.cpp
- * @brief FindCircleToolÊµÏÖ
+ * @brief FindCircleToolå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -14,31 +14,31 @@
 #include <vector>
 
 namespace {
-// µ±Ç°°æ±¾¡£±ØĞëµÈÓÚ±ä¸ü±í×îºóÒ»ĞĞ
+// å½“å‰ç‰ˆæœ¬ã€‚å¿…é¡»ç­‰äºå˜æ›´è¡¨æœ€åä¸€è¡Œ
 const char kToolVersion[] = "1.0.0.0";
-// ±ä¸ü±í¡£Ö»×·¼Ó£¬²»É¾¾ÉĞĞ
+// å˜æ›´è¡¨ã€‚åªè¿½åŠ ï¼Œä¸åˆ æ—§è¡Œ
 const Vision::VerNoteRaw kVerNotes[] = {
-    { "1.0.0.0", "Ê×°æ" },
+    { "1.0.0.0", "é¦–ç‰ˆ" },
 };
 
-// ×¢²áÃû
+// æ³¨å†Œå
 const char kToolName[] = "locate.find_circle";
-// ½çÃæÏÔÊ¾Ãû
-const char kDisplayName[] = "ÕÒÔ²";
-// ¹¤¾ßËµÃ÷
-const char kDescription[] = "ÔÚ ROI ÄÚÕÒÔ²£¬Êä³öÔ²ĞÄ¡¢°ë¾¶Óëµş¼ÓÍ¼ĞÎ";
+// ç•Œé¢æ˜¾ç¤ºå
+const char kDisplayName[] = "æ‰¾åœ†";
+// å·¥å…·è¯´æ˜
+const char kDescription[] = "åœ¨ ROI å†…æ‰¾åœ†ï¼Œè¾“å‡ºåœ†å¿ƒã€åŠå¾„ä¸å åŠ å›¾å½¢";
 
-// ²ÎÊıËµÃ÷
+// å‚æ•°è¯´æ˜
 std::vector<Vision::ParamField> fields()
 {
     std::vector<Vision::ParamField> f;
-    f.push_back(Vision::paramInt("threshold", "ãĞÖµ", 80, true, 0, true, 255));
-    f.push_back(Vision::paramInt("minR", "×îĞ¡°ë¾¶", 8, true, 1, false, 0));
-    f.push_back(Vision::paramInt("maxR", "×î´ó°ë¾¶", 400, true, 1, false, 0));
-    f.push_back(Vision::paramBool("dark", "°µÄ¿±ê", true));
-    f.push_back(Vision::paramDouble("sigma", "Æ½»¬", 1.0, true, 0.4, true, 20.0));
-    f.push_back(Vision::paramInt("low", "µÍãĞÖµ", 20, true, 0, true, 255));
-    f.push_back(Vision::paramInt("high", "¸ßãĞÖµ", 40, true, 0, true, 255));
+    f.push_back(Vision::paramInt("threshold", "é˜ˆå€¼", 80, true, 0, true, 255));
+    f.push_back(Vision::paramInt("minR", "æœ€å°åŠå¾„", 8, true, 1, false, 0));
+    f.push_back(Vision::paramInt("maxR", "æœ€å¤§åŠå¾„", 400, true, 1, false, 0));
+    f.push_back(Vision::paramBool("dark", "æš—ç›®æ ‡", true));
+    f.push_back(Vision::paramDouble("sigma", "å¹³æ»‘", 1.0, true, 0.4, true, 20.0));
+    f.push_back(Vision::paramInt("low", "ä½é˜ˆå€¼", 20, true, 0, true, 255));
+    f.push_back(Vision::paramInt("high", "é«˜é˜ˆå€¼", 40, true, 0, true, 255));
     return f;
 }
 Vision::ToolCaps caps()
@@ -53,7 +53,7 @@ Vision::ToolCaps caps()
     return c;
 }
 
-// ÓÉ²ÎÊıËµÃ÷Éú³ÉÈ±Ê¡ ParamMap
+// ç”±å‚æ•°è¯´æ˜ç”Ÿæˆç¼ºçœ ParamMap
 Vision::ParamMap defaultsFrom(const std::vector<Vision::ParamField>& fields)
 {
     Vision::ParamMap m;
@@ -68,62 +68,62 @@ Vision::ParamMap defaultsFrom(const std::vector<Vision::ParamField>& fields)
 
 }
 
-// ×¢²áÃû
+// æ³¨å†Œå
 std::string Vision::FindCircleTool::toolName() const
 {
     return kToolName;
 }
 
-// ¹¤¾ß´óÀà
+// å·¥å…·å¤§ç±»
 Vision::ToolType Vision::FindCircleTool::type() const
 {
     return Vision::ToolType::Locate;
 }
 
-// ½çÃæÏÔÊ¾Ãû
+// ç•Œé¢æ˜¾ç¤ºå
 std::string Vision::FindCircleTool::displayName() const
 {
-    return Vision::acpToUtf8(kDisplayName);
+    return kDisplayName;
 }
 
-// ¹¤¾ß°æ±¾
+// å·¥å…·ç‰ˆæœ¬
 std::string Vision::FindCircleTool::version() const
 {
     return std::string(kToolVersion);
 }
 
-// °æ±¾±ä¸ü£¬Ö»×·¼Ó
+// ç‰ˆæœ¬å˜æ›´ï¼Œåªè¿½åŠ 
 std::vector<Vision::VerNote> Vision::FindCircleTool::versionNotes() const
 {
     return Vision::verNotesFrom(kVerNotes, static_cast<int>(sizeof(kVerNotes) / sizeof(kVerNotes[0])));
 }
 
 
-// ¹¤¾ßËµÃ÷
+// å·¥å…·è¯´æ˜
 std::string Vision::FindCircleTool::description() const
 {
-    return Vision::acpToUtf8(kDescription);
+    return kDescription;
 }
 
-// È±Ê¡²ÎÊı
+// ç¼ºçœå‚æ•°
 Vision::ParamMap Vision::FindCircleTool::defaultParams() const
 {
     return defaultsFrom(fields());
 }
 
-// ²ÎÊıËµÃ÷
+// å‚æ•°è¯´æ˜
 std::vector<Vision::ParamField> Vision::FindCircleTool::paramFields() const
 {
     return fields();
 }
 
-// »­²¼ÄÜÁ¦
+// ç”»å¸ƒèƒ½åŠ›
 Vision::ToolCaps Vision::FindCircleTool::capabilities() const
 {
     return caps();
 }
 
-// µ÷Ëã·¨²å¼şÖ´ĞĞ
+// è°ƒç®—æ³•æ’ä»¶æ‰§è¡Œ
 Vision::ToolOut Vision::FindCircleTool::execute(const Vision::ToolIn& in)
 {
     Vision::ToolOut out = Vision::runAlgToolBase(toolName(), in, false);
@@ -136,13 +136,13 @@ Vision::ToolOut Vision::FindCircleTool::execute(const Vision::ToolIn& in)
     return out;
 }
 
-// ¿ËÂ¡±¾ÊµÀı
+// å…‹éš†æœ¬å®ä¾‹
 Vision::ToolBase* Vision::FindCircleTool::clone() const
 {
     FindCircleTool* p = new FindCircleTool();
     p->copyInstanceDataFrom(*this);
     return p;
-}// ·µ»Ø±¾¹¤¾ß²ÎÊı¶ÔÏó
+}// è¿”å›æœ¬å·¥å…·å‚æ•°å¯¹è±¡
 
 const Vision::ToolParaBase* Vision::FindCircleTool::toolParam() const
 {

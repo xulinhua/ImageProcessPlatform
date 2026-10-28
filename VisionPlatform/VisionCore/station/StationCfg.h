@@ -1,6 +1,6 @@
 /**
  * @file StationCfg.h
- * @brief StationCfgÍ·ÎÄ¼ş
+ * @brief StationCfgå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -18,26 +18,26 @@
 
 namespace Vision {
 
-/** @class RuntimePane @brief ÔËĞĞÌ¬Ò»¸öÍ¼Ïñ¸ñ£ºµ×Í¼À´Ô´Óë¶àÂ·µş¼Ó */
+/** @class RuntimePane @brief è¿è¡Œæ€ä¸€ä¸ªå›¾åƒæ ¼ï¼šåº•å›¾æ¥æºä¸å¤šè·¯å åŠ  */
 struct RuntimePane {
-    ObjectId imageToolId;                 ///< µ×Í¼¹¤¾ß£»¿ÕÔòÓÃ¹¤Õ¾±¾ÅÄ½á¹ûÍ¼
-    std::vector<ObjectId> overlayToolIds; ///< µş¼Ó¹¤¾ß£»¿Õ id ±íÊ¾¹¤Õ¾±¾ÅÄÍ¼ĞÎ
-    bool showOverlay;                     ///< ÊÇ·ñ»­µş¼Ó
-    bool enabled;                         ///< ¸Ã¸ñÊÇ·ñÏÔÊ¾
+    ObjectId imageToolId;                 ///< åº•å›¾å·¥å…·ï¼›ç©ºåˆ™ç”¨å·¥ç«™æœ¬æ‹ç»“æœå›¾
+    std::vector<ObjectId> overlayToolIds; ///< å åŠ å·¥å…·ï¼›ç©º id è¡¨ç¤ºå·¥ç«™æœ¬æ‹å›¾å½¢
+    bool showOverlay;                     ///< æ˜¯å¦ç”»å åŠ 
+    bool enabled;                         ///< è¯¥æ ¼æ˜¯å¦æ˜¾ç¤º
     RuntimePane()
         : showOverlay(true)
         , enabled(true)
     {}
 };
 
-/** @class RuntimeView @brief ¹¤Õ¾ÔËĞĞÖ÷½çÃæ²¼¾Ö£¨Ëæ·½°¸´æÅÌ£¬²»ÊÇ±¾»úÉèÖÃ£© */
+/** @class RuntimeView @brief å·¥ç«™è¿è¡Œä¸»ç•Œé¢å¸ƒå±€ï¼ˆéšæ–¹æ¡ˆå­˜ç›˜ï¼Œä¸æ˜¯æœ¬æœºè®¾ç½®ï¼‰ */
 struct VISIONCORE_API RuntimeView {
-    int rows;                       ///< ĞĞÊı£¬1 ÖÁ 3
-    int cols;                       ///< ÁĞÊı£¬1 ÖÁ 3
-    bool showStats;                 ///< ÓÒ²à²úÁ¿Í³¼Æ
-    bool showHistory;               ///< µ×²¿½á¹ûÀúÊ·
-    bool showSideButtons;           ///< ×ó²à¿ªÊ¼/Í£Ö¹ÁĞ
-    std::vector<RuntimePane> panes; ///< ×î¶à 9 ¸ñ£¬°´ĞĞÓÅÏÈ
+    int rows;                       ///< è¡Œæ•°ï¼Œ1 è‡³ 3
+    int cols;                       ///< åˆ—æ•°ï¼Œ1 è‡³ 3
+    bool showStats;                 ///< å³ä¾§äº§é‡ç»Ÿè®¡
+    bool showHistory;               ///< åº•éƒ¨ç»“æœå†å²
+    bool showSideButtons;           ///< å·¦ä¾§å¼€å§‹/åœæ­¢åˆ—
+    std::vector<RuntimePane> panes; ///< æœ€å¤š 9 æ ¼ï¼ŒæŒ‰è¡Œä¼˜å…ˆ
     RuntimeView()
         : rows(1)
         , cols(1)
@@ -45,30 +45,30 @@ struct VISIONCORE_API RuntimeView {
         , showHistory(true)
         , showSideButtons(true)
     {}
-    /** @brief ¸ñ×ÓÊı */
+    /** @brief æ ¼å­æ•° */
     int slotCount() const;
-    /** @brief ĞĞÁĞ¼Ğµ½ 1 ÖÁ 3£¬´°¸ñ²¹µ½ 9 */
+    /** @brief è¡Œåˆ—å¤¹åˆ° 1 è‡³ 3ï¼Œçª—æ ¼è¡¥åˆ° 9 */
     void normalize();
 };
 
-/** @brief µ±Ç°²¼¾ÖµÄ¸ñ×ÓÊı£¨ĞĞ³ËÁĞ£© */
+/** @brief å½“å‰å¸ƒå±€çš„æ ¼å­æ•°ï¼ˆè¡Œä¹˜åˆ—ï¼‰ */
 
 /**
  * @class StationCfg
- * @brief ¹¤Õ¾Åä·½ÅäÖÃ£º¶àÌõ JobCfg¡¢°ó¶¨Éè±¸ÓëÔËĞĞ½çÃæ²¼¾Ö
+ * @brief å·¥ç«™é…æ–¹é…ç½®ï¼šå¤šæ¡ JobCfgã€ç»‘å®šè®¾å¤‡ä¸è¿è¡Œç•Œé¢å¸ƒå±€
  */
 struct StationCfg {
-    ObjectId id;                         ///< ¹¤Õ¾ id
-    std::string name;                    ///< ÏÔÊ¾Ãû
-    std::string stationCode;             ///< ¹¤Õ¾±àÂë
-    bool enabled;                        ///< ÊÇ·ñÊ¹ÄÜ£¨Î´Ê¹ÄÜÔòÔËĞĞÌ¬²» tick£©
-    JobSchedule jobSchedule;             ///< Á÷³Ìµ÷¶È·½Ê½
-    std::vector<DeviceRef> boundDevices; ///< °ó¶¨Éè±¸
-    std::vector<JobCfg> jobs;         ///< ¼ì²âÁ÷³ÌÁĞ±í
-    std::string commChannelId;           ///< Í¨Ñ¶Í¨µÀ
-    int timeoutMs;                       ///< ³¬Ê±ºÁÃë
-    FailPolicy failPolicy;               ///< Ê§°Ü²ßÂÔ
-    RuntimeView runtimeView;             ///< ÔËĞĞÖ÷½çÃæ²¼¾Ö
+    ObjectId id;                         ///< å·¥ç«™ id
+    std::string name;                    ///< æ˜¾ç¤ºå
+    std::string stationCode;             ///< å·¥ç«™ç¼–ç 
+    bool enabled;                        ///< æ˜¯å¦ä½¿èƒ½ï¼ˆæœªä½¿èƒ½åˆ™è¿è¡Œæ€ä¸ tickï¼‰
+    JobSchedule jobSchedule;             ///< æµç¨‹è°ƒåº¦æ–¹å¼
+    std::vector<DeviceRef> boundDevices; ///< ç»‘å®šè®¾å¤‡
+    std::vector<JobCfg> jobs;         ///< æ£€æµ‹æµç¨‹åˆ—è¡¨
+    std::string commChannelId;           ///< é€šè®¯é€šé“
+    int timeoutMs;                       ///< è¶…æ—¶æ¯«ç§’
+    FailPolicy failPolicy;               ///< å¤±è´¥ç­–ç•¥
+    RuntimeView runtimeView;             ///< è¿è¡Œä¸»ç•Œé¢å¸ƒå±€
     StationCfg()
         : enabled(true)
         , jobSchedule(ScheduleSequence)

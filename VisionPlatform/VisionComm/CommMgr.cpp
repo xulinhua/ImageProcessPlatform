@@ -1,6 +1,6 @@
 /**
  * @file CommMgr.cpp
- * @brief CommMgrÊµÏÖ
+ * @brief CommMgrå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -20,12 +20,12 @@ namespace Vision {
 namespace {
 
 struct Session {
-    ICommChannel* channel; ///< ´«ÊäÍ¨µÀ£¬ÓµÓĞ
-    ModbusSlave* slave; ///< ´ÓÕ¾£»Ö÷Õ¾Îª¿Õ
-    bool modbus; ///< ÊÇ·ñ×ß MODBUS
-    bool master; ///< Ö÷Õ¾ÎªÕæ£¬´ÓÕ¾Îª¼Ù
-    uint16_t tid; ///< ÏÂÒ»ÊÂÎñºÅ
-    std::mutex mu; ///< Í¬Ò»Í¨µÀ´®ĞĞÊÕ·¢
+    ICommChannel* channel; ///< ä¼ è¾“é€šé“ï¼Œæ‹¥æœ‰
+    ModbusSlave* slave; ///< ä»ç«™ï¼›ä¸»ç«™ä¸ºç©º
+    bool modbus; ///< æ˜¯å¦èµ° MODBUS
+    bool master; ///< ä¸»ç«™ä¸ºçœŸï¼Œä»ç«™ä¸ºå‡
+    uint16_t tid; ///< ä¸‹ä¸€äº‹åŠ¡å·
+    std::mutex mu; ///< åŒä¸€é€šé“ä¸²è¡Œæ”¶å‘
 
     Session()
         : channel(nullptr)
@@ -36,7 +36,7 @@ struct Session {
     {}
 };
 
-// °´Í¨µÀÀàĞÍ´´½¨´«Êä¶ÔÏó
+// æŒ‰é€šé“ç±»å‹åˆ›å»ºä¼ è¾“å¯¹è±¡
 ICommChannel* createChannel(CommChannelType type)
 {
     if (type == CommTcpClient) {
@@ -51,12 +51,12 @@ ICommChannel* createChannel(CommChannelType type)
     return new SerialChannel();
 }
 
-// ·şÎñ¶Ë±ØĞëÖ¸¶¨¿Í»§¶Ë£¬ÆäËüÍ¨µÀºöÂÔ¶Ô¶Ë id
+// æœåŠ¡ç«¯å¿…é¡»æŒ‡å®šå®¢æˆ·ç«¯ï¼Œå…¶å®ƒé€šé“å¿½ç•¥å¯¹ç«¯ id
 bool usePeer(ICommChannel* ch, const std::string& peerId, std::string* out, std::string* err)
 {
     if (ch->transport() == TransportTcpServer) {
         if (peerId.empty()) {
-            setCommErr(err, Vision::acpToUtf8("Î´Ñ¡Ôñ¿Í»§¶Ë"));
+            setCommErr(err, "æœªé€‰æ‹©å®¢æˆ·ç«¯");
             return false;
         }
         *out = peerId;
@@ -69,24 +69,24 @@ bool usePeer(ICommChannel* ch, const std::string& peerId, std::string* out, std:
 } // namespace
 
 struct CommMgr::Impl {
-    std::mutex mu; ///< ±£»¤»á»°±í
-    std::map<std::string, std::shared_ptr<Session> > sessions; ///< Í¨µÀ id µ½»á»°
+    std::mutex mu; ///< ä¿æŠ¤ä¼šè¯è¡¨
+    std::map<std::string, std::shared_ptr<Session> > sessions; ///< é€šé“ id åˆ°ä¼šè¯
 };
 
-// ·µ»Ø½ø³ÌÄÚÎ¨Ò»ÊµÀı
+// è¿”å›è¿›ç¨‹å†…å”¯ä¸€å®ä¾‹
 CommMgr& CommMgr::instance()
 {
     static CommMgr hub;
     return hub;
 }
 
-// ´´½¨¿ÕµÄ»á»°±í
+// åˆ›å»ºç©ºçš„ä¼šè¯è¡¨
 CommMgr::CommMgr()
     : m_impl(new Impl)
 {
 }
 
-// ¹Ø±ÕÈ«²¿Í¨µÀ²¢ÊÍ·Å»á»°±í
+// å…³é—­å…¨éƒ¨é€šé“å¹¶é‡Šæ”¾ä¼šè¯è¡¨
 CommMgr::~CommMgr()
 {
     std::vector<std::string> ids;
@@ -106,13 +106,13 @@ CommMgr::~CommMgr()
     }
 }
 
-// Ã¶¾Ù±¾»ú´®¿ÚÃû
+// æšä¸¾æœ¬æœºä¸²å£å
 std::vector<std::string> CommMgr::listSerialPorts() const
 {
     return SerialChannel::listPorts();
 }
 
-// °´Ì¨ÕË´ò¿ªÍ¨µÀ£»ÒÑ¿ªÔòÏÈ¹ØÔÙ¿ª
+// æŒ‰å°è´¦æ‰“å¼€é€šé“ï¼›å·²å¼€åˆ™å…ˆå…³å†å¼€
 bool CommMgr::openChannel(const CommChannel& ch, std::string* err)
 {
     closeChannel(ch.id);
@@ -120,7 +120,7 @@ bool CommMgr::openChannel(const CommChannel& ch, std::string* err)
     const bool modbus = (protocol == "modbus");
     const bool master = ch.params.value("role").toString() != "slave";
     if (modbus && ch.type == CommUdp) {
-        setCommErr(err, Vision::acpToUtf8("UDP ²»ÅÜ MODBUS"));
+        setCommErr(err, "UDP ä¸æ”¯æŒ MODBUS");
         return false;
     }
     ICommChannel* channel = createChannel(ch.type);
@@ -144,7 +144,7 @@ bool CommMgr::openChannel(const CommChannel& ch, std::string* err)
     return true;
 }
 
-// Í£µô´ÓÕ¾²¢¹Ø±Õ´«Êä
+// åœæ‰ä»ç«™å¹¶å…³é—­ä¼ è¾“
 void CommMgr::closeChannel(const ObjectId& id)
 {
     std::shared_ptr<Session> session;
@@ -172,7 +172,7 @@ void CommMgr::closeChannel(const ObjectId& id)
     }
 }
 
-// Í¨µÀÊÇ·ñÔÚ»á»°±íÀïÇÒ´«ÊäÒÑ´ò¿ª
+// é€šé“æ˜¯å¦åœ¨ä¼šè¯è¡¨é‡Œä¸”ä¼ è¾“å·²æ‰“å¼€
 bool CommMgr::isOpen(const ObjectId& id) const
 {
     std::lock_guard<std::mutex> lock(m_impl->mu);
@@ -180,7 +180,7 @@ bool CommMgr::isOpen(const ObjectId& id) const
     return it != m_impl->sessions.end() && it->second->channel && it->second->channel->isOpen();
 }
 
-// È¡µ±Ç°¶Ô¶Ë£»Î´´ò¿ªÔò¿Õ
+// å–å½“å‰å¯¹ç«¯ï¼›æœªæ‰“å¼€åˆ™ç©º
 std::vector<CommPeer> CommMgr::peers(const ObjectId& id) const
 {
     std::lock_guard<std::mutex> lock(m_impl->mu);
@@ -191,7 +191,7 @@ std::vector<CommPeer> CommMgr::peers(const ObjectId& id) const
     return it->second->channel->peers();
 }
 
-// ÏòÒÑ´ò¿ªÍ¨µÀĞ´Ô­Ê¼×Ö½Ú
+// å‘å·²æ‰“å¼€é€šé“å†™åŸå§‹å­—èŠ‚
 bool CommMgr::writeBytes(const ObjectId& id, const std::string& peerId, const CommBytes& data, std::string* err)
 {
     std::shared_ptr<Session> session;
@@ -199,7 +199,7 @@ bool CommMgr::writeBytes(const ObjectId& id, const std::string& peerId, const Co
         std::lock_guard<std::mutex> lock(m_impl->mu);
         std::map<std::string, std::shared_ptr<Session> >::iterator it = m_impl->sessions.find(id.toString());
         if (it == m_impl->sessions.end()) {
-            setCommErr(err, Vision::acpToUtf8("Í¨µÀÎ´´ò¿ª"));
+            setCommErr(err, "é€šé“æœªæ‰“å¼€");
             return false;
         }
         session = it->second;
@@ -212,7 +212,7 @@ bool CommMgr::writeBytes(const ObjectId& id, const std::string& peerId, const Co
     return session->channel->write(peer, data, 1000, err);
 }
 
-// ´ÓÒÑ´ò¿ªÍ¨µÀ¶ÁÔ­Ê¼×Ö½Ú
+// ä»å·²æ‰“å¼€é€šé“è¯»åŸå§‹å­—èŠ‚
 CommBytes CommMgr::readBytes(const ObjectId& id, const std::string& peerId, int maxBytes, int timeoutMs, std::string* err)
 {
     std::shared_ptr<Session> session;
@@ -220,7 +220,7 @@ CommBytes CommMgr::readBytes(const ObjectId& id, const std::string& peerId, int 
         std::lock_guard<std::mutex> lock(m_impl->mu);
         std::map<std::string, std::shared_ptr<Session> >::iterator it = m_impl->sessions.find(id.toString());
         if (it == m_impl->sessions.end()) {
-            setCommErr(err, Vision::acpToUtf8("Í¨µÀÎ´´ò¿ª"));
+            setCommErr(err, "é€šé“æœªæ‰“å¼€");
             return CommBytes();
         }
         session = it->second;
@@ -235,20 +235,20 @@ CommBytes CommMgr::readBytes(const ObjectId& id, const std::string& peerId, int 
 
 namespace {
 
-// °´Í¨µÀ id È¡³ö»á»°£»Ã»ÓĞÔò±¨Î´´ò¿ª
+// æŒ‰é€šé“ id å–å‡ºä¼šè¯ï¼›æ²¡æœ‰åˆ™æŠ¥æœªæ‰“å¼€
 std::shared_ptr<Session> takeSession(std::map<std::string, std::shared_ptr<Session> >& sessions, std::mutex& mu,
                                          const std::string& key, std::string* err)
 {
     std::lock_guard<std::mutex> lock(mu);
     std::map<std::string, std::shared_ptr<Session> >::iterator it = sessions.find(key);
     if (it == sessions.end() || !it->second->channel) {
-        setCommErr(err, Vision::acpToUtf8("Í¨µÀÎ´´ò¿ª"));
+        setCommErr(err, "é€šé“æœªæ‰“å¼€");
         return std::shared_ptr<Session>();
     }
     return it->second;
 }
 
-// µİÔöÊÂÎñºÅ£¬Ìø¹ı 0
+// é€’å¢äº‹åŠ¡å·ï¼Œè·³è¿‡ 0
 uint16_t nextTid(Session* session)
 {
     session->tid = static_cast<uint16_t>(session->tid + 1);
@@ -260,12 +260,12 @@ uint16_t nextTid(Session* session)
 
 } // namespace
 
-// ¶ÁÎ»£º´ÓÕ¾¶ÁÓ³Ïñ£¬Ö÷Õ¾·¢×ÜÏßÇëÇó
+// è¯»ä½ï¼šä»ç«™è¯»æ˜ åƒï¼Œä¸»ç«™å‘æ€»çº¿è¯·æ±‚
 bool CommMgr::modbusReadBits(const ObjectId& id, const std::string& peerId, int slave, ModbusTable table,
                              int address, int count, std::vector<unsigned char>* bits, std::string* err)
 {
     if (table != ModbusCoil && table != ModbusDiscrete) {
-        setCommErr(err, Vision::acpToUtf8("¸ÃÇø²»ÊÇÎ»"));
+        setCommErr(err, "è¯¥åŒºä¸æ˜¯ä½");
         return false;
     }
     std::shared_ptr<Session> session = takeSession(m_impl->sessions, m_impl->mu, id.toString(), err);
@@ -274,7 +274,7 @@ bool CommMgr::modbusReadBits(const ObjectId& id, const std::string& peerId, int 
     }
     std::lock_guard<std::mutex> lock(session->mu);
     if (!session->modbus) {
-        setCommErr(err, Vision::acpToUtf8("µ±Ç°²»ÊÇ MODBUS Í¨µÀ"));
+        setCommErr(err, "å½“å‰ä¸æ˜¯ MODBUS é€šé“");
         return false;
     }
     if (!session->master) {
@@ -289,12 +289,12 @@ bool CommMgr::modbusReadBits(const ObjectId& id, const std::string& peerId, int 
     return modbusMasterReadBits(session->channel, peer, tcp, nextTid(session.get()), slave, fc, address, count, bits, err);
 }
 
-// ¶Á¼Ä´æÆ÷£º´ÓÕ¾¶ÁÓ³Ïñ£¬Ö÷Õ¾·¢×ÜÏßÇëÇó
+// è¯»å¯„å­˜å™¨ï¼šä»ç«™è¯»æ˜ åƒï¼Œä¸»ç«™å‘æ€»çº¿è¯·æ±‚
 bool CommMgr::modbusReadRegs(const ObjectId& id, const std::string& peerId, int slave, ModbusTable table,
                              int address, int count, std::vector<uint16_t>* regs, std::string* err)
 {
     if (table != ModbusHolding && table != ModbusInput) {
-        setCommErr(err, Vision::acpToUtf8("¸ÃÇø²»ÊÇ¼Ä´æÆ÷"));
+        setCommErr(err, "è¯¥åŒºä¸æ˜¯å¯„å­˜å™¨");
         return false;
     }
     std::shared_ptr<Session> session = takeSession(m_impl->sessions, m_impl->mu, id.toString(), err);
@@ -303,7 +303,7 @@ bool CommMgr::modbusReadRegs(const ObjectId& id, const std::string& peerId, int 
     }
     std::lock_guard<std::mutex> lock(session->mu);
     if (!session->modbus) {
-        setCommErr(err, Vision::acpToUtf8("µ±Ç°²»ÊÇ MODBUS Í¨µÀ"));
+        setCommErr(err, "å½“å‰ä¸æ˜¯ MODBUS é€šé“");
         return false;
     }
     if (!session->master) {
@@ -318,12 +318,12 @@ bool CommMgr::modbusReadRegs(const ObjectId& id, const std::string& peerId, int 
     return modbusMasterReadRegs(session->channel, peer, tcp, nextTid(session.get()), slave, fc, address, count, regs, err);
 }
 
-// Ğ´Î»£º´ÓÕ¾Ğ´Ó³Ïñ£¬Ö÷Õ¾Ö»ÔÊĞíÏßÈ¦
+// å†™ä½ï¼šä»ç«™å†™æ˜ åƒï¼Œä¸»ç«™åªå…è®¸çº¿åœˆ
 bool CommMgr::modbusWriteBits(const ObjectId& id, const std::string& peerId, int slave, ModbusTable table,
                               int address, const std::vector<unsigned char>& bits, std::string* err)
 {
     if (table != ModbusCoil && table != ModbusDiscrete) {
-        setCommErr(err, Vision::acpToUtf8("¸ÃÇø²»ÊÇÎ»"));
+        setCommErr(err, "è¯¥åŒºä¸æ˜¯ä½");
         return false;
     }
     std::shared_ptr<Session> session = takeSession(m_impl->sessions, m_impl->mu, id.toString(), err);
@@ -332,14 +332,14 @@ bool CommMgr::modbusWriteBits(const ObjectId& id, const std::string& peerId, int
     }
     std::lock_guard<std::mutex> lock(session->mu);
     if (!session->modbus) {
-        setCommErr(err, Vision::acpToUtf8("µ±Ç°²»ÊÇ MODBUS Í¨µÀ"));
+        setCommErr(err, "å½“å‰ä¸æ˜¯ MODBUS é€šé“");
         return false;
     }
     if (!session->master) {
         return session->slave->writeBits(table, address, bits, err);
     }
     if (table != ModbusCoil) {
-        setCommErr(err, Vision::acpToUtf8("Ö÷Õ¾²»ÄÜĞ´¸ÃÇø"));
+        setCommErr(err, "ä¸»ç«™ä¸èƒ½å†™è¯¥åŒº");
         return false;
     }
     std::string peer;
@@ -350,12 +350,12 @@ bool CommMgr::modbusWriteBits(const ObjectId& id, const std::string& peerId, int
     return modbusMasterWriteBits(session->channel, peer, tcp, nextTid(session.get()), slave, address, bits, err);
 }
 
-// Ğ´¼Ä´æÆ÷£º´ÓÕ¾Ğ´Ó³Ïñ£¬Ö÷Õ¾Ö»ÔÊĞí±£³Ö¼Ä´æÆ÷
+// å†™å¯„å­˜å™¨ï¼šä»ç«™å†™æ˜ åƒï¼Œä¸»ç«™åªå…è®¸ä¿æŒå¯„å­˜å™¨
 bool CommMgr::modbusWriteRegs(const ObjectId& id, const std::string& peerId, int slave, ModbusTable table,
                               int address, const std::vector<uint16_t>& regs, std::string* err)
 {
     if (table != ModbusHolding && table != ModbusInput) {
-        setCommErr(err, Vision::acpToUtf8("¸ÃÇø²»ÊÇ¼Ä´æÆ÷"));
+        setCommErr(err, "è¯¥åŒºä¸æ˜¯å¯„å­˜å™¨");
         return false;
     }
     std::shared_ptr<Session> session = takeSession(m_impl->sessions, m_impl->mu, id.toString(), err);
@@ -364,14 +364,14 @@ bool CommMgr::modbusWriteRegs(const ObjectId& id, const std::string& peerId, int
     }
     std::lock_guard<std::mutex> lock(session->mu);
     if (!session->modbus) {
-        setCommErr(err, Vision::acpToUtf8("µ±Ç°²»ÊÇ MODBUS Í¨µÀ"));
+        setCommErr(err, "å½“å‰ä¸æ˜¯ MODBUS é€šé“");
         return false;
     }
     if (!session->master) {
         return session->slave->writeRegs(table, address, regs, err);
     }
     if (table != ModbusHolding) {
-        setCommErr(err, Vision::acpToUtf8("Ö÷Õ¾²»ÄÜĞ´¸ÃÇø"));
+        setCommErr(err, "ä¸»ç«™ä¸èƒ½å†™è¯¥åŒº");
         return false;
     }
     std::string peer;

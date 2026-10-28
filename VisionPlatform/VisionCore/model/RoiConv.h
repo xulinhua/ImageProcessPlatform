@@ -1,6 +1,6 @@
 /**
  * @file RoiConv.h
- * @brief RoiConvÍ·ÎÄ¼ş
+ * @brief RoiConvå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -13,13 +13,13 @@
 #include <string>
 #include <vector>
 namespace Vision {
-/** @brief ´Ó Drawing id£¨roi.N£©½âÎöĞĞºÅ£»ÎŞĞ§Ê± -1 */
+/** @brief ä» Drawing idï¼ˆroi.Nï¼‰è§£æè¡Œå·ï¼›æ— æ•ˆæ—¶ -1 */
 VISIONCORE_API int roiIndexFromDrawingId(const std::string& id);
-/** @brief Í¼ĞÎÖÖÀàÖĞÎÄÃû */
+/** @brief å›¾å½¢ç§ç±»ä¸­æ–‡å */
 VISIONCORE_API std::string roiKindTitle(int kind);
-/** @brief Ò»Ìõ ROI µÄ¿É¶ÁÃ÷Ï¸£¨Ô²ĞÄ°ë¾¶¡¢¿í¸ßµÈ£© */
+/** @brief ä¸€æ¡ ROI çš„å¯è¯»æ˜ç»†ï¼ˆåœ†å¿ƒåŠå¾„ã€å®½é«˜ç­‰ï¼‰ */
 VISIONCORE_API std::string formatRoiDetail(const HsCommData::HsObject& roi);
- /** @brief Ã÷Ï¸ÎÄ×ÖÔÚÍ¼ÉÏµÄÃªµã£¨Í¼Ïñ×ø±ê£© */
+ /** @brief æ˜ç»†æ–‡å­—åœ¨å›¾ä¸Šçš„é”šç‚¹ï¼ˆå›¾åƒåæ ‡ï¼‰ */
 VISIONCORE_API void roiLabelAnchor(const HsCommData::HsObject& roi, double* x, double* y);
 }
 

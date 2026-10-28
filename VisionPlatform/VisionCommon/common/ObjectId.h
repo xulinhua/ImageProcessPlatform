@@ -1,6 +1,6 @@
 /**
  * @file ObjectId.h
- * @brief ObjectIdÍ·ÎÄ¼ş
+ * @brief ObjectIdå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -16,33 +16,33 @@ namespace Vision {
 
 /**
  * @class ObjectId
- * @brief ¶ÔÏóÎÈ¶¨±êÊ¶£¬ÄÚ²¿ÎªÈ¥µô»¨À¨ºÅµÄ UUID ÎÄ±¾
+ * @brief å¯¹è±¡ç¨³å®šæ ‡è¯†ï¼Œå†…éƒ¨ä¸ºå»æ‰èŠ±æ‹¬å·çš„ UUID æ–‡æœ¬
  */
 class VISION_COMMON_API ObjectId {
 public:
     ObjectId() {}
-    /** @brief ÓÃ×Ö·û´®¹¹Ôì£¬²¢È¥µô»¨À¨ºÅ */
+    /** @brief ç”¨å­—ç¬¦ä¸²æ„é€ ï¼Œå¹¶å»æ‰èŠ±æ‹¬å· */
     explicit ObjectId(const std::string& s);
 
-    /** @brief Éú³ÉĞÂµÄ UUID */
+    /** @brief ç”Ÿæˆæ–°çš„ UUID */
     static ObjectId create();
-    /** @brief ´Ó×Ö·û´®»¹Ô­ */
+    /** @brief ä»å­—ç¬¦ä¸²è¿˜åŸ */
     static ObjectId fromString(const std::string& s);
 
     bool isNull() const;
-    /** @brief ±êÊ¶ÎÄ±¾ */
+    /** @brief æ ‡è¯†æ–‡æœ¬ */
     const std::string& toString() const;
-    /** @brief ÎÄ±¾ÊÇ·ñÏàÍ¬ */
+    /** @brief æ–‡æœ¬æ˜¯å¦ç›¸åŒ */
     bool operator==(const ObjectId& o) const;
-    /** @brief ÎÄ±¾ÊÇ·ñ²»Í¬ */
+    /** @brief æ–‡æœ¬æ˜¯å¦ä¸åŒ */
     bool operator!=(const ObjectId& o) const;
-    /** @brief °´ÎÄ±¾ÅÅĞò */
+    /** @brief æŒ‰æ–‡æœ¬æ’åº */
     bool operator<(const ObjectId& o) const;
 
 private:
-    /** @brief È¥µô»¨À¨ºÅ */
+    /** @brief å»æ‰èŠ±æ‹¬å· */
     static std::string stripBraces(std::string s);
-    std::string m_s; ///< ±êÊ¶ÎÄ±¾
+    std::string m_s; ///< æ ‡è¯†æ–‡æœ¬
 };
 
 }

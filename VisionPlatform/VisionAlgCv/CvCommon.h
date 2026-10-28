@@ -1,6 +1,6 @@
 /**
  * @file CvCommon.h
- * @brief CvCommonÍ·ÎÄ¼ş
+ * @brief CvCommonå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -8,12 +8,12 @@
 
 #ifndef VISION_OPENCVCOMMON_H
 #define VISION_OPENCVCOMMON_H
-/** @brief ¼æÈİ¾ÉÍ·£º±àÅÅÇëÓÃ CvAlgoHelpers.h£»ĞÎÌ¬Ñ§ÇëÓÃ CvOps.h */
+/** @brief å…¼å®¹æ—§å¤´ï¼šç¼–æ’è¯·ç”¨ CvAlgoHelpers.hï¼›å½¢æ€å­¦è¯·ç”¨ CvOps.h */
 #include "CvAlgoHelpers.h"
 #include "CvOps.h"
 
 namespace Vision {
-/** @deprecated ÇëÓÃ morphOpenClose */
+/** @deprecated è¯·ç”¨ morphOpenClose */
 inline void morphMask(const cv::Mat& bin, double openR, double closeR, cv::Mat*& out)
 {
     morphOpenClose(bin, openR, closeR, out);

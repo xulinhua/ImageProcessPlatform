@@ -1,6 +1,6 @@
 /**
  * @file Geom3.h
- * @brief Geom3Í·ÎÄ¼ş
+ * @brief Geom3å¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -15,26 +15,26 @@ namespace HsCommData {
 
 /**
  * @class Point3_
- * @brief ÈıÎ¬µã»òÊ¸Á¿¡£ÓÒÊÖÏµ£¬µ¥Î»ºÁÃ×¡£²»ÊÇÍ¼Ïñ×ø±ê£¬Y ²»ÏòÏÂ
- * Æ½Ì¨¼¸ºÎÓÃ Point3d£¨double£©¡£ÕûĞÍ¡¢µ¥¾«¶ÈÖ»ÔÚ¶Ô½ÓÍâ²¿¿âÊ±ÓÃ¡£
+ * @brief ä¸‰ç»´ç‚¹æˆ–çŸ¢é‡ã€‚å³æ‰‹ç³»ï¼Œå•ä½æ¯«ç±³ã€‚ä¸æ˜¯å›¾åƒåæ ‡ï¼ŒY ä¸å‘ä¸‹
+ * å¹³å°å‡ ä½•ç”¨ Point3dï¼ˆdoubleï¼‰ã€‚æ•´å‹ã€å•ç²¾åº¦åªåœ¨å¯¹æ¥å¤–éƒ¨åº“æ—¶ç”¨ã€‚
  */
 template<typename T>
 struct Point3_ {
-    T x; ///< X£¬ÏòÓÒÎªÕı
-    T y; ///< Y£¬ÏòÉÏÎªÕı£¨ÓÒÊÖÏµ£¬²»ÊÇÍ¼ÏñĞĞ£©
-    T z; ///< Z£¬³¯Ïò¹Û²ìÕßÒ»²àÎªÕı
+    T x; ///< Xï¼Œå‘å³ä¸ºæ­£
+    T y; ///< Yï¼Œå‘ä¸Šä¸ºæ­£ï¼ˆå³æ‰‹ç³»ï¼Œä¸æ˜¯å›¾åƒè¡Œï¼‰
+    T z; ///< Zï¼Œæœå‘è§‚å¯Ÿè€…ä¸€ä¾§ä¸ºæ­£
 
-    /** @brief Ô­µã */
+    /** @brief åŸç‚¹ */
     Point3_() : x(0), y(0), z(0) {}
     /**
-     * @brief Ö¸¶¨×ø±ê
+     * @brief æŒ‡å®šåæ ‡
      * @param x_ X
      * @param y_ Y
      * @param z_ Z
      */
     Point3_(T x_, T y_, T z_) : x(x_), y(y_), z(z_) {}
     /**
-     * @brief ´ÓÁíÒ»ÖÖÊıÖµÀàĞÍ×ª»»¡£ÏÔÊ½£¬±ÜÃâºÍ double ÔËËã»ìÓÃ
+     * @brief ä»å¦ä¸€ç§æ•°å€¼ç±»å‹è½¬æ¢ã€‚æ˜¾å¼ï¼Œé¿å…å’Œ double è¿ç®—æ··ç”¨
      */
     template<typename U>
     explicit Point3_(const Point3_<U>& p)
@@ -45,109 +45,109 @@ struct Point3_ {
     }
 };
 
-typedef Point3_<int> Point3i;      ///< ÕûĞÍÈıÎ¬µã
-typedef Point3_<float> Point3f;    ///< µ¥¾«¶ÈÈıÎ¬µã
-typedef Point3_<double> Point3d;    ///< Æ½Ì¨Ê¹ÓÃµÄÈıÎ¬µã
-/** @brief ÏòÁ¿¼Ó·¨ */
+typedef Point3_<int> Point3i;      ///< æ•´å‹ä¸‰ç»´ç‚¹
+typedef Point3_<float> Point3f;    ///< å•ç²¾åº¦ä¸‰ç»´ç‚¹
+typedef Point3_<double> Point3d;    ///< å¹³å°ä½¿ç”¨çš„ä¸‰ç»´ç‚¹
+/** @brief å‘é‡åŠ æ³• */
 HSCOMMDATA_EXPORT Point3d operator+(const Point3d& a, const Point3d& b);
-/** @brief ÏòÁ¿¼õ·¨ */
+/** @brief å‘é‡å‡æ³• */
 HSCOMMDATA_EXPORT Point3d operator-(const Point3d& a, const Point3d& b);
-/** @brief È¡·´ */
+/** @brief å–å */
 HSCOMMDATA_EXPORT Point3d operator-(const Point3d& a);
-/** @brief Êı³Ë */
+/** @brief æ•°ä¹˜ */
 HSCOMMDATA_EXPORT Point3d operator*(const Point3d& a, double s);
-/** @brief Êı³ı¡£³ıÊı½Ó½ü 0 Ê±·µ»ØÁãÏòÁ¿ */
+/** @brief æ•°é™¤ã€‚é™¤æ•°æ¥è¿‘ 0 æ—¶è¿”å›é›¶å‘é‡ */
 HSCOMMDATA_EXPORT Point3d operator/(const Point3d& a, double s);
-/** @brief Ô­µØ¼Ó·¨ */
+/** @brief åŸåœ°åŠ æ³• */
 HSCOMMDATA_EXPORT Point3d& operator+=(Point3d& a, const Point3d& b);
-/** @brief Ô­µØ¼õ·¨ */
+/** @brief åŸåœ°å‡æ³• */
 HSCOMMDATA_EXPORT Point3d& operator-=(Point3d& a, const Point3d& b);
-/** @brief µã»ı */
+/** @brief ç‚¹ç§¯ */
 HSCOMMDATA_EXPORT double dot(const Point3d& a, const Point3d& b);
-/** @brief ²æ»ı */
+/** @brief å‰ç§¯ */
 HSCOMMDATA_EXPORT Point3d cross(const Point3d& a, const Point3d& b);
-/** @brief ³¤¶È */
+/** @brief é•¿åº¦ */
 HSCOMMDATA_EXPORT double length(const Point3d& a);
-/** @brief ³¤¶ÈÆ½·½ */
+/** @brief é•¿åº¦å¹³æ–¹ */
 HSCOMMDATA_EXPORT double lengthSquared(const Point3d& a);
-/** @brief µ¥Î»ÏòÁ¿¡£³¤¶È½Ó½ü 0 Ê±·µ»ØÁãÏòÁ¿ */
+/** @brief å•ä½å‘é‡ã€‚é•¿åº¦æ¥è¿‘ 0 æ—¶è¿”å›é›¶å‘é‡ */
 HSCOMMDATA_EXPORT Point3d normalized(const Point3d& a);
-/** @brief Á½µã¾àÀë */
+/** @brief ä¸¤ç‚¹è·ç¦» */
 HSCOMMDATA_EXPORT double dist(const Point3d& a, const Point3d& b);
 
 /**
  * @class Pose3
- * @brief ¸ÕÌåÎ»×Ë¡£Æ½ÒÆ¼Óµ¥Î»ËÄÔªÊı£¨Hamilton£©¡£µ¥Î»ÔªÎª (0,0,0,1)¡£
- * ÏÈĞı×ªÔÙÆ½ÒÆ£ºp_world = R * p_local + t¡£Å·À­½Ç²»·ÅÔÚÕâÀï£¬ÊÊÅä HALCON Ê±ÔÙ»»Ëã¡£
+ * @brief åˆšä½“ä½å§¿ã€‚å¹³ç§»åŠ å•ä½å››å…ƒæ•°ï¼ˆHamiltonï¼‰ã€‚å•ä½å…ƒä¸º (0,0,0,1)ã€‚
+ * å…ˆæ—‹è½¬å†å¹³ç§»ï¼šp_world = R * p_local + tã€‚æ¬§æ‹‰è§’ä¸æ”¾åœ¨è¿™é‡Œï¼Œé€‚é… HALCON æ—¶å†æ¢ç®—ã€‚
  */
 struct HSCOMMDATA_EXPORT Pose3 {
-    double tx; ///< Æ½ÒÆ X£¬ºÁÃ×
-    double ty; ///< Æ½ÒÆ Y£¬ºÁÃ×
-    double tz; ///< Æ½ÒÆ Z£¬ºÁÃ×
-    double qx; ///< ËÄÔªÊıĞé²¿ i
-    double qy; ///< ËÄÔªÊıĞé²¿ j
-    double qz; ///< ËÄÔªÊıĞé²¿ k
-    double qw; ///< ËÄÔªÊıÊµ²¿¡£µ¥Î»ÔªÎª 1
+    double tx; ///< å¹³ç§» Xï¼Œæ¯«ç±³
+    double ty; ///< å¹³ç§» Yï¼Œæ¯«ç±³
+    double tz; ///< å¹³ç§» Zï¼Œæ¯«ç±³
+    double qx; ///< å››å…ƒæ•°è™šéƒ¨ i
+    double qy; ///< å››å…ƒæ•°è™šéƒ¨ j
+    double qz; ///< å››å…ƒæ•°è™šéƒ¨ k
+    double qw; ///< å››å…ƒæ•°å®éƒ¨ã€‚å•ä½å…ƒä¸º 1
 
-    /** @brief µ¥Î»Î»×Ë£ºÆ½ÒÆ 0£¬ËÄÔªÊı (0,0,0,1) */
+    /** @brief å•ä½ä½å§¿ï¼šå¹³ç§» 0ï¼Œå››å…ƒæ•° (0,0,0,1) */
     Pose3();
     /**
-     * @brief Ö¸¶¨Æ½ÒÆºÍËÄÔªÊı¡£²»ÔÚÕâÀï¹éÒ»»¯
-     * @param tx Æ½ÒÆ X
-     * @param ty Æ½ÒÆ Y
-     * @param tz Æ½ÒÆ Z
-     * @param qx ËÄÔªÊı i
-     * @param qy ËÄÔªÊı j
-     * @param qz ËÄÔªÊı k
-     * @param qw ËÄÔªÊıÊµ²¿
+     * @brief æŒ‡å®šå¹³ç§»å’Œå››å…ƒæ•°ã€‚ä¸åœ¨è¿™é‡Œå½’ä¸€åŒ–
+     * @param tx å¹³ç§» X
+     * @param ty å¹³ç§» Y
+     * @param tz å¹³ç§» Z
+     * @param qx å››å…ƒæ•° i
+     * @param qy å››å…ƒæ•° j
+     * @param qz å››å…ƒæ•° k
+     * @param qw å››å…ƒæ•°å®éƒ¨
      */
     Pose3(double tx, double ty, double tz, double qx, double qy, double qz, double qw);
 
     /**
-     * @brief ÊÇ·ñ½Ó½üµ¥Î»ËÄÔªÊı
-     * @param eps Ä£³¤Óë 1 µÄÔÊĞíÆ«²î
+     * @brief æ˜¯å¦æ¥è¿‘å•ä½å››å…ƒæ•°
+     * @param eps æ¨¡é•¿ä¸ 1 çš„å…è®¸åå·®
      */
     bool isUnit(double eps = 1e-6) const;
-    /** @brief ËÄÔªÊı¹éÒ»»¯ºóµÄ¸±±¾¡£Ä£³¤½Ó½ü 0 Ê±ÍË»Øµ¥Î»Ôª£¬Æ½ÒÆ±£Áô */
+    /** @brief å››å…ƒæ•°å½’ä¸€åŒ–åçš„å‰¯æœ¬ã€‚æ¨¡é•¿æ¥è¿‘ 0 æ—¶é€€å›å•ä½å…ƒï¼Œå¹³ç§»ä¿ç•™ */
     Pose3 normalized() const;
-    /** @brief Ö»Ğı×ªÏòÁ¿£¬²»¼ÓÆ½ÒÆ¡£ËÄÔªÊı»áÏÈ¹éÒ»»¯ */
+    /** @brief åªæ—‹è½¬å‘é‡ï¼Œä¸åŠ å¹³ç§»ã€‚å››å…ƒæ•°ä¼šå…ˆå½’ä¸€åŒ– */
     Point3d rotate(const Point3d& v) const;
-    /** @brief °Ñ¾Ö²¿µã±äµ½ÊÀ½ç£ºÏÈĞı×ªÔÙ¼ÓÆ½ÒÆ */
+    /** @brief æŠŠå±€éƒ¨ç‚¹å˜åˆ°ä¸–ç•Œï¼šå…ˆæ—‹è½¬å†åŠ å¹³ç§» */
     Point3d apply(const Point3d& p) const;
-    /** @brief ÄæÎ»×Ë¡£ÏÈ°ÑËÄÔªÊı¹éÒ»»¯ */
+    /** @brief é€†ä½å§¿ã€‚å…ˆæŠŠå››å…ƒæ•°å½’ä¸€åŒ– */
     Pose3 inverse() const;
 };
 
 /**
  * @class Aabb3
- * @brief Öá¶ÔÆë°üÎ§ºĞ£¬±ÕÇø¼ä¡£Ä¬ÈÏ¹¹ÔìÊÇ¿ÕºĞ£¨Ä³Ò»Î¬ maxCorner Ğ¡ÓÚ minCorner£©
+ * @brief è½´å¯¹é½åŒ…å›´ç›’ï¼Œé—­åŒºé—´ã€‚é»˜è®¤æ„é€ æ˜¯ç©ºç›’ï¼ˆæŸä¸€ç»´ maxCorner å°äº minCornerï¼‰
  */
 struct HSCOMMDATA_EXPORT Aabb3 {
-    Point3d minCorner; ///< ×îĞ¡½Ç£¬º¬¡£²»ÓÃ min£¬±ÜÃâºÍ windows.h ºê³åÍ»
-    Point3d maxCorner; ///< ×î´ó½Ç£¬º¬¡£Ğ¡ÓÚ minCorner µÄ¶ÔÓ¦·ÖÁ¿±íÊ¾¸ÃºĞÎª¿Õ
+    Point3d minCorner; ///< æœ€å°è§’ï¼Œå«ã€‚ä¸ç”¨ minï¼Œé¿å…å’Œ windows.h å®å†²çª
+    Point3d maxCorner; ///< æœ€å¤§è§’ï¼Œå«ã€‚å°äº minCorner çš„å¯¹åº”åˆ†é‡è¡¨ç¤ºè¯¥ç›’ä¸ºç©º
 
-    /** @brief ¿ÕºĞ */
+    /** @brief ç©ºç›’ */
     Aabb3();
     /**
-     * @brief ÓÃ×îĞ¡½Ç¡¢×î´ó½Ç¹¹Ôì¡£²»×Ô¶¯½»»»
-     * @param minCorner ×îĞ¡½Ç
-     * @param maxCorner ×î´ó½Ç
+     * @brief ç”¨æœ€å°è§’ã€æœ€å¤§è§’æ„é€ ã€‚ä¸è‡ªåŠ¨äº¤æ¢
+     * @param minCorner æœ€å°è§’
+     * @param maxCorner æœ€å¤§è§’
      */
     Aabb3(const Point3d& minCorner, const Point3d& maxCorner);
 
-    /** @brief ÈÎÒ»Î¬ maxCorner Ğ¡ÓÚ minCorner ÔòÎª¿Õ */
+    /** @brief ä»»ä¸€ç»´ maxCorner å°äº minCorner åˆ™ä¸ºç©º */
     bool isEmpty() const;
-    /** @brief µ¥µãºĞ */
+    /** @brief å•ç‚¹ç›’ */
     static Aabb3 fromPoint(const Point3d& p);
-    /** @brief ²¢ÈëÒ»¸öµã¡£¿ÕºĞÔò±ä³É¸Ãµã */
+    /** @brief å¹¶å…¥ä¸€ä¸ªç‚¹ã€‚ç©ºç›’åˆ™å˜æˆè¯¥ç‚¹ */
     void include(const Point3d& p);
-    /** @brief ÓëÁíÒ»ºĞÇó²¢¡£¿ÕºĞ²»²ÎÓë */
+    /** @brief ä¸å¦ä¸€ç›’æ±‚å¹¶ã€‚ç©ºç›’ä¸å‚ä¸ */
     Aabb3 united(const Aabb3& other) const;
-    /** @brief µãÊÇ·ñÔÚ±ÕÇø¼äÄÚ¡£¿ÕºĞºãÎª false */
+    /** @brief ç‚¹æ˜¯å¦åœ¨é—­åŒºé—´å†…ã€‚ç©ºç›’æ’ä¸º false */
     bool contains(const Point3d& p) const;
-    /** @brief ÖĞĞÄ¡£¿ÕºĞ·µ»ØÔ­µã */
+    /** @brief ä¸­å¿ƒã€‚ç©ºç›’è¿”å›åŸç‚¹ */
     Point3d center() const;
-    /** @brief ¸÷±ß³¤¶È¡£¿ÕºĞ·µ»ØÁãÏòÁ¿ */
+    /** @brief å„è¾¹é•¿åº¦ã€‚ç©ºç›’è¿”å›é›¶å‘é‡ */
     Point3d extent() const;
 };
 

@@ -1,6 +1,6 @@
 /**
  * @file ToolParaFindCircle.hpp
- * @brief ToolParaFindCircleÍ·ÎÄ¼ş
+ * @brief ToolParaFindCircleå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -16,22 +16,22 @@ namespace Vision {
 
 /**
  * @class ToolParaFindCircle
- * @brief FindCircleTool ÔËĞĞ²ÎÊı
+ * @brief FindCircleTool è¿è¡Œå‚æ•°
  */
 class ToolParaFindCircle : public ToolParaBase {
 public:
-    /** @brief Ñ§Ï°²ÎÊı£¬Ã»ÓĞÔòÎª¿Õ */
+    /** @brief å­¦ä¹ å‚æ•°ï¼Œæ²¡æœ‰åˆ™ä¸ºç©º */
     struct Learn {
     };
-    /** @brief ÔËĞĞ²ÎÊı */
+    /** @brief è¿è¡Œå‚æ•° */
     struct Run {
-        int threshold;              ///< ãĞÖµ
-        int minR;                   ///< ×îĞ¡°ë¾¶
-        int maxR;                   ///< ×î´ó°ë¾¶
-        bool dark;                  ///< °µÄ¿±ê
-        double sigma;               ///< Æ½»¬
-        int low;                    ///< µÍãĞÖµ
-        int high;                   ///< ¸ßãĞÖµ
+        int threshold;              ///< é˜ˆå€¼
+        int minR;                   ///< æœ€å°åŠå¾„
+        int maxR;                   ///< æœ€å¤§åŠå¾„
+        bool dark;                  ///< æš—ç›®æ ‡
+        double sigma;               ///< å¹³æ»‘
+        int low;                    ///< ä½é˜ˆå€¼
+        int high;                   ///< é«˜é˜ˆå€¼
         Run()
             : threshold(80)
             , minR(8)
@@ -43,10 +43,10 @@ public:
         {}
     };
 
-    Learn learn; ///< Ñ§Ï°²ÎÊı£¬Ã»ÓĞÔòÎª¿Õ
-    Run run;     ///< ÔËĞĞ²ÎÊı
+    Learn learn; ///< å­¦ä¹ å‚æ•°ï¼Œæ²¡æœ‰åˆ™ä¸ºç©º
+    Run run;     ///< è¿è¡Œå‚æ•°
 
-    /** @brief ´Ó ToolParam ÌîĞ´ */
+    /** @brief ä» ToolParam å¡«å†™ */
     void load(const ToolParam& src)
     {
         const ParamMap& m = src.run;

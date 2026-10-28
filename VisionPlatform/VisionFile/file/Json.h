@@ -1,6 +1,6 @@
 /**
  * @file Json.h
- * @brief JsonÍ·ÎÄ¼ş
+ * @brief Jsonå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -18,101 +18,101 @@ namespace Vision {
 
 /**
  * @class JsonValue
- * @brief ×ÔÑĞ JSON£¨C++11£©¡£ClassLib ½ûÖ¹ QJson¡£Ö§³Ö null/bool/number/string/array/object
+ * @brief è‡ªç ” JSONï¼ˆC++11ï¼‰ã€‚ClassLib ç¦æ­¢ QJsonã€‚æ”¯æŒ null/bool/number/string/array/object
  */
 class VISION_FILE_API JsonValue {
 public:
-    /** @brief JSON ÖµÖÖÀà */
+    /** @brief JSON å€¼ç§ç±» */
     enum Type {
-        Null = 0, ///< ¿Õ
-        Bool,     ///< ²¼¶û
-        Number,   ///< Êı×Ö£¨ÄÚ²¿ double£©
-        String,   ///< ÎÄ±¾
-        Array,    ///< Êı×é
-        Object    ///< ¶ÔÏó
+        Null = 0, ///< ç©º
+        Bool,     ///< å¸ƒå°”
+        Number,   ///< æ•°å­—ï¼ˆå†…éƒ¨ doubleï¼‰
+        String,   ///< æ–‡æœ¬
+        Array,    ///< æ•°ç»„
+        Object    ///< å¯¹è±¡
     };
 
     JsonValue();                         ///< null
-    JsonValue(bool v);                   ///< ²¼¶û
-    JsonValue(int v);                    ///< ÕûÊı£¨´æ³É number£©
-    JsonValue(double v);                 ///< ¸¡µã
-    JsonValue(const char* v);            ///< C ´®
-    JsonValue(const std::string& v);     ///< ÎÄ±¾
+    JsonValue(bool v);                   ///< å¸ƒå°”
+    JsonValue(int v);                    ///< æ•´æ•°ï¼ˆå­˜æˆ numberï¼‰
+    JsonValue(double v);                 ///< æµ®ç‚¹
+    JsonValue(const char* v);            ///< C ä¸²
+    JsonValue(const std::string& v);     ///< æ–‡æœ¬
 
-    /** @brief µ±Ç°ÖÖÀà */
+    /** @brief å½“å‰ç§ç±» */
     Type type() const;
-    /** @brief ÊÇ·ñ null */
+    /** @brief æ˜¯å¦ null */
     bool isNull() const;
-    /** @brief ÊÇ·ñ¶ÔÏó */
+    /** @brief æ˜¯å¦å¯¹è±¡ */
     bool isObject() const;
-    /** @brief ÊÇ·ñÊı×é */
+    /** @brief æ˜¯å¦æ•°ç»„ */
     bool isArray() const;
-    /** @brief ÊÇ·ñÎÄ±¾ */
+    /** @brief æ˜¯å¦æ–‡æœ¬ */
     bool isString() const;
-    /** @brief ÊÇ·ñÊı×Ö */
+    /** @brief æ˜¯å¦æ•°å­— */
     bool isNumber() const;
-    /** @brief ÊÇ·ñ²¼¶û */
+    /** @brief æ˜¯å¦å¸ƒå°” */
     bool isBool() const;
 
-    /** @brief ×ª²¼¶û£»ÖÖÀà²»¶Ô·µ»Ø def */
+    /** @brief è½¬å¸ƒå°”ï¼›ç§ç±»ä¸å¯¹è¿”å› def */
     bool toBool(bool def = false) const;
-    /** @brief ×ªÕûÊı */
+    /** @brief è½¬æ•´æ•° */
     int toInt(int def = 0) const;
-    /** @brief ×ª¸¡µã */
+    /** @brief è½¬æµ®ç‚¹ */
     double toDouble(double def = 0) const;
-    /** @brief ×ªÎÄ±¾ */
+    /** @brief è½¬æ–‡æœ¬ */
     std::string toString() const;
 
-    /** @brief Êı×é³¤¶È£»·ÇÊı×éÎª 0 */
+    /** @brief æ•°ç»„é•¿åº¦ï¼›éæ•°ç»„ä¸º 0 */
     int size() const;
-    /** @brief Êı×éµÚ i Ïî£»Ô½½ç·µ»Ø null */
+    /** @brief æ•°ç»„ç¬¬ i é¡¹ï¼›è¶Šç•Œè¿”å› null */
     JsonValue at(int i) const;
-    /** @brief ±ä³É¿ÕÊı×é */
+    /** @brief å˜æˆç©ºæ•°ç»„ */
     void makeArray();
-    /** @brief ±ä³É¿Õ¶ÔÏó */
+    /** @brief å˜æˆç©ºå¯¹è±¡ */
     void makeObject();
-    /** @brief ×·¼Óµ½Êı×é£¨±ØÒªÊ±ÏÈ makeArray£© */
+    /** @brief è¿½åŠ åˆ°æ•°ç»„ï¼ˆå¿…è¦æ—¶å…ˆ makeArrayï¼‰ */
     void append(const JsonValue& v);
 
-    /** @brief ¶ÔÏóÊÇ·ñº¬¼ü */
+    /** @brief å¯¹è±¡æ˜¯å¦å«é”® */
     bool contains(const std::string& key) const;
-    /** @brief ¶ÔÏóÈ¡Öµ£»È±¼ü·µ»Ø null */
+    /** @brief å¯¹è±¡å–å€¼ï¼›ç¼ºé”®è¿”å› null */
     JsonValue value(const std::string& key) const;
-    /** @brief ¶ÔÏóĞ´¼ü£¨±ØÒªÊ±ÏÈ makeObject£© */
+    /** @brief å¯¹è±¡å†™é”®ï¼ˆå¿…è¦æ—¶å…ˆ makeObjectï¼‰ */
     void set(const std::string& key, const JsonValue& v);
 
-    /** @brief ¶ÔÏó×Ö¶Î×ª¸¡µã£»È±¼üÓÃ def */
+    /** @brief å¯¹è±¡å­—æ®µè½¬æµ®ç‚¹ï¼›ç¼ºé”®ç”¨ def */
     double number(const std::string& key, double def = 0) const;
-    /** @brief ¶ÔÏó×Ö¶Î×ªÕûÊı£»È±¼üÓÃ def */
+    /** @brief å¯¹è±¡å­—æ®µè½¬æ•´æ•°ï¼›ç¼ºé”®ç”¨ def */
     int integerOf(const std::string& key, int def = 0) const;
-    /** @brief ¶ÔÏó×Ö¶Î×ª²¼¶û£»È±¼üÓÃ def */
+    /** @brief å¯¹è±¡å­—æ®µè½¬å¸ƒå°”ï¼›ç¼ºé”®ç”¨ def */
     bool flagOf(const std::string& key, bool def = false) const;
-    /** @brief ¶ÔÏó×Ö¶Î×ªÎÄ±¾£»È±¼üÎª¿Õ´® */
+    /** @brief å¯¹è±¡å­—æ®µè½¬æ–‡æœ¬ï¼›ç¼ºé”®ä¸ºç©ºä¸² */
     std::string stringOf(const std::string& key) const;
 
-    /** @brief µ×²ãÊı×é */
+    /** @brief åº•å±‚æ•°ç»„ */
     const std::vector<JsonValue>& array() const;
-    /** @brief µ×²ã¶ÔÏó */
+    /** @brief åº•å±‚å¯¹è±¡ */
     const std::map<std::string, JsonValue>& object() const;
 
     /**
-     * @brief ½âÎöÎÄ±¾
-     * @param error Ê§°ÜÔ­Òò
+     * @brief è§£ææ–‡æœ¬
+     * @param error å¤±è´¥åŸå› 
      */
     static JsonValue parse(const std::string& text, std::string* error);
     /**
-     * @brief ĞòÁĞ»¯
-     * @param pretty true ´øËõ½ø
+     * @brief åºåˆ—åŒ–
+     * @param pretty true å¸¦ç¼©è¿›
      */
     static std::string stringify(const JsonValue& v, bool pretty = true);
 
 private:
-    Type m_type;                         ///< ÖÖÀà
-    bool m_bool;                         ///< ²¼¶û
-    double m_num;                        ///< Êı×Ö
-    std::string m_str;                   ///< ÎÄ±¾
-    std::vector<JsonValue> m_arr;        ///< Êı×é
-    std::map<std::string, JsonValue> m_obj; ///< ¶ÔÏó
+    Type m_type;                         ///< ç§ç±»
+    bool m_bool;                         ///< å¸ƒå°”
+    double m_num;                        ///< æ•°å­—
+    std::string m_str;                   ///< æ–‡æœ¬
+    std::vector<JsonValue> m_arr;        ///< æ•°ç»„
+    std::map<std::string, JsonValue> m_obj; ///< å¯¹è±¡
 };
 
 }

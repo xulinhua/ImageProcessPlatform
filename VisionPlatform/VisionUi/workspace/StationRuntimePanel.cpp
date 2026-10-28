@@ -1,6 +1,6 @@
 /**
  * @file StationRuntimePanel.cpp
- * @brief StationRuntimePanelÊµÏÖ
+ * @brief StationRuntimePanelå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -26,14 +26,14 @@
 namespace Vision {
 
 namespace {
-// ÔËĞĞ¸ñ°ó¶¨¹¤¾ßµÄÎ´Ê¹ÄÜÔ­Òò£»¿Õ´®±íÊ¾Õı³£
+// è¿è¡Œæ ¼ç»‘å®šå·¥å…·çš„æœªä½¿èƒ½åŸå› ï¼›ç©ºä¸²è¡¨ç¤ºæ­£å¸¸
 QString paneDisableReason(Solution* sol, StationCfg* st, const ObjectId& toolId)
 {
     if (!st) {
         return QString();
     }
     if (!st->enabled) {
-        return T("¹¤Õ¾Î´Ê¹ÄÜ");
+        return T("å·¥ç«™æœªä½¿èƒ½");
     }
     if (toolId.isNull()) {
         return QString();
@@ -53,17 +53,17 @@ QString paneDisableReason(Solution* sol, StationCfg* st, const ObjectId& toolId)
         }
     }
     if (job && !job->enabled) {
-        return T("Á÷³ÌÎ´Ê¹ÄÜ");
+        return T("æµç¨‹æœªä½¿èƒ½");
     }
     if (!t->enabled) {
-        return T("¹¤¾ßÎ´Ê¹ÄÜ");
+        return T("å·¥å…·æœªä½¿èƒ½");
     }
     return QString();
 }
 } // namespace
 
 
-// Í³¼Æ¿¨Æ¬ÖĞµÄÒ»ĞĞ£ºÃû³Æ + ÓÒ²àÊıÖµ±êÇ©
+// ç»Ÿè®¡å¡ç‰‡ä¸­çš„ä¸€è¡Œï¼šåç§° + å³ä¾§æ•°å€¼æ ‡ç­¾
 static QLabel* metricRow(QWidget* parent, const QString& name, QLabel** valueOut)
 {
     QWidget* row = new QWidget(parent);
@@ -83,7 +83,7 @@ static QLabel* metricRow(QWidget* parent, const QString& name, QLabel** valueOut
     return v;
 }
 
-// µ¥¹¤Õ¾£ºÍ¼ÏñÍø¸ñ¡¢²úÁ¿Í³¼ÆÓë½á¹ûÀúÊ·
+// å•å·¥ç«™ï¼šå›¾åƒç½‘æ ¼ã€äº§é‡ç»Ÿè®¡ä¸ç»“æœå†å²
 StationRuntimePanel::StationRuntimePanel(QWidget* parent)
     : QWidget(parent)
     , m_gridLay(nullptr)
@@ -103,11 +103,11 @@ StationRuntimePanel::StationRuntimePanel(QWidget* parent)
     }
     m_viewConfig.normalize();
 
-    m_online = new QLabel(T("¡ñ ÔÚÏß"), this);
+    m_online = new QLabel(T("â— åœ¨çº¿"), this);
     m_online->setStyleSheet(QLatin1String("color:#52C41A;"));
-    m_live = new QLabel(T("¡ñ Live"), this);
+    m_live = new QLabel(T("â— Live"), this);
     m_live->setStyleSheet(QLatin1String("color:#888888;"));
-    QLabel* trig = new QLabel(T("¡ñ Èí´¥·¢"), this);
+    QLabel* trig = new QLabel(T("â— è½¯è§¦å‘"), this);
     trig->setStyleSheet(QLatin1String("color:#1890FF;"));
 
     QHBoxLayout* imgHead = new QHBoxLayout();
@@ -125,7 +125,7 @@ StationRuntimePanel::StationRuntimePanel(QWidget* parent)
         QVBoxLayout* v = new QVBoxLayout(pane);
         v->setContentsMargins(0, 0, 0, 0);
         v->setSpacing(2);
-        QLabel* title = new QLabel(T("´°¿Ú") + QString::number(i + 1), pane);
+        QLabel* title = new QLabel(T("çª—å£") + QString::number(i + 1), pane);
         title->setObjectName(QLatin1String("hint"));
         HsCtrl::HsImageWindow* w = new HsCtrl::HsImageWindow(pane);
         w->setWindowMode(HsCtrl::WindowRuntime);
@@ -144,7 +144,7 @@ StationRuntimePanel::StationRuntimePanel(QWidget* parent)
     imgLay->addLayout(imgHead);
     imgLay->addWidget(gridHost, 1);
 
-    m_stationTitle = new QLabel(T("¹¤Õ¾£º-"), this);
+    m_stationTitle = new QLabel(T("å·¥ç«™ï¼š-"), this);
     m_stationTitle->setObjectName(QLatin1String("section"));
     m_banner = new QLabel(QLatin1String("OK"), this);
     m_banner->setObjectName(QLatin1String("bannerOk"));
@@ -156,11 +156,11 @@ StationRuntimePanel::StationRuntimePanel(QWidget* parent)
     QVBoxLayout* sLay = new QVBoxLayout(stats);
     sLay->addWidget(m_stationTitle);
     sLay->addWidget(m_banner);
-    metricRow(stats, T("²úÁ¿"), &m_total);
-    metricRow(stats, T("ºÏ¸ñ"), &m_pass);
-    metricRow(stats, T("²»ºÏ¸ñ"), &m_fail);
-    metricRow(stats, T("Á¼ÂÊ"), &m_yield);
-    metricRow(stats, T("½ÚÅÄ"), &m_cycle);
+    metricRow(stats, T("äº§é‡"), &m_total);
+    metricRow(stats, T("åˆæ ¼"), &m_pass);
+    metricRow(stats, T("ä¸åˆæ ¼"), &m_fail);
+    metricRow(stats, T("è‰¯ç‡"), &m_yield);
+    metricRow(stats, T("èŠ‚æ‹"), &m_cycle);
     m_fail->setStyleSheet(QLatin1String("color:#FF4D4F; font-weight:bold;"));
     m_yield->setStyleSheet(QLatin1String("color:#52C41A; font-weight:bold;"));
     sLay->addStretch();
@@ -170,9 +170,9 @@ StationRuntimePanel::StationRuntimePanel(QWidget* parent)
     top->addWidget(imgCard, 1);
     top->addWidget(stats);
 
-    QLabel* histTitle = new QLabel(T("½á¹ûÀúÊ·"), this);
+    QLabel* histTitle = new QLabel(T("ç»“æœå†å²"), this);
     histTitle->setObjectName(QLatin1String("section"));
-    m_fAll = new QPushButton(T("È«²¿"), this);
+    m_fAll = new QPushButton(T("å…¨éƒ¨"), this);
     m_fOk = new QPushButton(T("OK"), this);
     m_fNg = new QPushButton(T("NG"), this);
     m_fAll->setCheckable(true);
@@ -217,13 +217,13 @@ StationRuntimePanel::StationRuntimePanel(QWidget* parent)
     applyLayout();
 }
 
-// µ±Ç°°ó¶¨¹¤Õ¾ id
+// å½“å‰ç»‘å®šå·¥ç«™ id
 ObjectId StationRuntimePanel::stationId() const
 {
     return m_stationPtr ? m_stationPtr->id : ObjectId();
 }
 
-// µ±Ç°²¼¾ÖÀïµÚÒ»¸öÒÑÊ¹ÄÜ¸ñµÄÍ¼Ïñ´°
+// å½“å‰å¸ƒå±€é‡Œç¬¬ä¸€ä¸ªå·²ä½¿èƒ½æ ¼çš„å›¾åƒçª—
 HsCtrl::HsImageWindow* StationRuntimePanel::imageWindow() const
 {
     const int n = m_viewConfig.slotCount();
@@ -235,7 +235,7 @@ HsCtrl::HsImageWindow* StationRuntimePanel::imageWindow() const
     return m_cells[0];
 }
 
-// ¼ÇÏÂ·½°¸/¹¤Õ¾ÅäÖÃ/ÔËĞĞÊµÀı²¢°´Åä·½Ë¢ĞÂ»­Ãæ
+// è®°ä¸‹æ–¹æ¡ˆ/å·¥ç«™é…ç½®/è¿è¡Œå®ä¾‹å¹¶æŒ‰é…æ–¹åˆ·æ–°ç”»é¢
 void StationRuntimePanel::bindContext(Solution* sol, StationCfg* st, Station* station)
 {
     m_sol = sol;
@@ -244,29 +244,29 @@ void StationRuntimePanel::bindContext(Solution* sol, StationCfg* st, Station* st
     if (st) {
         st->runtimeView.normalize();
         m_viewConfig = st->runtimeView;
-        QString stTitle = T("¹¤Õ¾£º") + qs(st->name);
+        QString stTitle = T("å·¥ç«™ï¼š") + qs(st->name);
         if (!st->enabled) {
-            stTitle += T("£¨Î´Ê¹ÄÜ£©");
+            stTitle += T("ï¼ˆæœªä½¿èƒ½ï¼‰");
         }
         m_stationTitle->setText(stTitle);
         m_stationTitle->setStyleSheet(st->enabled ? QString() : QLatin1String("color:#A0A0A0;"));
     } else {
         m_viewConfig = RuntimeView();
         m_viewConfig.normalize();
-        m_stationTitle->setText(T("¹¤Õ¾£º-"));
+        m_stationTitle->setText(T("å·¥ç«™ï¼š-"));
         m_stationTitle->setStyleSheet(QString());
     }
     applyLayout();
     applyImages();
 }
 
-// Ö»»»ÔËĞĞÊµÀıÖ¸Õë£¬±£ÁôÉÏÒ»ÅÄ»­ÃæÓë²úÁ¿ÏÔÊ¾
+// åªæ¢è¿è¡Œå®ä¾‹æŒ‡é’ˆï¼Œä¿ç•™ä¸Šä¸€æ‹ç”»é¢ä¸äº§é‡æ˜¾ç¤º
 void StationRuntimePanel::setRuntimeStation(Station* station)
 {
     m_station = station;
 }
 
-// Ë¢ĞÂ²úÁ¿¡¢Á¼ÂÊÓë½ÚÅÄ
+// åˆ·æ–°äº§é‡ã€è‰¯ç‡ä¸èŠ‚æ‹
 void StationRuntimePanel::setCounts(int total, int pass, int fail, int cycleMs)
 {
     m_total->setText(QString::number(total));
@@ -277,7 +277,7 @@ void StationRuntimePanel::setCounts(int total, int pass, int fail, int cycleMs)
     m_cycle->setText(QString::number(cycleMs) + QLatin1String(" ms"));
 }
 
-// ÇĞ»» OK/NG ºá·ùÑùÊ½
+// åˆ‡æ¢ OK/NG æ¨ªå¹…æ ·å¼
 void StationRuntimePanel::setLastOk(bool ok)
 {
     m_banner->setText(ok ? QLatin1String("OK") : QLatin1String("NG"));
@@ -286,13 +286,13 @@ void StationRuntimePanel::setLastOk(bool ok)
     m_banner->style()->polish(m_banner);
 }
 
-// Live Ö¸Ê¾µÆÑÕÉ«
+// Live æŒ‡ç¤ºç¯é¢œè‰²
 void StationRuntimePanel::setLive(bool live)
 {
     m_live->setStyleSheet(live ? QLatin1String("color:#1890FF;") : QLatin1String("color:#888888;"));
 }
 
-// ×·¼ÓÒ»Ìõ½á¹ûÀúÊ·£¨×î¶à±£Áô 40 Ìõ£©
+// è¿½åŠ ä¸€æ¡ç»“æœå†å²ï¼ˆæœ€å¤šä¿ç•™ 40 æ¡ï¼‰
 void StationRuntimePanel::addResult(bool ok, const QString& line, const QImage& thumb)
 {
     HistItem it;
@@ -307,7 +307,7 @@ void StationRuntimePanel::addResult(bool ok, const QString& line, const QImage& 
     rebuildHist();
 }
 
-// Çå¿ÕÀúÊ·²¢¸´Î»¼ÆÊı£¨²»ÇåÍ¼Ïñ£»Í£Ö¹ºó»­ÃæÈÔ±£Áô£©
+// æ¸…ç©ºå†å²å¹¶å¤ä½è®¡æ•°ï¼ˆä¸æ¸…å›¾åƒï¼›åœæ­¢åç”»é¢ä»ä¿ç•™ï¼‰
 void StationRuntimePanel::resetHistory()
 {
     m_hist.clear();
@@ -316,7 +316,7 @@ void StationRuntimePanel::resetHistory()
     setLastOk(true);
 }
 
-// »º´æ±¾ÅÄ»ã×ÜÍ¼²¢Ë¢ĞÂ¸÷¸ñ
+// ç¼“å­˜æœ¬æ‹æ±‡æ€»å›¾å¹¶åˆ·æ–°å„æ ¼
 void StationRuntimePanel::setRunImages(const HsCommData::HsImage& source,
                                        const HsCommData::HsImage& result,
                                        const QVector<HsCommData::Graphic>& overlay)
@@ -327,7 +327,7 @@ void StationRuntimePanel::setRunImages(const HsCommData::HsImage& source,
     applyImages();
 }
 
-// °´ĞĞÁĞÖØÅÅ´°¸ñ£»Î´Ê¹ÄÜµÄ¸ñ×ÓÁô¿ÕÕ¼Î»
+// æŒ‰è¡Œåˆ—é‡æ’çª—æ ¼ï¼›æœªä½¿èƒ½çš„æ ¼å­ç•™ç©ºå ä½
 void StationRuntimePanel::applyLayout()
 {
     m_viewConfig.normalize();
@@ -361,17 +361,17 @@ void StationRuntimePanel::applyLayout()
     m_needFit = true;
 }
 
-// ¹¤¾ßÏÔÊ¾Ãû£»¿Õ id ±íÊ¾ÓÃ¹¤Õ¾±¾ÅÄ
+// å·¥å…·æ˜¾ç¤ºåï¼›ç©º id è¡¨ç¤ºç”¨å·¥ç«™æœ¬æ‹
 QString StationRuntimePanel::toolCaption(const ObjectId& id) const
 {
     if (id.isNull() || !m_sol) {
-        return T("¹¤Õ¾½á¹û");
+        return T("å·¥ç«™ç»“æœ");
     }
     const ToolCfg* t = m_sol->findTool(id);
-    return t ? qs(t->name) : T("¹¤Õ¾½á¹û");
+    return t ? qs(t->name) : T("å·¥ç«™ç»“æœ");
 }
 
-// Ã¿¸ñ£ºÖ¸¶¨µ×Í¼Ö»ÓÃÀ´Ô´»º´æ£¬½ûÖ¹»ØÍËµ½¹¤Õ¾»ã×ÜÍ¼
+// æ¯æ ¼ï¼šæŒ‡å®šåº•å›¾åªç”¨æ¥æºç¼“å­˜ï¼Œç¦æ­¢å›é€€åˆ°å·¥ç«™æ±‡æ€»å›¾
 void StationRuntimePanel::applyImages()
 {
     m_viewConfig.normalize();
@@ -413,7 +413,7 @@ void StationRuntimePanel::applyImages()
             }
         }
 
-        QString cap = T("´°¿Ú") + QString::number(i + 1) + QLatin1String("  ") + toolCaption(pane.imageToolId);
+        QString cap = T("çª—å£") + QString::number(i + 1) + QLatin1String("  ") + toolCaption(pane.imageToolId);
         if (pane.showOverlay && !pane.overlayToolIds.empty()) {
             QString ov;
             for (int k = 0; k < static_cast<int>(pane.overlayToolIds.size()); ++k) {
@@ -440,7 +440,7 @@ void StationRuntimePanel::applyImages()
         m_cellTitles[i]->setText(cap);
 
         if (!hasImage) {
-            // ÎŞĞÂÍ¼Ê±±£Áô´°¿ÚÉÏÒ»ÅÄ£¨Í£Ö¹/ÔÙ¿ªÉĞÎ´³öÍ¼Ê±²»Çå¿Õ£©
+            // æ— æ–°å›¾æ—¶ä¿ç•™çª—å£ä¸Šä¸€æ‹ï¼ˆåœæ­¢/å†å¼€å°šæœªå‡ºå›¾æ—¶ä¸æ¸…ç©ºï¼‰
             continue;
         }
         ObjectId cam;
@@ -460,7 +460,7 @@ void StationRuntimePanel::applyImages()
     m_needFit = false;
 }
 
-// È«²¿/OK/NG ¹ıÂËºóÖØ½¨ÀúÊ·Ìõ
+// å…¨éƒ¨/OK/NG è¿‡æ»¤åé‡å»ºå†å²æ¡
 void StationRuntimePanel::onHistFilter()
 {
     if (m_fOk->isChecked()) {
@@ -473,7 +473,7 @@ void StationRuntimePanel::onHistFilter()
     rebuildHist();
 }
 
-// °´¹ıÂËÌõ¼şÖØ½¨×î¶à 12 ÕÅÀúÊ·ËõÂÔÍ¼
+// æŒ‰è¿‡æ»¤æ¡ä»¶é‡å»ºæœ€å¤š 12 å¼ å†å²ç¼©ç•¥å›¾
 void StationRuntimePanel::rebuildHist()
 {
     while (m_ngLay->count() > 1) {

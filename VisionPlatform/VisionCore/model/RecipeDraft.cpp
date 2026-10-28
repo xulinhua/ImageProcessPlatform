@@ -1,6 +1,6 @@
 /**
  * @file RecipeDraft.cpp
- * @brief RecipeDraftÊµÏÖ
+ * @brief RecipeDraftå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -12,14 +12,14 @@
 
 namespace Vision {
 
-// ÊÇ·ñÔËĞĞÌ¬¼ü
+// æ˜¯å¦è¿è¡Œæ€é”®
 bool isRuntimeParamKey(const std::string& key)
 {
     RuntimeKey rk;
     return runtimeKeyFromName(key, &rk);
 }
 
-// Ç¨ÒÆÔËĞĞÌ¬¼ü
+// è¿ç§»è¿è¡Œæ€é”®
 void ToolCfg::migrateRuntime()
 {
         const std::vector<std::string> keys = params.keys();
@@ -33,7 +33,7 @@ void ToolCfg::migrateRuntime()
     }
 }
 
-// ±È½ÏÁ½·İ ParamMap ÊÇ·ñÏàÍ¬
+// æ¯”è¾ƒä¸¤ä»½ ParamMap æ˜¯å¦ç›¸åŒ
 bool paramMapEquals(const ParamMap& a, const ParamMap& b)
 {
     if (a.size() != b.size()) {
@@ -48,7 +48,7 @@ bool paramMapEquals(const ParamMap& a, const ParamMap& b)
     return true;
 }
 
-// ±È½ÏÁ½·İ ROI ÁĞ±íÊÇ·ñÏàÍ¬
+// æ¯”è¾ƒä¸¤ä»½ ROI åˆ—è¡¨æ˜¯å¦ç›¸åŒ
 bool toolRoisEquals(const std::vector<HsCommData::HsObject>& a, const std::vector<HsCommData::HsObject>& b)
 {
     if (a.size() != b.size()) {
@@ -62,7 +62,7 @@ bool toolRoisEquals(const std::vector<HsCommData::HsObject>& a, const std::vecto
     return true;
 }
 
-// ´Ó ToolCfg ¼ÓÔØÅä·½
+// ä» ToolCfg åŠ è½½é…æ–¹
 void ToolRecipe::loadFrom(const ToolCfg& t)
 {
     params = t.param.run;
@@ -71,7 +71,7 @@ void ToolRecipe::loadFrom(const ToolCfg& t)
     algLib = t.param.algLib;
 }
 
-// Ğ´»Ø ToolCfg Åä·½
+// å†™å› ToolCfg é…æ–¹
 void ToolRecipe::applyTo(ToolCfg* t) const
 {
     if (!t) {
@@ -84,7 +84,7 @@ void ToolRecipe::applyTo(ToolCfg* t) const
     t->syncRois();
 }
 
-// ±È½ÏÁ½·İ¹¤¾ßÅä·½ÊÇ·ñÏàÍ¬
+// æ¯”è¾ƒä¸¤ä»½å·¥å…·é…æ–¹æ˜¯å¦ç›¸åŒ
 bool ToolRecipe::equals(const ToolRecipe& other) const
 {
     return deviceId == other.deviceId
@@ -93,7 +93,7 @@ bool ToolRecipe::equals(const ToolRecipe& other) const
         && toolRoisEquals(rois, other.rois);
 }
 
-// Éî¿½±´Á÷³Ì×é
+// æ·±æ‹·è´æµç¨‹ç»„
 ToolGroup ToolGroup::clone() const
 {
     ToolGroup c = *this;
@@ -104,7 +104,7 @@ ToolGroup ToolGroup::clone() const
     return c;
 }
 
-// Éî¿½±´ JobCfg
+// æ·±æ‹·è´ JobCfg
 JobCfg JobCfg::clone() const
 {
     JobCfg j = *this;
@@ -114,25 +114,30 @@ JobCfg JobCfg::clone() const
     for (size_t i = 0; i < j.tools.size(); ++i) {
         j.tools[i].migrateRuntime();
     }
-    bool anyIn = false;
-    for (size_t i = 0; i < j.tools.size(); ++i) {
-        if (!j.tools[i].links.empty()) {
-            anyIn = true;
-            break;
-        }
-    }
-    if (anyIn) {
-        j.rebuildLinksCache();
-    }
+
     return j;
 }
 
-// Á½·İ JobCfg Åä·½ÊÇ·ñÏàÍ¬
+// ä¸¤ä»½ JobCfg é…æ–¹æ˜¯å¦ç›¸åŒ
 bool JobCfg::equals(const JobCfg& other) const
 {
     if (id != other.id || name != other.name || timeoutMs != other.timeoutMs
-        || failPolicy != other.failPolicy || trigger != other.trigger
-        || order != other.order || enabled != other.enabled) {
+        || failPolicy != other.failPolicy || execMode != other.execMode
+        || order != other.order || enabled != other.enabled
+        || resultToolId != other.resultToolId
+        || runOnUnloadOnce != other.runOnUnloadOnce
+        || refreshUiWhileRunning != other.refreshUiWhileRunning
+        || encrypted != other.encrypted
+        || retakeCount != other.retakeCount
+        || textX != other.textX || textY != other.textY || textPx != other.textPx
+        || okColor != other.okColor || ngColor != other.ngColor
+        || saveOk != other.saveOk || saveNg != other.saveNg
+        || saveAll != other.saveAll || saveBatchAll != other.saveBatchAll
+        || saveLimit != other.saveLimit || saveDir != other.saveDir
+        || yieldMode != other.yieldMode || batchYield != other.batchYield
+        || recentCount != other.recentCount || recentYield != other.recentYield
+        || ngLimit != other.ngLimit || yieldAction != other.yieldAction
+        || singleToolScope != other.singleToolScope) {
         return false;
     }
     if (tools.size() != other.tools.size() || links.size() != other.links.size()) {
@@ -189,7 +194,7 @@ bool JobCfg::equals(const JobCfg& other) const
     return true;
 }
 
-// È±Ê¡¹¤Õ¾Åä·½£ºÊ¹ÄÜ¡¢´®ĞĞ¡¢³¬Ê± 500 ºÁÃë¡¢Ê§°ÜÍ£¹¤Õ¾
+// ç¼ºçœå·¥ç«™é…æ–¹ï¼šä½¿èƒ½ã€ä¸²è¡Œã€è¶…æ—¶ 500 æ¯«ç§’ã€å¤±è´¥åœå·¥ç«™
 StationRecipe::StationRecipe()
     : enabled(true)
     , jobSchedule(ScheduleSequence)
@@ -198,7 +203,7 @@ StationRecipe::StationRecipe()
 {
 }
 
-// ´Ó StationCfg ¼ÓÔØ draft
+// ä» StationCfg åŠ è½½ draft
 void StationRecipe::loadFrom(const StationCfg& st)
 {
     name = st.name;
@@ -215,7 +220,7 @@ void StationRecipe::loadFrom(const StationCfg& st)
     commChannelId = st.commChannelId;
 }
 
-// Ğ´»Ø StationCfg
+// å†™å› StationCfg
 void StationRecipe::applyTo(StationCfg* st) const
 {
     if (!st) {
@@ -232,7 +237,7 @@ void StationRecipe::applyTo(StationCfg* st) const
     st->commChannelId = commChannelId;
 }
 
-// ±È½ÏÁ½·İ¹¤Õ¾Åä·½ÊÇ·ñÏàÍ¬
+// æ¯”è¾ƒä¸¤ä»½å·¥ç«™é…æ–¹æ˜¯å¦ç›¸åŒ
 bool StationRecipe::equals(const StationRecipe& other) const
 {
     if (name != other.name || stationCode != other.stationCode || enabled != other.enabled
@@ -260,7 +265,7 @@ bool StationRecipe::equals(const StationRecipe& other) const
     return true;
 }
 
-// ´Ó HardwareDevice ¼ÓÔØ draft
+// ä» HardwareDevice åŠ è½½ draft
 void DeviceRecipe::loadFrom(const HardwareDevice& d)
 {
     name = d.name;
@@ -269,7 +274,7 @@ void DeviceRecipe::loadFrom(const HardwareDevice& d)
     defaultParams = d.defaultParams;
 }
 
-// Ğ´»Ø HardwareDevice
+// å†™å› HardwareDevice
 void DeviceRecipe::applyTo(HardwareDevice* d) const
 {
     if (!d) {
@@ -281,14 +286,14 @@ void DeviceRecipe::applyTo(HardwareDevice* d) const
     d->defaultParams = defaultParams;
 }
 
-// ±È½ÏÁ½·İÉè±¸Åä·½ÊÇ·ñÏàÍ¬
+// æ¯”è¾ƒä¸¤ä»½è®¾å¤‡é…æ–¹æ˜¯å¦ç›¸åŒ
 bool DeviceRecipe::equals(const DeviceRecipe& other) const
 {
     return name == other.name && kind == other.kind && cameraBackend == other.cameraBackend
         && paramMapEquals(defaultParams, other.defaultParams);
 }
 
-// °Ñ¹¤¾ßÅä·½ draft Ğ´»ØÕıÊ½ ToolCfg£¬±£Áô runtime
+// æŠŠå·¥å…·é…æ–¹ draft å†™å›æ­£å¼ ToolCfgï¼Œä¿ç•™ runtime
 void ToolRecipe::commitTo(ToolCfg* formal) const
 {
     if (!formal) {
@@ -297,7 +302,7 @@ void ToolRecipe::commitTo(ToolCfg* formal) const
     applyTo(formal);
 }
 
-// °Ñ draft JobCfg Ğ´»Ø·½°¸ÖĞÍ¬ id µÄ JobCfg
+// æŠŠ draft JobCfg å†™å›æ–¹æ¡ˆä¸­åŒ id çš„ JobCfg
 bool Solution::commitJob(const JobCfg& draft)
 {
     for (size_t si = 0; si < stations.size(); ++si) {
@@ -311,7 +316,7 @@ bool Solution::commitJob(const JobCfg& draft)
     return false;
 }
 
-// Ìá½»¹¤Õ¾²İ¸å£¬±£Áô id Óë runtimeView
+// æäº¤å·¥ç«™è‰ç¨¿ï¼Œä¿ç•™ id ä¸ runtimeView
 bool Solution::commitStation(const StationCfg& draft)
 {
     if (draft.id.isNull()) {
@@ -332,7 +337,7 @@ bool Solution::commitStation(const StationCfg& draft)
     return true;
 }
 
-// °Ñ draft Device Ğ´»ØÌ¨ÕË
+// æŠŠ draft Device å†™å›å°è´¦
 bool Solution::commitDevice(const HardwareDevice& draft)
 {
     if (draft.id.isNull()) {

@@ -1,6 +1,6 @@
 /**
  * @file FindLineTool.cpp
- * @brief FindLineToolÊµÏÖ
+ * @brief FindLineToolå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -14,31 +14,31 @@
 #include <vector>
 
 namespace {
-// µ±Ç°°æ±¾¡£±ØĞëµÈÓÚ±ä¸ü±í×îºóÒ»ĞĞ
+// å½“å‰ç‰ˆæœ¬ã€‚å¿…é¡»ç­‰äºå˜æ›´è¡¨æœ€åä¸€è¡Œ
 const char kToolVersion[] = "1.0.0.0";
-// ±ä¸ü±í¡£Ö»×·¼Ó£¬²»É¾¾ÉĞĞ
+// å˜æ›´è¡¨ã€‚åªè¿½åŠ ï¼Œä¸åˆ æ—§è¡Œ
 const Vision::VerNoteRaw kVerNotes[] = {
-    { "1.0.0.0", "Ê×°æ" },
+    { "1.0.0.0", "é¦–ç‰ˆ" },
 };
 
-// ×¢²áÃû
+// æ³¨å†Œå
 const char kToolName[] = "locate.find_line";
-// ½çÃæÏÔÊ¾Ãû
-const char kDisplayName[] = "ÕÒÏß";
-// ¹¤¾ßËµÃ÷
-const char kDescription[] = "¶à ROI£¬Ã¿¿ò¿ÉÉè²éÕÒÌõÊı¡¢¼«ĞÔÓëÑ¡Ôñ²ßÂÔ";
+// ç•Œé¢æ˜¾ç¤ºå
+const char kDisplayName[] = "æ‰¾çº¿";
+// å·¥å…·è¯´æ˜
+const char kDescription[] = "å¤š ROIï¼Œæ¯æ¡†å¯è®¾æŸ¥æ‰¾æ¡æ•°ã€ææ€§ä¸é€‰æ‹©ç­–ç•¥";
 
-// ²ÎÊıËµÃ÷
+// å‚æ•°è¯´æ˜
 std::vector<Vision::ParamField> fields()
 {
     std::vector<Vision::ParamField> f;
-    f.push_back(Vision::paramString("polarity", "¼«ĞÔ", "all", Vision::paramChoices("all", "positive", "negative")));
-    f.push_back(Vision::paramString("select", "Ñ¡Ôñ", "best", Vision::paramChoices("best", "first", "last")));
-    f.push_back(Vision::paramDouble("minLength", "×î¶Ì³¤¶È", 20.0, true, 0.0, false, 0));
-    f.push_back(Vision::paramDouble("sigma", "Æ½»¬", 1.0, true, 0.4, true, 20.0));
-    f.push_back(Vision::paramInt("low", "µÍãĞÖµ", 20, true, 0, true, 255));
-    f.push_back(Vision::paramInt("high", "¸ßãĞÖµ", 40, true, 0, true, 255));
-    f.push_back(Vision::paramInt("searchCount", "²éÕÒÌõÊı", 1, true, 1, true, 50));
+    f.push_back(Vision::paramString("polarity", "ææ€§", "all", Vision::paramChoices("all", "positive", "negative")));
+    f.push_back(Vision::paramString("select", "é€‰æ‹©", "best", Vision::paramChoices("best", "first", "last")));
+    f.push_back(Vision::paramDouble("minLength", "æœ€çŸ­é•¿åº¦", 20.0, true, 0.0, false, 0));
+    f.push_back(Vision::paramDouble("sigma", "å¹³æ»‘", 1.0, true, 0.4, true, 20.0));
+    f.push_back(Vision::paramInt("low", "ä½é˜ˆå€¼", 20, true, 0, true, 255));
+    f.push_back(Vision::paramInt("high", "é«˜é˜ˆå€¼", 40, true, 0, true, 255));
+    f.push_back(Vision::paramInt("searchCount", "æŸ¥æ‰¾æ¡æ•°", 1, true, 1, true, 50));
     return f;
 }
 Vision::ToolCaps caps()
@@ -53,7 +53,7 @@ Vision::ToolCaps caps()
     return c;
 }
 
-// ÓÉ²ÎÊıËµÃ÷Éú³ÉÈ±Ê¡ ParamMap
+// ç”±å‚æ•°è¯´æ˜ç”Ÿæˆç¼ºçœ ParamMap
 Vision::ParamMap defaultsFrom(const std::vector<Vision::ParamField>& fields)
 {
     Vision::ParamMap m;
@@ -68,62 +68,62 @@ Vision::ParamMap defaultsFrom(const std::vector<Vision::ParamField>& fields)
 
 }
 
-// ×¢²áÃû
+// æ³¨å†Œå
 std::string Vision::FindLineTool::toolName() const
 {
     return kToolName;
 }
 
-// ¹¤¾ß´óÀà
+// å·¥å…·å¤§ç±»
 Vision::ToolType Vision::FindLineTool::type() const
 {
     return Vision::ToolType::Locate;
 }
 
-// ½çÃæÏÔÊ¾Ãû
+// ç•Œé¢æ˜¾ç¤ºå
 std::string Vision::FindLineTool::displayName() const
 {
-    return Vision::acpToUtf8(kDisplayName);
+    return kDisplayName;
 }
 
-// ¹¤¾ß°æ±¾
+// å·¥å…·ç‰ˆæœ¬
 std::string Vision::FindLineTool::version() const
 {
     return std::string(kToolVersion);
 }
 
-// °æ±¾±ä¸ü£¬Ö»×·¼Ó
+// ç‰ˆæœ¬å˜æ›´ï¼Œåªè¿½åŠ 
 std::vector<Vision::VerNote> Vision::FindLineTool::versionNotes() const
 {
     return Vision::verNotesFrom(kVerNotes, static_cast<int>(sizeof(kVerNotes) / sizeof(kVerNotes[0])));
 }
 
 
-// ¹¤¾ßËµÃ÷
+// å·¥å…·è¯´æ˜
 std::string Vision::FindLineTool::description() const
 {
-    return Vision::acpToUtf8(kDescription);
+    return kDescription;
 }
 
-// È±Ê¡²ÎÊı
+// ç¼ºçœå‚æ•°
 Vision::ParamMap Vision::FindLineTool::defaultParams() const
 {
     return defaultsFrom(fields());
 }
 
-// ²ÎÊıËµÃ÷
+// å‚æ•°è¯´æ˜
 std::vector<Vision::ParamField> Vision::FindLineTool::paramFields() const
 {
     return fields();
 }
 
-// »­²¼ÄÜÁ¦
+// ç”»å¸ƒèƒ½åŠ›
 Vision::ToolCaps Vision::FindLineTool::capabilities() const
 {
     return caps();
 }
 
-// µ÷Ëã·¨²å¼şÖ´ĞĞ
+// è°ƒç®—æ³•æ’ä»¶æ‰§è¡Œ
 Vision::ToolOut Vision::FindLineTool::execute(const Vision::ToolIn& in)
 {
     Vision::ToolOut out = Vision::runAlgToolBase(toolName(), in, false);
@@ -136,13 +136,13 @@ Vision::ToolOut Vision::FindLineTool::execute(const Vision::ToolIn& in)
     return out;
 }
 
-// ¿ËÂ¡±¾ÊµÀı
+// å…‹éš†æœ¬å®ä¾‹
 Vision::ToolBase* Vision::FindLineTool::clone() const
 {
     FindLineTool* p = new FindLineTool();
     p->copyInstanceDataFrom(*this);
     return p;
-}// ·µ»Ø±¾¹¤¾ß²ÎÊı¶ÔÏó
+}// è¿”å›æœ¬å·¥å…·å‚æ•°å¯¹è±¡
 
 const Vision::ToolParaBase* Vision::FindLineTool::toolParam() const
 {

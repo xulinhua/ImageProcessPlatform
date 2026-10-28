@@ -1,6 +1,6 @@
 /**
  * @file ToolParaTexture.hpp
- * @brief ToolParaTextureÍ·ÎÄ¼ş
+ * @brief ToolParaTextureå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -16,22 +16,22 @@ namespace Vision {
 
 /**
  * @class ToolParaTexture
- * @brief TextureTool ÔËĞĞ²ÎÊı
+ * @brief TextureTool è¿è¡Œå‚æ•°
  */
 class ToolParaTexture : public ToolParaBase {
 public:
-    /** @brief Ñ§Ï°²ÎÊı£¬Ã»ÓĞÔòÎª¿Õ */
+    /** @brief å­¦ä¹ å‚æ•°ï¼Œæ²¡æœ‰åˆ™ä¸ºç©º */
     struct Learn {
     };
-    /** @brief ÔËĞĞ²ÎÊı */
+    /** @brief è¿è¡Œå‚æ•° */
     struct Run {
-        std::string bgMethod;       ///< ±³¾°
-        int kernelW;                ///< ºË¿í
-        int kernelH;                ///< ºË¸ß
-        double residThresh;         ///< ²Ğ²îãĞÖµ
-        double openR;               ///< ¿ªÔËËã
-        int minArea;                ///< ×îĞ¡Ãæ»ı
-        int maxArea;                ///< ×î´óÃæ»ı
+        std::string bgMethod;       ///< èƒŒæ™¯
+        int kernelW;                ///< æ ¸å®½
+        int kernelH;                ///< æ ¸é«˜
+        double residThresh;         ///< æ®‹å·®é˜ˆå€¼
+        double openR;               ///< å¼€è¿ç®—
+        int minArea;                ///< æœ€å°é¢ç§¯
+        int maxArea;                ///< æœ€å¤§é¢ç§¯
         Run()
             : bgMethod("mean")
             , kernelW(31)
@@ -43,10 +43,10 @@ public:
         {}
     };
 
-    Learn learn; ///< Ñ§Ï°²ÎÊı£¬Ã»ÓĞÔòÎª¿Õ
-    Run run;     ///< ÔËĞĞ²ÎÊı
+    Learn learn; ///< å­¦ä¹ å‚æ•°ï¼Œæ²¡æœ‰åˆ™ä¸ºç©º
+    Run run;     ///< è¿è¡Œå‚æ•°
 
-    /** @brief ´Ó ToolParam ÌîĞ´ */
+    /** @brief ä» ToolParam å¡«å†™ */
     void load(const ToolParam& src)
     {
         const ParamMap& m = src.run;

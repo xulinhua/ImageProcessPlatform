@@ -1,6 +1,6 @@
 /**
  * @file LocateDetectEditors.cpp
- * @brief LocateDetectEditorsÊµÏÖ
+ * @brief LocateDetectEditorså®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -23,7 +23,7 @@
 
 namespace Vision {
 
-// °´´æÅÌÖµÑ¡ÖĞÏÂÀ­Ïî£¬ÕÒ²»µ½ÔòµÚÒ»Ïî
+// æŒ‰å­˜ç›˜å€¼é€‰ä¸­ä¸‹æ‹‰é¡¹ï¼Œæ‰¾ä¸åˆ°åˆ™ç¬¬ä¸€é¡¹
 static void setComboData(QComboBox* c, const QString& v)
 {
     const int i = c->findData(v);
@@ -37,26 +37,26 @@ public:
     {
         m_method = mkParamCombo(this);
         m_method->addItem(QLatin1String("NCC"), QLatin1String("ncc"));
-        m_method->addItem(T("ĞÎ×´"), QLatin1String("shape"));
+        m_method->addItem(T("å½¢çŠ¶"), QLatin1String("shape"));
         m_score = mkParamDSpin(this, 0.1, 1.0, 2, 0.05);
         m_angle = mkParamDSpin(this, 0, 180, 1, 1.0);
         m_num = mkParamSpin(this, 1, 20);
         m_modelFile = new QLineEdit(this);
-        m_rebuild = mkParamCheck(this, T("ÏÂ´ÎÔËĞĞÇ¿ÖÆÖØ½¨²¢¸²¸ÇÄ£ĞÍ"));
-        QPushButton* teach = new QPushButton(T("¼ÇÂ¼µ±Ç°Î»×ËÎªÊ¾½Ì"), this);
-        QPushButton* delModel = new QPushButton(T("É¾³ıÒÑ´æÄ£ĞÍÎÄ¼ş"), this);
+        m_rebuild = mkParamCheck(this, T("ä¸‹æ¬¡è¿è¡Œå¼ºåˆ¶é‡å»ºå¹¶è¦†ç›–æ¨¡å‹"));
+        QPushButton* teach = new QPushButton(T("è®°å½•å½“å‰ä½å§¿ä¸ºç¤ºæ•™"), this);
+        QPushButton* delModel = new QPushButton(T("åˆ é™¤å·²å­˜æ¨¡å‹æ–‡ä»¶"), this);
         connect(teach, &QPushButton::clicked, this, &TmplEditor::onTeach);
         connect(delModel, &QPushButton::clicked, this, &TmplEditor::onDeleteModel);
         QVBoxLayout* lay = mkParamStack(this, 10);
-        addParamStackItem(lay, mkParamCell(this, T("Æ¥Åä·½Ê½"), m_method));
-        addParamStackItem(lay, mkParamRow2(this, T("×îµÍ·Ö"), m_score, T("½Ç¶È·¶Î§(¶È)"), m_angle));
-        addParamStackItem(lay, mkParamCell(this, T("Æ¥Åä¸öÊı"), m_num));
-        addParamStackItem(lay, mkParamCell(this, T("Ä£ĞÍÎÄ¼ş(Ïà¶Ôvpdata)"), m_modelFile));
+        addParamStackItem(lay, mkParamCell(this, T("åŒ¹é…æ–¹å¼"), m_method));
+        addParamStackItem(lay, mkParamRow2(this, T("æœ€ä½åˆ†"), m_score, T("è§’åº¦èŒƒå›´(åº¦)"), m_angle));
+        addParamStackItem(lay, mkParamCell(this, T("åŒ¹é…ä¸ªæ•°"), m_num));
+        addParamStackItem(lay, mkParamCell(this, T("æ¨¡å‹æ–‡ä»¶(ç›¸å¯¹vpdata)"), m_modelFile));
         addParamStackItem(lay, m_rebuild);
         addParamStackItem(lay, teach);
         addParamStackItem(lay, delModel);
         QLabel* tip = new QLabel(
-            T("Êä³ö£ºx / y / angle / score¡£ÇëÏÈ±£´æ·½°¸£»Ê×´ÎÔËĞĞÓÃ ROI ´´½¨Ä£ĞÍ²¢Ğ´Èë .vpdata¡£"), this);
+            T("è¾“å‡ºï¼šx / y / angle / scoreã€‚è¯·å…ˆä¿å­˜æ–¹æ¡ˆï¼›é¦–æ¬¡è¿è¡Œç”¨ ROI åˆ›å»ºæ¨¡å‹å¹¶å†™å…¥ .vpdataã€‚"), this);
         tip->setWordWrap(true);
         tip->setStyleSheet(QStringLiteral("color:#666;"));
         addParamStackItem(lay, tip);
@@ -170,13 +170,13 @@ public:
         : ToolEditorBase(parent)
     {
         m_pol = mkParamCombo(this);
-        m_pol->addItem(T("ÁÁ -> °µ"), QLatin1String("positive"));
-        m_pol->addItem(T("°µ -> ÁÁ"), QLatin1String("negative"));
-        m_pol->addItem(T("È«²¿"), QLatin1String("all"));
+        m_pol->addItem(T("äº® -> æš—"), QLatin1String("positive"));
+        m_pol->addItem(T("æš— -> äº®"), QLatin1String("negative"));
+        m_pol->addItem(T("å…¨éƒ¨"), QLatin1String("all"));
         m_sel = mkParamCombo(this);
-        m_sel->addItem(T("×îÇ¿"), QLatin1String("best"));
-        m_sel->addItem(T("µÚÒ»Ìõ"), QLatin1String("first"));
-        m_sel->addItem(T("×îºóÒ»Ìõ"), QLatin1String("last"));
+        m_sel->addItem(T("æœ€å¼º"), QLatin1String("best"));
+        m_sel->addItem(T("ç¬¬ä¸€æ¡"), QLatin1String("first"));
+        m_sel->addItem(T("æœ€åä¸€æ¡"), QLatin1String("last"));
         m_count = mkParamSpin(this, 1, 20);
         m_minLen = mkParamDSpin(this, 1, 10000, 1, 1.0);
         m_minLen->setSuffix(QLatin1String(" px"));
@@ -185,10 +185,10 @@ public:
         m_low = mkParamSpin(this, 1, 255);
         m_high = mkParamSpin(this, 1, 255);
         QVBoxLayout* lay = mkParamStack(this, 10);
-        addParamStackItem(lay, mkParamRow2(this, T("¼«ĞÔ"), m_pol, T("Ñ¡Ôñ"), m_sel));
-        addParamStackItem(lay, mkParamRow2(this, T("×îĞ¡³¤¶È"), m_minLen, T("Sigma"), m_sigma));
-        addParamStackItem(lay, mkParamCell(this, T("Ã¿¿òÌõÊı"), m_count));
-        addParamStackItem(lay, mkParamRow2(this, T("µÍãĞÖµ"), m_low, T("¸ßãĞÖµ"), m_high));
+        addParamStackItem(lay, mkParamRow2(this, T("ææ€§"), m_pol, T("é€‰æ‹©"), m_sel));
+        addParamStackItem(lay, mkParamRow2(this, T("æœ€å°é•¿åº¦"), m_minLen, T("Sigma"), m_sigma));
+        addParamStackItem(lay, mkParamCell(this, T("æ¯æ¡†æ¡æ•°"), m_count));
+        addParamStackItem(lay, mkParamRow2(this, T("ä½é˜ˆå€¼"), m_low, T("é«˜é˜ˆå€¼"), m_high));
         connect(m_pol, SIGNAL(currentIndexChanged(int)), this, SLOT(onEdited()));
         connect(m_sel, SIGNAL(currentIndexChanged(int)), this, SLOT(onEdited()));
         connect(m_count, SIGNAL(valueChanged(int)), this, SLOT(onEdited()));
@@ -247,10 +247,10 @@ public:
         m_low = mkParamSpin(this, 1, 255);
         m_high = mkParamSpin(this, 1, 255);
         QVBoxLayout* lay = mkParamStack(this, 10);
-        addParamStackItem(lay, mkParamRow2(this, T("ãĞÖµ"), m_th, T("×îĞ¡°ë¾¶"), m_minR));
-        addParamStackItem(lay, mkParamRow2(this, T("×î´ó°ë¾¶"), m_maxR, T("Sigma"), m_sigma));
-        addParamStackItem(lay, mkParamRow2(this, T("µÍãĞÖµ"), m_low, T("¸ßãĞÖµ"), m_high));
-        addParamStackItem(lay, mkParamCell(this, T("°µÄ¿±ê"), m_dark));
+        addParamStackItem(lay, mkParamRow2(this, T("é˜ˆå€¼"), m_th, T("æœ€å°åŠå¾„"), m_minR));
+        addParamStackItem(lay, mkParamRow2(this, T("æœ€å¤§åŠå¾„"), m_maxR, T("Sigma"), m_sigma));
+        addParamStackItem(lay, mkParamRow2(this, T("ä½é˜ˆå€¼"), m_low, T("é«˜é˜ˆå€¼"), m_high));
+        addParamStackItem(lay, mkParamCell(this, T("æš—ç›®æ ‡"), m_dark));
         connect(m_th, SIGNAL(valueChanged(int)), this, SLOT(onEdited()));
         connect(m_minR, SIGNAL(valueChanged(int)), this, SLOT(onEdited()));
         connect(m_maxR, SIGNAL(valueChanged(int)), this, SLOT(onEdited()));
@@ -302,24 +302,24 @@ public:
         : ToolEditorBase(parent)
     {
         m_mode = mkParamCombo(this);
-        m_mode->addItem(T("²â¿í"), QLatin1String("width"));
-        m_mode->addItem(T("ÕÒ±ß"), QLatin1String("edge"));
+        m_mode->addItem(T("æµ‹å®½"), QLatin1String("width"));
+        m_mode->addItem(T("æ‰¾è¾¹"), QLatin1String("edge"));
         m_sigma = mkParamDSpin(this, 0.4, 20, 2, 0.1);
         m_th = mkParamDSpin(this, 1, 255, 1, 1.0);
         m_trans = mkParamCombo(this);
-        m_trans->addItem(T("È«²¿"), QLatin1String("all"));
-        m_trans->addItem(T("ÓÉ°µµ½ÁÁ"), QLatin1String("positive"));
-        m_trans->addItem(T("ÓÉÁÁµ½°µ"), QLatin1String("negative"));
+        m_trans->addItem(T("å…¨éƒ¨"), QLatin1String("all"));
+        m_trans->addItem(T("ç”±æš—åˆ°äº®"), QLatin1String("positive"));
+        m_trans->addItem(T("ç”±äº®åˆ°æš—"), QLatin1String("negative"));
         m_sel = mkParamCombo(this);
-        m_sel->addItem(T("È«²¿"), QLatin1String("all"));
-        m_sel->addItem(T("µÚÒ»Ìõ"), QLatin1String("first"));
-        m_sel->addItem(T("×îºóÒ»Ìõ"), QLatin1String("last"));
+        m_sel->addItem(T("å…¨éƒ¨"), QLatin1String("all"));
+        m_sel->addItem(T("ç¬¬ä¸€æ¡"), QLatin1String("first"));
+        m_sel->addItem(T("æœ€åä¸€æ¡"), QLatin1String("last"));
         m_count = mkParamSpin(this, 1, 20);
         QVBoxLayout* lay = mkParamStack(this, 10);
-        addParamStackItem(lay, mkParamCell(this, T("Ä£Ê½"), m_mode));
-        addParamStackItem(lay, mkParamRow2(this, T("Sigma"), m_sigma, T("ãĞÖµ"), m_th));
-        addParamStackItem(lay, mkParamRow2(this, T("¼«ĞÔ"), m_trans, T("Ñ¡Ôñ"), m_sel));
-        addParamStackItem(lay, mkParamCell(this, T("Ã¿¿òÌõÊı"), m_count));
+        addParamStackItem(lay, mkParamCell(this, T("æ¨¡å¼"), m_mode));
+        addParamStackItem(lay, mkParamRow2(this, T("Sigma"), m_sigma, T("é˜ˆå€¼"), m_th));
+        addParamStackItem(lay, mkParamRow2(this, T("ææ€§"), m_trans, T("é€‰æ‹©"), m_sel));
+        addParamStackItem(lay, mkParamCell(this, T("æ¯æ¡†æ¡æ•°"), m_count));
         connect(m_mode, SIGNAL(currentIndexChanged(int)), this, SLOT(onEdited()));
         connect(m_sigma, SIGNAL(valueChanged(double)), this, SLOT(onEdited()));
         connect(m_th, SIGNAL(valueChanged(double)), this, SLOT(onEdited()));
@@ -367,15 +367,15 @@ public:
         : ToolEditorBase(parent)
     {
         m_mode = mkParamCombo(this);
-        m_mode->addItem(T("¾ø¶ÔãĞÖµ"), QLatin1String("absolute"));
-        m_mode->addItem(T("Ïà¶ÔãĞÖµ"), QLatin1String("relative"));
-        m_mode->addItem(T("¶¯Ì¬ãĞÖµ"), QLatin1String("dynamic"));
+        m_mode->addItem(T("ç»å¯¹é˜ˆå€¼"), QLatin1String("absolute"));
+        m_mode->addItem(T("ç›¸å¯¹é˜ˆå€¼"), QLatin1String("relative"));
+        m_mode->addItem(T("åŠ¨æ€é˜ˆå€¼"), QLatin1String("dynamic"));
         m_absMin = mkParamSpin(this, 0, 255);
         m_absMax = mkParamSpin(this, 0, 255);
         m_rel = mkParamDSpin(this, 0, 255, 1, 1.0);
         m_dyn = mkParamDSpin(this, 0, 255, 1, 1.0);
         m_kern = mkParamSpin(this, 3, 201);
-        m_dark = mkParamCheck(this, T("°µÄ¿±ê"));
+        m_dark = mkParamCheck(this, T("æš—ç›®æ ‡"));
         m_open = mkParamDSpin(this, 0, 50, 1, 0.5);
         m_close = mkParamDSpin(this, 0, 50, 1, 0.5);
         m_minA = mkParamSpin(this, 0, 100000000);
@@ -387,16 +387,16 @@ public:
         m_okMinArea = mkParamDSpin(this, 0, 1e12, 1, 1.0);
         m_okMaxArea = mkParamDSpin(this, 0, 1e12, 1, 1.0);
         QVBoxLayout* lay = mkParamStack(this, 10);
-        addParamStackItem(lay, mkParamCell(this, T("ãĞÖµ·½Ê½"), m_mode));
-        addParamStackItem(lay, mkParamRow2(this, T("¾ø¶ÔÏÂÏŞ"), m_absMin, T("¾ø¶ÔÉÏÏŞ"), m_absMax));
-        addParamStackItem(lay, mkParamRow2(this, T("Ïà¶ÔÆ«ÒÆ"), m_rel, T("¶¯Ì¬Æ«ÒÆ"), m_dyn));
-        addParamStackItem(lay, mkParamCell(this, T("¶¯Ì¬ºË"), m_kern));
+        addParamStackItem(lay, mkParamCell(this, T("é˜ˆå€¼æ–¹å¼"), m_mode));
+        addParamStackItem(lay, mkParamRow2(this, T("ç»å¯¹ä¸‹é™"), m_absMin, T("ç»å¯¹ä¸Šé™"), m_absMax));
+        addParamStackItem(lay, mkParamRow2(this, T("ç›¸å¯¹åç§»"), m_rel, T("åŠ¨æ€åç§»"), m_dyn));
+        addParamStackItem(lay, mkParamCell(this, T("åŠ¨æ€æ ¸"), m_kern));
         addParamStackItem(lay, m_dark);
-        addParamStackItem(lay, mkParamRow2(this, T("¿ªÔËËã°ë¾¶"), m_open, T("±ÕÔËËã°ë¾¶"), m_close));
-        addParamStackItem(lay, mkParamRow2(this, T("É¸Ñ¡×îĞ¡Ãæ»ı"), m_minA, T("É¸Ñ¡×î´óÃæ»ı(0²»ÏŞ)"), m_maxA));
-        addParamStackItem(lay, mkParamRow2(this, T("×îĞ¡Ô²¶È"), m_minC, T("×î´óÔ²¶È"), m_maxC));
-        addParamStackItem(lay, mkParamRow2(this, T("ÅĞ¶¨×îÉÙÊıÁ¿(0²»ÅĞ)"), m_okMinCnt, T("ÅĞ¶¨×î¶àÊıÁ¿(0²»ÏŞ)"), m_okMaxCnt));
-        addParamStackItem(lay, mkParamRow2(this, T("ÅĞ¶¨×ÜÃæ»ıÏÂÏŞ(0²»ÅĞ)"), m_okMinArea, T("ÅĞ¶¨×ÜÃæ»ıÉÏÏŞ(0²»ÏŞ)"), m_okMaxArea));
+        addParamStackItem(lay, mkParamRow2(this, T("å¼€è¿ç®—åŠå¾„"), m_open, T("é—­è¿ç®—åŠå¾„"), m_close));
+        addParamStackItem(lay, mkParamRow2(this, T("ç­›é€‰æœ€å°é¢ç§¯"), m_minA, T("ç­›é€‰æœ€å¤§é¢ç§¯(0ä¸é™)"), m_maxA));
+        addParamStackItem(lay, mkParamRow2(this, T("æœ€å°åœ†åº¦"), m_minC, T("æœ€å¤§åœ†åº¦"), m_maxC));
+        addParamStackItem(lay, mkParamRow2(this, T("åˆ¤å®šæœ€å°‘æ•°é‡(0ä¸åˆ¤)"), m_okMinCnt, T("åˆ¤å®šæœ€å¤šæ•°é‡(0ä¸é™)"), m_okMaxCnt));
+        addParamStackItem(lay, mkParamRow2(this, T("åˆ¤å®šæ€»é¢ç§¯ä¸‹é™(0ä¸åˆ¤)"), m_okMinArea, T("åˆ¤å®šæ€»é¢ç§¯ä¸Šé™(0ä¸é™)"), m_okMaxArea));
         connect(m_mode, SIGNAL(currentIndexChanged(int)), this, SLOT(onEdited()));
         connect(m_absMin, SIGNAL(valueChanged(int)), this, SLOT(onEdited()));
         connect(m_absMax, SIGNAL(valueChanged(int)), this, SLOT(onEdited()));
@@ -488,9 +488,9 @@ public:
         : ToolEditorBase(parent)
     {
         m_bg = mkParamCombo(this);
-        m_bg->addItem(T("¾ùÖµ±³¾°"), QLatin1String("mean"));
-        m_bg->addItem(T("ÖĞÖµ±³¾°"), QLatin1String("median"));
-        m_bg->addItem(T("»Ò¶È±ÕÔËËã"), QLatin1String("closing"));
+        m_bg->addItem(T("å‡å€¼èƒŒæ™¯"), QLatin1String("mean"));
+        m_bg->addItem(T("ä¸­å€¼èƒŒæ™¯"), QLatin1String("median"));
+        m_bg->addItem(T("ç°åº¦é—­è¿ç®—"), QLatin1String("closing"));
         m_kw = mkParamSpin(this, 3, 501);
         m_kh = mkParamSpin(this, 3, 501);
         m_th = mkParamDSpin(this, 1, 255, 1, 1.0);
@@ -498,10 +498,10 @@ public:
         m_minA = mkParamSpin(this, 0, 100000000);
         m_maxA = mkParamSpin(this, 0, 100000000);
         QVBoxLayout* lay = mkParamStack(this, 10);
-        addParamStackItem(lay, mkParamCell(this, T("±³¾°"), m_bg));
-        addParamStackItem(lay, mkParamRow2(this, T("ºË¿í"), m_kw, T("ºË¸ß"), m_kh));
-        addParamStackItem(lay, mkParamRow2(this, T("²Ğ²îãĞÖµ"), m_th, T("¿ªÔËËã°ë¾¶"), m_open));
-        addParamStackItem(lay, mkParamRow2(this, T("×îĞ¡Ãæ»ı"), m_minA, T("×î´óÃæ»ı(0²»ÏŞ)"), m_maxA));
+        addParamStackItem(lay, mkParamCell(this, T("èƒŒæ™¯"), m_bg));
+        addParamStackItem(lay, mkParamRow2(this, T("æ ¸å®½"), m_kw, T("æ ¸é«˜"), m_kh));
+        addParamStackItem(lay, mkParamRow2(this, T("æ®‹å·®é˜ˆå€¼"), m_th, T("å¼€è¿ç®—åŠå¾„"), m_open));
+        addParamStackItem(lay, mkParamRow2(this, T("æœ€å°é¢ç§¯"), m_minA, T("æœ€å¤§é¢ç§¯(0ä¸é™)"), m_maxA));
         connect(m_bg, SIGNAL(currentIndexChanged(int)), this, SLOT(onEdited()));
         connect(m_kw, SIGNAL(valueChanged(int)), this, SLOT(onEdited()));
         connect(m_kh, SIGNAL(valueChanged(int)), this, SLOT(onEdited()));
@@ -547,17 +547,17 @@ protected:
     QSpinBox* m_maxA;
 };
 
-// Ä£°å¶¨Î»²ÎÊıÒ³
+// æ¨¡æ¿å®šä½å‚æ•°é¡µ
 ToolEditorBase* createTmplEditor(QWidget* parent) { return new TmplEditor(parent); }
-// ÕÒÏß²ÎÊıÒ³
+// æ‰¾çº¿å‚æ•°é¡µ
 ToolEditorBase* createFindLineEditor(QWidget* parent) { return new FindLineEditor(parent); }
-// ÕÒÔ²²ÎÊıÒ³
+// æ‰¾åœ†å‚æ•°é¡µ
 ToolEditorBase* createFindCircleEditor(QWidget* parent) { return new FindCircleEditor(parent); }
-// ¿¨³ß²ÎÊıÒ³
+// å¡å°ºå‚æ•°é¡µ
 ToolEditorBase* createCaliperEditor(QWidget* parent) { return new CaliperEditor(parent); }
-// °ßµã¼ì²â²ÎÊıÒ³
+// æ–‘ç‚¹æ£€æµ‹å‚æ•°é¡µ
 ToolEditorBase* createBlobEditor(QWidget* parent) { return new BlobEditor(parent); }
-// ÎÆÀí¼ì²â²ÎÊıÒ³
+// çº¹ç†æ£€æµ‹å‚æ•°é¡µ
 ToolEditorBase* createTextureEditor(QWidget* parent) { return new TextureEditor(parent); }
 
 }

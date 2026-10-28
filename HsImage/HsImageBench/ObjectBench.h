@@ -1,6 +1,6 @@
 /**
  * @file ObjectBench.h
- * @brief ObjectBenchÍ·ÎÄ¼ş
+ * @brief ObjectBenchå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -13,18 +13,18 @@
 
 #include <cstdint>
 
-/** @brief Ñù±¾ÖÖÀà¡£ÔØºÉµÄº¬Òå¼û fillSample */
+/** @brief æ ·æœ¬ç§ç±»ã€‚è½½è·çš„å«ä¹‰è§ fillSample */
 enum ObjectSampleKind {
-    SampleRegion = 0,  ///< Ã¿¸öÔªËØÒ»ÌõÇøÓò£¬ÔØºÉÎªÏÒÊı
-    SampleContour = 1, ///< Ã¿¸öÔªËØÒ»ÌõÂÖÀª£¬ÔØºÉÎªµãÊı
-    SamplePoly = 2,    ///< Ã¿¸öÔªËØÒ»ÌõÕÛÏß±Æ½ü£¬ÔØºÉÎª¶ÎÊı
-    SampleCircle = 3,  ///< Ã¿¸öÔªËØÒ»¸öÔ²£¬ÔØºÉÎª°ë¾¶
-    SampleMixed = 4    ///< ÇøÓò¡¢ÂÖÀª¡¢Ô²¡¢Ïß¶ÎÂÖÁ÷
+    SampleRegion = 0,  ///< æ¯ä¸ªå…ƒç´ ä¸€æ¡åŒºåŸŸï¼Œè½½è·ä¸ºå¼¦æ•°
+    SampleContour = 1, ///< æ¯ä¸ªå…ƒç´ ä¸€æ¡è½®å»“ï¼Œè½½è·ä¸ºç‚¹æ•°
+    SamplePoly = 2,    ///< æ¯ä¸ªå…ƒç´ ä¸€æ¡æŠ˜çº¿é€¼è¿‘ï¼Œè½½è·ä¸ºæ®µæ•°
+    SampleCircle = 3,  ///< æ¯ä¸ªå…ƒç´ ä¸€ä¸ªåœ†ï¼Œè½½è·ä¸ºåŠå¾„
+    SampleMixed = 4    ///< åŒºåŸŸã€è½®å»“ã€åœ†ã€çº¿æ®µè½®æµ
 };
 
 /**
  * @class ObjectSampleStats
- * @brief Ò»´ÎÉú³ÉµÄ¹æÄ£¡£fail£º0 ³É¹¦£¬1 ²ÎÊı·Ç·¨£¬2 ³¬¹ı 800MB£¬3 Òì³£
+ * @brief ä¸€æ¬¡ç”Ÿæˆçš„è§„æ¨¡ã€‚failï¼š0 æˆåŠŸï¼Œ1 å‚æ•°éæ³•ï¼Œ2 è¶…è¿‡ 800MBï¼Œ3 å¼‚å¸¸
  */
 struct ObjectSampleStats {
     bool ok;
@@ -51,7 +51,7 @@ struct ObjectSampleStats {
 
 /**
  * @class CopyTimings
- * @brief ¾ä±ú¿½±´¡¢µ¥ÀàÔªËØ¸³Öµ¡¢Ôª×é clone¡£fail£º0 ³É¹¦£¬1 ¿ÕÑù±¾£¬2 Òì³£
+ * @brief å¥æŸ„æ‹·è´ã€å•ç±»å…ƒç´ èµ‹å€¼ã€å…ƒç»„ cloneã€‚failï¼š0 æˆåŠŸï¼Œ1 ç©ºæ ·æœ¬ï¼Œ2 å¼‚å¸¸
  */
 struct CopyTimings {
     bool ok;
@@ -78,7 +78,7 @@ struct CopyTimings {
 
 /**
  * @class LockTimings
- * @brief ¶àÏß³ÌÍ¬Ê±¿½±´¾ä±ú²¢ append¡£cloneStable ±íÊ¾µÚ 0 ¸öÔªËØµÄÉî¿½Ã»ÓĞ±»Ğ´Ïß³Ì¸Äµô
+ * @brief å¤šçº¿ç¨‹åŒæ—¶æ‹·è´å¥æŸ„å¹¶ appendã€‚cloneStable è¡¨ç¤ºç¬¬ 0 ä¸ªå…ƒç´ çš„æ·±æ‹·æ²¡æœ‰è¢«å†™çº¿ç¨‹æ”¹æ‰
  */
 struct LockTimings {
     bool ok;
@@ -108,18 +108,18 @@ struct LockTimings {
 };
 
 /**
- * @brief Éú³ÉÑù±¾²¢Ğ´Èë dst¡£¾ä±ú¸³Öµ£¬ÔªËØ±¾ÉíÒÑÊÇ¶ÀÁ¢¸±±¾
- * @param count Ôª×é¸öÊı
- * @param payload ÏÒ¡¢µã¡¢¶Î»ò°ë¾¶
+ * @brief ç”Ÿæˆæ ·æœ¬å¹¶å†™å…¥ dstã€‚å¥æŸ„èµ‹å€¼ï¼Œå…ƒç´ æœ¬èº«å·²æ˜¯ç‹¬ç«‹å‰¯æœ¬
+ * @param count å…ƒç»„ä¸ªæ•°
+ * @param payload å¼¦ã€ç‚¹ã€æ®µæˆ–åŠå¾„
  */
 ObjectSampleStats fillSample(HsCommData::HsObject* dst, int kind, int count, int payload);
 
-/** @brief ¼ÆÊ±¾ä±ú¿½±´¡¢ÔªËØÉî¿½¡¢clone£¬²¢¼ì²é clone ÓëËæºóµÄĞ´Èë¸ôÀë */
+/** @brief è®¡æ—¶å¥æŸ„æ‹·è´ã€å…ƒç´ æ·±æ‹·ã€cloneï¼Œå¹¶æ£€æŸ¥ clone ä¸éšåçš„å†™å…¥éš”ç¦» */
 CopyTimings benchCopy(const HsCommData::HsObject& src, int loops);
 
 /**
- * @brief ¶ÁÕß¿½±´¾ä±ú²¢Å¼¶û clone µÚ 0 ¸ö£»Ğ´Õß append Ğ¡Ô²
- * @param shared ±»²â¶ÔÏó£¬Ğ´Õß»á±ä³¤
+ * @brief è¯»è€…æ‹·è´å¥æŸ„å¹¶å¶å°” clone ç¬¬ 0 ä¸ªï¼›å†™è€… append å°åœ†
+ * @param shared è¢«æµ‹å¯¹è±¡ï¼Œå†™è€…ä¼šå˜é•¿
  */
 LockTimings benchLock(HsCommData::HsObject* shared, int readers, int writers, int opsEach);
 

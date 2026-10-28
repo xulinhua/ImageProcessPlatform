@@ -1,6 +1,6 @@
 /**
  * @file CameraFileTool.cpp
- * @brief CameraFileToolÊµÏÖ
+ * @brief CameraFileToolå®žçŽ°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -11,7 +11,7 @@
 
 namespace Vision {
 
-// Â·¾¶¡¢²É¼¯·½Ê½¡¢ÏñËØ¸ñÊ½Õ¼Î»
+// è·¯å¾„ã€é‡‡é›†æ–¹å¼ã€åƒç´ æ ¼å¼å ä½
 ParamMap CameraFileTool::defaultParams() const
 {
     ParamMap p;
@@ -22,12 +22,12 @@ ParamMap CameraFileTool::defaultParams() const
     return p;
 }
 
-// ´Ó°ó¶¨Éè±¸/¹¤¾ßÂ·¾¶×¥ÏÂÒ»ÕÅÍ¼£¨index/lastFile ÎªÔËÐÐÌ¬£¬²»±ê·½°¸ dirty£©
+// ä»Žç»‘å®šè®¾å¤‡/å·¥å…·è·¯å¾„æŠ“ä¸‹ä¸€å¼ å›¾ï¼ˆindex/lastFile ä¸ºè¿è¡Œæ€ï¼Œä¸æ ‡æ–¹æ¡ˆ dirtyï¼‰
 ToolOut CameraFileTool::execute(ToolContext& ctx)
 {
     ToolOut out;
     if (!ctx.sol || !ctx.tool) {
-        out.message = std::string(Translate::tr("ÉÏÏÂÎÄÎÞÐ§"));
+        out.message = std::string(Translate::tr("ä¸Šä¸‹æ–‡æ— æ•ˆ"));
         return out;
     }
     HardwareDevice* dev = ctx.sol->findDevice(ctx.tool->deviceId);

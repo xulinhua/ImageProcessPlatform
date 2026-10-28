@@ -1,6 +1,6 @@
 /**
  * @file EnhanceTool.h
- * @brief EnhanceToolÍ·ÎÄ¼ş
+ * @brief EnhanceToolå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -16,31 +16,31 @@ namespace Vision {
 
 /**
  * @class EnhanceTool
- * @brief Í¼ÏñÔöÇ¿£ºµÇ¼Ç²ÎÊı£¬Ö´ĞĞ½»¸øËã·¨²å¼ş
+ * @brief å›¾åƒå¢å¼ºï¼šç™»è®°å‚æ•°ï¼Œæ‰§è¡Œäº¤ç»™ç®—æ³•æ’ä»¶
  */
 class EnhanceTool : public ToolBase {
 public:
-    /** @brief ×¢²áÃû */
+    /** @brief æ³¨å†Œå */
     std::string toolName() const;
-    /** @brief ¹¤¾ß´óÀà */
+    /** @brief å·¥å…·å¤§ç±» */
     ToolType type() const;
-    /** @brief ½çÃæÏÔÊ¾Ãû */
+    /** @brief ç•Œé¢æ˜¾ç¤ºå */
     std::string displayName() const;
-    /** @brief ¹¤¾ß°æ±¾ */
+    /** @brief å·¥å…·ç‰ˆæœ¬ */
     std::string version() const;
-    /** @brief °æ±¾±ä¸ü£¬Ö»×·¼Ó */
+    /** @brief ç‰ˆæœ¬å˜æ›´ï¼Œåªè¿½åŠ  */
     std::vector<VerNote> versionNotes() const;
-    /** @brief ¹¤¾ßËµÃ÷ */
+    /** @brief å·¥å…·è¯´æ˜ */
     std::string description() const;
-    /** @brief È±Ê¡²ÎÊı */
+    /** @brief ç¼ºçœå‚æ•° */
     ParamMap defaultParams() const;
-    /** @brief ²ÎÊıËµÃ÷ */
+    /** @brief å‚æ•°è¯´æ˜ */
     std::vector<ParamField> paramFields() const;
-    /** @brief »­²¼ ROI µÈÄÜÁ¦ */
+    /** @brief ç”»å¸ƒ ROI ç­‰èƒ½åŠ› */
     ToolCaps capabilities() const;
-    /** @brief µ÷Ëã·¨²å¼şÖ´ĞĞ */
+    /** @brief è°ƒç®—æ³•æ’ä»¶æ‰§è¡Œ */
     ToolOut execute(const ToolIn& in);
-    /** @brief ¿ËÂ¡±¾ÊµÀı£¨±¾ DLL ÄÚ new£© */
+    /** @brief å…‹éš†æœ¬å®ä¾‹ï¼ˆæœ¬ DLL å†… newï¼‰ */
     ToolBase* clone() const;
     const ToolParaBase* toolParam() const;
 private:

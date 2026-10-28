@@ -1,6 +1,6 @@
 /**
  * @file Mask.cpp
- * @brief MaskÊµÏÖ
+ * @brief Maskå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -10,14 +10,14 @@
 
 namespace HsCommData {
 
-// ¿ÕÑÚÂë
+// ç©ºæ©ç 
 MaskP::MaskP()
     : width(0)
     , height(0)
 {
 }
 
-// Í¬ÀàĞÍ¿½±´£¬ÏñËØÕû·İ¸´ÖÆ
+// åŒç±»å‹æ‹·è´ï¼Œåƒç´ æ•´ä»½å¤åˆ¶
 MaskP::MaskP(const MaskP& other)
     : width(other.width)
     , height(other.height)
@@ -25,7 +25,7 @@ MaskP::MaskP(const MaskP& other)
 {
 }
 
-// Í¬ÀàĞÍ¸³Öµ£¬ÏñËØÕû·İ¸´ÖÆ
+// åŒç±»å‹èµ‹å€¼ï¼Œåƒç´ æ•´ä»½å¤åˆ¶
 MaskP& MaskP::operator=(const MaskP& other)
 {
     if (this != &other) {
@@ -36,7 +36,7 @@ MaskP& MaskP::operator=(const MaskP& other)
     return *this;
 }
 
-// ³ß´ç»ò»º³å·Ç·¨ÔòÎª¿Õ
+// å°ºå¯¸æˆ–ç¼“å†²éæ³•åˆ™ä¸ºç©º
 bool MaskP::isEmpty() const
 {
     if (width <= 0 || height <= 0) {

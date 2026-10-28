@@ -1,6 +1,6 @@
 /**
  * @file ParaAdaptDlg.h
- * @brief ParaAdaptDlgͷ�ļ�
+ * @brief ParaAdaptDlg头文件
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.

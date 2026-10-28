@@ -1,6 +1,6 @@
 /**
  * @file LayerItem.h
- * @brief LayerItemÍ·ÎÄ¼ş
+ * @brief LayerItemå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -15,7 +15,7 @@ namespace HsCtrl {
 
 /**
  * @class LayerItem
- * @brief ¿ÕÄÚÈİÍ¼²ã£¬Ö»×÷ Stack / Drawing µÄ¸¸½Úµã£¨z=10 / z=20£©
+ * @brief ç©ºå†…å®¹å›¾å±‚ï¼Œåªä½œ Stack / Drawing çš„çˆ¶èŠ‚ç‚¹ï¼ˆz=10 / z=20ï¼‰
  */
 class LayerItem : public QGraphicsItem {
 public:

@@ -1,6 +1,6 @@
 /**
  * @file CalibMath.cpp
- * @brief CalibMathÊµÏÖ
+ * @brief CalibMathå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -17,7 +17,7 @@ namespace {
 
 const double kPi = 3.14159265358979323846;
 
-// °Ñ¿í×Ö·û×ª³É UTF-8
+// æŠŠå®½å­—ç¬¦è½¬æˆ UTF-8
 std::string U(const wchar_t* w)
 {
     std::string o;
@@ -40,7 +40,7 @@ std::string U(const wchar_t* w)
     return o;
 }
 
-// ´øÖ÷ÔªµÄ¸ßË¹ÏûÔª
+// å¸¦ä¸»å…ƒçš„é«˜æ–¯æ¶ˆå…ƒ
 bool solveLinear(std::vector<double> a, int n, std::vector<double> b, std::vector<double>* x)
 {
     if (!x || n <= 0 || (int)a.size() != n * n || (int)b.size() != n) {
@@ -92,7 +92,7 @@ bool solveLinear(std::vector<double> a, int n, std::vector<double> b, std::vecto
     return true;
 }
 
-// ×îĞ¡¶ş³Ë¡£¾ØÕó°´ĞĞÖ÷Ğò
+// æœ€å°äºŒä¹˜ã€‚çŸ©é˜µæŒ‰è¡Œä¸»åº
 bool leastSquares(const std::vector<double>& A, int rows, int cols,
                   const std::vector<double>& b, std::vector<double>* x)
 {
@@ -175,7 +175,7 @@ int usedSamples(const std::vector<PlaneSample>& samples, std::vector<PlaneSample
     return (int)used->size();
 }
 
-// µã¹éÒ»»¯£¬Ê¹Í¸ÊÓÄâºÏ¸üÎÈ
+// ç‚¹å½’ä¸€åŒ–ï¼Œä½¿é€è§†æ‹Ÿåˆæ›´ç¨³
 bool normalizePoints(const std::vector<double>& xs, const std::vector<double>& ys, double T[9],
                      std::vector<double>* nx, std::vector<double>* ny)
 {
@@ -243,7 +243,7 @@ void fillResidual(PlaneMap* out)
 
 }
 
-// ÏñËØµã¾­3¡Á3Ó³Éäµ½ºÁÃ×
+// åƒç´ ç‚¹ç»3Ã—3æ˜ å°„åˆ°æ¯«ç±³
 bool mapImageToWorld(const double m[9], double imageX, double imageY, double* worldX, double* worldY)
 {
     if (!m || !worldX || !worldY) {
@@ -258,7 +258,7 @@ bool mapImageToWorld(const double m[9], double imageX, double imageY, double* wo
     return true;
 }
 
-// ÈÆÖĞĞÄÄæÊ±Õë×ªÒ»¸ö½Ç¶È
+// ç»•ä¸­å¿ƒé€†æ—¶é’ˆè½¬ä¸€ä¸ªè§’åº¦
 void rotatePoint(double cx, double cy, double angleDeg, double x, double y, double* outX, double* outY)
 {
     const double rad = angleDeg * kPi / 180.0;
@@ -274,7 +274,7 @@ void rotatePoint(double cx, double cy, double angleDeg, double x, double y, doub
     }
 }
 
-// ÓÃµã¶ÔÄâºÏ±ÈÀı³ß¡¢·ÂÉä»òÍ¸ÊÓ
+// ç”¨ç‚¹å¯¹æ‹Ÿåˆæ¯”ä¾‹å°ºã€ä»¿å°„æˆ–é€è§†
 bool fitPlaneMap(CalibPlaneFit fit, const std::vector<PlaneSample>& samples, PlaneMap* out, std::string* err)
 {
     if (!out) {
@@ -457,7 +457,7 @@ bool fitPlaneMap(CalibPlaneFit fit, const std::vector<PlaneSample>& samples, Pla
     return true;
 }
 
-// ´úÊıÔ²ÄâºÏ£¬²Ğ²î°´µãµ½Ô²ÖÜµÄ¾àÀë
+// ä»£æ•°åœ†æ‹Ÿåˆï¼Œæ®‹å·®æŒ‰ç‚¹åˆ°åœ†å‘¨çš„è·ç¦»
 bool fitRotateCenter(const std::vector<RotateSample>& samples, RotateCenter* out, std::string* err)
 {
     if (!out) {

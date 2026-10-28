@@ -1,6 +1,6 @@
 /**
  * @file VersionDlg.cpp
- * @brief VersionDlgÊµÏÖ
+ * @brief VersionDlgå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -22,25 +22,24 @@
 #include <QTableWidget>
 #include <QTableWidgetItem>
 #include <QVBoxLayout>
+#include <vector>
 
 namespace Vision {
 
 namespace {
 
-// ÌîÒ»ĞĞÁ½ÁĞ±í
+// å¡«ä¸€è¡Œä¸¤åˆ—è¡¨
 void setRow2(QTableWidget* table, int row, const QString& a, const QString& b)
 {
     table->setItem(row, 0, new QTableWidgetItem(a));
     table->setItem(row, 1, new QTableWidgetItem(b));
 }
 
-// ÌîÒ»ĞĞËÄÁĞ±í
+// å¡«ä¸€è¡Œå››åˆ—è¡¨
 
-// ÌîÒ»ĞĞÊ®ÁĞ£¨Ä©ËÄÁĞ£ºHal / Hik / Hray / CV£©
-void setRow10(QTableWidget* table, int row,
-              const QString& a, const QString& b, const QString& c, const QString& d,
-              const QString& e, const QString& f, const QString& g, const QString& h,
-              const QString& i, const QString& j)
+// å‰å…­åˆ—æ˜¯å·¥å…·ä¿¡æ¯ï¼Œåé¢æ¯ä¸ªç®—æ³•åº“ä¸€åˆ—
+void setToolRow(QTableWidget* table, int row, const QString& a, const QString& b, const QString& c,
+                const QString& d, const QString& e, const QString& f, const std::vector<QString>& libs)
 {
     table->setItem(row, 0, new QTableWidgetItem(a));
     table->setItem(row, 1, new QTableWidgetItem(b));
@@ -48,10 +47,9 @@ void setRow10(QTableWidget* table, int row,
     table->setItem(row, 3, new QTableWidgetItem(d));
     table->setItem(row, 4, new QTableWidgetItem(e));
     table->setItem(row, 5, new QTableWidgetItem(f));
-    table->setItem(row, 6, new QTableWidgetItem(g));
-    table->setItem(row, 7, new QTableWidgetItem(h));
-    table->setItem(row, 8, new QTableWidgetItem(i));
-    table->setItem(row, 9, new QTableWidgetItem(j));
+    for (int i = 0; i < static_cast<int>(libs.size()); ++i) {
+        table->setItem(row, 6 + i, new QTableWidgetItem(libs[static_cast<size_t>(i)]));
+    }
 }
 void setRow4(QTableWidget* table, int row, const QString& a, const QString& b,
              const QString& c, const QString& d)
@@ -64,14 +62,14 @@ void setRow4(QTableWidget* table, int row, const QString& a, const QString& b,
 
 } // namespace
 
-// ¹ØÓÚ¶Ô»°¿ò£ºÈí¼şÕªÒª + Ä£¿é±í + ¹¤¾ß±í
+// å…³äºå¯¹è¯æ¡†ï¼šè½¯ä»¶æ‘˜è¦ + æ¨¡å—è¡¨ + å·¥å…·è¡¨
 VersionDlg::VersionDlg(QWidget* parent)
     : QDialog(parent)
     , m_summary(nullptr)
     , m_modules(nullptr)
     , m_tools(nullptr)
 {
-    setWindowTitle(T("°æ±¾¹ÜÀí"));
+    setWindowTitle(T("ç‰ˆæœ¬ç®¡ç†"));
     setModal(true);
     resize(1280, 560);
 
@@ -81,7 +79,7 @@ VersionDlg::VersionDlg(QWidget* parent)
 
     m_modules = new QTableWidget(this);
     m_modules->setColumnCount(2);
-    m_modules->setHorizontalHeaderLabels(QStringList() << T("Ä£¿é") << T("°æ±¾"));
+    m_modules->setHorizontalHeaderLabels(QStringList() << T("æ¨¡å—") << T("ç‰ˆæœ¬"));
     m_modules->horizontalHeader()->setStretchLastSection(true);
     m_modules->verticalHeader()->setVisible(false);
     m_modules->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -89,26 +87,28 @@ VersionDlg::VersionDlg(QWidget* parent)
     m_modules->setAlternatingRowColors(true);
 
     m_tools = new QTableWidget(this);
-    m_tools->setColumnCount(11);
-    m_tools->setHorizontalHeaderLabels(QStringList()
-                                       << T("×¢²áÃû") << T("ÏÔÊ¾Ãû") << T("°æ±¾") << T("¹¤¾ßĞŞ¸ÄÊ±¼ä")
-                                       << T("´óÀà") << T("Ëã·¨¹¤¾ß")
-                                       << QString::fromLatin1(algLibKindTitle(AlgLibHal))
-                                       << QString::fromLatin1(algLibKindTitle(AlgLibHik))
-                                       << QString::fromLatin1(algLibKindTitle(AlgLibHray))
-                                       << QString::fromLatin1(algLibKindTitle(AlgLibCv)) << QString());
+    const int libCols = static_cast<int>(AlgLibKindMax);
+    const int stretchCol = 6 + libCols;
+    m_tools->setColumnCount(stretchCol + 1);
+    QStringList headers;
+    headers << T("æ³¨å†Œå") << T("æ˜¾ç¤ºå") << T("ç‰ˆæœ¬") << T("å·¥å…·ä¿®æ”¹æ—¶é—´") << T("å¤§ç±»") << T("ç®—æ³•å·¥å…·");
+    for (int k = 0; k < libCols; ++k) {
+        headers << QString::fromLatin1(algLibKindTitle(static_cast<AlgLibKind>(k)));
+    }
+    headers << QString();
+    m_tools->setHorizontalHeaderLabels(headers);
     m_tools->horizontalHeader()->setStretchLastSection(false);
-    m_tools->horizontalHeader()->setSectionResizeMode(10, QHeaderView::Stretch);
+    m_tools->horizontalHeader()->setSectionResizeMode(stretchCol, QHeaderView::Stretch);
     m_tools->verticalHeader()->setVisible(false);
     m_tools->setEditTriggers(QAbstractItemView::NoEditTriggers);
     m_tools->setSelectionBehavior(QAbstractItemView::SelectRows);
     m_tools->setAlternatingRowColors(true);
 
-    QLabel* modTitle = new QLabel(T("Ä£¿é"), this);
-    QLabel* toolTitle = new QLabel(T("ÒÑ×¢²á¹¤¾ß"), this);
+    QLabel* modTitle = new QLabel(T("æ¨¡å—"), this);
+    QLabel* toolTitle = new QLabel(T("å·²æ³¨å†Œå·¥å…·"), this);
 
     QDialogButtonBox* box = new QDialogButtonBox(QDialogButtonBox::Ok, this);
-    box->button(QDialogButtonBox::Ok)->setText(T("¹Ø±Õ"));
+    box->button(QDialogButtonBox::Ok)->setText(T("å…³é—­"));
     setButtonRole(box->button(QDialogButtonBox::Ok), "primary");
     connect(box, SIGNAL(accepted()), this, SLOT(accept()));
 
@@ -125,16 +125,16 @@ VersionDlg::VersionDlg(QWidget* parent)
     fillTables();
 }
 
-// Ìî³äÕªÒªÓëÁ½ÕÅ±í
+// å¡«å……æ‘˜è¦ä¸ä¸¤å¼ è¡¨
 void VersionDlg::fillTables()
 {
     const QString summary = QString::fromUtf8(appProductName())
                             + QLatin1Char('\n')
-                            + T("Èí¼ş°æ±¾£º") + QString::fromLatin1(appVersion())
+                            + T("è½¯ä»¶ç‰ˆæœ¬ï¼š") + QString::fromLatin1(appVersion())
                             + QLatin1Char('\n')
-                            + T("¹¹½¨Ê±¼ä£º") + qs(buildStamp())
+                            + T("æ„å»ºæ—¶é—´ï¼š") + qs(buildStamp())
                             + QLatin1Char('\n')
-                            + T("¹¤¾ßÁ´£ºVS2015 (v140) + Qt 5.9.9 + C++11");
+                            + T("å·¥å…·é“¾ï¼šVS2022 (v143) + Qt 5.15.2 + C++17");
     m_summary->setText(summary);
 
     const std::vector<VersionInfo> mods = moduleVersions();
@@ -154,18 +154,19 @@ void VersionDlg::fillTables()
         if (tb) {
             typeTitle = QString::fromUtf8(toolTypeTitle(tb->type()).c_str());
         }
-        QString algo = v.algoTool ? T("ÊÇ") : T("·ñ");
+        QString algo = v.algoTool ? T("æ˜¯") : T("å¦");
         QString mtime = v.modified.empty() ? QString(QLatin1String("-")) : qs(v.modified);
-        const QString yes = T("ÊÇ");
+        const QString yes = T("æ˜¯");
         const QString no = QString(QLatin1String("-"));
-        setRow10(m_tools, i, qs(v.id), qs(v.name), qs(v.version), mtime, typeTitle, algo,
-                 v.hasAlgLib[AlgLibHal] ? yes : no,
-                 v.hasAlgLib[AlgLibHik] ? yes : no,
-                 v.hasAlgLib[AlgLibHray] ? yes : no,
-                 v.hasAlgLib[AlgLibCv] ? yes : no);
+        std::vector<QString> libs;
+        const int nLib = static_cast<int>(AlgLibKindMax);
+        for (int k = 0; k < nLib; ++k) {
+            libs.push_back(v.hasAlgLib[k] ? yes : no);
+        }
+        setToolRow(m_tools, i, qs(v.id), qs(v.name), qs(v.version), mtime, typeTitle, algo, libs);
     }
-    // Êı¾İÁĞ°´ÎÄ×Ö¿í¶È£¬¶à³öµÄ¿í¶ÈÁô¸ø×îºóÒ»ÁĞ¿ÕÁĞ
-    for (int c = 0; c < 10; ++c) {
+    // æ•°æ®åˆ—æŒ‰æ–‡å­—å®½åº¦ï¼Œå¤šå‡ºçš„å®½åº¦ç•™ç»™æœ€åä¸€åˆ—ç©ºåˆ—
+    for (int c = 0; c < 6 + static_cast<int>(AlgLibKindMax); ++c) {
         m_tools->resizeColumnToContents(c);
     }
 }

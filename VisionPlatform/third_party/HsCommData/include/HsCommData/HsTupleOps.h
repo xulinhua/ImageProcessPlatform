@@ -3,7 +3,7 @@
 
 /**
  * @file HsTupleOps.h
- * @brief HsTuple Óë±êÁ¿µÄ±È½Ï¡¢ËãÊõÔËËã·û¡£ÓÉ HsTuple.h Ä©Î²°üº¬£¬Îğµ¥¶À°üº¬
+ * @brief HsTuple ä¸æ ‡é‡çš„æ¯”è¾ƒã€ç®—æœ¯è¿ç®—ç¬¦ã€‚ç”± HsTuple.h æœ«å°¾åŒ…å«ï¼Œå‹¿å•ç‹¬åŒ…å«
  */
 
 namespace HsCommData {
@@ -12,506 +12,506 @@ inline bool operator==(int a, const HsTuple& b)
 {
     return HsTuple(a) == b;
 }
-/** @brief ×ó²Ù×÷Êı int64 µÄ == */
+/** @brief å·¦æ“ä½œæ•° int64 çš„ == */
 inline bool operator==(int64_t a, const HsTuple& b)
 {
     return HsTuple(a) == b;
 }
-/** @brief ×ó²Ù×÷Êı double µÄ == */
+/** @brief å·¦æ“ä½œæ•° double çš„ == */
 inline bool operator==(double a, const HsTuple& b)
 {
     return HsTuple(a) == b;
 }
-/** @brief ×ó²Ù×÷Êı C ×Ö·û´®µÄ ==¡£¿ÕÖ¸Õëµ±¿Õ´® */
+/** @brief å·¦æ“ä½œæ•° C å­—ç¬¦ä¸²çš„ ==ã€‚ç©ºæŒ‡é’ˆå½“ç©ºä¸² */
 inline bool operator==(const char* a, const HsTuple& b)
 {
     return HsTuple(a) == b;
 }
-/** @brief ×ó²Ù×÷Êı string µÄ == */
+/** @brief å·¦æ“ä½œæ•° string çš„ == */
 inline bool operator==(const std::string& a, const HsTuple& b)
 {
     return HsTuple(a) == b;
 }
-/** @brief ÓÒ²Ù×÷Êı int µÄ == */
+/** @brief å³æ“ä½œæ•° int çš„ == */
 inline bool operator==(const HsTuple& a, int b)
 {
     return a == HsTuple(b);
 }
-/** @brief ÓÒ²Ù×÷Êı int64 µÄ == */
+/** @brief å³æ“ä½œæ•° int64 çš„ == */
 inline bool operator==(const HsTuple& a, int64_t b)
 {
     return a == HsTuple(b);
 }
-/** @brief ÓÒ²Ù×÷Êı double µÄ == */
+/** @brief å³æ“ä½œæ•° double çš„ == */
 inline bool operator==(const HsTuple& a, double b)
 {
     return a == HsTuple(b);
 }
-/** @brief ÓÒ²Ù×÷Êı C ×Ö·û´®µÄ ==¡£¿ÕÖ¸Õëµ±¿Õ´® */
+/** @brief å³æ“ä½œæ•° C å­—ç¬¦ä¸²çš„ ==ã€‚ç©ºæŒ‡é’ˆå½“ç©ºä¸² */
 inline bool operator==(const HsTuple& a, const char* b)
 {
     return a == HsTuple(b);
 }
-/** @brief ÓÒ²Ù×÷Êı string µÄ == */
+/** @brief å³æ“ä½œæ•° string çš„ == */
 inline bool operator==(const HsTuple& a, const std::string& b)
 {
     return a == HsTuple(b);
 }
 
-/** @brief ×ó²Ù×÷Êı int µÄ != */
+/** @brief å·¦æ“ä½œæ•° int çš„ != */
 inline bool operator!=(int a, const HsTuple& b)
 {
     return HsTuple(a) != b;
 }
-/** @brief ×ó²Ù×÷Êı int64 µÄ != */
+/** @brief å·¦æ“ä½œæ•° int64 çš„ != */
 inline bool operator!=(int64_t a, const HsTuple& b)
 {
     return HsTuple(a) != b;
 }
-/** @brief ×ó²Ù×÷Êı double µÄ != */
+/** @brief å·¦æ“ä½œæ•° double çš„ != */
 inline bool operator!=(double a, const HsTuple& b)
 {
     return HsTuple(a) != b;
 }
-/** @brief ×ó²Ù×÷Êı C ×Ö·û´®µÄ !=¡£¿ÕÖ¸Õëµ±¿Õ´® */
+/** @brief å·¦æ“ä½œæ•° C å­—ç¬¦ä¸²çš„ !=ã€‚ç©ºæŒ‡é’ˆå½“ç©ºä¸² */
 inline bool operator!=(const char* a, const HsTuple& b)
 {
     return HsTuple(a) != b;
 }
-/** @brief ×ó²Ù×÷Êı string µÄ != */
+/** @brief å·¦æ“ä½œæ•° string çš„ != */
 inline bool operator!=(const std::string& a, const HsTuple& b)
 {
     return HsTuple(a) != b;
 }
-/** @brief ÓÒ²Ù×÷Êı int µÄ != */
+/** @brief å³æ“ä½œæ•° int çš„ != */
 inline bool operator!=(const HsTuple& a, int b)
 {
     return a != HsTuple(b);
 }
-/** @brief ÓÒ²Ù×÷Êı int64 µÄ != */
+/** @brief å³æ“ä½œæ•° int64 çš„ != */
 inline bool operator!=(const HsTuple& a, int64_t b)
 {
     return a != HsTuple(b);
 }
-/** @brief ÓÒ²Ù×÷Êı double µÄ != */
+/** @brief å³æ“ä½œæ•° double çš„ != */
 inline bool operator!=(const HsTuple& a, double b)
 {
     return a != HsTuple(b);
 }
-/** @brief ÓÒ²Ù×÷Êı C ×Ö·û´®µÄ !=¡£¿ÕÖ¸Õëµ±¿Õ´® */
+/** @brief å³æ“ä½œæ•° C å­—ç¬¦ä¸²çš„ !=ã€‚ç©ºæŒ‡é’ˆå½“ç©ºä¸² */
 inline bool operator!=(const HsTuple& a, const char* b)
 {
     return a != HsTuple(b);
 }
-/** @brief ÓÒ²Ù×÷Êı string µÄ != */
+/** @brief å³æ“ä½œæ•° string çš„ != */
 inline bool operator!=(const HsTuple& a, const std::string& b)
 {
     return a != HsTuple(b);
 }
 
-/** @brief ×ó²Ù×÷Êı int µÄ < */
+/** @brief å·¦æ“ä½œæ•° int çš„ < */
 inline bool operator<(int a, const HsTuple& b)
 {
     return HsTuple(a) < b;
 }
-/** @brief ×ó²Ù×÷Êı int64 µÄ < */
+/** @brief å·¦æ“ä½œæ•° int64 çš„ < */
 inline bool operator<(int64_t a, const HsTuple& b)
 {
     return HsTuple(a) < b;
 }
-/** @brief ×ó²Ù×÷Êı double µÄ < */
+/** @brief å·¦æ“ä½œæ•° double çš„ < */
 inline bool operator<(double a, const HsTuple& b)
 {
     return HsTuple(a) < b;
 }
-/** @brief ×ó²Ù×÷Êı C ×Ö·û´®µÄ <¡£¿ÕÖ¸Õëµ±¿Õ´® */
+/** @brief å·¦æ“ä½œæ•° C å­—ç¬¦ä¸²çš„ <ã€‚ç©ºæŒ‡é’ˆå½“ç©ºä¸² */
 inline bool operator<(const char* a, const HsTuple& b)
 {
     return HsTuple(a) < b;
 }
-/** @brief ×ó²Ù×÷Êı string µÄ < */
+/** @brief å·¦æ“ä½œæ•° string çš„ < */
 inline bool operator<(const std::string& a, const HsTuple& b)
 {
     return HsTuple(a) < b;
 }
-/** @brief ÓÒ²Ù×÷Êı int µÄ < */
+/** @brief å³æ“ä½œæ•° int çš„ < */
 inline bool operator<(const HsTuple& a, int b)
 {
     return a < HsTuple(b);
 }
-/** @brief ÓÒ²Ù×÷Êı int64 µÄ < */
+/** @brief å³æ“ä½œæ•° int64 çš„ < */
 inline bool operator<(const HsTuple& a, int64_t b)
 {
     return a < HsTuple(b);
 }
-/** @brief ÓÒ²Ù×÷Êı double µÄ < */
+/** @brief å³æ“ä½œæ•° double çš„ < */
 inline bool operator<(const HsTuple& a, double b)
 {
     return a < HsTuple(b);
 }
-/** @brief ÓÒ²Ù×÷Êı C ×Ö·û´®µÄ <¡£¿ÕÖ¸Õëµ±¿Õ´® */
+/** @brief å³æ“ä½œæ•° C å­—ç¬¦ä¸²çš„ <ã€‚ç©ºæŒ‡é’ˆå½“ç©ºä¸² */
 inline bool operator<(const HsTuple& a, const char* b)
 {
     return a < HsTuple(b);
 }
-/** @brief ÓÒ²Ù×÷Êı string µÄ < */
+/** @brief å³æ“ä½œæ•° string çš„ < */
 inline bool operator<(const HsTuple& a, const std::string& b)
 {
     return a < HsTuple(b);
 }
 
-/** @brief ×ó²Ù×÷Êı int µÄ > */
+/** @brief å·¦æ“ä½œæ•° int çš„ > */
 inline bool operator>(int a, const HsTuple& b)
 {
     return HsTuple(a) > b;
 }
-/** @brief ×ó²Ù×÷Êı int64 µÄ > */
+/** @brief å·¦æ“ä½œæ•° int64 çš„ > */
 inline bool operator>(int64_t a, const HsTuple& b)
 {
     return HsTuple(a) > b;
 }
-/** @brief ×ó²Ù×÷Êı double µÄ > */
+/** @brief å·¦æ“ä½œæ•° double çš„ > */
 inline bool operator>(double a, const HsTuple& b)
 {
     return HsTuple(a) > b;
 }
-/** @brief ×ó²Ù×÷Êı C ×Ö·û´®µÄ >¡£¿ÕÖ¸Õëµ±¿Õ´® */
+/** @brief å·¦æ“ä½œæ•° C å­—ç¬¦ä¸²çš„ >ã€‚ç©ºæŒ‡é’ˆå½“ç©ºä¸² */
 inline bool operator>(const char* a, const HsTuple& b)
 {
     return HsTuple(a) > b;
 }
-/** @brief ×ó²Ù×÷Êı string µÄ > */
+/** @brief å·¦æ“ä½œæ•° string çš„ > */
 inline bool operator>(const std::string& a, const HsTuple& b)
 {
     return HsTuple(a) > b;
 }
-/** @brief ÓÒ²Ù×÷Êı int µÄ > */
+/** @brief å³æ“ä½œæ•° int çš„ > */
 inline bool operator>(const HsTuple& a, int b)
 {
     return a > HsTuple(b);
 }
-/** @brief ÓÒ²Ù×÷Êı int64 µÄ > */
+/** @brief å³æ“ä½œæ•° int64 çš„ > */
 inline bool operator>(const HsTuple& a, int64_t b)
 {
     return a > HsTuple(b);
 }
-/** @brief ÓÒ²Ù×÷Êı double µÄ > */
+/** @brief å³æ“ä½œæ•° double çš„ > */
 inline bool operator>(const HsTuple& a, double b)
 {
     return a > HsTuple(b);
 }
-/** @brief ÓÒ²Ù×÷Êı C ×Ö·û´®µÄ >¡£¿ÕÖ¸Õëµ±¿Õ´® */
+/** @brief å³æ“ä½œæ•° C å­—ç¬¦ä¸²çš„ >ã€‚ç©ºæŒ‡é’ˆå½“ç©ºä¸² */
 inline bool operator>(const HsTuple& a, const char* b)
 {
     return a > HsTuple(b);
 }
-/** @brief ÓÒ²Ù×÷Êı string µÄ > */
+/** @brief å³æ“ä½œæ•° string çš„ > */
 inline bool operator>(const HsTuple& a, const std::string& b)
 {
     return a > HsTuple(b);
 }
 
-/** @brief ×ó²Ù×÷Êı int µÄ <= */
+/** @brief å·¦æ“ä½œæ•° int çš„ <= */
 inline bool operator<=(int a, const HsTuple& b)
 {
     return HsTuple(a) <= b;
 }
-/** @brief ×ó²Ù×÷Êı int64 µÄ <= */
+/** @brief å·¦æ“ä½œæ•° int64 çš„ <= */
 inline bool operator<=(int64_t a, const HsTuple& b)
 {
     return HsTuple(a) <= b;
 }
-/** @brief ×ó²Ù×÷Êı double µÄ <= */
+/** @brief å·¦æ“ä½œæ•° double çš„ <= */
 inline bool operator<=(double a, const HsTuple& b)
 {
     return HsTuple(a) <= b;
 }
-/** @brief ×ó²Ù×÷Êı C ×Ö·û´®µÄ <=¡£¿ÕÖ¸Õëµ±¿Õ´® */
+/** @brief å·¦æ“ä½œæ•° C å­—ç¬¦ä¸²çš„ <=ã€‚ç©ºæŒ‡é’ˆå½“ç©ºä¸² */
 inline bool operator<=(const char* a, const HsTuple& b)
 {
     return HsTuple(a) <= b;
 }
-/** @brief ×ó²Ù×÷Êı string µÄ <= */
+/** @brief å·¦æ“ä½œæ•° string çš„ <= */
 inline bool operator<=(const std::string& a, const HsTuple& b)
 {
     return HsTuple(a) <= b;
 }
-/** @brief ÓÒ²Ù×÷Êı int µÄ <= */
+/** @brief å³æ“ä½œæ•° int çš„ <= */
 inline bool operator<=(const HsTuple& a, int b)
 {
     return a <= HsTuple(b);
 }
-/** @brief ÓÒ²Ù×÷Êı int64 µÄ <= */
+/** @brief å³æ“ä½œæ•° int64 çš„ <= */
 inline bool operator<=(const HsTuple& a, int64_t b)
 {
     return a <= HsTuple(b);
 }
-/** @brief ÓÒ²Ù×÷Êı double µÄ <= */
+/** @brief å³æ“ä½œæ•° double çš„ <= */
 inline bool operator<=(const HsTuple& a, double b)
 {
     return a <= HsTuple(b);
 }
-/** @brief ÓÒ²Ù×÷Êı C ×Ö·û´®µÄ <=¡£¿ÕÖ¸Õëµ±¿Õ´® */
+/** @brief å³æ“ä½œæ•° C å­—ç¬¦ä¸²çš„ <=ã€‚ç©ºæŒ‡é’ˆå½“ç©ºä¸² */
 inline bool operator<=(const HsTuple& a, const char* b)
 {
     return a <= HsTuple(b);
 }
-/** @brief ÓÒ²Ù×÷Êı string µÄ <= */
+/** @brief å³æ“ä½œæ•° string çš„ <= */
 inline bool operator<=(const HsTuple& a, const std::string& b)
 {
     return a <= HsTuple(b);
 }
 
-/** @brief ×ó²Ù×÷Êı int µÄ >= */
+/** @brief å·¦æ“ä½œæ•° int çš„ >= */
 inline bool operator>=(int a, const HsTuple& b)
 {
     return HsTuple(a) >= b;
 }
-/** @brief ×ó²Ù×÷Êı int64 µÄ >= */
+/** @brief å·¦æ“ä½œæ•° int64 çš„ >= */
 inline bool operator>=(int64_t a, const HsTuple& b)
 {
     return HsTuple(a) >= b;
 }
-/** @brief ×ó²Ù×÷Êı double µÄ >= */
+/** @brief å·¦æ“ä½œæ•° double çš„ >= */
 inline bool operator>=(double a, const HsTuple& b)
 {
     return HsTuple(a) >= b;
 }
-/** @brief ×ó²Ù×÷Êı C ×Ö·û´®µÄ >=¡£¿ÕÖ¸Õëµ±¿Õ´® */
+/** @brief å·¦æ“ä½œæ•° C å­—ç¬¦ä¸²çš„ >=ã€‚ç©ºæŒ‡é’ˆå½“ç©ºä¸² */
 inline bool operator>=(const char* a, const HsTuple& b)
 {
     return HsTuple(a) >= b;
 }
-/** @brief ×ó²Ù×÷Êı string µÄ >= */
+/** @brief å·¦æ“ä½œæ•° string çš„ >= */
 inline bool operator>=(const std::string& a, const HsTuple& b)
 {
     return HsTuple(a) >= b;
 }
-/** @brief ÓÒ²Ù×÷Êı int µÄ >= */
+/** @brief å³æ“ä½œæ•° int çš„ >= */
 inline bool operator>=(const HsTuple& a, int b)
 {
     return a >= HsTuple(b);
 }
-/** @brief ÓÒ²Ù×÷Êı int64 µÄ >= */
+/** @brief å³æ“ä½œæ•° int64 çš„ >= */
 inline bool operator>=(const HsTuple& a, int64_t b)
 {
     return a >= HsTuple(b);
 }
-/** @brief ÓÒ²Ù×÷Êı double µÄ >= */
+/** @brief å³æ“ä½œæ•° double çš„ >= */
 inline bool operator>=(const HsTuple& a, double b)
 {
     return a >= HsTuple(b);
 }
-/** @brief ÓÒ²Ù×÷Êı C ×Ö·û´®µÄ >=¡£¿ÕÖ¸Õëµ±¿Õ´® */
+/** @brief å³æ“ä½œæ•° C å­—ç¬¦ä¸²çš„ >=ã€‚ç©ºæŒ‡é’ˆå½“ç©ºä¸² */
 inline bool operator>=(const HsTuple& a, const char* b)
 {
     return a >= HsTuple(b);
 }
-/** @brief ÓÒ²Ù×÷Êı string µÄ >= */
+/** @brief å³æ“ä½œæ•° string çš„ >= */
 inline bool operator>=(const HsTuple& a, const std::string& b)
 {
     return a >= HsTuple(b);
 }
 
-/** @brief ×ó²Ù×÷Êı int µÄ +¡£ÏÈÊÕ³Éµ¥ÔªËØÔª×é */
+/** @brief å·¦æ“ä½œæ•° int çš„ +ã€‚å…ˆæ”¶æˆå•å…ƒç´ å…ƒç»„ */
 inline HsTuple operator+(int a, const HsTuple& b)
 {
     return HsTuple(a) + b;
 }
-/** @brief ×ó²Ù×÷Êı int64 µÄ + */
+/** @brief å·¦æ“ä½œæ•° int64 çš„ + */
 inline HsTuple operator+(int64_t a, const HsTuple& b)
 {
     return HsTuple(a) + b;
 }
-/** @brief ×ó²Ù×÷Êı double µÄ + */
+/** @brief å·¦æ“ä½œæ•° double çš„ + */
 inline HsTuple operator+(double a, const HsTuple& b)
 {
     return HsTuple(a) + b;
 }
-/** @brief ×ó²Ù×÷Êı C ×Ö·û´®µÄ +¡£¿ÕÖ¸Õëµ±¿Õ´® */
+/** @brief å·¦æ“ä½œæ•° C å­—ç¬¦ä¸²çš„ +ã€‚ç©ºæŒ‡é’ˆå½“ç©ºä¸² */
 inline HsTuple operator+(const char* a, const HsTuple& b)
 {
     return HsTuple(a) + b;
 }
-/** @brief ×ó²Ù×÷Êı string µÄ + */
+/** @brief å·¦æ“ä½œæ•° string çš„ + */
 inline HsTuple operator+(const std::string& a, const HsTuple& b)
 {
     return HsTuple(a) + b;
 }
-/** @brief ÓÒ²Ù×÷Êı int µÄ + */
+/** @brief å³æ“ä½œæ•° int çš„ + */
 inline HsTuple operator+(const HsTuple& a, int b)
 {
     return a + HsTuple(b);
 }
-/** @brief ÓÒ²Ù×÷Êı int64 µÄ + */
+/** @brief å³æ“ä½œæ•° int64 çš„ + */
 inline HsTuple operator+(const HsTuple& a, int64_t b)
 {
     return a + HsTuple(b);
 }
-/** @brief ÓÒ²Ù×÷Êı double µÄ + */
+/** @brief å³æ“ä½œæ•° double çš„ + */
 inline HsTuple operator+(const HsTuple& a, double b)
 {
     return a + HsTuple(b);
 }
-/** @brief ÓÒ²Ù×÷Êı C ×Ö·û´®µÄ +¡£¿ÕÖ¸Õëµ±¿Õ´® */
+/** @brief å³æ“ä½œæ•° C å­—ç¬¦ä¸²çš„ +ã€‚ç©ºæŒ‡é’ˆå½“ç©ºä¸² */
 inline HsTuple operator+(const HsTuple& a, const char* b)
 {
     return a + HsTuple(b);
 }
-/** @brief ÓÒ²Ù×÷Êı string µÄ + */
+/** @brief å³æ“ä½œæ•° string çš„ + */
 inline HsTuple operator+(const HsTuple& a, const std::string& b)
 {
     return a + HsTuple(b);
 }
 
-/** @brief ×ó²Ù×÷Êı int µÄ - */
+/** @brief å·¦æ“ä½œæ•° int çš„ - */
 inline HsTuple operator-(int a, const HsTuple& b)
 {
     return HsTuple(a) - b;
 }
-/** @brief ×ó²Ù×÷Êı int64 µÄ - */
+/** @brief å·¦æ“ä½œæ•° int64 çš„ - */
 inline HsTuple operator-(int64_t a, const HsTuple& b)
 {
     return HsTuple(a) - b;
 }
-/** @brief ×ó²Ù×÷Êı double µÄ - */
+/** @brief å·¦æ“ä½œæ•° double çš„ - */
 inline HsTuple operator-(double a, const HsTuple& b)
 {
     return HsTuple(a) - b;
 }
-/** @brief ×ó²Ù×÷Êı C ×Ö·û´®µÄ -¡£¿ÕÖ¸Õëµ±¿Õ´®£»×Ö·û´®¼õÊı×Ö»áÅ×ÀàĞÍ´í */
+/** @brief å·¦æ“ä½œæ•° C å­—ç¬¦ä¸²çš„ -ã€‚ç©ºæŒ‡é’ˆå½“ç©ºä¸²ï¼›å­—ç¬¦ä¸²å‡æ•°å­—ä¼šæŠ›ç±»å‹é”™ */
 inline HsTuple operator-(const char* a, const HsTuple& b)
 {
     return HsTuple(a) - b;
 }
-/** @brief ×ó²Ù×÷Êı string µÄ - */
+/** @brief å·¦æ“ä½œæ•° string çš„ - */
 inline HsTuple operator-(const std::string& a, const HsTuple& b)
 {
     return HsTuple(a) - b;
 }
-/** @brief ÓÒ²Ù×÷Êı int µÄ - */
+/** @brief å³æ“ä½œæ•° int çš„ - */
 inline HsTuple operator-(const HsTuple& a, int b)
 {
     return a - HsTuple(b);
 }
-/** @brief ÓÒ²Ù×÷Êı int64 µÄ - */
+/** @brief å³æ“ä½œæ•° int64 çš„ - */
 inline HsTuple operator-(const HsTuple& a, int64_t b)
 {
     return a - HsTuple(b);
 }
-/** @brief ÓÒ²Ù×÷Êı double µÄ - */
+/** @brief å³æ“ä½œæ•° double çš„ - */
 inline HsTuple operator-(const HsTuple& a, double b)
 {
     return a - HsTuple(b);
 }
-/** @brief ÓÒ²Ù×÷Êı C ×Ö·û´®µÄ -¡£¿ÕÖ¸Õëµ±¿Õ´® */
+/** @brief å³æ“ä½œæ•° C å­—ç¬¦ä¸²çš„ -ã€‚ç©ºæŒ‡é’ˆå½“ç©ºä¸² */
 inline HsTuple operator-(const HsTuple& a, const char* b)
 {
     return a - HsTuple(b);
 }
-/** @brief ÓÒ²Ù×÷Êı string µÄ - */
+/** @brief å³æ“ä½œæ•° string çš„ - */
 inline HsTuple operator-(const HsTuple& a, const std::string& b)
 {
     return a - HsTuple(b);
 }
 
-/** @brief ×ó²Ù×÷Êı int µÄ * */
+/** @brief å·¦æ“ä½œæ•° int çš„ * */
 inline HsTuple operator*(int a, const HsTuple& b)
 {
     return HsTuple(a) * b;
 }
-/** @brief ×ó²Ù×÷Êı int64 µÄ * */
+/** @brief å·¦æ“ä½œæ•° int64 çš„ * */
 inline HsTuple operator*(int64_t a, const HsTuple& b)
 {
     return HsTuple(a) * b;
 }
-/** @brief ×ó²Ù×÷Êı double µÄ * */
+/** @brief å·¦æ“ä½œæ•° double çš„ * */
 inline HsTuple operator*(double a, const HsTuple& b)
 {
     return HsTuple(a) * b;
 }
-/** @brief ×ó²Ù×÷Êı C ×Ö·û´®µÄ *¡£¿ÕÖ¸Õëµ±¿Õ´®£»×Ö·û´®³ËÊı×Ö»áÅ×ÀàĞÍ´í */
+/** @brief å·¦æ“ä½œæ•° C å­—ç¬¦ä¸²çš„ *ã€‚ç©ºæŒ‡é’ˆå½“ç©ºä¸²ï¼›å­—ç¬¦ä¸²ä¹˜æ•°å­—ä¼šæŠ›ç±»å‹é”™ */
 inline HsTuple operator*(const char* a, const HsTuple& b)
 {
     return HsTuple(a) * b;
 }
-/** @brief ×ó²Ù×÷Êı string µÄ * */
+/** @brief å·¦æ“ä½œæ•° string çš„ * */
 inline HsTuple operator*(const std::string& a, const HsTuple& b)
 {
     return HsTuple(a) * b;
 }
-/** @brief ÓÒ²Ù×÷Êı int µÄ * */
+/** @brief å³æ“ä½œæ•° int çš„ * */
 inline HsTuple operator*(const HsTuple& a, int b)
 {
     return a * HsTuple(b);
 }
-/** @brief ÓÒ²Ù×÷Êı int64 µÄ * */
+/** @brief å³æ“ä½œæ•° int64 çš„ * */
 inline HsTuple operator*(const HsTuple& a, int64_t b)
 {
     return a * HsTuple(b);
 }
-/** @brief ÓÒ²Ù×÷Êı double µÄ * */
+/** @brief å³æ“ä½œæ•° double çš„ * */
 inline HsTuple operator*(const HsTuple& a, double b)
 {
     return a * HsTuple(b);
 }
-/** @brief ÓÒ²Ù×÷Êı C ×Ö·û´®µÄ *¡£¿ÕÖ¸Õëµ±¿Õ´® */
+/** @brief å³æ“ä½œæ•° C å­—ç¬¦ä¸²çš„ *ã€‚ç©ºæŒ‡é’ˆå½“ç©ºä¸² */
 inline HsTuple operator*(const HsTuple& a, const char* b)
 {
     return a * HsTuple(b);
 }
-/** @brief ÓÒ²Ù×÷Êı string µÄ * */
+/** @brief å³æ“ä½œæ•° string çš„ * */
 inline HsTuple operator*(const HsTuple& a, const std::string& b)
 {
     return a * HsTuple(b);
 }
 
-/** @brief ×ó²Ù×÷Êı int µÄ / */
+/** @brief å·¦æ“ä½œæ•° int çš„ / */
 inline HsTuple operator/(int a, const HsTuple& b)
 {
     return HsTuple(a) / b;
 }
-/** @brief ×ó²Ù×÷Êı int64 µÄ / */
+/** @brief å·¦æ“ä½œæ•° int64 çš„ / */
 inline HsTuple operator/(int64_t a, const HsTuple& b)
 {
     return HsTuple(a) / b;
 }
-/** @brief ×ó²Ù×÷Êı double µÄ / */
+/** @brief å·¦æ“ä½œæ•° double çš„ / */
 inline HsTuple operator/(double a, const HsTuple& b)
 {
     return HsTuple(a) / b;
 }
-/** @brief ×ó²Ù×÷Êı C ×Ö·û´®µÄ /¡£¿ÕÖ¸Õëµ±¿Õ´®£»×Ö·û´®³ıÊı×Ö»áÅ×ÀàĞÍ´í */
+/** @brief å·¦æ“ä½œæ•° C å­—ç¬¦ä¸²çš„ /ã€‚ç©ºæŒ‡é’ˆå½“ç©ºä¸²ï¼›å­—ç¬¦ä¸²é™¤æ•°å­—ä¼šæŠ›ç±»å‹é”™ */
 inline HsTuple operator/(const char* a, const HsTuple& b)
 {
     return HsTuple(a) / b;
 }
-/** @brief ×ó²Ù×÷Êı string µÄ / */
+/** @brief å·¦æ“ä½œæ•° string çš„ / */
 inline HsTuple operator/(const std::string& a, const HsTuple& b)
 {
     return HsTuple(a) / b;
 }
-/** @brief ÓÒ²Ù×÷Êı int µÄ / */
+/** @brief å³æ“ä½œæ•° int çš„ / */
 inline HsTuple operator/(const HsTuple& a, int b)
 {
     return a / HsTuple(b);
 }
-/** @brief ÓÒ²Ù×÷Êı int64 µÄ / */
+/** @brief å³æ“ä½œæ•° int64 çš„ / */
 inline HsTuple operator/(const HsTuple& a, int64_t b)
 {
     return a / HsTuple(b);
 }
-/** @brief ÓÒ²Ù×÷Êı double µÄ / */
+/** @brief å³æ“ä½œæ•° double çš„ / */
 inline HsTuple operator/(const HsTuple& a, double b)
 {
     return a / HsTuple(b);
 }
-/** @brief ÓÒ²Ù×÷Êı C ×Ö·û´®µÄ /¡£¿ÕÖ¸Õëµ±¿Õ´® */
+/** @brief å³æ“ä½œæ•° C å­—ç¬¦ä¸²çš„ /ã€‚ç©ºæŒ‡é’ˆå½“ç©ºä¸² */
 inline HsTuple operator/(const HsTuple& a, const char* b)
 {
     return a / HsTuple(b);
 }
-/** @brief ÓÒ²Ù×÷Êı string µÄ / */
+/** @brief å³æ“ä½œæ•° string çš„ / */
 inline HsTuple operator/(const HsTuple& a, const std::string& b)
 {
     return a / HsTuple(b);

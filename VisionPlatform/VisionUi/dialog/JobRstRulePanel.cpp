@@ -1,6 +1,6 @@
 /**
  * @file JobRstRulePanel.cpp
- * @brief JobRstRulePanelÊµÏÖ
+ * @brief JobRstRulePanelå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -32,17 +32,17 @@ enum {
 
 static const int kRoleRuleId = Qt::UserRole;
 
-// Êä³ö½á¹ûÅäÖÃÃæ°å
+// è¾“å‡ºç»“æœé…ç½®é¢æ¿
 JobRstRulePanel::JobRstRulePanel(QWidget* parent)
     : QWidget(parent)
     , m_editJob(nullptr)
     , m_editable(true)
 {
-    QLabel* title = new QLabel(T("Âß¼­ÅĞ¶Ï¾ØÕó"), this);
+    QLabel* title = new QLabel(T("é€»è¾‘åˆ¤æ–­çŸ©é˜µ"), this);
     title->setObjectName(QLatin1String("section"));
 
     QLabel* hint = new QLabel(
-        T("Ã¿¸ñµ¥»÷Ñ­»·£ººöÂÔ ¡ú ÒªÇó OK ¡ú ÒªÇó NG¡£Î´ÔËĞĞ¹¤¾ß×Ô¶¯ºöÂÔ¡£Í¬ĞĞ¶àÏîÎª AND¡£"), this);
+        T("æ¯æ ¼å•å‡»å¾ªç¯ï¼šå¿½ç•¥ â†’ è¦æ±‚ OK â†’ è¦æ±‚ NGã€‚æœªè¿è¡Œå·¥å…·è‡ªåŠ¨å¿½ç•¥ã€‚åŒè¡Œå¤šé¡¹ä¸º ANDã€‚"), this);
     hint->setObjectName(QLatin1String("hint"));
     hint->setWordWrap(true);
 
@@ -53,8 +53,8 @@ JobRstRulePanel::JobRstRulePanel(QWidget* parent)
     m_table->verticalHeader()->setVisible(false);
     m_table->setMinimumHeight(360);
 
-    m_addRule = new QPushButton(T("Ìí¼ÓÂß¼­ÅĞ¶Ï"), this);
-    m_removeRule = new QPushButton(T("É¾³ıÑ¡ÖĞĞĞ"), this);
+    m_addRule = new QPushButton(T("æ·»åŠ é€»è¾‘åˆ¤æ–­"), this);
+    m_removeRule = new QPushButton(T("åˆ é™¤é€‰ä¸­è¡Œ"), this);
     connect(m_addRule, SIGNAL(clicked()), this, SLOT(onAddRule()));
     connect(m_removeRule, SIGNAL(clicked()), this, SLOT(onRemoveRule()));
 
@@ -71,13 +71,13 @@ JobRstRulePanel::JobRstRulePanel(QWidget* parent)
     lay->addLayout(btns);
 }
 
-// °ó¶¨±à¼­ JobCfg
+// ç»‘å®šç¼–è¾‘ JobCfg
 void JobRstRulePanel::setJob(JobCfg* job)
 {
     m_editJob = job;
 }
 
-// ÉèÖÃÈıÌ¬¸ñÍâ¹Û
+// è®¾ç½®ä¸‰æ€æ ¼å¤–è§‚
 void JobRstRulePanel::applyTermVisual(QCheckBox* cb, int state)
 {
     if (!cb) {
@@ -90,25 +90,25 @@ void JobRstRulePanel::applyTermVisual(QCheckBox* cb, int state)
         cb->setTristate(false);
         cb->setCheckState(Qt::Checked);
         cb->setText(QString());
-        cb->setToolTip(T("ÒªÇó OK£¨µ¥»÷ÇĞ»»£©"));
+        cb->setToolTip(T("è¦æ±‚ OKï¼ˆå•å‡»åˆ‡æ¢ï¼‰"));
         break;
     case RstTermRequireNg:
         cb->setTristate(true);
         cb->setCheckState(Qt::PartiallyChecked);
-        cb->setText(T("·´"));
-        cb->setToolTip(T("ÒªÇó NG£¨µ¥»÷ÇĞ»»£©"));
+        cb->setText(T("å"));
+        cb->setToolTip(T("è¦æ±‚ NGï¼ˆå•å‡»åˆ‡æ¢ï¼‰"));
         break;
     default:
         cb->setTristate(false);
         cb->setCheckState(Qt::Unchecked);
         cb->setText(QString());
-        cb->setToolTip(T("ºöÂÔ£¨µ¥»÷ÇĞ»»£©"));
+        cb->setToolTip(T("å¿½ç•¥ï¼ˆå•å‡»åˆ‡æ¢ï¼‰"));
         break;
     }
     cb->blockSignals(false);
 }
 
-// ½âÎöÁĞ¶ÔÓ¦µÄÀ´Ô´
+// è§£æåˆ—å¯¹åº”çš„æ¥æº
 bool JobRstRulePanel::columnSource(int col, int ruleRow, int* kind, ObjectId* sourceId) const
 {
     if (!m_editJob || col < ColTermStart || !kind || !sourceId) {
@@ -130,7 +130,7 @@ bool JobRstRulePanel::columnSource(int col, int ruleRow, int* kind, ObjectId* so
     return false;
 }
 
-// Ìî³ä¡¸Á÷³Ì½á¹ûÑ¡Ôñ¡¹ÏÂÀ­
+// å¡«å……ã€Œæµç¨‹ç»“æœé€‰æ‹©ã€ä¸‹æ‹‰
 void JobRstRulePanel::populateFromRuleCombo(QComboBox* combo, const JobCfg* job)
 {
     if (!combo) {
@@ -138,7 +138,7 @@ void JobRstRulePanel::populateFromRuleCombo(QComboBox* combo, const JobCfg* job)
     }
     combo->blockSignals(true);
     combo->clear();
-    combo->addItem(T("£¨Ä©¼¶¹¤¾ß£¬Ä¬ÈÏ£©"), QString());
+    combo->addItem(T("ï¼ˆæœ«çº§å·¥å…·ï¼Œé»˜è®¤ï¼‰"), QString());
     if (job) {
         for (size_t i = 0; i < job->resultRules.size(); ++i) {
             const RstRule& r = job->resultRules[static_cast<size_t>(i)];
@@ -151,7 +151,7 @@ void JobRstRulePanel::populateFromRuleCombo(QComboBox* combo, const JobCfg* job)
     combo->blockSignals(false);
 }
 
-// ´ÓÏÂÀ­Ğ´»Ø resultFromRuleId
+// ä»ä¸‹æ‹‰å†™å› resultFromRuleId
 void JobRstRulePanel::applyFromRuleCombo(QComboBox* combo, JobCfg* job)
 {
     if (!combo || !job) {
@@ -161,7 +161,7 @@ void JobRstRulePanel::applyFromRuleCombo(QComboBox* combo, JobCfg* job)
     job->resultFromRuleId = fromData.isEmpty() ? ObjectId() : oid(fromData);
 }
 
-// ´Ó JobCfg Ë¢ĞÂ
+// ä» JobCfg åˆ·æ–°
 void JobRstRulePanel::loadFromJob(const JobCfg* job)
 {
     if (job) {
@@ -170,7 +170,7 @@ void JobRstRulePanel::loadFromJob(const JobCfg* job)
     rebuildTable();
 }
 
-// Ğ´»Ø JobCfg
+// å†™å› JobCfg
 void JobRstRulePanel::flushToJob(JobCfg* job)
 {
     if (!job) {
@@ -218,14 +218,14 @@ void JobRstRulePanel::flushToJob(JobCfg* job)
             rule.terms.push_back(term);
         }
         if (rule.name.empty()) {
-            rule.name = std::string(Translate::tr("Âß¼­ÅĞ¶Ï"));
+            rule.name = std::string(Translate::tr("é€»è¾‘åˆ¤æ–­"));
         }
         job->resultRules.push_back(rule);
     }
     job->normalizeRstRules();
 }
 
-// ÉèÖÃÊÇ·ñ¿É±à¼­
+// è®¾ç½®æ˜¯å¦å¯ç¼–è¾‘
 void JobRstRulePanel::setEditable(bool editable)
 {
     m_editable = editable;
@@ -234,7 +234,7 @@ void JobRstRulePanel::setEditable(bool editable)
     m_table->setEnabled(editable);
 }
 
-// ÖØ½¨¾ØÕó
+// é‡å»ºçŸ©é˜µ
 void JobRstRulePanel::rebuildTable()
 {
     m_table->clear();
@@ -250,7 +250,7 @@ void JobRstRulePanel::rebuildTable()
     const int colCount = ColTermStart + toolCount + maxRuleCols;
 
     QStringList headers;
-    headers << T("Ãû³Æ") << T("°ó¶¨¹¤¾ß");
+    headers << T("åç§°") << T("ç»‘å®šå·¥å…·");
     for (int i = 0; i < toolCount; ++i) {
         const ToolCfg* t = m_editJob->findTool(tools[static_cast<size_t>(i)]);
         headers << (t ? qs(t->name) : qs(tools[static_cast<size_t>(i)].toString()));
@@ -273,7 +273,7 @@ void JobRstRulePanel::rebuildTable()
         m_table->setCellWidget(row, ColName, nameEdit);
 
         QComboBox* bind = new QComboBox(m_table);
-        bind->addItem(T("£¨²»°ó¶¨£©"), QString());
+        bind->addItem(T("ï¼ˆä¸ç»‘å®šï¼‰"), QString());
         for (size_t ti = 0; ti < tools.size(); ++ti) {
             const ToolCfg* t = m_editJob->findTool(tools[ti]);
             if (!t) {
@@ -304,7 +304,7 @@ void JobRstRulePanel::rebuildTable()
     m_table->resizeColumnsToContents();
 }
 
-// ÈıÌ¬¸ñµ¥»÷
+// ä¸‰æ€æ ¼å•å‡»
 void JobRstRulePanel::onTermClicked()
 {
     QCheckBox* cb = qobject_cast<QCheckBox*>(sender());
@@ -317,13 +317,13 @@ void JobRstRulePanel::onTermClicked()
     emit changed();
 }
 
-// Ãû³Æ»ò°ó¶¨¹¤¾ß±ä¸ü
+// åç§°æˆ–ç»‘å®šå·¥å…·å˜æ›´
 void JobRstRulePanel::onRuleMetaChanged()
 {
     emit changed();
 }
 
-// Ìí¼ÓÂß¼­ÅĞ¶ÏĞĞ
+// æ·»åŠ é€»è¾‘åˆ¤æ–­è¡Œ
 void JobRstRulePanel::onAddRule()
 {
     if (!m_editJob || !m_editable) {
@@ -332,7 +332,7 @@ void JobRstRulePanel::onAddRule()
     flushToJob(m_editJob);
     RstRule rule;
     rule.id = ObjectId::create();
-    rule.name = Translate::format("Âß¼­ÅĞ¶Ï{0}", std::to_string(static_cast<int>(m_editJob->resultRules.size()) + 1));
+    rule.name = Translate::format("é€»è¾‘åˆ¤æ–­{0}", std::to_string(static_cast<int>(m_editJob->resultRules.size()) + 1));
     m_editJob->resultRules.push_back(rule);
     if (m_editJob->resultFromRuleId.isNull()) {
         m_editJob->resultFromRuleId = rule.id;
@@ -341,7 +341,7 @@ void JobRstRulePanel::onAddRule()
     emit changed();
 }
 
-// É¾³ıÑ¡ÖĞĞĞ
+// åˆ é™¤é€‰ä¸­è¡Œ
 void JobRstRulePanel::onRemoveRule()
 {
     if (!m_editJob || !m_editable) {

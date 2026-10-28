@@ -1,6 +1,6 @@
 /**
  * @file Modbus.h
- * @brief ModbusÍ·ÎÄ¼ş
+ * @brief Modbuså¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -21,75 +21,75 @@
 
 namespace Vision {
 
-/** @brief Modbus Êı¾İÇø */
+/** @brief Modbus æ•°æ®åŒº */
 enum ModbusTable {
-    ModbusCoil = 0,      ///< ÏßÈ¦£¬¶ÁĞ´
-    ModbusDiscrete = 1,  ///< ÀëÉ¢ÊäÈë£¬Ö÷Õ¾Ö»¶Á
-    ModbusHolding = 2,   ///< ±£³Ö¼Ä´æÆ÷£¬¶ÁĞ´
-    ModbusInput = 3      ///< ÊäÈë¼Ä´æÆ÷£¬Ö÷Õ¾Ö»¶Á
+    ModbusCoil = 0,      ///< çº¿åœˆï¼Œè¯»å†™
+    ModbusDiscrete = 1,  ///< ç¦»æ•£è¾“å…¥ï¼Œä¸»ç«™åªè¯»
+    ModbusHolding = 2,   ///< ä¿æŒå¯„å­˜å™¨ï¼Œè¯»å†™
+    ModbusInput = 3      ///< è¾“å…¥å¯„å­˜å™¨ï¼Œä¸»ç«™åªè¯»
 };
 
-/** @brief Ö÷Õ¾Ò»´ÎÊÂÎñ¡£tcp ÎªÕæÊ±×ß MBAP£¬·ñÔò RTU¡£tid ÓÉµ÷ÓÃ·½µİÔö */
+/** @brief ä¸»ç«™ä¸€æ¬¡äº‹åŠ¡ã€‚tcp ä¸ºçœŸæ—¶èµ° MBAPï¼Œå¦åˆ™ RTUã€‚tid ç”±è°ƒç”¨æ–¹é€’å¢ */
 VISION_COMM_API bool modbusMasterReadBits(ICommChannel* ch, const std::string& peerId, bool tcp, uint16_t tid,
                           int slave, int fc, int address, int count,
                           std::vector<unsigned char>* bits, std::string* err);
-/** @brief Ö÷Õ¾¶Á±£³Ö¼Ä´æÆ÷»òÊäÈë¼Ä´æÆ÷ */
+/** @brief ä¸»ç«™è¯»ä¿æŒå¯„å­˜å™¨æˆ–è¾“å…¥å¯„å­˜å™¨ */
 VISION_COMM_API bool modbusMasterReadRegs(ICommChannel* ch, const std::string& peerId, bool tcp, uint16_t tid,
                           int slave, int fc, int address, int count,
                           std::vector<uint16_t>* regs, std::string* err);
-/** @brief Ö÷Õ¾Ğ´ÏßÈ¦£»Ò»¸ö×ß¹¦ÄÜÂë 5£¬¶à¸ö×ß 15 */
+/** @brief ä¸»ç«™å†™çº¿åœˆï¼›ä¸€ä¸ªèµ°åŠŸèƒ½ç  5ï¼Œå¤šä¸ªèµ° 15 */
 VISION_COMM_API bool modbusMasterWriteBits(ICommChannel* ch, const std::string& peerId, bool tcp, uint16_t tid,
                            int slave, int address, const std::vector<unsigned char>& bits, std::string* err);
-/** @brief Ö÷Õ¾Ğ´¼Ä´æÆ÷£»Ò»¸ö×ß¹¦ÄÜÂë 6£¬¶à¸ö×ß 16 */
+/** @brief ä¸»ç«™å†™å¯„å­˜å™¨ï¼›ä¸€ä¸ªèµ°åŠŸèƒ½ç  6ï¼Œå¤šä¸ªèµ° 16 */
 VISION_COMM_API bool modbusMasterWriteRegs(ICommChannel* ch, const std::string& peerId, bool tcp, uint16_t tid,
                            int slave, int address, const std::vector<uint16_t>& regs, std::string* err);
 
 /**
  * @class ModbusSlave
- * @brief ´ÓÕ¾¡£ºóÌ¨ÊÕÇëÇó²¢Ó¦´ğ£¬Ó³Ïñ¿É±»±¾»ú¶ÁĞ´
+ * @brief ä»ç«™ã€‚åå°æ”¶è¯·æ±‚å¹¶åº”ç­”ï¼Œæ˜ åƒå¯è¢«æœ¬æœºè¯»å†™
  */
 class VISION_COMM_API ModbusSlave {
 public:
-    /** @brief ·ÖÅäËÄ¿éÓ³Ïñ */
+    /** @brief åˆ†é…å››å—æ˜ åƒ */
     ModbusSlave();
-    /** @brief Îö¹¹Ê±Í£Ö¹Ó¦´ğ */
+    /** @brief ææ„æ—¶åœæ­¢åº”ç­” */
     ~ModbusSlave();
 
-    /** @brief ¹Òµ½Í¨µÀÉÏ²¢¿ªÊ¼Ó¦´ğ */
+    /** @brief æŒ‚åˆ°é€šé“ä¸Šå¹¶å¼€å§‹åº”ç­” */
     void start(ICommChannel* channel, int slaveId);
-    /** @brief Í£Ö¹Ó¦´ğ²¢Ğ¶ÏÂÍ¨µÀ */
+    /** @brief åœæ­¢åº”ç­”å¹¶å¸ä¸‹é€šé“ */
     void stop();
 
-    /** @brief ¶Á±¾»úÎ»Ó³Ïñ */
+    /** @brief è¯»æœ¬æœºä½æ˜ åƒ */
     bool readBits(ModbusTable table, int address, int count, std::vector<unsigned char>* bits, std::string* err);
-    /** @brief ¶Á±¾»ú¼Ä´æÆ÷Ó³Ïñ */
+    /** @brief è¯»æœ¬æœºå¯„å­˜å™¨æ˜ åƒ */
     bool readRegs(ModbusTable table, int address, int count, std::vector<uint16_t>* regs, std::string* err);
-    /** @brief Ğ´±¾»úÎ»Ó³Ïñ */
+    /** @brief å†™æœ¬æœºä½æ˜ åƒ */
     bool writeBits(ModbusTable table, int address, const std::vector<unsigned char>& bits, std::string* err);
-    /** @brief Ğ´±¾»ú¼Ä´æÆ÷Ó³Ïñ */
+    /** @brief å†™æœ¬æœºå¯„å­˜å™¨æ˜ åƒ */
     bool writeRegs(ModbusTable table, int address, const std::vector<uint16_t>& regs, std::string* err);
 
 private:
-    /** @brief ÊÕÇëÇó²¢»Ø°ü£¬Ö±µ½ stop */
+    /** @brief æ”¶è¯·æ±‚å¹¶å›åŒ…ï¼Œç›´åˆ° stop */
     void loop();
-    /** @brief °´¹¦ÄÜÂë¸ÄÓ³Ïñ²¢×éÓ¦´ğ£»¹ã²¥²»»Ø°ü */
+    /** @brief æŒ‰åŠŸèƒ½ç æ”¹æ˜ åƒå¹¶ç»„åº”ç­”ï¼›å¹¿æ’­ä¸å›åŒ… */
     CommBytes reply(const CommBytes& unitAndPdu);
-    /** @brief ²ğµô MBAP ºó´¦Àí£¬ÔÙÌ×»ØÊÂÎñºÅ */
+    /** @brief æ‹†æ‰ MBAP åå¤„ç†ï¼Œå†å¥—å›äº‹åŠ¡å· */
     CommBytes onTcp(const CommBytes& frame);
-    /** @brief Ğ£Ñé CRC ºó´¦Àí£¬ÔÙ²¹ÉÏ CRC */
+    /** @brief æ ¡éªŒ CRC åå¤„ç†ï¼Œå†è¡¥ä¸Š CRC */
     CommBytes onRtu(const CommBytes& frame);
 
-    ICommChannel* m_ch; ///< Ëù¹ÒÍ¨µÀ£¬²»ÓµÓĞ
-    int m_slaveId; ///< ±¾»ú´ÓÕ¾ºÅ
-    std::atomic<bool> m_run; ///< Ó¦´ğÏß³ÌÊÇ·ñ¼ÌĞø
-    std::thread m_thread; ///< ÊÕÇëÇó²¢Ó¦´ğ
-    std::mutex m_mu; ///< ±£»¤Ó³Ïñ
-    std::vector<unsigned char> m_coils; ///< ÏßÈ¦Ó³Ïñ
-    std::vector<unsigned char> m_discrete; ///< ÀëÉ¢ÊäÈëÓ³Ïñ
-    std::vector<uint16_t> m_holding; ///< ±£³Ö¼Ä´æÆ÷Ó³Ïñ
-    std::vector<uint16_t> m_input; ///< ÊäÈë¼Ä´æÆ÷Ó³Ïñ
-    std::map<std::string, CommBytes> m_rx; ///< TCP Õ³°ü»º³å£¬°´¶Ô¶Ë
-    static const int kMapSize = 1024; ///< Ó³Ïñ³¤¶È
+    ICommChannel* m_ch; ///< æ‰€æŒ‚é€šé“ï¼Œä¸æ‹¥æœ‰
+    int m_slaveId; ///< æœ¬æœºä»ç«™å·
+    std::atomic<bool> m_run; ///< åº”ç­”çº¿ç¨‹æ˜¯å¦ç»§ç»­
+    std::thread m_thread; ///< æ”¶è¯·æ±‚å¹¶åº”ç­”
+    std::mutex m_mu; ///< ä¿æŠ¤æ˜ åƒ
+    std::vector<unsigned char> m_coils; ///< çº¿åœˆæ˜ åƒ
+    std::vector<unsigned char> m_discrete; ///< ç¦»æ•£è¾“å…¥æ˜ åƒ
+    std::vector<uint16_t> m_holding; ///< ä¿æŒå¯„å­˜å™¨æ˜ åƒ
+    std::vector<uint16_t> m_input; ///< è¾“å…¥å¯„å­˜å™¨æ˜ åƒ
+    std::map<std::string, CommBytes> m_rx; ///< TCP ç²˜åŒ…ç¼“å†²ï¼ŒæŒ‰å¯¹ç«¯
+    static const int kMapSize = 1024; ///< æ˜ åƒé•¿åº¦
 };
 
 }

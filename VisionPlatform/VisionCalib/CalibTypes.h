@@ -1,6 +1,6 @@
 /**
  * @file CalibTypes.h
- * @brief CalibTypesÍ·ÎÄ¼ş
+ * @brief CalibTypeså¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -16,191 +16,191 @@
 
 namespace Vision {
 
-/** @brief ±ê¶¨ÖÖÀà¡£°´Ïà»ú¸÷´æÒ»·İÉúĞ§½á¹û */
+/** @brief æ ‡å®šç§ç±»ã€‚æŒ‰ç›¸æœºå„å­˜ä¸€ä»½ç”Ÿæ•ˆç»“æœ */
 enum CalibKind {
-    CalibKindUndefined = -1, ///< Î´¶¨Òå
-    CalibKindPlate = 0,  ///< Ïà»úÄ£ĞÍ£¨±ê¶¨°åÄÚ²Î£©
-    CalibKindPlane = 1,  ///< Æ½ÃæÓ³Éä£¨¾Åµã¡¢±ÈÀı³ß£©
-    CalibKindRotate = 2,  ///< Ğı×ªÖĞĞÄ
-    CalibKindMax ///< ¸öÊı£¬²»ÊÇºÏ·¨Öµ
+    CalibKindUndefined = -1, ///< æœªå®šä¹‰
+    CalibKindPlate = 0,  ///< ç›¸æœºæ¨¡å‹ï¼ˆæ ‡å®šæ¿å†…å‚ï¼‰
+    CalibKindPlane = 1,  ///< å¹³é¢æ˜ å°„ï¼ˆä¹ç‚¹ã€æ¯”ä¾‹å°ºï¼‰
+    CalibKindRotate = 2,  ///< æ—‹è½¬ä¸­å¿ƒ
+    CalibKindMax ///< ä¸ªæ•°ï¼Œä¸æ˜¯åˆæ³•å€¼
 };
 
-/** @brief ½á¹ûÊÇ·ñ¿É¹©ÔËĞĞÊ¹ÓÃ */
+/** @brief ç»“æœæ˜¯å¦å¯ä¾›è¿è¡Œä½¿ç”¨ */
 enum CalibStatus {
-    CalibDraft = 0,    ///< ²İ¸å£¬ÔËĞĞÊ±²»ÓÃ
-    CalibValid = 1,    ///< ÉúĞ§
-    CalibExpired = 2   ///< ÒÑ±»Ìæ»»»òÓë¸¸½á¹û¶Ô²»ÉÏ
+    CalibDraft = 0,    ///< è‰ç¨¿ï¼Œè¿è¡Œæ—¶ä¸ç”¨
+    CalibValid = 1,    ///< ç”Ÿæ•ˆ
+    CalibExpired = 2   ///< å·²è¢«æ›¿æ¢æˆ–ä¸çˆ¶ç»“æœå¯¹ä¸ä¸Š
 };
 
-/** @brief Ñù±¾´ÓÄÄÀ´ */
+/** @brief æ ·æœ¬ä»å“ªæ¥ */
 enum CalibSource {
-    CalibSourceUndefined = -1, ///< Î´¶¨Òå
-    CalibOnline = 0,        ///< ÔÚÏß²É¼¯
-    CalibOfflineImage = 1,  ///< ÀëÏßÍ¼Æ¬
-    CalibOfflineTable = 2,  ///< ÀëÏßµã±í
-    CalibImport = 3,         ///< µ¼ÈëÒÑÓĞ½á¹û
-    CalibSourceMax ///< ¸öÊı£¬²»ÊÇºÏ·¨Öµ
+    CalibSourceUndefined = -1, ///< æœªå®šä¹‰
+    CalibOnline = 0,        ///< åœ¨çº¿é‡‡é›†
+    CalibOfflineImage = 1,  ///< ç¦»çº¿å›¾ç‰‡
+    CalibOfflineTable = 2,  ///< ç¦»çº¿ç‚¹è¡¨
+    CalibImport = 3,         ///< å¯¼å…¥å·²æœ‰ç»“æœ
+    CalibSourceMax ///< ä¸ªæ•°ï¼Œä¸æ˜¯åˆæ³•å€¼
 };
 
-/** @brief ±ê¶¨°åÀàĞÍ */
+/** @brief æ ‡å®šæ¿ç±»å‹ */
 enum CalibPlateKind {
-    CalibPlateKindUndefined = -1, ///< Î´¶¨Òå
-    CalibPlateCheckerboard = 0, ///< ÆåÅÌ¸ñ
-    CalibPlateCircleGrid = 1,   ///< Ô²µãÕó
-    CalibPlateHalconCaltab = 2,  ///< Halcon ÃèÊöÎÄ¼ş
-    CalibPlateKindMax ///< ¸öÊı£¬²»ÊÇºÏ·¨Öµ
+    CalibPlateKindUndefined = -1, ///< æœªå®šä¹‰
+    CalibPlateCheckerboard = 0, ///< æ£‹ç›˜æ ¼
+    CalibPlateCircleGrid = 1,   ///< åœ†ç‚¹é˜µ
+    CalibPlateHalconCaltab = 2,  ///< Halcon æè¿°æ–‡ä»¶
+    CalibPlateKindMax ///< ä¸ªæ•°ï¼Œä¸æ˜¯åˆæ³•å€¼
 };
 
-/** @brief Æ½ÃæÓ³ÉäÄâºÏ */
+/** @brief å¹³é¢æ˜ å°„æ‹Ÿåˆ */
 enum CalibPlaneFit {
-    CalibFitScale = 0,       ///< ±ÈÀı³ß£¨ÏàËÆ±ä»»£©
-    CalibFitAffine = 1,      ///< ·ÂÉä£¬¾ÅµãÄ¬ÈÏ
-    CalibFitHomography = 2   ///< Í¸ÊÓ
+    CalibFitScale = 0,       ///< æ¯”ä¾‹å°ºï¼ˆç›¸ä¼¼å˜æ¢ï¼‰
+    CalibFitAffine = 1,      ///< ä»¿å°„ï¼Œä¹ç‚¹é»˜è®¤
+    CalibFitHomography = 2   ///< é€è§†
 };
 
 /**
  * @class CalibParam
- * @brief Ò»Â·Ïà»úµÄ±ê¶¨²ÎÊı¡£±ê¶¨Ö®Ç°¾Í¿ÉÒÔÌîĞ´
+ * @brief ä¸€è·¯ç›¸æœºçš„æ ‡å®šå‚æ•°ã€‚æ ‡å®šä¹‹å‰å°±å¯ä»¥å¡«å†™
  */
 struct VISION_CALIB_API CalibParam {
-    CalibPlateKind plateKind; ///< °åĞÍ
-    int rows;                 ///< ÄÚ½Çµã»òÔ²ĞÄĞĞÊı
-    int cols;                 ///< ÄÚ½Çµã»òÔ²ĞÄÁĞÊı
-    double spacingMm;         ///< ¸ñ¾à»òÔ²ĞÄ¾à£¬ºÁÃ×
-    double thicknessMm;       ///< °åºñ£¬ºÁÃ×
-    CalibPlaneFit planeFit;   ///< ¾ÅµãÓÃÄÄÖÖÄâºÏ
-    double residualMaxPx;     ///< ÏñËØ²Ğ²îÉÏÏŞ
-    double residualMaxMm;     ///< ºÁÃ×²Ğ²îÉÏÏŞ
-    double angleRefDeg;       ///< Ğı×ª²¹³¥µÄÊ¾½Ì½Ç£¬¶È
-    int minPlateImages;       ///< ±ê¶¨°å×îÉÙÕÅÊı
-    int minRotateAngles;      ///< Ğı×ªÖĞĞÄ×îÉÙ½Ç¶ÈÊı
+    CalibPlateKind plateKind; ///< æ¿å‹
+    int rows;                 ///< å†…è§’ç‚¹æˆ–åœ†å¿ƒè¡Œæ•°
+    int cols;                 ///< å†…è§’ç‚¹æˆ–åœ†å¿ƒåˆ—æ•°
+    double spacingMm;         ///< æ ¼è·æˆ–åœ†å¿ƒè·ï¼Œæ¯«ç±³
+    double thicknessMm;       ///< æ¿åšï¼Œæ¯«ç±³
+    CalibPlaneFit planeFit;   ///< ä¹ç‚¹ç”¨å“ªç§æ‹Ÿåˆ
+    double residualMaxPx;     ///< åƒç´ æ®‹å·®ä¸Šé™
+    double residualMaxMm;     ///< æ¯«ç±³æ®‹å·®ä¸Šé™
+    double angleRefDeg;       ///< æ—‹è½¬è¡¥å¿çš„ç¤ºæ•™è§’ï¼Œåº¦
+    int minPlateImages;       ///< æ ‡å®šæ¿æœ€å°‘å¼ æ•°
+    int minRotateAngles;      ///< æ—‹è½¬ä¸­å¿ƒæœ€å°‘è§’åº¦æ•°
 
     CalibParam();
 };
 
 /**
  * @class CamModel
- * @brief Ïà»úÄÚ²ÎÓë»û±ä¡£ÏµÊı¹²ÓÃ£¬²»°óËã·¨¿â¾ä±ú
+ * @brief ç›¸æœºå†…å‚ä¸ç•¸å˜ã€‚ç³»æ•°å…±ç”¨ï¼Œä¸ç»‘ç®—æ³•åº“å¥æŸ„
  */
 struct VISION_CALIB_API CamModel {
-    bool present;             ///< ÊÇ·ñÓĞÕâ·İ½á¹û
-    CalibStatus status;       ///< ²İ¸å¡¢ÉúĞ§»òÊ§Ğ§
-    CalibSource source;       ///< À´Ô´
-    double rms;               ///< ÖØÍ¶Ó°¾ù·½¸ù£¬ÏñËØ
-    double maxResidual;       ///< ×î´ó²Ğ²î£¬ÏñËØ
-    std::string updatedAt;    ///< ¸üĞÂÊ±¼ä
-    double fx;                ///< ½¹¾à x £¬ÏñËØ
-    double fy;                ///< ½¹¾à y £¬ÏñËØ
-    double cx;                ///< Ö÷µã x
-    double cy;                ///< Ö÷µã y
-    double k1;                ///< ¾¶Ïò»û±ä
-    double k2;                ///< ¾¶Ïò»û±ä
-    double k3;                ///< ¾¶Ïò»û±ä
-    double p1;                ///< ÇĞÏò»û±ä
-    double p2;                ///< ÇĞÏò»û±ä
-    CalibPlateKind plateKind; ///< ±ê¶¨Ê±µÄ°åĞÍ
-    int rows;                 ///< ±ê¶¨Ê±µÄĞĞÊı
-    int cols;                 ///< ±ê¶¨Ê±µÄÁĞÊı
-    double spacingMm;         ///< ±ê¶¨Ê±µÄ¼ä¾à
-    int count;                ///< Êµ¼Ê²ÉÓÃµÄÍ¼ÏñÕÅÊı
+    bool present;             ///< æ˜¯å¦æœ‰è¿™ä»½ç»“æœ
+    CalibStatus status;       ///< è‰ç¨¿ã€ç”Ÿæ•ˆæˆ–å¤±æ•ˆ
+    CalibSource source;       ///< æ¥æº
+    double rms;               ///< é‡æŠ•å½±å‡æ–¹æ ¹ï¼Œåƒç´ 
+    double maxResidual;       ///< æœ€å¤§æ®‹å·®ï¼Œåƒç´ 
+    std::string updatedAt;    ///< æ›´æ–°æ—¶é—´
+    double fx;                ///< ç„¦è· x ï¼Œåƒç´ 
+    double fy;                ///< ç„¦è· y ï¼Œåƒç´ 
+    double cx;                ///< ä¸»ç‚¹ x
+    double cy;                ///< ä¸»ç‚¹ y
+    double k1;                ///< å¾„å‘ç•¸å˜
+    double k2;                ///< å¾„å‘ç•¸å˜
+    double k3;                ///< å¾„å‘ç•¸å˜
+    double p1;                ///< åˆ‡å‘ç•¸å˜
+    double p2;                ///< åˆ‡å‘ç•¸å˜
+    CalibPlateKind plateKind; ///< æ ‡å®šæ—¶çš„æ¿å‹
+    int rows;                 ///< æ ‡å®šæ—¶çš„è¡Œæ•°
+    int cols;                 ///< æ ‡å®šæ—¶çš„åˆ—æ•°
+    double spacingMm;         ///< æ ‡å®šæ—¶çš„é—´è·
+    int count;                ///< å®é™…é‡‡ç”¨çš„å›¾åƒå¼ æ•°
 
     CamModel();
 };
 
-/** @brief ¾Åµã»ò±ÈÀı³ßµÄÒ»¶Ôµã */
+/** @brief ä¹ç‚¹æˆ–æ¯”ä¾‹å°ºçš„ä¸€å¯¹ç‚¹ */
 struct VISION_CALIB_API PlaneSample {
-    double imageX; ///< ÏñËØ x
-    double imageY; ///< ÏñËØ y
-    double worldX; ///< ºÁÃ× x
-    double worldY; ///< ºÁÃ× y
-    bool used;     ///< ²ÎÓëÄâºÏ
+    double imageX; ///< åƒç´  x
+    double imageY; ///< åƒç´  y
+    double worldX; ///< æ¯«ç±³ x
+    double worldY; ///< æ¯«ç±³ y
+    bool used;     ///< å‚ä¸æ‹Ÿåˆ
 
     PlaneSample();
 };
 
 /**
  * @class PlaneMap
- * @brief ÏñËØµ½¹¤×÷Æ½ÃæºÁÃ×µÄ 3x3 Ó³Éä£¬ĞĞÖ÷Ğò
+ * @brief åƒç´ åˆ°å·¥ä½œå¹³é¢æ¯«ç±³çš„ 3x3 æ˜ å°„ï¼Œè¡Œä¸»åº
  */
 struct VISION_CALIB_API PlaneMap {
-    bool present;                    ///< ÊÇ·ñÓĞÕâ·İ½á¹û
-    CalibStatus status;              ///< ²İ¸å¡¢ÉúĞ§»òÊ§Ğ§
-    CalibSource source;              ///< À´Ô´
-    double rms;                      ///< ºÁÃ×²Ğ²î¾ù·½¸ù
-    double maxResidual;              ///< ×î´óºÁÃ×²Ğ²î
-    std::string updatedAt;           ///< ¸üĞÂÊ±¼ä
-    CalibPlaneFit fit;               ///< ÄâºÏÀàĞÍ
-    double imageToWorld[9];          ///< ÏñËØÆë´Îµ½ºÁÃ×Æë´Î
-    double worldToImage[9];          ///< Äæ¾ØÕó
-    double mmPerPixel;               ///< ½ö±ÈÀı³ßÓĞÒâÒå
-    std::string parentModelStamp;    ///< ±ê¶¨Ê±Ïà»úÄ£ĞÍµÄ¸üĞÂÊ±¼ä
-    std::vector<PlaneSample> samples; ///< µã¶Ô
+    bool present;                    ///< æ˜¯å¦æœ‰è¿™ä»½ç»“æœ
+    CalibStatus status;              ///< è‰ç¨¿ã€ç”Ÿæ•ˆæˆ–å¤±æ•ˆ
+    CalibSource source;              ///< æ¥æº
+    double rms;                      ///< æ¯«ç±³æ®‹å·®å‡æ–¹æ ¹
+    double maxResidual;              ///< æœ€å¤§æ¯«ç±³æ®‹å·®
+    std::string updatedAt;           ///< æ›´æ–°æ—¶é—´
+    CalibPlaneFit fit;               ///< æ‹Ÿåˆç±»å‹
+    double imageToWorld[9];          ///< åƒç´ é½æ¬¡åˆ°æ¯«ç±³é½æ¬¡
+    double worldToImage[9];          ///< é€†çŸ©é˜µ
+    double mmPerPixel;               ///< ä»…æ¯”ä¾‹å°ºæœ‰æ„ä¹‰
+    std::string parentModelStamp;    ///< æ ‡å®šæ—¶ç›¸æœºæ¨¡å‹çš„æ›´æ–°æ—¶é—´
+    std::vector<PlaneSample> samples; ///< ç‚¹å¯¹
 
     PlaneMap();
 };
 
-/** @brief Ğı×ªÖĞĞÄµÄÒ»¸ö½Ç¶ÈÑù±¾ */
+/** @brief æ—‹è½¬ä¸­å¿ƒçš„ä¸€ä¸ªè§’åº¦æ ·æœ¬ */
 struct VISION_CALIB_API RotateSample {
-    double angleDeg; ///< Æ½Ì¨½Ç¶È£¬¶È
-    double imageX;   ///< ±ê¼ÇÏñËØ x
-    double imageY;   ///< ±ê¼ÇÏñËØ y
+    double angleDeg; ///< å¹³å°è§’åº¦ï¼Œåº¦
+    double imageX;   ///< æ ‡è®°åƒç´  x
+    double imageY;   ///< æ ‡è®°åƒç´  y
 
     RotateSample();
 };
 
 /**
  * @class RotateCenter
- * @brief Ğı×ªÖĞĞÄ¡£ÓĞÆ½ÃæÓ³ÉäÊ±Í¬Ê±ÁôÏÂºÁÃ×Ô²ĞÄ
+ * @brief æ—‹è½¬ä¸­å¿ƒã€‚æœ‰å¹³é¢æ˜ å°„æ—¶åŒæ—¶ç•™ä¸‹æ¯«ç±³åœ†å¿ƒ
  */
 struct VISION_CALIB_API RotateCenter {
-    bool present;                  ///< ÊÇ·ñÓĞÕâ·İ½á¹û
-    CalibStatus status;            ///< ²İ¸å¡¢ÉúĞ§»òÊ§Ğ§
-    CalibSource source;            ///< À´Ô´
-    double rms;                    ///< µãµ½Ô²µÄÏñËØ¾ù·½¸ù
-    double maxResidual;            ///< ×î´óÏñËØÆ«²î
-    std::string updatedAt;         ///< ¸üĞÂÊ±¼ä
-    double imageX;                 ///< ÏñËØÔ²ĞÄ x
-    double imageY;                 ///< ÏñËØÔ²ĞÄ y
-    double worldX;                 ///< ºÁÃ×Ô²ĞÄ x
-    double worldY;                 ///< ºÁÃ×Ô²ĞÄ y
-    bool worldValid;               ///< ºÁÃ×Ô²ĞÄÊÇ·ñÓĞĞ§
-    double radius;                 ///< ÄâºÏ°ë¾¶£¬ÏñËØ
-    std::string parentPlaneStamp;  ///< ±ê¶¨Ê±Æ½ÃæÓ³ÉäµÄ¸üĞÂÊ±¼ä
-    std::vector<RotateSample> samples; ///< Ñù±¾
+    bool present;                  ///< æ˜¯å¦æœ‰è¿™ä»½ç»“æœ
+    CalibStatus status;            ///< è‰ç¨¿ã€ç”Ÿæ•ˆæˆ–å¤±æ•ˆ
+    CalibSource source;            ///< æ¥æº
+    double rms;                    ///< ç‚¹åˆ°åœ†çš„åƒç´ å‡æ–¹æ ¹
+    double maxResidual;            ///< æœ€å¤§åƒç´ åå·®
+    std::string updatedAt;         ///< æ›´æ–°æ—¶é—´
+    double imageX;                 ///< åƒç´ åœ†å¿ƒ x
+    double imageY;                 ///< åƒç´ åœ†å¿ƒ y
+    double worldX;                 ///< æ¯«ç±³åœ†å¿ƒ x
+    double worldY;                 ///< æ¯«ç±³åœ†å¿ƒ y
+    bool worldValid;               ///< æ¯«ç±³åœ†å¿ƒæ˜¯å¦æœ‰æ•ˆ
+    double radius;                 ///< æ‹ŸåˆåŠå¾„ï¼Œåƒç´ 
+    std::string parentPlaneStamp;  ///< æ ‡å®šæ—¶å¹³é¢æ˜ å°„çš„æ›´æ–°æ—¶é—´
+    std::vector<RotateSample> samples; ///< æ ·æœ¬
 
     RotateCenter();
 };
 
 /**
  * @class CalibRst
- * @brief Ò»Â·Ïà»úµ±Ç°Èı·İ½á¹û
+ * @brief ä¸€è·¯ç›¸æœºå½“å‰ä¸‰ä»½ç»“æœ
  */
 struct VISION_CALIB_API CalibRst {
-    CamModel camera;  ///< Ïà»úÄ£ĞÍ
-    PlaneMap plane;      ///< Æ½ÃæÓ³Éä
-    RotateCenter rotate; ///< Ğı×ªÖĞĞÄ
+    CamModel camera;  ///< ç›¸æœºæ¨¡å‹
+    PlaneMap plane;      ///< å¹³é¢æ˜ å°„
+    RotateCenter rotate; ///< æ—‹è½¬ä¸­å¿ƒ
 
     CalibRst();
 };
 
 /**
  * @class CalibHistItem
- * @brief ±»Ìæ»»ÏÂÀ´µÄÒ»Ìõ¾É½á¹û
+ * @brief è¢«æ›¿æ¢ä¸‹æ¥çš„ä¸€æ¡æ—§ç»“æœ
  */
 struct VISION_CALIB_API CalibHistItem {
-    CalibKind kind;        ///< ÖÖÀà
-    std::string fileName;  ///< history Ä¿Â¼ÏÂµÄÎÄ¼şÃû
-    std::string updatedAt; ///< µ±Ê±µÄ¸üĞÂÊ±¼ä
-    CalibStatus status;    ///< Ò»°ãÊÇÊ§Ğ§
+    CalibKind kind;        ///< ç§ç±»
+    std::string fileName;  ///< history ç›®å½•ä¸‹çš„æ–‡ä»¶å
+    std::string updatedAt; ///< å½“æ—¶çš„æ›´æ–°æ—¶é—´
+    CalibStatus status;    ///< ä¸€èˆ¬æ˜¯å¤±æ•ˆ
 
     CalibHistItem();
 };
 
-/** @brief ÏñËØ»òºÁÃ×Î»×Ë¡£½Ç¶ÈÎª¶È£¬ÄæÊ±ÕëÎªÕı */
+/** @brief åƒç´ æˆ–æ¯«ç±³ä½å§¿ã€‚è§’åº¦ä¸ºåº¦ï¼Œé€†æ—¶é’ˆä¸ºæ­£ */
 struct VISION_CALIB_API CalibPose {
     double x;     ///< x
     double y;     ///< y
-    double angle; ///< ¶È
+    double angle; ///< åº¦
 
     CalibPose();
 };

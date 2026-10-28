@@ -1,6 +1,6 @@
 /**
  * @file HsException.h
- * @brief HsExceptionÍ·ÎÄ¼ş
+ * @brief HsExceptionå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -26,115 +26,115 @@ class HsTuple;
 
 /**
  * @class HsException
- * @brief ½Ó¿ÚÊ§°Ü¡£¶ÔÓ¦ Halcon HException ÀïºÍÊı¾İÓĞ¹ØµÄ²¿·Ö
- * º¬´íÎóÂë¡¢ËµÃ÷¡¢Ëã×ÓÃû¡¢¸½¼ÓÂë¡¢¸½¼ÓËµÃ÷ºÍÓÃ»§Ôª×é¡£
- * ³ÌĞòĞĞºÅ¡¢¹ı³ÌÃû¡¢µ÷ÓÃÕ»ÊôÓÚ½Å±¾ÒıÇæ£¬²»·ÅÔÚÕâÀï
+ * @brief æ¥å£å¤±è´¥ã€‚å¯¹åº” Halcon HException é‡Œå’Œæ•°æ®æœ‰å…³çš„éƒ¨åˆ†
+ * å«é”™è¯¯ç ã€è¯´æ˜ã€ç®—å­åã€é™„åŠ ç ã€é™„åŠ è¯´æ˜å’Œç”¨æˆ·å…ƒç»„ã€‚
+ * ç¨‹åºè¡Œå·ã€è¿‡ç¨‹åã€è°ƒç”¨æ ˆå±äºè„šæœ¬å¼•æ“ï¼Œä¸æ”¾åœ¨è¿™é‡Œ
  */
 class HSCOMMDATA_EXPORT HsException : public std::runtime_error {
 public:
-    /** @brief °´´íÎóÂë¹¹Ôì¡£ËµÃ÷´Ó´íÎóÂë±íÈ¡£¬Ëã×ÓÃûÎª¿Õ */
+    /** @brief æŒ‰é”™è¯¯ç æ„é€ ã€‚è¯´æ˜ä»é”™è¯¯ç è¡¨å–ï¼Œç®—å­åä¸ºç©º */
     explicit HsException(HsError code);
     /**
-     * @brief ´øËã×ÓÃûºÍ´íÎóÂë
-     * @param procName Ëã×Ó»òº¯ÊıÃû¡£¿ÕÖ¸Õëµ±¿Õ´®
+     * @brief å¸¦ç®—å­åå’Œé”™è¯¯ç 
+     * @param procName ç®—å­æˆ–å‡½æ•°åã€‚ç©ºæŒ‡é’ˆå½“ç©ºä¸²
      */
     HsException(const char* procName, HsError code);
     /**
-     * @brief ´øËã×ÓÃûºÍ×Ô¶¨ÒåËµÃ÷¡£ËµÃ÷Îª¿ÕÔòÈÔÓÃ´íÎóÂë±í
-     * @param procName Ëã×Ó»òº¯ÊıÃû¡£¿ÕÖ¸Õëµ±¿Õ´®
-     * @param message ËµÃ÷¡£¿ÕÖ¸Õë»ò¿Õ´®ÔòÓÃ´íÎóÂë±í
-     * @param code ´íÎóÂë¡£²»´«ÔòÎª HS_OK
+     * @brief å¸¦ç®—å­åå’Œè‡ªå®šä¹‰è¯´æ˜ã€‚è¯´æ˜ä¸ºç©ºåˆ™ä»ç”¨é”™è¯¯ç è¡¨
+     * @param procName ç®—å­æˆ–å‡½æ•°åã€‚ç©ºæŒ‡é’ˆå½“ç©ºä¸²
+     * @param message è¯´æ˜ã€‚ç©ºæŒ‡é’ˆæˆ–ç©ºä¸²åˆ™ç”¨é”™è¯¯ç è¡¨
+     * @param code é”™è¯¯ç ã€‚ä¸ä¼ åˆ™ä¸º HS_OK
      */
     HsException(const char* procName, const char* message, HsError code = HS_OK);
-    /** @brief Éî¿½ËµÃ÷ºÍÓÃ»§Ôª×é */
+    /** @brief æ·±æ‹·è¯´æ˜å’Œç”¨æˆ·å…ƒç»„ */
     HsException(const HsException& other);
-    /** @brief Éî¿½ËµÃ÷ºÍÓÃ»§Ôª×é */
+    /** @brief æ·±æ‹·è¯´æ˜å’Œç”¨æˆ·å…ƒç»„ */
     HsException& operator=(const HsException& other);
     virtual ~HsException();
 
-    /** @brief °´Êµ¼ÊÀàĞÍÔÙÅ×³ö¡£ÅÉÉúÀà²»»á±»ÇĞ³É»ùÀà */
+    /** @brief æŒ‰å®é™…ç±»å‹å†æŠ›å‡ºã€‚æ´¾ç”Ÿç±»ä¸ä¼šè¢«åˆ‡æˆåŸºç±» */
     virtual void throwInstance() const;
 
-    /** @brief Å×³öÖ»´ø´íÎóÂëµÄÒì³£ */
+    /** @brief æŠ›å‡ºåªå¸¦é”™è¯¯ç çš„å¼‚å¸¸ */
     static void Throw(HsError code);
-    /** @brief Å×³ö´øËã×ÓÃûºÍ´íÎóÂëµÄÒì³£ */
+    /** @brief æŠ›å‡ºå¸¦ç®—å­åå’Œé”™è¯¯ç çš„å¼‚å¸¸ */
     static void Throw(const char* procName, HsError code);
     /**
-     * @brief Å×³ö´øËã×ÓÃûºÍ×Ô¶¨ÒåËµÃ÷µÄÒì³£
-     * @param code ²»´«ÔòÎª HS_OK
+     * @brief æŠ›å‡ºå¸¦ç®—å­åå’Œè‡ªå®šä¹‰è¯´æ˜çš„å¼‚å¸¸
+     * @param code ä¸ä¼ åˆ™ä¸º HS_OK
      */
     static void Throw(const char* procName, const char* message, HsError code = HS_OK);
 
-    /** @brief Ëã×Ó»òº¯ÊıÃû¡£Ã»ÓĞÔòÎª¿Õ´®¡£¶ÔÏóĞŞ¸Ä»òÎö¹¹ºóÖ¸ÕëÊ§Ğ§ */
+    /** @brief ç®—å­æˆ–å‡½æ•°åã€‚æ²¡æœ‰åˆ™ä¸ºç©ºä¸²ã€‚å¯¹è±¡ä¿®æ”¹æˆ–ææ„åæŒ‡é’ˆå¤±æ•ˆ */
     const char* procName() const;
-    /** @brief Ö÷ËµÃ÷£¬²»º¬Ëã×ÓÃûºÍ¸½¼ÓËµÃ÷ */
+    /** @brief ä¸»è¯´æ˜ï¼Œä¸å«ç®—å­åå’Œé™„åŠ è¯´æ˜ */
     const char* errorMessage() const;
-    /** @brief ´íÎóÂë */
+    /** @brief é”™è¯¯ç  */
     HsError code() const;
-    /** @brief ¸½¼Ó´íÎóÂë¡£Ã»ÓĞÔòÎª HS_OK */
+    /** @brief é™„åŠ é”™è¯¯ç ã€‚æ²¡æœ‰åˆ™ä¸º HS_OK */
     HsError extendedCode() const;
-    /** @brief ¸½¼ÓËµÃ÷¡£Ã»ÓĞÔòÎª¿Õ´®¡£¶ÔÏóĞŞ¸Ä»òÎö¹¹ºóÖ¸ÕëÊ§Ğ§ */
+    /** @brief é™„åŠ è¯´æ˜ã€‚æ²¡æœ‰åˆ™ä¸ºç©ºä¸²ã€‚å¯¹è±¡ä¿®æ”¹æˆ–ææ„åæŒ‡é’ˆå¤±æ•ˆ */
     const char* extendedMessage() const;
-    /** @brief ÓÃ»§Ôª×é¡£Ã»ÓĞ¸½¼ÓÊı¾İÊ±Îª¿ÕÔª×é */
+    /** @brief ç”¨æˆ·å…ƒç»„ã€‚æ²¡æœ‰é™„åŠ æ•°æ®æ—¶ä¸ºç©ºå…ƒç»„ */
     const HsTuple& userData() const;
 
     /**
-     * @brief ²¹ÉÏ¸½¼ÓÂëºÍ¸½¼ÓËµÃ÷¡£¶ÔÓ¦ Halcon µÄÀ©Õ¹´íÎóĞÅÏ¢
-     * @param extendedCode ¸½¼ÓÂë¡£HS_OK ±íÊ¾Ã»ÓĞ
-     * @param extendedMessage ¸½¼ÓËµÃ÷¡£¿ÕÖ¸Õëµ±¿Õ´®
+     * @brief è¡¥ä¸Šé™„åŠ ç å’Œé™„åŠ è¯´æ˜ã€‚å¯¹åº” Halcon çš„æ‰©å±•é”™è¯¯ä¿¡æ¯
+     * @param extendedCode é™„åŠ ç ã€‚HS_OK è¡¨ç¤ºæ²¡æœ‰
+     * @param extendedMessage é™„åŠ è¯´æ˜ã€‚ç©ºæŒ‡é’ˆå½“ç©ºä¸²
      */
     void setExtended(HsError extendedCode, const char* extendedMessage);
-    /** @brief »»ÉÏÓÃ»§Ôª×é¡£Õû·İ¿½±´ */
+    /** @brief æ¢ä¸Šç”¨æˆ·å…ƒç»„ã€‚æ•´ä»½æ‹·è´ */
     void setUserData(const HsTuple& data);
 
     /**
-     * @brief ¸ø std::exception ÓÃµÄÕû¾äËµÃ÷
-     * ÓĞËã×ÓÃûÊ±·ÅÔÚÇ°Ãæ¡£ÓĞ¸½¼ÓËµÃ÷Ê±½ÓÔÚºóÃæ
+     * @brief ç»™ std::exception ç”¨çš„æ•´å¥è¯´æ˜
+     * æœ‰ç®—å­åæ—¶æ”¾åœ¨å‰é¢ã€‚æœ‰é™„åŠ è¯´æ˜æ—¶æ¥åœ¨åé¢
      */
     virtual const char* what() const noexcept;
 
 private:
     struct Data;
 
-    /** @brief ÌîËã×ÓÃû¡¢´íÎóÂëºÍÖ÷ËµÃ÷£¬²¢ÖØÆ´ what */
+    /** @brief å¡«ç®—å­åã€é”™è¯¯ç å’Œä¸»è¯´æ˜ï¼Œå¹¶é‡æ‹¼ what */
     void init(const char* procName, HsError code, const char* message);
 
-    Data* m_data; ///< ËµÃ÷¡¢¸½¼ÓĞÅÏ¢ºÍÓÃ»§Ôª×é¡£²»¿Õ
+    Data* m_data; ///< è¯´æ˜ã€é™„åŠ ä¿¡æ¯å’Œç”¨æˆ·å…ƒç»„ã€‚ä¸ç©º
 };
 
 /**
  * @class HsTupleAccessException
- * @brief Ôª×é·ÃÎÊÊ§°Ü¡£¶ÔÓ¦ Halcon HTupleAccessException
+ * @brief å…ƒç»„è®¿é—®å¤±è´¥ã€‚å¯¹åº” Halcon HTupleAccessException
  */
 class HSCOMMDATA_EXPORT HsTupleAccessException : public HsException {
 public:
-    /** @brief ÀàĞÍ²»·û£¬ËµÃ÷ÎªÔª×é²Ù×÷²»ºÏ·¨ */
+    /** @brief ç±»å‹ä¸ç¬¦ï¼Œè¯´æ˜ä¸ºå…ƒç»„æ“ä½œä¸åˆæ³• */
     HsTupleAccessException();
-    /** @brief ×Ô¶¨ÒåËµÃ÷£¬´íÎóÂëÎª HS_ERR_TYPE¡£¿ÕÖ¸Õëµ±¿Õ´® */
+    /** @brief è‡ªå®šä¹‰è¯´æ˜ï¼Œé”™è¯¯ç ä¸º HS_ERR_TYPEã€‚ç©ºæŒ‡é’ˆå½“ç©ºä¸² */
     explicit HsTupleAccessException(const char* message);
-    /** @brief °´´íÎóÂë¹¹Ôì¡£ËµÃ÷´Ó´íÎóÂë±íÈ¡ */
+    /** @brief æŒ‰é”™è¯¯ç æ„é€ ã€‚è¯´æ˜ä»é”™è¯¯ç è¡¨å– */
     explicit HsTupleAccessException(HsError code);
     /**
-     * @brief ×Ô¶¨ÒåËµÃ÷ºÍ´íÎóÂë
-     * ËµÃ÷Îª¿ÕÔòÓÃ´íÎóÂë±í
+     * @brief è‡ªå®šä¹‰è¯´æ˜å’Œé”™è¯¯ç 
+     * è¯´æ˜ä¸ºç©ºåˆ™ç”¨é”™è¯¯ç è¡¨
      */
     HsTupleAccessException(const char* message, HsError code);
     virtual ~HsTupleAccessException();
 
-    /** @brief °´±¾ÀàĞÍÔÙÅ×³ö */
+    /** @brief æŒ‰æœ¬ç±»å‹å†æŠ›å‡º */
     virtual void throwInstance() const;
 
-    /** @brief Å×³öÄ¬ÈÏµÄÔª×é·ÃÎÊÒì³£ */
+    /** @brief æŠ›å‡ºé»˜è®¤çš„å…ƒç»„è®¿é—®å¼‚å¸¸ */
     static void Throw();
-    /** @brief Å×³ö´øËµÃ÷µÄÔª×é·ÃÎÊÒì³£ */
+    /** @brief æŠ›å‡ºå¸¦è¯´æ˜çš„å…ƒç»„è®¿é—®å¼‚å¸¸ */
     static void Throw(const char* message);
-    /** @brief Å×³ö´ø´íÎóÂëµÄÔª×é·ÃÎÊÒì³£ */
+    /** @brief æŠ›å‡ºå¸¦é”™è¯¯ç çš„å…ƒç»„è®¿é—®å¼‚å¸¸ */
     static void Throw(HsError code);
 };
 
 /**
- * @brief °´ÏµÍ³ÀïµÄÒì³£·½Ê½´¦Àí¡£Å×³ö¡¢»Øµ÷»òºöÂÔºó¼ÌĞø
- * »Øµ÷Îª¿ÕÊ±ÈÔÅ×³ö¡£»Øµ÷Àï²»ÒªÔÙµ÷ÓÃ±¾º¯Êı
+ * @brief æŒ‰ç³»ç»Ÿé‡Œçš„å¼‚å¸¸æ–¹å¼å¤„ç†ã€‚æŠ›å‡ºã€å›è°ƒæˆ–å¿½ç•¥åç»§ç»­
+ * å›è°ƒä¸ºç©ºæ—¶ä»æŠ›å‡ºã€‚å›è°ƒé‡Œä¸è¦å†è°ƒç”¨æœ¬å‡½æ•°
  */
 HSCOMMDATA_EXPORT void raiseException(const HsException& exception);
 

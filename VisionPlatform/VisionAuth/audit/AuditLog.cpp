@@ -1,6 +1,6 @@
 /**
  * @file AuditLog.cpp
- * @brief AuditLog实现
+ * @brief AuditLog瀹炵幇
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -11,7 +11,7 @@
 
 namespace Vision {
 
-// 兼容旧调用：转到 VisionLog 操作日志
+// 鍏煎鏃ц皟鐢細杞埌 VisionLog 鎿嶄綔鏃ュ織
 void auditLog(const std::string& event, const std::string& loginName, const std::string& detail)
 {
     const char* result = (event == "login_fail") ? "fail" : "ok";

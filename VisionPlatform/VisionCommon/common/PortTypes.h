@@ -1,6 +1,6 @@
 /**
  * @file PortTypes.h
- * @brief PortTypesÍ·ÎÄ¼ş
+ * @brief PortTypeså¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -14,84 +14,87 @@
 
 namespace Vision {
 
-/** @brief ¹¤¾ß¶Ë¿Ú·½Ïò */
+/** @brief å·¥å…·ç«¯å£æ–¹å‘ */
 enum class PortDir {
-    In = 0, ///< ÊäÈë
-    Out     ///< Êä³ö
+    In = 0, ///< è¾“å…¥
+    Out     ///< è¾“å‡º
 };
 
-/** @brief ¹¤¾ß¶Ë¿ÚÊı¾İÀàĞÍ£¨¾ù¿ÉÎªÏòÁ¿£©¡£ĞÂÀàĞÍÖ»×·¼ÓÔÚÄ©Î²£¬±ÜÃâÒÑ´æÅÌµÄÕûÊı´íÎ» */
+/** @brief å·¥å…·ç«¯å£æ•°æ®ç±»å‹ï¼ˆå‡å¯ä¸ºå‘é‡ï¼‰ã€‚æ–°ç±»å‹åªè¿½åŠ åœ¨æœ«å°¾ï¼Œé¿å…å·²å­˜ç›˜çš„æ•´æ•°é”™ä½ */
 enum class PortData {
-    Image = 0,  ///< Í¼Ïñ
-    Region,     ///< ÇøÓò
-    Contour,    ///< ÂÖÀª
-    Roi,        ///< ±ê×¼Í¼ĞÎ£¨Ô²¡¢¾ØĞÎ¡¢Ö±ÏßµÈ£©
-    Logic,      ///< Âß¼­½á¹û£¨OK/NG£©
-    Pose,       ///< Î»×Ë£¨x¡¢y¡¢½Ç¶È£©
-    Tuple,       ///< ÊıÖµÔª×é
-    Max ///< ¸öÊı£¬²»ÊÇºÏ·¨Öµ
+    Image = 0,  ///< å›¾åƒ
+    Region,     ///< åŒºåŸŸ
+    Contour,    ///< è½®å»“
+    Roi,        ///< æ ‡å‡†å›¾å½¢ï¼ˆåœ†ã€çŸ©å½¢ã€ç›´çº¿ç­‰ï¼‰
+    Logic,      ///< é€»è¾‘ç»“æœï¼ˆOK/NGï¼‰
+    Pose,       ///< ä½å§¿ï¼ˆxã€yã€è§’åº¦ï¼‰
+    Tuple,       ///< æ•°å€¼å…ƒç»„
+    Cloud,       ///< ç‚¹äº‘
+    Pose3,       ///< ä¸‰ç»´ä½å§¿
+    Shape3,      ///< ä¸‰ç»´å½¢çŠ¶
+    Max ///< ä¸ªæ•°ï¼Œä¸æ˜¯åˆæ³•å€¼
 };
 
-/** @brief ÇøÓò»ò ROI ÔÚ±¾ÅÄÀïÔõÃ´ÓÃ */
+/** @brief åŒºåŸŸæˆ– ROI åœ¨æœ¬æ‹é‡Œæ€ä¹ˆç”¨ */
 enum class RegionUse {
-    Normal = 0, ///< Õı³£ÇøÓò£¬²ÎÓëËÑË÷»ò¼ì²â
-    Mask,       ///< ÆÁ±ÎÇøÓò£¬´ÓÕı³£ÇøÓòÀï¿Û³ı
-    Invalid     ///< ÎŞĞ§ÇøÓò£¬±¾ÅÄ²»ÓÃ
+    Normal = 0, ///< æ­£å¸¸åŒºåŸŸï¼Œå‚ä¸æœç´¢æˆ–æ£€æµ‹
+    Mask,       ///< å±è”½åŒºåŸŸï¼Œä»æ­£å¸¸åŒºåŸŸé‡Œæ‰£é™¤
+    Invalid     ///< æ— æ•ˆåŒºåŸŸï¼Œæœ¬æ‹ä¸ç”¨
 };
 
-/** @class PortSlot @brief ¶Ë¿Ú²ÛÎ»£º·½Ïò¡¢Êı¾İÀàĞÍ¡¢¿ÚÃû */
+/** @class PortSlot @brief ç«¯å£æ§½ä½ï¼šæ–¹å‘ã€æ•°æ®ç±»å‹ã€å£å */
 struct PortSlot {
-    PortDir dir;       ///< Èë»ò³ö
-    PortData data;     ///< Êı¾İÀàĞÍ
-    std::string name;  ///< ¿ÚÃû£»¿Õ±íÊ¾¸ÃÀàĞÍµÄÈ±Ê¡¿Ú
+    PortDir dir;       ///< å…¥æˆ–å‡º
+    PortData data;     ///< æ•°æ®ç±»å‹
+    std::string name;  ///< å£åï¼›ç©ºè¡¨ç¤ºè¯¥ç±»å‹çš„ç¼ºçœå£
     PortSlot() : dir(PortDir::Out), data(PortData::Image) {}
     PortSlot(PortDir d, PortData t) : dir(d), data(t) {}
     bool operator==(const PortSlot& o) const { return dir == o.dir && data == o.data && name == o.name; }
     bool operator!=(const PortSlot& o) const { return !(*this == o); }
 };
 
-/** @brief ¹¹ÔìÊäÈë¶Ë¿Ú²ÛÎ» */
+/** @brief æ„é€ è¾“å…¥ç«¯å£æ§½ä½ */
 inline PortSlot portSlotIn(PortData d) { return PortSlot(PortDir::In, d); }
-/** @brief ¹¹ÔìÊä³ö¶Ë¿Ú²ÛÎ» */
+/** @brief æ„é€ è¾“å‡ºç«¯å£æ§½ä½ */
 inline PortSlot portSlotOut(PortData d) { return PortSlot(PortDir::Out, d); }
 
-/** @brief ÕûÊı»¹Ô­ÇøÓòÓÃÍ¾£»Ô½½çµ±Õı³£ÇøÓò */
+/** @brief æ•´æ•°è¿˜åŸåŒºåŸŸç”¨é€”ï¼›è¶Šç•Œå½“æ­£å¸¸åŒºåŸŸ */
     VISION_COMMON_API RegionUse regionUseFromInt(int v);
 
 
-/** @brief Êı¾İÀàĞÍ¶ÔÓ¦µÄ¼üºó×º */
+/** @brief æ•°æ®ç±»å‹å¯¹åº”çš„é”®åç¼€ */
     VISION_COMMON_API const char* portDataSuffix(PortData d);
 
 
-/** @brief ¶Ë¿Ú²ÛÎ»×ª in.xxx / out.xxx£»ÓĞ¿ÚÃûÊ±ÔÙ¼ÓÒ»¶Î */
+/** @brief ç«¯å£æ§½ä½è½¬ in.xxx / out.xxxï¼›æœ‰å£åæ—¶å†åŠ ä¸€æ®µ */
     VISION_COMMON_API std::string portKey(const PortSlot& s);
 
 
-/** @brief ¶Ë¿ÚÃû¹æ·¶³É in.xxx¡¢out.xxx£»¼æÈİ¾É graphics¡¢values */
+/** @brief ç«¯å£åè§„èŒƒæˆ in.xxxã€out.xxxï¼›å…¼å®¹æ—§ graphicsã€values */
     VISION_COMMON_API std::string canonicalizePortKey(const std::string& key);
 
 
-/** @brief ÓÉÀàĞÍºó×º½âÎöÊı¾İÀàĞÍ */
+/** @brief ç”±ç±»å‹åç¼€è§£ææ•°æ®ç±»å‹ */
     VISION_COMMON_API PortData portDataFromSuffix(const std::string& k);
 
 
-/** @brief ´Ó¼ü½âÎö¶Ë¿Ú²ÛÎ»¡£in.image.locate µÄ¿ÚÃûÊÇ locate */
+/** @brief ä»é”®è§£æç«¯å£æ§½ä½ã€‚in.image.locate çš„å£åæ˜¯ locate */
     VISION_COMMON_API PortSlot portSlotFromKey(const std::string& key);
 
 
-/** @brief ÓÉ¶Ë¿ÚÃûÅĞ¶ÏÊı¾İÀàĞÍ */
+/** @brief ç”±ç«¯å£ååˆ¤æ–­æ•°æ®ç±»å‹ */
 inline PortData portDataFromKey(const std::string& key)
 {
     return portSlotFromKey(key).data;
 }
 
-/** @brief Á½¶Ë¶Ë¿ÚÊÇ·ñÍ¬Ò»Êı¾İÀàĞÍÇÒ·½ÏòÕıÈ·¡£¿ÚÃû¿ÉÒÔ²»Í¬ */
+/** @brief ä¸¤ç«¯ç«¯å£æ˜¯å¦åŒä¸€æ•°æ®ç±»å‹ä¸”æ–¹å‘æ­£ç¡®ã€‚å£åå¯ä»¥ä¸åŒ */
 inline bool portsTypeMatch(const PortSlot& from, const PortSlot& to)
 {
     return from.dir == PortDir::Out && to.dir == PortDir::In && from.data == to.data;
 }
 
-/** @brief ÓÉ´æÅÌµÄ·½ÏòÓëÊı¾İÀàĞÍÕûÊı»¹Ô­¶Ë¿Ú²ÛÎ» */
+/** @brief ç”±å­˜ç›˜çš„æ–¹å‘ä¸æ•°æ®ç±»å‹æ•´æ•°è¿˜åŸç«¯å£æ§½ä½ */
     VISION_COMMON_API PortSlot portSlotFromInts(int dir, int data);
 
 

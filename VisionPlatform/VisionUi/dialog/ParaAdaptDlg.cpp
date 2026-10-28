@@ -1,6 +1,6 @@
 /**
  * @file ParaAdaptDlg.cpp
- * @brief ParaAdaptDlg µœ÷
+ * @brief ParaAdaptDlgÂÆûÁé∞
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -32,7 +32,7 @@
 namespace Vision {
 
 namespace {
-QString u(const char* s) { return QString::fromLocal8Bit(s); }
+QString u(const char* s) { return QString::fromUtf8(s); }
 
 QString showVer(const std::string& s)
 {
@@ -116,7 +116,7 @@ void addJudgeRows(QTableWidget* table, const std::vector<JudgeParam>& before, co
                 + QLatin1String(" [") + QString::number(after[i].minVal)
                 + QLatin1String(",") + QString::number(after[i].maxVal) + QLatin1String("]");
         }
-        QTableWidgetItem* g = new QTableWidgetItem(u("≈–∂œ"));
+        QTableWidgetItem* g = new QTableWidgetItem(u("Âà§Êñ≠"));
         QTableWidgetItem* k = new QTableWidgetItem(QString::number(int(i + 1)));
         QTableWidgetItem* b = new QTableWidgetItem(btext);
         QTableWidgetItem* a = new QTableWidgetItem(atext);
@@ -135,7 +135,7 @@ public:
                    const ToolCfg& tool, bool dirty, QWidget* parent)
         : QDialog(parent)
     {
-        setWindowTitle(u("≤Œ ˝∂‘±»"));
+        setWindowTitle(u("ÂèÇÊï∞ÂØπÊØî"));
         resize(860, 560);
         const std::string saved = tool.param.paraVersion.empty() ? std::string("0.0.0.0") : tool.param.paraVersion;
         std::string current = "1.0.0.0";
@@ -168,14 +168,14 @@ public:
             const std::string algLog = verNotesBetween(algNotes, tool.param.algVersion, algNow);
             QString logText;
             if (!toolLog.empty()) {
-                logText += QString::fromLocal8Bit("π§æﬂ∞Ê±æ\n");
+                logText += QString::fromUtf8("Â∑•ÂÖ∑ÁâàÊú¨\n");
                 logText += QString::fromUtf8(toolLog.c_str());
             }
             if (!algLog.empty()) {
                 if (!logText.isEmpty()) {
                     logText += QLatin1String("\n");
                 }
-                logText += QString::fromLocal8Bit("À„∑®∞Ê±æ\n");
+                logText += QString::fromUtf8("ÁÆóÊ≥ïÁâàÊú¨\n");
                 logText += QString::fromUtf8(algLog.c_str());
             }
             if (!logText.isEmpty()) {
@@ -184,33 +184,33 @@ public:
             }
         }
         QLabel* head = new QLabel(this);
-        head->setText(u("π§’æ") + QLatin1String(": ") + station
-            + QLatin1String("    ") + u("¡˜≥Ã") + QLatin1String(": ") + job
-            + QLatin1String("    ") + u("π§æﬂ") + QLatin1String(": ") + toolName
+        head->setText(u("Â∑•Á´ô") + QLatin1String(": ") + station
+            + QLatin1String("    ") + u("ÊµÅÁ®ã") + QLatin1String(": ") + job
+            + QLatin1String("    ") + u("Â∑•ÂÖ∑") + QLatin1String(": ") + toolName
             + QLatin1String(" (") + QString::fromUtf8(tool.info.toolName.c_str()) + QLatin1String(")"));
         QLabel* ver = new QLabel(this);
-        ver->setText(u("≤Œ ˝∞Ê±æ") + QLatin1String(": ")
+        ver->setText(u("ÂèÇÊï∞ÁâàÊú¨") + QLatin1String(": ")
             + showVer(saved) + QLatin1String("  ->  ") + showVer(current)
-            + QLatin1String("    ") + u("π§æﬂ∞Ê±æ") + QLatin1String(": ")
+            + QLatin1String("    ") + u("Â∑•ÂÖ∑ÁâàÊú¨") + QLatin1String(": ")
             + QString::fromUtf8(tool.info.toolVersion.empty() ? "-" : tool.info.toolVersion.c_str())
             + QLatin1String("  ->  ") + QString::fromUtf8(toolNow.empty() ? "-" : toolNow.c_str())
-            + QLatin1String("    ") + u("À„∑®∞Ê±æ") + QLatin1String(": ")
+            + QLatin1String("    ") + u("ÁÆóÊ≥ïÁâàÊú¨") + QLatin1String(": ")
             + showVer(tool.param.algVersion) + QLatin1String("  ->  ") + showVer(algNow));
         QTableWidget* table = new QTableWidget(this);
         table->setColumnCount(4);
         table->setHorizontalHeaderLabels(QStringList()
-            << u("∑÷◊È")
-            << u("≤Œ ˝√˚")
-            << u("…˝º∂«∞")
-            << u("…˝º∂∫Û"));
+            << u("ÂàÜÁªÑ")
+            << u("ÂèÇÊï∞Âêç")
+            << u("ÂçáÁ∫ßÂâç")
+            << u("ÂçáÁ∫ßÂêé"));
         table->horizontalHeader()->setStretchLastSection(true);
         table->setEditTriggers(QAbstractItemView::NoEditTriggers);
         table->setSelectionBehavior(QAbstractItemView::SelectRows);
-        addValueRow(table, "‘À––", u("deviceId"),
+        addValueRow(table, "ËøêË°å", u("deviceId"),
                     QString::fromUtf8(tool.param.deviceId.toString().c_str()),
                     QString::fromUtf8(after.deviceId.toString().c_str()),
                     !tool.param.deviceId.isNull(), dirty);
-        addValueRow(table, "‘À––", u("algLib"),
+        addValueRow(table, "ËøêË°å", u("algLib"),
                     QString::number(static_cast<int>(tool.param.algLib)),
                     QString::number(static_cast<int>(after.algLib)),
                     true, dirty);
@@ -222,22 +222,22 @@ public:
                     || tool.param.learn.contains(key) || after.learn.contains(key)) {
                     continue;
                 }
-                const QString title = QString::fromUtf8(Vision::acpToUtf8(fields[fi].title).c_str());
+                const QString title = QString::fromUtf8(fields[fi].title.c_str());
                 const QString shown = title.isEmpty() ? QString::fromUtf8(key.c_str())
                     : (title + QLatin1String(" (") + QString::fromUtf8(key.c_str()) + QLatin1String(")"));
-                addValueRow(table, "‘À––", shown,
+                addValueRow(table, "ËøêË°å", shown,
                             QString::fromLatin1("-"),
                             QString::fromUtf8(fields[fi].def.toString().c_str()),
                             false, dirty);
             }
         }
-        addMapRows(table, "—ßœ∞", tool.param.learn, after.learn, dirty);
-        addMapRows(table, "‘À––", tool.param.run, after.run, dirty);
+        addMapRows(table, "Â≠¶‰π†", tool.param.learn, after.learn, dirty);
+        addMapRows(table, "ËøêË°å", tool.param.run, after.run, dirty);
         addJudgeRows(table, tool.param.judge, after.judge);
         QLabel* legend = new QLabel(this);
-        legend->setText(u("¬Ã…´œ‡Õ¨£¨∫Ï…´≤ªÕ¨£¨ª∆…´ «“—∏ƒŒ¥±£¥ÊªÚ…–Œ¥–¥»Î≤Œ ˝±Ì"));
+        legend->setText(u("ÁªøËâ≤Áõ∏ÂêåÔºåÁ∫¢Ëâ≤‰∏çÂêåÔºåÈªÑËâ≤ÊòØÂ∑≤ÊîπÊú™‰øùÂ≠òÊàñÂ∞öÊú™ÂÜôÂÖ•ÂèÇÊï∞Ë°®"));
         table->resizeColumnsToContents();
-        QPushButton* closeBtn = new QPushButton(u("πÿ±’"), this);
+        QPushButton* closeBtn = new QPushButton(u("ÂÖ≥Èó≠"), this);
         connect(closeBtn, SIGNAL(clicked()), this, SLOT(accept()));
         QHBoxLayout* buttons = new QHBoxLayout();
         buttons->addStretch();
@@ -262,26 +262,26 @@ ParaAdaptDlg::ParaAdaptDlg(Solution* sol, QWidget* parent)
     , m_sol(sol)
     , m_table(nullptr)
 {
-    setWindowTitle(u("≤Œ ˝∞Ê±æ"));
+    setWindowTitle(u("ÂèÇÊï∞ÁâàÊú¨"));
     resize(1180, 560);
     m_table = new QTableWidget(this);
     m_table->setColumnCount(8);
     m_table->setHorizontalHeaderLabels(QStringList()
-        << u("π§’æ")
-        << u("¡˜≥Ã")
-        << u("π§æﬂ")
-        << u("◊¢≤·√˚")
-        << u("≤Œ ˝∞Ê±æ")
-        << u("π§æﬂ∞Ê±æ")
-        << u("À„∑®∞Ê±æ")
-        << u("◊¥Ã¨"));
+        << u("Â∑•Á´ô")
+        << u("ÊµÅÁ®ã")
+        << u("Â∑•ÂÖ∑")
+        << u("Ê≥®ÂÜåÂêç")
+        << u("ÂèÇÊï∞ÁâàÊú¨")
+        << u("Â∑•ÂÖ∑ÁâàÊú¨")
+        << u("ÁÆóÊ≥ïÁâàÊú¨")
+        << u("Áä∂ÊÄÅ"));
     m_table->horizontalHeader()->setStretchLastSection(true);
     m_table->setSelectionBehavior(QAbstractItemView::SelectRows);
     m_table->setEditTriggers(QAbstractItemView::NoEditTriggers);
     connect(m_table, SIGNAL(itemDoubleClicked(QTableWidgetItem*)), this, SLOT(onOpenCompare(QTableWidgetItem*)));
-    QPushButton* up = new QPushButton(u("…˝º∂µΩµ±«∞"), this);
-    QPushButton* down = new QPushButton(u("Ωµº∂µΩ÷∏∂®∞Ê±æ"), this);
-    QPushButton* see = new QPushButton(u("÷ªø¥≤Ó“Ï"), this);
+    QPushButton* up = new QPushButton(u("ÂçáÁ∫ßÂà∞ÂΩìÂâç"), this);
+    QPushButton* down = new QPushButton(u("ÈôçÁ∫ßÂà∞ÊåáÂÆöÁâàÊú¨"), this);
+    QPushButton* see = new QPushButton(u("Âè™ÁúãÂ∑ÆÂºÇ"), this);
     connect(up, SIGNAL(clicked()), this, SLOT(onUpgrade()));
     connect(down, SIGNAL(clicked()), this, SLOT(onDowngrade()));
     connect(see, SIGNAL(clicked()), this, SLOT(onPreview()));
@@ -325,7 +325,7 @@ void ParaAdaptDlg::reload()
                 std::string current = "1.0.0.0";
                 std::string toolNow;
                 std::string algNow;
-                std::string state = "“—“ª÷¬";
+                std::string state = "Â∑≤‰∏ÄËá¥";
                 bool need = false;
                 ToolBase* proto = ToolRegistry::instance().find(tool.info.toolName);
                 if (proto) {
@@ -348,13 +348,13 @@ void ParaAdaptDlg::reload()
                     }
                     const int cmp = ToolParaBase::compareVersion(saved, current);
                     if (cmp == 0) {
-                        state = "“—“ª÷¬";
+                        state = "Â∑≤‰∏ÄËá¥";
                     } else if (cmp > 0) {
-                        state = "Œƒº˛±»≥Ã–Ú–¬";
+                        state = "Êñá‰ª∂ÊØîÁ®ãÂ∫èÊñ∞";
                     } else if (need || names.empty()) {
-                        state = "–Ë»∑»œ";
+                        state = "ÈúÄÁ°ÆËÆ§";
                     } else {
-                        state = "ø…◊‘∂Ø…˝º∂";
+                        state = "ÂèØËá™Âä®ÂçáÁ∫ß";
                     }
                 }
                 m_table->setItem(row, 4, new QTableWidgetItem(showVer(saved) + QLatin1String("  ->  ") + showVer(current)));
@@ -403,7 +403,7 @@ bool ParaAdaptDlg::applyRow(int row, const std::string& target)
     }
     inst->destroy();
     if (!ok) {
-        QMessageBox::warning(this, u("  ≈‰ ß∞‹"), QString::fromUtf8(detail.c_str()));
+        QMessageBox::warning(this, u("ÈÄÇÈÖçÂ§±Ë¥•"), QString::fromUtf8(detail.c_str()));
     }
     return ok;
 }
@@ -412,11 +412,11 @@ void ParaAdaptDlg::onUpgrade()
 {
     const int row = m_table->currentRow();
     if (row < 0) {
-        QMessageBox::information(this, u("≤Œ ˝∞Ê±æ"), u("√ª”–—°÷–π§æﬂ"));
+        QMessageBox::information(this, u("ÂèÇÊï∞ÁâàÊú¨"), u("Ê≤°ÊúâÈÄâ‰∏≠Â∑•ÂÖ∑"));
         return;
     }
     if (applyRow(row, std::string())) {
-        QMessageBox::information(this, u("≤Œ ˝∞Ê±æ"), u("“—–¥ªÿ∑Ω∞∏"));
+        QMessageBox::information(this, u("ÂèÇÊï∞ÁâàÊú¨"), u("Â∑≤ÂÜôÂõûÊñπÊ°à"));
         reload();
     }
 }
@@ -425,16 +425,16 @@ void ParaAdaptDlg::onDowngrade()
 {
     const int row = m_table->currentRow();
     if (row < 0) {
-        QMessageBox::information(this, u("≤Œ ˝∞Ê±æ"), u("√ª”–—°÷–π§æﬂ"));
+        QMessageBox::information(this, u("ÂèÇÊï∞ÁâàÊú¨"), u("Ê≤°ÊúâÈÄâ‰∏≠Â∑•ÂÖ∑"));
         return;
     }
     bool ok = false;
-    const QString ver = QInputDialog::getText(this, u("Ωµº∂µΩ÷∏∂®∞Ê±æ"), u("ƒø±Í∞Ê±æ"), QLineEdit::Normal, QString::fromLatin1("1.0.0.0"), &ok);
+    const QString ver = QInputDialog::getText(this, u("ÈôçÁ∫ßÂà∞ÊåáÂÆöÁâàÊú¨"), u("ÁõÆÊ†áÁâàÊú¨"), QLineEdit::Normal, QString::fromLatin1("1.0.0.0"), &ok);
     if (!ok || ver.trimmed().isEmpty()) {
         return;
     }
     if (applyRow(row, ver.trimmed().toStdString())) {
-        QMessageBox::information(this, u("≤Œ ˝∞Ê±æ"), u("“—–¥ªÿ∑Ω∞∏"));
+        QMessageBox::information(this, u("ÂèÇÊï∞ÁâàÊú¨"), u("Â∑≤ÂÜôÂõûÊñπÊ°à"));
         reload();
     }
 }
@@ -443,7 +443,7 @@ void ParaAdaptDlg::onPreview()
 {
     const int row = m_table->currentRow();
     if (row < 0) {
-        QMessageBox::information(this, u("≤Œ ˝∞Ê±æ"), u("√ª”–—°÷–π§æﬂ"));
+        QMessageBox::information(this, u("ÂèÇÊï∞ÁâàÊú¨"), u("Ê≤°ÊúâÈÄâ‰∏≠Â∑•ÂÖ∑"));
         return;
     }
     onOpenCompare(m_table->item(row, 0));

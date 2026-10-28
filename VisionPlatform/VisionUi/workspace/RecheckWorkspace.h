@@ -1,6 +1,6 @@
 /**
  * @file RecheckWorkspace.h
- * @brief RecheckWorkspaceÍ·ÎÄ¼ş
+ * @brief RecheckWorkspaceå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -36,90 +36,90 @@ class Job;
 
 /**
  * @class RecheckWorkspace
- * @brief ¸´¼ìÒ³£ºÑ¡ÎÄ¼ş¼ĞÓëÁ÷³Ì£¬ÅúÁ¿ÅÜÍ¼£¬±í¸ñä¯ÀÀ£¬µãÑ¡¿´ÏêÇé
+ * @brief å¤æ£€é¡µï¼šé€‰æ–‡ä»¶å¤¹ä¸æµç¨‹ï¼Œæ‰¹é‡è·‘å›¾ï¼Œè¡¨æ ¼æµè§ˆï¼Œç‚¹é€‰çœ‹è¯¦æƒ…
  */
 class VISION_UI_API RecheckWorkspace : public QWidget {
     Q_OBJECT
 public:
     /**
-     * @brief ¹¹Ôì¸´¼ì¹¤×÷Çø
-     * @param session »á»°£¨²»ÓµÓĞ£©
-     * @param solution µ±Ç°·½°¸£¨²»ÓµÓĞ£©
+     * @brief æ„é€ å¤æ£€å·¥ä½œåŒº
+     * @param session ä¼šè¯ï¼ˆä¸æ‹¥æœ‰ï¼‰
+     * @param solution å½“å‰æ–¹æ¡ˆï¼ˆä¸æ‹¥æœ‰ï¼‰
      */
     RecheckWorkspace(Session* session, Solution* solution, QWidget* parent = 0);
 
-    /** @brief ·½°¸ÇĞ»»»ò¹¤Õ¾ÁĞ±í±ä»¯ºóË¢ĞÂÏÂÀ­ */
+    /** @brief æ–¹æ¡ˆåˆ‡æ¢æˆ–å·¥ç«™åˆ—è¡¨å˜åŒ–ååˆ·æ–°ä¸‹æ‹‰ */
     void reloadCombos();
-    /** @brief °ó¶¨¹¤Õ¾ÔËĞĞÊµÀı£¨ÅúÅÜÇ°ÓÉÖ÷´° ensure ºóÏÂ·¢£© */
+    /** @brief ç»‘å®šå·¥ç«™è¿è¡Œå®ä¾‹ï¼ˆæ‰¹è·‘å‰ç”±ä¸»çª— ensure åä¸‹å‘ï¼‰ */
     void setStation(Station* station);
-    /** @brief °´È¨ÏŞÆôÓÃ¿ªÊ¼/µ¼³ö/±¨¸æ/Ìø×ª */
+    /** @brief æŒ‰æƒé™å¯ç”¨å¼€å§‹/å¯¼å‡º/æŠ¥å‘Š/è·³è½¬ */
     void setRunPerms(bool canRun);
-    /** @brief ÍË³öÈí¼ş£ºÍ£Ö¹ÅúÅÜ±êÖ¾£¨²»µÈ³Ø£»ÓÉÖ÷´° drain£© */
+    /** @brief é€€å‡ºè½¯ä»¶ï¼šåœæ­¢æ‰¹è·‘æ ‡å¿—ï¼ˆä¸ç­‰æ± ï¼›ç”±ä¸»çª— drainï¼‰ */
     void abortBatch();
-    /** @brief ÓïÑÔÈÈÇĞ»»ºóË¢ĞÂ¾²Ì¬ÎÄ°¸ */
+    /** @brief è¯­è¨€çƒ­åˆ‡æ¢ååˆ·æ–°é™æ€æ–‡æ¡ˆ */
     void retranslateUi();
 
 signals:
     /**
-     * @brief ÅúÅÜÇ°ÇëÇóÖ÷´°°ó¶¨¸Ã¹¤Õ¾ÔËĞĞÊµÀı
-     * @param stationId ¹¤Õ¾ id
+     * @brief æ‰¹è·‘å‰è¯·æ±‚ä¸»çª—ç»‘å®šè¯¥å·¥ç«™è¿è¡Œå®ä¾‹
+     * @param stationId å·¥ç«™ id
      */
     void prepareStation(const QString& stationId);
     /**
-     * @brief Ìø×ªÉè¼ÆÌ¬²¢´ò¿ª¹¤¾ßµ÷ÊÔ£¨¿É´ø¸´¼ìÍ¼Â·¾¶£©
-     * @param jobId Á÷³Ì id
-     * @param toolId ¹¤¾ß id£¨¿É¿Õ=Á÷³ÌÊ×¸ö¹¤¾ß£©
-     * @param imagePath ¸´¼ìÍ¼È«Â·¾¶£¨¿É¿Õ£©
+     * @brief è·³è½¬è®¾è®¡æ€å¹¶æ‰“å¼€å·¥å…·è°ƒè¯•ï¼ˆå¯å¸¦å¤æ£€å›¾è·¯å¾„ï¼‰
+     * @param jobId æµç¨‹ id
+     * @param toolId å·¥å…· idï¼ˆå¯ç©º=æµç¨‹é¦–ä¸ªå·¥å…·ï¼‰
+     * @param imagePath å¤æ£€å›¾å…¨è·¯å¾„ï¼ˆå¯ç©ºï¼‰
      */
     void openDesignDebug(const QString& jobId, const QString& toolId, const QString& imagePath);
 
 private slots:
-    /** @brief ä¯ÀÀÍ¼ÏñÎÄ¼ş¼Ğ */
+    /** @brief æµè§ˆå›¾åƒæ–‡ä»¶å¤¹ */
     void onBrowseFolder();
-    /** @brief ¹¤Õ¾ÇĞ»»Ê±Ë¢ĞÂÁ÷³ÌÏÂÀ­ */
+    /** @brief å·¥ç«™åˆ‡æ¢æ—¶åˆ·æ–°æµç¨‹ä¸‹æ‹‰ */
     void onStationChanged();
-    /** @brief ¿ªÊ¼ÅúÁ¿¸´¼ì */
+    /** @brief å¼€å§‹æ‰¹é‡å¤æ£€ */
     void onStart();
-    /** @brief Í£Ö¹ÅúÁ¿¸´¼ì */
+    /** @brief åœæ­¢æ‰¹é‡å¤æ£€ */
     void onStop();
-    /** @brief ÔİÍ£ / ¼ÌĞø */
+    /** @brief æš‚åœ / ç»§ç»­ */
     void onPauseResume();
-    /** @brief ´¦ÀíÏÂÒ»ÕÅÍ¼£¨Í¶µİµ½Ïß³Ì³Ø£© */
+    /** @brief å¤„ç†ä¸‹ä¸€å¼ å›¾ï¼ˆæŠ•é€’åˆ°çº¿ç¨‹æ± ï¼‰ */
     void onStepNext();
-    /** @brief µ¥ÕÅÒì²½ÅÜÍê£¨itemPtr Îª¶ÑÉÏ Item*£© */
+    /** @brief å•å¼ å¼‚æ­¥è·‘å®Œï¼ˆitemPtr ä¸ºå †ä¸Š Item*ï¼‰ */
     void onStepFinished(void* itemPtr);
-    /** @brief ½á¹û±íÑ¡ÖĞ±ä»¯£¬Ë¢ĞÂÏêÇé */
+    /** @brief ç»“æœè¡¨é€‰ä¸­å˜åŒ–ï¼Œåˆ·æ–°è¯¦æƒ… */
     void onRowSelected();
-    /** @brief ¹ıÂËÌõ¼ş±ä»¯ */
+    /** @brief è¿‡æ»¤æ¡ä»¶å˜åŒ– */
     void onFilterChanged();
-    /** @brief µ¼³ö CSV */
+    /** @brief å¯¼å‡º CSV */
     void onExportCsv();
-    /** @brief ±£´æ»á»°±¨¸æµ½ logs */
+    /** @brief ä¿å­˜ä¼šè¯æŠ¥å‘Šåˆ° logs */
     void onSaveReport();
-    /** @brief ÓÃµ±Ç°ĞĞÌø×ªÉè¼Æµ÷ÊÔ */
+    /** @brief ç”¨å½“å‰è¡Œè·³è½¬è®¾è®¡è°ƒè¯• */
     void onOpenDesignDebug();
-    /** @brief Ë«»÷¹¤¾ß½á¹ûĞĞÌø×ª¸Ã¹¤¾ßµ÷ÊÔ */
+    /** @brief åŒå‡»å·¥å…·ç»“æœè¡Œè·³è½¬è¯¥å·¥å…·è°ƒè¯• */
     void onToolDouble(int row, int col);
 
 private:
-    /** @brief ĞĞÅĞ¶¨£ºOK / NG / Ê§°Ü£¨¶ÁÍ¼»ò×¢ÈëÊ§°Ü£© */
+    /** @brief è¡Œåˆ¤å®šï¼šOK / NG / å¤±è´¥ï¼ˆè¯»å›¾æˆ–æ³¨å…¥å¤±è´¥ï¼‰ */
     enum Verdict {
-        VerdictOk = 0,   ///< ¼ì²âÍ¨¹ı
-        VerdictNg,       ///< Á÷³ÌÅÜÍêµ«ÅĞ¶¨ NG
-        VerdictFail      ///< ¶ÁÍ¼/×¢Èë/ÊµÀıÊ§°Ü£¬Î´Õı³£³ö½á¹û
+        VerdictOk = 0,   ///< æ£€æµ‹é€šè¿‡
+        VerdictNg,       ///< æµç¨‹è·‘å®Œä½†åˆ¤å®š NG
+        VerdictFail      ///< è¯»å›¾/æ³¨å…¥/å®ä¾‹å¤±è´¥ï¼Œæœªæ­£å¸¸å‡ºç»“æœ
     };
 
     /**
      * @class ToolRow
-     * @brief µ¥¹¤¾ß½á¹ûÕªÒª£¨ÏêÇé±íÒ»ĞĞ£©
+     * @brief å•å·¥å…·ç»“æœæ‘˜è¦ï¼ˆè¯¦æƒ…è¡¨ä¸€è¡Œï¼‰
      */
     struct ToolRow {
-        QString toolId;    ///< ¹¤¾ß id
-        QString name;      ///< ÏÔÊ¾Ãû
-        bool ran;          ///< ±¾ÕÅÊÇ·ñÅÜ¹ı
+        QString toolId;    ///< å·¥å…· id
+        QString name;      ///< æ˜¾ç¤ºå
+        bool ran;          ///< æœ¬å¼ æ˜¯å¦è·‘è¿‡
         bool ok;           ///< OK/NG
-        QString summary;   ///< ¼òÒªËµÃ÷
-        int elapsedMs;     ///< ¹¤¾ßºÄÊ± ms£»Î´ÅÜÎª -1
+        QString summary;   ///< ç®€è¦è¯´æ˜
+        int elapsedMs;     ///< å·¥å…·è€—æ—¶ msï¼›æœªè·‘ä¸º -1
         ToolRow()
             : ran(false)
             , ok(false)
@@ -129,19 +129,19 @@ private:
 
     /**
      * @class Item
-     * @brief µ¥ÕÅ¸´¼ì½á¹û£¨º¬ÏêÇé»º´æ£©
+     * @brief å•å¼ å¤æ£€ç»“æœï¼ˆå«è¯¦æƒ…ç¼“å­˜ï¼‰
      */
     struct Item {
-        QString path;                          ///< Í¼ÏñÈ«Â·¾¶
-        QString fileName;                      ///< ÎÄ¼şÃû
-        Verdict verdict;                       ///< ÅĞ¶¨
-        bool ran;                              ///< ÊÇ·ñÒÑ´¦Àí
-        int elapsedMs;                         ///< ºÄÊ±
-        QString message;                       ///< ÕªÒª
-        HsCommData::HsImage source;           ///< Ô´Í¼
-        HsCommData::HsImage image;            ///< ½á¹ûÍ¼
-        QVector<HsCommData::Graphic> graphics;    ///< µş¼Ó
-        QVector<ToolRow> tools;                ///< ¸÷¹¤¾ß½á¹û
+        QString path;                          ///< å›¾åƒå…¨è·¯å¾„
+        QString fileName;                      ///< æ–‡ä»¶å
+        Verdict verdict;                       ///< åˆ¤å®š
+        bool ran;                              ///< æ˜¯å¦å·²å¤„ç†
+        int elapsedMs;                         ///< è€—æ—¶
+        QString message;                       ///< æ‘˜è¦
+        HsCommData::HsImage source;           ///< æºå›¾
+        HsCommData::HsImage image;            ///< ç»“æœå›¾
+        QVector<HsCommData::Graphic> graphics;    ///< å åŠ 
+        QVector<ToolRow> tools;                ///< å„å·¥å…·ç»“æœ
         Item()
             : verdict(VerdictFail)
             , ran(false)
@@ -149,64 +149,64 @@ private:
         {}
     };
 
-    /** @brief µ±Ç°Ñ¡ÖĞµÄ¹¤Õ¾ÅäÖÃ */
+    /** @brief å½“å‰é€‰ä¸­çš„å·¥ç«™é…ç½® */
     StationCfg* currentStationConfig() const;
-    /** @brief µ±Ç°Ñ¡ÖĞµÄÁ÷³ÌÅäÖÃ */
+    /** @brief å½“å‰é€‰ä¸­çš„æµç¨‹é…ç½® */
     JobCfg* currentJobConfig() const;
-    /** @brief ²İ¸åÁ÷³Ì£º°Ñ²É¼¯¹¤¾ß path Ö¸µ½Ö¸¶¨ÎÄ¼ş */
+    /** @brief è‰ç¨¿æµç¨‹ï¼šæŠŠé‡‡é›†å·¥å…· path æŒ‡åˆ°æŒ‡å®šæ–‡ä»¶ */
     bool applyImageToDraft(JobCfg* draft, const std::string& imagePath, QString* err) const;
-    /** @brief ´Ó Job ÔËĞĞÌ¬ÊÕ¼¯¸÷¹¤¾ßĞĞ */
+    /** @brief ä» Job è¿è¡Œæ€æ”¶é›†å„å·¥å…·è¡Œ */
     void collectToolRows(Job* job, const JobCfg* formal, Item* item) const;
-    /** @brief Ë¢ĞÂ½ø¶ÈÓëÍ³¼Æ±êÇ© */
+    /** @brief åˆ·æ–°è¿›åº¦ä¸ç»Ÿè®¡æ ‡ç­¾ */
     void updateProgressLabels();
-    /** @brief ¸üĞÂ¿ªÊ¼/ÔİÍ£/Í£Ö¹°´Å¥Ê¹ÄÜ */
+    /** @brief æ›´æ–°å¼€å§‹/æš‚åœ/åœæ­¢æŒ‰é’®ä½¿èƒ½ */
     void updateRunButtons();
-    /** @brief °´¹ıÂËÌõ¼şÖØÌî½á¹û±í£¨²»¶ª Item£© */
+    /** @brief æŒ‰è¿‡æ»¤æ¡ä»¶é‡å¡«ç»“æœè¡¨ï¼ˆä¸ä¸¢ Itemï¼‰ */
     void refillTable();
-    /** @brief ÏÔÊ¾Ö¸¶¨ Item ÏêÇé£»¿ÕÔòÇå¿Õ */
+    /** @brief æ˜¾ç¤ºæŒ‡å®š Item è¯¦æƒ…ï¼›ç©ºåˆ™æ¸…ç©º */
     void showDetail(const Item* item);
-    /** @brief ±í¸ñĞĞ ¡ú m_items ÏÂ±ê£»ÎŞĞ§Îª -1 */
+    /** @brief è¡¨æ ¼è¡Œ â†’ m_items ä¸‹æ ‡ï¼›æ— æ•ˆä¸º -1 */
     int itemIndexFromRow(int row) const;
-    /** @brief µ±Ç°Ñ¡ÖĞ Item£»ÎŞÔò 0 */
+    /** @brief å½“å‰é€‰ä¸­ Itemï¼›æ— åˆ™ 0 */
     const Item* currentItem() const;
-    /** @brief ÅĞ¶¨ÎÄ°¸ */
+    /** @brief åˆ¤å®šæ–‡æ¡ˆ */
     static QString verdictText(Verdict v);
-    /** @brief Ğ´±¨¸æµ½Ö¸¶¨Â·¾¶£¨JSON£© */
+    /** @brief å†™æŠ¥å‘Šåˆ°æŒ‡å®šè·¯å¾„ï¼ˆJSONï¼‰ */
     bool writeReportFile(const QString& path, QString* err) const;
-    /** @brief ÅúÅÜ½áÊøÊ±×Ô¶¯ÂäÒ»·İ±¨¸æ */
+    /** @brief æ‰¹è·‘ç»“æŸæ—¶è‡ªåŠ¨è½ä¸€ä»½æŠ¥å‘Š */
     void autoSaveReportIfNeeded();
 
-    Session* m_session;                 ///< »á»°
-    Solution* m_sol;                    ///< ·½°¸
-    Station* m_station;                 ///< ¹¤Õ¾ÔËĞĞÊµÀı£¬²»ÓµÓĞ
-    QLineEdit* m_folder;                ///< Í¼ÏñÄ¿Â¼
-    QComboBox* m_stationCombo;          ///< ¹¤Õ¾
-    QComboBox* m_jobCombo;              ///< Á÷³Ì
-    QLabel* m_fileCount;                ///< ÒÑÉ¨ÃèÕÅÊı
-    QPushButton* m_btnStart;            ///< ¿ªÊ¼
-    QPushButton* m_btnPause;            ///< ÔİÍ£/¼ÌĞø
-    QPushButton* m_btnStop;             ///< Í£Ö¹
-    QProgressBar* m_progress;           ///< ½ø¶È
-    QLabel* m_stats;                    ///< OK/NG/Ê§°Ü Í³¼Æ
-    QComboBox* m_filter;                ///< ¹ıÂË£ºÈ«²¿/ÎÊÌâ/NG/Ê§°Ü
-    QPushButton* m_btnExport;           ///< µ¼³ö CSV
-    QPushButton* m_btnReport;           ///< ±£´æ±¨¸æ
-    QPushButton* m_btnDebug;            ///< ´ò¿ªÉè¼Æµ÷ÊÔ
-    QTableWidget* m_table;              ///< ½á¹û±í
-    HsCtrl::HsImageWindow* m_view;     ///< ÏêÇéÍ¼Ïñ
-    QLabel* m_detailTitle;              ///< ÏêÇé±êÌâ
-    QTableWidget* m_toolTable;          ///< ¹¤¾ß½á¹û±í
-    QVector<Item> m_items;              ///< È«²¿½á¹û
-    std::vector<std::string> m_queue;   ///< ´ıÅÜÂ·¾¶
-    int m_queueIndex;                   ///< ÏÂÒ»ÕÅÏÂ±ê
-    bool m_running;                     ///< ÅúÅÜÖĞ£¨º¬ÔİÍ££©
-    bool m_paused;                      ///< ÒÑÔİÍ£
-    bool m_stopRequested;               ///< ÓÃ»§ÇëÇóÍ£Ö¹
-    bool m_stepBusy;                    ///< µ±Ç°ÕÅÒÑÍ¶µİÎ´Íê³É
-    bool m_canRun;                      ///< ÔËĞĞÈ¨ÏŞ
-    QString m_sessionJobId;             ///< ±¾ÅúÁ÷³Ì id£¨±¨¸æÓÃ£©
-    QString m_sessionStationId;         ///< ±¾Åú¹¤Õ¾ id
-    QString m_lastReportPath;           ///< ×î½ü×Ô¶¯/ÊÖ¶¯±¨¸æÂ·¾¶
+    Session* m_session;                 ///< ä¼šè¯
+    Solution* m_sol;                    ///< æ–¹æ¡ˆ
+    Station* m_station;                 ///< å·¥ç«™è¿è¡Œå®ä¾‹ï¼Œä¸æ‹¥æœ‰
+    QLineEdit* m_folder;                ///< å›¾åƒç›®å½•
+    QComboBox* m_stationCombo;          ///< å·¥ç«™
+    QComboBox* m_jobCombo;              ///< æµç¨‹
+    QLabel* m_fileCount;                ///< å·²æ‰«æå¼ æ•°
+    QPushButton* m_btnStart;            ///< å¼€å§‹
+    QPushButton* m_btnPause;            ///< æš‚åœ/ç»§ç»­
+    QPushButton* m_btnStop;             ///< åœæ­¢
+    QProgressBar* m_progress;           ///< è¿›åº¦
+    QLabel* m_stats;                    ///< OK/NG/å¤±è´¥ ç»Ÿè®¡
+    QComboBox* m_filter;                ///< è¿‡æ»¤ï¼šå…¨éƒ¨/é—®é¢˜/NG/å¤±è´¥
+    QPushButton* m_btnExport;           ///< å¯¼å‡º CSV
+    QPushButton* m_btnReport;           ///< ä¿å­˜æŠ¥å‘Š
+    QPushButton* m_btnDebug;            ///< æ‰“å¼€è®¾è®¡è°ƒè¯•
+    QTableWidget* m_table;              ///< ç»“æœè¡¨
+    HsCtrl::HsImageWindow* m_view;     ///< è¯¦æƒ…å›¾åƒ
+    QLabel* m_detailTitle;              ///< è¯¦æƒ…æ ‡é¢˜
+    QTableWidget* m_toolTable;          ///< å·¥å…·ç»“æœè¡¨
+    QVector<Item> m_items;              ///< å…¨éƒ¨ç»“æœ
+    std::vector<std::string> m_queue;   ///< å¾…è·‘è·¯å¾„
+    int m_queueIndex;                   ///< ä¸‹ä¸€å¼ ä¸‹æ ‡
+    bool m_running;                     ///< æ‰¹è·‘ä¸­ï¼ˆå«æš‚åœï¼‰
+    bool m_paused;                      ///< å·²æš‚åœ
+    bool m_stopRequested;               ///< ç”¨æˆ·è¯·æ±‚åœæ­¢
+    bool m_stepBusy;                    ///< å½“å‰å¼ å·²æŠ•é€’æœªå®Œæˆ
+    bool m_canRun;                      ///< è¿è¡Œæƒé™
+    QString m_sessionJobId;             ///< æœ¬æ‰¹æµç¨‹ idï¼ˆæŠ¥å‘Šç”¨ï¼‰
+    QString m_sessionStationId;         ///< æœ¬æ‰¹å·¥ç«™ id
+    QString m_lastReportPath;           ///< æœ€è¿‘è‡ªåŠ¨/æ‰‹åŠ¨æŠ¥å‘Šè·¯å¾„
 };
 
 }

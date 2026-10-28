@@ -1,6 +1,6 @@
 /**
  * @file Pbkdf2.cpp
- * @brief Pbkdf2ÊµÏÖ
+ * @brief Pbkdf2å®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -12,7 +12,7 @@
 
 namespace Vision {
 
-// HMAC-SHA256£¬Êä³ö 32 ×Ö½Ú
+// HMAC-SHA256ï¼Œè¾“å‡º 32 å­—èŠ‚
 void hmacSha256(const unsigned char* key, size_t keyLen,
                 const unsigned char* data, size_t dataLen,
                 unsigned char out[32])
@@ -43,7 +43,7 @@ void hmacSha256(const unsigned char* key, size_t keyLen,
     sha256(outer, sizeof(outer), out);
 }
 
-// ÓÃÑÎºÍ¿ÚÁîÅÉÉú 32 ×Ö½ÚÃÜÔ¿
+// ç”¨ç›å’Œå£ä»¤æ´¾ç”Ÿ 32 å­—èŠ‚å¯†é’¥
 std::vector<unsigned char> pbkdf2HmacSha256(const std::vector<unsigned char>& salt,
                                             const std::string& password,
                                             int iterations)

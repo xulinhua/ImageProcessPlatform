@@ -1,6 +1,6 @@
 /**
  * @file VisionAuthExport.h
- * @brief VisionAuthExportͷ�ļ�
+ * @brief VisionAuthExport头文件
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.

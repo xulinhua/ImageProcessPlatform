@@ -1,6 +1,6 @@
 /**
  * @file HalTupleConvert.h
- * @brief HalTupleConvertÍ·ÎÄ¼ş
+ * @brief HalTupleConvertå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -18,12 +18,12 @@
 namespace Vision {
 
 /**
- * @brief HsTuple ¡ú HTuple¡£»ìºÏÔª×é°´¸ñÀàĞÍ×·¼Ó£»¿ÕÔª×éµÃ¿Õ HTuple
+ * @brief HsTuple â†’ HTupleã€‚æ··åˆå…ƒç»„æŒ‰æ ¼ç±»å‹è¿½åŠ ï¼›ç©ºå…ƒç»„å¾—ç©º HTuple
  */
 VISION_HALCOM_API bool hsTupleToHTuple(const HsCommData::HsTuple& src, HalconCpp::HTuple*& out, std::string* err);
 
 /**
- * @brief HTuple ¡ú HsTuple¡£°´ Halcon ÔªËØÀàĞÍĞ´Èë long/double/string
+ * @brief HTuple â†’ HsTupleã€‚æŒ‰ Halcon å…ƒç´ ç±»å‹å†™å…¥ long/double/string
  */
 VISION_HALCOM_API bool hTupleToHsTuple(const HalconCpp::HTuple& src, HsCommData::HsTuple*& out, std::string* err);
 

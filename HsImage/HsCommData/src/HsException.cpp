@@ -1,6 +1,6 @@
 /**
  * @file HsException.cpp
- * @brief HsExceptionÊµÏÖ
+ * @brief HsExceptionå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -14,7 +14,7 @@ namespace HsCommData {
 
 namespace {
 
-// °´´íÎóÂëÈ¡Ö÷ËµÃ÷
+// æŒ‰é”™è¯¯ç å–ä¸»è¯´æ˜
 const char* messageOf(HsError code)
 {
     switch (code) {
@@ -87,7 +87,7 @@ const char* messageOf(HsError code)
     }
 }
 
-// ¿ÕÖ¸Õëµ±¿Õ´®
+// ç©ºæŒ‡é’ˆå½“ç©ºä¸²
 std::string takeText(const char* text)
 {
     if (!text) {
@@ -99,27 +99,27 @@ std::string takeText(const char* text)
 }
 
 struct HsException::Data {
-    std::string proc; ///< Ëã×ÓÃû¡£Ã»ÓĞÔòÎª¿Õ´®
-    std::string message; ///< Ö÷ËµÃ÷
-    std::string extendedMessage; ///< ¸½¼ÓËµÃ÷¡£Ã»ÓĞÔòÎª¿Õ´®
-    std::string whatText; ///< what() ÓÃµÄÕû¾äËµÃ÷
-    HsError code; ///< ´íÎóÂë
-    HsError extendedCode; ///< ¸½¼Ó´íÎóÂë¡£HS_OK ±íÊ¾Ã»ÓĞ
-    HsTuple userData; ///< ÓÃ»§Ôª×é¡£Ã»ÓĞ¸½¼ÓÊı¾İÊ±Îª¿Õ
+    std::string proc; ///< ç®—å­åã€‚æ²¡æœ‰åˆ™ä¸ºç©ºä¸²
+    std::string message; ///< ä¸»è¯´æ˜
+    std::string extendedMessage; ///< é™„åŠ è¯´æ˜ã€‚æ²¡æœ‰åˆ™ä¸ºç©ºä¸²
+    std::string whatText; ///< what() ç”¨çš„æ•´å¥è¯´æ˜
+    HsError code; ///< é”™è¯¯ç 
+    HsError extendedCode; ///< é™„åŠ é”™è¯¯ç ã€‚HS_OK è¡¨ç¤ºæ²¡æœ‰
+    HsTuple userData; ///< ç”¨æˆ·å…ƒç»„ã€‚æ²¡æœ‰é™„åŠ æ•°æ®æ—¶ä¸ºç©º
 
     Data();
-    /** @brief °´Ëã×ÓÃû¡¢Ö÷ËµÃ÷ºÍ¸½¼ÓËµÃ÷ÖØÆ´ what */
+    /** @brief æŒ‰ç®—å­åã€ä¸»è¯´æ˜å’Œé™„åŠ è¯´æ˜é‡æ‹¼ what */
     void rebuild();
 };
 
-// ´íÎóÂëºÍ¸½¼ÓÂëÄ¬ÈÏÎª³É¹¦
+// é”™è¯¯ç å’Œé™„åŠ ç é»˜è®¤ä¸ºæˆåŠŸ
 HsException::Data::Data()
     : code(HS_OK)
     , extendedCode(HS_OK)
 {
 }
 
-// ÓĞËã×ÓÃû·ÅÇ°Ãæ£¬ÓĞ¸½¼ÓËµÃ÷½ÓÔÚºóÃæ
+// æœ‰ç®—å­åæ”¾å‰é¢ï¼Œæœ‰é™„åŠ è¯´æ˜æ¥åœ¨åé¢
 void HsException::Data::rebuild()
 {
     whatText.clear();
@@ -134,7 +134,7 @@ void HsException::Data::rebuild()
     }
 }
 
-// ÌîËã×ÓÃû¡¢´íÎóÂëºÍÖ÷ËµÃ÷£¬²¢ÖØÆ´ what
+// å¡«ç®—å­åã€é”™è¯¯ç å’Œä¸»è¯´æ˜ï¼Œå¹¶é‡æ‹¼ what
 void HsException::init(const char* procName, HsError errorCode, const char* message)
 {
     m_data->proc = takeText(procName);
@@ -149,7 +149,7 @@ void HsException::init(const char* procName, HsError errorCode, const char* mess
     m_data->rebuild();
 }
 
-// °´´íÎóÂë¹¹Ôì
+// æŒ‰é”™è¯¯ç æ„é€ 
 HsException::HsException(HsError errorCode)
     : std::runtime_error("")
     , m_data(new Data())
@@ -157,7 +157,7 @@ HsException::HsException(HsError errorCode)
     init(0, errorCode, 0);
 }
 
-// ´øËã×ÓÃûºÍ´íÎóÂë
+// å¸¦ç®—å­åå’Œé”™è¯¯ç 
 HsException::HsException(const char* procName, HsError errorCode)
     : std::runtime_error("")
     , m_data(new Data())
@@ -165,7 +165,7 @@ HsException::HsException(const char* procName, HsError errorCode)
     init(procName, errorCode, 0);
 }
 
-// ´øËã×ÓÃûºÍ×Ô¶¨ÒåËµÃ÷
+// å¸¦ç®—å­åå’Œè‡ªå®šä¹‰è¯´æ˜
 HsException::HsException(const char* procName, const char* message, HsError errorCode)
     : std::runtime_error("")
     , m_data(new Data())
@@ -173,14 +173,14 @@ HsException::HsException(const char* procName, const char* message, HsError erro
     init(procName, errorCode, message);
 }
 
-// Éî¿½ËµÃ÷ºÍÓÃ»§Ôª×é
+// æ·±æ‹·è¯´æ˜å’Œç”¨æˆ·å…ƒç»„
 HsException::HsException(const HsException& other)
     : std::runtime_error(other)
     , m_data(new Data(*other.m_data))
 {
 }
 
-// Éî¿½ËµÃ÷ºÍÓÃ»§Ôª×é
+// æ·±æ‹·è¯´æ˜å’Œç”¨æˆ·å…ƒç»„
 HsException& HsException::operator=(const HsException& other)
 {
     if (this != &other) {
@@ -195,7 +195,7 @@ HsException& HsException::operator=(const HsException& other)
     return *this;
 }
 
-// ¿ç DLL ±ß½çÊÍ·ÅÄÚ²¿Êı¾İ
+// è·¨ DLL è¾¹ç•Œé‡Šæ”¾å†…éƒ¨æ•°æ®
 HsException::~HsException()
 {
     if (m_data) {
@@ -204,13 +204,13 @@ HsException::~HsException()
     }
 }
 
-// °´Êµ¼ÊÀàĞÍÔÙÅ×³ö
+// æŒ‰å®é™…ç±»å‹å†æŠ›å‡º
 void HsException::throwInstance() const
 {
     throw *this;
 }
 
-// °´ÏµÍ³²ÎÊı¾ö¶¨Å×³ö¡¢»Øµ÷»ò¼ÌĞø
+// æŒ‰ç³»ç»Ÿå‚æ•°å†³å®šæŠ›å‡ºã€å›è°ƒæˆ–ç»§ç»­
 void raiseException(const HsException& exception)
 {
     const HsSystem::ExceptionMode mode = HsSystem::instance().exceptionMode;
@@ -227,61 +227,61 @@ void raiseException(const HsException& exception)
     exception.throwInstance();
 }
 
-// Å×³öÖ»´ø´íÎóÂëµÄÒì³£
+// æŠ›å‡ºåªå¸¦é”™è¯¯ç çš„å¼‚å¸¸
 void HsException::Throw(HsError errorCode)
 {
     raiseException(HsException(errorCode));
 }
 
-// Å×³ö´øËã×ÓÃûºÍ´íÎóÂëµÄÒì³£
+// æŠ›å‡ºå¸¦ç®—å­åå’Œé”™è¯¯ç çš„å¼‚å¸¸
 void HsException::Throw(const char* procName, HsError errorCode)
 {
     raiseException(HsException(procName, errorCode));
 }
 
-// Å×³ö´øËã×ÓÃûºÍ×Ô¶¨ÒåËµÃ÷µÄÒì³£
+// æŠ›å‡ºå¸¦ç®—å­åå’Œè‡ªå®šä¹‰è¯´æ˜çš„å¼‚å¸¸
 void HsException::Throw(const char* procName, const char* message, HsError errorCode)
 {
     raiseException(HsException(procName, message, errorCode));
 }
 
-// Ëã×Ó»òº¯ÊıÃû
+// ç®—å­æˆ–å‡½æ•°å
 const char* HsException::procName() const
 {
     return m_data->proc.c_str();
 }
 
-// Ö÷ËµÃ÷
+// ä¸»è¯´æ˜
 const char* HsException::errorMessage() const
 {
     return m_data->message.c_str();
 }
 
-// ´íÎóÂë
+// é”™è¯¯ç 
 HsError HsException::code() const
 {
     return m_data->code;
 }
 
-// ¸½¼Ó´íÎóÂë
+// é™„åŠ é”™è¯¯ç 
 HsError HsException::extendedCode() const
 {
     return m_data->extendedCode;
 }
 
-// ¸½¼ÓËµÃ÷
+// é™„åŠ è¯´æ˜
 const char* HsException::extendedMessage() const
 {
     return m_data->extendedMessage.c_str();
 }
 
-// ÓÃ»§Ôª×é
+// ç”¨æˆ·å…ƒç»„
 const HsTuple& HsException::userData() const
 {
     return m_data->userData;
 }
 
-// ²¹ÉÏ¸½¼ÓÂëºÍ¸½¼ÓËµÃ÷
+// è¡¥ä¸Šé™„åŠ ç å’Œé™„åŠ è¯´æ˜
 void HsException::setExtended(HsError extendedCode, const char* extendedMessage)
 {
     m_data->extendedCode = extendedCode;
@@ -289,66 +289,66 @@ void HsException::setExtended(HsError extendedCode, const char* extendedMessage)
     m_data->rebuild();
 }
 
-// »»ÉÏÓÃ»§Ôª×é
+// æ¢ä¸Šç”¨æˆ·å…ƒç»„
 void HsException::setUserData(const HsTuple& data)
 {
     m_data->userData = data;
 }
 
-// Õû¾äËµÃ÷
+// æ•´å¥è¯´æ˜
 const char* HsException::what() const noexcept
 {
     return m_data->whatText.c_str();
 }
 
-// ÀàĞÍ²»·û£¬ËµÃ÷ÎªÔª×é·ÃÎÊÊ§°Ü
+// ç±»å‹ä¸ç¬¦ï¼Œè¯´æ˜ä¸ºå…ƒç»„è®¿é—®å¤±è´¥
 HsTupleAccessException::HsTupleAccessException()
     : HsException(static_cast<const char*>(nullptr), "Tuple access failed", HS_ERR_TYPE)
 {
 }
 
-// ×Ô¶¨ÒåËµÃ÷£¬´íÎóÂëÎªÀàĞÍ²»·û
+// è‡ªå®šä¹‰è¯´æ˜ï¼Œé”™è¯¯ç ä¸ºç±»å‹ä¸ç¬¦
 HsTupleAccessException::HsTupleAccessException(const char* message)
     : HsException(static_cast<const char*>(nullptr), message, HS_ERR_TYPE)
 {
 }
 
-// °´´íÎóÂë¹¹Ôì
+// æŒ‰é”™è¯¯ç æ„é€ 
 HsTupleAccessException::HsTupleAccessException(HsError errorCode)
     : HsException(errorCode)
 {
 }
 
-// ×Ô¶¨ÒåËµÃ÷ºÍ´íÎóÂë
+// è‡ªå®šä¹‰è¯´æ˜å’Œé”™è¯¯ç 
 HsTupleAccessException::HsTupleAccessException(const char* message, HsError errorCode)
     : HsException(static_cast<const char*>(nullptr), message, errorCode)
 {
 }
 
-// ¿ç DLL ±ß½çÊÍ·ÅÄÚ²¿Êı¾İ
+// è·¨ DLL è¾¹ç•Œé‡Šæ”¾å†…éƒ¨æ•°æ®
 HsTupleAccessException::~HsTupleAccessException()
 {
 }
 
-// °´±¾ÀàĞÍÔÙÅ×³ö
+// æŒ‰æœ¬ç±»å‹å†æŠ›å‡º
 void HsTupleAccessException::throwInstance() const
 {
     throw *this;
 }
 
-// Å×³öÄ¬ÈÏµÄÔª×é·ÃÎÊÒì³£
+// æŠ›å‡ºé»˜è®¤çš„å…ƒç»„è®¿é—®å¼‚å¸¸
 void HsTupleAccessException::Throw()
 {
     raiseException(HsTupleAccessException());
 }
 
-// Å×³ö´øËµÃ÷µÄÔª×é·ÃÎÊÒì³£
+// æŠ›å‡ºå¸¦è¯´æ˜çš„å…ƒç»„è®¿é—®å¼‚å¸¸
 void HsTupleAccessException::Throw(const char* message)
 {
     raiseException(HsTupleAccessException(message));
 }
 
-// Å×³ö´ø´íÎóÂëµÄÔª×é·ÃÎÊÒì³£
+// æŠ›å‡ºå¸¦é”™è¯¯ç çš„å…ƒç»„è®¿é—®å¼‚å¸¸
 void HsTupleAccessException::Throw(HsError errorCode)
 {
     raiseException(HsTupleAccessException(errorCode));

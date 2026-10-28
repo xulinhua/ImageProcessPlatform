@@ -1,6 +1,6 @@
 /**
  * @file ToolBase.h
- * @brief ToolBaseÍ·ÎÄ¼ş
+ * @brief ToolBaseå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -10,6 +10,7 @@
 #define VISION_TOOLBASE_H
 
 #include "ParamField.h"
+#include "ToolSpec.h"
 #include "ToolParaBase.h"
 #include "ToolEnums.h"
 #include "ToolExport.h"
@@ -23,137 +24,188 @@
 
 namespace Vision {
 
-/** @class ToolDesc @brief ¹¤¾ßÏäÌõÄ¿¡£type ÊÇ´óÀà£¬toolName ÊÇ¾ßÌå¹¤¾ß */
+class AlgToolBase;
+
+/** @class ToolDesc @brief å·¥å…·ç®±æ¡ç›®ã€‚type æ˜¯å¤§ç±»ï¼ŒtoolName æ˜¯å…·ä½“å·¥å…· */
 struct ToolDesc {
-    std::string toolName;               ///< ¾ßÌå¹¤¾ß×¢²áÃû
-    ToolType type;                      ///< ËùÊô ToolType
-    std::string displayName;            ///< ½çÃæÏÔÊ¾Ãû
-    std::string description;            ///< ËµÃ÷
-    std::string version;                ///< ¹¤¾ß°æ±¾ major.minor.patch
-    std::vector<PortDesc> ports;        ///< ¶Ë¿Ú±í
-    std::vector<std::string> paramKeys; ///< ²ÎÊıÃû
+    std::string toolName;               ///< å…·ä½“å·¥å…·æ³¨å†Œå
+    ToolType type;                      ///< æ‰€å± ToolType
+    std::string displayName;            ///< ç•Œé¢æ˜¾ç¤ºå
+    std::string description;            ///< è¯´æ˜
+    std::string version;                ///< å·¥å…·ç‰ˆæœ¬ major.minor.patch
+    std::vector<PortDesc> ports;        ///< ç«¯å£è¡¨
+    std::vector<std::string> paramKeys; ///< å‚æ•°å
     ToolDesc() : type(ToolType::Undefined) {}
 };
 
 
 /**
  * @class ToolBase
- * @brief ¹¤¾ßÊµÀı»ùÀà£ºËÄ¼şÌ×³ÉÔ± + ÖÖÀàÔªÊı¾İ + execute + clone/destroy
- * @note ×¢²á±í³ÖÔ­ĞÍ£»Job ³Ö clone ³öµÄÊµÀı¡£Æ½Ì¨Ö»¼û±¾Í·£¬²»¼û×ÓÀàÍ·
+ * @brief å·¥å…·å®ä¾‹åŸºç±»ï¼šå››ä»¶å¥—æˆå‘˜ + ç§ç±»å…ƒæ•°æ® + execute + clone/destroy
+ * @note æ³¨å†Œè¡¨æŒåŸå‹ï¼›Job æŒ clone å‡ºçš„å®ä¾‹ã€‚å¹³å°åªè§æœ¬å¤´ï¼Œä¸è§å­ç±»å¤´
  */
 class VISION_TOOL_API ToolBase {
 public:
     ToolBase();
     virtual ~ToolBase();
 
-    /************************************************** ÊµÀıÊı¾İ **************************************************/
-    /** @brief Éí·İ£¨ÂäÅÌ£© */
+    /************************************************** å®ä¾‹æ•°æ® **************************************************/
+    /** @brief èº«ä»½ï¼ˆè½ç›˜ï¼‰ */
     ToolInfo& info();
-    /** @brief Éí·İ£¨ÂäÅÌ£© */
+    /** @brief èº«ä»½ï¼ˆè½ç›˜ï¼‰ */
     const ToolInfo& info() const;
-    /** @brief Ğ´ÈëÉí·İ */
+    /** @brief å†™å…¥èº«ä»½ */
     void setInfo(const ToolInfo& value);
-    /** @brief ÊäÈëÁ¬Ïß£¨ÂäÅÌ£© */
+    /** @brief è¾“å…¥è¿çº¿ï¼ˆè½ç›˜ï¼‰ */
     std::vector<ToolInputLink>& links();
-    /** @brief ÊäÈëÁ¬Ïß£¨ÂäÅÌ£© */
+    /** @brief è¾“å…¥è¿çº¿ï¼ˆè½ç›˜ï¼‰ */
     const std::vector<ToolInputLink>& links() const;
-    /** @brief Ğ´ÈëÊäÈëÁ¬Ïß */
+    /** @brief å†™å…¥è¾“å…¥è¿çº¿ */
     void setLinks(const std::vector<ToolInputLink>& value);
-    /** @brief ²ÎÊı£¨ÂäÅÌ£© */
+    /** @brief å‚æ•°ï¼ˆè½ç›˜ï¼‰ */
     ToolParam& param();
-    /** @brief ²ÎÊı£¨ÂäÅÌ£© */
+    /** @brief å‚æ•°ï¼ˆè½ç›˜ï¼‰ */
     const ToolParam& param() const;
-    /** @brief Ğ´Èë²ÎÊı */
+    /** @brief å†™å…¥å‚æ•° */
     void setPara(const ToolParam& value);
-    /** @brief ±¾ÅÄ IO£¨½öÔËĞĞÌ¬£© */
+    /** @brief æœ¬æ‹ IOï¼ˆä»…è¿è¡Œæ€ï¼‰ */
     ToolIo& io();
-    /** @brief ±¾ÅÄ IO£¨½öÔËĞĞÌ¬£© */
+    /** @brief æœ¬æ‹ IOï¼ˆä»…è¿è¡Œæ€ï¼‰ */
     const ToolIo& io() const;
-    /** @brief Ğ´Èë±¾ÅÄ IO */
+    /** @brief å†™å…¥æœ¬æ‹ IO */
     void setIo(const ToolIo& value);
-    /** @brief ÔËĞĞÌ¬ÊıÖµ£¨²»ÂäÅÌ£© */
+    /** @brief è¿è¡Œæ€æ•°å€¼ï¼ˆä¸è½ç›˜ï¼‰ */
     ParamMap& runtime();
-    /** @brief ÔËĞĞÌ¬ÊıÖµ£¨²»ÂäÅÌ£© */
+    /** @brief è¿è¡Œæ€æ•°å€¼ï¼ˆä¸è½ç›˜ï¼‰ */
     const ParamMap& runtime() const;
-    /** @brief Ğ´ÈëÔËĞĞÌ¬ÊıÖµ */
+    /** @brief å†™å…¥è¿è¡Œæ€æ•°å€¼ */
     void setRuntime(const ParamMap& value);
 
 
-    /************************************************** Éí·İ **************************************************/
-    /** @brief ×¢²áÃû£¬Èç locate.find_circle */
+    /************************************************** èº«ä»½ **************************************************/
+    /** @brief æ³¨å†Œåï¼Œå¦‚ locate.find_circle */
     virtual std::string toolName() const = 0;
-    /** @brief ËùÊô¹¤¾ß´óÀà */
+    /** @brief æ‰€å±å·¥å…·å¤§ç±» */
     virtual ToolType type() const = 0;
-    /** @brief ½çÃæÏÔÊ¾Ãû */
+    /** @brief ç•Œé¢æ˜¾ç¤ºå */
     virtual std::string displayName() const = 0;
-    /** @brief ¹¤¾ßËµÃ÷£»Ä¬ÈÏ¿Õ */
+    /** @brief å·¥å…·è¯´æ˜ï¼›é»˜è®¤ç©º */
     virtual std::string description() const;
-    /** @brief ¹¤¾ß°æ±¾£»Ä¬ÈÏ 1.0.0.0 */
+    /** @brief å·¥å…·ç‰ˆæœ¬ï¼›é»˜è®¤ 1.0.0.0 */
     virtual std::string version() const;
-    /** @brief °æ±¾±ä¸ü¡£Ö»×·¼Ó£¬²»É¾¾ÉĞĞ */
+    /** @brief ç‰ˆæœ¬å˜æ›´ã€‚åªè¿½åŠ ï¼Œä¸åˆ æ—§è¡Œ */
     virtual std::vector<VerNote> versionNotes() const;
 
-    /************************************************** ÄÜÁ¦ **************************************************/
-    /** @brief ĞÂ½¨ÊµÀıÊ±µÄÈ±Ê¡²ÎÊı */
+    /************************************************** èƒ½åŠ› **************************************************/
+    /** @brief æ–°å»ºå®ä¾‹æ—¶çš„ç¼ºçœå‚æ•° */
     virtual ParamMap defaultParams() const;
-    /** @brief ²ÎÊıËµÃ÷£¬½çÃæ¾İ´ËÉú³É±íµ¥ */
+    /** @brief å‚æ•°è¯´æ˜ï¼Œç•Œé¢æ®æ­¤ç”Ÿæˆè¡¨å• */
     virtual std::vector<ParamField> paramFields() const;
-    /** @brief ÊäÈëÊä³ö¶Ë¿Ú±í */
+    /** @brief è¾“å…¥è¾“å‡ºç«¯å£è¡¨ */
     virtual std::vector<PortDesc> ports() const;
-    /** @brief »­²¼ ROI µÈÄÜÁ¦ */
+    /** @brief ç”»å¸ƒ ROI ç­‰èƒ½åŠ› */
     virtual ToolCaps capabilities() const;
-    /** @brief ×é×°¹¤¾ßÏäÌõÄ¿ */
+    /** @brief ç»„è£…å·¥å…·ç®±æ¡ç›® */
     virtual ToolDesc desc() const;
+    /** @brief æ³¨å†Œåã€‚é»˜è®¤è½¬åˆ° toolName */
+    virtual std::string tool_name() const;
+    /** @brief ç•Œé¢æ˜¾ç¤ºåã€‚é»˜è®¤è½¬åˆ° displayName */
+    virtual std::string display_name() const;
+    /** @brief ç‰ˆæœ¬å˜æ›´ã€‚é»˜è®¤è½¬åˆ° versionNotes */
+    virtual std::vector<VerNote> version_notes() const;
+    /** @brief ç¼ºçœå‚æ•°ã€‚é»˜è®¤è½¬åˆ° defaultParams */
+    virtual ParamMap default_params() const;
+    /** @brief è¿è¡Œå‚æ•°è¯´æ˜ã€‚é»˜è®¤è½¬åˆ° paramFields */
+    virtual std::vector<ParamField> cfg_param() const;
+    /** @brief ç¤ºæ•™å‚æ•°è¯´æ˜ã€‚æ²¡æœ‰ç¤ºæ•™æ•°æ®çš„å·¥å…·è¿”å›ç©º */
+    virtual std::vector<ParamField> cfg_teach() const;
+    /** @brief æœ¬å·¥å…·å‚æ•°å¯¹è±¡ã€‚é»˜è®¤è½¬åˆ° toolParam */
+    virtual const ToolParaBase* tool_param() const;
+    /** @brief load ä¹‹åæ ¸å¯¹å‚æ•°ã€‚å¤±è´¥æ—¶æŠŠè¯´æ˜å†™å…¥ detail */
+    virtual int check_param(std::string* detail) const;
+    /** @brief è¾“å‡ºé¡¹ã€‚é»˜è®¤ç©º */
+    virtual OutputSpec cfg_output() const;
+    /** @brief å…¬å·®é¡¹ã€‚é»˜è®¤ç©º */
+    virtual TolSpec cfg_tol() const;
+    /** @brief æ˜¾ç¤ºé¡¹ã€‚é»˜è®¤ç©º */
+    virtual DisplaySpec cfg_display() const;
+    /** @brief ç”»å¸ƒ ROIã€‚é»˜è®¤è½¬åˆ° capabilities */
+    virtual ToolCaps cfg_roi() const;
+    /** @brief è°ƒè¯•é¡µæŒ‰é’® */
+    virtual std::vector<ToolAction> cfg_action() const;
+    /** @brief å„å·¥å…·è‡ªå·±çš„ä¸€æ‹å®ç°ã€‚ç»“æœå†™å…¥ out */
+    virtual int execute(const ToolIn& in, ToolOut* out);
+    /** @brief æŒ‰åŠ¨ä½œ id æ‰§è¡Œã€‚æœªçŸ¥åŠ¨ä½œå¤±è´¥ */
+    virtual int action(const std::string& id, const ToolIn& in, ToolOut* out);
+    /** @brief æŠŠæœ¬å·¥å…·è¦ç•™ä¸‹çš„è§†è§‰æ•°æ®å†™å…¥ç›®å½•ã€‚è¿”å›é”™è¯¯ç  */
+    virtual int save();
+    /** @brief å·¥å…·å·²åˆ é™¤æ—¶æ¸…æ‰æœ¬å·¥å…·æ•°æ® */
+    virtual void clear(const std::string& toolDataDir);
 
-    /************************************************** ÔËĞĞ **************************************************/
-    /** @brief Ö´ĞĞÒ»´Î²¢·µ»ØÊä³ö */
+    /************************************************** è¿è¡Œ **************************************************/
+    /** @brief æ‰§è¡Œä¸€æ¬¡å¹¶è¿”å›è¾“å‡º */
     virtual ToolOut execute(const ToolIn& in) = 0;
-    /** @brief Ê¾½ÌÒ»´Î¡£Ä¬ÈÏ¿Õ½á¹û */
+    /** @brief ç¤ºæ•™ä¸€æ¬¡ã€‚é»˜è®¤ç©ºç»“æœ */
     virtual ToolOut teach(const ToolIn& in);
-    /** @brief ´ò¶Ï³¤Ê±¼äÔËĞĞ¡£Ä¬ÈÏ¿Õ */
+    /** @brief æ‰“æ–­é•¿æ—¶é—´è¿è¡Œã€‚é»˜è®¤ç©º */
     virtual void stop();
+    /** @brief æŒ‰æ•°æ®ç›®å½•æŒ‚ä¸Šæœ¬å·¥å…·è‡ªå·±çš„ç®—æ³•å®ä¾‹ã€‚ç›®å½•ä¸å˜åˆ™æ²¿ç”¨ */
+    void attachAlg(const std::string& toolDataDir);
+    /** @brief å½“å‰æŒ‚ç€çš„ç®—æ³•ã€‚æ²¡æœ‰åˆ™ä¸º 0 */
+    AlgToolBase* attachedAlg() const;
+    /** @brief è®©ç®—æ³•æŠŠæ¨¡å‹å†™å…¥ç›®å½• */
+    int saveAlg();
+    /** @brief ä¸¢æ‰ç®—æ³•å¹¶æ¸…æ‰å·¥å…·æ•°æ®ç›®å½• */
+    void clearAlg(const std::string& toolDataDir);
 
-    /************************************************** ÉúÃüÖÜÆÚ **************************************************/
+    /************************************************** ç”Ÿå‘½å‘¨æœŸ **************************************************/
     /**
-     * @brief ¿ËÂ¡±¾ÊµÀı£¨×ÓÀàÔÚ±¾ DLL ÄÚ new£©
-     * @return ĞÂ¶ÔÏó£¬ÓÉµ÷ÓÃ·½ destroy
+     * @brief å…‹éš†æœ¬å®ä¾‹ï¼ˆå­ç±»åœ¨æœ¬ DLL å†… newï¼‰
+     * @return æ–°å¯¹è±¡ï¼Œç”±è°ƒç”¨æ–¹ destroy
      */
     virtual ToolBase* clone() const = 0;
-    /** @brief ÔÚ´´½¨±¾¶ÔÏóµÄÄ£¿éÄÚÊÍ·Å£¨Ä¬ÈÏ delete this£© */
+    /** @brief åœ¨åˆ›å»ºæœ¬å¯¹è±¡çš„æ¨¡å—å†…é‡Šæ”¾ï¼ˆé»˜è®¤ delete thisï¼‰ */
     virtual void destroy();
 
 
-    /************************************************** ÊµÀıÊı¾İ **************************************************/
-    /** @brief ´ÓÁíÒ»ÊµÀı³­ËÄ¼şÌ×Óë runtime£¨²»º¬ÖÖÀàÔªÊı¾İ£© */
+    /************************************************** å®ä¾‹æ•°æ® **************************************************/
+    /** @brief ä»å¦ä¸€å®ä¾‹æŠ„å››ä»¶å¥—ä¸ runtimeï¼ˆä¸å«ç§ç±»å…ƒæ•°æ®ï¼‰ */
     void copyInstanceDataFrom(const ToolBase& other);
-    /** @brief Ğ´ÈëÉí·İ/Á¬Ïß/²ÎÊı/runtime£¨´ò¿ª·½°¸»òÖØ½¨Ê±£© */
+    /** @brief å†™å…¥èº«ä»½/è¿çº¿/å‚æ•°/runtimeï¼ˆæ‰“å¼€æ–¹æ¡ˆæˆ–é‡å»ºæ—¶ï¼‰ */
     void applyInstanceData(const ToolInfo& i,
                            const std::vector<ToolInputLink>& l,
                            const ToolParam& p,
                            const ParamMap& rt);
-    /** @brief Çå¿ÕÔËĞĞÌ¬ io Óë runtime */
+    /** @brief æ¸…ç©ºè¿è¡Œæ€ io ä¸ runtime */
     void clearRuntime();
 
-    /************************************************** ²ÎÊı **************************************************/
-    /** @brief ÓÃÂäÅÌ²ÎÊıË¢ĞÂÔËĞĞÊ±²ÎÊı¶ÔÏó */
+    /************************************************** å‚æ•° **************************************************/
+    /** @brief ç”¨è½ç›˜å‚æ•°åˆ·æ–°è¿è¡Œæ—¶å‚æ•°å¯¹è±¡ */
     virtual bool initToolParam(ToolParam& src);
-    /** @brief °´°æ±¾ºÅÁ¬ĞøÊÊÅä¡£Éı»ò½µÓÉÁ½¸ö°æ±¾¾ö¶¨ */
+    /** @brief æŒ‰ç‰ˆæœ¬å·è¿ç»­é€‚é…ã€‚å‡æˆ–é™ç”±ä¸¤ä¸ªç‰ˆæœ¬å†³å®š */
     bool adaptParam(ToolParam& src, const std::string& oldVer, const std::string& newVer, std::string* detail);
     bool paramOk() const;
     const std::string& paramBlock() const;
-    /** @brief µ±Ç°¹¤¾ßµÄ²ÎÊı¶ÔÏó£¬Ã»ÓĞÔòÎª 0 */
+    /** @brief å½“å‰å·¥å…·çš„å‚æ•°å¯¹è±¡ï¼Œæ²¡æœ‰åˆ™ä¸º 0 */
     virtual const ToolParaBase* toolParam() const;
+protected:
+    /** @brief æ”¶å£ä¹‹åå†™ç»“æœæ—¥å¿—ã€‚é»˜è®¤ç©º */
+    virtual void log_result(ToolOut* out) const;
+    /** @brief å›¾å…ƒç”Ÿæˆåå†è¡¥å·¥å…·è‡ªå·±çš„å›¾å½¢ */
+    virtual void disp_extra(const ToolIn& in, ToolOut* out) const;
 private:
-    ToolInfo m_info;                    ///< Éí·İ£¨ÂäÅÌ£©
-    std::vector<ToolInputLink> m_links; ///< ÊäÈëÁ¬Ïß£¨ÂäÅÌ£©
-    ToolParam m_param;                   ///< ²ÎÊı£¨ÂäÅÌ£©
-    ToolIo m_io;                        ///< ±¾ÅÄ IO£¨½öÔËĞĞÌ¬£©
-    ParamMap m_runtime;                 ///< ÔËĞĞÌ¬ÊıÖµ£¨²»ÂäÅÌ£©
-    bool m_paramOk = true;               ///< ²ÎÊıÊÊÅäÊÇ·ñÍ¨¹ı
-    std::string m_paramBlock;            ///< ²ÎÊı±»À¹×¡Ê±µÄÔ­Òò
+    ToolInfo m_info;                    ///< èº«ä»½ï¼ˆè½ç›˜ï¼‰
+    std::vector<ToolInputLink> m_links; ///< è¾“å…¥è¿çº¿ï¼ˆè½ç›˜ï¼‰
+    ToolParam m_param;                   ///< å‚æ•°ï¼ˆè½ç›˜ï¼‰
+    ToolIo m_io;                        ///< æœ¬æ‹ IOï¼ˆä»…è¿è¡Œæ€ï¼‰
+    ParamMap m_runtime;                 ///< è¿è¡Œæ€æ•°å€¼ï¼ˆä¸è½ç›˜ï¼‰
+    bool m_paramOk = true;               ///< å‚æ•°é€‚é…æ˜¯å¦é€šè¿‡
+    std::string m_paramBlock;            ///< å‚æ•°è¢«æ‹¦ä½æ—¶çš„åŸå› 
+    AlgToolBase* m_alg;                  ///< æœ¬å·¥å…·æŒ‚ç€çš„ç®—æ³•ï¼Œè‡ªå·±æ‹¥æœ‰
+    std::string m_algDir;                ///< å½“å‰ç®—æ³•çš„æ•°æ®ç›®å½•
 };
 
-/** @brief °´¹¤¾ß´óÀà¸ø³öÄ¬ÈÏ¶Ë¿Ú±í */
+/** @brief æŒ‰å·¥å…·å¤§ç±»ç»™å‡ºé»˜è®¤ç«¯å£è¡¨ */
 VISION_TOOL_API std::vector<PortDesc> defaultPortsForType(ToolType type);
 
 

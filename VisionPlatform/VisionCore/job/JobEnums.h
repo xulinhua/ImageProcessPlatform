@@ -1,6 +1,6 @@
 /**
  * @file JobEnums.h
- * @brief JobEnumsÍ·ÎÄ¼þ
+ * @brief JobEnumså¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -13,63 +13,74 @@
 
 namespace Vision {
 
-/** @brief Á÷³ÌÊµÀý£¨JobCfg£©´¥·¢·½Ê½ */
-enum TriggerMode {
-    TriggerModeUndefined = -1, ///< Î´¶¨Òå
-    TriggerSoft = 0,    ///< Èí¼þ´¥·¢
-    TriggerHardwareIo,  ///< Ó²¼þ IO
-    TriggerUpstreamJob, ///< ÉÏÓÎ JobCfg Íê³É
-    TriggerLoop,           ///< Ñ­»·
-    TriggerModeMax ///< ¸öÊý£¬²»ÊÇºÏ·¨Öµ
+/** @brief æµç¨‹å®žä¾‹ï¼ˆJobCfgï¼‰è§¦å‘æ–¹å¼ */
+enum ExecWay {
+    ExecActive = 0,
+    ExecCalled,
+    ExecStopped,
+    ExecLoadOnce,
+    ExecUnloadOnce,
+    ExecWayMax
 };
 
-/** @brief JobCfg »ò¹¤Õ¾Ê§°Ü²ßÂÔ */
+/** @brief JobCfg æˆ–å·¥ç«™å¤±è´¥ç­–ç•¥ */
 enum FailPolicy {
-    FailStopStation = 0, ///< Í£Õ¾
-    FailSkip,            ///< Ìø¹ý
-    FailNgContinue       ///< NG Ê±¼ÌÐø
+    FailContinue = 0,
+    FailStopStation = 1,
+    FailStopAll = 2,
+    FailSkip = 3
 };
 
-/** @brief Á÷³ÌÄÚ¹¤¾ß×éÖ´ÐÐÓïÒå */
+/** @brief æµç¨‹å†…å·¥å…·ç»„æ‰§è¡Œè¯­ä¹‰ */
 enum GroupKind {
-    GroupKindUndefined = -1, ///< Î´¶¨Òå
-    GroupSequence = 0, ///< Ë³Ðò
-    GroupParallel,     ///< ²¢ÐÐ
-    GroupIf,           ///< Ìõ¼þ
-    GroupLoop,          ///< Ñ­»·
-    GroupKindMax ///< ¸öÊý£¬²»ÊÇºÏ·¨Öµ
+    GroupKindUndefined = -1,
+    GroupSequence = 0,
+    GroupIf = 1,
+    GroupLoop = 2,
+    GroupParallel = 3,
+    GroupSubJob = 4,
+    GroupKindMax
 };
 
-/** @brief Ìõ¼þ×é THEN ·ÖÖ§ÆÚÍû */
+/** @brief æ¡ä»¶ç»„ THEN åˆ†æ”¯æœŸæœ› */
 enum CondWant {
-    CondThenOnOk = 0, ///< À´Ô´ OK Ê±×ß THEN
-    CondThenOnNg      ///< À´Ô´ NG Ê±×ß THEN
+    CondThenOnOk = 0, ///< æ¥æº OK æ—¶èµ° THEN
+    CondThenOnNg      ///< æ¥æº NG æ—¶èµ° THEN
 };
 
-/** @brief Êä³ö½á¹û¹æÔòÏîÈýÌ¬ */
+/** @brief è¾“å‡ºç»“æžœè§„åˆ™é¡¹ä¸‰æ€ */
 enum RstTermState {
-    RstTermIgnore = 0, ///< ²»²ÎÓë±¾ÐÐºÏ³É
-    RstTermRequireOk,  ///< ÒªÇóÀ´Ô´ OK
-    RstTermRequireNg   ///< ÒªÇóÀ´Ô´ NG£¨È¡·´£©
+    RstTermIgnore = 0, ///< ä¸å‚ä¸Žæœ¬è¡Œåˆæˆ
+    RstTermRequireOk,  ///< è¦æ±‚æ¥æº OK
+    RstTermRequireNg   ///< è¦æ±‚æ¥æº NGï¼ˆå–åï¼‰
 };
 
-/** @brief Êä³ö½á¹û¹æÔòÏîÀ´Ô´ */
+/** @brief è¾“å‡ºç»“æžœè§„åˆ™é¡¹æ¥æº */
 enum RstTermKind {
-    RstTermTool = 0, ///< ¹¤¾ßÊµÀý
-    RstTermRule      ///< ÉÏÃæÐÐµÄÂß¼­ÅÐ¶Ï
+    RstTermTool = 0, ///< å·¥å…·å®žä¾‹
+    RstTermRule      ///< ä¸Šé¢è¡Œçš„é€»è¾‘åˆ¤æ–­
 };
 
-VISIONCORE_API /** @brief ´¥·¢·½Ê½½çÃæÏÔÊ¾Ãû */
-std::string triggerTitle(TriggerMode t);
-VISIONCORE_API /** @brief Ê§°Ü²ßÂÔ½çÃæÏÔÊ¾Ãû */
+VISIONCORE_API /** @brief è§¦å‘æ–¹å¼ç•Œé¢æ˜¾ç¤ºå */
+std::string execWayTitle(ExecWay way);
+VISIONCORE_API const char* execWayName(ExecWay way);
+VISIONCORE_API ExecWay execWayFromName(const std::string& name);
+VISIONCORE_API ExecWay execWayFromLegacyTrigger(int trigger);
+VISIONCORE_API const char* failPolicyName(FailPolicy policy);
+VISIONCORE_API FailPolicy failPolicyFromName(const std::string& name);
+VISIONCORE_API FailPolicy failPolicyFromLegacy(int value);
+VISIONCORE_API GroupKind groupKindFromLegacy(int value);
+VISIONCORE_API const char* groupKindName(GroupKind kind);
+VISIONCORE_API GroupKind groupKindFromName(const std::string& name);
+VISIONCORE_API /** @brief å¤±è´¥ç­–ç•¥ç•Œé¢æ˜¾ç¤ºå */
 std::string failPolicyTitle(FailPolicy p);
-VISIONCORE_API /** @brief ¹¤¾ß×éÓïÒå½çÃæÏÔÊ¾Ãû */
+VISIONCORE_API /** @brief å·¥å…·ç»„è¯­ä¹‰ç•Œé¢æ˜¾ç¤ºå */
 std::string groupKindTitle(GroupKind k);
-VISIONCORE_API /** @brief ´ÓÕûÐÍ½âÎö×éÓïÒå */
+VISIONCORE_API /** @brief ä»Žæ•´åž‹è§£æžç»„è¯­ä¹‰ */
 GroupKind groupKindFromInt(int v);
-VISIONCORE_API /** @brief ½á¹û¹æÔòÈýÌ¬½çÃæÏÔÊ¾Ãû */
+VISIONCORE_API /** @brief ç»“æžœè§„åˆ™ä¸‰æ€ç•Œé¢æ˜¾ç¤ºå */
 std::string resultTermStateTitle(RstTermState s);
-VISIONCORE_API /** @brief ½á¹û¹æÔòÀ´Ô´½çÃæÏÔÊ¾Ãû */
+VISIONCORE_API /** @brief ç»“æžœè§„åˆ™æ¥æºç•Œé¢æ˜¾ç¤ºå */
 std::string resultTermKindTitle(RstTermKind k);
 
 }

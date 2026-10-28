@@ -1,6 +1,6 @@
 /**
  * @file CvObjectConvert.cpp
- * @brief CvObjectConvertÊµÏÖ
+ * @brief CvObjectConvertå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -18,7 +18,7 @@
 
 namespace Vision {
 
-// ÑÚÄ¤ÊÇ·ñÎŞÓĞĞ§Ç°¾°ÏñËØ
+// æ©è†œæ˜¯å¦æ— æœ‰æ•ˆå‰æ™¯åƒç´ 
 bool maskIsEmpty(const cv::Mat& mask)
 {
     if (mask.empty()) {
@@ -27,7 +27,7 @@ bool maskIsEmpty(const cv::Mat& mask)
     return cv::countNonZero(mask) < 1;
 }
 
-// Õû·ù°×ÑÚÄ¤
+// æ•´å¹…ç™½æ©è†œ
 cv::Mat fullImageMask(int imgW, int imgH)
 {
     if (imgW <= 0 || imgH <= 0) {
@@ -36,7 +36,7 @@ cv::Mat fullImageMask(int imgW, int imgH)
     return cv::Mat(imgH, imgW, CV_8UC1, cv::Scalar(255));
 }
 
-// Ïß¶ÎÀ©³ÉÌõ´ø
+// çº¿æ®µæ‰©æˆæ¡å¸¦
 static void drawLineStrip(cv::Mat* mask, double x1, double y1, double x2, double y2, double dilateR)
 {
     const int t = dilateR > 0.1 ? static_cast<int>(dilateR * 2.0 + 0.5) : 1;
@@ -44,7 +44,7 @@ static void drawLineStrip(cv::Mat* mask, double x1, double y1, double x2, double
              cv::Scalar(255), t < 1 ? 1 : t, 8);
 }
 
-// HsRegion ĞĞ³Ì×ªÑÚÄ¤
+// HsRegion è¡Œç¨‹è½¬æ©è†œ
 cv::Mat hsRegionToMask(const HsCommData::HsRegion& reg, int imgW, int imgH)
 {
     cv::Mat mask = cv::Mat::zeros(imgH > 0 ? imgH : 0, imgW > 0 ? imgW : 0, CV_8UC1);
@@ -67,7 +67,7 @@ cv::Mat hsRegionToMask(const HsCommData::HsRegion& reg, int imgW, int imgH)
     return mask;
 }
 
-// µ¥¸ñ¼¸ºÎ»­½øÒÑ·ÖÅäµÄÁãÑÚÄ¤
+// å•æ ¼å‡ ä½•ç”»è¿›å·²åˆ†é…çš„é›¶æ©è†œ
 static void drawGeomCell(cv::Mat* mask, const HsCommData::HsObject& obj, int index, int imgW, int imgH)
 {
     using namespace HsCommData;
@@ -161,7 +161,7 @@ static void drawGeomCell(cv::Mat* mask, const HsCommData::HsObject& obj, int ind
     }
 }
 
-// µ¥¸ñ»òÕû´ü HsObject ×ªÑÚÄ¤
+// å•æ ¼æˆ–æ•´è¢‹ HsObject è½¬æ©è†œ
 cv::Mat hsObjectToMask(const HsCommData::HsObject& obj, int imgW, int imgH)
 {
     if (imgW <= 0 || imgH <= 0 || !obj.isInitialized() || obj.isEmpty()) {
@@ -181,7 +181,7 @@ cv::Mat hsObjectToMask(const HsCommData::HsObject& obj, int imgW, int imgH)
     return acc;
 }
 
-// ¶àÖ»ÉÏÓÎÇøÓò¶ÔÏó²¢¼¯£»¿ÕÔòÕû·ùÍ¼
+// å¤šåªä¸Šæ¸¸åŒºåŸŸå¯¹è±¡å¹¶é›†ï¼›ç©ºåˆ™æ•´å¹…å›¾
 cv::Mat hsRegionsToMask(const std::vector<HsCommData::HsObject>& regs, int imgW, int imgH)
 {
     if (regs.empty() || imgW <= 0 || imgH <= 0) {
@@ -212,7 +212,7 @@ cv::Mat hsRegionsToMask(const std::vector<HsCommData::HsObject>& regs, int imgW,
     return acc;
 }
 
-// µ¥Ö» HsObject ×ªÑÚÄ¤£»ÎŞĞ§ÔòÕû·ùÍ¼
+// å•åª HsObject è½¬æ©è†œï¼›æ— æ•ˆåˆ™æ•´å¹…å›¾
 cv::Mat toolRoiToMask(const HsCommData::HsObject& roi, int imgW, int imgH)
 {
     if (!roi.isInitialized() || roi.isEmpty() || imgW <= 0 || imgH <= 0) {
@@ -221,7 +221,7 @@ cv::Mat toolRoiToMask(const HsCommData::HsObject& roi, int imgW, int imgH)
     return hsObjectToMask(roi, imgW, imgH);
 }
 
-// ¶à ROI ²¢¼¯£»¿ÕÔòÕû·ùÍ¼
+// å¤š ROI å¹¶é›†ï¼›ç©ºåˆ™æ•´å¹…å›¾
 cv::Mat toolRoisToMask(const std::vector<HsCommData::HsObject>& rois, int imgW, int imgH)
 {
     if (rois.empty()) {
@@ -241,7 +241,7 @@ cv::Mat toolRoisToMask(const std::vector<HsCommData::HsObject>& rois, int imgW, 
     return acc;
 }
 
-// ¶şÖµÑÚÄ¤×ª HsObject
+// äºŒå€¼æ©è†œè½¬ HsObject
 HsCommData::HsObject maskToRegionObject(const cv::Mat& mask)
 {
     HsCommData::HsRegion reg;
@@ -288,7 +288,7 @@ HsCommData::HsObject maskToRegionObject(const cv::Mat& mask)
     return HsCommData::HsObject(reg);
 }
 
-// ½á¹ûÔ²×ª HsObject
+// ç»“æœåœ†è½¬ HsObject
 HsCommData::HsObject circleObject(double cx, double cy, double r)
 {
     HsCommData::CircleP c;
@@ -297,7 +297,7 @@ HsCommData::HsObject circleObject(double cx, double cy, double r)
     return HsCommData::HsObject(c);
 }
 
-// ½á¹ûÏß¶Î×ª HsObject
+// ç»“æœçº¿æ®µè½¬ HsObject
 HsCommData::HsObject lineObject(double x1, double y1, double x2, double y2)
 {
     HsCommData::LineP ln;

@@ -1,6 +1,6 @@
 /**
  * @file ToolGeom.cpp
- * @brief ToolGeomÊµÏÖ
+ * @brief ToolGeomå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -16,7 +16,7 @@ namespace Vision {
 
 namespace {
 
-// ÈÆÊ¾½ÌµãĞı×ªÔÙÆ½ÒÆµ½µ±Ç°Î»×Ë
+// ç»•ç¤ºæ•™ç‚¹æ—‹è½¬å†å¹³ç§»åˆ°å½“å‰ä½å§¿
 void mapPoint(double* x, double* y, double refX, double refY, double poseX, double poseY, double c, double s)
 {
     if (!x || !y) {
@@ -28,7 +28,7 @@ void mapPoint(double* x, double* y, double refX, double refY, double poseX, doub
     *y = poseY + s * dx + c * dy;
 }
 
-// ¾ÉÓÎ³Ì»¹Ô­ÇøÓò
+// æ—§æ¸¸ç¨‹è¿˜åŸåŒºåŸŸ
 HsCommData::HsRegion regionFromRuns(const std::vector<std::int32_t>& runRow,
                                     const std::vector<std::int32_t>& runCb,
                                     const std::vector<std::int32_t>& runCe)
@@ -67,13 +67,13 @@ HsCommData::HsRegion regionFromRuns(const std::vector<std::int32_t>& runRow,
 
 } // namespace
 
-// ¼¸ºÎÊÇÇøÓò
+// å‡ ä½•æ˜¯åŒºåŸŸ
 bool graphicIsRegion(const HsCommData::Graphic& g)
 {
     return g.geom.isInitialized() && g.geom.kind() == HsCommData::ObjRegion;
 }
 
-// ¼¸ºÎÊÇÂÖÀª
+// å‡ ä½•æ˜¯è½®å»“
 bool graphicIsContour(const HsCommData::Graphic& g)
 {
     return g.kind != HsCommData::KindKeypoints
@@ -82,7 +82,7 @@ bool graphicIsContour(const HsCommData::Graphic& g)
         && g.geom.kind() == HsCommData::ObjContour;
 }
 
-// ËÑË÷Çø»­³É¿ÉÍÏÍ¼Ôª
+// æœç´¢åŒºç”»æˆå¯æ‹–å›¾å…ƒ
 HsCommData::Graphic roiToDrawing(const HsCommData::HsObject& roi)
 {
     HsCommData::Graphic g;
@@ -98,7 +98,7 @@ HsCommData::Graphic roiToDrawing(const HsCommData::HsObject& roi)
     return g;
 }
 
-// »æÖÆÍ¼ÔªÊÕ³ÉÒ»¿éËÑË÷Çø
+// ç»˜åˆ¶å›¾å…ƒæ”¶æˆä¸€å—æœç´¢åŒº
 HsCommData::HsObject drawingToRoi(const HsCommData::Graphic& g)
 {
     HsCommData::HsObject r;
@@ -121,7 +121,7 @@ HsCommData::HsObject drawingToRoi(const HsCommData::Graphic& g)
     return r;
 }
 
-// ¾É x/y/a/b/phi ×ª HsObject
+// æ—§ x/y/a/b/phi è½¬ HsObject
 HsCommData::HsObject toolRoiFromLegacy(int kind, double x, double y, double a, double b, double phi,
                           const std::vector<double>& polyX, const std::vector<double>& polyY,
                           bool polyClosed,
@@ -185,7 +185,7 @@ HsCommData::HsObject toolRoiFromLegacy(int kind, double x, double y, double a, d
     return r;
 }
 
-// ´ÓÊıÖµ½á¹û¶ÁÎ»×Ë
+// ä»æ•°å€¼ç»“æœè¯»ä½å§¿
 bool poseFromValues(const ParamMap& v, HsCommData::Pose2* pose)
 {
     if (!pose) {
@@ -202,7 +202,7 @@ bool poseFromValues(const ParamMap& v, HsCommData::Pose2* pose)
     return true;
 }
 
-// Î»×ËĞ´ÈëÊıÖµ½á¹û
+// ä½å§¿å†™å…¥æ•°å€¼ç»“æœ
 void poseToValues(ParamMap* v, const HsCommData::Pose2& p)
 {
     if (!v) {
@@ -213,7 +213,7 @@ void poseToValues(ParamMap* v, const HsCommData::Pose2& p)
     paramSet(v, ValueKey::Angle, p.ang());
 }
 
-// Î»×Ë¸úËæ£ºĞı×ªºÍÆ½ÒÆËÑË÷Çø
+// ä½å§¿è·Ÿéšï¼šæ—‹è½¬å’Œå¹³ç§»æœç´¢åŒº
 void applyPoseToRois(std::vector<HsCommData::HsObject>* rois, const ParamMap& params, const HsCommData::Pose2& pose)
 {
     using namespace HsCommData;
@@ -277,7 +277,7 @@ void applyPoseToRois(std::vector<HsCommData::HsObject>* rois, const ParamMap& pa
     }
 }
 
-// Í¼±ê¶ÔÏó×ª³É´°¿Úµş¼Ó
+// å›¾æ ‡å¯¹è±¡è½¬æˆçª—å£å åŠ 
 HsCommData::Graphic objectToGraphic(const HsCommData::HsObject& obj)
 {
     HsCommData::Graphic g;
@@ -292,7 +292,7 @@ HsCommData::Graphic objectToGraphic(const HsCommData::HsObject& obj)
     return g;
 }
 
-// Ò»ÅúÍ¼±ê¶ÔÏó×ª³É´°¿Úµş¼Ó
+// ä¸€æ‰¹å›¾æ ‡å¯¹è±¡è½¬æˆçª—å£å åŠ 
 std::vector<HsCommData::Graphic> objectsToGraphics(const std::vector<HsCommData::HsObject>& objs)
 {
     std::vector<HsCommData::Graphic> out;
@@ -304,7 +304,7 @@ std::vector<HsCommData::Graphic> objectsToGraphics(const std::vector<HsCommData:
 }
 
 
-// ¹¤¾ß»­²¼ÄÜÁ¦¡£ÓÉ¹¤¾ß DLL ÌîĞ´£¬Æ½Ì¨²»°´Ãû×Ö²Â²â
+// å·¥å…·ç”»å¸ƒèƒ½åŠ›ã€‚ç”±å·¥å…· DLL å¡«å†™ï¼Œå¹³å°ä¸æŒ‰åå­—çŒœæµ‹
 bool ToolCaps::usesMultiRoi() const
 {
         for (size_t i = 0; i < slotRules.size(); ++i) {
@@ -315,7 +315,7 @@ bool ToolCaps::usesMultiRoi() const
         return false;
     }
 
-// ¹¤¾ß»­²¼ÄÜÁ¦¡£ÓÉ¹¤¾ß DLL ÌîĞ´£¬Æ½Ì¨²»°´Ãû×Ö²Â²â
+// å·¥å…·ç”»å¸ƒèƒ½åŠ›ã€‚ç”±å·¥å…· DLL å¡«å†™ï¼Œå¹³å°ä¸æŒ‰åå­—çŒœæµ‹
 int ToolCaps::preferredRoiKind() const
 {
         int found = -1;
@@ -334,7 +334,7 @@ int ToolCaps::preferredRoiKind() const
         return found;
     }
 
-// ¹¤¾ß»­²¼ÄÜÁ¦¡£ÓÉ¹¤¾ß DLL ÌîĞ´£¬Æ½Ì¨²»°´Ãû×Ö²Â²â
+// å·¥å…·ç”»å¸ƒèƒ½åŠ›ã€‚ç”±å·¥å…· DLL å¡«å†™ï¼Œå¹³å°ä¸æŒ‰åå­—çŒœæµ‹
 bool ToolCaps::kindMatches(int kind) const
 {
         if (kind < 0) {

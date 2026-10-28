@@ -1,6 +1,6 @@
 /**
  * @file CommTool.h
- * @brief CommToolÍ·ÎÄ¼ş
+ * @brief CommToolå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -16,29 +16,29 @@ namespace Vision {
 
 /**
  * @class CommTool
- * @brief Í¨ĞÅÔ­Óï£ºĞ´¼Ä´æÆ÷ / µÈµ½Î» / Ğ´Î»×Ëµ½¼Ä´æÆ÷
+ * @brief é€šä¿¡åŸè¯­ï¼šå†™å¯„å­˜å™¨ / ç­‰åˆ°ä½ / å†™ä½å§¿åˆ°å¯„å­˜å™¨
  */
 class CommTool : public ToolBase {
 public:
-    /** @brief ×¢²áÃû */
+    /** @brief æ³¨å†Œå */
     std::string toolName() const;
-    /** @brief ¹¤¾ß´óÀà */
+    /** @brief å·¥å…·å¤§ç±» */
     Vision::ToolType type() const;
-    /** @brief ½çÃæÏÔÊ¾Ãû */
+    /** @brief ç•Œé¢æ˜¾ç¤ºå */
     std::string displayName() const;
-    /** @brief ¹¤¾ß°æ±¾ */
+    /** @brief å·¥å…·ç‰ˆæœ¬ */
     std::string version() const;
-    /** @brief °æ±¾±ä¸ü£¬Ö»×·¼Ó */
+    /** @brief ç‰ˆæœ¬å˜æ›´ï¼Œåªè¿½åŠ  */
     std::vector<VerNote> versionNotes() const;
-    /** @brief ¹¤¾ßËµÃ÷ */
+    /** @brief å·¥å…·è¯´æ˜ */
     std::string description() const;
-    /** @brief È±Ê¡²ÎÊı */
+    /** @brief ç¼ºçœå‚æ•° */
     Vision::ParamMap defaultParams() const;
-    /** @brief ²ÎÊıËµÃ÷ */
+    /** @brief å‚æ•°è¯´æ˜ */
     std::vector<Vision::ParamField> paramFields() const;
-    /** @brief Ğ´¼Ä´æÆ÷¡¢µÈµ½Î»»òĞ´Î»×Ë */
+    /** @brief å†™å¯„å­˜å™¨ã€ç­‰åˆ°ä½æˆ–å†™ä½å§¿ */
     Vision::ToolOut execute(const Vision::ToolIn& in);
-    /** @brief ¿ËÂ¡±¾ÊµÀı£¨±¾ DLL ÄÚ new£© */
+    /** @brief å…‹éš†æœ¬å®ä¾‹ï¼ˆæœ¬ DLL å†… newï¼‰ */
     ToolBase* clone() const;
     const ToolParaBase* toolParam() const;
 private:

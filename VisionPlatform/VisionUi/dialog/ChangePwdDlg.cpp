@@ -1,6 +1,6 @@
 /**
  * @file ChangePwdDlg.cpp
- * @brief ChangePwdDlgÊµÏÖ
+ * @brief ChangePwdDlgå®žçŽ°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -20,7 +20,7 @@
 
 namespace Vision {
 
-// ¸ÄÃÜ/¹ÜÀíÔ±ÖØÖÃ¿ÚÁî¶Ô»°¿ò
+// æ”¹å¯†/ç®¡ç†å‘˜é‡ç½®å£ä»¤å¯¹è¯æ¡†
 ChangePwdDlg::ChangePwdDlg(Session* session, const QString& loginName, bool requireOld,
                                            QWidget* parent, bool resetByAdmin)
     : QDialog(parent)
@@ -30,20 +30,20 @@ ChangePwdDlg::ChangePwdDlg(Session* session, const QString& loginName, bool requ
     , m_resetByAdmin(resetByAdmin)
     , m_old(nullptr)
 {
-    setWindowTitle(resetByAdmin ? T("ÖØÖÃ¿ÚÁî") : T("ÐÞ¸Ä¿ÚÁî"));
+    setWindowTitle(resetByAdmin ? T("é‡ç½®å£ä»¤") : T("ä¿®æ”¹å£ä»¤"));
     setModal(true);
     QFormLayout* form = new QFormLayout();
     if (requireOld) {
         m_old = new QLineEdit(this);
         m_old->setEchoMode(QLineEdit::Password);
-        form->addRow(T("µ±Ç°¿ÚÁî"), m_old);
+        form->addRow(T("å½“å‰å£ä»¤"), m_old);
     }
     m_n1 = new QLineEdit(this);
     m_n2 = new QLineEdit(this);
     m_n1->setEchoMode(QLineEdit::Password);
     m_n2->setEchoMode(QLineEdit::Password);
-    form->addRow(T("ÐÂ¿ÚÁî"), m_n1);
-    form->addRow(T("È·ÈÏÐÂ¿ÚÁî"), m_n2);
+    form->addRow(T("æ–°å£ä»¤"), m_n1);
+    form->addRow(T("ç¡®è®¤æ–°å£ä»¤"), m_n2);
 
     QDialogButtonBox* box = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, this);
     connect(box, SIGNAL(accepted()), this, SLOT(onOk()));
@@ -56,11 +56,11 @@ ChangePwdDlg::ChangePwdDlg(Session* session, const QString& loginName, bool requ
     lay->addWidget(box);
 }
 
-// Ð£ÑéÐÂ¾É¿ÚÁî²¢Ð´»ØÓÃ»§¿â
+// æ ¡éªŒæ–°æ—§å£ä»¤å¹¶å†™å›žç”¨æˆ·åº“
 void ChangePwdDlg::onOk()
 {
     if (m_n1->text() != m_n2->text()) {
-        QMessageBox::warning(this, T("¿ÚÁî"), T("Á½´ÎÐÂ¿ÚÁî²»Ò»ÖÂ¡£"));
+        QMessageBox::warning(this, T("å£ä»¤"), T("ä¸¤æ¬¡æ–°å£ä»¤ä¸ä¸€è‡´ã€‚"));
         return;
     }
     UserAccount* u = m_session->users().findByLogin(ss(m_login));
@@ -69,7 +69,7 @@ void ChangePwdDlg::onOk()
         return;
     }
     if (m_requireOld && !m_session->users().verifyPassword(*u, ss(m_old->text()))) {
-        QMessageBox::warning(this, T("¿ÚÁî"), T("µ±Ç°¿ÚÁî²»ÕýÈ·¡£"));
+        QMessageBox::warning(this, T("å£ä»¤"), T("å½“å‰å£ä»¤ä¸æ­£ç¡®ã€‚"));
         return;
     }
     m_session->users().setPassword(u, ss(m_n1->text()));

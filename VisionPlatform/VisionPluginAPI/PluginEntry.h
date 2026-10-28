@@ -3,31 +3,31 @@
 
 /**
  * @file PluginEntry.h
- * @brief ²å¼ş DLL Èë¿ÚÔ¼¶¨£¨¹¤¾ß / Ëã·¨²å¼ş¹²ÓÃ£©
+ * @brief æ’ä»¶ DLL å…¥å£çº¦å®šï¼ˆå·¥å…· / ç®—æ³•æ’ä»¶å…±ç”¨ï¼‰
  *
- * Ã¿¸ö plugins\\tools\\*.dll¡¢plugins\\algos\\*.dll Ğëµ¼³öÏÂÁĞ C ·ûºÅ£¬
- * ËŞÖ÷ loadVisionPlugins ÓÃ GetProcAddress ²éÕÒ£»apiVersion ĞëÎª 1¡£
+ * æ¯ä¸ª plugins\\tools\\*.dllã€plugins\\algos\\*.dll é¡»å¯¼å‡ºä¸‹åˆ— C ç¬¦å·ï¼Œ
+ * å®¿ä¸» loadVisionPlugins ç”¨ GetProcAddress æŸ¥æ‰¾ï¼›apiVersion é¡»ä¸º 1ã€‚
  *
  * @code
  * VISION_PLUGIN_EXPORT int VisionPlugin_apiVersion() { return 1; }
  *
  * VISION_PLUGIN_EXPORT void VisionPlugin_register(Vision::IPluginHost* host)
  * {
- *     host->addTool(new MyTool());   // »ò host->addAlg(new MyAlg());
+ *     host->addTool(new MyTool());   // æˆ– host->addAlg(new MyAlg());
  * }
  * @endcode
  *
- * @note ²å¼ş¹¤³ÌÖ»Ğè°üº¬±¾Í·£¨¼° ToolBase / AlgToolBase£©£¬²»±ØÁ´½Ó VisionPluginAPI.lib¡£
- * @note ×ÓÀàÍ·ÎÄ¼ş½öÁôÔÚ²å¼ş¹¤³ÌÄÚ£¬Æ½Ì¨²»¿É¼û¡£
+ * @note æ’ä»¶å·¥ç¨‹åªéœ€åŒ…å«æœ¬å¤´ï¼ˆåŠ ToolBase / AlgToolBaseï¼‰ï¼Œä¸å¿…é“¾æ¥ VisionPluginAPI.libã€‚
+ * @note å­ç±»å¤´æ–‡ä»¶ä»…ç•™åœ¨æ’ä»¶å·¥ç¨‹å†…ï¼Œå¹³å°ä¸å¯è§ã€‚
  */
 
 #include "PluginHost.h"
 
 #ifdef _WIN32
-/** @brief ²å¼şµ¼³ö C ·ûºÅ£¨Windows£© */
+/** @brief æ’ä»¶å¯¼å‡º C ç¬¦å·ï¼ˆWindowsï¼‰ */
 #define VISION_PLUGIN_EXPORT extern "C" __declspec(dllexport)
 #else
-/** @brief ²å¼şµ¼³ö C ·ûºÅ£¨·Ç Windows£© */
+/** @brief æ’ä»¶å¯¼å‡º C ç¬¦å·ï¼ˆé Windowsï¼‰ */
 #define VISION_PLUGIN_EXPORT extern "C"
 #endif
 

@@ -1,6 +1,6 @@
 /**
  * @file HsArrow.h
- * @brief HsArrowͷ�ļ�
+ * @brief HsArrow头文件
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.

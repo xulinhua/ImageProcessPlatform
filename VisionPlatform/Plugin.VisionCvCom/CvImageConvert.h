@@ -1,6 +1,6 @@
 /**
  * @file CvImageConvert.h
- * @brief CvImageConvertÍ·ÎÄ¼ş
+ * @brief CvImageConvertå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -18,20 +18,20 @@
 namespace Vision {
 
 /**
- * @brief HsImage ×ª»Ò¶È Mat£¨²ÊÉ«°´ÁÁ¶ÈÕÛ»Òºó¿½±´£©
- * @param img ÊäÈëÍ¼
- * @param out Êä³ö£¬²»¿É¿Õ
- * @param err Ê§°ÜÔ­Òò£¬¿É¿Õ
+ * @brief HsImage è½¬ç°åº¦ Matï¼ˆå½©è‰²æŒ‰äº®åº¦æŠ˜ç°åæ‹·è´ï¼‰
+ * @param img è¾“å…¥å›¾
+ * @param out è¾“å‡ºï¼Œä¸å¯ç©º
+ * @param err å¤±è´¥åŸå› ï¼Œå¯ç©º
  */
 VISION_CVCOM_API bool hsImageToMatGray(const HsCommData::HsImage& img, cv::Mat*& out, std::string* err);
 
 /**
- * @brief HsImage ×ª Mat¡£µ¥Í¨µÀ¡úCV_8UC1£»Èı/ËÄÍ¨µÀ½»´í RGB/BGR¡úCV_8UC3£¨BGR£©
+ * @brief HsImage è½¬ Matã€‚å•é€šé“â†’CV_8UC1ï¼›ä¸‰/å››é€šé“äº¤é”™ RGB/BGRâ†’CV_8UC3ï¼ˆBGRï¼‰
  */
 VISION_CVCOM_API bool hsImageToMat(const HsCommData::HsImage& img, cv::Mat*& out, std::string* err);
 
 /**
- * @brief Mat ×ª HsImage¡£1 Í¨µÀ¡úmono8£»3 Í¨µÀ BGR¡úrgb8 ½»´í
+ * @brief Mat è½¬ HsImageã€‚1 é€šé“â†’mono8ï¼›3 é€šé“ BGRâ†’rgb8 äº¤é”™
  */
 VISION_CVCOM_API bool matToHsImage(const cv::Mat& img, int64_t frameId, HsCommData::HsImage*& out, std::string* err);
 

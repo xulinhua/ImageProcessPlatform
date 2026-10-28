@@ -1,6 +1,6 @@
 /**
  * @file WidgetPermBinder.cpp
- * @brief WidgetPermBinderÊµÏÖ
+ * @brief WidgetPermBinderå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -13,7 +13,7 @@
 
 namespace Vision {
 
-// ÎŞÈ¨ÏŞÔò½ûÓÃ£¨²»Òş²Ø£¬±ÜÃâ²¼¾ÖÌø¶¯£©
+// æ— æƒé™åˆ™ç¦ç”¨ï¼ˆä¸éšè—ï¼Œé¿å…å¸ƒå±€è·³åŠ¨ï¼‰
 void WidgetPermBinder::bindWidget(QWidget* w, Perm perm)
 {
     if (!w) {
@@ -25,7 +25,7 @@ void WidgetPermBinder::bindWidget(QWidget* w, Perm perm)
     m_items.push_back(it);
 }
 
-// ÎŞÈ¨ÏŞÔò½ûÓÃ£¨²»Òş²Ø£¬±ÜÃâ²¼¾ÖÌø¶¯£©
+// æ— æƒé™åˆ™ç¦ç”¨ï¼ˆä¸éšè—ï¼Œé¿å…å¸ƒå±€è·³åŠ¨ï¼‰
 void WidgetPermBinder::bindAction(QAction* a, Perm perm)
 {
     if (!a) {
@@ -37,7 +37,7 @@ void WidgetPermBinder::bindAction(QAction* a, Perm perm)
     m_items.push_back(it);
 }
 
-// ÎŞÈ¨ÏŞÔò½ûÓÃ£¨²»Òş²Ø£¬±ÜÃâ²¼¾ÖÌø¶¯£©
+// æ— æƒé™åˆ™ç¦ç”¨ï¼ˆä¸éšè—ï¼Œé¿å…å¸ƒå±€è·³åŠ¨ï¼‰
 void WidgetPermBinder::apply(const Session& session) const
 {
     for (size_t i = 0; i < m_items.size(); ++i) {

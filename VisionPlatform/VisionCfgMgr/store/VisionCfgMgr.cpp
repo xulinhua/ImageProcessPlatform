@@ -1,6 +1,6 @@
 /**
  * @file VisionCfgMgr.cpp
- * @brief VisionCfgMgrÊµÏÖ
+ * @brief VisionCfgMgrå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -16,8 +16,10 @@
 #include "ToolBase.h"
 #include "RecipeDraft.h"
 #include "Json.h"
+#include "CfgStore.h"
 #include <cstdio>
 #include <cstdint>
+#include <map>
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
@@ -29,57 +31,22 @@ CompositeDef compositeFromJson(const JsonValue& o);
 // Read whole file as UTF-8 text; path string is UTF-8
 static bool readFileUtf8(const std::string& path, std::string* out)
 {
-    FILE* f = _wfopen(utf8ToWide(path).c_str(), L"rb");
-    if (!f) {
+    const CfgBytes got = CfgStore().read(path);
+    if (got.kind != CfgFilePlain && got.kind != CfgFileSealed) {
         return false;
     }
-    if (fseek(f, 0, SEEK_END) != 0) {
-        fclose(f);
-        return false;
+    if (out) {
+        *out = got.json;
     }
-    const long sz = ftell(f);
-    if (sz < 0) {
-        fclose(f);
-        return false;
-    }
-    rewind(f);
-    out->assign(static_cast<size_t>(sz), '\0');
-    if (sz > 0) {
-        const size_t n = fread(&(*out)[0], 1, static_cast<size_t>(sz), f);
-        out->resize(n);
-    }
-    fclose(f);
     return true;
 }
 
-// Write temp then MoveFileEx replace
 static bool writeFileAtomic(const std::string& path, const std::string& data)
 {
-    const std::string tmp = path + ".tmp";
-    FILE* f = _wfopen(utf8ToWide(tmp).c_str(), L"wb");
-    if (!f) {
-        return false;
-    }
-    const size_t n = data.empty() ? 0 : fwrite(data.data(), 1, data.size(), f);
-    const int bad = fflush(f) != 0 || ferror(f);
-    fclose(f);
-    if (bad || n != data.size()) {
-        _wremove(utf8ToWide(tmp).c_str());
-        return false;
-    }
-    const std::wstring wpath = utf8ToWide(path);
-    const std::wstring wtmp = utf8ToWide(tmp);
-    if (!MoveFileExW(wtmp.c_str(), wpath.c_str(), MOVEFILE_REPLACE_EXISTING | MOVEFILE_COPY_ALLOWED)) {
-        DeleteFileW(wpath.c_str());
-        if (!MoveFileExW(wtmp.c_str(), wpath.c_str(), MOVEFILE_REPLACE_EXISTING | MOVEFILE_COPY_ALLOWED)) {
-            _wremove(wtmp.c_str());
-            return false;
-        }
-    }
-    return true;
+    return CfgStore().write(path, data);
 }
 
-// ParamMap Ğ´³É JSON ¶ÔÏó
+// ParamMap å†™æˆ JSON å¯¹è±¡
 static JsonValue paramsToJson(const ParamMap& p)
 {
     JsonValue o;
@@ -100,7 +67,7 @@ static JsonValue paramsToJson(const ParamMap& p)
     return o;
 }
 
-// ÅĞ¶Ï²ÎÊıĞ´³É JSON Êı×é
+// åˆ¤æ–­å‚æ•°å†™æˆ JSON æ•°ç»„
 static JsonValue judgeToJson(const std::vector<JudgeParam>& items)
 {
     JsonValue a;
@@ -120,7 +87,7 @@ static JsonValue judgeToJson(const std::vector<JudgeParam>& items)
     return a;
 }
 
-// ´Ó JSON Êı×é¶ÁÅĞ¶Ï²ÎÊı
+// ä» JSON æ•°ç»„è¯»åˆ¤æ–­å‚æ•°
 static void judgeFromJson(const JsonValue& a, std::vector<JudgeParam>* out)
 {
     if (!out || !a.isArray()) {
@@ -138,7 +105,7 @@ static void judgeFromJson(const JsonValue& a, std::vector<JudgeParam>* out)
         out->push_back(j);
     }
 }
-// JSON ¶ÔÏó»¹Ô­ ParamMap
+// JSON å¯¹è±¡è¿˜åŸ ParamMap
 static ParamMap paramsFromJson(const JsonValue& o)
 {
     ParamMap p;
@@ -164,7 +131,7 @@ static ParamMap paramsFromJson(const JsonValue& o)
     return p;
 }
 
-// ¹¤¾ß¼ÇÂ¼Ğ´³É JSON£¨format3£ºinfo/links/params£©
+// å·¥å…·è®°å½•å†™æˆ JSONï¼ˆformat3ï¼šinfo/links/paramsï¼‰
 static JsonValue roiShapeToJson(const HsCommData::HsObject& roi);
 
 static JsonValue toolToJson(const ToolCfg& t)
@@ -192,25 +159,7 @@ static JsonValue toolToJson(const ToolCfg& t)
     }
     o.set("info", info);
 
-    JsonValue links;
-    links.makeArray();
-    for (size_t i = 0; i < t.links.size(); ++i) {
-        const ToolInputLink& in = t.links[i];
-        JsonValue L;
-        L.makeObject();
-        L.set("fromToolId", in.fromToolId.toString());
-        L.set("fromPortDir", static_cast<int>(in.fromPort.dir));
-        L.set("fromPortData", static_cast<int>(in.fromPort.data));
-        L.set("toPortDir", static_cast<int>(in.toPort.dir));
-        L.set("toPortData", static_cast<int>(in.toPort.data));
-        L.set("fromPortName", in.fromPort.name);
-        L.set("toPortName", in.toPort.name);
-        L.set("index", in.index);
-        L.set("use", static_cast<int>(in.use));
-        L.set("origin", in.origin);
-        links.append(L);
-    }
-    o.set("links", links);
+
 
     JsonValue param;
     param.makeObject();
@@ -218,6 +167,41 @@ static JsonValue toolToJson(const ToolCfg& t)
     param.set("algVersion", t.param.algVersion);
     param.set("algLib", JsonValue(static_cast<int>(t.param.algLib)));
     param.set("deviceId", t.param.deviceId.toString());
+    if (!t.param.backendOverride.empty()) {
+        param.set("backendOverride", t.param.backendOverride);
+    }
+    if (t.param.teachPar.valid()) {
+        JsonValue teach;
+        teach.makeObject();
+        teach.set("relPath", t.param.teachPar.relPath);
+        teach.set("fingerprint", t.param.teachPar.fingerprint);
+        param.set("teachPar", teach);
+    }
+    if (!t.param.statCfg.empty()) {
+        JsonValue stat;
+        stat.makeObject();
+        for (std::map<std::string, std::string>::const_iterator it = t.param.statCfg.begin();
+             it != t.param.statCfg.end(); ++it) {
+            stat.set(it->first, it->second);
+        }
+        param.set("statCfg", stat);
+    }
+    if (!t.param.displayCfg.empty()) {
+        JsonValue disp;
+        disp.makeArray();
+        for (std::map<std::string, DisplayCfg>::const_iterator it = t.param.displayCfg.begin();
+             it != t.param.displayCfg.end(); ++it) {
+            JsonValue one;
+            one.makeObject();
+            one.set("key", it->first);
+            one.set("text", it->second.text);
+            one.set("enabled", it->second.enabled);
+            one.set("alpha", it->second.alpha);
+            one.set("anchor", it->second.anchor);
+            disp.append(one);
+        }
+        param.set("displayCfg", disp);
+    }
     param.set("learn", paramsToJson(t.param.learn));
     param.set("run", paramsToJson(t.param.run));
     param.set("params", paramsToJson(t.param.run));
@@ -261,7 +245,7 @@ static JsonValue toolToJson(const ToolCfg& t)
     return o;
 }
 
-// Ò»¿ıEºÎĞ´³É JSON ¶ÔÏó
+// ä¸€é­Eä½•å†™æˆ JSON å¯¹è±¡
 static JsonValue roiShapeToJson(const HsCommData::HsObject& roi)
 {
     JsonValue r;
@@ -307,7 +291,7 @@ static JsonValue roiShapeToJson(const HsCommData::HsObject& roi)
     return r;
 }
 
-// ´Ó JSON ¶ÁÒ»¸ö ROI¡£ĞÂ½á¹¹ÓÃ objectKind£¬¾É½á¹¹ÓÃ kind
+// ä» JSON è¯»ä¸€ä¸ª ROIã€‚æ–°ç»“æ„ç”¨ objectKindï¼Œæ—§ç»“æ„ç”¨ kind
 static HsCommData::HsObject roiFromJson(const JsonValue& r)
 {
     if (r.value("objectKind").isNumber() || r.contains("objectKind")) {
@@ -378,7 +362,7 @@ static HsCommData::HsObject roiFromJson(const JsonValue& r)
                              runRow, runCb, runCe);
 }
 
-// JSON »¹Ô­¹¤¾ß¼ÇÂ¼£¬Ö§³Ö format3 Ç¶Ì×Óë¾É±âÆ½
+// JSON è¿˜åŸå·¥å…·è®°å½•ï¼Œæ”¯æŒ format3 åµŒå¥—ä¸æ—§æ‰å¹³
 static ToolCfg toolFromJson(const JsonValue& o)
 {
     ToolCfg t;
@@ -414,10 +398,36 @@ static ToolCfg toolFromJson(const JsonValue& o)
     t.param.algVersion = paraSrc.value("algVersion").toString();
     t.param.algLib = static_cast<AlgLibKind>(paraSrc.value("algLib").toInt(static_cast<int>(AlgLibHal)));
     t.param.deviceId = ObjectId::fromString(paraSrc.value("deviceId").toString());
+    t.param.backendOverride = paraSrc.value("backendOverride").toString();
+    const JsonValue teach = paraSrc.value("teachPar");
+    if (teach.isObject()) {
+        t.param.teachPar.relPath = teach.value("relPath").toString();
+        t.param.teachPar.fingerprint = teach.value("fingerprint").toString();
+    }
+    const JsonValue stat = paraSrc.value("statCfg");
+    if (stat.isObject()) {
+        const std::map<std::string, JsonValue>& fields = stat.object();
+        for (std::map<std::string, JsonValue>::const_iterator it = fields.begin();
+             it != fields.end(); ++it) {
+            t.param.statCfg[it->first] = it->second.toString();
+        }
+    }
+    const JsonValue disp = paraSrc.value("displayCfg");
+    if (disp.isArray()) {
+        for (int i = 0; i < disp.size(); ++i) {
+            const JsonValue one = disp.at(i);
+            DisplayCfg cfg;
+            cfg.text = one.value("text").toBool(false);
+            cfg.enabled = one.value("enabled").toBool(true);
+            cfg.alpha = one.value("alpha").toInt(100);
+            cfg.anchor = one.value("anchor").toInt(0);
+            t.param.displayCfg[one.value("key").toString()] = cfg;
+        }
+    }
     if (paraSrc.contains("run")) { t.param.run = paramsFromJson(paraSrc.value("run")); } else { t.param.run = paramsFromJson(paraSrc.value("params")); }
     if (paraSrc.contains("learn")) { t.param.learn = paramsFromJson(paraSrc.value("learn")); }
     judgeFromJson(paraSrc.value("judge"), &t.param.judge);
-    // ¾ÉÎÄ¼şµÄ pipeline Êı×éÕÛ³É pl_* ²ÎÊı
+    // æ—§æ–‡ä»¶çš„ pipeline æ•°ç»„æŠ˜æˆ pl_* å‚æ•°
     const JsonValue pipeline = paraSrc.value("pipeline");
     if (pipeline.isArray() && !t.param.run.contains("pl_n")
         && (t.info.toolName == "preprocess.enhance" || t.info.toolName == "preprocess.smooth")) {
@@ -529,7 +539,7 @@ static ToolCfg toolFromJson(const JsonValue& o)
     if (impl) {
         t.info.type = impl->type();
     }
-    // ¾ÉÎÄ¼şÀï»­²¼×ø±êÈÔ¿ÉÄÜĞ´ÔÚ¹¤¾ßÉÏ
+    // æ—§æ–‡ä»¶é‡Œç”»å¸ƒåæ ‡ä»å¯èƒ½å†™åœ¨å·¥å…·ä¸Š
     t.canvasPlaced = o.value("canvasPlaced").toBool(false);
     t.canvasX = o.value("canvasX").toDouble();
     t.canvasY = o.value("canvasY").toDouble();
@@ -538,18 +548,25 @@ static ToolCfg toolFromJson(const JsonValue& o)
     return t;
 }
 
-// ×éĞ´³É JSON
+// ç»„å†™æˆ JSON
 static JsonValue groupToJson(const ToolGroup& g)
 {
     JsonValue o;
     o.makeObject();
     o.set("id", g.id.toString());
     o.set("kind", g.kind);
+    o.set("kindName", groupKindName(g.kind));
     o.set("name", g.name);
     o.set("toolId", g.toolId.toString());
     o.set("condSourceId", g.condSourceId.toString());
     o.set("condWant", g.condWant);
     o.set("loopCount", g.loopCount);
+    if (!g.subJobRef.empty()) {
+        o.set("subJobRef", g.subJobRef);
+    }
+    if (g.parallelLimit != 0) {
+        o.set("parallelLimit", static_cast<int>(g.parallelLimit));
+    }
     if (g.canvasPlaced) {
         o.set("canvasPlaced", JsonValue(true));
         o.set("canvasX", JsonValue(g.canvasX));
@@ -564,19 +581,23 @@ static JsonValue groupToJson(const ToolGroup& g)
     return o;
 }
 
-// JSON »¹Ô­×é
+// JSON è¿˜åŸç»„
 static ToolGroup groupFromJson(const JsonValue& o)
 {
     ToolGroup g;
     g.id = ObjectId(o.value("id").toString());
-    if (o.contains("kind")) {
-        g.kind = groupKindFromInt(o.value("kind").toInt(-1));
+    if (o.contains("kindName") && !o.value("kindName").toString().empty()) {
+        g.kind = groupKindFromName(o.value("kindName").toString());
+    } else if (o.contains("kind")) {
+        g.kind = groupKindFromLegacy(o.value("kind").toInt(-1));
     }
     g.name = o.value("name").toString();
     g.toolId = ObjectId(o.value("toolId").toString());
     g.condSourceId = ObjectId(o.value("condSourceId").toString());
     g.condWant = o.value("condWant").toInt(CondThenOnOk);
     g.loopCount = o.value("loopCount").toInt(1);
+    g.subJobRef = o.value("subJobRef").toString();
+    g.parallelLimit = static_cast<unsigned>(o.value("parallelLimit").toInt(0));
     if (g.loopCount < 1) {
         g.loopCount = 1;
     }
@@ -590,8 +611,8 @@ static ToolGroup groupFromJson(const JsonValue& o)
     return g;
 }
 
-// Á÷³Ì²¼¾Ö±í×ª JSON
-// ÕÛÏß¹ÕµãĞ´Èë JSON Êı×é
+// æµç¨‹å¸ƒå±€è¡¨è½¬ JSON
+// æŠ˜çº¿æ‹ç‚¹å†™å…¥ JSON æ•°ç»„
 static JsonValue routePointsToJson(const std::vector<RoutePoint>& pts)
 {
     JsonValue arr;
@@ -606,7 +627,7 @@ static JsonValue routePointsToJson(const std::vector<RoutePoint>& pts)
     return arr;
 }
 
-// ¶ÁÕÛÏß¹Õµã£»¼æÈİ¾É routeX1..Y2
+// è¯»æŠ˜çº¿æ‹ç‚¹ï¼›å…¼å®¹æ—§ routeX1..Y2
 static void routePointsFromJson(const JsonValue& o, bool* custom, std::vector<RoutePoint>* pts)
 {
     if (!custom || !pts) {
@@ -703,7 +724,7 @@ static JsonValue jobLayoutToJson(const JobCfg& j)
     return o;
 }
 
-// JSON »¹Ô­Á÷³Ì²¼¾Ö
+// JSON è¿˜åŸæµç¨‹å¸ƒå±€
 static JobLayout jobLayoutFromJson(const JsonValue& o)
 {
     JobLayout lay;
@@ -738,7 +759,7 @@ static JobLayout jobLayoutFromJson(const JsonValue& o)
     return lay;
 }
 
-// JobCfg Ğ´³É JSON
+// JobCfg å†™æˆ JSON
 static JsonValue jobToJson(const JobCfg& j)
 {
     JsonValue o;
@@ -748,16 +769,41 @@ static JsonValue jobToJson(const JobCfg& j)
     o.set("timeoutMs", j.timeoutMs);
     o.set("order", j.order);
     o.set("enabled", j.enabled);
-    o.set("trigger", static_cast<int>(j.trigger));
-    o.set("failPolicy", static_cast<int>(j.failPolicy));
+    o.set("execMode", execWayName(j.execMode));
+    o.set("failPolicyName", failPolicyName(j.failPolicy));
+    if (!j.resultToolId.isNull()) {
+        o.set("resultToolId", j.resultToolId.toString());
+    }
+    o.set("runOnUnloadOnce", j.runOnUnloadOnce);
+    o.set("refreshUiWhileRunning", j.refreshUiWhileRunning);
+    o.set("encrypted", j.encrypted);
+    o.set("retakeCount", j.retakeCount);
+    o.set("textX", j.textX);
+    o.set("textY", j.textY);
+    o.set("textPx", j.textPx);
+    o.set("okColor", j.okColor);
+    o.set("ngColor", j.ngColor);
+    o.set("saveOk", j.saveOk);
+    o.set("saveNg", j.saveNg);
+    o.set("saveAll", j.saveAll);
+    o.set("saveBatchAll", j.saveBatchAll);
+    o.set("saveLimit", j.saveLimit);
+    o.set("saveDir", j.saveDir);
+    o.set("yieldMode", j.yieldMode);
+    o.set("batchYield", j.batchYield);
+    o.set("recentCount", j.recentCount);
+    o.set("recentYield", j.recentYield);
+    o.set("ngLimit", j.ngLimit);
+    o.set("yieldAction", j.yieldAction);
+    o.set("singleToolScope", j.singleToolScope);
     JsonValue tools;
     tools.makeArray();
     for (int i = 0; i < static_cast<int>(j.tools.size()); ++i) {
         tools.append(toolToJson(j.tools[static_cast<size_t>(i)]));
     }
     o.set("tools", tools);
-    // ¹ı¶Éï¼šlinks ÅÉÉú»º´æï¼ˆÓÅÏÈ´Ó¹¤¾ß»ã×Üï¼‰
-    std::vector<ToolLink> linkView = j.collectLinks();
+    // è¿‡æ¸¡é”›æ­­inks æ´¾ç”Ÿç¼“å­˜é”›å „ç•”å´åº¸ãå‘‹é˜•èŒ±ç´š
+    const std::vector<ToolLink>& linkView = j.links;
     JsonValue links;
     links.makeArray();
     for (int i = 0; i < static_cast<int>(linkView.size()); ++i) {
@@ -817,7 +863,7 @@ static JsonValue jobToJson(const JobCfg& j)
     return o;
 }
 
-// JSON »¹Ô­ JobCfg
+// JSON è¿˜åŸ JobCfg
 static JobCfg jobFromJson(const JsonValue& o)
 {
     JobCfg j;
@@ -826,13 +872,47 @@ static JobCfg jobFromJson(const JsonValue& o)
     j.timeoutMs = o.value("timeoutMs").toInt(500);
     j.order = o.value("order").toInt(1);
     j.enabled = o.value("enabled").toBool(true);
-    if (o.contains("trigger")) {
-        const int tv = o.value("trigger").toInt(-1);
-        if (tv >= 0 && tv < static_cast<int>(TriggerModeMax)) {
-            j.trigger = static_cast<TriggerMode>(tv);
-        }
+    if (o.contains("execMode")) {
+        j.execMode = execWayFromName(o.value("execMode").toString());
+    } else if (o.contains("trigger")) {
+        j.execMode = execWayFromLegacyTrigger(o.value("trigger").toInt(-1));
     }
-    j.failPolicy = static_cast<FailPolicy>(o.value("failPolicy").toInt());
+    if (o.contains("failPolicyName")) {
+        j.failPolicy = failPolicyFromName(o.value("failPolicyName").toString());
+    } else {
+        j.failPolicy = failPolicyFromLegacy(o.value("failPolicy").toInt(0));
+    }
+    if (o.contains("resultToolId")) {
+        j.resultToolId = ObjectId::fromString(o.value("resultToolId").toString());
+    }
+    j.runOnUnloadOnce = o.value("runOnUnloadOnce").toBool(false);
+    j.refreshUiWhileRunning = o.value("refreshUiWhileRunning").toBool(true);
+    j.encrypted = o.value("encrypted").toBool(false);
+    j.retakeCount = o.value("retakeCount").toInt(0);
+    j.textX = o.value("textX").toInt(20);
+    j.textY = o.value("textY").toInt(20);
+    j.textPx = o.value("textPx").toInt(16);
+    j.okColor = o.value("okColor").toString();
+    if (j.okColor.empty()) {
+        j.okColor = "#22A050";
+    }
+    j.ngColor = o.value("ngColor").toString();
+    if (j.ngColor.empty()) {
+        j.ngColor = "#D03830";
+    }
+    j.saveOk = o.value("saveOk").toBool(false);
+    j.saveNg = o.value("saveNg").toBool(false);
+    j.saveAll = o.value("saveAll").toBool(false);
+    j.saveBatchAll = o.value("saveBatchAll").toBool(true);
+    j.saveLimit = o.value("saveLimit").toInt(20);
+    j.saveDir = o.value("saveDir").toString();
+    j.yieldMode = o.value("yieldMode").toInt(0);
+    j.batchYield = o.value("batchYield").toDouble(90);
+    j.recentCount = o.value("recentCount").toInt(100);
+    j.recentYield = o.value("recentYield").toDouble(90);
+    j.ngLimit = o.value("ngLimit").toInt(20);
+    j.yieldAction = o.value("yieldAction").toInt(0);
+    j.singleToolScope = o.value("singleToolScope").toInt(0);
     const JsonValue tools = o.value("tools");
     for (int i = 0; i < tools.size(); ++i) {
         j.tools.push_back(toolFromJson(tools.at(i)));
@@ -861,7 +941,7 @@ static JobCfg jobFromJson(const JsonValue& o)
     } else {
         j.syncLayoutFromTools();
     }
-    // ¹¤¾ßÉĞÎŞÈë±ßÊ±£¬ÓÉ¹¤¾ß links »ØÌî
+    // å·¥å…·å°šæ— å…¥è¾¹æ—¶ï¼Œç”±å·¥å…· links å›å¡«
     bool anyIn = false;
     for (size_t i = 0; i < j.tools.size(); ++i) {
         if (!j.tools[i].links.empty()) {
@@ -869,10 +949,12 @@ static JobCfg jobFromJson(const JsonValue& o)
             break;
         }
     }
-    if (!anyIn) {
-        j.distributeLinks();
+    if (j.links.empty()) {
+        j.links = j.collectLinks();
     }
-    j.syncLinksCache();
+    for (size_t i = 0; i < j.tools.size(); ++i) {
+        j.tools[i].links.clear();
+    }
     if (o.contains("root")) {
         j.root = groupFromJson(o.value("root"));
     }
@@ -905,7 +987,7 @@ static JobCfg jobFromJson(const JsonValue& o)
     return j;
 }
 
-// ÔËĞĞ»­ÃæĞ´³É JSON
+// è¿è¡Œç”»é¢å†™æˆ JSON
 static JsonValue runtimeViewToJson(const RuntimeView& view)
 {
     RuntimeView v = view;
@@ -943,7 +1025,7 @@ static JsonValue runtimeViewToJson(const RuntimeView& view)
     return o;
 }
 
-// ÔËĞĞ»­Ãæ£ºÍø¸ñ£¬»ò¾ÉµÄ grid Óë overlayToolId
+// è¿è¡Œç”»é¢ï¼šç½‘æ ¼ï¼Œæˆ–æ—§çš„ grid ä¸ overlayToolId
 static RuntimeView runtimeViewFromJson(const JsonValue& o)
 {
     RuntimeView v;
@@ -989,7 +1071,7 @@ static RuntimeView runtimeViewFromJson(const JsonValue& o)
     return v;
 }
 
-// ¹¤Õ¾Ğ´³É JSON£ºÉè±¸°ó¶¨Óë JobCfg ÁĞ±í
+// å·¥ç«™å†™æˆ JSONï¼šè®¾å¤‡ç»‘å®šä¸ JobCfg åˆ—è¡¨
 static JsonValue stationToJson(const StationCfg& st)
 {
     JsonValue o;
@@ -1000,7 +1082,7 @@ static JsonValue stationToJson(const StationCfg& st)
     o.set("enabled", st.enabled);
     o.set("jobSchedule", static_cast<int>(st.jobSchedule));
     o.set("timeoutMs", st.timeoutMs);
-    o.set("failPolicy", static_cast<int>(st.failPolicy));
+    o.set("failPolicyName", failPolicyName(st.failPolicy));
     o.set("commChannelId", st.commChannelId);
     JsonValue bound;
     bound.makeArray();
@@ -1022,7 +1104,7 @@ static JsonValue stationToJson(const StationCfg& st)
     return o;
 }
 
-// JSON »¹Ô­¹¤Õ¾
+// JSON è¿˜åŸå·¥ç«™
 static StationCfg stationFromJson(const JsonValue& o)
 {
     StationCfg st;
@@ -1032,7 +1114,11 @@ static StationCfg stationFromJson(const JsonValue& o)
     st.enabled = o.value("enabled").toBool(true);
     st.jobSchedule = jobScheduleFromInt(o.value("jobSchedule").toInt());
     st.timeoutMs = o.value("timeoutMs").toInt(500);
-    st.failPolicy = static_cast<FailPolicy>(o.value("failPolicy").toInt());
+    if (o.contains("failPolicyName")) {
+        st.failPolicy = failPolicyFromName(o.value("failPolicyName").toString());
+    } else {
+        st.failPolicy = failPolicyFromLegacy(o.value("failPolicy").toInt(0));
+    }
     st.commChannelId = o.value("commChannelId").toString();
     const JsonValue bound = o.value("boundDevices");
     for (int i = 0; i < bound.size(); ++i) {
@@ -1049,7 +1135,7 @@ static StationCfg stationFromJson(const JsonValue& o)
     return st;
 }
 
-// Çåµô²»²ÎÓë´æÅÌ±È½ÏµÄ paraVersion
+// æ¸…æ‰ä¸å‚ä¸å­˜ç›˜æ¯”è¾ƒçš„ paraVersion
 static void clearParaVersions(JobCfg& job)
 {
     for (size_t i = 0; i < job.tools.size(); ++i) {
@@ -1057,7 +1143,7 @@ static void clearParaVersions(JobCfg& job)
     }
 }
 
-// Çåµô²»²ÎÓë´æÅÌ±È½ÏµÄ paraVersion
+// æ¸…æ‰ä¸å‚ä¸å­˜ç›˜æ¯”è¾ƒçš„ paraVersion
 static void clearPersistNoise(Solution& s)
 {
     for (size_t i = 0; i < s.stations.size(); ++i) {
@@ -1071,7 +1157,7 @@ static void clearPersistNoise(Solution& s)
     }
 }
 
-// ·½°¸¿É´æÅÌ JSON¡£saveMeta Îª¼ÙÊ±²»º¬±£´æÕßºÍÊ±¼ä
+// æ–¹æ¡ˆå¯å­˜ç›˜ JSONã€‚saveMeta ä¸ºå‡æ—¶ä¸å«ä¿å­˜è€…å’Œæ—¶é—´
 static JsonValue solutionToJson(const Solution& s, bool saveMeta)
 {
     JsonValue root;
@@ -1131,7 +1217,7 @@ static JsonValue solutionToJson(const Solution& s, bool saveMeta)
     return root;
 }
 
-// ¿É´æÅÌÅä·½Ö¸ÎÆ£¬²»º¬±£´æÕß¡¢Ê±¼ä¡¢Èí¼ş°æ±¾ºÍ paraVersion
+// å¯å­˜ç›˜é…æ–¹æŒ‡çº¹ï¼Œä¸å«ä¿å­˜è€…ã€æ—¶é—´ã€è½¯ä»¶ç‰ˆæœ¬å’Œ paraVersion
 std::string VisionCfgMgr::persistFingerprint(const Solution& s)
 {
     Solution copy = s;
@@ -1139,7 +1225,7 @@ std::string VisionCfgMgr::persistFingerprint(const Solution& s)
     return JsonValue::stringify(solutionToJson(copy, false), false);
 }
 
-// ´æÅÌÃ¶¾Ù±ØĞëÒÑÊÇ¾ßÌåÖµ
+// å­˜ç›˜æšä¸¾å¿…é¡»å·²æ˜¯å…·ä½“å€¼
 static bool groupEnumsOk(const ToolGroup& g)
 {
     if (g.kind <= GroupKindUndefined || g.kind >= GroupKindMax) {
@@ -1155,7 +1241,7 @@ static bool groupEnumsOk(const ToolGroup& g)
 
 static bool jobEnumsOk(const JobCfg& job)
 {
-    if (job.trigger <= TriggerModeUndefined || job.trigger >= TriggerModeMax) {
+    if (job.execMode < ExecActive || job.execMode >= ExecWayMax) {
         return false;
     }
     if (!groupEnumsOk(job.root)) {
@@ -1182,14 +1268,14 @@ static bool persistEnumsOk(const Solution& s, std::string* error)
         const HardwareDevice& d = s.inventory[i];
         if (d.kind <= DeviceKindUndefined || d.kind >= DeviceKindMax) {
             if (error) {
-                *error = std::string(Translate::tr("ÀàĞÍÎ´¶¨Òå£¬²»ÄÜ±£´æ"));
+                *error = std::string(Translate::tr("ç±»å‹æœªå®šä¹‰ï¼Œä¸èƒ½ä¿å­˜"));
             }
             return false;
         }
         if (d.kind == DeviceCamera
             && (d.cameraBackend <= CameraBackendUndefined || d.cameraBackend > CameraBackendSdk)) {
             if (error) {
-                *error = std::string(Translate::tr("ÀàĞÍÎ´¶¨Òå£¬²»ÄÜ±£´æ"));
+                *error = std::string(Translate::tr("ç±»å‹æœªå®šä¹‰ï¼Œä¸èƒ½ä¿å­˜"));
             }
             return false;
         }
@@ -1198,7 +1284,7 @@ static bool persistEnumsOk(const Solution& s, std::string* error)
         const CommChannelType ct = s.commChannels[i].type;
         if (ct <= CommChannelTypeUndefined || ct >= CommChannelTypeMax) {
             if (error) {
-                *error = std::string(Translate::tr("ÀàĞÍÎ´¶¨Òå£¬²»ÄÜ±£´æ"));
+                *error = std::string(Translate::tr("ç±»å‹æœªå®šä¹‰ï¼Œä¸èƒ½ä¿å­˜"));
             }
             return false;
         }
@@ -1208,7 +1294,7 @@ static bool persistEnumsOk(const Solution& s, std::string* error)
         for (size_t ji = 0; ji < st.jobs.size(); ++ji) {
             if (!jobEnumsOk(st.jobs[ji])) {
                 if (error) {
-                    *error = std::string(Translate::tr("ÀàĞÍÎ´¶¨Òå£¬²»ÄÜ±£´æ"));
+                    *error = std::string(Translate::tr("ç±»å‹æœªå®šä¹‰ï¼Œä¸èƒ½ä¿å­˜"));
                 }
                 return false;
             }
@@ -1217,19 +1303,19 @@ static bool persistEnumsOk(const Solution& s, std::string* error)
     for (size_t i = 0; i < s.composites.size(); ++i) {
         if (!jobEnumsOk(s.composites[i].inner)) {
             if (error) {
-                *error = std::string(Translate::tr("ÀàĞÍÎ´¶¨Òå£¬²»ÄÜ±£´æ"));
+                *error = std::string(Translate::tr("ç±»å‹æœªå®šä¹‰ï¼Œä¸èƒ½ä¿å­˜"));
             }
             return false;
         }
     }
     return true;
 }
-// ·½°¸´æ³É format=3 JSON ²¢Ô­×ÓÂäÅÌ
+// æ–¹æ¡ˆå­˜æˆ format=3 JSON å¹¶åŸå­è½ç›˜
 bool VisionCfgMgr::saveSolution(const Solution& s, std::string* error)
 {
     if (s.filePath.empty()) {
         if (error) {
-            *error = std::string(Translate::tr("Î´Ö¸¶¨·½°¸Â·¾¶"));
+            *error = std::string(Translate::tr("æœªæŒ‡å®šæ–¹æ¡ˆè·¯å¾„"));
         }
         return false;
     }
@@ -1239,21 +1325,21 @@ bool VisionCfgMgr::saveSolution(const Solution& s, std::string* error)
     const JsonValue root = solutionToJson(s, true);
     if (!writeFileAtomic(s.filePath, JsonValue::stringify(root, true))) {
         if (error) {
-            *error = std::string(Translate::tr("ÎŞ·¨Ğ´ÈëÎÄ¼ş"));
+            *error = std::string(Translate::tr("æ— æ³•å†™å…¥æ–‡ä»¶"));
         }
         return false;
     }
-    // ÅÔÂ· vpdata£ºÎªÃ¿¸ö¹¤¾ß½¨ºÃÊı¾İÄ¿Â¼
+    // æ—è·¯ vpdataï¼šä¸ºæ¯ä¸ªå·¥å…·å»ºå¥½æ•°æ®ç›®å½•
     if (!VisionCfgMgr::ensureSolutionDataDirs(s)) {
         if (error) {
-            *error = std::string(Translate::tr("ÎŞ·¨´´½¨·½°¸Êı¾İÄ¿Â¼"));
+            *error = std::string(Translate::tr("æ— æ³•åˆ›å»ºæ–¹æ¡ˆæ•°æ®ç›®å½•"));
         }
         return false;
     }
     return true;
 }
 
-// Îª·½°¸ÄÚÈ«²¿¹¤¾ßÈ·±£ vpdata ×ÓÄ¿Â¼
+// ä¸ºæ–¹æ¡ˆå†…å…¨éƒ¨å·¥å…·ç¡®ä¿ vpdata å­ç›®å½•
 bool VisionCfgMgr::ensureSolutionDataDirs(const Solution& s)
 {
     const std::string root = solutionDataRootFromFile(s.filePath);
@@ -1279,7 +1365,7 @@ bool VisionCfgMgr::ensureSolutionDataDirs(const Solution& s)
     return true;
 }
 
-// ¶Á·½°¸£»format ´óÓÚ 3 Ôò¾Ü¾ø¡£³É¹¦ºó dirty Îª false
+// è¯»æ–¹æ¡ˆï¼›format å¤§äº 3 åˆ™æ‹’ç»ã€‚æˆåŠŸå dirty ä¸º false
 bool VisionCfgMgr::loadSolution(const std::string& path, Solution* s, std::string* error)
 {
     if (!s) {
@@ -1288,7 +1374,7 @@ bool VisionCfgMgr::loadSolution(const std::string& path, Solution* s, std::strin
     std::string text;
     if (!readFileUtf8(path, &text)) {
         if (error) {
-            *error = std::string(Translate::tr("ÎŞ·¨´ò¿ªÎÄ¼ş"));
+            *error = std::string(Translate::tr("æ— æ³•æ‰“å¼€æ–‡ä»¶"));
         }
         return false;
     }
@@ -1296,14 +1382,14 @@ bool VisionCfgMgr::loadSolution(const std::string& path, Solution* s, std::strin
     const JsonValue root = JsonValue::parse(text, &perr);
     if (!root.isObject()) {
         if (error) {
-            *error = perr.empty() ? std::string(Translate::tr("·½°¸ÎÄ¼ş²»ÊÇ JSON ¶ÔÏó")) : perr;
+            *error = perr.empty() ? std::string(Translate::tr("æ–¹æ¡ˆæ–‡ä»¶ä¸æ˜¯ JSON å¯¹è±¡")) : perr;
         }
         return false;
     }
     const int format = root.value("format").toInt(1);
     if (format > 3) {
         if (error) {
-            *error = std::string(Translate::tr("·½°¸ÎÄ¼ş°æ±¾¸ü¸ß£¬ÇëÉı¼¶Èí¼ş"));
+            *error = std::string(Translate::tr("æ–¹æ¡ˆæ–‡ä»¶ç‰ˆæœ¬æ›´é«˜ï¼Œè¯·å‡çº§è½¯ä»¶"));
         }
         return false;
     }
@@ -1381,14 +1467,14 @@ bool VisionCfgMgr::loadSolution(const std::string& path, Solution* s, std::strin
     return true;
 }
 
-// Â·¾¶ÊÇ·ñÎªÒÑ´æÔÚµÄÎÄ¼ş£¨UTF-8£©
+// è·¯å¾„æ˜¯å¦ä¸ºå·²å­˜åœ¨çš„æ–‡ä»¶ï¼ˆUTF-8ï¼‰
 static bool fileExistsUtf8(const std::string& path)
 {
     const DWORD a = GetFileAttributesW(utf8ToWide(path).c_str());
     return a != INVALID_FILE_ATTRIBUTES && (a & FILE_ATTRIBUTE_DIRECTORY) == 0;
 }
 
-// ±¾»úÉèÖÃ¶ÁĞ´ settings.json
+// æœ¬æœºè®¾ç½®è¯»å†™ settings.json
 bool VisionCfgMgr::saveSettings(const AppSettings& s)
 {
     AppPaths::ensureDirs();
@@ -1410,7 +1496,7 @@ bool VisionCfgMgr::saveSettings(const AppSettings& s)
     return writeFileAtomic(AppPaths::settingsFile(), JsonValue::stringify(o, true));
 }
 
-// ¶ÁÉèÖÃ£»Ëğ»µÊ±ÈÔÓÃ³ö³§Ä¬ÈÏ
+// è¯»è®¾ç½®ï¼›æŸåæ—¶ä»ç”¨å‡ºå‚é»˜è®¤
 FileLoadStatus VisionCfgMgr::loadSettings(AppSettings* s, std::string* error)
 {
     if (!s) {
@@ -1423,14 +1509,14 @@ FileLoadStatus VisionCfgMgr::loadSettings(AppSettings* s, std::string* error)
     *s = def;
     if (!fileExistsUtf8(AppPaths::settingsFile())) {
         if (error) {
-            *error = std::string(Translate::tr("ÎŞ·¨¶ÁÈ¡±¾»úÉèÖÃ"));
+            *error = std::string(Translate::tr("æ— æ³•è¯»å–æœ¬æœºè®¾ç½®"));
         }
         return FileLoadMissing;
     }
     std::string text;
     if (!readFileUtf8(AppPaths::settingsFile(), &text)) {
         if (error) {
-            *error = std::string(Translate::tr("ÎŞ·¨¶ÁÈ¡±¾»úÉèÖÃ"));
+            *error = std::string(Translate::tr("æ— æ³•è¯»å–æœ¬æœºè®¾ç½®"));
         }
         return FileLoadCorrupt;
     }
@@ -1438,7 +1524,7 @@ FileLoadStatus VisionCfgMgr::loadSettings(AppSettings* s, std::string* error)
     const JsonValue o = JsonValue::parse(text, &perr);
     if (!o.isObject()) {
         if (error) {
-            *error = perr.empty() ? std::string(Translate::tr("±¾»úÉèÖÃ²»ÊÇ JSON ¶ÔÏó")) : perr;
+            *error = perr.empty() ? std::string(Translate::tr("æœ¬æœºè®¾ç½®ä¸æ˜¯ JSON å¯¹è±¡")) : perr;
         }
         return FileLoadCorrupt;
     }

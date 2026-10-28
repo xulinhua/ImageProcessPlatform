@@ -1,6 +1,6 @@
 /**
  * @file ToolEditorBase.h
- * @brief ToolEditorBaseÍ·ÎÄ¼ş
+ * @brief ToolEditorBaseå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -19,40 +19,40 @@ class Session;
 
 /**
  * @class ToolEditorBase
- * @brief ¹¤¾ß²ÎÊıÒ³¹«¹²µ××ù¡£ÅÉÉúÀà²»ÒªÔÙÉùÃ÷ Q_OBJECT£¬¸Ä¶¯½Ó onEdited
+ * @brief å·¥å…·å‚æ•°é¡µå…¬å…±åº•åº§ã€‚æ´¾ç”Ÿç±»ä¸è¦å†å£°æ˜ Q_OBJECTï¼Œæ”¹åŠ¨æ¥ onEdited
  */
 class VISION_TOOLUI_API ToolEditorBase : public QWidget {
     Q_OBJECT
 public:
-    /** @brief ²ÎÊıÒ³µ××ù£¬ÉÔºó°ó¶¨¹¤¾ß */
+    /** @brief å‚æ•°é¡µåº•åº§ï¼Œç¨åç»‘å®šå·¥å…· */
     explicit ToolEditorBase(QWidget* parent = 0);
     virtual ~ToolEditorBase() {}
 
-    /** @brief °ó¶¨Í¬Ò» ToolCfg£¨¿ì½İÃæ°åÓëµ÷ÊÔ´°¹²ÓÃ£© */
+    /** @brief ç»‘å®šåŒä¸€ ToolCfgï¼ˆå¿«æ·é¢æ¿ä¸è°ƒè¯•çª—å…±ç”¨ï¼‰ */
     void bind(ToolCfg* tool, Session* session, Solution* sol);
-    /** @brief ¿Ø¼şĞ´»Ø ToolCfg£¨²»±ê dirty£»ÓÃ»§±à¼­Ê±ÓÉ onEdited ±ê¼Ç£© */
+    /** @brief æ§ä»¶å†™å› ToolCfgï¼ˆä¸æ ‡ dirtyï¼›ç”¨æˆ·ç¼–è¾‘æ—¶ç”± onEdited æ ‡è®°ï¼‰ */
     void apply();
-    /** @brief ´Ó ToolCfg ÖØĞÂ¹àÈë¿Ø¼ş */
+    /** @brief ä» ToolCfg é‡æ–°çŒå…¥æ§ä»¶ */
     void reload();
 
 signals:
-    /** @brief ²ÎÊıÒÑ¸Ä */
+    /** @brief å‚æ•°å·²æ”¹ */
     void edited();
 
 protected slots:
-    /** @brief ¿Ø¼ş¸Ä¶¯£ºĞ´»Ø²¢Í¨Öª */
+    /** @brief æ§ä»¶æ”¹åŠ¨ï¼šå†™å›å¹¶é€šçŸ¥ */
     void onEdited();
 
 protected:
-    /** @brief ÅÉÉúÀà¹àÈë¿Ø¼ş */
+    /** @brief æ´¾ç”Ÿç±»çŒå…¥æ§ä»¶ */
     virtual void loadFromTool() = 0;
-    /** @brief ÅÉÉúÀàĞ´»Ø ToolCfg */
+    /** @brief æ´¾ç”Ÿç±»å†™å› ToolCfg */
     virtual void saveToTool() = 0;
 
-    ToolCfg* m_tool;     ///< µ±Ç°¹¤¾ß£¬²»ÓµÓĞ
-    Session* m_session;     ///< »á»°£¬²»ÓµÓĞ
-    Solution* m_sol;        ///< ·½°¸£¬²»ÓµÓĞ
-    bool m_block;           ///< ¹àÈëÊ±µ²×¡»ØĞ´
+    ToolCfg* m_tool;     ///< å½“å‰å·¥å…·ï¼Œä¸æ‹¥æœ‰
+    Session* m_session;     ///< ä¼šè¯ï¼Œä¸æ‹¥æœ‰
+    Solution* m_sol;        ///< æ–¹æ¡ˆï¼Œä¸æ‹¥æœ‰
+    bool m_block;           ///< çŒå…¥æ—¶æŒ¡ä½å›å†™
 };
 
 }

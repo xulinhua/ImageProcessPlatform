@@ -1,6 +1,6 @@
 /**
  * @file ImageLayer.cpp
- * @brief ImageLayerÊµÏÖ
+ * @brief ImageLayerå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -29,19 +29,19 @@ bool ImageLayer::isVisible() const { return m_item->isVisible(); }
 void ImageLayer::setViewScale(qreal scale) { m_item->setViewScale(scale); }
 void ImageLayer::setPixelInspect(bool on) { m_item->setPixelInspect(on); }
 
-// Í¼ÏñÏî
+// å›¾åƒé¡¹
 ImageItem* ImageLayer::item() const
 {
     return m_item;
 }
 
-// µ×Í¼Ö¡
+// åº•å›¾å¸§
 HsCommData::HsImage& ImageLayer::frame()
 {
     return m_frame;
 }
 
-// µ×Í¼Ö¡£¨Ö»¶Á£©
+// åº•å›¾å¸§ï¼ˆåªè¯»ï¼‰
 const HsCommData::HsImage& ImageLayer::frame() const
 {
     return m_frame;

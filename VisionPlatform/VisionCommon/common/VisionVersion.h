@@ -1,6 +1,6 @@
 /**
  * @file VisionVersion.h
- * @brief VisionVersionÍ·ÎÄ¼ş
+ * @brief VisionVersionå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -14,10 +14,10 @@
 #include <string>
 #include <vector>
 
-/** @brief ²úÆ·Ö÷°æ±¾£¨¸ÄºÅÖ»¸ÄÕâÀï£© */
+/** @brief äº§å“ä¸»ç‰ˆæœ¬ï¼ˆæ”¹å·åªæ”¹è¿™é‡Œï¼‰ */
 #define VISION_VERSION_STRING "1.0.0"
 
-/** @brief Ä£¿é°æ±¾³õÖµ£»¹¤¾ß¿Éµ¥¶À¸²¸Ç ToolBase::version */
+/** @brief æ¨¡å—ç‰ˆæœ¬åˆå€¼ï¼›å·¥å…·å¯å•ç‹¬è¦†ç›– ToolBase::version */
 #define VISION_MODULE_CORE_VERSION       "1.0.0"
 #define VISION_MODULE_COMM_VERSION       "1.0.0"
 #define VISION_MODULE_ALGOBASE_VERSION   "1.0.0"
@@ -27,30 +27,30 @@
 
 namespace Vision {
 
-/** @brief cpp ÀïµÄÒ»ĞĞ±ä¸ü¡£note °´ÏµÍ³ ANSI ´æ·Å */
+/** @brief cpp é‡Œçš„ä¸€è¡Œå˜æ›´ã€‚note æŒ‰ UTF-8 å­˜æ”¾ */
 struct VerNoteRaw {
-    const char* ver;  ///< ËÄ¶Î°æ±¾
-    const char* note; ///< ÕâÒ»°æ¸ÄÁËÊ²Ã´
+    const char* ver;  ///< å››æ®µç‰ˆæœ¬
+    const char* note; ///< è¿™ä¸€ç‰ˆæ”¹äº†ä»€ä¹ˆ
 };
 
-/** @brief ½»¸ø½çÃæµÄÒ»ĞĞ±ä¸ü¡£note Îª UTF-8 */
+/** @brief äº¤ç»™ç•Œé¢çš„ä¸€è¡Œå˜æ›´ã€‚note ä¸º UTF-8 */
 struct VerNote {
-    std::string ver;  ///< ËÄ¶Î°æ±¾
-    std::string note; ///< ÕâÒ»°æ¸ÄÁËÊ²Ã´
+    std::string ver;  ///< å››æ®µç‰ˆæœ¬
+    std::string note; ///< è¿™ä¸€ç‰ˆæ”¹äº†ä»€ä¹ˆ
 };
 
 
 /**
  * @class VersionInfo
- * @brief Ò»Ìõ°æ±¾¼ÇÂ¼£¨Èí¼şÄ£¿é»òÒÑ×¢²á¹¤¾ß£©
+ * @brief ä¸€æ¡ç‰ˆæœ¬è®°å½•ï¼ˆè½¯ä»¶æ¨¡å—æˆ–å·²æ³¨å†Œå·¥å…·ï¼‰
  */
 struct VersionInfo {
-    std::string id;       ///< ÎÈ¶¨¼ü£¬Èç vision.platform / locate.template
-    std::string name;     ///< ÏÔÊ¾Ãû
+    std::string id;       ///< ç¨³å®šé”®ï¼Œå¦‚ vision.platform / locate.template
+    std::string name;     ///< æ˜¾ç¤ºå
     std::string version;  ///< major.minor.patch
-    std::string modified; ///< ¹¤¾ß DLL ĞŞ¸ÄÊ±¼ä£¨±¾µØ£©
-    bool algoTool;        ///< ÊÇ·ñËã·¨¹¤¾ß
-    bool hasAlgLib[AlgLibKindMax]; ///< ¸÷Ëã·¨¿âÊÇ·ñÒÑµÇ¼Ç£¨Hal/Hik/Hray/CV£©
+    std::string modified; ///< å·¥å…· DLL ä¿®æ”¹æ—¶é—´ï¼ˆæœ¬åœ°ï¼‰
+    bool algoTool;        ///< æ˜¯å¦ç®—æ³•å·¥å…·
+    bool hasAlgLib[AlgLibKindMax]; ///< å„ç®—æ³•åº“æ˜¯å¦å·²ç™»è®°ï¼ˆHal/Hik/Hray/CVï¼‰
     VersionInfo()
         : algoTool(false)
     {
@@ -60,22 +60,22 @@ struct VersionInfo {
     }
 };
 
-/** @brief °Ñ cpp ÀïµÄ±ä¸ü±í×ª³É UTF-8 */
+/** @brief æŠŠ cpp é‡Œçš„å˜æ›´è¡¨è½¬æˆ UTF-8 */
 VISION_COMMON_API std::vector<VerNote> verNotesFrom(const VerNoteRaw* rows, int count);
 /**
- * @brief ÁĞ³ö (saved, current] Ö®¼äµÄËµÃ÷¡£saved ±È current ĞÂÊ±ËµÃ÷±¾³ÌĞòµ½ÄÄÒ»°æ
+ * @brief åˆ—å‡º (saved, current] ä¹‹é—´çš„è¯´æ˜ã€‚saved æ¯” current æ–°æ—¶è¯´æ˜æœ¬ç¨‹åºåˆ°å“ªä¸€ç‰ˆ
  */
 VISION_COMMON_API std::string verNotesBetween(const std::vector<VerNote>& notes,
                                               const std::string& saved,
                                               const std::string& current);
 
-/** @brief ²úÆ·ÏÔÊ¾Ãû */
+/** @brief äº§å“æ˜¾ç¤ºå */
 VISION_COMMON_API const char* appProductName();
-/** @brief Èí¼ş°æ±¾×Ö·û´® */
+/** @brief è½¯ä»¶ç‰ˆæœ¬å­—ç¬¦ä¸² */
 VISION_COMMON_API const char* appVersion();
-/** @brief ±àÒëÊ±¼ä´Á£¨__DATE__ __TIME__£© */
+/** @brief ç¼–è¯‘æ—¶é—´æˆ³ï¼ˆ__DATE__ __TIME__ï¼‰ */
 VISION_COMMON_API std::string buildStamp();
-/** @brief ¾²Ì¬Ä£¿é°æ±¾±í */
+/** @brief é™æ€æ¨¡å—ç‰ˆæœ¬è¡¨ */
 VISION_COMMON_API std::vector<VersionInfo> moduleVersions();
 #ifndef VISION_TOOL_API
 #ifdef VISION_TOOL_EXPORTS
@@ -86,7 +86,7 @@ VISION_COMMON_API std::vector<VersionInfo> moduleVersions();
 #endif
 
 /**
- * @brief ÒÑ×¢²á¹¤¾ß°æ±¾±í£¨ÊµÏÖÔÚ VisionToolBase£©
+ * @brief å·²æ³¨å†Œå·¥å…·ç‰ˆæœ¬è¡¨ï¼ˆå®ç°åœ¨ VisionToolBaseï¼‰
  */
 VISION_TOOL_API std::vector<VersionInfo> toolVersions();
 

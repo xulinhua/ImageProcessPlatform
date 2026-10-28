@@ -1,6 +1,6 @@
 /**
  * @file Geom3.cpp
- * @brief Geom3ÊµÏÖ
+ * @brief Geom3å®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -15,13 +15,13 @@ namespace HsCommData {
 
 namespace {
 
-// ËÄÔªÊıÄ£³¤Æ½·½
+// å››å…ƒæ•°æ¨¡é•¿å¹³æ–¹
 double quatLen2(double qx, double qy, double qz, double qw)
 {
     return qx * qx + qy * qy + qz * qz + qw * qw;
 }
 
-// µ¥Î»ËÄÔªÊıĞı×ªÏòÁ¿
+// å•ä½å››å…ƒæ•°æ—‹è½¬å‘é‡
 Point3d rotateUnit(double qx, double qy, double qz, double qw, const Point3d& v)
 {
     const double uvx = qy * v.z - qz * v.y;
@@ -38,31 +38,31 @@ Point3d rotateUnit(double qx, double qy, double qz, double qw, const Point3d& v)
 
 }
 
-// ÏòÁ¿Ïà¼Ó
+// å‘é‡ç›¸åŠ 
 Point3d operator+(const Point3d& a, const Point3d& b)
 {
     return Point3d(a.x + b.x, a.y + b.y, a.z + b.z);
 }
 
-// ÏòÁ¿Ïà¼õ
+// å‘é‡ç›¸å‡
 Point3d operator-(const Point3d& a, const Point3d& b)
 {
     return Point3d(a.x - b.x, a.y - b.y, a.z - b.z);
 }
 
-// È¡·´
+// å–å
 Point3d operator-(const Point3d& a)
 {
     return Point3d(-a.x, -a.y, -a.z);
 }
 
-// Êı³Ë
+// æ•°ä¹˜
 Point3d operator*(const Point3d& a, double s)
 {
     return Point3d(a.x * s, a.y * s, a.z * s);
 }
 
-// Êı³ı¡£³ıÊı½Ó½ü 0 Ê±·µ»ØÁãÏòÁ¿
+// æ•°é™¤ã€‚é™¤æ•°æ¥è¿‘ 0 æ—¶è¿”å›é›¶å‘é‡
 Point3d operator/(const Point3d& a, double s)
 {
     if (s > -1e-15 && s < 1e-15) {
@@ -71,7 +71,7 @@ Point3d operator/(const Point3d& a, double s)
     return Point3d(a.x / s, a.y / s, a.z / s);
 }
 
-// Ô­µØÏà¼Ó
+// åŸåœ°ç›¸åŠ 
 Point3d& operator+=(Point3d& a, const Point3d& b)
 {
     a.x += b.x;
@@ -80,7 +80,7 @@ Point3d& operator+=(Point3d& a, const Point3d& b)
     return a;
 }
 
-// Ô­µØÏà¼õ
+// åŸåœ°ç›¸å‡
 Point3d& operator-=(Point3d& a, const Point3d& b)
 {
     a.x -= b.x;
@@ -89,13 +89,13 @@ Point3d& operator-=(Point3d& a, const Point3d& b)
     return a;
 }
 
-// µã»ı
+// ç‚¹ç§¯
 double dot(const Point3d& a, const Point3d& b)
 {
     return a.x * b.x + a.y * b.y + a.z * b.z;
 }
 
-// ²æ»ı
+// å‰ç§¯
 Point3d cross(const Point3d& a, const Point3d& b)
 {
     return Point3d(
@@ -104,19 +104,19 @@ Point3d cross(const Point3d& a, const Point3d& b)
         a.x * b.y - a.y * b.x);
 }
 
-// ³¤¶È
+// é•¿åº¦
 double length(const Point3d& a)
 {
     return std::sqrt(lengthSquared(a));
 }
 
-// ³¤¶ÈÆ½·½
+// é•¿åº¦å¹³æ–¹
 double lengthSquared(const Point3d& a)
 {
     return dot(a, a);
 }
 
-// µ¥Î»ÏòÁ¿¡£³¤¶È½Ó½ü 0 Ê±·µ»ØÁãÏòÁ¿
+// å•ä½å‘é‡ã€‚é•¿åº¦æ¥è¿‘ 0 æ—¶è¿”å›é›¶å‘é‡
 Point3d normalized(const Point3d& a)
 {
     const double len2 = lengthSquared(a);
@@ -127,13 +127,13 @@ Point3d normalized(const Point3d& a)
     return Point3d(a.x * inv, a.y * inv, a.z * inv);
 }
 
-// Á½µã¾àÀë
+// ä¸¤ç‚¹è·ç¦»
 double dist(const Point3d& a, const Point3d& b)
 {
     return length(a - b);
 }
 
-// µ¥Î»Î»×Ë
+// å•ä½ä½å§¿
 Pose3::Pose3()
     : tx(0.0)
     , ty(0.0)
@@ -145,7 +145,7 @@ Pose3::Pose3()
 {
 }
 
-// Ö¸¶¨Æ½ÒÆºÍËÄÔªÊı£¬²»ÔÚÕâÀï¹éÒ»»¯
+// æŒ‡å®šå¹³ç§»å’Œå››å…ƒæ•°ï¼Œä¸åœ¨è¿™é‡Œå½’ä¸€åŒ–
 Pose3::Pose3(double tx_, double ty_, double tz_, double qx_, double qy_, double qz_, double qw_)
     : tx(tx_)
     , ty(ty_)
@@ -157,7 +157,7 @@ Pose3::Pose3(double tx_, double ty_, double tz_, double qx_, double qy_, double 
 {
 }
 
-// ÊÇ·ñ½Ó½üµ¥Î»ËÄÔªÊı
+// æ˜¯å¦æ¥è¿‘å•ä½å››å…ƒæ•°
 bool Pose3::isUnit(double eps) const
 {
     const double n = std::sqrt(quatLen2(qx, qy, qz, qw));
@@ -165,7 +165,7 @@ bool Pose3::isUnit(double eps) const
     return d <= eps && d >= -eps;
 }
 
-// ËÄÔªÊı¹éÒ»»¯¡£Ä£³¤½Ó½ü 0 Ê±ÍË»Øµ¥Î»Ôª£¬Æ½ÒÆ±£Áô
+// å››å…ƒæ•°å½’ä¸€åŒ–ã€‚æ¨¡é•¿æ¥è¿‘ 0 æ—¶é€€å›å•ä½å…ƒï¼Œå¹³ç§»ä¿ç•™
 Pose3 Pose3::normalized() const
 {
     const double len2 = quatLen2(qx, qy, qz, qw);
@@ -181,7 +181,7 @@ Pose3 Pose3::normalized() const
     return out;
 }
 
-// Ö»Ğı×ªÏòÁ¿£¬²»¼ÓÆ½ÒÆ
+// åªæ—‹è½¬å‘é‡ï¼Œä¸åŠ å¹³ç§»
 Point3d Pose3::rotate(const Point3d& v) const
 {
     const double len2 = quatLen2(qx, qy, qz, qw);
@@ -192,14 +192,14 @@ Point3d Pose3::rotate(const Point3d& v) const
     return rotateUnit(qx * inv, qy * inv, qz * inv, qw * inv, v);
 }
 
-// ¾Ö²¿µã±äµ½ÊÀ½ç£ºÏÈĞı×ªÔÙ¼ÓÆ½ÒÆ
+// å±€éƒ¨ç‚¹å˜åˆ°ä¸–ç•Œï¼šå…ˆæ—‹è½¬å†åŠ å¹³ç§»
 Point3d Pose3::apply(const Point3d& p) const
 {
     const Point3d r = rotate(p);
     return Point3d(r.x + tx, r.y + ty, r.z + tz);
 }
 
-// ÄæÎ»×Ë
+// é€†ä½å§¿
 Pose3 Pose3::inverse() const
 {
     const Pose3 u = normalized();
@@ -211,33 +211,33 @@ Pose3 Pose3::inverse() const
     return inv;
 }
 
-// ¿ÕºĞ
+// ç©ºç›’
 Aabb3::Aabb3()
     : minCorner(0.0, 0.0, 0.0)
     , maxCorner(-1.0, -1.0, -1.0)
 {
 }
 
-// ÓÃ×îĞ¡½ÇºÍ×î´ó½Ç¹¹Ôì£¬²»×Ô¶¯½»»»
+// ç”¨æœ€å°è§’å’Œæœ€å¤§è§’æ„é€ ï¼Œä¸è‡ªåŠ¨äº¤æ¢
 Aabb3::Aabb3(const Point3d& minCorner_, const Point3d& maxCorner_)
     : minCorner(minCorner_)
     , maxCorner(maxCorner_)
 {
 }
 
-// ÈÎÒ»Î¬ max Ğ¡ÓÚ min ÔòÎª¿Õ
+// ä»»ä¸€ç»´ max å°äº min åˆ™ä¸ºç©º
 bool Aabb3::isEmpty() const
 {
     return maxCorner.x < minCorner.x || maxCorner.y < minCorner.y || maxCorner.z < minCorner.z;
 }
 
-// µ¥µãºĞ
+// å•ç‚¹ç›’
 Aabb3 Aabb3::fromPoint(const Point3d& p)
 {
     return Aabb3(p, p);
 }
 
-// ²¢ÈëÒ»¸öµã¡£¿ÕºĞÔò±ä³É¸Ãµã
+// å¹¶å…¥ä¸€ä¸ªç‚¹ã€‚ç©ºç›’åˆ™å˜æˆè¯¥ç‚¹
 void Aabb3::include(const Point3d& p)
 {
     if (isEmpty()) {
@@ -265,7 +265,7 @@ void Aabb3::include(const Point3d& p)
     }
 }
 
-// ÓëÁíÒ»ºĞÇó²¢¡£¿ÕºĞ²»²ÎÓë
+// ä¸å¦ä¸€ç›’æ±‚å¹¶ã€‚ç©ºç›’ä¸å‚ä¸
 Aabb3 Aabb3::united(const Aabb3& other) const
 {
     if (isEmpty()) {
@@ -280,7 +280,7 @@ Aabb3 Aabb3::united(const Aabb3& other) const
     return out;
 }
 
-// µãÊÇ·ñÔÚ±ÕÇø¼äÄÚ¡£¿ÕºĞºãÎª false
+// ç‚¹æ˜¯å¦åœ¨é—­åŒºé—´å†…ã€‚ç©ºç›’æ’ä¸º false
 bool Aabb3::contains(const Point3d& p) const
 {
     if (isEmpty()) {
@@ -291,7 +291,7 @@ bool Aabb3::contains(const Point3d& p) const
         && p.z >= minCorner.z && p.z <= maxCorner.z;
 }
 
-// ÖĞĞÄ¡£¿ÕºĞ·µ»ØÔ­µã
+// ä¸­å¿ƒã€‚ç©ºç›’è¿”å›åŸç‚¹
 Point3d Aabb3::center() const
 {
     if (isEmpty()) {
@@ -303,7 +303,7 @@ Point3d Aabb3::center() const
         (minCorner.z + maxCorner.z) * 0.5);
 }
 
-// ¸÷±ß³¤¶È¡£¿ÕºĞ·µ»ØÁãÏòÁ¿
+// å„è¾¹é•¿åº¦ã€‚ç©ºç›’è¿”å›é›¶å‘é‡
 Point3d Aabb3::extent() const
 {
     if (isEmpty()) {

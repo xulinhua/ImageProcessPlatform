@@ -1,6 +1,6 @@
 /**
  * @file StationDlg.cpp
- * @brief StationDlgÊµÏÖ
+ * @brief StationDlgå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -38,7 +38,7 @@ namespace Vision {
 
 namespace {
 
-// ±í¸ñÖÁÉÙÏÔÊ¾ rows ĞĞ£¬³¬³ö²¿·Ö¹ö¶¯
+// è¡¨æ ¼è‡³å°‘æ˜¾ç¤º rows è¡Œï¼Œè¶…å‡ºéƒ¨åˆ†æ»šåŠ¨
 void setTableMinVisibleRows(QTableWidget* table, int rows)
 {
     if (!table || rows <= 0) {
@@ -58,7 +58,7 @@ void setTableMinVisibleRows(QTableWidget* table, int rows)
 
 } // namespace
 
-// ¹¤Õ¾ÅäÖÃ£º»ù±¾ĞÅÏ¢¡¢°ó¶¨Éè±¸Óë JobCfg ±í
+// å·¥ç«™é…ç½®ï¼šåŸºæœ¬ä¿¡æ¯ã€ç»‘å®šè®¾å¤‡ä¸ JobCfg è¡¨
 StationDlg::StationDlg(Session* session,
 Solution* solution, const QString& stationId, QWidget* parent)
     : QDialog(parent)
@@ -66,18 +66,18 @@ Solution* solution, const QString& stationId, QWidget* parent)
     , m_sol(solution)
     , m_stationId(stationId)
 {
-    setWindowTitle(T("¹¤Õ¾ÅäÖÃ"));
+    setWindowTitle(T("å·¥ç«™é…ç½®"));
     resize(860, 560);
     setMinimumSize(640, 480);
     enableDialogResize(this);
     const bool canEdit = m_session->has(PermEditSolution);
 
     m_name = new QLineEdit(this);
-    m_enabled = new QCheckBox(T("ÆôÓÃ¹¤Õ¾"), this);
+    m_enabled = new QCheckBox(T("å¯ç”¨å·¥ç«™"), this);
     m_code = new QLineEdit(this);
     m_schedule = new QComboBox(this);
-    m_schedule->addItem(T("´®ĞĞ"), ScheduleSequence);
-    m_schedule->addItem(T("²¢ĞĞ"), ScheduleParallel);
+    m_schedule->addItem(T("ä¸²è¡Œ"), ScheduleSequence);
+    m_schedule->addItem(T("å¹¶è¡Œ"), ScheduleParallel);
     m_timeout = new QSpinBox(this);
     m_timeout->setRange(1, 600000);
     m_timeout->setSuffix(QLatin1String(" ms"));
@@ -85,27 +85,27 @@ Solution* solution, const QString& stationId, QWidget* parent)
     m_devices->setMaximumHeight(110);
 
     QFormLayout* form = new QFormLayout();
-    form->addRow(T("¹¤Õ¾Ãû³Æ"), m_name);
-    form->addRow(T("Ê¹ÄÜ"), m_enabled);
-    form->addRow(T("¹¤Î»±àºÅ"), m_code);
-    form->addRow(T("Á÷³ÌÖ´ĞĞ·½Ê½"), m_schedule);
-    form->addRow(T("Ä¬ÈÏ³¬Ê±"), m_timeout);
-    form->addRow(T("°ó¶¨Éè±¸"), m_devices);
+    form->addRow(T("å·¥ç«™åç§°"), m_name);
+    form->addRow(T("ä½¿èƒ½"), m_enabled);
+    form->addRow(T("å·¥ä½ç¼–å·"), m_code);
+    form->addRow(T("æµç¨‹æ‰§è¡Œæ–¹å¼"), m_schedule);
+    form->addRow(T("é»˜è®¤è¶…æ—¶"), m_timeout);
+    form->addRow(T("ç»‘å®šè®¾å¤‡"), m_devices);
 
     m_jobs = new QTableWidget(this);
     m_jobs->setColumnCount(5);
     QStringList h;
-    h << T("Ë³Ğò") << T("Ãû³Æ") << T("³¬Ê±") << T("Ê¹ÄÜ") << T("¹¤¾ßÊı");
+    h << T("é¡ºåº") << T("åç§°") << T("è¶…æ—¶") << T("ä½¿èƒ½") << T("å·¥å…·æ•°");
     m_jobs->setHorizontalHeaderLabels(h);
     m_jobs->horizontalHeader()->setStretchLastSection(true);
     m_jobs->setSelectionBehavior(QAbstractItemView::SelectRows);
     m_jobs->setEditTriggers(QAbstractItemView::NoEditTriggers);
     setTableMinVisibleRows(m_jobs, 3);
 
-    QPushButton* addJ = new QPushButton(T("ĞÂ½¨Á÷³Ì"), this);
-    QPushButton* delJ = new QPushButton(T("É¾³ı"), this);
-    QPushButton* openJ = new QPushButton(T("´ò¿ªÁ÷³ÌÅäÖÃ"), this);
-    QPushButton* enJ = new QPushButton(T("ÇĞ»»Ê¹ÄÜ"), this);
+    QPushButton* addJ = new QPushButton(T("æ–°å»ºæµç¨‹"), this);
+    QPushButton* delJ = new QPushButton(T("åˆ é™¤"), this);
+    QPushButton* openJ = new QPushButton(T("æ‰“å¼€æµç¨‹é…ç½®"), this);
+    QPushButton* enJ = new QPushButton(T("åˆ‡æ¢ä½¿èƒ½"), this);
     connect(addJ, SIGNAL(clicked()), this, SLOT(onAddJob()));
     connect(delJ, SIGNAL(clicked()), this, SLOT(onDelJob()));
     connect(openJ, SIGNAL(clicked()), this, SLOT(onOpenJob()));
@@ -130,10 +130,10 @@ Solution* solution, const QString& stationId, QWidget* parent)
     prependFramelessTitleBar(this, root, windowTitle());
     QVBoxLayout* lay = framelessDialogContentLayout(this, root);
     lay->addLayout(form);
-    lay->addWidget(new QLabel(T("±¾¹¤Õ¾Á÷³Ì"), this));
+    lay->addWidget(new QLabel(T("æœ¬å·¥ç«™æµç¨‹"), this));
     lay->addLayout(jb);
     lay->addWidget(m_jobs, 1);
-    lay->addWidget(new QLabel(T("¹¤Õ¾ÄÚ¶àÌõÁ÷³Ì¿É´®ĞĞ»ò²¢ĞĞ£»µ¥ÌõÁ÷³ÌÄÚ²¢ĞĞÇëÓÃ¡¸²¢ĞĞ×é¡¹¡£"), this));
+    lay->addWidget(new QLabel(T("å·¥ç«™å†…å¤šæ¡æµç¨‹å¯ä¸²è¡Œæˆ–å¹¶è¡Œï¼›å•æ¡æµç¨‹å†…å¹¶è¡Œè¯·ç”¨ã€Œå¹¶è¡Œç»„ã€ã€‚"), this));
     lay->addWidget(box);
 
     m_name->setReadOnly(!canEdit);
@@ -157,7 +157,7 @@ Solution* solution, const QString& stationId, QWidget* parent)
     load();
 }
 
-// ´Ó draft Ìî³ä±íµ¥
+// ä» draft å¡«å……è¡¨å•
 void StationDlg::load()
 {
     m_name->setText(qs(m_draft.name));
@@ -190,12 +190,12 @@ void StationDlg::load()
         name->setData(Qt::UserRole, qs(j.id));
         m_jobs->setItem(r, 1, name);
         m_jobs->setItem(r, 2, new QTableWidgetItem(QString::number(j.timeoutMs)));
-        m_jobs->setItem(r, 3, new QTableWidgetItem(j.enabled ? T("ÊÇ") : T("·ñ")));
+        m_jobs->setItem(r, 3, new QTableWidgetItem(j.enabled ? T("æ˜¯") : T("å¦")));
         m_jobs->setItem(r, 4, new QTableWidgetItem(QString::number(j.tools.size())));
     }
 }
 
-// ±íµ¥Ğ´»Ø draft
+// è¡¨å•å†™å› draft
 void StationDlg::flushUiToDraft()
 {
     if (!m_session->has(PermEditSolution)) {
@@ -217,20 +217,20 @@ void StationDlg::flushUiToDraft()
     }
 }
 
-// ¸üĞÂÔà±ê¼Ç
+// æ›´æ–°è„æ ‡è®°
 void StationDlg::markDraftDirty()
 {
     flushUiToDraft();
-    // ¹¤Õ¾ draft ÎŞ Registry£¬¿¿ askCloseAction ±¾µØ±È½Ï
+    // å·¥ç«™ draft æ—  Registryï¼Œé  askCloseAction æœ¬åœ°æ¯”è¾ƒ
 }
 
-// ±íµ¥±ä»¯
+// è¡¨å•å˜åŒ–
 void StationDlg::onEdited()
 {
     markDraftDirty();
 }
 
-// ¹Ø´°Ç°ÈıÑ¡Ò»£ºÈ¡Ïû=0£¬²»±£´æ=1£¬ÒÑ±£´æ=2
+// å…³çª—å‰ä¸‰é€‰ä¸€ï¼šå–æ¶ˆ=0ï¼Œä¸ä¿å­˜=1ï¼Œå·²ä¿å­˜=2
 int StationDlg::askCloseAction()
 {
     flushUiToDraft();
@@ -250,7 +250,7 @@ int StationDlg::askCloseAction()
     return 1;
 }
 
-// Ğ´»Ø formal£¬²»¹Ø´°
+// å†™å› formalï¼Œä¸å…³çª—
 bool StationDlg::trySave()
 {
     if (!m_session->has(PermEditSolution)) {
@@ -264,7 +264,7 @@ bool StationDlg::trySave()
     st.id = oid(m_stationId);
     m_draft.applyTo(&st);
     if (!m_sol->commitStation(st)) {
-        QMessageBox::warning(this, T("±£´æ"), T("±£´æÊ§°Ü¡£"));
+        QMessageBox::warning(this, T("ä¿å­˜"), T("ä¿å­˜å¤±è´¥ã€‚"));
         return false;
     }
     m_formalSnapshot = m_draft;
@@ -272,7 +272,7 @@ bool StationDlg::trySave()
     return true;
 }
 
-// È¡Ïû
+// å–æ¶ˆ
 void StationDlg::reject()
 {
     const int action = askCloseAction();
@@ -286,7 +286,7 @@ void StationDlg::reject()
     QDialog::reject();
 }
 
-// ¹Ø±ÕÇ°È·ÈÏ
+// å…³é—­å‰ç¡®è®¤
 void StationDlg::closeEvent(QCloseEvent* event)
 {
     const int action = askCloseAction();
@@ -302,13 +302,13 @@ void StationDlg::closeEvent(QCloseEvent* event)
     }
 }
 
-// µ±Ç°Ñ¡ÖĞµÄÁ÷³ÌĞĞºÅ
+// å½“å‰é€‰ä¸­çš„æµç¨‹è¡Œå·
 int StationDlg::currentJobRow() const
 {
     return m_jobs->currentRow();
 }
 
-// ±£´æ¹¤Õ¾ draft
+// ä¿å­˜å·¥ç«™ draft
 void StationDlg::onSave()
 {
     if (!trySave()) {
@@ -317,7 +317,7 @@ void StationDlg::onSave()
     accept();
 }
 
-// ĞÂ½¨¿ÕÁ÷³Ì£¬²»´ø¹¤¾ß
+// æ–°å»ºç©ºæµç¨‹ï¼Œä¸å¸¦å·¥å…·
 void StationDlg::onAddJob()
 {
     if (!m_session->has(PermEditSolution)) {
@@ -331,7 +331,7 @@ void StationDlg::onAddJob()
     sprintf(jobBuf, "JobCfg%d", j.order);
     j.name = std::string(jobBuf);
     j.root.id = ObjectId::create();
-    j.trigger = TriggerLoop;
+    j.execMode = ExecActive;
     j.root.kind = GroupSequence;
 
     m_draft.jobs.push_back(j);
@@ -339,7 +339,7 @@ void StationDlg::onAddJob()
     load();
 }
 
-// É¾³ıµ±Ç°ĞĞÁ÷³Ì£¨draft£©
+// åˆ é™¤å½“å‰è¡Œæµç¨‹ï¼ˆdraftï¼‰
 void StationDlg::onDelJob()
 {
     if (!m_session->has(PermEditSolution)) {
@@ -355,9 +355,9 @@ void StationDlg::onDelJob()
     load();
 }
 
-// ´ò¿ªÁ÷³ÌÅäÖÃ£ºÏÈ°Ñ¹¤Õ¾ draft Ìá½»µ½ formal£¨Óë¾É°æ¡¸´ò¿ªÇ°Ğ´»Ø¡¹Ò»ÖÂ£©
+// æ‰“å¼€æµç¨‹é…ç½®ï¼šå…ˆæŠŠå·¥ç«™ draft æäº¤åˆ° formalï¼ˆä¸æ—§ç‰ˆã€Œæ‰“å¼€å‰å†™å›ã€ä¸€è‡´ï¼‰
 
-// ÇĞ»»µ±Ç°Ñ¡ÖĞÁ÷³ÌµÄÊ¹ÄÜ
+// åˆ‡æ¢å½“å‰é€‰ä¸­æµç¨‹çš„ä½¿èƒ½
 void StationDlg::onToggleJobEnabled()
 {
     if (!m_session->has(PermEditSolution)) {
@@ -373,7 +373,7 @@ void StationDlg::onToggleJobEnabled()
     load();
     m_jobs->setCurrentCell(r, 0);
 }
-// ÏÈÌá½»¹¤Õ¾²İ¸å£¬ÔÙÇëÇó´ò¿ª¸ÃÁ÷³Ì
+// å…ˆæäº¤å·¥ç«™è‰ç¨¿ï¼Œå†è¯·æ±‚æ‰“å¼€è¯¥æµç¨‹
 void StationDlg::onOpenJob()
 {
     const int r = currentJobRow();

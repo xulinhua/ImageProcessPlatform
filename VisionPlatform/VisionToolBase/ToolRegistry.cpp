@@ -1,6 +1,6 @@
 /**
  * @file ToolRegistry.cpp
- * @brief ToolRegistryÊµÏÖ
+ * @brief ToolRegistryå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -12,14 +12,14 @@
 #include "VisionVersion.h"
 
 namespace Vision {
-// ½ø³ÌÄÚµ¥Àı£¨±¾ DLL ÄÚÒ»·İ£©
+// è¿›ç¨‹å†…å•ä¾‹ï¼ˆæœ¬ DLL å†…ä¸€ä»½ï¼‰
 ToolRegistry& ToolRegistry::instance()
 {
     static ToolRegistry g;
     return g;
 }
 
-// ÊÍ·ÅÈ«²¿ÒÑ×¢²áÔ­ĞÍ
+// é‡Šæ”¾å…¨éƒ¨å·²æ³¨å†ŒåŸå‹
 ToolRegistry::~ToolRegistry()
 {
     for (int i = 0; i < static_cast<int>(m_tools.size()); ++i) {
@@ -31,7 +31,7 @@ ToolRegistry::~ToolRegistry()
     m_tools.clear();
 }
 
-// °´ toolName È¥ÖØºó½Ó¹ÜÔ­ĞÍ£»ÖØ¸´Ôò destroy ´«ÈëÖ¸Õë
+// æŒ‰ toolName å»é‡åæ¥ç®¡åŸå‹ï¼›é‡å¤åˆ™ destroy ä¼ å…¥æŒ‡é’ˆ
 void ToolRegistry::add(ToolBase* tool)
 {
     if (!tool) {
@@ -47,13 +47,13 @@ void ToolRegistry::add(ToolBase* tool)
     m_tools.push_back(tool);
 }
 
-// ¼ÇÏÂ»òÇå³ıµ±Ç°ÕıÔÚ¼ÓÔØµÄ¹¤¾ß DLL Ê±¼ä´Á
+// è®°ä¸‹æˆ–æ¸…é™¤å½“å‰æ­£åœ¨åŠ è½½çš„å·¥å…· DLL æ—¶é—´æˆ³
 void ToolRegistry::setIncomingPluginStamp(const std::string& stamp)
 {
     m_incomingStamp = stamp;
 }
 
-// ÒÑµÇ¼Ç¹¤¾ßµÄ DLL ĞŞ¸ÄÊ±¼ä
+// å·²ç™»è®°å·¥å…·çš„ DLL ä¿®æ”¹æ—¶é—´
 std::string ToolRegistry::pluginStamp(const std::string& toolName) const
 {
     std::map<std::string, std::string>::const_iterator it = m_stamps.find(toolName);
@@ -63,13 +63,13 @@ std::string ToolRegistry::pluginStamp(const std::string& toolName) const
     return it->second;
 }
 
-// °´Ãû³Æ²éÕÒ£¨±ğÃû£©
+// æŒ‰åç§°æŸ¥æ‰¾ï¼ˆåˆ«åï¼‰
 ToolBase* ToolRegistry::findByName(const std::string& toolName) const
 {
     return find(toolName);
 }
 
-// °´ toolName ¾«È·²éÕÒ
+// æŒ‰ toolName ç²¾ç¡®æŸ¥æ‰¾
 ToolBase* ToolRegistry::find(const std::string& toolName) const
 {
     for (int i = 0; i < static_cast<int>(m_tools.size()); ++i) {
@@ -80,7 +80,7 @@ ToolBase* ToolRegistry::find(const std::string& toolName) const
     return 0;
 }
 
-// ·µ»Ø¸ÃÀàĞÍµÄµÚÒ»¸öÊµÏÖ
+// è¿”å›è¯¥ç±»å‹çš„ç¬¬ä¸€ä¸ªå®ç°
 ToolBase* ToolRegistry::findByType(ToolType type) const
 {
     for (int i = 0; i < static_cast<int>(m_tools.size()); ++i) {
@@ -91,13 +91,13 @@ ToolBase* ToolRegistry::findByType(ToolType type) const
     return 0;
 }
 
-// È«²¿ÒÑ×¢²áÔ­ĞÍ
+// å…¨éƒ¨å·²æ³¨å†ŒåŸå‹
 std::vector<ToolBase*> ToolRegistry::all() const
 {
     return m_tools;
 }
 
-// °´×¢²áÃû clone ³öĞÂÊµÀı
+// æŒ‰æ³¨å†Œå clone å‡ºæ–°å®ä¾‹
 ToolBase* ToolRegistry::create(const std::string& toolName) const
 {
     ToolBase* proto = find(toolName);

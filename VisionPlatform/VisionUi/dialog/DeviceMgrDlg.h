@@ -1,6 +1,6 @@
 /**
  * @file DeviceMgrDlg.h
- * @brief DeviceMgrDlgÍ·ÎÄ¼ş
+ * @brief DeviceMgrDlgå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -28,58 +28,58 @@ struct Solution;
 
 /**
  * @class DeviceMgrDlg
- * @brief Éè±¸¹ÜÀí£ºÏà»ú/¿ØÖÆ¿¨/PLC ÈıÀà£»Ã¿Ààº¬±éÀúÓë¹ÜÀí
+ * @brief è®¾å¤‡ç®¡ç†ï¼šç›¸æœº/æ§åˆ¶å¡/PLC ä¸‰ç±»ï¼›æ¯ç±»å«éå†ä¸ç®¡ç†
  */
 class VISION_UI_API DeviceMgrDlg : public QDialog {
     Q_OBJECT
 public:
-    /** @brief ´ò¿ªÉè±¸¹ÜÀí£»»á»°Óë·½°¸²»ÓµÓĞ */
+    /** @brief æ‰“å¼€è®¾å¤‡ç®¡ç†ï¼›ä¼šè¯ä¸æ–¹æ¡ˆä¸æ‹¥æœ‰ */
     DeviceMgrDlg(Session* session, Solution* solution, QWidget* parent = 0);
 
 signals:
-    /** @brief ÇëÇó´ò¿ªµ¥Éè±¸ÅäÖÃ */
+    /** @brief è¯·æ±‚æ‰“å¼€å•è®¾å¤‡é…ç½® */
     void openDeviceRequested(const QString& deviceId);
 
 private slots:
-    /** @brief ÇĞ»»Ïà»ú¡¢¿ØÖÆ¿¨»ò PLC ²¢ÖØĞÂ±éÀú */
+    /** @brief åˆ‡æ¢ç›¸æœºã€æ§åˆ¶å¡æˆ– PLC å¹¶é‡æ–°éå† */
     void onKindTabChanged(int index);
-    /** @brief Ã¶¾Ùµ±Ç°ÖÖÀàµÄÉè±¸ */
+    /** @brief æšä¸¾å½“å‰ç§ç±»çš„è®¾å¤‡ */
     void onScan();
-    /** @brief °Ñ±éÀú½á¹ûµÇ¼Ç½øÌ¨ÕË */
+    /** @brief æŠŠéå†ç»“æœç™»è®°è¿›å°è´¦ */
     void onRegisterProbe();
-    /** @brief ÊÖ¹¤¼ÓÒ»Ì¨²¢´ò¿ªÅäÖÃ */
+    /** @brief æ‰‹å·¥åŠ ä¸€å°å¹¶æ‰“å¼€é…ç½® */
     void onAddManual();
-    /** @brief ´ÓÌ¨ÕËÒÆ³ıµ±Ç°Éè±¸ */
+    /** @brief ä»å°è´¦ç§»é™¤å½“å‰è®¾å¤‡ */
     void onRemove();
-    /** @brief ´ò¿ªµ±Ç°Ì¨ÕËÉè±¸µÄÅäÖÃ */
+    /** @brief æ‰“å¼€å½“å‰å°è´¦è®¾å¤‡çš„é…ç½® */
     void onOpen();
-    /** @brief Ñ¡ÖĞÌ¨ÕËÏîºóË¢ĞÂÕªÒª */
+    /** @brief é€‰ä¸­å°è´¦é¡¹ååˆ·æ–°æ‘˜è¦ */
     void onManagedSel();
-    /** @brief ÊÔ´ò¿ªÔÙ¹Ø±Õ£¬²¢ÌáÊ¾³É°Ü */
+    /** @brief è¯•æ‰“å¼€å†å…³é—­ï¼Œå¹¶æç¤ºæˆè´¥ */
     void onTestOpen();
 
 private:
-    /** @brief °´µ±Ç°ÖÖÀàÖØÌîÌ¨ÕËÁĞ±í */
+    /** @brief æŒ‰å½“å‰ç§ç±»é‡å¡«å°è´¦åˆ—è¡¨ */
     void refreshManaged();
-    /** @brief ÏÔÊ¾×î½üÒ»´Î±éÀú½á¹û */
+    /** @brief æ˜¾ç¤ºæœ€è¿‘ä¸€æ¬¡éå†ç»“æœ */
     void refreshProbe();
-    /** @brief Ì¨ÕËµ±Ç°Ñ¡ÖĞÉè±¸ id */
+    /** @brief å°è´¦å½“å‰é€‰ä¸­è®¾å¤‡ id */
     QString currentManagedId() const;
-    /** @brief µ±Ç°Ò³Ç©¶ÔÓ¦µÄÉè±¸ÖÖÀà */
+    /** @brief å½“å‰é¡µç­¾å¯¹åº”çš„è®¾å¤‡ç§ç±» */
     DeviceKind currentKind() const;
 
-    Session* m_session;                 ///< »á»°
-    Solution* m_sol;                    ///< ·½°¸
-    QTabWidget* m_kindTabs;             ///< ÈıÀàÒ³Ç©
-    QListWidget* m_probeList;           ///< ±éÀúÁĞ±í
-    QListWidget* m_managedList;         ///< Ì¨ÕËÁĞ±í
-    QLabel* m_summary;                  ///< ÕªÒª
-    HsCtrl::HsImageWindow* m_preview;  ///< Ïà»úÔ¤ÀÀ
-    QPushButton* m_testBtn;             ///< Á¬½Ó²âÊÔ
-    CamDeviceControl m_camCtrl;      ///< Ïà»ú¿ØÖÆ
-    ControlCardDeviceControl m_cardCtrl;///< ¿ØÖÆ¿¨¿ØÖÆ
-    PlcDeviceControl m_plcCtrl;         ///< PLC ¿ØÖÆ
-    std::vector<DeviceProbeInfo> m_probes; ///< ×î½ü±éÀú½á¹û
+    Session* m_session;                 ///< ä¼šè¯
+    Solution* m_sol;                    ///< æ–¹æ¡ˆ
+    QTabWidget* m_kindTabs;             ///< ä¸‰ç±»é¡µç­¾
+    QListWidget* m_probeList;           ///< éå†åˆ—è¡¨
+    QListWidget* m_managedList;         ///< å°è´¦åˆ—è¡¨
+    QLabel* m_summary;                  ///< æ‘˜è¦
+    HsCtrl::HsImageWindow* m_preview;  ///< ç›¸æœºé¢„è§ˆ
+    QPushButton* m_testBtn;             ///< è¿æ¥æµ‹è¯•
+    CamDeviceControl m_camCtrl;      ///< ç›¸æœºæ§åˆ¶
+    ControlCardDeviceControl m_cardCtrl;///< æ§åˆ¶å¡æ§åˆ¶
+    PlcDeviceControl m_plcCtrl;         ///< PLC æ§åˆ¶
+    std::vector<DeviceProbeInfo> m_probes; ///< æœ€è¿‘éå†ç»“æœ
 };
 
 }

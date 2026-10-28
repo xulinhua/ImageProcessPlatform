@@ -1,6 +1,6 @@
 /**
  * @file ForegroundLayer.h
- * @brief ForegroundLayerÍ·ÎÄ¼ş
+ * @brief ForegroundLayerå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -20,7 +20,7 @@ struct DrawInfoEntry {
     int fontPx;
     QColor color;
 };
-/** @class ForegroundLayer @brief Ç°¾°£ºdrawInfo¡¢ĞÅÏ¢ÌõÓë HUD¿ª¹Ø */
+/** @class ForegroundLayer @brief å‰æ™¯ï¼šdrawInfoã€ä¿¡æ¯æ¡ä¸ HUDå¼€å…³ */
 class ForegroundLayer {
 public:
     ForegroundLayer();

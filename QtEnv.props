@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  已设置环境变量 QTDIR 时用它。未设置时用本机 Qt 5.15.2 固定目录，以后再改成相对设置。
+  x64 为 msvc2019_64，Win32 为 msvc2019。
+-->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(QTDIR)'=='' and '$(Platform)'=='Win32'">
+    <QTDIR>C:\Qt\Qt5.15.2\5.15.2\msvc2019</QTDIR>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(QTDIR)'==''">
+    <QTDIR>C:\Qt\Qt5.15.2\5.15.2\msvc2019_64</QTDIR>
+  </PropertyGroup>
+</Project>

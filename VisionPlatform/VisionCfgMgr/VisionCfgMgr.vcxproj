@@ -67,7 +67,7 @@
       <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>VisionFile.lib;VisionCore.lib;VisionToolBase.lib;VisionCommon.lib;VisionComm.lib;VisionAuth.lib;VisionDb.lib;VisionLang.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>VisionCfgCrypt.lib;VisionFile.lib;VisionCore.lib;VisionToolBase.lib;VisionCommon.lib;VisionComm.lib;VisionAuth.lib;VisionDb.lib;VisionLang.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -83,6 +83,9 @@
   <ItemGroup>
     <ProjectReference Include="..\VisionToolBase\VisionToolBase.vcxproj">
       <Project>{B4E91A10-7C22-4F18-9A01-A0B1C2D3E440}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\VisionCfgCrypt\VisionCfgCrypt.vcxproj">
+      <Project>{B4E91A10-7C22-4F18-9A01-A0B1C2D3E4C1}</Project>
     </ProjectReference>
     <ProjectReference Include="..\VisionCommon\VisionCommon.vcxproj">
       <Project>{B4E91A10-7C22-4F18-9A01-A0B1C2D3E402}</Project>

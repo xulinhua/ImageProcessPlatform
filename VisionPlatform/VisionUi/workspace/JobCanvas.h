@@ -1,6 +1,6 @@
 /**
  * @file JobCanvas.h
- * @brief JobCanvasÍ·ÎÄ¼ş
+ * @brief JobCanvaså¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -33,220 +33,220 @@ class QScrollBar;
 
 namespace Vision {
 
-/** @brief »­²¼ÃüÖĞ£º¿Õ°×¡¢¹¤¾ß¡¢×é¡¢Êı¾İ±ß */
+/** @brief ç”»å¸ƒå‘½ä¸­ï¼šç©ºç™½ã€å·¥å…·ã€ç»„ã€æ•°æ®è¾¹ */
 enum CanvasHitKind {
-    CanvasHitBlank = 0, ///< ¿Õ°×»ò±êÌâ
-    CanvasHitTool,      ///< ¹¤¾ß½Úµã
-    CanvasHitGroup,     ///< ²¢ĞĞ/Ìõ¼ş/ĞòÁĞ×é
-    CanvasHitWire       ///< ¶Ë¿ÚÁ¬Ïß
+    CanvasHitBlank = 0, ///< ç©ºç™½æˆ–æ ‡é¢˜
+    CanvasHitTool,      ///< å·¥å…·èŠ‚ç‚¹
+    CanvasHitGroup,     ///< å¹¶è¡Œ/æ¡ä»¶/åºåˆ—ç»„
+    CanvasHitWire       ///< ç«¯å£è¿çº¿
 };
 
 /**
  * @class CanvasWireRef
- * @brief Ò»ÌõÒÑ»­Á¬Ïß£ºÂ·¾¶Í¼ÔªÓëÁ½¶ËÕë½Å¼ü
+ * @brief ä¸€æ¡å·²ç”»è¿çº¿ï¼šè·¯å¾„å›¾å…ƒä¸ä¸¤ç«¯é’ˆè„šé”®
  */
 struct CanvasWireRef {
-    QGraphicsPathItem* item; ///< ÇúÏß
-    QString fromKey;         ///< ÆğµãÕë½Å¼ü
-    QString toKey;           ///< ÖÕµãÕë½Å¼ü
-    int linkIndex;           ///< job.links ÏÂ±ê
+    QGraphicsPathItem* item; ///< æ›²çº¿
+    QString fromKey;         ///< èµ·ç‚¹é’ˆè„šé”®
+    QString toKey;           ///< ç»ˆç‚¹é’ˆè„šé”®
+    int linkIndex;           ///< job.links ä¸‹æ ‡
     CanvasWireRef() : item(nullptr), linkIndex(-1) {}
 };
 
 /**
  * @class CanvasOrderRef
- * @brief Ò»ÌõÖ´ĞĞË³ĞòĞéÏß¼ıÍ·£ºÉÏÒ»½Úµãµ×±ßÖĞµãµ½ÏÂÒ»½Úµã¶¥±ßÖĞµã£¨¼ıÍ·Ö¸ÏòÏÂÓÎ£©
+ * @brief ä¸€æ¡æ‰§è¡Œé¡ºåºè™šçº¿ç®­å¤´ï¼šä¸Šä¸€èŠ‚ç‚¹åº•è¾¹ä¸­ç‚¹åˆ°ä¸‹ä¸€èŠ‚ç‚¹é¡¶è¾¹ä¸­ç‚¹ï¼ˆç®­å¤´æŒ‡å‘ä¸‹æ¸¸ï¼‰
  */
 struct CanvasOrderRef {
-    QGraphicsPathItem* item; ///< ĞéÏß + ÖÕµã¼ıÍ·
-    QGraphicsItem* from;     ///< ÉÏÒ»½Úµã£¨¹¤¾ß»ò×é¿ò£©
-    QGraphicsItem* to;       ///< ÏÂÒ»½Úµã
+    QGraphicsPathItem* item; ///< è™šçº¿ + ç»ˆç‚¹ç®­å¤´
+    QGraphicsItem* from;     ///< ä¸Šä¸€èŠ‚ç‚¹ï¼ˆå·¥å…·æˆ–ç»„æ¡†ï¼‰
+    QGraphicsItem* to;       ///< ä¸‹ä¸€èŠ‚ç‚¹
     CanvasOrderRef() : item(nullptr), from(nullptr), to(nullptr) {}
 };
 
 /**
  * @class JobCanvas
- * @brief Éè¼ÆÌ¬Á÷³Ì»­²¼£º½Úµã¿ÉÍÏ¡¢¶Ë¿ÚÍÏÏß¡¢Á¬ÏßËæ½Úµã¸üĞÂ
+ * @brief è®¾è®¡æ€æµç¨‹ç”»å¸ƒï¼šèŠ‚ç‚¹å¯æ‹–ã€ç«¯å£æ‹–çº¿ã€è¿çº¿éšèŠ‚ç‚¹æ›´æ–°
  */
 class VISION_UI_API JobCanvas : public QGraphicsView {
     Q_OBJECT
 public:
-    /** @brief ¿Õ»­²¼ */
+    /** @brief ç©ºç”»å¸ƒ */
     explicit JobCanvas(QWidget* parent = 0);
     /**
-     * @brief ÖØ»­Ò»¸ö JobCfg
-     * @param selectedId ¸ßÁÁµÄ¹¤¾ß»ò×é id
-     * @param selectedLinkIndex ¸ßÁÁµÄÊı¾İÁ¬ÏßË÷Òı£»-1 ±íÊ¾ÎŞ
+     * @brief é‡ç”»ä¸€ä¸ª JobCfg
+     * @param selectedId é«˜äº®çš„å·¥å…·æˆ–ç»„ id
+     * @param selectedLinkIndex é«˜äº®çš„æ•°æ®è¿çº¿ç´¢å¼•ï¼›-1 è¡¨ç¤ºæ— 
      */
     void showJob(const JobCfg* job, const QString& selectedId, int selectedLinkIndex = -1);
-    /** @brief µ±Ç°Ëõ·Å£¨1 = 100%£© */
+    /** @brief å½“å‰ç¼©æ”¾ï¼ˆ1 = 100%ï¼‰ */
     qreal zoomScale() const;
-    /** @brief Ëõ·ÅÖÃ»Ø 100% */
+    /** @brief ç¼©æ”¾ç½®å› 100% */
     void resetZoom();
-    /** @brief ×î½üÒ»´Î linkRouteChanged µÄÖĞ¼ä¹Õµã£¨³¡¾°×ø±ê£© */
+    /** @brief æœ€è¿‘ä¸€æ¬¡ linkRouteChanged çš„ä¸­é—´æ‹ç‚¹ï¼ˆåœºæ™¯åæ ‡ï¼‰ */
     QVector<QPointF> pendingRoutePoints() const;
 
 signals:
-    /** @brief µãÁË¹¤¾ß½Úµã */
+    /** @brief ç‚¹äº†å·¥å…·èŠ‚ç‚¹ */
     void toolClicked(const QString& toolId);
-    /** @brief Ë«»÷¹¤¾ß½Úµã£¬´ò¿ª¸Ã¹¤¾ß½çÃæ */
+    /** @brief åŒå‡»å·¥å…·èŠ‚ç‚¹ï¼Œæ‰“å¼€è¯¥å·¥å…·ç•Œé¢ */
     void toolDoubleClicked(const QString& toolId);
-    /** @brief µãÁËÁ÷³Ì×é½Úµã */
+    /** @brief ç‚¹äº†æµç¨‹ç»„èŠ‚ç‚¹ */
     void groupClicked(const QString& groupId);
     /**
-     * @brief ÓÒ¼ü²Ëµ¥
-     * @param id ¹¤¾ß»ò×é id£»Á¬ÏßÊ±Îª links ÏÂ±ê×Ö·û´®
+     * @brief å³é”®èœå•
+     * @param id å·¥å…·æˆ–ç»„ idï¼›è¿çº¿æ—¶ä¸º links ä¸‹æ ‡å­—ç¬¦ä¸²
      * @param kind CanvasHitKind
      */
     void canvasMenuRequested(const QString& id, int kind, const QPoint& globalPos);
-    /** @brief ´ÓÊä³ö¶Ë¿ÚÍÏµ½ÊäÈë¶Ë¿Ú */
+    /** @brief ä»è¾“å‡ºç«¯å£æ‹–åˆ°è¾“å…¥ç«¯å£ */
     void linkPorts(const QString& fromId, const QString& fromPort,
                    const QString& toId, const QString& toPort);
-    /** @brief ÇëÇó¶Ï¿ª job.links[index] */
+    /** @brief è¯·æ±‚æ–­å¼€ job.links[index] */
     void unlinkRequested(int linkIndex);
     /**
-     * @brief ÓÃ»§ÍÏÍê²¢ĞĞ/Ìõ¼ş×é¿ò
-     * @param groupId ×é id
-     * @param x ³¡¾°×óÉÏ½Ç X
-     * @param y ³¡¾°×óÉÏ½Ç Y
+     * @brief ç”¨æˆ·æ‹–å®Œå¹¶è¡Œ/æ¡ä»¶ç»„æ¡†
+     * @param groupId ç»„ id
+     * @param x åœºæ™¯å·¦ä¸Šè§’ X
+     * @param y åœºæ™¯å·¦ä¸Šè§’ Y
      */
     void groupMoved(const QString& groupId, qreal x, qreal y);
     /**
-     * @brief ÓÃ»§ÍÏÍê¹¤¾ß½Úµã
-     * @param toolId ¹¤¾ß id
-     * @param x ³¡¾°×óÉÏ½Ç X
-     * @param y ³¡¾°×óÉÏ½Ç Y
+     * @brief ç”¨æˆ·æ‹–å®Œå·¥å…·èŠ‚ç‚¹
+     * @param toolId å·¥å…· id
+     * @param x åœºæ™¯å·¦ä¸Šè§’ X
+     * @param y åœºæ™¯å·¦ä¸Šè§’ Y
      */
     void nodeMoved(const QString& toolId, qreal x, qreal y);
-    /** @brief µãÁËÊı¾İÁ¬Ïß */
+    /** @brief ç‚¹äº†æ•°æ®è¿çº¿ */
     void wireClicked(int linkIndex);
     /**
-     * @brief ÓÃ»§¸ÄÍêÁ¬ÏßÕÛÏß£¨¹ÕµãÁĞ±í¼û pendingRoutePoints£©
-     * @param linkIndex links ÏÂ±ê
+     * @brief ç”¨æˆ·æ”¹å®Œè¿çº¿æŠ˜çº¿ï¼ˆæ‹ç‚¹åˆ—è¡¨è§ pendingRoutePointsï¼‰
+     * @param linkIndex links ä¸‹æ ‡
      */
     void linkRouteChanged(int linkIndex);
     /**
-     * @brief ÓÃ»§ÇëÇó»Ö¸´¸ÃÁ¬Ïß×Ô¶¯Â·ÓÉ
-     * @param linkIndex links ÏÂ±ê
+     * @brief ç”¨æˆ·è¯·æ±‚æ¢å¤è¯¥è¿çº¿è‡ªåŠ¨è·¯ç”±
+     * @param linkIndex links ä¸‹æ ‡
      */
     void linkRouteReset(int linkIndex);
 
 protected:
-    /** @brief ÃüÖĞÍ¼Ôª£ºÑ¡ÖĞ¡¢¿ªÊ¼ÍÏ½Úµã»òÍÏÏß¡¢Æ½ÒÆ£¨¿Õ°××ó¼ü/ÖĞ¼ü£© */
+    /** @brief å‘½ä¸­å›¾å…ƒï¼šé€‰ä¸­ã€å¼€å§‹æ‹–èŠ‚ç‚¹æˆ–æ‹–çº¿ã€å¹³ç§»ï¼ˆç©ºç™½å·¦é”®/ä¸­é”®ï¼‰ */
     void mousePressEvent(QMouseEvent* e);
-    /** @brief Ë«»÷¹¤¾ß½Úµã */
+    /** @brief åŒå‡»å·¥å…·èŠ‚ç‚¹ */
     void mouseDoubleClickEvent(QMouseEvent* e);
-    /** @brief ÍÏ½Úµã£¨Á¬Ïß¸úËæ£©¡¢ÍÏÏßÔ¤ÀÀ»òÆ½ÒÆÊÓÍ¼ */
+    /** @brief æ‹–èŠ‚ç‚¹ï¼ˆè¿çº¿è·Ÿéšï¼‰ã€æ‹–çº¿é¢„è§ˆæˆ–å¹³ç§»è§†å›¾ */
     void mouseMoveEvent(QMouseEvent* e);
-    /** @brief ½áÊøÍÏ½Úµã¡¢ÍÏÏß»òÆ½ÒÆ */
+    /** @brief ç»“æŸæ‹–èŠ‚ç‚¹ã€æ‹–çº¿æˆ–å¹³ç§» */
     void mouseReleaseEvent(QMouseEvent* e);
-    /** @brief ¹öÂÖËõ·Å */
+    /** @brief æ»šè½®ç¼©æ”¾ */
     void wheelEvent(QWheelEvent* e);
-    /** @brief ÓÒ¼ü·¢²Ëµ¥ĞÅºÅ */
+    /** @brief å³é”®å‘èœå•ä¿¡å· */
     void contextMenuEvent(QContextMenuEvent* e);
-    /** @brief Êı×Ö 0 ¸´Î»Ëõ·Å */
+    /** @brief æ•°å­— 0 å¤ä½ç¼©æ”¾ */
     void keyPressEvent(QKeyEvent* e);
-    /** @brief ×ó²à¹ö¶¯Ìõ²¼¾Ö */
+    /** @brief å·¦ä¾§æ»šåŠ¨æ¡å¸ƒå±€ */
     void resizeEvent(QResizeEvent* e);
 
 private slots:
-    /** @brief ÓÒ²à´¹Ö±¹ö¶¯Ìõ±ä»¯Ê±Í¬²½×ó²à */
+    /** @brief å³ä¾§å‚ç›´æ»šåŠ¨æ¡å˜åŒ–æ—¶åŒæ­¥å·¦ä¾§ */
     void onVertScroll(int value);
-    /** @brief ×ó²à´¹Ö±¹ö¶¯Ìõ±ä»¯Ê±Í¬²½ÓÒ²à */
+    /** @brief å·¦ä¾§å‚ç›´æ»šåŠ¨æ¡å˜åŒ–æ—¶åŒæ­¥å³ä¾§ */
     void onLeftScroll(int value);
 
 private:
-    /** @brief ´Óµã»÷´¦½âÎöÃüÖĞ */
+    /** @brief ä»ç‚¹å‡»å¤„è§£æå‘½ä¸­ */
     bool hitAt(const QPoint& viewPos, QString* id, int* kind, QString* port, int* dir) const;
-    /** @brief ÍÏÏßÊ±°´¾àÀëÕÒÕë½Å£¨Ô¤ÀÀÏßÔÚÉÏ²ã£¬²»ÄÜÓÃ itemAt£© */
+    /** @brief æ‹–çº¿æ—¶æŒ‰è·ç¦»æ‰¾é’ˆè„šï¼ˆé¢„è§ˆçº¿åœ¨ä¸Šå±‚ï¼Œä¸èƒ½ç”¨ itemAtï¼‰ */
     bool hitPinAt(const QPoint& viewPos, QString* id, QString* port, int* dir) const;
-    /** @brief µã»÷´¦µÄ¹¤¾ß¿ò£¨Õë½Å²»Ëã£© */
+    /** @brief ç‚¹å‡»å¤„çš„å·¥å…·æ¡†ï¼ˆé’ˆè„šä¸ç®—ï¼‰ */
     QGraphicsItem* toolBoxAt(const QPoint& viewPos) const;
-    /** @brief µã»÷´¦µÄ²¢ĞĞ/Ìõ¼ş×é¿ò£¨¿Õ°×Çø£¬²»º¬¹¤¾ß£»ºöÂÔÁ¬Ïß£© */
+    /** @brief ç‚¹å‡»å¤„çš„å¹¶è¡Œ/æ¡ä»¶ç»„æ¡†ï¼ˆç©ºç™½åŒºï¼Œä¸å«å·¥å…·ï¼›å¿½ç•¥è¿çº¿ï¼‰ */
     QGraphicsItem* groupFrameAt(const QPoint& viewPos) const;
-    /** @brief ³¡¾°µãÊÇ·ñÂäÔÚ×éÄÚÄ³¹¤¾ß¿òÉÏ */
+    /** @brief åœºæ™¯ç‚¹æ˜¯å¦è½åœ¨ç»„å†…æŸå·¥å…·æ¡†ä¸Š */
     bool scenePointOnGroupTool(QGraphicsRectItem* frame, const QPointF& sp) const;
-    /** @brief ÍÏ½Úµã¿ªÊ¼Ç°¼ÇÏÂ×Ô¶¨ÒåÕÛÏß */
+    /** @brief æ‹–èŠ‚ç‚¹å¼€å§‹å‰è®°ä¸‹è‡ªå®šä¹‰æŠ˜çº¿ */
     void captureNodeWireSnaps();
-    /** @brief ½ÚµãÒÆ¶¯ºó±£³Ö¶Ë¿Ú´¦µÄÕÛÏßÈÔÊÇºáÊú */
+    /** @brief èŠ‚ç‚¹ç§»åŠ¨åä¿æŒç«¯å£å¤„çš„æŠ˜çº¿ä»æ˜¯æ¨ªç«– */
     void applyNodeWireSnaps();
-    /** @brief °´µ±Ç°Õë½ÅÎ»ÖÃÖØËãÊı¾İÁ¬Ïß */
+    /** @brief æŒ‰å½“å‰é’ˆè„šä½ç½®é‡ç®—æ•°æ®è¿çº¿ */
     void updateWires();
-    /** @brief ÊÕ¼¯µã»÷´¦¸½½üÈ«²¿Á¬Ïß£¨ÓÃÓÚµşÏßÂÖ»»£© */
+    /** @brief æ”¶é›†ç‚¹å‡»å¤„é™„è¿‘å…¨éƒ¨è¿çº¿ï¼ˆç”¨äºå çº¿è½®æ¢ï¼‰ */
     void collectWireHitsAt(const QPoint& viewPos, QVector<int>* outIndices) const;
-    /** @brief °´Ñ¡ÖĞË÷ÒıË¢ĞÂÁ¬Ïß´ÖÏ¸Óë¹ÕµãÊÖ±ú */
+    /** @brief æŒ‰é€‰ä¸­ç´¢å¼•åˆ·æ–°è¿çº¿ç²—ç»†ä¸æ‹ç‚¹æ‰‹æŸ„ */
     void refreshWireSelectionVisual();
-    /** @brief ¸üĞÂÑ¡ÖĞÁ¬ÏßµÄ¹Õµã/¶ÎÊÖ±ú */
+    /** @brief æ›´æ–°é€‰ä¸­è¿çº¿çš„æ‹ç‚¹/æ®µæ‰‹æŸ„ */
     void updateWireHandles();
-    /** @brief ¼ÆËãÒ»ÌõÁ¬ÏßÂ·¾¶£»¿ÉÑ¡·µ»ØÖĞ¼ä¹Õµã */
+    /** @brief è®¡ç®—ä¸€æ¡è¿çº¿è·¯å¾„ï¼›å¯é€‰è¿”å›ä¸­é—´æ‹ç‚¹ */
     QPainterPath wirePathForLink(int linkIndex, const QPointF& a, const QPointF& b,
                                  QVector<QPointF>* outMids = 0) const;
-    /** @brief È¡Á¬Ïßµ±Ç°ÖĞ¼ä¹Õµã£¨Ô¤ÀÀÓÅÏÈ£© */
+    /** @brief å–è¿çº¿å½“å‰ä¸­é—´æ‹ç‚¹ï¼ˆé¢„è§ˆä¼˜å…ˆï¼‰ */
     QVector<QPointF> midPointsForLink(int linkIndex, const QPointF& a, const QPointF& b) const;
-    /** @brief °Ñ×Ô¶¯ÈÆÕÏÂ·¾¶ÊÕ³ÉÖĞ¼ä¹Õµã²¢½øÈëÔ¤ÀÀ */
+    /** @brief æŠŠè‡ªåŠ¨ç»•éšœè·¯å¾„æ”¶æˆä¸­é—´æ‹ç‚¹å¹¶è¿›å…¥é¢„è§ˆ */
     void beginCustomPreviewFromAuto(int linkIndex, const QPointF& a, const QPointF& b);
-    /** @brief °´½ÚµãÎ»ÖÃÖØËãÖ´ĞĞË³ĞòĞéÏß */
+    /** @brief æŒ‰èŠ‚ç‚¹ä½ç½®é‡ç®—æ‰§è¡Œé¡ºåºè™šçº¿ */
     void updateOrderLines();
-    /** @brief ½áÊøÍÏ½Úµã»òÍÏ×é£¬²¢°Ñ¹¤¾ß×ø±êĞ´»Ø */
+    /** @brief ç»“æŸæ‹–èŠ‚ç‚¹æˆ–æ‹–ç»„ï¼Œå¹¶æŠŠå·¥å…·åæ ‡å†™å› */
     void finishNodeMove();
-    /** @brief ¹¤¾ßÍÏ¶¯ºóÈÃ×æÏÈ×é¿òÖØĞÂ°ü×¡×ÓÏî */
+    /** @brief å·¥å…·æ‹–åŠ¨åè®©ç¥–å…ˆç»„æ¡†é‡æ–°åŒ…ä½å­é¡¹ */
     void refitGroupChain(QGraphicsItem* item);
-    /** @brief ¸üĞÂ×ó²à¹ö¶¯ÌõÎ»ÖÃÓë¿É¼ûĞÔ */
+    /** @brief æ›´æ–°å·¦ä¾§æ»šåŠ¨æ¡ä½ç½®ä¸å¯è§æ€§ */
     void layoutLeftScrollBar();
 
-    QGraphicsScene* m_scene;           ///< ½Úµã³¡¾°
-    qreal m_zoom;                      ///< ÊÓÍ¼Ëõ·Å
-    bool m_panning;                    ///< Æ½ÒÆÖĞ£¨ÖĞ¼ü»ò¿Õ°××ó¼ü£©
-    QScrollBar* m_vScrollLeft;         ///< ×ó²à´¹Ö±¹ö¶¯Ìõ£¨ÓëÓÒ²àÍ¬²½£©
-    bool m_blockScrollSync;            ///< ¹ö¶¯ÌõË«ÏòÍ¬²½Ëø
-    QPoint m_panLast;                  ///< ÉÏÒ»Æ½ÒÆµã
-    bool m_wiring;                     ///< ÕıÔÚ´ÓÊä³ö¶Ë¿ÚÍÏÏß
-    QString m_wireFromId;              ///< ÍÏÏßÆğµã¹¤¾ß
-    QString m_wireFromPort;            ///< ÍÏÏßÆğµã¶Ë¿Ú
-    PortData m_wireFromData;           ///< ÍÏÏßÆğµãÊı¾İÀàĞÍ
-    QPointF m_wireFromPos;             ///< ÍÏÏßÆğµã³¡¾°×ø±ê
-    QGraphicsPathItem* m_tempWire;     ///< ÍÏÏßÏğÆ¤½î£¨ÓëÕıÊ½Á¬ÏßÍ¬Ò»Ì×ÇúÏß£©
-    QHash<QString, QGraphicsItem*> m_pinItems; ///< Õë½Å¼üµ½Í¼Ôª£¨Ô²/ÁâĞÎ/·½£©
-    QVector<CanvasWireRef> m_wires;    ///< µ±Ç° JobCfg µÄÊı¾İÁ¬Ïß
-    QVector<CanvasOrderRef> m_orderLines; ///< Ö´ĞĞË³ĞòĞéÏß
-    bool m_movingNode;                 ///< ÕıÔÚÍÏ¹¤¾ß½Úµã
-    bool m_movingGroup;                ///< ÕıÔÚÍÏ²¢ĞĞ/Ìõ¼ş×é¿ò
-    bool m_moveArmed;                  ///< ÒÑ°´ÏÂ¹¤¾ß»ò×é£¬µÈ´ı³¬¹ıãĞÖµÔÙÍÏ
-    QGraphicsItem* m_moveItem;         ///< ÕıÔÚÍÏµÄ¹¤¾ß¿ò»ò×é¿ò
-    QString m_moveId;                  ///< ÕıÔÚÍÏµÄ¹¤¾ß»ò×é id
-    QPointF m_moveGrab;                ///< °´ÏÂÊ±Êó±êÏà¶Ô½Úµã³¡¾°×óÉÏ½ÇµÄÆ«ÒÆ
-    QPoint m_movePressView;            ///< °´ÏÂÊ±µÄÊÓÍ¼×ø±ê
-    /** @brief ÍÏ½ÚµãÇ°¼ÇÏÂµÄÒ»Ìõ×Ô¶¨ÒåÕÛÏß */
+    QGraphicsScene* m_scene;           ///< èŠ‚ç‚¹åœºæ™¯
+    qreal m_zoom;                      ///< è§†å›¾ç¼©æ”¾
+    bool m_panning;                    ///< å¹³ç§»ä¸­ï¼ˆä¸­é”®æˆ–ç©ºç™½å·¦é”®ï¼‰
+    QScrollBar* m_vScrollLeft;         ///< å·¦ä¾§å‚ç›´æ»šåŠ¨æ¡ï¼ˆä¸å³ä¾§åŒæ­¥ï¼‰
+    bool m_blockScrollSync;            ///< æ»šåŠ¨æ¡åŒå‘åŒæ­¥é”
+    QPoint m_panLast;                  ///< ä¸Šä¸€å¹³ç§»ç‚¹
+    bool m_wiring;                     ///< æ­£åœ¨ä»è¾“å‡ºç«¯å£æ‹–çº¿
+    QString m_wireFromId;              ///< æ‹–çº¿èµ·ç‚¹å·¥å…·
+    QString m_wireFromPort;            ///< æ‹–çº¿èµ·ç‚¹ç«¯å£
+    PortData m_wireFromData;           ///< æ‹–çº¿èµ·ç‚¹æ•°æ®ç±»å‹
+    QPointF m_wireFromPos;             ///< æ‹–çº¿èµ·ç‚¹åœºæ™¯åæ ‡
+    QGraphicsPathItem* m_tempWire;     ///< æ‹–çº¿æ©¡çš®ç­‹ï¼ˆä¸æ­£å¼è¿çº¿åŒä¸€å¥—æ›²çº¿ï¼‰
+    QHash<QString, QGraphicsItem*> m_pinItems; ///< é’ˆè„šé”®åˆ°å›¾å…ƒï¼ˆåœ†/è±å½¢/æ–¹ï¼‰
+    QVector<CanvasWireRef> m_wires;    ///< å½“å‰ JobCfg çš„æ•°æ®è¿çº¿
+    QVector<CanvasOrderRef> m_orderLines; ///< æ‰§è¡Œé¡ºåºè™šçº¿
+    bool m_movingNode;                 ///< æ­£åœ¨æ‹–å·¥å…·èŠ‚ç‚¹
+    bool m_movingGroup;                ///< æ­£åœ¨æ‹–å¹¶è¡Œ/æ¡ä»¶ç»„æ¡†
+    bool m_moveArmed;                  ///< å·²æŒ‰ä¸‹å·¥å…·æˆ–ç»„ï¼Œç­‰å¾…è¶…è¿‡é˜ˆå€¼å†æ‹–
+    QGraphicsItem* m_moveItem;         ///< æ­£åœ¨æ‹–çš„å·¥å…·æ¡†æˆ–ç»„æ¡†
+    QString m_moveId;                  ///< æ­£åœ¨æ‹–çš„å·¥å…·æˆ–ç»„ id
+    QPointF m_moveGrab;                ///< æŒ‰ä¸‹æ—¶é¼ æ ‡ç›¸å¯¹èŠ‚ç‚¹åœºæ™¯å·¦ä¸Šè§’çš„åç§»
+    QPoint m_movePressView;            ///< æŒ‰ä¸‹æ—¶çš„è§†å›¾åæ ‡
+    /** @brief æ‹–èŠ‚ç‚¹å‰è®°ä¸‹çš„ä¸€æ¡è‡ªå®šä¹‰æŠ˜çº¿ */
     struct NodeWireSnap {
-        int linkIndex;                 ///< Á¬ÏßÏÂ±ê
-        QVector<QPointF> mids;         ///< °´ÏÂÊ±µÄÖĞ¼ä¹Õµã
-        QPointF pinA;                  ///< °´ÏÂÊ±Æğµã¶Ë¿Ú
-        QPointF pinB;                  ///< °´ÏÂÊ±ÖÕµã¶Ë¿Ú
-        bool srcHoriz;                 ///< Æğµã²àÑØË®Æ½¶Ì×®
-        bool dstHoriz;                 ///< ÖÕµã²àÑØË®Æ½¶Ì×®
+        int linkIndex;                 ///< è¿çº¿ä¸‹æ ‡
+        QVector<QPointF> mids;         ///< æŒ‰ä¸‹æ—¶çš„ä¸­é—´æ‹ç‚¹
+        QPointF pinA;                  ///< æŒ‰ä¸‹æ—¶èµ·ç‚¹ç«¯å£
+        QPointF pinB;                  ///< æŒ‰ä¸‹æ—¶ç»ˆç‚¹ç«¯å£
+        bool srcHoriz;                 ///< èµ·ç‚¹ä¾§æ²¿æ°´å¹³çŸ­æ¡©
+        bool dstHoriz;                 ///< ç»ˆç‚¹ä¾§æ²¿æ°´å¹³çŸ­æ¡©
     };
-    QVector<NodeWireSnap> m_nodeWireSnaps; ///< ÍÏ½ÚµãÆÚ¼äµÄÕÛÏß¿ìÕÕ
-    const JobCfg* m_job;                  ///< µ±Ç°ÏÔÊ¾µÄ JobCfg£¨²»ÓµÓĞ£©
-    QHash<QString, QGraphicsItem*> m_toolBoxes;  ///< ¹¤¾ß¿ò£¨¼¸ºÎÃüÖĞ£¬²»ÊÜÁ¬ÏßÕÚµ²£©
-    QHash<QString, QGraphicsItem*> m_groupFrames; ///< ¿ÉÍÏ¶¯µÄ²¢ĞĞ/Ìõ¼ş×é¿ò
-    QString m_selectedGroupId;         ///< µ±Ç°Ñ¡ÖĞµÄ×é id
-    int m_selectedLinkIndex;           ///< Ñ¡ÖĞµÄÁ¬ÏßË÷Òı£»-1 ÎŞ
-    QPoint m_wirePickPos;              ///< ÉÏ´ÎµãÑ¡Á¬Ïß´¦£¨µşÏßÂÖ»»£©
-    QVector<int> m_wirePickList;       ///< ÉÏ´Îµã»÷ÃüÖĞµÄÁ¬ÏßË÷ÒıÁĞ±í
-    int m_wirePickIndex;               ///< µşÏßÂÖ»»µ±Ç°ÏÂ±ê
-    bool m_draggingWireHandle;         ///< ÕıÔÚÍÏÁ¬Ïß¹Õµã»òÏß¶Î
-    int m_dragLinkIndex;               ///< ±»ÍÏµÄÁ¬ÏßË÷Òı
-    int m_dragVertexIndex;             ///< ÍÏ¹ÕµãÊ±£ºÖĞ¼äµãÏÂ±ê£»ÍÏ¶ÎÊ± -1
-    int m_dragSegIndex;                ///< ÍÏ¶ÎÊ±£ºÕûÂ·¾¶¶ÎÏÂ±ê
-    bool m_dragIsSegment;              ///< true=ÍÏÕû¶Î£¬false=ÍÏ¹Õµã
-    QPointF m_dragPressScene;          ///< ÍÏÏß°´ÏÂÊ±µÄ³¡¾°×ø±ê
-    QVector<QPointF> m_dragBaseMids;   ///< °´ÏÂÊ±µÄÖĞ¼ä¹Õµã£¬ÍÏ¶¯°´Î»ÒÆ¸Ä
-    QVector<QGraphicsEllipseItem*> m_wireVertexHandles; ///< ¹ÕµãÊÖ±ú
-    QVector<QGraphicsRectItem*> m_wireSegHandles;       ///< ¶ÎÖĞµãÊÖ±ú£¨ÍÏ¶Î£©
-    bool m_previewRoute;               ///< ÍÏ×§/±à¼­Ô¤ÀÀÖĞ
-    int m_previewLinkIndex;            ///< Ô¤ÀÀÁ¬ÏßË÷Òı
-    QVector<QPointF> m_previewMids;    ///< Ô¤ÀÀÖĞ¼ä¹Õµã
-    QVector<QPointF> m_pendingRoutePoints; ///< Ğ´»ØÓÃÖĞ¼ä¹Õµã
+    QVector<NodeWireSnap> m_nodeWireSnaps; ///< æ‹–èŠ‚ç‚¹æœŸé—´çš„æŠ˜çº¿å¿«ç…§
+    const JobCfg* m_job;                  ///< å½“å‰æ˜¾ç¤ºçš„ JobCfgï¼ˆä¸æ‹¥æœ‰ï¼‰
+    QHash<QString, QGraphicsItem*> m_toolBoxes;  ///< å·¥å…·æ¡†ï¼ˆå‡ ä½•å‘½ä¸­ï¼Œä¸å—è¿çº¿é®æŒ¡ï¼‰
+    QHash<QString, QGraphicsItem*> m_groupFrames; ///< å¯æ‹–åŠ¨çš„å¹¶è¡Œ/æ¡ä»¶ç»„æ¡†
+    QString m_selectedGroupId;         ///< å½“å‰é€‰ä¸­çš„ç»„ id
+    int m_selectedLinkIndex;           ///< é€‰ä¸­çš„è¿çº¿ç´¢å¼•ï¼›-1 æ— 
+    QPoint m_wirePickPos;              ///< ä¸Šæ¬¡ç‚¹é€‰è¿çº¿å¤„ï¼ˆå çº¿è½®æ¢ï¼‰
+    QVector<int> m_wirePickList;       ///< ä¸Šæ¬¡ç‚¹å‡»å‘½ä¸­çš„è¿çº¿ç´¢å¼•åˆ—è¡¨
+    int m_wirePickIndex;               ///< å çº¿è½®æ¢å½“å‰ä¸‹æ ‡
+    bool m_draggingWireHandle;         ///< æ­£åœ¨æ‹–è¿çº¿æ‹ç‚¹æˆ–çº¿æ®µ
+    int m_dragLinkIndex;               ///< è¢«æ‹–çš„è¿çº¿ç´¢å¼•
+    int m_dragVertexIndex;             ///< æ‹–æ‹ç‚¹æ—¶ï¼šä¸­é—´ç‚¹ä¸‹æ ‡ï¼›æ‹–æ®µæ—¶ -1
+    int m_dragSegIndex;                ///< æ‹–æ®µæ—¶ï¼šæ•´è·¯å¾„æ®µä¸‹æ ‡
+    bool m_dragIsSegment;              ///< true=æ‹–æ•´æ®µï¼Œfalse=æ‹–æ‹ç‚¹
+    QPointF m_dragPressScene;          ///< æ‹–çº¿æŒ‰ä¸‹æ—¶çš„åœºæ™¯åæ ‡
+    QVector<QPointF> m_dragBaseMids;   ///< æŒ‰ä¸‹æ—¶çš„ä¸­é—´æ‹ç‚¹ï¼Œæ‹–åŠ¨æŒ‰ä½ç§»æ”¹
+    QVector<QGraphicsEllipseItem*> m_wireVertexHandles; ///< æ‹ç‚¹æ‰‹æŸ„
+    QVector<QGraphicsRectItem*> m_wireSegHandles;       ///< æ®µä¸­ç‚¹æ‰‹æŸ„ï¼ˆæ‹–æ®µï¼‰
+    bool m_previewRoute;               ///< æ‹–æ‹½/ç¼–è¾‘é¢„è§ˆä¸­
+    int m_previewLinkIndex;            ///< é¢„è§ˆè¿çº¿ç´¢å¼•
+    QVector<QPointF> m_previewMids;    ///< é¢„è§ˆä¸­é—´æ‹ç‚¹
+    QVector<QPointF> m_pendingRoutePoints; ///< å†™å›ç”¨ä¸­é—´æ‹ç‚¹
 };
 
 }

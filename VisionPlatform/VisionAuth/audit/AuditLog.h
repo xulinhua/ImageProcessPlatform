@@ -1,6 +1,6 @@
 /**
  * @file AuditLog.h
- * @brief AuditLogÍ·ÎÄ¼ş
+ * @brief AuditLogå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -15,10 +15,10 @@
 namespace Vision {
 
 /**
- * @brief ×·¼ÓÒ»ÌõÉó¼Æ£¨µÇÂ¼¡¢¸ÄÃÜ¡¢¸ÄÈ¨ÏŞµÈ£©¡£Ğ´ logs Ä¿Â¼ÎÄ±¾£¬²»µ¯´°
- * @param event ÊÂ¼şÃû
- * @param loginName µ±ÊÂÓÃ»§
- * @param detail ²¹³äËµÃ÷
+ * @brief è¿½åŠ ä¸€æ¡å®¡è®¡ï¼ˆç™»å½•ã€æ”¹å¯†ã€æ”¹æƒé™ç­‰ï¼‰ã€‚å†™ logs ç›®å½•æ–‡æœ¬ï¼Œä¸å¼¹çª—
+ * @param event äº‹ä»¶å
+ * @param loginName å½“äº‹ç”¨æˆ·
+ * @param detail è¡¥å……è¯´æ˜
  */
 VISION_AUTH_API void auditLog(const std::string& event, const std::string& loginName, const std::string& detail = std::string());
 

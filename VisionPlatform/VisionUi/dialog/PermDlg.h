@@ -1,6 +1,6 @@
 /**
  * @file PermDlg.h
- * @brief PermDlgÍ·ÎÄ¼ş
+ * @brief PermDlgå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -20,37 +20,37 @@ class Session;
 
 /**
  * @class PermDlg
- * @brief °´Ò³Ãæ¡¢°´¿Ø¼ş¹´Ñ¡Èı½ÇÉ«È¨ÏŞ£»¹ÜÀíÔ±Ëø¶¨Ïî²»¿É¹Ø±Õ
+ * @brief æŒ‰é¡µé¢ã€æŒ‰æ§ä»¶å‹¾é€‰ä¸‰è§’è‰²æƒé™ï¼›ç®¡ç†å‘˜é”å®šé¡¹ä¸å¯å…³é—­
  */
 class VISION_UI_API PermDlg : public QDialog {
     Q_OBJECT
 public:
     /**
-     * @brief ¹¹ÔìÈ¨ÏŞÊ÷±í
-     * @param session »á»°£¨²»ÓµÓĞ£©£¬¶ÁĞ´ settings ÖĞµÄÈ¨ÏŞÑÚÂë
+     * @brief æ„é€ æƒé™æ ‘è¡¨
+     * @param session ä¼šè¯ï¼ˆä¸æ‹¥æœ‰ï¼‰ï¼Œè¯»å†™ settings ä¸­çš„æƒé™æ©ç 
      */
     explicit PermDlg(Session* session, QWidget* parent = 0);
 
 private slots:
-    /** @brief °ÑÊ÷ÖĞ¹´Ñ¡Ğ´ÈëÈı½ÇÉ«ÑÚÂë²¢±£´æ */
+    /** @brief æŠŠæ ‘ä¸­å‹¾é€‰å†™å…¥ä¸‰è§’è‰²æ©ç å¹¶ä¿å­˜ */
     void onSave();
-    /** @brief ÓÃÄ¬ÈÏÈ¨ÏŞÖØÌî£¨²»Á¢¿ÌÂäÅÌ£© */
+    /** @brief ç”¨é»˜è®¤æƒé™é‡å¡«ï¼ˆä¸ç«‹åˆ»è½ç›˜ï¼‰ */
     void onReset();
 
 private:
     /**
-     * @brief Ìî³äÈ¨ÏŞÊ÷
-     * @param useDefaults true ÓÃ defaultPerms£¬false ÓÃµ±Ç° settings
+     * @brief å¡«å……æƒé™æ ‘
+     * @param useDefaults true ç”¨ defaultPermsï¼Œfalse ç”¨å½“å‰ settings
      */
     void loadTree(bool useDefaults);
     /**
-     * @brief °ÑÖ¸¶¨ÁĞ¹´Ñ¡ºÏ³ÉÑÚÂë
-     * @param col 1=²Ù×÷Ô±£¬2=¹¤³ÌÊ¦£¬3=¹ÜÀíÔ±
+     * @brief æŠŠæŒ‡å®šåˆ—å‹¾é€‰åˆæˆæ©ç 
+     * @param col 1=æ“ä½œå‘˜ï¼Œ2=å·¥ç¨‹å¸ˆï¼Œ3=ç®¡ç†å‘˜
      */
     quint32 maskFromColumn(int col) const;
 
-    Session* m_session;     ///< »á»°£¨²»ÓµÓĞ£©
-    QTreeWidget* m_tree;    ///< Ò³ÃæÎª¸¸½Úµã£¬¿Ø¼şÎª×Ó½Úµã
+    Session* m_session;     ///< ä¼šè¯ï¼ˆä¸æ‹¥æœ‰ï¼‰
+    QTreeWidget* m_tree;    ///< é¡µé¢ä¸ºçˆ¶èŠ‚ç‚¹ï¼Œæ§ä»¶ä¸ºå­èŠ‚ç‚¹
 };
 
 }

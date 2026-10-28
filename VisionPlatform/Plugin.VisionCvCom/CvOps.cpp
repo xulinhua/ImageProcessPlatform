@@ -1,6 +1,6 @@
 /**
  * @file CvOps.cpp
- * @brief CvOps实现
+ * @brief CvOps瀹炵幇
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -12,7 +12,7 @@
 
 namespace Vision {
 
-// 掩膜开闭运算。空掩膜直接返回；半径过小则跳过
+// 鎺╄啘寮�闂繍绠椼�傜┖鎺╄啘鐩存帴杩斿洖锛涘崐寰勮繃灏忓垯璺宠繃
 void morphOpenClose(const cv::Mat& bin, double openR, double closeR, cv::Mat*& out)
 {
     if (!out) {

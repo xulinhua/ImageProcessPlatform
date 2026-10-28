@@ -1,6 +1,6 @@
 /**
  * @file Style.cpp
- * @brief Í¼ĞÎÑùÊ½ºÍÎÄ±¾ÑùÊ½
+ * @brief å›¾å½¢æ ·å¼å’Œæ–‡æœ¬æ ·å¼
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -10,7 +10,7 @@
 
 namespace HsCommData {
 
-// Ä¬ÈÏÂÌÃè±ß¡¢µ­ÂÌÌî³ä¡¢ÊµÏß¡¢Ö»Ãè±ß
+// é»˜è®¤ç»¿æè¾¹ã€æ·¡ç»¿å¡«å……ã€å®çº¿ã€åªæè¾¹
 GeomStyle::GeomStyle()
     : stroke(Color4::of(ColorGreen))
     , fill(Color4::of(ColorGreen, 40))
@@ -22,7 +22,7 @@ GeomStyle::GeomStyle()
 {
 }
 
-// ½á¹ûµş¼ÓÓÃÂÌÉ«
+// ç»“æœå åŠ ç”¨ç»¿è‰²
 GeomStyle GeomStyle::stackStyle()
 {
     GeomStyle s;
@@ -35,7 +35,7 @@ GeomStyle GeomStyle::stackStyle()
     return s;
 }
 
-// ¿ÉÍÏ ROI ÓÃ³ÈÉ«
+// å¯æ‹– ROI ç”¨æ©™è‰²
 GeomStyle GeomStyle::drawingStyle()
 {
     GeomStyle s;
@@ -48,7 +48,7 @@ GeomStyle GeomStyle::drawingStyle()
     return s;
 }
 
-// Ñ¡ÖĞ¸ßÁÁÓÃÀ¶É«
+// é€‰ä¸­é«˜äº®ç”¨è“è‰²
 GeomStyle GeomStyle::highlightStyle()
 {
     GeomStyle s;
@@ -61,7 +61,7 @@ GeomStyle GeomStyle::highlightStyle()
     return s;
 }
 
-// ±ê×¢ÓÃÂÌÉ«
+// æ ‡æ³¨ç”¨ç»¿è‰²
 GeomStyle GeomStyle::annotationStyle()
 {
     GeomStyle s;
@@ -74,14 +74,14 @@ GeomStyle GeomStyle::annotationStyle()
     return s;
 }
 
-// ÂÌ×Ö¡¢ÎŞµ×¡¢16 ÏñËØ
+// ç»¿å­—ã€æ— åº•ã€16 åƒç´ 
 TextStyle::TextStyle()
     : color(0x52, 0xC4, 0x1A, 255)
     , fontPx(16.0)
 {
 }
 
-// ½á¹ûÎÄ×ÖµÄÈ±Ê¡
+// ç»“æœæ–‡å­—çš„ç¼ºçœ
 TextStyle TextStyle::stackStyle()
 {
     return TextStyle();

@@ -1,6 +1,6 @@
 /**
  * @file ToolBase.cpp
- * @brief ToolBaseÊµÏÖ
+ * @brief ToolBaseå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -11,13 +11,13 @@
 
 namespace Vision {
 
-// Ä¬ÈÏ¹¤¾ß°æ±¾
+// é»˜è®¤å·¥å…·ç‰ˆæœ¬
 std::string ToolBase::version() const
 {
     return std::string("1.0.0");
 }
 
-// Ä¬ÈÏÄÜÁ¦£º²É¼¯/Âß¼­/Í¨Ñ¶²»»­ ROI
+// é»˜è®¤èƒ½åŠ›ï¼šé‡‡é›†/é€»è¾‘/é€šè®¯ä¸ç”» ROI
 ToolCaps ToolBase::capabilities() const
 {
     ToolCaps c;

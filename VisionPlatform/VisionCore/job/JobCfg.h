@@ -1,6 +1,6 @@
 /**
  * @file JobCfg.h
- * @brief JobCfgÍ·ÎÄ¼ş
+ * @brief JobCfgå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -18,62 +18,65 @@
 
 namespace Vision {
 
-/** @class RstRuleTerm @brief Êä³ö½á¹û¾ØÕóÒ»¸ñ£ºÀ´Ô´ + ÈıÌ¬ */
+/** @class RstRuleTerm @brief è¾“å‡ºç»“æœçŸ©é˜µä¸€æ ¼ï¼šæ¥æº + ä¸‰æ€ */
 struct RstRuleTerm {
     int kind;           ///< RstTermKind
-    ObjectId sourceId;  ///< ¹¤¾ß id »ò¹æÔò id
+    ObjectId sourceId;  ///< å·¥å…· id æˆ–è§„åˆ™ id
     int state;          ///< RstTermState
     RstRuleTerm() : kind(RstTermTool), state(RstTermIgnore) {}
 };
 
-/** @class RstRule @brief Ò»ĞĞÂß¼­ÅĞ¶Ï£º¶àÀ´Ô´ AND ºÏ³É */
+/** @class RstRule @brief ä¸€è¡Œé€»è¾‘åˆ¤æ–­ï¼šå¤šæ¥æº AND åˆæˆ */
 struct VISIONCORE_API RstRule {
-    ObjectId id;                     ///< ĞĞ id
-    std::string name;                ///< ÏÔÊ¾Ãû£¬Èç¡¸Âß¼­ÅĞ¶Ï1¡¹
-    ObjectId toolId;                 ///< ¿ÉÑ¡°ó¶¨¹¤¾ß£¨È¡Í¼Ïñ/ÊıÖµ£©
-    std::vector<RstRuleTerm> terms; ///< ·Ç Ignore µÄÏî×ö AND
+    ObjectId id;                     ///< è¡Œ id
+    std::string name;                ///< æ˜¾ç¤ºåï¼Œå¦‚ã€Œé€»è¾‘åˆ¤æ–­1ã€
+    ObjectId toolId;                 ///< å¯é€‰ç»‘å®šå·¥å…·ï¼ˆå–å›¾åƒ/æ•°å€¼ï¼‰
+    std::vector<RstRuleTerm> terms; ///< é Ignore çš„é¡¹åš AND
     RstRule() {}
 
-    /** @brief ¶Á¹æÔòÏîÈıÌ¬£»Ã»ÓĞÔòÎª Ignore */
+    /** @brief è¯»è§„åˆ™é¡¹ä¸‰æ€ï¼›æ²¡æœ‰åˆ™ä¸º Ignore */
     int termState(int kind, const ObjectId& sourceId) const;
-    /** @brief Ğ´¹æÔòÏîÈıÌ¬£» Ignore ÔòÈ¥µô¸ÃÏî */
+    /** @brief å†™è§„åˆ™é¡¹ä¸‰æ€ï¼› Ignore åˆ™å»æ‰è¯¥é¡¹ */
     void setTermState(int kind, const ObjectId& sourceId, int state);
 };
 
-/** @class ToolGroup @brief Á÷³ÌÄÚ¹¤¾ß×é£¨Ë³Ğò / ²¢ĞĞ / Ìõ¼ş / Ñ­»·£© */
+/** @class ToolGroup @brief æµç¨‹å†…å·¥å…·ç»„ï¼ˆé¡ºåº / å¹¶è¡Œ / æ¡ä»¶ / å¾ªç¯ï¼‰ */
 struct VISIONCORE_API ToolGroup {
-    ObjectId id;                      ///< ×é id
-    GroupKind kind;                   ///< ×éÓïÒå
-    std::string name;                 ///< ÏÔÊ¾Ãû
-    std::vector<ToolGroup> children;  ///< ×Ó×é
-    ObjectId toolId;                  ///< Ò¶½Úµã°ó¶¨µÄ¹¤¾ß id
-    ObjectId condSourceId;            ///< Ìõ¼şÀ´Ô´¹¤¾ß id
+    ObjectId id;                      ///< ç»„ id
+    GroupKind kind;                   ///< ç»„è¯­ä¹‰
+    std::string name;                 ///< æ˜¾ç¤ºå
+    std::vector<ToolGroup> children;  ///< å­ç»„
+    ObjectId toolId;                  ///< å¶èŠ‚ç‚¹ç»‘å®šçš„å·¥å…· id
+    ObjectId condSourceId;            ///< æ¡ä»¶æ¥æºå·¥å…· id
     int condWant;                     ///< CondWant
-    int loopCount;                    ///< Ñ­»·´ÎÊı£»<=0 °´ 1
-    double canvasX;                   ///< ×é¿ò×óÉÏ½Ç³¡¾° X£¨ÓÃ»§ÍÏ¹ıºó£©
-    double canvasY;                   ///< ×é¿ò×óÉÏ½Ç³¡¾° Y
-    bool canvasPlaced;                ///< ÊÇ·ñÒÑÓÉÓÃ»§ÍÏµ½×Ô¶¨ÒåÎ»ÖÃ
+    int loopCount;                    ///< å¾ªç¯æ¬¡æ•°ï¼›<=0 æŒ‰ 1
+    std::string subJobRef;            ///< å­æµç¨‹åã€‚ä»… GroupSubJob
+    unsigned parallelLimit;           ///< å¹¶è¡Œä¸Šé™ã€‚0 è¡¨ç¤ºé»˜è®¤
+    double canvasX;                   ///< ç»„æ¡†å·¦ä¸Šè§’åœºæ™¯ Xï¼ˆç”¨æˆ·æ‹–è¿‡åï¼‰
+    double canvasY;                   ///< ç»„æ¡†å·¦ä¸Šè§’åœºæ™¯ Y
+    bool canvasPlaced;                ///< æ˜¯å¦å·²ç”±ç”¨æˆ·æ‹–åˆ°è‡ªå®šä¹‰ä½ç½®
     ToolGroup()
         : kind(GroupKindUndefined)
         , condWant(CondThenOnOk)
         , loopCount(1)
+        , parallelLimit(0)
         , canvasX(0)
         , canvasY(0)
         , canvasPlaced(false)
     {}
 
-    /** @brief ÊÕ¼¯×éÄÚÈ«²¿¹¤¾ß id */
-    /** @brief Éî¿½±´ */
+    /** @brief æ”¶é›†ç»„å†…å…¨éƒ¨å·¥å…· id */
+    /** @brief æ·±æ‹·è´ */
     ToolGroup clone() const;
     std::vector<ObjectId> toolIds() const;
 };
 
-/** @class JobNodeLayout @brief Á÷³Ì»­²¼ÉÏÒ»¸ö¹¤¾ß½ÚµãµÄ°Ú·Å */
+/** @class JobNodeLayout @brief æµç¨‹ç”»å¸ƒä¸Šä¸€ä¸ªå·¥å…·èŠ‚ç‚¹çš„æ‘†æ”¾ */
 struct JobNodeLayout {
-    ObjectId toolId;   ///< ¹¤¾ß id
-    double canvasX;    ///< ×óÉÏ½Ç X
-    double canvasY;    ///< ×óÉÏ½Ç Y
-    bool canvasPlaced; ///< ÊÇ·ñÓÃ»§ÍÏ¹ı
+    ObjectId toolId;   ///< å·¥å…· id
+    double canvasX;    ///< å·¦ä¸Šè§’ X
+    double canvasY;    ///< å·¦ä¸Šè§’ Y
+    bool canvasPlaced; ///< æ˜¯å¦ç”¨æˆ·æ‹–è¿‡
     JobNodeLayout()
         : canvasX(0)
         , canvasY(0)
@@ -81,189 +84,233 @@ struct JobNodeLayout {
     {}
 };
 
-/** @class JobRouteLayout @brief Ò»ÌõÊäÈëÁ¬ÏßµÄÕÛÏß¼¸ºÎ£¨¼ü£ºÏÂÓÎ¹¤¾ß+ÊäÈë¿Ú£© */
+/** @class JobRouteLayout @brief ä¸€æ¡è¾“å…¥è¿çº¿çš„æŠ˜çº¿å‡ ä½•ï¼ˆé”®ï¼šä¸‹æ¸¸å·¥å…·+è¾“å…¥å£ï¼‰ */
 struct JobRouteLayout {
-    ObjectId toToolId; ///< ÏÂÓÎ¹¤¾ß
-    PortSlot toPort;   ///< ÏÂÓÎÊäÈë¿Ú
-    bool routeCustom;  ///< ÊÇ·ñ×Ô¶¨Òå¹Õµã
-    std::vector<RoutePoint> routePoints; ///< ÖĞ¼ä¹Õµã£¨³¡¾°×ø±ê£©
+    ObjectId toToolId; ///< ä¸‹æ¸¸å·¥å…·
+    PortSlot toPort;   ///< ä¸‹æ¸¸è¾“å…¥å£
+    bool routeCustom;  ///< æ˜¯å¦è‡ªå®šä¹‰æ‹ç‚¹
+    std::vector<RoutePoint> routePoints; ///< ä¸­é—´æ‹ç‚¹ï¼ˆåœºæ™¯åæ ‡ï¼‰
     JobRouteLayout()
         : toPort(portSlotIn(PortData::Image))
         , routeCustom(false)
     {}
 };
 
-/** @class JobLayout @brief Á÷³Ì²¼¾Ö±í£ºÔõÃ´»­£»ÓëÊı¾İÁ¬Ïß·ÖÀë */
+/** @class JobLayout @brief æµç¨‹å¸ƒå±€è¡¨ï¼šæ€ä¹ˆç”»ï¼›ä¸æ•°æ®è¿çº¿åˆ†ç¦» */
 struct JobLayout {
-    std::vector<JobNodeLayout> nodes;   ///< ¹¤¾ß½Úµã×ø±ê
-    std::vector<JobRouteLayout> routes; ///< Á¬ÏßÕÛÏß
+    std::vector<JobNodeLayout> nodes;   ///< å·¥å…·èŠ‚ç‚¹åæ ‡
+    std::vector<JobRouteLayout> routes; ///< è¿çº¿æŠ˜çº¿
 };
 
-/** @class JobCfg @brief ¹¤Õ¾ÏÂµÄÒ»Ìõ¼ì²âÁ÷³Ì£º¹¤¾ßÊµÀıÁĞ±í¡¢Á¬ÏßÓë½á¹û¹æÔò */
+/** @class JobCfg @brief å·¥ç«™ä¸‹çš„ä¸€æ¡æ£€æµ‹æµç¨‹ï¼šå·¥å…·å®ä¾‹åˆ—è¡¨ã€è¿çº¿ä¸ç»“æœè§„åˆ™ */
 struct VISIONCORE_API JobCfg {
-    ObjectId id;                         ///< Á÷³Ì id
-    std::string name;                    ///< ÏÔÊ¾Ãû
-    TriggerMode trigger;                 ///< ´¥·¢·½Ê½
-    int timeoutMs;                       ///< ³¬Ê±ºÁÃë
-    FailPolicy failPolicy;               ///< Ê§°Ü²ßÂÔ
-    int order;                           ///< ¹¤Õ¾ÄÚÅÅĞò
-    bool enabled;                        ///< ÊÇ·ñÆôÓÃ
-    std::vector<ToolCfg> tools;       ///< Á÷³ÌÄÚ¹¤¾ßÊµÀı£¨º¬ info/links/param£©
-    std::vector<ToolLink> links; ///< ÓÉ¹¤¾ß links ÖØ½¨µÄ»º´æ£¬Ö»ÓÉ rebuildLinksCache Ğ´Èë
-    JobLayout layout;                    ///< Á÷³Ì²¼¾Ö±í
-    ToolGroup root;                      ///< Ö´ĞĞÊ÷
-    std::vector<RstRule> resultRules; ///< Êä³ö½á¹ûÅäÖÃ£¨Âß¼­ÅĞ¶ÏĞĞ£©
-    ObjectId resultFromRuleId;           ///< Á÷³Ì×îÖÕ½á¹ûÈ¡×ÔÄÄÒ»ĞĞ£»¿ÕÔòÄ©¼¶¹¤¾ß
+    ObjectId id;                         ///< æµç¨‹ id
+    std::string name;                    ///< æ˜¾ç¤ºå
+    ExecWay execMode;                 ///< è§¦å‘æ–¹å¼
+    int timeoutMs;                       ///< è¶…æ—¶æ¯«ç§’
+    FailPolicy failPolicy;               ///< å¤±è´¥ç­–ç•¥
+    int order;                           ///< å·¥ç«™å†…æ’åº
+    bool enabled;                        ///< æ˜¯å¦å¯ç”¨
+    std::vector<ToolCfg> tools;       ///< æµç¨‹å†…å·¥å…·å®ä¾‹ï¼ˆå« info/links/paramï¼‰
+    std::vector<ToolLink> links; ///< æµç¨‹è¿çº¿ã€‚å·¥å…·ä¸Šä¸å¦å­˜ä¸€ä»½
+    JobLayout layout;                    ///< æµç¨‹å¸ƒå±€è¡¨
+    ToolGroup root;                      ///< æ‰§è¡Œæ ‘
+    std::vector<RstRule> resultRules; ///< è¾“å‡ºç»“æœé…ç½®ï¼ˆé€»è¾‘åˆ¤æ–­è¡Œï¼‰
+    ObjectId resultFromRuleId;           ///< æµç¨‹æœ€ç»ˆç»“æœå–è‡ªå“ªä¸€è¡Œï¼›ç©ºåˆ™æœ«çº§å·¥å…·
+    ObjectId resultToolId;               ///< ç”»é¢æ¥æºå·¥å…·ã€‚ç©ºåˆ™æœ«å·¥å…·
+    bool runOnUnloadOnce;                ///< å¸è½½æ–¹æ¡ˆæ—¶å†è·‘ä¸€æ¬¡
+    bool refreshUiWhileRunning;          ///< è¿è¡Œæ—¶åˆ·æ–°ç•Œé¢
+    bool encrypted;                      ///< æµç¨‹åŠ å¯†
+    int retakeCount;                     ///< NG é‡æ‹æ¬¡æ•°
+    int textX;                           ///< ç»“æœæ–‡å­—æ¨ªåæ ‡
+    int textY;                           ///< ç»“æœæ–‡å­—çºµåæ ‡
+    int textPx;                          ///< ç»“æœæ–‡å­—å­—å·
+    std::string okColor;                 ///< OK é¢œè‰²
+    std::string ngColor;                 ///< NG é¢œè‰²
+    bool saveOk;                         ///< å­˜ OK å›¾
+    bool saveNg;                         ///< å­˜ NG å›¾
+    bool saveAll;                        ///< å­˜å…¨éƒ¨å›¾
+    bool saveBatchAll;                   ///< å­˜æœ¬æ‰¹æ¬¡å…¨éƒ¨
+    int saveLimit;                       ///< å­˜å›¾å¼ æ•°ä¸Šé™
+    std::string saveDir;                 ///< å­˜å›¾ç›®å½•
+    int yieldMode;                       ///< 0 å…³ / 1 æ‰¹æ¬¡è‰¯ç‡ / 2 å®æ—¶è‰¯ç‡ / 3 NG æ•°é‡
+    double batchYield;                   ///< æ‰¹æ¬¡è‰¯ç‡çº¿
+    int recentCount;                     ///< æœ€è¿‘æ ·æœ¬æ•°
+    double recentYield;                  ///< å®æ—¶è‰¯ç‡çº¿
+    int ngLimit;                         ///< NG æ•°é‡çº¿
+    int yieldAction;                     ///< 0 æŠ¥è­¦å¹¶åœ / 1 åªæŠ¥è­¦
+    int singleToolScope;                 ///< 0 ä¸Šæ¸¸åŠ è‡ªå·± / 1 åªè·‘è‡ªå·±
     JobCfg()
-        : trigger(TriggerModeUndefined)
+        : execMode(ExecActive)
         , timeoutMs(500)
         , failPolicy(FailStopStation)
         , order(1)
         , enabled(true)
+        , runOnUnloadOnce(false)
+        , refreshUiWhileRunning(true)
+        , encrypted(false)
+        , retakeCount(0)
+        , textX(20)
+        , textY(20)
+        , textPx(16)
+        , okColor("#22A050")
+        , ngColor("#D03830")
+        , saveOk(false)
+        , saveNg(false)
+        , saveAll(false)
+        , saveBatchAll(true)
+        , saveLimit(20)
+        , yieldMode(0)
+        , batchYield(90)
+        , recentCount(100)
+        , recentYield(90)
+        , ngLimit(20)
+        , yieldAction(0)
+        , singleToolScope(0)
     {}
 
-    /** @brief °´ id ²éÕÒ¹¤¾ßÅäÖÃ */
+    /** @brief æŒ‰ id æŸ¥æ‰¾å·¥å…·é…ç½® */
     ToolCfg* findTool(const ObjectId& id);
-    /** @brief °´ id ²éÕÒ¹¤¾ßÅäÖÃ£¨Ö»¶Á£© */
+    /** @brief æŒ‰ id æŸ¥æ‰¾å·¥å…·é…ç½®ï¼ˆåªè¯»ï¼‰ */
     const ToolCfg* findTool(const ObjectId& id) const;
-    /** @brief °´ÏÔÊ¾Ãû²éÕÒ¹¤¾ß */
+    /** @brief æŒ‰æ˜¾ç¤ºåæŸ¥æ‰¾å·¥å…· */
     ToolCfg* findToolByName(const std::string& name);
-    /** @brief °´ÏÔÊ¾Ãû²éÕÒ¹¤¾ß£¨Ö»¶Á£© */
+    /** @brief æŒ‰æ˜¾ç¤ºåæŸ¥æ‰¾å·¥å…·ï¼ˆåªè¯»ï¼‰ */
     const ToolCfg* findToolByName(const std::string& name) const;
-    /** @brief °´ÏÂ±êÈ¡¹¤¾ß */
+    /** @brief æŒ‰ä¸‹æ ‡å–å·¥å…· */
     ToolCfg* findToolAt(int index);
-    /** @brief °´ÏÂ±êÈ¡¹¤¾ß£¨Ö»¶Á£© */
+    /** @brief æŒ‰ä¸‹æ ‡å–å·¥å…·ï¼ˆåªè¯»ï¼‰ */
     const ToolCfg* findToolAt(int index) const;
-    /** @brief ¹¤¾ßÔÚÁĞ±íÖĞµÄÏÂ±ê£»ÕÒ²»µ½Îª -1 */
-    /** @brief Éî¿½±´ */
+    /** @brief å·¥å…·åœ¨åˆ—è¡¨ä¸­çš„ä¸‹æ ‡ï¼›æ‰¾ä¸åˆ°ä¸º -1 */
+    /** @brief æ·±æ‹·è´ */
     JobCfg clone() const;
-    /** @brief Åä·½ÊÇ·ñÏàÍ¬ */
+    /** @brief é…æ–¹æ˜¯å¦ç›¸åŒ */
     bool equals(const JobCfg& other) const;
     int indexOf(const ObjectId& id) const;
-    /** @brief Á÷³ÌÄÚ¹¤¾ßµÄÖ´ĞĞË³Ğò */
+    /** @brief æµç¨‹å†…å·¥å…·çš„æ‰§è¡Œé¡ºåº */
     std::vector<ObjectId> execOrder() const;
 
-    /** @brief JobCfg ÄÚ¿É×÷Îª½á¹û¾ØÕóÁĞµÄ¹¤¾ß£¨Ö´ĞĞĞò£© */
+    /** @brief JobCfg å†…å¯ä½œä¸ºç»“æœçŸ©é˜µåˆ—çš„å·¥å…·ï¼ˆæ‰§è¡Œåºï¼‰ */
     std::vector<ObjectId> okNgToolIds() const;
 
-    /** @brief ÇåÀí½á¹û¹æÔòÀïÒÑÉ¾¹¤¾ß/ĞĞµÄÒıÓÃ */
+    /** @brief æ¸…ç†ç»“æœè§„åˆ™é‡Œå·²åˆ å·¥å…·/è¡Œçš„å¼•ç”¨ */
     void normalizeRstRules();
 
     /**
-    * @brief °´ĞĞË³ĞòÇóÖµÈ«²¿¹æÔò£¬²¢È¡Ö¸¶¨ĞĞ×÷Îª JobCfg ½á¹û
-    * @return false ±íÊ¾Î´ÅäÖÃ»òÖ¸¶¨ĞĞ²»´æÔÚ£¬µ÷ÓÃ·½»ØÍËÄ©¼¶¹¤¾ß
+    * @brief æŒ‰è¡Œé¡ºåºæ±‚å€¼å…¨éƒ¨è§„åˆ™ï¼Œå¹¶å–æŒ‡å®šè¡Œä½œä¸º JobCfg ç»“æœ
+    * @return false è¡¨ç¤ºæœªé…ç½®æˆ–æŒ‡å®šè¡Œä¸å­˜åœ¨ï¼Œè°ƒç”¨æ–¹å›é€€æœ«çº§å·¥å…·
     */
     bool evalRstRules(const std::map<ObjectId, bool>& toolOk,
         const std::map<ObjectId, bool>& toolRan,const ObjectId& fromRuleId,
         bool* outOk,std::string* outMessage);
 
-    /** @brief Ö¸Ïò¸ÃÊäÈë¶Ë¿ÚµÄÁ¬Ïß£»Ã»ÓĞÔòÎª 0 */
+    /** @brief æŒ‡å‘è¯¥è¾“å…¥ç«¯å£çš„è¿çº¿ï¼›æ²¡æœ‰åˆ™ä¸º 0 */
     const ToolLink* findLinkToPort(const ObjectId& toId, const PortSlot& toPort) const;
 
-    /** @brief ´Ó¸÷¹¤¾ß links »ã×ÜÈ«Á÷³ÌÁ¬ÏßÊÓÍ¼ */
+    /** @brief ä»å„å·¥å…· links æ±‡æ€»å…¨æµç¨‹è¿çº¿è§†å›¾ */
     std::vector<ToolLink> collectLinks() const;
 
-    /** @brief ÓÃ¹¤¾ß links ÖØ½¨ job.links£¬ÕâÊÇ»º´æµÄÎ¨Ò»Ğ´Èë */
+    /** @brief ç”¨å·¥å…· links é‡å»º job.linksï¼Œè¿™æ˜¯ç¼“å­˜çš„å”¯ä¸€å†™å…¥ */
     void rebuildLinksCache();
 
-    /** @brief °Ñ¹¤¾ß links Í¬²½µ½ job.links »º´æ */
+    /** @brief æŠŠå·¥å…· links åŒæ­¥åˆ° job.links ç¼“å­˜ */
     void syncLinksCache();
 
-    /** @brief °Ñ job.links ²ğÈë¸÷¹¤¾ß links£¨¾É·½°¸Ç¨ÒÆ£»Ö»²¹¿Õ¹¤¾ß£© */
+    /** @brief æŠŠ job.links æ‹†å…¥å„å·¥å…· linksï¼ˆæ—§æ–¹æ¡ˆè¿ç§»ï¼›åªè¡¥ç©ºå·¥å…·ï¼‰ */
     void distributeLinks();
 
-    /** @brief ¹¤¾ß»­²¼×ø±êĞ´Èë JobLayout */
+    /** @brief å·¥å…·ç”»å¸ƒåæ ‡å†™å…¥ JobLayout */
     void syncLayoutFromTools();
 
-    /** @brief JobLayout Ğ´»Ø¹¤¾ß»­²¼¾µÏñ×Ö¶Î */
+    /** @brief JobLayout å†™å›å·¥å…·ç”»å¸ƒé•œåƒå­—æ®µ */
     void applyLayoutToTools();
 
-    /** @brief ÏÈ²¹È«Ö´ĞĞÊ÷£¬ÔÙ°´Ê÷ÖØ½¨Êı¾İÁ¬Ïß */
+    /** @brief å…ˆè¡¥å…¨æ‰§è¡Œæ ‘ï¼Œå†æŒ‰æ ‘é‡å»ºæ•°æ®è¿çº¿ */
     void rebuildSerialLinks();
 
-    /** @brief ²¹¸ù×é¡¢¼ôµôÊ§Ğ§Ò¶×Ó£¬²¢°ÑÎ´ÈëÊ÷µÄ¹¤¾ß¹Òµ½¸ù */
+    /** @brief è¡¥æ ¹ç»„ã€å‰ªæ‰å¤±æ•ˆå¶å­ï¼Œå¹¶æŠŠæœªå…¥æ ‘çš„å·¥å…·æŒ‚åˆ°æ ¹ */
     void ensureTree();
 
-    /** @brief °´Ö´ĞĞÊ÷ÖØ½¨Êı¾İÁ¬Ïß */
+    /** @brief æŒ‰æ‰§è¡Œæ ‘é‡å»ºæ•°æ®è¿çº¿ */
     void rebuildLinksFromTree();
 
     /**
-    * @brief »­²¼ÍÏÏß£º½Óµ½Ö¸¶¨ÊäÈë¶Ë¿Ú£»Í¬¶Ë¿ÚÒÑÓĞÀ´Ô´ÔòÌæ»»
-    * @param err Ê§°ÜÔ­Òò
+    * @brief ç”»å¸ƒæ‹–çº¿ï¼šæ¥åˆ°æŒ‡å®šè¾“å…¥ç«¯å£ï¼›åŒç«¯å£å·²æœ‰æ¥æºåˆ™æ›¿æ¢
+    * @param err å¤±è´¥åŸå› 
     */
     bool connectPorts(const ObjectId& fromId, const PortSlot& fromPort,
     const ObjectId& toId, const PortSlot& toPort, std::string* err);
 
-    /** @brief °´ links ÏÂ±ê¶Ï¿ªÒ»ÌõÊı¾İÁ¬Ïß */
+    /** @brief æŒ‰ links ä¸‹æ ‡æ–­å¼€ä¸€æ¡æ•°æ®è¿çº¿ */
     bool disconnectLink(int index);
 
-    /** @brief ¶Ï¿ªÖ¸ÏòÖ¸¶¨ÊäÈë¶Ë¿ÚµÄÁ¬Ïß£»ÎŞÁ¬ÏßÊ±·µ»Ø false */
+    /** @brief æ–­å¼€æŒ‡å‘æŒ‡å®šè¾“å…¥ç«¯å£çš„è¿çº¿ï¼›æ— è¿çº¿æ—¶è¿”å› false */
     bool disconnectPort(const ObjectId& toId, const PortSlot& toPort);
 
-    /** @brief °´ id ²éÕÒ¹¤¾ß×é */
+    /** @brief æŒ‰ id æŸ¥æ‰¾å·¥å…·ç»„ */
     ToolGroup* findGroup(const ObjectId& id);
 
-    /** @brief ²éÕÒ°ó¶¨¸Ã¹¤¾ßµÄÒ¶½Úµã */
+    /** @brief æŸ¥æ‰¾ç»‘å®šè¯¥å·¥å…·çš„å¶èŠ‚ç‚¹ */
     ToolGroup* findLeaf(const ObjectId& toolId);
 
-    /** @brief ²éÕÒÖ±½Ó°üº¬¸Ã×Ó½ÚµãµÄ¸¸×é */
+    /** @brief æŸ¥æ‰¾ç›´æ¥åŒ…å«è¯¥å­èŠ‚ç‚¹çš„çˆ¶ç»„ */
     ToolGroup* findParent(const ObjectId& childId);
 
-    /** @brief ×·¼Ó¹¤¾ß£¬²¢ÔÚÑ¡ÖĞ´¦¹Òµ½Ö´ĞĞÊ÷ */
+    /** @brief è¿½åŠ å·¥å…·ï¼Œå¹¶åœ¨é€‰ä¸­å¤„æŒ‚åˆ°æ‰§è¡Œæ ‘ */
     bool insertTool(const ToolCfg& t, const ObjectId& selectId);
 
     /**
-    * @brief ĞÂ¹¤¾ß¼ÓÈë JobCfg Ê±·ÖÅäºÏÊÊ»­²¼×ø±ê£¬±ÜÃâÓëÒÑÓĞ½ÚµãµşÔÚÒ»Æğ
-    * @param selectId µ±Ç°Ñ¡ÖĞ¹¤¾ß£»ÒÑ·ÅÖÃÔòÔÚÆäÏÂ·½²åÈë
-    * @note ²¢ĞĞ/Ìõ¼ş×é¼°ÆäÖ§Â·ÄÚ²»Ğ´ canvasPlaced£¬ÈÔÓÉ»­²¼°´Ê÷½á¹¹ºá/×İÏòÅÅ²¼
+    * @brief æ–°å·¥å…·åŠ å…¥ JobCfg æ—¶åˆ†é…åˆé€‚ç”»å¸ƒåæ ‡ï¼Œé¿å…ä¸å·²æœ‰èŠ‚ç‚¹å åœ¨ä¸€èµ·
+    * @param selectId å½“å‰é€‰ä¸­å·¥å…·ï¼›å·²æ”¾ç½®åˆ™åœ¨å…¶ä¸‹æ–¹æ’å…¥
+    * @note å¹¶è¡Œ/æ¡ä»¶ç»„åŠå…¶æ”¯è·¯å†…ä¸å†™ canvasPlacedï¼Œä»ç”±ç”»å¸ƒæŒ‰æ ‘ç»“æ„æ¨ª/çºµå‘æ’å¸ƒ
     */
     void assignNewToolCanvasPosition(ToolCfg* t, const ObjectId& selectId);
 
     /**
-    * @brief ×Ô¶¯ÅÅÁĞ»­²¼£º¹¤¾ß/×éË®Æ½ÖĞĞÄ¶ÔÆë¡¢×ÔÉÏ¶øÏÂ£»Çå³ı×Ô¶¨ÒåÁ¬ÏßÂ·ÓÉÒÔ±ãºáÆ½ÊúÖ±ÈÆĞĞ
+    * @brief è‡ªåŠ¨æ’åˆ—ç”»å¸ƒï¼šå·¥å…·/ç»„æ°´å¹³ä¸­å¿ƒå¯¹é½ã€è‡ªä¸Šè€Œä¸‹ï¼›æ¸…é™¤è‡ªå®šä¹‰è¿çº¿è·¯ç”±ä»¥ä¾¿æ¨ªå¹³ç«–ç›´ç»•è¡Œ
     */
     void autoLayoutCanvas();
 
-    /** @brief ÔÚÑ¡ÖĞ´¦²åÈë´øÁ½Ìõ¿ÕÖ§Â·µÄ²¢ĞĞ×é */
+    /** @brief åœ¨é€‰ä¸­å¤„æ’å…¥å¸¦ä¸¤æ¡ç©ºæ”¯è·¯çš„å¹¶è¡Œç»„ */
     ObjectId addParallelGroup(const ObjectId& selectId);
 
-    /** @brief ÔÚÑ¡ÖĞ´¦²åÈëÌõ¼ş×é£»Ñ¡ÖĞÒ¶×ÓÊ±ÒÔÆäÅĞ¶¨ÎªÌõ¼ş */
+    /** @brief åœ¨é€‰ä¸­å¤„æ’å…¥æ¡ä»¶ç»„ï¼›é€‰ä¸­å¶å­æ—¶ä»¥å…¶åˆ¤å®šä¸ºæ¡ä»¶ */
     ObjectId addIfGroup(const ObjectId& selectId);
 
-    /** @brief ÔÚÑ¡ÖĞ´¦²åÈëÑ­»·×é */
+    /** @brief åœ¨é€‰ä¸­å¤„æ’å…¥å¾ªç¯ç»„ */
     ObjectId addLoopGroup(const ObjectId& selectId);
 
-    /** @brief ÉèÖÃÑ­»·×é´ÎÊı£»ÖÁÉÙÎª 1 */
+    /** @brief è®¾ç½®å¾ªç¯ç»„æ¬¡æ•°ï¼›è‡³å°‘ä¸º 1 */
     bool setLoopCount(const ObjectId& loopId, int count);
 
-    /** @brief ¸ø²¢ĞĞ×é×·¼ÓÒ»Ìõ¿ÕµÄË³ĞòÖ§Â· */
+    /** @brief ç»™å¹¶è¡Œç»„è¿½åŠ ä¸€æ¡ç©ºçš„é¡ºåºæ”¯è·¯ */
     ObjectId addSequenceBranch(const ObjectId& parallelId);
 
-    /** @brief ÉèÖÃÌõ¼ş×éµÄÀ´Ô´¹¤¾ßÓëÆÚÍûÅĞ¶¨ */
+    /** @brief è®¾ç½®æ¡ä»¶ç»„çš„æ¥æºå·¥å…·ä¸æœŸæœ›åˆ¤å®š */
     bool setIfCondition(const ObjectId& ifId, const ObjectId& sourceId, int want);
 
-    /** @brief ÔÚÍ¬¼¶ÖĞÉÏÒÆ»òÏÂÒÆ½Úµã */
+    /** @brief åœ¨åŒçº§ä¸­ä¸Šç§»æˆ–ä¸‹ç§»èŠ‚ç‚¹ */
     bool moveTreeNode(const ObjectId& nodeId, int delta);
 
-    /** @brief ¸Ä¹¤¾ß×éÏÔÊ¾Ãû£¨¸ù×é³ıÍâ£© */
+    /** @brief æ”¹å·¥å…·ç»„æ˜¾ç¤ºåï¼ˆæ ¹ç»„é™¤å¤–ï¼‰ */
     bool renameGroup(const ObjectId& id, const std::string& name);
 
-    /** @brief É¾³ı¹¤¾ß×é¼°Æä¹¤¾ß£»Ìõ¼ş×éµÄÁ½¸ö·ÖÖ§²»¿ÉÉ¾ */
+    /** @brief åˆ é™¤å·¥å…·ç»„åŠå…¶å·¥å…·ï¼›æ¡ä»¶ç»„çš„ä¸¤ä¸ªåˆ†æ”¯ä¸å¯åˆ  */
     bool removeGroup(const ObjectId& id);
 
-    /** @brief ¸´ÖÆ¹¤¾ß×é²¢²åµ½Ô­½ÚµãÖ®ºó */
+    /** @brief å¤åˆ¶å·¥å…·ç»„å¹¶æ’åˆ°åŸèŠ‚ç‚¹ä¹‹å */
     ObjectId duplicateGroup(const ObjectId& id);
 
-    /** @brief ÔÚÍ¬¼¶ÖĞÉÏÒÆ»òÏÂÒÆ¹¤¾ß */
+    /** @brief åœ¨åŒçº§ä¸­ä¸Šç§»æˆ–ä¸‹ç§»å·¥å…· */
     bool moveTool(const ObjectId& id, int delta);
 
-    /** @brief ´ÓÖ´ĞĞÊ÷ºÍ¹¤¾ßÁĞ±íÖĞÉ¾³ı¸Ã¹¤¾ß */
+    /** @brief ä»æ‰§è¡Œæ ‘å’Œå·¥å…·åˆ—è¡¨ä¸­åˆ é™¤è¯¥å·¥å…· */
     bool removeTool(const ObjectId& id);
 
-    /** @brief ¸´ÖÆ¹¤¾ß²¢²åµ½Ô­Ò¶×Ó¸½½ü */
+    /** @brief å¤åˆ¶å·¥å…·å¹¶æ’åˆ°åŸå¶å­é™„è¿‘ */
     ObjectId duplicateTool(const ObjectId& id);
 
-    /** @brief Í¬²½¸Ä¹¤¾ßÏÔÊ¾ÃûÓë¶ÔÓ¦Ò¶×ÓÃû */
+    /** @brief åŒæ­¥æ”¹å·¥å…·æ˜¾ç¤ºåä¸å¯¹åº”å¶å­å */
     bool renameTool(const ObjectId& id, const std::string& name);
 };
 

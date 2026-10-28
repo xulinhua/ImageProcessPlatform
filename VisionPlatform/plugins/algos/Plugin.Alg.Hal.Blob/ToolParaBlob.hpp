@@ -1,6 +1,6 @@
 /**
  * @file ToolParaBlob.hpp
- * @brief BlobTool ???��???
+ * @brief Blob 参数
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -15,7 +15,7 @@
 
 namespace Vision {
 
-/** @brief ??????????????????��?????? */
+/** @brief 参数键。步骤字段写在 step_序号_ 后面 */
 struct BlobKey {
     static constexpr const char* threshMode = "threshMode";
     static constexpr const char* absMin = "absMin";
@@ -64,14 +64,14 @@ struct BlobKey {
 
 /**
  * @class ToolParaBlob
- * @brief BlobTool ???��???
+ * @brief Blob 参数
  */
 class ToolParaBlob : public ToolParaBase {
 public:
     struct Teach {
     };
 
-    /** @brief ????????��??????????????????��?? */
+    /** @brief 一步。类型是阈值、形态学或筛选 */
     struct Step {
         std::string type;
         std::string threshMode;
@@ -128,7 +128,7 @@ public:
     Teach teach;
     Run run;
 
-    /** @brief ?? ToolParam ??��???? step ???????????????????????? */
+    /** @brief 从 ToolParam 读步骤。没有步骤时按旧字段拼 */
     void load(const ToolParam& src)
     {
         const ParamMap& m = src.run;

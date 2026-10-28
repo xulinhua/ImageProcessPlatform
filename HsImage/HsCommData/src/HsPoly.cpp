@@ -1,6 +1,6 @@
 /**
  * @file HsPoly.cpp
- * @brief HsPolyÊµÏÖ
+ * @brief HsPolyå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -12,14 +12,14 @@
 
 namespace HsCommData {
 
-// ÏÂ±êÎ´Ö¸¶¨
+// ä¸‹æ ‡æœªæŒ‡å®š
 PolySeg::PolySeg()
     : first(-1)
     , last(-1)
 {
 }
 
-// Ö¸¶¨¶¥µãÓëÂÖÀªµã´®ÉÏµÄ±ÕÇø¼äÏÂ±ê
+// æŒ‡å®šé¡¶ç‚¹ä¸è½®å»“ç‚¹ä¸²ä¸Šçš„é—­åŒºé—´ä¸‹æ ‡
 PolySeg::PolySeg(const Point2d& pt_, int first_, int last_)
     : pt(pt_)
     , first(first_)
@@ -27,7 +27,7 @@ PolySeg::PolySeg(const Point2d& pt_, int first_, int last_)
 {
 }
 
-// ¿Õ¶à±ßĞÎ£¬²»±ÕºÏ
+// ç©ºå¤šè¾¹å½¢ï¼Œä¸é—­åˆ
 HsPoly::HsPoly()
     : closed(false)
     , m_segs(nullptr)
@@ -36,7 +36,7 @@ HsPoly::HsPoly()
 {
 }
 
-// Éî¿½±´¶Î±íÓë±ÕºÏ±êÖ¾
+// æ·±æ‹·è´æ®µè¡¨ä¸é—­åˆæ ‡å¿—
 HsPoly::HsPoly(const HsPoly& other)
     : closed(other.closed)
     , m_segs(nullptr)
@@ -46,7 +46,7 @@ HsPoly::HsPoly(const HsPoly& other)
     copySegs(other.m_segs, other.m_segCount);
 }
 
-// Éî¿½¸³Öµ
+// æ·±æ‹·èµ‹å€¼
 HsPoly& HsPoly::operator=(const HsPoly& other)
 {
     if (this != &other) {
@@ -55,37 +55,37 @@ HsPoly& HsPoly::operator=(const HsPoly& other)
     }
     return *this;
 }
-// ÊÍ·Å¶Î»º³å
+// é‡Šæ”¾æ®µç¼“å†²
 HsPoly::~HsPoly()
 {
     releaseSegs();
 }
-// ¶ÎÊı
+// æ®µæ•°
 size_t HsPoly::segCount() const
 {
     return m_segCount;
 }
 
-// Ã»ÓĞ¿ØÖÆ¶Î
+// æ²¡æœ‰æ§åˆ¶æ®µ
 bool HsPoly::segsEmpty() const
 {
     return m_segCount == 0;
 }
 
-// µÚ i ¶Î
+// ç¬¬ i æ®µ
 PolySeg& HsPoly::segAt(size_t i)
 {
     return m_segs[i];
 }
 
-// µÚ i ¶Î
+// ç¬¬ i æ®µ
 const PolySeg& HsPoly::segAt(size_t i) const
 {
     return m_segs[i];
 }
 
 
-// ×·¼ÓÒ»¶Î
+// è¿½åŠ ä¸€æ®µ
 void HsPoly::pushSeg(const PolySeg& seg)
 {
     ensureSegs(m_segCount + 1);
@@ -93,7 +93,7 @@ void HsPoly::pushSeg(const PolySeg& seg)
     ++m_segCount;
 }
 
-// ¸Ä¶ÎÊı¡£±ä³¤µÄĞÂ¶ÎÏÂ±êÎª -1
+// æ”¹æ®µæ•°ã€‚å˜é•¿çš„æ–°æ®µä¸‹æ ‡ä¸º -1
 void HsPoly::resizeSegs(size_t n)
 {
     if (n > m_segCount) {
@@ -108,7 +108,7 @@ void HsPoly::resizeSegs(size_t n)
     m_segCount = n;
 }
 
-// °´¶ÎÊı·ÖÅä£¬²»Öğ¶Î¹¹Ôì
+// æŒ‰æ®µæ•°åˆ†é…ï¼Œä¸é€æ®µæ„é€ 
 void HsPoly::allocSegs(size_t n)
 {
     if (n > m_segCap) {
@@ -123,7 +123,7 @@ void HsPoly::allocSegs(size_t n)
     m_segCount = n;
 }
 
-// ÈİÁ¿²»×ãÊ±»»Ò»¿é¸ü´óµÄ»º³å£¬¾É¶ÎÕû¶Î°á¹ıÈ¥
+// å®¹é‡ä¸è¶³æ—¶æ¢ä¸€å—æ›´å¤§çš„ç¼“å†²ï¼Œæ—§æ®µæ•´æ®µæ¬è¿‡å»
 void HsPoly::ensureSegs(size_t need)
 {
     if (need <= m_segCap) {
@@ -145,7 +145,7 @@ void HsPoly::ensureSegs(size_t need)
     m_segCap = cap;
 }
 
-// ÊÍ·Å¶Î»º³å
+// é‡Šæ”¾æ®µç¼“å†²
 void HsPoly::releaseSegs()
 {
     if (m_segs) {
@@ -156,7 +156,7 @@ void HsPoly::releaseSegs()
     m_segCap = 0;
 }
 
-// °´¶ÎÊıÕû¶Î¸´ÖÆ
+// æŒ‰æ®µæ•°æ•´æ®µå¤åˆ¶
 void HsPoly::copySegs(const PolySeg* src, size_t n)
 {
     allocSegs(n);
@@ -165,13 +165,13 @@ void HsPoly::copySegs(const PolySeg* src, size_t n)
     }
 }
 
-// ÎŞ¶¥µã¶Î
+// æ— é¡¶ç‚¹æ®µ
 bool HsPoly::isEmpty() const
 {
     return m_segCount == 0;
 }
 
-// Öá¶ÔÆë°üÎ§ºĞ
+// è½´å¯¹é½åŒ…å›´ç›’
 Box2 HsPoly::bounds() const
 {
     if (m_segCount == 0) {
@@ -184,7 +184,7 @@ Box2 HsPoly::bounds() const
     return r;
 }
 
-// ¸÷¶ÎÏÂ±êÊÇ·ñÂäÔÚÂÖÀªµãÊı·¶Î§ÄÚ
+// å„æ®µä¸‹æ ‡æ˜¯å¦è½åœ¨è½®å»“ç‚¹æ•°èŒƒå›´å†…
 bool HsPoly::fits(const HsContour& contour) const
 {
     const int n = static_cast<int>(contour.ptCount());

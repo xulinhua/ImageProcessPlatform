@@ -1,6 +1,6 @@
 /**
  * @file ToolLibDlg.h
- * @brief ToolLibDlgÍ·ÎÄ¼ş
+ * @brief ToolLibDlgå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -19,42 +19,42 @@ class QLabel;
 namespace Vision {
 /**
  * @class ToolLibDlg
- * @brief ¹¤¾ß¿â¹ÜÀí£º²å¼şÊ÷±íÒ»Ìå£¬Ñ¡ÖĞ½Úµã³öÏêÇé
+ * @brief å·¥å…·åº“ç®¡ç†ï¼šæ’ä»¶æ ‘è¡¨ä¸€ä½“ï¼Œé€‰ä¸­èŠ‚ç‚¹å‡ºè¯¦æƒ…
  */
 class VISION_UI_API ToolLibDlg : public QDialog {
     Q_OBJECT
 public:
-    /** @brief ´ò¿ª¹¤¾ß¿â¹ÜÀí */
+    /** @brief æ‰“å¼€å·¥å…·åº“ç®¡ç† */
     explicit ToolLibDlg(QWidget* parent = 0);
 private slots:
-    /** @brief ÔÙÉ¨²å¼şÄ¿Â¼£¬Ö»¼ÓĞÂ DLL */
+    /** @brief å†æ‰«æ’ä»¶ç›®å½•ï¼ŒåªåŠ æ–° DLL */
     void onReload();
-    /** @brief Ñ¡ÖĞ½Úµã±ä»¯£¬Ë¢ĞÂÏêÇé */
+    /** @brief é€‰ä¸­èŠ‚ç‚¹å˜åŒ–ï¼Œåˆ·æ–°è¯¦æƒ… */
     void onCurrentChanged();
-    /** @brief ËÑË÷¿ò±ä»¯£¬ÏÔÒşÊ÷ĞĞ */
+    /** @brief æœç´¢æ¡†å˜åŒ–ï¼Œæ˜¾éšæ ‘è¡Œ */
     void onSearch(const QString& text);
 private:
-    /** @brief ÖØ¶ÁµÇ¼Ç²¢ÖØ½¨Ê÷±í */
+    /** @brief é‡è¯»ç™»è®°å¹¶é‡å»ºæ ‘è¡¨ */
     void reloadLists();
-    /** @brief °´ËÑË÷´ÊÏÔÒş½Úµã£¬ÃüÖĞµÄ¸¸½ÚµãÕ¹¿ª */
+    /** @brief æŒ‰æœç´¢è¯æ˜¾éšèŠ‚ç‚¹ï¼Œå‘½ä¸­çš„çˆ¶èŠ‚ç‚¹å±•å¼€ */
     void applyFilter();
-    /** @brief °´½ÚµãÖÖÀàĞ´ÏêÇé */
+    /** @brief æŒ‰èŠ‚ç‚¹ç§ç±»å†™è¯¦æƒ… */
     void showNode(QTreeWidgetItem* item);
-    /** @brief µÇ¼ÇÒ¶×ÓÊÇ·ñÃüÖĞËÑË÷ */
+    /** @brief ç™»è®°å¶å­æ˜¯å¦å‘½ä¸­æœç´¢ */
     bool leafHit(const ToolLibReg& row, const QString& key) const;
 
-    QTreeWidget* m_tree;                 ///< ²å¼şÊ÷±í
-    QLineEdit* m_search;                 ///< ËÑË÷
-    QLabel* m_kind;                      ///< ÏêÇé£ºÀàĞÍ
-    QLabel* m_display;                   ///< ÏêÇé£ºÏÔÊ¾Ãû
-    QLabel* m_name;                      ///< ÏêÇé£º×¢²áÃû
-    QLabel* m_alg;                       ///< ÏêÇé£ºËã·¨¿â
-    QLabel* m_ver;                       ///< ÏêÇé£º°æ±¾
-    QLabel* m_file;                      ///< ÏêÇé£ºÀ´Ô´ DLL
-    QLabel* m_stamp;                     ///< ÏêÇé£ºÎÄ¼şÊ±¼ä
-    QLabel* m_desc;                      ///< ÏêÇé£ºËµÃ÷
-    std::vector<ToolLibReg> m_regs;      ///< µÇ¼Ç»º´æ
-    std::vector<ToolLibItem> m_files;    ///< ÒÑÔØÈë DLL
+    QTreeWidget* m_tree;                 ///< æ’ä»¶æ ‘è¡¨
+    QLineEdit* m_search;                 ///< æœç´¢
+    QLabel* m_kind;                      ///< è¯¦æƒ…ï¼šç±»å‹
+    QLabel* m_display;                   ///< è¯¦æƒ…ï¼šæ˜¾ç¤ºå
+    QLabel* m_name;                      ///< è¯¦æƒ…ï¼šæ³¨å†Œå
+    QLabel* m_alg;                       ///< è¯¦æƒ…ï¼šç®—æ³•åº“
+    QLabel* m_ver;                       ///< è¯¦æƒ…ï¼šç‰ˆæœ¬
+    QLabel* m_file;                      ///< è¯¦æƒ…ï¼šæ¥æº DLL
+    QLabel* m_stamp;                     ///< è¯¦æƒ…ï¼šæ–‡ä»¶æ—¶é—´
+    QLabel* m_desc;                      ///< è¯¦æƒ…ï¼šè¯´æ˜
+    std::vector<ToolLibReg> m_regs;      ///< ç™»è®°ç¼“å­˜
+    std::vector<ToolLibItem> m_files;    ///< å·²è½½å…¥ DLL
 };
 }
 #endif

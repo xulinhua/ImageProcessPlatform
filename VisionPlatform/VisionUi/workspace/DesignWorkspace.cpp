@@ -1,6 +1,6 @@
 /**
  * @file DesignWorkspace.cpp
- * @brief DesignWorkspaceÊµÏÖ
+ * @brief DesignWorkspaceå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -77,12 +77,12 @@ enum TreeKind {
     KindTool
 };
 
-// ×ÊÔ´Ê÷Î¯ÍĞ£º°´ÔËĞĞ×´Ì¬»æÖÆ½Úµã
+// èµ„æºæ ‘å§”æ‰˜ï¼šæŒ‰è¿è¡ŒçŠ¶æ€ç»˜åˆ¶èŠ‚ç‚¹
 class ResourceTreeDelegate : public QStyledItemDelegate {
 public:
     explicit ResourceTreeDelegate(QObject* parent = 0) : QStyledItemDelegate(parent) {}
 
-    // ×Ô»æ½Úµã£¬°´ÔËĞĞ×´Ì¬×ÅÉ«
+    // è‡ªç»˜èŠ‚ç‚¹ï¼ŒæŒ‰è¿è¡ŒçŠ¶æ€ç€è‰²
 void paint(QPainter* painter, const QStyleOptionViewItem& option,
                const QModelIndex& index) const override
     {
@@ -120,7 +120,7 @@ void paint(QPainter* painter, const QStyleOptionViewItem& option,
     }
 };
 
-// Çåµô¹¤¾ß½ÚµãµÄÔËĞĞ×ÅÉ«
+// æ¸…æ‰å·¥å…·èŠ‚ç‚¹çš„è¿è¡Œç€è‰²
 static void clearTreeToolRunLook(QTreeWidgetItem* item)
 {
     if (!item) {
@@ -138,7 +138,7 @@ static void clearTreeToolRunLook(QTreeWidgetItem* item)
     item->setFont(0, f);
 }
 
-// °´ OK/NG ¸ø¹¤¾ß½Úµã×ÅÉ«
+// æŒ‰ OK/NG ç»™å·¥å…·èŠ‚ç‚¹ç€è‰²
 static void applyTreeToolRunLook(QTreeWidgetItem* item, bool ok)
 {
     if (!item) {
@@ -150,7 +150,7 @@ static void applyTreeToolRunLook(QTreeWidgetItem* item, bool ok)
     item->setFont(0, f);
 }
 
-// ´Ó¹¤¾ß½ÚµãÏòÉÏÕÒËùÊôÁ÷³Ì id
+// ä»å·¥å…·èŠ‚ç‚¹å‘ä¸Šæ‰¾æ‰€å±æµç¨‹ id
 static QString treeToolJobId(QTreeWidgetItem* toolItem)
 {
     QTreeWidgetItem* p = toolItem ? toolItem->parent() : nullptr;
@@ -163,13 +163,13 @@ static QString treeToolJobId(QTreeWidgetItem* toolItem)
     return QString();
 }
 
-// È¡¹¤¾ßËùÔÚÁ÷³ÌµÄÔËĞĞ¶ÔÏó
+// å–å·¥å…·æ‰€åœ¨æµç¨‹çš„è¿è¡Œå¯¹è±¡
 inline Job* currentJobForTool(Station* station, const ObjectId& toolId)
 {
     return station ? station->findJobOfTool(toolId) : 0;
 }
 
-// Éè¼ÆÒ³£º·½°¸Ê÷¡¢»­²¼¡¢Í¼ÏñºÍ½á¹û
+// è®¾è®¡é¡µï¼šæ–¹æ¡ˆæ ‘ã€ç”»å¸ƒã€å›¾åƒå’Œç»“æœ
 DesignWorkspace::DesignWorkspace(Session* session, Solution* solution, Station* station, QWidget* parent)
     : QWidget(parent)
     , m_session(session)
@@ -206,34 +206,34 @@ DesignWorkspace::DesignWorkspace(Session* session, Solution* solution, Station* 
 
     m_view = new HsCtrl::HsImageWindow(this);
     m_view->setWindowMode(HsCtrl::WindowDesign);
-    // Òş²Øµş¼Ó¹¤¾ßÌõ
+    // éšè—å åŠ å·¥å…·æ¡
     m_view->setOverlayToolbarVisible(false);
     m_view->setDrawTool(HsCtrl::ToolBrowse);
     connect(m_view, SIGNAL(cursorMoved(QPointF,double,bool)), this, SLOT(onCursor(QPointF,double,bool)));
     connect(m_view, SIGNAL(roiCommitted(HsCommData::Graphic)), this, SLOT(onRoi(HsCommData::Graphic)));
 
-    m_status = new QLabel(T("Í¼Ïñ / ROI"), this);
-    bindTrKey(m_status, "Í¼Ïñ / ROI");
+    m_status = new QLabel(T("å›¾åƒ / ROI"), this);
+    bindTrKey(m_status, "å›¾åƒ / ROI");
     m_status->setObjectName(QLatin1String("hint"));
 
-    QAction* actUp = new QAction(T("ÉÏÒÆ"), this);
-    bindTrKey(actUp, "ÉÏÒÆ");
+    QAction* actUp = new QAction(T("ä¸Šç§»"), this);
+    bindTrKey(actUp, "ä¸Šç§»");
     actUp->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Up));
     connect(actUp, SIGNAL(triggered()), this, SLOT(onMoveUp()));
-    QAction* actDown = new QAction(T("ÏÂÒÆ"), this);
-    bindTrKey(actDown, "ÏÂÒÆ");
+    QAction* actDown = new QAction(T("ä¸‹ç§»"), this);
+    bindTrKey(actDown, "ä¸‹ç§»");
     actDown->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Down));
     connect(actDown, SIGNAL(triggered()), this, SLOT(onMoveDown()));
-    QAction* actRename = new QAction(T("ÖØÃüÃû"), this);
-    bindTrKey(actRename, "ÖØÃüÃû");
+    QAction* actRename = new QAction(T("é‡å‘½å"), this);
+    bindTrKey(actRename, "é‡å‘½å");
     actRename->setShortcut(QKeySequence(Qt::Key_F2));
     connect(actRename, SIGNAL(triggered()), this, SLOT(onRename()));
-    QAction* actCopy = new QAction(T("¸´ÖÆ"), this);
-    bindTrKey(actCopy, "¸´ÖÆ");
+    QAction* actCopy = new QAction(T("å¤åˆ¶"), this);
+    bindTrKey(actCopy, "å¤åˆ¶");
     actCopy->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_D));
     connect(actCopy, SIGNAL(triggered()), this, SLOT(onCopyTool()));
-    QAction* actDel = new QAction(T("É¾³ı"), this);
-    bindTrKey(actDel, "É¾³ı");
+    QAction* actDel = new QAction(T("åˆ é™¤"), this);
+    bindTrKey(actDel, "åˆ é™¤");
     actDel->setShortcut(QKeySequence::Delete);
     connect(actDel, SIGNAL(triggered()), this, SLOT(onDeleteTool()));
     addAction(actUp);
@@ -242,13 +242,13 @@ DesignWorkspace::DesignWorkspace(Session* session, Solution* solution, Station* 
     addAction(actCopy);
     addAction(actDel);
 
-    // ·½°¸Ê÷¿¨Æ¬
+    // æ–¹æ¡ˆæ ‘å¡ç‰‡
     QFrame* solCard = makeCard(this);
     QVBoxLayout* solLay = new QVBoxLayout(solCard);
     solLay->setContentsMargins(8, 8, 8, 8);
     solLay->setSpacing(4);
-    m_solTitle = new QLabel(T("·½°¸"), solCard);
-    bindTrKey(m_solTitle, "·½°¸");
+    m_solTitle = new QLabel(T("æ–¹æ¡ˆ"), solCard);
+    bindTrKey(m_solTitle, "æ–¹æ¡ˆ");
     m_solTitle->setObjectName(QLatin1String("section"));
     solLay->addWidget(m_solTitle);
     solLay->addWidget(m_tree, 1);
@@ -257,8 +257,8 @@ DesignWorkspace::DesignWorkspace(Session* session, Solution* solution, Station* 
     QVBoxLayout* algoLay = new QVBoxLayout(algoCard);
     algoLay->setContentsMargins(8, 8, 8, 8);
     algoLay->setSpacing(4);
-    m_algoTitle = new QLabel(T("¹¤¾ß¿â"), algoCard);
-    bindTrKey(m_algoTitle, "¹¤¾ß¿â");
+    m_algoTitle = new QLabel(T("å·¥å…·åº“"), algoCard);
+    bindTrKey(m_algoTitle, "å·¥å…·åº“");
     m_algoTitle->setObjectName(QLatin1String("section"));
     algoLay->addWidget(m_algoTitle);
     algoLay->addWidget(m_toolLib, 1);
@@ -282,8 +282,8 @@ DesignWorkspace::DesignWorkspace(Session* session, Solution* solution, Station* 
     QFrame* canvasCard = makeCard(this);
     QVBoxLayout* canvasLay = new QVBoxLayout(canvasCard);
     canvasLay->setContentsMargins(8, 8, 8, 8);
-    m_canvasTitle = new QLabel(T("Á÷³Ì»­²¼"), canvasCard);
-    bindTrKey(m_canvasTitle, "Á÷³Ì»­²¼");
+    m_canvasTitle = new QLabel(T("æµç¨‹ç”»å¸ƒ"), canvasCard);
+    bindTrKey(m_canvasTitle, "æµç¨‹ç”»å¸ƒ");
     m_canvasTitle->setObjectName(QLatin1String("section"));
     canvasLay->addWidget(m_canvasTitle);
     canvasLay->addWidget(m_flowCanvas, 1);
@@ -293,8 +293,8 @@ DesignWorkspace::DesignWorkspace(Session* session, Solution* solution, Station* 
     QVBoxLayout* imgLay = new QVBoxLayout(imgCard);
     imgLay->setContentsMargins(8, 8, 8, 8);
     imgLay->setSpacing(6);
-    QLabel* iTitle = new QLabel(T("Í¼Ïñ"), imgCard);
-    bindTrKey(iTitle, "Í¼Ïñ");
+    QLabel* iTitle = new QLabel(T("å›¾åƒ"), imgCard);
+    bindTrKey(iTitle, "å›¾åƒ");
     iTitle->setObjectName(QLatin1String("section"));
     imgLay->addWidget(iTitle);
     imgLay->addWidget(m_view, 1);
@@ -302,11 +302,11 @@ DesignWorkspace::DesignWorkspace(Session* session, Solution* solution, Station* 
 
     m_result = new ToolRstPanel(this);
 
-    QPushButton* runT = new QPushButton(T("ÔËĞĞ±¾¹¤¾ß"), this);
-    bindTrKey(runT, "ÔËĞĞ±¾¹¤¾ß");
-    QPushButton* runJ = new QPushButton(T("ÔËĞĞ±¾Á÷³Ì"), this);
-    m_btnDebug = new QPushButton(T("ÏêÏ¸µ÷ÊÔ"), this);
-    bindTrKey(m_btnDebug, "ÏêÏ¸µ÷ÊÔ");
+    QPushButton* runT = new QPushButton(T("è¿è¡Œæœ¬å·¥å…·"), this);
+    bindTrKey(runT, "è¿è¡Œæœ¬å·¥å…·");
+    QPushButton* runJ = new QPushButton(T("è¿è¡Œæœ¬æµç¨‹"), this);
+    m_btnDebug = new QPushButton(T("è¯¦ç»†è°ƒè¯•"), this);
+    bindTrKey(m_btnDebug, "è¯¦ç»†è°ƒè¯•");
     m_btnRunTool = runT;
     m_btnRunJob = runJ;
     setButtonRole(runJ, "primary");
@@ -319,8 +319,8 @@ DesignWorkspace::DesignWorkspace(Session* session, Solution* solution, Station* 
     QVBoxLayout* rLay = new QVBoxLayout(resultCard);
     rLay->setContentsMargins(8, 8, 8, 8);
     rLay->setSpacing(6);
-    QLabel* pTitle = new QLabel(T("µ÷ÊÔ½á¹û"), resultCard);
-    bindTrKey(pTitle, "µ÷ÊÔ½á¹û");
+    QLabel* pTitle = new QLabel(T("è°ƒè¯•ç»“æœ"), resultCard);
+    bindTrKey(pTitle, "è°ƒè¯•ç»“æœ");
     pTitle->setObjectName(QLatin1String("section"));
     rLay->addWidget(pTitle);
     rLay->addWidget(m_result, 1);
@@ -344,7 +344,7 @@ DesignWorkspace::DesignWorkspace(Session* session, Solution* solution, Station* 
     m_log = new QTableWidget(this);
     m_log->setColumnCount(3);
     QStringList hh;
-    hh << T("Ê±¼ä") << T("¼¶±ğ") << T("ÏûÏ¢");
+    hh << T("æ—¶é—´") << T("çº§åˆ«") << T("æ¶ˆæ¯");
     m_log->setHorizontalHeaderLabels(hh);
     m_log->horizontalHeader()->setStretchLastSection(true);
     m_log->verticalHeader()->setVisible(false);
@@ -358,8 +358,8 @@ DesignWorkspace::DesignWorkspace(Session* session, Solution* solution, Station* 
     QVBoxLayout* lay = new QVBoxLayout(this);
     lay->setContentsMargins(8, 8, 8, 8);
     lay->addWidget(split, 1);
-    QLabel* logTitle = new QLabel(T("ÈÕÖ¾"), this);
-    bindTrKey(logTitle, "ÈÕÖ¾");
+    QLabel* logTitle = new QLabel(T("æ—¥å¿—"), this);
+    bindTrKey(logTitle, "æ—¥å¿—");
     logTitle->setObjectName(QLatin1String("section"));
     lay->addWidget(logTitle);
     lay->addWidget(m_log);
@@ -368,7 +368,7 @@ DesignWorkspace::DesignWorkspace(Session* session, Solution* solution, Station* 
 }
 
 
-// µ±Ç°¹¤Õ¾ id£ºÏÈ¿´Ê÷Ñ¡ÖĞ£¬ÔÙ¿´µ±Ç°Á÷³Ì
+// å½“å‰å·¥ç«™ idï¼šå…ˆçœ‹æ ‘é€‰ä¸­ï¼Œå†çœ‹å½“å‰æµç¨‹
 QString 
 DesignWorkspace::currentStationId() const
 {
@@ -392,26 +392,26 @@ DesignWorkspace::currentStationId() const
     }
     return QString();
 }
-// ÇĞ»»µ±Ç°¹¤Õ¾
+// åˆ‡æ¢å½“å‰å·¥ç«™
 void DesignWorkspace::setStation(Station* station)
 {
     m_station = station;
 }
 
-// Í¼Ïñ¹â±êÎ»ÖÃºÍ»Ò¶È
+// å›¾åƒå…‰æ ‡ä½ç½®å’Œç°åº¦
 void DesignWorkspace::onCursor(const QPointF& pt, double gray, bool valid)
 {
     if (!valid) {
         return;
     }
-    m_status->setText(T("ĞĞ %1  ÁĞ %2  »Ò¶È %3  Ëõ·Å %4%")
+    m_status->setText(T("è¡Œ %1  åˆ— %2  ç°åº¦ %3  ç¼©æ”¾ %4%")
                       .arg(qRound(pt.y()))
                       .arg(qRound(pt.x()))
                       .arg(gray, 0, 'f', 1)
                       .arg(m_view->zoomScale() * 100.0, 0, 'f', 0));
 }
 
-// ×·¼ÓÈÕÖ¾
+// è¿½åŠ æ—¥å¿—
 void DesignWorkspace::appendLog(const QString& line)
 {
     QString level = QLatin1String("INF");
@@ -423,7 +423,7 @@ void DesignWorkspace::appendLog(const QString& line)
     appendLog(level, line);
 }
 
-// ×·¼ÓÈÕÖ¾
+// è¿½åŠ æ—¥å¿—
 void DesignWorkspace::appendLog(const QString& level, const QString& message)
 {
     m_log->insertRow(0);
@@ -435,7 +435,7 @@ void DesignWorkspace::appendLog(const QString& level, const QString& message)
     }
 }
 
-// °´µ±Ç°Á÷³ÌÖØ»­»­²¼
+// æŒ‰å½“å‰æµç¨‹é‡ç”»ç”»å¸ƒ
 void DesignWorkspace::refreshCanvas()
 {
     JobCfg* job = m_sol->findJobConfig(oid(m_jobId));
@@ -452,7 +452,7 @@ void DesignWorkspace::refreshCanvas()
     }
 }
 
-// ´ò¿ªµ±Ç°¹¤¾ßµÄµ÷ÊÔ´°£¬²¢½ÓÉÏ ROI¡¢²İ¸å¡¢ÊÔÅÜºÍÁ¬Ïß±ä»¯
+// æ‰“å¼€å½“å‰å·¥å…·çš„è°ƒè¯•çª—ï¼Œå¹¶æ¥ä¸Š ROIã€è‰ç¨¿ã€è¯•è·‘å’Œè¿çº¿å˜åŒ–
 void DesignWorkspace::onOpenDebug()
 {
     ToolCfg* t = m_sol->findTool(oid(m_toolId));
@@ -475,7 +475,7 @@ void DesignWorkspace::onOpenDebug()
     syncToolView(true);
 }
 
-// ´Ó¸´¼ì¶¨Î»µ½Ö¸¶¨Á÷³ÌºÍ¹¤¾ß£¬±ØÒªÊ±´ò¿ª¶ÔÓ¦Í¼Ïñ
+// ä»å¤æ£€å®šä½åˆ°æŒ‡å®šæµç¨‹å’Œå·¥å…·ï¼Œå¿…è¦æ—¶æ‰“å¼€å¯¹åº”å›¾åƒ
 void DesignWorkspace::focusRecheckDebug(const QString& jobId, const QString& toolId,
                                         const QString& imagePath)
 {
@@ -498,7 +498,7 @@ void DesignWorkspace::focusRecheckDebug(const QString& jobId, const QString& too
     }
 }
 
-// °´µ±Ç°ÒÑµÇ¼Ç¹¤¾ßÖØÌî¹¤¾ß¿â
+// æŒ‰å½“å‰å·²ç™»è®°å·¥å…·é‡å¡«å·¥å…·åº“
 void DesignWorkspace::reloadToolLib()
 {
     if (m_toolLib) {
@@ -520,19 +520,19 @@ void DesignWorkspace::reloadTree()
     }
     m_tree->clear();
     QTreeWidgetItem* root = new QTreeWidgetItem(m_tree);
-    root->setText(0, T("·½°¸ ") + qs(m_sol->name));
+    root->setText(0, T("æ–¹æ¡ˆ ") + qs(m_sol->name));
     root->setData(0, RoleKind, KindSol);
 
     QTreeWidgetItem* keepItem = (keepKind == KindSol) ? root : nullptr;
-    // ±éÀú¹¤Õ¾ÌîÊ÷
+    // éå†å·¥ç«™å¡«æ ‘
     for (int i = 0; i < m_sol->stations.size(); ++i) {
         const StationCfg& st = m_sol->stations[i];
         QTreeWidgetItem* stItem = new QTreeWidgetItem(root);
-        stItem->setText(0, T("¹¤Õ¾ ") + qs(st.stationCode) + QLatin1String(" ") + qs(st.name));
+        stItem->setText(0, T("å·¥ç«™ ") + qs(st.stationCode) + QLatin1String(" ") + qs(st.name));
         stItem->setData(0, RoleId, qs(st.id));
         stItem->setData(0, RoleKind, KindStation);
         if (!st.enabled) {
-            stItem->setText(0, stItem->text(0) + T("£¨Î´ÆôÓÃ£©"));
+            stItem->setText(0, stItem->text(0) + T("ï¼ˆæœªå¯ç”¨ï¼‰"));
             stItem->setData(0, RoleDisabled, true);
             stItem->setForeground(0, QBrush(QColor(0xA0, 0xA0, 0xA0)));
         }
@@ -542,12 +542,12 @@ void DesignWorkspace::reloadTree()
         for (int j = 0; j < st.jobs.size(); ++j) {
             const JobCfg& job = st.jobs[j];
             QTreeWidgetItem* jItem = new QTreeWidgetItem(stItem);
-            jItem->setText(0, T("Á÷³Ì ") + qs(job.name));
+            jItem->setText(0, T("æµç¨‹ ") + qs(job.name));
             jItem->setData(0, RoleId, qs(job.id));
             jItem->setData(0, RoleKind, KindJob);
             if (!job.enabled || !st.enabled) {
                 if (!job.enabled) {
-                    jItem->setText(0, jItem->text(0) + T("£¨Î´ÆôÓÃ£©"));
+                    jItem->setText(0, jItem->text(0) + T("ï¼ˆæœªå¯ç”¨ï¼‰"));
                 }
                 jItem->setData(0, RoleDisabled, true);
                 jItem->setForeground(0, QBrush(QColor(0xA0, 0xA0, 0xA0)));
@@ -555,7 +555,7 @@ void DesignWorkspace::reloadTree()
             if (keepKind == KindJob && qs(job.id) == keepId) {
                 keepItem = jItem;
             }
-            // UTF-8 ×Ö·û´®×ª QString
+            // UTF-8 å­—ç¬¦ä¸²è½¬ QString
             if (keepKind == KindTool && qs(job.id) == m_jobId) {
                 keepItem = jItem;
             }
@@ -571,7 +571,7 @@ void DesignWorkspace::reloadTree()
     refreshTreeRunStatus(coloredJob);
 }
 
-// Ë¢ĞÂÊ÷ÉÏµÄÔËĞĞ×´Ì¬
+// åˆ·æ–°æ ‘ä¸Šçš„è¿è¡ŒçŠ¶æ€
 void DesignWorkspace::refreshTreeRunStatus(const JobCfg* scopeJob)
 {
     if (!m_tree || !m_station || !scopeJob) {
@@ -623,7 +623,7 @@ void DesignWorkspace::refreshTreeRunStatus(const JobCfg* scopeJob)
     }
 }
 
-// Ë«»÷Ê÷½Úµã
+// åŒå‡»æ ‘èŠ‚ç‚¹
 void DesignWorkspace::onTreeDouble(QTreeWidgetItem* item, int)
 {
     if (!item) {
@@ -644,7 +644,7 @@ void DesignWorkspace::onTreeDouble(QTreeWidgetItem* item, int)
     }
 }
 
-// µ¥»÷Ê÷½Úµã
+// å•å‡»æ ‘èŠ‚ç‚¹
 void DesignWorkspace::onTreeClicked(QTreeWidgetItem* item, int)
 {
     if (!item) {
@@ -668,7 +668,7 @@ void DesignWorkspace::onTreeClicked(QTreeWidgetItem* item, int)
     }
 }
 
-// Ñ¡ÖĞ¹¤¾ß
+// é€‰ä¸­å·¥å…·
 void DesignWorkspace::selectTool(const QString& toolId)
 {
     m_toolId = toolId;
@@ -694,12 +694,12 @@ void DesignWorkspace::selectTool(const QString& toolId)
     updateToolButtons();
 }
 
-// °Ñ½çÃæ²ÎÊıĞ´»Ø¹¤¾ß
+// æŠŠç•Œé¢å‚æ•°å†™å›å·¥å…·
 void DesignWorkspace::applyParamsFromUi()
 {
 }
 
-// °´È¨ÏŞ¿ª¹Øµ÷ÊÔ
+// æŒ‰æƒé™å¼€å…³è°ƒè¯•
 void DesignWorkspace::setDebugPerms(bool canDebug)
 {
     if (m_btnRunTool) {
@@ -713,7 +713,7 @@ void DesignWorkspace::setDebugPerms(bool canDebug)
     }
 }
 
-// Í¼ÉÏ ROI ±ä»¯
+// å›¾ä¸Š ROI å˜åŒ–
 void DesignWorkspace::onRoi(const HsCommData::Graphic& g)
 {
     ToolCfg* t = m_sol->findTool(oid(m_toolId));
@@ -727,12 +727,12 @@ void DesignWorkspace::onRoi(const HsCommData::Graphic& g)
         t->applyDrawnRoi(g);
     }
     m_sol->dirty = true;
-    appendLog(T("ROI ÒÑĞ´Èë ") + qs(t->name));
+    appendLog(T("ROI å·²å†™å…¥ ") + qs(t->name));
     afterRoiEdited();
     syncDrawingInteractionView();
 }
 
-// µ÷ÊÔ´° ROI ±ä»¯
+// è°ƒè¯•çª— ROI å˜åŒ–
 void DesignWorkspace::onDebugRoiChanged()
 {
     if (m_debug && m_debug->isVisible()) {
@@ -740,7 +740,7 @@ void DesignWorkspace::onDebugRoiChanged()
     }
 }
 
-// µ÷ÊÔ±£´æºóË¢ĞÂ²İ¸å
+// è°ƒè¯•ä¿å­˜ååˆ·æ–°è‰ç¨¿
 void DesignWorkspace::onDebugDraftSaved()
 {
     afterRoiEdited();
@@ -748,13 +748,13 @@ void DesignWorkspace::onDebugDraftSaved()
     emit namesChanged();
 }
 
-// µ÷ÊÔÊÔÔËĞĞ½á¹û
+// è°ƒè¯•è¯•è¿è¡Œç»“æœ
 void DesignWorkspace::onDebugTestRun(const ToolOut& out)
 {
     showToolResult(qs(out.toolId), out.image, qg(out.objects), &out);
 }
 
-// ROI ¸ÄÍêºóÍ¬²½
+// ROI æ”¹å®ŒååŒæ­¥
 void DesignWorkspace::afterRoiEdited()
 {
     applyDrawingsToView();
@@ -764,7 +764,7 @@ void DesignWorkspace::afterRoiEdited()
     }
 }
 
-// °ÑÍ¼ĞÎ»­µ½Í¼Ïñ´°
+// æŠŠå›¾å½¢ç”»åˆ°å›¾åƒçª—
 void DesignWorkspace::applyDrawingsToView()
 {
     ToolCfg* t = m_sol->findTool(oid(m_toolId));
@@ -773,7 +773,7 @@ void DesignWorkspace::applyDrawingsToView()
     overlayRoiDetails(m_view, t, -1, showLabels);
 }
 
-// Í¬²½Í¼Ïñ´°µÄ½»»¥Ä£Ê½
+// åŒæ­¥å›¾åƒçª—çš„äº¤äº’æ¨¡å¼
 void DesignWorkspace::syncDrawingInteractionView()
 {
     ToolCfg* t = m_sol->findTool(oid(m_toolId));
@@ -782,7 +782,7 @@ void DesignWorkspace::syncDrawingInteractionView()
     syncDrawingInteraction(m_view, editable, -1, has);
 }
 
-// Ë¢ĞÂ½á¹ûÃæ°å
+// åˆ·æ–°ç»“æœé¢æ¿
 void DesignWorkspace::refreshResult(const ToolOut* runMeta, bool afterJobRun)
 {
     if (!m_result) {
@@ -799,7 +799,7 @@ void DesignWorkspace::refreshResult(const ToolOut* runMeta, bool afterJobRun)
     m_result->refresh(m_sol, t, jobRt, use, afterJobRun);
 }
 
-// Á÷³ÌÅÜÍêºóÍ¬²½½çÃæ
+// æµç¨‹è·‘å®ŒååŒæ­¥ç•Œé¢
 void DesignWorkspace::syncAfterJobRun(const ToolOut& jobOut)
 {
     if (!m_station) {
@@ -820,7 +820,7 @@ void DesignWorkspace::syncAfterJobRun(const ToolOut& jobOut)
     m_jobId = jobId;
     Job* jobRt = m_station->findJob(job->id);
 
-    // ÓĞµ±Ç°¹¤¾ßÔòÏÔÊ¾Æä½á¹û
+    // æœ‰å½“å‰å·¥å…·åˆ™æ˜¾ç¤ºå…¶ç»“æœ
 if (!m_toolId.isEmpty()) {
         ToolCfg* t = m_sol->findTool(oid(m_toolId));
         if (t && job->findTool(t->id)) {
@@ -844,7 +844,7 @@ if (!m_toolId.isEmpty()) {
     showJobResult(job, jobOut);
 }
 
-// ÏÔÊ¾Á÷³ÌÔËĞĞ½á¹û
+// æ˜¾ç¤ºæµç¨‹è¿è¡Œç»“æœ
 void DesignWorkspace::showJobResult(const JobCfg* job, const ToolOut& jobOut)
 {
     Job* jobRt = (job && m_station) ? m_station->findJob(job->id) : nullptr;
@@ -895,7 +895,7 @@ void DesignWorkspace::showJobResult(const JobCfg* job, const ToolOut& jobOut)
         m_view->setOverlays(toStd(ov));
     }
     m_view->setDrawings(std::vector<HsCommData::Graphic>());
-    m_status->setText(T("Á÷³Ì ") + qs(job->name) + T("£ºÏÔÊ¾²É¼¯µ×Í¼Óë¸÷¹¤¾ßµş¼Ó"));
+    m_status->setText(T("æµç¨‹ ") + qs(job->name) + T("ï¼šæ˜¾ç¤ºé‡‡é›†åº•å›¾ä¸å„å·¥å…·å åŠ "));
 
     m_result->refreshJob(m_sol, job, jobRt, &jobOut);
     syncDrawingInteractionView();
@@ -903,7 +903,7 @@ void DesignWorkspace::showJobResult(const JobCfg* job, const ToolOut& jobOut)
     refreshTreeRunStatus(job);
 }
 
-// Ë¢ĞÂÁ÷³Ì½á¹ûÔ¤ÀÀ
+// åˆ·æ–°æµç¨‹ç»“æœé¢„è§ˆ
 void DesignWorkspace::refreshJobResultPreview()
 {
     JobCfg* job = m_jobId.isEmpty() ? 0 : m_sol->findJobConfig(oid(m_jobId));
@@ -938,10 +938,10 @@ void DesignWorkspace::refreshJobResultPreview()
     m_view->fitToWindow();
     m_view->setOverlay(toStd(ov), m_view->currentFrameId());
     m_view->setDrawings(std::vector<HsCommData::Graphic>());
-    m_status->setText(T("Á÷³Ì ") + qs(job->name) + T("£ºÏÔÊ¾²É¼¯µ×Í¼Óë¸÷¹¤¾ßµş¼Ó"));
+    m_status->setText(T("æµç¨‹ ") + qs(job->name) + T("ï¼šæ˜¾ç¤ºé‡‡é›†åº•å›¾ä¸å„å·¥å…·å åŠ "));
 }
 
-// Í¬²½¹¤¾ßÍ¼Ïñ£¬ÓÅÏÈÊäÈëÍ¼
+// åŒæ­¥å·¥å…·å›¾åƒï¼Œä¼˜å…ˆè¾“å…¥å›¾
 void DesignWorkspace::syncToolView(bool preferInput)
 {
     Q_UNUSED(preferInput);
@@ -962,7 +962,7 @@ void DesignWorkspace::syncToolView(bool preferInput)
     showToolResult(m_toolId, fb, qg(jobRt->cachedOverlay(t->id)));
 }
 
-// ÏÔÊ¾¹¤¾ßÊä³öÍ¼ºÍµş¼Ó
+// æ˜¾ç¤ºå·¥å…·è¾“å‡ºå›¾å’Œå åŠ 
 void DesignWorkspace::showToolResult(const QString& toolId, const HsCommData::HsImage& fb,
                                      const QVector<HsCommData::Graphic>& overlay,
                                      const ToolOut* runMeta, bool afterJobRun)
@@ -1032,7 +1032,7 @@ void DesignWorkspace::showToolResult(const QString& toolId, const HsCommData::Hs
         m_debug->refreshView(metaMatches ? runMeta : 0);
     }
 }
-// °´Ñ¡ÖĞÏîË¢ĞÂ°´Å¥
+// æŒ‰é€‰ä¸­é¡¹åˆ·æ–°æŒ‰é’®
 void DesignWorkspace::updateToolButtons()
 {
     StationCfg* st = nullptr;
@@ -1047,7 +1047,7 @@ void DesignWorkspace::updateToolButtons()
     m_canDown = ok && job && idx < job->tools.size() - 1;
 }
 
-// ÉÏÒÆ
+// ä¸Šç§»
 void DesignWorkspace::onMoveUp()
 {
     applyParamsFromUi();
@@ -1064,7 +1064,7 @@ void DesignWorkspace::onMoveUp()
     selectTool(m_toolId);
 }
 
-// ÏÂÒÆ
+// ä¸‹ç§»
 void DesignWorkspace::onMoveDown()
 {
     applyParamsFromUi();
@@ -1081,7 +1081,7 @@ void DesignWorkspace::onMoveDown()
     selectTool(m_toolId);
 }
 
-// ÖØÃüÃû
+// é‡å‘½å
 void DesignWorkspace::onRename()
 {
     QTreeWidgetItem* item = m_tree->currentItem();
@@ -1095,38 +1095,38 @@ void DesignWorkspace::onRename()
     QString label;
     if (kind == KindSol) {
         cur = qs(m_sol->name);
-        label = T("·½°¸Ãû³Æ");
+        label = T("æ–¹æ¡ˆåç§°");
     } else if (kind == KindStation) {
         StationCfg* st = m_sol->findStationConfig(oid(id));
         if (!st) {
             return;
         }
         cur = qs(st->name);
-        label = T("¹¤Õ¾Ãû³Æ");
+        label = T("å·¥ç«™åç§°");
     } else if (kind == KindJob) {
         JobCfg* job = m_sol->findJobConfig(oid(id));
         if (!job) {
             return;
         }
         cur = qs(job->name);
-        label = T("Á÷³ÌÃû³Æ");
+        label = T("æµç¨‹åç§°");
     } else if (kind == KindTool) {
         ToolCfg* t = m_sol->findTool(oid(id));
         if (!t) {
             return;
         }
         cur = qs(t->name);
-        label = T("¹¤¾ßÃû³Æ");
+        label = T("å·¥å…·åç§°");
     } else {
         return;
     }
     bool ok = false;
-    const QString n = QInputDialog::getText(this, T("ÖØÃüÃû"), label,
+    const QString n = QInputDialog::getText(this, T("é‡å‘½å"), label,
                                             QLineEdit::Normal, cur, &ok).trimmed();
     if (!ok || n.isEmpty() || n == cur) {
         return;
     }
-    // ·½°¸½ÚµãµÄ²Ëµ¥
+    // æ–¹æ¡ˆèŠ‚ç‚¹çš„èœå•
     if (kind == KindSol) {
         m_sol->name = ss(n);
     } else if (kind == KindStation) {
@@ -1144,7 +1144,7 @@ void DesignWorkspace::onRename()
     emit namesChanged();
 }
 
-// ¸´ÖÆ¹¤¾ß
+// å¤åˆ¶å·¥å…·
 void DesignWorkspace::onCopyTool()
 {
     applyParamsFromUi();
@@ -1163,7 +1163,7 @@ void DesignWorkspace::onCopyTool()
     selectTool(m_toolId);
 }
 
-// É¾³ı¹¤¾ß
+// åˆ é™¤å·¥å…·
 void DesignWorkspace::onDeleteTool()
 {
     applyParamsFromUi();
@@ -1177,7 +1177,7 @@ void DesignWorkspace::onDeleteTool()
     if (idx < 0) {
         return;
     }
-    if (QMessageBox::question(this, T("É¾³ı"), T("É¾³ı´Ë¹¤¾ß£¿")) != QMessageBox::Yes) {
+    if (QMessageBox::question(this, T("åˆ é™¤"), T("åˆ é™¤æ­¤å·¥å…·ï¼Ÿ")) != QMessageBox::Yes) {
         return;
     }
     if (!job->removeTool(tid)) {
@@ -1199,7 +1199,7 @@ void DesignWorkspace::onDeleteTool()
     }
 }
 
-// Ê÷ÓÒ¼ü²Ëµ¥
+// æ ‘å³é”®èœå•
 void DesignWorkspace::onTreeMenu(const QPoint& pos)
 {
     QTreeWidgetItem* item = m_tree->itemAt(pos);
@@ -1219,7 +1219,7 @@ void DesignWorkspace::onTreeMenu(const QPoint& pos)
     const bool canEdit = m_session->has(PermEditSolution);
     QMenu menu(this);
     if (kind == KindSol || kind == KindStation || kind == KindJob) {
-        QAction* rename = menu.addAction(T("ÖØÃüÃû"));
+        QAction* rename = menu.addAction(T("é‡å‘½å"));
         rename->setEnabled(canEdit);
         QAction* chosen = menu.exec(m_tree->mapToGlobal(pos));
         if (chosen == rename) {
@@ -1230,12 +1230,12 @@ void DesignWorkspace::onTreeMenu(const QPoint& pos)
     if (kind != KindTool) {
         return;
     }
-    QAction* up = menu.addAction(T("ÉÏÒÆ"));
-    QAction* down = menu.addAction(T("ÏÂÒÆ"));
+    QAction* up = menu.addAction(T("ä¸Šç§»"));
+    QAction* down = menu.addAction(T("ä¸‹ç§»"));
     menu.addSeparator();
-    QAction* rename = menu.addAction(T("ÖØÃüÃû"));
-    QAction* copy = menu.addAction(T("¸´ÖÆ"));
-    QAction* del = menu.addAction(T("É¾³ı"));
+    QAction* rename = menu.addAction(T("é‡å‘½å"));
+    QAction* copy = menu.addAction(T("å¤åˆ¶"));
+    QAction* del = menu.addAction(T("åˆ é™¤"));
     up->setEnabled(m_canUp);
     down->setEnabled(m_canDown);
     rename->setEnabled(m_canEditTool);
@@ -1255,7 +1255,7 @@ void DesignWorkspace::onTreeMenu(const QPoint& pos)
     }
 }
 
-// »­²¼Ñ¡ÖĞ¹¤¾ß
+// ç”»å¸ƒé€‰ä¸­å·¥å…·
 void DesignWorkspace::onCanvasTool(const QString& toolId)
 {
     if (toolId.isEmpty()) {
@@ -1264,7 +1264,7 @@ void DesignWorkspace::onCanvasTool(const QString& toolId)
     selectTool(toolId);
 }
 
-// »­²¼Ë«»÷¹¤¾ß
+// ç”»å¸ƒåŒå‡»å·¥å…·
 void DesignWorkspace::onCanvasToolDouble(const QString& toolId)
 {
     if (toolId.isEmpty()) {
@@ -1275,7 +1275,7 @@ void DesignWorkspace::onCanvasToolDouble(const QString& toolId)
     onOpenDebug();
 }
 
-// »­²¼Ñ¡ÖĞ×é
+// ç”»å¸ƒé€‰ä¸­ç»„
 void DesignWorkspace::onCanvasGroup(const QString& groupId)
 {
     JobCfg* job = m_sol->findJobConfig(oid(m_jobId));
@@ -1288,7 +1288,7 @@ void DesignWorkspace::onCanvasGroup(const QString& groupId)
     }
 }
 
-// »­²¼ÓÒ¼ü²Ëµ¥
+// ç”»å¸ƒå³é”®èœå•
 void DesignWorkspace::onCanvasMenu(const QString& id, int kind, const QPoint& globalPos)
 {
     JobCfg* job = m_sol->findJobConfig(oid(m_jobId));
@@ -1301,8 +1301,8 @@ void DesignWorkspace::onCanvasMenu(const QString& id, int kind, const QPoint& gl
             return;
         }
         QMenu menu(this);
-        QAction* reset = menu.addAction(T("»Ö¸´×Ô¶¯Â·ÓÉ"));
-        QAction* del = menu.addAction(T("¶Ï¿ªÁ¬Ïß"));
+        QAction* reset = menu.addAction(T("æ¢å¤è‡ªåŠ¨è·¯ç”±"));
+        QAction* del = menu.addAction(T("æ–­å¼€è¿çº¿"));
         QAction* chosen = menu.exec(globalPos);
         if (!m_flowCanvas || !chosen) {
             return;
@@ -1319,7 +1319,7 @@ void DesignWorkspace::onCanvasMenu(const QString& id, int kind, const QPoint& gl
     }
     updateToolButtons();
     QMenu menu(this);
-    QMenu* addMenu = menu.addMenu(T("ÔÚ´Ë´¦Ìí¼Ó¹¤¾ß"));
+    QMenu* addMenu = menu.addMenu(T("åœ¨æ­¤å¤„æ·»åŠ å·¥å…·"));
     addMenu->setEnabled(canEdit && job);
     const std::vector<ToolBase*> tools = ToolRegistry::instance().all();
     for (int i = 0; i < static_cast<int>(tools.size()); ++i) {
@@ -1327,21 +1327,21 @@ void DesignWorkspace::onCanvasMenu(const QString& id, int kind, const QPoint& gl
         a->setData(qs(tools[static_cast<size_t>(i)]->toolName()));
     }
     menu.addSeparator();
-    QAction* up = menu.addAction(T("ÉÏÒÆ"));
-    QAction* down = menu.addAction(T("ÏÂÒÆ"));
+    QAction* up = menu.addAction(T("ä¸Šç§»"));
+    QAction* down = menu.addAction(T("ä¸‹ç§»"));
     menu.addSeparator();
-    QAction* rename = menu.addAction(T("ÖØÃüÃû"));
-    QAction* copy = menu.addAction(T("¸´ÖÆ"));
-    QAction* del = menu.addAction(T("É¾³ı"));
+    QAction* rename = menu.addAction(T("é‡å‘½å"));
+    QAction* copy = menu.addAction(T("å¤åˆ¶"));
+    QAction* del = menu.addAction(T("åˆ é™¤"));
     up->setEnabled(m_canUp);
     down->setEnabled(m_canDown);
     rename->setEnabled(m_canEditTool);
     copy->setEnabled(m_canEditTool);
     del->setEnabled(m_canEditTool);
     menu.addSeparator();
-    QAction* autoLay = menu.addAction(T("×Ô¶¯²¼¾Ö"));
+    QAction* autoLay = menu.addAction(T("è‡ªåŠ¨å¸ƒå±€"));
     autoLay->setEnabled(canEdit && job);
-    QAction* zoom = menu.addAction(T("¸´Î»Ëõ·Å"));
+    QAction* zoom = menu.addAction(T("å¤ä½ç¼©æ”¾"));
     QAction* chosen = menu.exec(globalPos);
     if (!chosen) {
         return;
@@ -1402,9 +1402,9 @@ void DesignWorkspace::onCanvasMenu(const QString& id, int kind, const QPoint& gl
     selectTool(qs(t.id));
 }
 
-// Ë«»÷Ëã·¨¿â
+// åŒå‡»ç®—æ³•åº“
 
-// Ë«»÷Ëã·¨¿â
+// åŒå‡»ç®—æ³•åº“
 void DesignWorkspace::onAlgLibDouble(QTreeWidgetItem* item, int)
 {
     if (!item || !m_session || !m_session->has(PermEditSolution)) {
@@ -1416,11 +1416,11 @@ void DesignWorkspace::onAlgLibDouble(QTreeWidgetItem* item, int)
     }
     JobCfg* job = m_sol ? m_sol->findJobConfig(oid(m_jobId)) : nullptr;
     if (!job) {
-        QMessageBox::information(this, T("ÌáÊ¾"), T("ÇëÏÈÑ¡ÔñÒ»ÌõÁ÷³Ì¡£"));
+        QMessageBox::information(this, T("æç¤º"), T("è¯·å…ˆé€‰æ‹©ä¸€æ¡æµç¨‹ã€‚"));
         return;
     }
     if (tn == QLatin1String("group.parallel") || tn == QLatin1String("group.if") || tn == QLatin1String("group.loop")) {
-        QMessageBox::information(this, T("ÌáÊ¾"), T("²¢ĞĞ×é¡¢Ìõ¼ş×éºÍÑ­»·×éÇëÔÚÁ÷³ÌÅäÖÃÀïÌí¼Ó¡£"));
+        QMessageBox::information(this, T("æç¤º"), T("å¹¶è¡Œç»„ã€æ¡ä»¶ç»„å’Œå¾ªç¯ç»„è¯·åœ¨æµç¨‹é…ç½®é‡Œæ·»åŠ ã€‚"));
         return;
     }
     ObjectId dev;
@@ -1444,28 +1444,28 @@ void DesignWorkspace::onCanvasLinksChanged()
     refreshResult();
 }
 
-// ÇĞ»»ÓïÑÔºóË¢ĞÂÎÄ°¸
+// åˆ‡æ¢è¯­è¨€ååˆ·æ–°æ–‡æ¡ˆ
 void DesignWorkspace::retranslateUi()
 {
     retranslateBound(this);
     if (m_solTitle) {
-        m_solTitle->setText(T("·½°¸"));
+        m_solTitle->setText(T("æ–¹æ¡ˆ"));
     }
     if (m_algoTitle) {
-        m_algoTitle->setText(T("¹¤¾ß¿â"));
+        m_algoTitle->setText(T("å·¥å…·åº“"));
     }
     if (m_canvasTitle) {
-        m_canvasTitle->setText(T("Á÷³Ì»­²¼"));
+        m_canvasTitle->setText(T("æµç¨‹ç”»å¸ƒ"));
     }
     if (m_toolLib) {
         fillRegisteredToolTree(m_toolLib, true);
     }
     QStringList hh;
-    hh << T("Ê±¼ä") << T("¼¶±ğ") << T("ÏûÏ¢");
+    hh << T("æ—¶é—´") << T("çº§åˆ«") << T("æ¶ˆæ¯");
     m_log->setHorizontalHeaderLabels(hh);
     reloadTree();
 }
-// Í¼Ïñ´°¿Ú
+// å›¾åƒçª—å£
 HsCtrl::HsImageWindow* DesignWorkspace::imageWindow() const
 {
     return m_view;
@@ -1473,7 +1473,7 @@ HsCtrl::HsImageWindow* DesignWorkspace::imageWindow() const
 
 
 
-// µ±Ç°¹¤¾ß id
+// å½“å‰å·¥å…· id
 QString DesignWorkspace::currentToolId() const
 {
     return m_toolId;
@@ -1481,7 +1481,7 @@ QString DesignWorkspace::currentToolId() const
 
 
 
-// µ±Ç°Á÷³Ì id
+// å½“å‰æµç¨‹ id
 QString DesignWorkspace::currentJobId() const
 {
     return m_jobId;

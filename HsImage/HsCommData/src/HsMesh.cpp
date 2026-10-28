@@ -1,6 +1,6 @@
 /**
  * @file HsMesh.cpp
- * @brief HsMeshÊµÏÖ
+ * @brief HsMeshå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -12,12 +12,12 @@
 
 namespace HsCommData {
 
-// ¿ÕÍø¸ñ
+// ç©ºç½‘æ ¼
 Mesh3::Mesh3()
 {
 }
 
-// Í¬ÀàĞÍ¿½±´£¬¶¥µãºÍÈı½ÇÕû·İ¸´ÖÆ
+// åŒç±»å‹æ‹·è´ï¼Œé¡¶ç‚¹å’Œä¸‰è§’æ•´ä»½å¤åˆ¶
 Mesh3::Mesh3(const Mesh3& other)
     : vertices(other.vertices)
     , triangles(other.triangles)
@@ -25,7 +25,7 @@ Mesh3::Mesh3(const Mesh3& other)
 {
 }
 
-// Í¬ÀàĞÍ¸³Öµ£¬¶¥µãºÍÈı½ÇÕû·İ¸´ÖÆ
+// åŒç±»å‹èµ‹å€¼ï¼Œé¡¶ç‚¹å’Œä¸‰è§’æ•´ä»½å¤åˆ¶
 Mesh3& Mesh3::operator=(const Mesh3& other)
 {
     if (this != &other) {
@@ -36,19 +36,19 @@ Mesh3& Mesh3::operator=(const Mesh3& other)
     return *this;
 }
 
-// Ã»ÓĞ¶¥µã»òÃ»ÓĞÈı½ÇĞÎÔòÎª¿Õ
+// æ²¡æœ‰é¡¶ç‚¹æˆ–æ²¡æœ‰ä¸‰è§’å½¢åˆ™ä¸ºç©º
 bool Mesh3::isEmpty() const
 {
     return vertices.empty() || triangles.empty();
 }
 
-// Èı½ÇĞÎ¸öÊı
+// ä¸‰è§’å½¢ä¸ªæ•°
 int Mesh3::triangleCount() const
 {
     return static_cast<int>(triangles.size() / 3);
 }
 
-// ÏÂ±êºÍ·¨ÏòÊÇ·ñ×ÔÇ¢
+// ä¸‹æ ‡å’Œæ³•å‘æ˜¯å¦è‡ªæ´½
 bool Mesh3::attribsOk() const
 {
     if (triangles.size() % 3 != 0) {
@@ -70,7 +70,7 @@ bool Mesh3::attribsOk() const
     return true;
 }
 
-// ¶¥µãµÄÖá¶ÔÆë°üÎ§ºĞ
+// é¡¶ç‚¹çš„è½´å¯¹é½åŒ…å›´ç›’
 Aabb3 Mesh3::bounds() const
 {
     if (vertices.empty()) {

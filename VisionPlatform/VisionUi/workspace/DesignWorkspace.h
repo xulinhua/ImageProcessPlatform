@@ -1,6 +1,6 @@
 /**
  * @file DesignWorkspace.h
- * @brief DesignWorkspaceÍ·ÎÄ¼ş
+ * @brief DesignWorkspaceå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -35,173 +35,173 @@ struct JobCfg;
 
 /**
  * @class DesignWorkspace
- * @brief Éè¼Æ¹¤×÷Çø£º·½°¸Ê÷+Ëã·¨¿â | Á÷³Ì»­²¼ | Í¼ÏñÓëµ÷ÊÔ
+ * @brief è®¾è®¡å·¥ä½œåŒºï¼šæ–¹æ¡ˆæ ‘+ç®—æ³•åº“ | æµç¨‹ç”»å¸ƒ | å›¾åƒä¸è°ƒè¯•
  */
 class VISION_UI_API DesignWorkspace : public QWidget {
     Q_OBJECT
 public:
-    /** @brief session / solution / station ¾ù²»ÓµÓĞ */
+    /** @brief session / solution / station å‡ä¸æ‹¥æœ‰ */
     DesignWorkspace(Session* session, Solution* solution, Station* station, QWidget* parent = 0);
 
-    /** @brief °ó¶¨¹¤Õ¾ÔËĞĞÊµÀı£¨²»ÓµÓĞ£»·½°¸ÇĞ»»ºóÓÉÖ÷´°ÖØ½¨£© */
+    /** @brief ç»‘å®šå·¥ç«™è¿è¡Œå®ä¾‹ï¼ˆä¸æ‹¥æœ‰ï¼›æ–¹æ¡ˆåˆ‡æ¢åç”±ä¸»çª—é‡å»ºï¼‰ */
     void setStation(Station* station);
 
-    /** @brief ÖØË¢·½°¸Ê÷£¨¹¤Õ¾/Á÷³Ì£¬²»º¬¹¤¾ß£© */
+    /** @brief é‡åˆ·æ–¹æ¡ˆæ ‘ï¼ˆå·¥ç«™/æµç¨‹ï¼Œä¸å«å·¥å…·ï¼‰ */
     void reloadTree();
-    /** @brief °´µ±Ç°ÒÑµÇ¼Ç¹¤¾ßÖØÌî¹¤¾ß¿â */
+    /** @brief æŒ‰å½“å‰å·²ç™»è®°å·¥å…·é‡å¡«å·¥å…·åº“ */
     void reloadToolLib();
-    /** @brief ×·¼ÓÒ»ĞĞÈÕÖ¾£¨ÕûĞĞ½øÏûÏ¢ÁĞ£© */
+    /** @brief è¿½åŠ ä¸€è¡Œæ—¥å¿—ï¼ˆæ•´è¡Œè¿›æ¶ˆæ¯åˆ—ï¼‰ */
     void appendLog(const QString& line);
     /**
-     * @brief ×·¼ÓÔËĞĞÈÕÖ¾£¨¼¶±ğÓëÏûÏ¢·ÖÁĞ£»ÏûÏ¢²»º¬ UUID£©
-     * @param level ¼¶±ğÎÄ°¸£¬Èç OK / NG / INF
-     * @param message ÕıÎÄ
+     * @brief è¿½åŠ è¿è¡Œæ—¥å¿—ï¼ˆçº§åˆ«ä¸æ¶ˆæ¯åˆ†åˆ—ï¼›æ¶ˆæ¯ä¸å« UUIDï¼‰
+     * @param level çº§åˆ«æ–‡æ¡ˆï¼Œå¦‚ OK / NG / INF
+     * @param message æ­£æ–‡
      */
     void appendLog(const QString& level, const QString& message);
     /**
-     * @brief ÏÔÊ¾Ä³¹¤¾ßµÄÍ¼Óëµş¼Ó£¬²¢Ë¢ĞÂÓÒ²à½á¹ûÇø
-     * @param runMeta ·Ç¿ÕÇÒÓëÕ¹Ê¾¹¤¾ß id Ò»ÖÂÊ±Ğ´Èë±¾´ÎÔËĞĞÕªÒª
-     * @param afterJobRun true ±íÊ¾¸ÕÅÜÍêÕûÁ÷³Ì
+     * @brief æ˜¾ç¤ºæŸå·¥å…·çš„å›¾ä¸å åŠ ï¼Œå¹¶åˆ·æ–°å³ä¾§ç»“æœåŒº
+     * @param runMeta éç©ºä¸”ä¸å±•ç¤ºå·¥å…· id ä¸€è‡´æ—¶å†™å…¥æœ¬æ¬¡è¿è¡Œæ‘˜è¦
+     * @param afterJobRun true è¡¨ç¤ºåˆšè·‘å®Œæ•´æµç¨‹
      */
     void showToolResult(const QString& toolId, const HsCommData::HsImage& fb,
                         const QVector<HsCommData::Graphic>& overlay,
                         const ToolOut* runMeta = 0, bool afterJobRun = false);
     /**
-     * @brief °´»º´æË¢ĞÂµ±Ç°¹¤¾ß»­Ãæ
-     * @param preferInput true Ê±ÓÅÏÈÏÔÊ¾ÊäÈëÍ¼£¨·½±ã»­ ROI£©
+     * @brief æŒ‰ç¼“å­˜åˆ·æ–°å½“å‰å·¥å…·ç”»é¢
+     * @param preferInput true æ—¶ä¼˜å…ˆæ˜¾ç¤ºè¾“å…¥å›¾ï¼ˆæ–¹ä¾¿ç”» ROIï¼‰
      */
     void syncToolView(bool preferInput);
-    /** @brief Éè¼ÆÍ¼Ïñ´° */
+    /** @brief è®¾è®¡å›¾åƒçª— */
     HsCtrl::HsImageWindow* imageWindow() const;
-    /** @brief µ±Ç°¹¤¾ß id */
+    /** @brief å½“å‰å·¥å…· id */
     QString currentToolId() const;
-    /** @brief µ±Ç° JobCfg id */
+    /** @brief å½“å‰ JobCfg id */
     QString currentJobId() const;
-    /** @brief µ±Ç°¹ØÁª¹¤Õ¾ id£¨Ê÷Ñ¡ÖĞ»òµ±Ç°Á÷³ÌËùÊô£© */
+    /** @brief å½“å‰å…³è”å·¥ç«™ idï¼ˆæ ‘é€‰ä¸­æˆ–å½“å‰æµç¨‹æ‰€å±ï¼‰ */
     QString currentStationId() const;
-    /** @brief Ö÷Ò³²» flush µ÷ÊÔ´°µ½ formal£»±£Áô½Ó¿Ú¹© MainWindow µ÷ÓÃ */
+    /** @brief ä¸»é¡µä¸ flush è°ƒè¯•çª—åˆ° formalï¼›ä¿ç•™æ¥å£ä¾› MainWindow è°ƒç”¨ */
     void applyParamsFromUi();
-    /** @brief °´È¨ÏŞÆôÓÃµ÷ÊÔÔËĞĞ°´Å¥ */
+    /** @brief æŒ‰æƒé™å¯ç”¨è°ƒè¯•è¿è¡ŒæŒ‰é’® */
     void setDebugPerms(bool canDebug);
-    /** @brief ÓïÑÔÈÈÇĞ»»ºóË¢ĞÂ¾²Ì¬ÎÄ°¸ */
+    /** @brief è¯­è¨€çƒ­åˆ‡æ¢ååˆ·æ–°é™æ€æ–‡æ¡ˆ */
     void retranslateUi();
-    /** @brief ÅÜÍêÕûÁ÷³Ìºó£¬°´µ±Ç°Ñ¡ÖĞ¹¤¾ßË¢ĞÂÍ¼ÏñÓë½á¹ûÇø */
+    /** @brief è·‘å®Œæ•´æµç¨‹åï¼ŒæŒ‰å½“å‰é€‰ä¸­å·¥å…·åˆ·æ–°å›¾åƒä¸ç»“æœåŒº */
     void syncAfterJobRun(const ToolOut& jobOut);
     /**
-     * @brief ¸´¼ìÌø×ª£ºÑ¡ÖĞÁ÷³Ì/¹¤¾ß²¢´ò¿ªÏêÏ¸µ÷ÊÔ£¨¿ÉÇ¿ÖÆ¸´¼ìÍ¼Â·¾¶£©
-     * @param jobId Á÷³Ì id
-     * @param toolId ¹¤¾ß id£¨¿É¿Õ=Á÷³ÌÊ×¸ö¹¤¾ß£©
-     * @param imagePath ¸´¼ìÍ¼È«Â·¾¶£¨¿É¿Õ£©
+     * @brief å¤æ£€è·³è½¬ï¼šé€‰ä¸­æµç¨‹/å·¥å…·å¹¶æ‰“å¼€è¯¦ç»†è°ƒè¯•ï¼ˆå¯å¼ºåˆ¶å¤æ£€å›¾è·¯å¾„ï¼‰
+     * @param jobId æµç¨‹ id
+     * @param toolId å·¥å…· idï¼ˆå¯ç©º=æµç¨‹é¦–ä¸ªå·¥å…·ï¼‰
+     * @param imagePath å¤æ£€å›¾å…¨è·¯å¾„ï¼ˆå¯ç©ºï¼‰
      */
     void focusRecheckDebug(const QString& jobId, const QString& toolId, const QString& imagePath);
 
 signals:
-    /** @brief Ë«»÷·½°¸¸ù£ºÇëÇó´ò¿ª¹¤Õ¾¹ÜÀí */
+    /** @brief åŒå‡»æ–¹æ¡ˆæ ¹ï¼šè¯·æ±‚æ‰“å¼€å·¥ç«™ç®¡ç† */
     void stationsRequested();
-    /** @brief Ñ¡ÖĞ¹¤Õ¾ */
+    /** @brief é€‰ä¸­å·¥ç«™ */
     void stationActivated(const QString& stationId);
-    /** @brief Ñ¡ÖĞ JobCfg */
+    /** @brief é€‰ä¸­ JobCfg */
     void jobActivated(const QString& jobId);
-    /** @brief Ñ¡ÖĞ¹¤¾ß */
+    /** @brief é€‰ä¸­å·¥å…· */
     void toolActivated(const QString& toolId);
-    /** @brief ÏÔÊ¾Ãû±ä»¯£¬ĞèË¢±êÌâ */
+    /** @brief æ˜¾ç¤ºåå˜åŒ–ï¼Œéœ€åˆ·æ ‡é¢˜ */
     void namesChanged();
-    /** @brief ÇëÇóÅÜµ±Ç°¹¤¾ß */
+    /** @brief è¯·æ±‚è·‘å½“å‰å·¥å…· */
     void runThisTool();
-    /** @brief ÇëÇóÅÜµ±Ç° JobCfg */
+    /** @brief è¯·æ±‚è·‘å½“å‰ JobCfg */
     void runThisJob();
 
 public slots:
-    /** @brief HUD ¹â±êĞÅÏ¢ */
+    /** @brief HUD å…‰æ ‡ä¿¡æ¯ */
     void onCursor(const QPointF& pt, double gray, bool valid);
 
 private slots:
-    /** @brief Ê÷Ë«»÷£º·½°¸¡ú¹¤Õ¾¹ÜÀí£¬¹¤Õ¾/Á÷³Ì¡úÅäÖÃ£¬¹¤¾ß¡úµ÷ÊÔ */
+    /** @brief æ ‘åŒå‡»ï¼šæ–¹æ¡ˆâ†’å·¥ç«™ç®¡ç†ï¼Œå·¥ç«™/æµç¨‹â†’é…ç½®ï¼Œå·¥å…·â†’è°ƒè¯• */
     void onTreeDouble(QTreeWidgetItem* item, int col);
-    /** @brief Ê÷µ¥»÷Ñ¡ÖĞ */
+    /** @brief æ ‘å•å‡»é€‰ä¸­ */
     void onTreeClicked(QTreeWidgetItem* item, int col);
-    /** @brief ÓÃ»§»­Íê ROI */
+    /** @brief ç”¨æˆ·ç”»å®Œ ROI */
     void onRoi(const HsCommData::Graphic& g);
-    /** @brief ´ò¿ªÏêÏ¸µ÷ÊÔ´° */
+    /** @brief æ‰“å¼€è¯¦ç»†è°ƒè¯•çª— */
     void onOpenDebug();
-    /** @brief ¹¤¾ßÉÏÒÆ */
+    /** @brief å·¥å…·ä¸Šç§» */
     void onMoveUp();
-    /** @brief ¹¤¾ßÏÂÒÆ */
+    /** @brief å·¥å…·ä¸‹ç§» */
     void onMoveDown();
-    /** @brief ÖØÃüÃû */
+    /** @brief é‡å‘½å */
     void onRename();
-    /** @brief ¸´ÖÆ¹¤¾ß */
+    /** @brief å¤åˆ¶å·¥å…· */
     void onCopyTool();
-    /** @brief É¾³ı¹¤¾ß */
+    /** @brief åˆ é™¤å·¥å…· */
     void onDeleteTool();
-    /** @brief Ê÷ÓÒ¼ü²Ëµ¥ */
+    /** @brief æ ‘å³é”®èœå• */
     void onTreeMenu(const QPoint& pos);
-    /** @brief Ëã·¨¿âË«»÷£ºÏòµ±Ç°Á÷³ÌÌí¼Ó¹¤¾ß */
+    /** @brief ç®—æ³•åº“åŒå‡»ï¼šå‘å½“å‰æµç¨‹æ·»åŠ å·¥å…· */
     void onAlgLibDouble(QTreeWidgetItem* item, int col);
-    /** @brief »­²¼µãÁË¹¤¾ß */
+    /** @brief ç”»å¸ƒç‚¹äº†å·¥å…· */
     void onCanvasTool(const QString& toolId);
-    /** @brief »­²¼Ë«»÷¹¤¾ß£¬´ò¿ª¸Ã¹¤¾ß½çÃæ */
+    /** @brief ç”»å¸ƒåŒå‡»å·¥å…·ï¼Œæ‰“å¼€è¯¥å·¥å…·ç•Œé¢ */
     void onCanvasToolDouble(const QString& toolId);
-    /** @brief »­²¼µãÁË×é */
+    /** @brief ç”»å¸ƒç‚¹äº†ç»„ */
     void onCanvasGroup(const QString& groupId);
-    /** @brief »­²¼ÓÒ¼ü */
+    /** @brief ç”»å¸ƒå³é”® */
     void onCanvasMenu(const QString& id, int kind, const QPoint& globalPos);
-    /** @brief »­²¼Á¬Ïß±ä»¯ */
+    /** @brief ç”»å¸ƒè¿çº¿å˜åŒ– */
     void onCanvasLinksChanged();
-    /** @brief ÏêÏ¸µ÷ÊÔ´°¸ÄÁË ROI */
+    /** @brief è¯¦ç»†è°ƒè¯•çª—æ”¹äº† ROI */
     void onDebugRoiChanged();
-    /** @brief ÏêÏ¸µ÷ÊÔ´° draft ÒÑÌá½»µ½ formal */
+    /** @brief è¯¦ç»†è°ƒè¯•çª— draft å·²æäº¤åˆ° formal */
     void onDebugDraftSaved();
-    /** @brief ÏêÏ¸µ÷ÊÔ´°ÊÔÅÜÍê³É£¬Í¬²½Ö÷½çÃæ½á¹ûÓëÊ÷×ÅÉ« */
+    /** @brief è¯¦ç»†è°ƒè¯•çª—è¯•è·‘å®Œæˆï¼ŒåŒæ­¥ä¸»ç•Œé¢ç»“æœä¸æ ‘ç€è‰² */
     void onDebugTestRun(const ToolOut& out);
-    /** @brief Ë¢ĞÂÉÏÒÆ/ÏÂÒÆ/É¾³ı°´Å¥ */
+    /** @brief åˆ·æ–°ä¸Šç§»/ä¸‹ç§»/åˆ é™¤æŒ‰é’® */
     void updateToolButtons();
 
 private:
-    /** @brief Ñ¡ÖĞ¹¤¾ß²¢Ë¢ĞÂ½á¹ûÇø */
+    /** @brief é€‰ä¸­å·¥å…·å¹¶åˆ·æ–°ç»“æœåŒº */
     void selectTool(const QString& toolId);
-    /** @brief Éè¼ÆÌ¬£ºÕ¹Ê¾Õû JobCfg ÔËĞĞ½á¹û£¨»ã×Ü¸÷¹¤¾ßÊä³ö£© */
+    /** @brief è®¾è®¡æ€ï¼šå±•ç¤ºæ•´ JobCfg è¿è¡Œç»“æœï¼ˆæ±‡æ€»å„å·¥å…·è¾“å‡ºï¼‰ */
     void showJobResult(const JobCfg* job, const ToolOut& jobOut);
-    /** @brief Ñ¡ÖĞÁ÷³Ì½ÚµãÊ±Ë¢ĞÂ½á¹ûÇø£¨ÎŞµ¥¹¤¾ßÉÏÏÂÎÄ£© */
+    /** @brief é€‰ä¸­æµç¨‹èŠ‚ç‚¹æ—¶åˆ·æ–°ç»“æœåŒºï¼ˆæ— å•å·¥å…·ä¸Šä¸‹æ–‡ï¼‰ */
     void refreshJobResultPreview();
-    /** @brief Ë¢ĞÂ JobCfg »­²¼ */
+    /** @brief åˆ·æ–° JobCfg ç”»å¸ƒ */
     void refreshCanvas();
-    /** @brief Ë¢ĞÂÓÒ²àµ÷ÊÔ½á¹ûÇø */
+    /** @brief åˆ·æ–°å³ä¾§è°ƒè¯•ç»“æœåŒº */
     void refreshResult(const ToolOut* runMeta = 0, bool afterJobRun = false);
-    /** @brief °Ñµ±Ç°¹¤¾ß ROI Ë¢µ½Ö÷Í¼ */
+    /** @brief æŠŠå½“å‰å·¥å…· ROI åˆ·åˆ°ä¸»å›¾ */
     void applyDrawingsToView();
-    /** @brief °´Á÷³Ì»º´æË¢ĞÂ×ÊÔ´Ê÷¹¤¾ßĞĞ OK/NG ±³¾° */
+    /** @brief æŒ‰æµç¨‹ç¼“å­˜åˆ·æ–°èµ„æºæ ‘å·¥å…·è¡Œ OK/NG èƒŒæ™¯ */
     void refreshTreeRunStatus(const JobCfg* scopeJob);
-    /** @brief °´»æÖÆ¹¤¾ßÓë ROI Í¬²½ Drawing ²ã */
+    /** @brief æŒ‰ç»˜åˆ¶å·¥å…·ä¸ ROI åŒæ­¥ Drawing å±‚ */
     void syncDrawingInteractionView();
-    /** @brief µ±Ç°¹¤¾ß ROI ±ä¸üºóµÄ¹«¹²ÊÕÎ² */
+    /** @brief å½“å‰å·¥å…· ROI å˜æ›´åçš„å…¬å…±æ”¶å°¾ */
     void afterRoiEdited();
 
-    Session* m_session;                 ///< »á»°
-    Solution* m_sol;                    ///< ·½°¸
-    Station* m_station;                 ///< ¹¤Õ¾ÔËĞĞÊµÀı£¬²»ÓµÓĞ
-    QTreeWidget* m_tree;                ///< ·½°¸Ê÷£¨¹¤Õ¾/Á÷³Ì£©
-    QTreeWidget* m_toolLib;             ///< Ëã·¨¿â£¨¿É×¢²á¹¤¾ß£©
-    QLabel* m_solTitle;                 ///< ·½°¸Ê÷±êÌâ
-    QLabel* m_algoTitle;                ///< Ëã·¨¿â±êÌâ
-    QLabel* m_canvasTitle;              ///< »­²¼±êÌâ
-    JobFlowCanvasPanel* m_flowCanvas;   ///< µ±Ç° JobCfg »­²¼£¨º¬Á¬ÏßĞ´»Ø£©
-    HsCtrl::HsImageWindow* m_view;     ///< Í¼Ïñ´°
-    QLabel* m_status;                   ///< ×´Ì¬/×ø±ê
-    QTableWidget* m_log;                ///< ÈÕÖ¾±í
-    ToolRstPanel* m_result;          ///< µ÷ÊÔÓë½á¹ûÏÔÊ¾
-    ToolDebugHost* m_debug;             ///< ÏêÏ¸µ÷ÊÔ´°£¨º¬²ÎÊıÓë ROI£©
-    QPushButton* m_btnDebug;            ///< ÏêÏ¸µ÷ÊÔ
-    QPushButton* m_btnRunTool;          ///< ÔËĞĞ±¾¹¤¾ß
-    QPushButton* m_btnRunJob;           ///< ÔËĞĞ±¾Á÷³Ì
-    ToolOut m_lastRun;                  ///< ×î½üÒ»´ÎÔËĞĞÕªÒª
-    bool m_hasLastRun;                  ///< ÊÇ·ñÒÑÓĞ m_lastRun
-    QString m_lastRunJobId;             ///< ×î½üÒ»´ÎÅÜÁ÷³ÌµÄ JobCfg id£¨Ê÷×ÅÉ«·¶Î§£©
-    QString m_toolId;                   ///< µ±Ç°¹¤¾ß
-    QString m_jobId;                    ///< µ±Ç° JobCfg
-    bool m_canUp;                       ///< ¿ÉÉÏÒÆ
-    bool m_canDown;                     ///< ¿ÉÏÂÒÆ
-    bool m_canEditTool;                 ///< ¿É¸Ä¹¤¾ß
+    Session* m_session;                 ///< ä¼šè¯
+    Solution* m_sol;                    ///< æ–¹æ¡ˆ
+    Station* m_station;                 ///< å·¥ç«™è¿è¡Œå®ä¾‹ï¼Œä¸æ‹¥æœ‰
+    QTreeWidget* m_tree;                ///< æ–¹æ¡ˆæ ‘ï¼ˆå·¥ç«™/æµç¨‹ï¼‰
+    QTreeWidget* m_toolLib;             ///< ç®—æ³•åº“ï¼ˆå¯æ³¨å†Œå·¥å…·ï¼‰
+    QLabel* m_solTitle;                 ///< æ–¹æ¡ˆæ ‘æ ‡é¢˜
+    QLabel* m_algoTitle;                ///< ç®—æ³•åº“æ ‡é¢˜
+    QLabel* m_canvasTitle;              ///< ç”»å¸ƒæ ‡é¢˜
+    JobFlowCanvasPanel* m_flowCanvas;   ///< å½“å‰ JobCfg ç”»å¸ƒï¼ˆå«è¿çº¿å†™å›ï¼‰
+    HsCtrl::HsImageWindow* m_view;     ///< å›¾åƒçª—
+    QLabel* m_status;                   ///< çŠ¶æ€/åæ ‡
+    QTableWidget* m_log;                ///< æ—¥å¿—è¡¨
+    ToolRstPanel* m_result;          ///< è°ƒè¯•ä¸ç»“æœæ˜¾ç¤º
+    ToolDebugHost* m_debug;             ///< è¯¦ç»†è°ƒè¯•çª—ï¼ˆå«å‚æ•°ä¸ ROIï¼‰
+    QPushButton* m_btnDebug;            ///< è¯¦ç»†è°ƒè¯•
+    QPushButton* m_btnRunTool;          ///< è¿è¡Œæœ¬å·¥å…·
+    QPushButton* m_btnRunJob;           ///< è¿è¡Œæœ¬æµç¨‹
+    ToolOut m_lastRun;                  ///< æœ€è¿‘ä¸€æ¬¡è¿è¡Œæ‘˜è¦
+    bool m_hasLastRun;                  ///< æ˜¯å¦å·²æœ‰ m_lastRun
+    QString m_lastRunJobId;             ///< æœ€è¿‘ä¸€æ¬¡è·‘æµç¨‹çš„ JobCfg idï¼ˆæ ‘ç€è‰²èŒƒå›´ï¼‰
+    QString m_toolId;                   ///< å½“å‰å·¥å…·
+    QString m_jobId;                    ///< å½“å‰ JobCfg
+    bool m_canUp;                       ///< å¯ä¸Šç§»
+    bool m_canDown;                     ///< å¯ä¸‹ç§»
+    bool m_canEditTool;                 ///< å¯æ”¹å·¥å…·
 };
 
 }

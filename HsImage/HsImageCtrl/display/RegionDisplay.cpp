@@ -1,6 +1,6 @@
 /**
  * @file RegionDisplay.cpp
- * @brief RegionDisplayй╣ож
+ * @brief RegionDisplayЕ╝·Г▌╟
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -14,7 +14,7 @@
 
 namespace HsCtrl {
 
-// ц©лУорр╩╦Ж 1px ╦ъ╬ьпнё╛ф╢ЁилНЁД path
+// Ф╞▐Ф²║Е╪╕Д╦─Д╦╙ 1px И╚≤Г÷╘Е╫╒О╪▄Ф▀╪Ф┬░Е║╚Е┘┘ path
 QPainterPath rleToPath(const HsCommData::HsRegion& rle)
 {
     QPainterPath path;
@@ -30,13 +30,13 @@ QPainterPath rleToPath(const HsCommData::HsRegion& rle)
     return path;
 }
 
-// ©уотй╬╩╨╢Ф
+// Г╘╨Ф≤╬Г╓╨Г╪⌠Е╜≤
 RegionDisplay::RegionDisplay()
     : maskScale(0)
 {
 }
 
-// си rle иЗЁилНЁД path
+// Г■╠ rle Г■÷Ф┬░Е║╚Е┘┘ path
 void RegionDisplay::rebuildPath()
 {
     path = rleToPath(rle);
@@ -47,13 +47,13 @@ void RegionDisplay::rebuildOutline()
     outline = rleToPath(rle.boundary());
 }
 
-// ппЁл╤Ю╡е╦д╩╜ mask║ёцФ╩Щ╢С╣╚ппЁлиыё╗уШ╥Ы╬ьпнр╩ппр╩лУё╘хтвъ path
+// Х║▄Г╗▀Е╓ Ф┴█Ф■╧Г■╩ maskЦ─┌И²╒Г╖╞Е╓╖Д╫├Х║▄Г╗▀Е╟▒О╪┬Ф∙╢Е╧┘Г÷╘Е╫╒Д╦─Х║▄Д╦─Ф²║О╪┴Д╩█Х╣╟ path
 bool RegionDisplay::preferMask(const HsCommData::HsRegion& rle)
 {
     return rle.runCount() >= 4096;
 }
 
-// сийс©зкУ╥е╣ц╣╫ lodё╛╪п╣╫ [1/16, 1]
+// Г■╠Х╖├Е▐ёГ╪╘Ф■╬Е╬≈Е┬╟ lodО╪▄Е╓╧Е┬╟ [1/16, 1]
 qreal RegionDisplay::clampLodScale(qreal viewScale)
 {
     if (viewScale < 1e-6) {
@@ -62,7 +62,7 @@ qreal RegionDisplay::clampLodScale(qreal viewScale)
     return qBound(1.0 / 16.0, viewScale * 1.25, 1.0);
 }
 
-// ╟╢ lodScale иЗЁит╓Ёк ARGB mask
+// Ф▄┴ lodScale Г■÷Ф┬░И╒└Д╧≤ ARGB mask
 void RegionDisplay::rebuildMask(const QColor& fill, qreal lodScale)
 {
     path = QPainterPath();
@@ -90,7 +90,7 @@ void RegionDisplay::rebuildMask(const QColor& fill, qreal lodScale)
 
     const int x0b = left(b);
     const int y0b = top(b);
-    // м╛р╩ппох╡╒Ёи╡╩жь╣Ч╣дгЬ╪Дё╛тым©р╩╢н
+    // Е░▄Д╦─Х║▄Е┘┬Е╧╤Ф┬░Д╦█И┤█Е▐═Г └Е▄╨И≈╢О╪▄Е├█Ф╤┌Д╦─Ф╛║
     struct Span { int cb; int ce; };
     std::vector<std::vector<Span>> rows(static_cast<size_t>(bh));
     for (size_t i = 0; i < rle.runCount(); ++i) {
@@ -183,7 +183,7 @@ void RegionDisplay::rebuildMask(const QColor& fill, qreal lodScale)
     maskScale = lodScale;
 }
 
-// нчппЁлгрнч╩╨╢Ф
+// Ф≈═Х║▄Г╗▀Д╦■Ф≈═Г╪⌠Е╜≤
 bool RegionDisplay::isEmpty() const
 {
     return rle.isEmpty() && path.isEmpty() && maskLod.isNull();

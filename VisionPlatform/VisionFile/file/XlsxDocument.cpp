@@ -1,6 +1,6 @@
 /**
  * @file XlsxDocument.cpp
- * @brief XlsxDocumentÊµÏÖ
+ * @brief XlsxDocumentå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -18,7 +18,7 @@ namespace Vision {
 
 namespace {
 
-// ZIP ±¾µØÍ·ÓÃµÄ CRC32
+// ZIP æœ¬åœ°å¤´ç”¨çš„ CRC32
 uint32_t crc32Of(const void* data, size_t n)
 {
     static uint32_t table[256];
@@ -41,14 +41,14 @@ uint32_t crc32Of(const void* data, size_t n)
     return crc ^ 0xFFFFFFFFu;
 }
 
-// °´Ğ¡¶ËĞ´Èë 16 Î»
+// æŒ‰å°ç«¯å†™å…¥ 16 ä½
 void put16(std::string* o, uint16_t v)
 {
     o->push_back(static_cast<char>(v & 0xFF));
     o->push_back(static_cast<char>((v >> 8) & 0xFF));
 }
 
-// °´Ğ¡¶ËĞ´Èë 32 Î»
+// æŒ‰å°ç«¯å†™å…¥ 32 ä½
 void put32(std::string* o, uint32_t v)
 {
     o->push_back(static_cast<char>(v & 0xFF));
@@ -58,13 +58,13 @@ void put32(std::string* o, uint32_t v)
 }
 
 struct ZipEntry {
-    std::string name; ///< °üÄÚÂ·¾¶
-    std::string data; ///< ÎÄ¼şÄÚÈİ
+    std::string name; ///< åŒ…å†…è·¯å¾„
+    std::string data; ///< æ–‡ä»¶å†…å®¹
     uint32_t crc;     ///< CRC32
-    uint32_t offset;  ///< ±¾µØÍ·Æ«ÒÆ
+    uint32_t offset;  ///< æœ¬åœ°å¤´åç§»
 };
 
-// ×ªÒå¹¤×÷±í XML
+// è½¬ä¹‰å·¥ä½œè¡¨ XML
 std::string xmlEscape(const std::string& s)
 {
     std::string o;
@@ -85,7 +85,7 @@ std::string xmlEscape(const std::string& s)
     return o;
 }
 
-// ÎŞÑ¹Ëõ´ò³É ZIP
+// æ— å‹ç¼©æ‰“æˆ ZIP
 std::string buildZip(const std::vector<ZipEntry>& in)
 {
     std::vector<ZipEntry> files = in;
@@ -142,7 +142,7 @@ std::string buildZip(const std::vector<ZipEntry>& in)
     return out;
 }
 
-// ÁĞºÅ×ª³É Excel ÁĞÃû
+// åˆ—å·è½¬æˆ Excel åˆ—å
 std::string colName(int c)
 {
     std::string s;
@@ -157,19 +157,19 @@ std::string colName(int c)
 
 } // namespace
 
-// ¼ÇÏÂµ¼³öÁĞÃû
+// è®°ä¸‹å¯¼å‡ºåˆ—å
 void XlsxDocument::setHeaders(const std::vector<std::string>& headers)
 {
     m_headers = headers;
 }
 
-// »º´æÒ»ĞĞµ¥Ôª¸ñ
+// ç¼“å­˜ä¸€è¡Œå•å…ƒæ ¼
 void XlsxDocument::addRow(const std::vector<std::string>& cells)
 {
     m_rows.push_back(cells);
 }
 
-// ´ò³É xlsx ²¢Ô­×ÓĞ´³ö
+// æ‰“æˆ xlsx å¹¶åŸå­å†™å‡º
 bool XlsxDocument::save(const std::string& path, std::string* error)
 {
     std::string sheet;

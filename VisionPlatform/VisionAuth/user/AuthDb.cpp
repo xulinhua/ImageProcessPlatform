@@ -1,6 +1,6 @@
 /**
  * @file AuthDb.cpp
- * @brief AuthDbÊµÏÖ
+ * @brief AuthDbå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -16,20 +16,20 @@ namespace Vision {
 
 namespace {
 
-// ±¾Ä£¿é¹²ÓÃµÄ SQLite Á¬½Ó
+// æœ¬æ¨¡å—å…±ç”¨çš„ SQLite è¿æ¥
 SqliteDatabase& db()
 {
     static SqliteDatabase g;
     return g;
 }
 
-// ×Ö½ÚÊı×é°ü³É°ó¶¨ÓÃµÄ¶ş½øÖÆµ¥Ôª¸ñ
+// å­—èŠ‚æ•°ç»„åŒ…æˆç»‘å®šç”¨çš„äºŒè¿›åˆ¶å•å…ƒæ ¼
 DbValue blobVal(const std::vector<unsigned char>& b)
 {
     return DbValue::fromBlob(b);
 }
 
-// ´Óµ¥Ôª¸ñÈ¡³ö¶ş½øÖÆ
+// ä»å•å…ƒæ ¼å–å‡ºäºŒè¿›åˆ¶
 std::vector<unsigned char> asBlob(const DbValue& v)
 {
     if (v.kind == DbValue::Blob) {
@@ -41,7 +41,7 @@ std::vector<unsigned char> asBlob(const DbValue& v)
     return std::vector<unsigned char>();
 }
 
-// ´Óµ¥Ôª¸ñÈ¡³öÎÄ±¾
+// ä»å•å…ƒæ ¼å–å‡ºæ–‡æœ¬
 std::string asText(const DbValue& v)
 {
     if (v.kind == DbValue::Text) {
@@ -55,7 +55,7 @@ std::string asText(const DbValue& v)
     return std::string();
 }
 
-// ´Óµ¥Ôª¸ñÈ¡³öÕûÊı
+// ä»å•å…ƒæ ¼å–å‡ºæ•´æ•°
 int64_t asInt(const DbValue& v)
 {
     if (v.kind == DbValue::Int) {
@@ -69,14 +69,14 @@ int64_t asInt(const DbValue& v)
 
 } // namespace
 
-// ½ø³ÌÄÚÎ¨Ò»ÓÃ»§¿â
+// è¿›ç¨‹å†…å”¯ä¸€ç”¨æˆ·åº“
 AuthDb& AuthDb::instance()
 {
     static AuthDb g;
     return g;
 }
 
-// ´´½¨ÓÃ»§±íºÍ½ÇÉ«È¨ÏŞ±í
+// åˆ›å»ºç”¨æˆ·è¡¨å’Œè§’è‰²æƒé™è¡¨
 bool AuthDb::migrateSchema(std::string* error)
 {
     SchemaMigrator mig(&db());
@@ -123,7 +123,7 @@ bool AuthDb::migrateSchema(std::string* error)
     return true;
 }
 
-// ´ò¿ªÓÃ»§¿â²¢Éı¼¶±í½á¹¹
+// æ‰“å¼€ç”¨æˆ·åº“å¹¶å‡çº§è¡¨ç»“æ„
 bool AuthDb::open(std::string* error)
 {
     AppPaths::ensureDirs();
@@ -135,13 +135,13 @@ bool AuthDb::open(std::string* error)
     return migrateSchema(error);
 }
 
-// ¹Ø±ÕÊı¾İ¿â
+// å…³é—­æ•°æ®åº“
 void AuthDb::close()
 {
     db().close();
 }
 
-// ¶Á³öÈ«²¿ÓÃ»§
+// è¯»å‡ºå…¨éƒ¨ç”¨æˆ·
 bool AuthDb::loadUsers(AuthMgr* users, std::string* error)
 {
     if (!users || !open(error)) {
@@ -181,7 +181,7 @@ bool AuthDb::loadUsers(AuthMgr* users, std::string* error)
     return true;
 }
 
-// Çå¿ÕºóÕû±íĞ´»ØÓÃ»§
+// æ¸…ç©ºåæ•´è¡¨å†™å›ç”¨æˆ·
 bool AuthDb::saveUsers(const AuthMgr& users, std::string* error)
 {
     if (!open(error)) {
@@ -222,7 +222,7 @@ bool AuthDb::saveUsers(const AuthMgr& users, std::string* error)
     return db().commit(error);
 }
 
-// ¶ÁÄ³½ÇÉ«µÄÈ¨ÏŞÑÚÂë
+// è¯»æŸè§’è‰²çš„æƒé™æ©ç 
 bool AuthDb::loadRoleMask(UserRole role, uint32_t* mask, std::string* error)
 {
     if (!mask || !open(error)) {
@@ -241,7 +241,7 @@ bool AuthDb::loadRoleMask(UserRole role, uint32_t* mask, std::string* error)
     return true;
 }
 
-// Ğ´Ä³½ÇÉ«µÄÈ¨ÏŞÑÚÂë
+// å†™æŸè§’è‰²çš„æƒé™æ©ç 
 bool AuthDb::saveRoleMask(UserRole role, uint32_t mask, std::string* error)
 {
     if (!open(error)) {

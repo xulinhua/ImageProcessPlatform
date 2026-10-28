@@ -1,6 +1,6 @@
 /**
  * @file MainWindow.h
- * @brief MainWindowÍ·ÎÄ¼ş
+ * @brief MainWindowå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -27,7 +27,7 @@ class QSpinBox;
 
 /**
  * @class BenchWorker
- * @brief ¹¤×÷Ïß³Ì¶ÔÏó: Éú³ÉÍ¼/×ª»»¼ÆÊ±
+ * @brief å·¥ä½œçº¿ç¨‹å¯¹è±¡: ç”Ÿæˆå›¾/è½¬æ¢è®¡æ—¶
  */
 class BenchWorker : public QObject {
     Q_OBJECT
@@ -35,29 +35,29 @@ public:
     explicit BenchWorker(QObject* parent = 0);
 
 public slots:
-    /** @brief Éú³É»Ò¶ÈÍ¼ */
+    /** @brief ç”Ÿæˆç°åº¦å›¾ */
     void genGray(int width, int height);
-    /** @brief Éú³É²ÊÉ«Í¼ */
+    /** @brief ç”Ÿæˆå½©è‰²å›¾ */
     void genColor(int width, int height);
-    /** @brief ²â»Ò¶È×ª»» */
+    /** @brief æµ‹ç°åº¦è½¬æ¢ */
     void runGray(QImage src, int loops, bool toHalconOnly);
-    /** @brief ²â²ÊÉ«×ª»» */
+    /** @brief æµ‹å½©è‰²è½¬æ¢ */
     void runColor(QImage src, int method, int loops, bool toHalconOnly);
 
 signals:
-    /** @brief Ô´Í¼/²âÊÔÍ¼¾ÍĞ÷ */
+    /** @brief æºå›¾/æµ‹è¯•å›¾å°±ç»ª */
     void imageReady(const QImage& img, const QString& tip);
-    /** @brief ×ª»»Ç°/ºóÍ¼¾ÍĞ÷ */
+    /** @brief è½¬æ¢å‰/åå›¾å°±ç»ª */
     void convertPairReady(const QImage& before, const QImage& after);
-    /** @brief ÈÕÖ¾¾ÍĞ÷ */
+    /** @brief æ—¥å¿—å°±ç»ª */
     void logReady(const QString& text);
-    /** @brief ÈÎÎñ½áÊø */
+    /** @brief ä»»åŠ¡ç»“æŸ */
     void finished();
 };
 
 /**
  * @class MainWindow
- * @brief HsImageBench ÆÀ²â´°¿Ú¡£Í¼Ïñ×ª»»£¬ÒÔ¼° region¡¢contour µÈ½á¹¹µÄ´óÅúÁ¿¿½±´£¬¶¼ÔÚ±¾³ÌĞò²âÊÔ
+ * @brief HsImageBench è¯„æµ‹çª—å£ã€‚å›¾åƒè½¬æ¢ï¼Œä»¥åŠ regionã€contour ç­‰ç»“æ„çš„å¤§æ‰¹é‡æ‹·è´ï¼Œéƒ½åœ¨æœ¬ç¨‹åºæµ‹è¯•
  */
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -84,10 +84,10 @@ private:
     ColorConvertMethod currentColorMethod() const;
     void setViewerImage(image_widget::ImageWidgetApi* api, const QImage& img, const QString& tag);
 
-    image_widget::ImageWidgetApi* m_apiBefore; ///< ×ª»»Ç°
-    image_widget::ImageWidgetApi* m_apiAfter;  ///< ×ª»»ºó
-    QImage m_before;                           ///< ×ª»»Ç°
-    QImage m_after;                            ///< ×ª»»ºó
+    image_widget::ImageWidgetApi* m_apiBefore; ///< è½¬æ¢å‰
+    image_widget::ImageWidgetApi* m_apiAfter;  ///< è½¬æ¢å
+    QImage m_before;                           ///< è½¬æ¢å‰
+    QImage m_after;                            ///< è½¬æ¢å
 
     QThread* m_thread;
     BenchWorker* m_worker;

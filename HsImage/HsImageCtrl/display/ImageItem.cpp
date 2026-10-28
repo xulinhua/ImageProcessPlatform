@@ -1,6 +1,6 @@
 /**
  * @file ImageItem.cpp
- * @brief ImageItemÊµÏÖ
+ * @brief ImageItemå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -14,10 +14,10 @@
 
 namespace HsCtrl {
 
-// Éè±¸Ãæ»ıÌ«´óÊ±²»ÓÃ DeviceCoordinateCache£¬±ÜÃâ»º´æÌùÍ¼¹ı´ó
+// è®¾å¤‡é¢ç§¯å¤ªå¤§æ—¶ä¸ç”¨ DeviceCoordinateCacheï¼Œé¿å…ç¼“å­˜è´´å›¾è¿‡å¤§
 static const qreal kImageCacheMaxDevicePx = 2048.0 * 2048.0;
 
-// µ×Í¼ Item£¬²»½ÓÊÕÊó±ê£¬z=0
+// åº•å›¾ Itemï¼Œä¸æ¥æ”¶é¼ æ ‡ï¼Œz=0
 ImageItem::ImageItem(QGraphicsItem* parent)
     : QGraphicsItem(parent)
     , m_viewScale(1.0)
@@ -28,7 +28,7 @@ ImageItem::ImageItem(QGraphicsItem* parent)
     updateCacheMode();
 }
 
-// »»³ÉĞÂÖ¡¡£ÏñËØ×ª»»Áô¸ø»æÖÆ£¬²»ÔÚ»»Í¼Ê±×ö³É QPixmap
+// æ¢æˆæ–°å¸§ã€‚åƒç´ è½¬æ¢ç•™ç»™ç»˜åˆ¶ï¼Œä¸åœ¨æ¢å›¾æ—¶åšæˆ QPixmap
 void ImageItem::setFrame(const HsCommData::HsImage& frame)
 {
     setImage(qImageFromFrame(frame));
@@ -43,7 +43,7 @@ void ImageItem::setImage(const QImage& image)
     update();
 }
 
-// Çåµôµ×Í¼
+// æ¸…æ‰åº•å›¾
 void ImageItem::clear()
 {
     prepareGeometryChange();
@@ -53,7 +53,7 @@ void ImageItem::clear()
     update();
 }
 
-// ¼ÇÂ¼ÊÓ¿ÚËõ·Å£¬»º´æ²ßÂÔËæËü±ä
+// è®°å½•è§†å£ç¼©æ”¾ï¼Œç¼“å­˜ç­–ç•¥éšå®ƒå˜
 void ImageItem::setViewScale(qreal s)
 {
     if (s <= 0.0) {
@@ -67,7 +67,7 @@ void ImageItem::setViewScale(qreal s)
     updateCacheMode();
 }
 
-// ÏñËØ¼ìÑé¿ª¹Ø£¬ÓÃÀ´¹Øµô DeviceCoordinateCache
+// åƒç´ æ£€éªŒå¼€å…³ï¼Œç”¨æ¥å…³æ‰ DeviceCoordinateCache
 void ImageItem::setPixelInspect(bool on)
 {
     if (m_pixelInspect == on) {
@@ -77,7 +77,7 @@ void ImageItem::setPixelInspect(bool on)
     updateCacheMode();
 }
 
-// ¿ÕÍ¼¡¢ÏñËØ¼ìÑé»ò½Ó½ü 1:1 Ê±²»»º´æ£¬±ÜÃâ HUD È¡Ñù´íÎ»
+// ç©ºå›¾ã€åƒç´ æ£€éªŒæˆ–æ¥è¿‘ 1:1 æ—¶ä¸ç¼“å­˜ï¼Œé¿å… HUD å–æ ·é”™ä½
 void ImageItem::updateCacheMode()
 {
     if (m_imageSize.isEmpty() || m_pixelInspect || m_viewScale >= 0.999) {
@@ -93,7 +93,7 @@ void ImageItem::updateCacheMode()
     }
 }
 
-// Í¼Ïñ¿í¸ß¶ÔÓ¦µÄ³¡¾°¾ØĞÎ
+// å›¾åƒå®½é«˜å¯¹åº”çš„åœºæ™¯çŸ©å½¢
 QRectF ImageItem::boundingRect() const
 {
     if (m_imageSize.isEmpty()) {
@@ -102,7 +102,7 @@ QRectF ImageItem::boundingRect() const
     return QRectF(0, 0, m_imageSize.width(), m_imageSize.height());
 }
 
-// ËõĞ¡»­ LOD£¬1:1 Ö»Ìù¿É¼ûÏñËØ¸ñ
+// ç¼©å°ç”» LODï¼Œ1:1 åªè´´å¯è§åƒç´ æ ¼
 void ImageItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget*)
 {
     if (m_image.isNull()) {
@@ -112,7 +112,7 @@ void ImageItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option,
     painter->setRenderHint(QPainter::Antialiasing, false);
     painter->setRenderHint(QPainter::SmoothPixmapTransform, false);
 
-    // 1:1£ºÏñËØ (i,j) Õ¼°ë¿ªÇø¼ä [i,i+1)¡Á[j,j+1)£¬Ö»»­Â¶³öµÄÔ´¾ØĞÎ
+    // 1:1ï¼šåƒç´  (i,j) å åŠå¼€åŒºé—´ [i,i+1)Ã—[j,j+1)ï¼Œåªç”»éœ²å‡ºçš„æºçŸ©å½¢
     QRectF vis = boundingRect();
     if (option) {
         vis = option->exposedRect.intersected(vis);

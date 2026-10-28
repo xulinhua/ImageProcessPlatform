@@ -1,6 +1,6 @@
 /**
  * @file JobRstRuleDlg.cpp
- * @brief JobRstRuleDlgÊµÏÖ
+ * @brief JobRstRuleDlgå®žçŽ°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -16,13 +16,13 @@
 
 namespace Vision {
 
-// Êä³ö½á¹ûÅäÖÃ¶ÀÁ¢¶Ô»°¿ò
+// è¾“å‡ºç»“æžœé…ç½®ç‹¬ç«‹å¯¹è¯æ¡†
 JobRstRuleDlg::JobRstRuleDlg(JobCfg* job, bool editable, QWidget* parent)
     : QDialog(parent)
     , m_panel(nullptr)
     , m_job(job)
 {
-    QString title = T("Êä³ö½á¹ûÅäÖÃ");
+    QString title = T("è¾“å‡ºç»“æžœé…ç½®");
     if (job && !job->name.empty()) {
         title = qs(job->name) + QLatin1Char(' ') + QString(QChar(0x00B7)) + QLatin1Char(' ') + title;
     }
@@ -56,7 +56,7 @@ JobRstRuleDlg::JobRstRuleDlg(JobCfg* job, bool editable, QWidget* parent)
     lay->addWidget(box);
 }
 
-// È·¶¨£ºÐ´»Ø JobCfg
+// ç¡®å®šï¼šå†™å›ž JobCfg
 void JobRstRuleDlg::accept()
 {
     if (m_panel && m_job) {

@@ -1,6 +1,6 @@
 /**
  * @file AcquireTool.cpp
- * @brief AcquireToolÊµÏÖ
+ * @brief AcquireToolå®ç°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -13,21 +13,21 @@
 #include <vector>
 
 namespace {
-// µ±Ç°°æ±¾¡£±ØĞëµÈÓÚ±ä¸ü±í×îºóÒ»ĞĞ
+// å½“å‰ç‰ˆæœ¬ã€‚å¿…é¡»ç­‰äºå˜æ›´è¡¨æœ€åä¸€è¡Œ
 const char kToolVersion[] = "1.0.0.0";
-// ±ä¸ü±í¡£Ö»×·¼Ó£¬²»É¾¾ÉĞĞ
+// å˜æ›´è¡¨ã€‚åªè¿½åŠ ï¼Œä¸åˆ æ—§è¡Œ
 const Vision::VerNoteRaw kVerNotes[] = {
-    { "1.0.0.0", "Ê×°æ" },
+    { "1.0.0.0", "é¦–ç‰ˆ" },
 };
 
-// ×¢²áÃû
+// æ³¨å†Œå
 const char kToolName[] = "camera.acquire";
-// ½çÃæÏÔÊ¾Ãû
-const char kDisplayName[] = "²É¼¯";
-// ¹¤¾ßËµÃ÷
-const char kDescription[] = "´ÓÒÑÅäÖÃµÄÏà»ú¡¢ÎÄ¼ş¼Ğ»òÍ¼ÏñÄ£¿éÈ¡Í¼";
+// ç•Œé¢æ˜¾ç¤ºå
+const char kDisplayName[] = "é‡‡é›†";
+// å·¥å…·è¯´æ˜
+const char kDescription[] = "ä»å·²é…ç½®çš„ç›¸æœºã€æ–‡ä»¶å¤¹æˆ–å›¾åƒæ¨¡å—å–å›¾";
 
-// °´»»ĞĞ²ğ¿ª¼ÇÂ¼µÄÍ¼ÏñÂ·¾¶
+// æŒ‰æ¢è¡Œæ‹†å¼€è®°å½•çš„å›¾åƒè·¯å¾„
 std::vector<std::string> splitLines(const std::string& packed)
 {
     std::vector<std::string> out;
@@ -50,52 +50,52 @@ std::vector<std::string> splitLines(const std::string& packed)
 }
 }
 
-// ×¢²áÃû
+// æ³¨å†Œå
 std::string Vision::AcquireTool::toolName() const
 {
     return kToolName;
 }
 
-// ¹¤¾ß´óÀà
+// å·¥å…·å¤§ç±»
 Vision::ToolType Vision::AcquireTool::type() const
 {
     return Vision::ToolType::Acquire;
 }
 
-// ½çÃæÏÔÊ¾Ãû
+// ç•Œé¢æ˜¾ç¤ºå
 std::string Vision::AcquireTool::displayName() const
 {
-    return Vision::acpToUtf8(kDisplayName);
+    return kDisplayName;
 }
 
-// ¹¤¾ß°æ±¾
+// å·¥å…·ç‰ˆæœ¬
 std::string Vision::AcquireTool::version() const
 {
     return std::string(kToolVersion);
 }
 
-// °æ±¾±ä¸ü£¬Ö»×·¼Ó
+// ç‰ˆæœ¬å˜æ›´ï¼Œåªè¿½åŠ 
 std::vector<Vision::VerNote> Vision::AcquireTool::versionNotes() const
 {
     return Vision::verNotesFrom(kVerNotes, static_cast<int>(sizeof(kVerNotes) / sizeof(kVerNotes[0])));
 }
 
 
-// ¹¤¾ßËµÃ÷
+// å·¥å…·è¯´æ˜
 std::string Vision::AcquireTool::description() const
 {
-    return Vision::acpToUtf8(kDescription);
+    return kDescription;
 }
 
-// ²ÎÊıËµÃ÷
+// å‚æ•°è¯´æ˜
 std::vector<Vision::ParamField> Vision::AcquireTool::paramFields() const
 {
         std::vector<Vision::ParamField> f;
-        f.push_back(Vision::paramDevice("deviceId", "²É¼¯Ä£¿é"));
+        f.push_back(Vision::paramDevice("deviceId", "é‡‡é›†æ¨¡å—"));
         return f;
     }
 
-// °´ÎÄ¼ş¡¢Í¼ÏñÁĞ±í»òÎÄ¼ş¼ĞÈ¡Í¼
+// æŒ‰æ–‡ä»¶ã€å›¾åƒåˆ—è¡¨æˆ–æ–‡ä»¶å¤¹å–å›¾
 Vision::ToolOut Vision::AcquireTool::execute(const Vision::ToolIn& in)
 {
         Vision::ToolOut out;
@@ -118,21 +118,21 @@ Vision::ToolOut Vision::AcquireTool::execute(const Vision::ToolIn& in)
         }
         const std::string st = in.param.run.value("deviceStatus").toString();
         if (st == "missing" || st.empty()) {
-            out.message = Vision::acpToUtf8("Î´°ó¶¨²É¼¯Ä£¿é");
+            out.message = "æœªç»‘å®šé‡‡é›†æ¨¡å—";
             return out;
         }
         if (st == "not_acquire" || st == "not_camera") {
-            out.message = Vision::acpToUtf8("°ó¶¨µÄ²»ÊÇ²É¼¯Ä£¿é");
+            out.message = "ç»‘å®šçš„ä¸æ˜¯é‡‡é›†æ¨¡å—";
             return out;
         }
         if (st == "no_sdk") {
-            out.message = Vision::acpToUtf8("Ïà»ú SDK Î´½ÓÈë");
+            out.message = "ç›¸æœº SDK æœªæ¥å…¥";
             return out;
         }
         if (st == "image") {
             const std::vector<std::string> files = splitLines(in.param.run.value("images").toString());
             if (files.empty()) {
-                out.message = Vision::acpToUtf8("Í¼ÏñÄ£¿éÃ»ÓĞ¼ÇÂ¼Í¼ÏñÂ·¾¶");
+                out.message = "å›¾åƒæ¨¡å—æ²¡æœ‰è®°å½•å›¾åƒè·¯å¾„";
                 return out;
             }
             int idx = static_cast<int>(runtime.value("index").toDouble(0));
@@ -142,7 +142,7 @@ Vision::ToolOut Vision::AcquireTool::execute(const Vision::ToolIn& in)
             const HsCommData::HsImage fb = Vision::FileGrabber::grab(files[static_cast<size_t>(idx)], "file", &runtime, fid, &err);
             out.runtime = runtime;
             if (fb.isNull()) {
-                out.message = err.empty() ? Vision::acpToUtf8("Ã»ÓĞ¿ÉÓÃÍ¼Ïñ") : err;
+                out.message = err.empty() ? "æ²¡æœ‰å¯ç”¨å›¾åƒ" : err;
                 return out;
             }
             out.runtime.insert("index", static_cast<double>((idx + 1) % static_cast<int>(files.size())));
@@ -155,7 +155,7 @@ Vision::ToolOut Vision::AcquireTool::execute(const Vision::ToolIn& in)
         const HsCommData::HsImage fb = Vision::FileGrabber::grab(in.param.run.value("path").toString(), "folder", &runtime, fid, &err);
         out.runtime = runtime;
         if (fb.isNull()) {
-            out.message = err.empty() ? Vision::acpToUtf8("Ã»ÓĞ¿ÉÓÃÍ¼Ïñ") : err;
+            out.message = err.empty() ? "æ²¡æœ‰å¯ç”¨å›¾åƒ" : err;
             return out;
         }
         out.ok = true;
@@ -165,7 +165,7 @@ Vision::ToolOut Vision::AcquireTool::execute(const Vision::ToolIn& in)
         return out;
     }
 
-// ¿ËÂ¡±¾ÊµÀı
+// å…‹éš†æœ¬å®ä¾‹
 Vision::ToolBase* Vision::AcquireTool::clone() const
 {
     AcquireTool* p = new AcquireTool();
@@ -173,7 +173,7 @@ Vision::ToolBase* Vision::AcquireTool::clone() const
     return p;
 }
 
-// ·µ»Ø±¾¹¤¾ß²ÎÊı¶ÔÏó
+// è¿”å›æœ¬å·¥å…·å‚æ•°å¯¹è±¡
 
 const Vision::ToolParaBase* Vision::AcquireTool::toolParam() const
 {

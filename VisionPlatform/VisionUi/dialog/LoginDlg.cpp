@@ -1,6 +1,6 @@
 /**
  * @file LoginDlg.cpp
- * @brief LoginDlgÊµÏÖ
+ * @brief LoginDlgå®žçŽ°
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -21,7 +21,7 @@
 
 namespace Vision {
 
-// ÆÕÍ¨µÇÂ¼¿ò
+// æ™®é€šç™»å½•æ¡†
 LoginDlg::LoginDlg(Session* session, QWidget* parent)
     : QDialog(parent)
     , m_session(session)
@@ -30,7 +30,7 @@ LoginDlg::LoginDlg(Session* session, QWidget* parent)
     buildUi();
 }
 
-// ÌáÈ¨µÇÂ¼£ºÐ£ÑéËùÐèÈ¨ÏÞºóÔÙ·ÅÐÐ
+// ææƒç™»å½•ï¼šæ ¡éªŒæ‰€éœ€æƒé™åŽå†æ”¾è¡Œ
 LoginDlg::LoginDlg(Session* session, const std::string& neededPerm, QWidget* parent)
     : QDialog(parent)
     , m_session(session)
@@ -40,17 +40,17 @@ LoginDlg::LoginDlg(Session* session, const std::string& neededPerm, QWidget* par
     buildUi();
 }
 
-// ´îµÇÂ¼±íµ¥£»ÌáÈ¨Ê±¸Ä±êÌâÓë°´Å¥
+// æ­ç™»å½•è¡¨å•ï¼›ææƒæ—¶æ”¹æ ‡é¢˜ä¸ŽæŒ‰é’®
 void LoginDlg::buildUi()
 {
-    setWindowTitle(m_neededPerm.empty() ? T("ÓÃ»§µÇÂ¼") : T("ÌáÈ¨µÇÂ¼"));
+    setWindowTitle(m_neededPerm.empty() ? T("ç”¨æˆ·ç™»å½•") : T("ææƒç™»å½•"));
     setModal(true);
     resize(400, 220);
 
     QLabel* hint = new QLabel(
         m_neededPerm.empty()
-            ? T("ÇëÊäÈëµÇÂ¼ÃûÓë¿ÚÁî¡£")
-            : T("µ±Ç°²Ù×÷ÐèÒª¸ü¸ßÈ¨ÏÞ£¬ÇëÊäÈëÓÐÈ¨ÏÞµÄÕË»§¡£"),
+            ? T("è¯·è¾“å…¥ç™»å½•åä¸Žå£ä»¤ã€‚")
+            : T("å½“å‰æ“ä½œéœ€è¦æ›´é«˜æƒé™ï¼Œè¯·è¾“å…¥æœ‰æƒé™çš„è´¦æˆ·ã€‚"),
         this);
     hint->setWordWrap(true);
     hint->setObjectName(QLatin1String("hint"));
@@ -66,12 +66,12 @@ void LoginDlg::buildUi()
     m_err->setStyleSheet(QLatin1String("color:#FF4D4F;"));
 
     QFormLayout* form = new QFormLayout();
-    form->addRow(T("µÇÂ¼Ãû"), m_user);
-    form->addRow(T("¿ÚÁî"), m_pwd);
+    form->addRow(T("ç™»å½•å"), m_user);
+    form->addRow(T("å£ä»¤"), m_pwd);
 
     QDialogButtonBox* box = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, this);
-    box->button(QDialogButtonBox::Ok)->setText(m_neededPerm.empty() ? T("µÇÂ¼") : T("ÌáÈ¨"));
-    box->button(QDialogButtonBox::Cancel)->setText(T("È¡Ïû"));
+    box->button(QDialogButtonBox::Ok)->setText(m_neededPerm.empty() ? T("ç™»å½•") : T("ææƒ"));
+    box->button(QDialogButtonBox::Cancel)->setText(T("å–æ¶ˆ"));
     setButtonRole(box->button(QDialogButtonBox::Ok), "primary");
     connect(box, SIGNAL(accepted()), this, SLOT(onOk()));
     connect(box, SIGNAL(rejected()), this, SLOT(reject()));
@@ -91,13 +91,13 @@ void LoginDlg::buildUi()
     }
 }
 
-// È¥µô¿Õ°×ºóµÄµÇÂ¼Ãû
+// åŽ»æŽ‰ç©ºç™½åŽçš„ç™»å½•å
 QString LoginDlg::loginName() const
 {
     return m_user->text().trimmed();
 }
 
-// µÇÂ¼»òÌáÈ¨£»Ê§°ÜÔòÀÛ¼Æ´ÎÊý
+// ç™»å½•æˆ–ææƒï¼›å¤±è´¥åˆ™ç´¯è®¡æ¬¡æ•°
 void LoginDlg::onOk()
 {
     std::string err;
@@ -111,7 +111,7 @@ void LoginDlg::onOk()
     }
     if (!ok) {
         ++m_fails;
-        m_err->setText(qs(err) + T("£¨ÒÑÊ§°Ü ") + QString::number(m_fails) + T(" ´Î£©"));
+        m_err->setText(qs(err) + T("ï¼ˆå·²å¤±è´¥ ") + QString::number(m_fails) + T(" æ¬¡ï¼‰"));
         m_pwd->selectAll();
         m_pwd->setFocus();
         return;

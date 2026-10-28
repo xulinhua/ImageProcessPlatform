@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="export">
+      <UniqueIdentifier>{B4E91A10-7C22-4F18-9A01-0000000000D1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="base">
+      <UniqueIdentifier>{B4E91A10-7C22-4F18-9A01-0000000000D2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="soft">
+      <UniqueIdentifier>{B4E91A10-7C22-4F18-9A01-0000000000D3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="dongle">
+      <UniqueIdentifier>{B4E91A10-7C22-4F18-9A01-0000000000D4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="LicenseSource.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="LicenseCodec.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="LicenseSign.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="SoftLicense.cpp">
+      <Filter>soft</Filter>
+    </ClCompile>
+    <ClCompile Include="HardwareProbe.cpp">
+      <Filter>soft</Filter>
+    </ClCompile>
+    <ClCompile Include="ClockLog.cpp">
+      <Filter>soft</Filter>
+    </ClCompile>
+    <ClCompile Include="LicenseFile.cpp">
+      <Filter>soft</Filter>
+    </ClCompile>
+    <ClCompile Include="DongleLicense.cpp">
+      <Filter>dongle</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="VisionLicenseExport.h">
+      <Filter>export</Filter>
+    </ClInclude>
+    <ClInclude Include="LicenseTypes.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="LicenseSource.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="LicenseCodec.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="LicenseSign.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="SoftLicense.h">
+      <Filter>soft</Filter>
+    </ClInclude>
+    <ClInclude Include="HardwareProbe.h">
+      <Filter>soft</Filter>
+    </ClInclude>
+    <ClInclude Include="ClockLog.h">
+      <Filter>soft</Filter>
+    </ClInclude>
+    <ClInclude Include="LicenseFile.h">
+      <Filter>soft</Filter>
+    </ClInclude>
+    <ClInclude Include="DongleLicense.h">
+      <Filter>dongle</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
