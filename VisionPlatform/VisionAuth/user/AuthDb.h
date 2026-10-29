@@ -17,7 +17,7 @@ namespace Vision {
 
 /**
  * @class AuthDb
- * @brief 用户与角色权限的 SQLite 仓储。文本列为 UTF-8
+ * @brief 权限库。users 只放账号，perm 按角色和权限各一行
  */
 class AuthDb {
 public:
@@ -38,8 +38,12 @@ public:
 
 private:
     AuthDb() {}
-    /** @brief 创建用户表和角色权限表 */
+    /** @brief 创建 users 和 perm，并把旧的整型掩码拆成权限行 */
     bool migrateSchema(std::string* error);
+    /** @brief 权限库还是空的时候，从旧 vision.db 搬用户和权限 */
+    bool importLegacy(std::string* error);
+    /** @brief 按掩码重写某角色在 perm 里的全部行。调用方负责事务 */
+    bool writeRolePerms(int role, uint32_t mask, std::string* error);
 };
 
 }

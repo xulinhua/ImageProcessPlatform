@@ -7,6 +7,7 @@
  */
 
 #include "MainWindow.h"
+#include "ProdDb.h"
 #include "ParaAdaptDlg.h"
 #include "CompositeMgrDlg.h"
 #include "CompositeMgr.h"
@@ -1196,7 +1197,7 @@ void MainWindow::openPerms()
     if (!ensurePerm(PermEditAppSettings, T("仅管理员可改控件权限。"))) {
         return;
     }
-    PermDlg dlg(m_session, this);
+    PermDlg dlg(m_session, &m_sol, this);
     dlg.exec();
     onUserChanged();
 }
@@ -1485,6 +1486,17 @@ void MainWindow::stationCycleThunk(void* user, const StationRunRst& result)
     LiveStationSlot* slot = static_cast<LiveStationSlot*>(user);
     if (!slot || !slot->window || slot->window->m_shuttingDown || !slot->window->m_running) {
         return;
+    }
+    {
+        ProdShot shot;
+        shot.solution = slot->window->m_sol.name;
+        shot.stationId = slot->stationId.toString();
+        shot.frameNo = result.source.frameId > 0 ? result.source.frameId : 0;
+        shot.ok = result.ok ? 1 : 0;
+        shot.summary = result.summary;
+        shot.cycleMs = result.cycleMs;
+        shot.elapsedMs = result.cycleMs;
+        ProdDb::instance().note(shot);
     }
     {
         std::lock_guard<std::mutex> lock(slot->uiMu);

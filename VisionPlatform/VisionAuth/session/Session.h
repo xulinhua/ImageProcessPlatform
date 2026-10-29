@@ -32,7 +32,7 @@ public:
 
 /**
  * @class Session
- * @brief 当前登录用户、权限掩码，以及临时提权
+ * @brief 当前登录用户。权限在设置的树上，不另存掩码
  */
 class VISION_AUTH_API Session {
 public:
@@ -52,11 +52,16 @@ public:
     bool isLoggedIn() const;
     const UserAccount& user() const;
     UserRole role() const;
-    uint32_t perms() const;
-    /** @brief 当前掩码是否包含该点分权限标识 */
+    /** @brief 当前角色在权限树上是否有该标识 */
     bool has(const std::string& permId) const;
-    /** @brief 当前掩码是否包含该权限位 */
+    /** @brief 当前角色在权限树上是否有该控件 */
     bool has(Perm p) const;
+    /**
+     * @brief 流程工具参数是否可改
+     * @param field 空则只看该工具或该实例这一层
+     */
+    bool allowToolField(const std::string& toolName, const std::string& flowId,
+                        const std::string& toolId, const std::string& field) const;
 
     /** @brief 校验口令后进入；失败写 error */
     bool login(const std::string& loginName, const std::string& password, std::string* error);
@@ -81,7 +86,7 @@ public:
     bool autoLoginOperator();
     /** @brief 清除当前用户并通知界面 */
     void logout();
-    /** @brief 按角色从库刷新掩码，并并上不能关掉的权限 */
+    /** @brief 权限记在树上，这里不再刷新掩码 */
     void reloadPerms();
     /** @brief 用给定账户替换当前用户（不含口令哈希） */
     void touchUser(const UserAccount& u);
@@ -93,16 +98,14 @@ public:
     void notifyUiLocaleChanged();
 
 private:
-    /** @brief 写入当前用户、刷新掩码并回调 */
+    /** @brief 写入当前用户并回调 */
     void applyUser(const UserAccount& u);
 
     ISessionListener* m_listener; ///< 界面回调，可空
     AuthMgr m_users;            ///< 内存用户库
     AppSettings m_settings;       ///< 本机设置
     UserAccount m_user;           ///< 当前登录用户
-    uint32_t m_perms;             ///< 当前权限掩码
     UserAccount m_savedUser;      ///< 提权前的用户
-    uint32_t m_savedPerms;        ///< 提权前的掩码
     bool m_elevated;              ///< 是否处于提权
 };
 

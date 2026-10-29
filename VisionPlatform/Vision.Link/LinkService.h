@@ -52,8 +52,10 @@ private:
     void onFrame(const CommFrame::Frame& frame);
     /** @brief 本机槽有新帧就发给仍在线的对端。每个对端只留最新一张 */
     void publishLatest();
-    /** @brief 超过 3 秒没有心跳的对端标离线 */
+    /** @brief 超过 3 秒没有心跳的对端标离线，并关掉对应 TCP */
     void dropStale();
+    /** @brief 客户端断线重连后重新发 Hello */
+    void ensureHello();
 
     NodeSettings m_node;   ///< 本机节点
     DeployTable m_deploy;  ///< 部署表
@@ -61,6 +63,7 @@ private:
     CommFrame m_frames;    ///< 粘包
     std::map<std::string, Peer> m_peers; ///< peerId → 报到信息。客户端只有一条，键为空
     bool m_server;         ///< 本机是服务端
+    bool m_helloSent;      ///< 客户端本轮连接是否已发 Hello
 };
 
 }

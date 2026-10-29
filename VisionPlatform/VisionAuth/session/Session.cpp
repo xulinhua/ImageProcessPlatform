@@ -10,6 +10,8 @@
 #include "AppPaths.h"
 #include "AuditLog.h"
 #include "AuthDb.h"
+#include "FactoryAccount.h"
+#include "PermGate.h"
 #include "PermMgr.h"
 #include "Pbkdf2.h"
 #include "Translate.h"
@@ -36,8 +38,6 @@ static std::string sessionIsoNow()
 // 准备目录、内置权限和出厂用户
 Session::Session()
     : m_listener(nullptr)
-    , m_perms(0)
-    , m_savedPerms(0)
     , m_elevated(false)
 {
     AppPaths::ensureDirs();
@@ -66,35 +66,57 @@ void Session::applyUser(const UserAccount& u)
 // 按角色从库刷新掩码，并并上不能关掉的权限
 void Session::reloadPerms()
 {
-    if (m_user.id.empty()) {
-        m_perms = 0;
-        return;
-    }
-    uint32_t mask = 0;
-    if (!AuthDb::instance().loadRoleMask(m_user.role, &mask, 0)) {
-        mask = m_settings.permMask(m_user.role);
-    }
-    m_perms = mask | lockedPerms(m_user.role);
-    m_settings.setPermMask(m_user.role, m_perms);
 }
 
 // 点分标识是否落在当前权限掩码里
 bool Session::has(const std::string& permId) const
 {
-    if (permId.empty() || !PermMgr::instance().contains(permId)) {
+    if (m_user.role == RoleFactory) {
+        return !permId.empty();
+    }
+    if (permId.empty()) {
         return false;
     }
     const Perm bit = permissionFromId(permId.c_str());
-    if (bit == PermNone) {
-        return false;
+    if (bit != PermNone) {
+        return has(bit);
     }
-    return (m_perms & static_cast<uint32_t>(bit)) != 0;
+    return PermGate::allowed(m_settings, m_user.role, permId);
 }
 
-// 权限位是否落在当前掩码里
 bool Session::has(Perm p) const
 {
-    return has(std::string(permissionId(p)));
+    if (p == PermNone) {
+        return false;
+    }
+    if (m_user.role == RoleFactory) {
+        return true;
+    }
+    return PermGate::allowed(m_settings, m_user.role, permNodeId(p));
+}
+
+bool Session::allowToolField(const std::string& toolName, const std::string& flowId,
+                             const std::string& toolId, const std::string& field) const
+{
+    if (m_user.role == RoleFactory) {
+        return true;
+    }
+    if (!has(PermEditSolution)) {
+        return false;
+    }
+    std::string key;
+    if (m_settings.permScope == PermScopeInstance) {
+        if (flowId.empty() || toolId.empty()) {
+            return true;
+        }
+        key = field.empty() ? PermGate::instNode(flowId, toolId) : PermGate::instField(flowId, toolId, field);
+    } else {
+        if (toolName.empty()) {
+            return true;
+        }
+        key = field.empty() ? PermGate::toolNode(toolName) : PermGate::toolField(toolName, field);
+    }
+    return PermGate::allowed(m_settings, m_user.role, key);
 }
 
 // 把内存用户库整表写回
@@ -112,6 +134,9 @@ void Session::touchUser(const UserAccount& u)
 // 按 id 从用户库重新套用当前用户
 void Session::refreshCurrentUser()
 {
+    if (m_user.role == RoleFactory) {
+        return;
+    }
     UserAccount* u = m_users.findById(m_user.id);
     if (u) {
         applyUser(*u);
@@ -121,6 +146,19 @@ void Session::refreshCurrentUser()
 // 校验口令后进入；失败把原因写到 error
 bool Session::login(const std::string& loginName, const std::string& password, std::string* error)
 {
+    if (FactoryAccount::ownsName(loginName)) {
+        if (!FactoryAccount::matches(loginName, password)) {
+            auditLog("login_fail", loginName, std::string());
+            if (error) {
+                *error = std::string(Translate::tr("user or password"));
+            }
+            return false;
+        }
+        dropElevate();
+        applyUser(FactoryAccount::account());
+        auditLog("login", FactoryAccount::loginName(), std::to_string(static_cast<int>(RoleFactory)));
+        return true;
+    }
     UserAccount* u = m_users.findByLogin(loginName);
     if (!u || !u->enabled) {
         auditLog("login_fail", vpLower(loginName), std::string());
@@ -224,6 +262,21 @@ bool Session::enterAdminForDev()
 bool Session::elevate(const std::string& loginName, const std::string& password,
                       const std::string& neededPerm, std::string* error)
 {
+    if (FactoryAccount::ownsName(loginName)) {
+        if (!FactoryAccount::matches(loginName, password)) {
+            if (error) {
+                *error = std::string(Translate::tr("user or password"));
+            }
+            return false;
+        }
+        if (!m_elevated) {
+            m_savedUser = m_user;
+            m_elevated = true;
+        }
+        applyUser(FactoryAccount::account());
+        auditLog("elevate", FactoryAccount::loginName(), neededPerm);
+        return true;
+    }
     UserAccount* u = m_users.findByLogin(loginName);
     if (!u || !u->enabled || !m_users.verifyPassword(*u, password)) {
         if (error) {
@@ -231,13 +284,8 @@ bool Session::elevate(const std::string& loginName, const std::string& password,
         }
         return false;
     }
-    uint32_t mask = 0;
-    if (!AuthDb::instance().loadRoleMask(u->role, &mask, 0)) {
-        mask = defaultPerms(u->role) | m_settings.permMask(u->role);
-    }
-    mask |= lockedPerms(u->role);
-    const Perm bit = permissionFromId(neededPerm.c_str());
-    if (bit != PermNone && (mask & static_cast<uint32_t>(bit)) == 0) {
+    const Perm needed = permissionFromId(neededPerm.c_str());
+    if (needed != PermNone && !PermGate::allowed(m_settings, u->role, permNodeId(needed))) {
         if (error) {
             *error = std::string(Translate::tr("no permission"));
         }
@@ -245,7 +293,6 @@ bool Session::elevate(const std::string& loginName, const std::string& password,
     }
     if (!m_elevated) {
         m_savedUser = m_user;
-        m_savedPerms = m_perms;
         m_elevated = true;
     }
     applyUser(*u);
@@ -264,7 +311,6 @@ void Session::dropElevate()
         applyUser(m_savedUser);
     }
     m_savedUser = UserAccount();
-    m_savedPerms = 0;
 }
 
 // 设置允许时，以操作员账户进入
@@ -307,7 +353,6 @@ void Session::logout()
     dropElevate();
     m_user = UserAccount();
     m_user.id.clear();
-    m_perms = 0;
     if (m_listener) {
         m_listener->onUserChanged();
     }
@@ -353,12 +398,6 @@ const UserAccount& Session::user() const
 UserRole Session::role() const
 {
     return m_user.role;
-}
-
-// 当前权限掩码
-uint32_t Session::perms() const
-{
-    return m_perms;
 }
 
 // 是否处于提权

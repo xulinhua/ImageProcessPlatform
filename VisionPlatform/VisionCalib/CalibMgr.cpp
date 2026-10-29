@@ -7,6 +7,7 @@
  */
 
 #include "CalibMgr.h"
+#include "CalibDb.h"
 #include "CalibJson.h"
 #include "CalibMath.h"
 #include "SolutionDataPaths.h"
@@ -672,12 +673,35 @@ bool CalibMgr::commitCamera(const ObjectId& cameraId, CamModel model, std::strin
     std::lock_guard<std::mutex> lock(m_impl->mu);
     Slot& s = m_impl->ensure(cameraId.toString());
     s.id = cameraId;
+    if (model.updatedAt.empty()) {
+        model.updatedAt = nowStamp();
+    }
+    const std::string halconSrc = pathJoin(m_impl->camDir(cameraId.toString()), "camera.halcon.dat");
+    const std::string offlineDir = pathJoin(m_impl->camDir(cameraId.toString()), "offline");
     if (model.rms > s.param.residualMaxPx || model.maxResidual > s.param.residualMaxPx) {
         model.present = true;
         model.status = CalibDraft;
+        int64_t rowId = 0;
+        if (!CalibDb::instance().recordPlate(m_impl->dir, cameraId.toString(), s.name,
+                s.imageWidth, s.imageHeight, s.param, model, halconSrc, offlineDir, &rowId, err)) {
+            if (err && err->empty()) {
+                *err = U(L"\u6807\u5B9A\u8BB0\u5F55\u6CA1\u6709\u5199\u5165\u6570\u636E\u5E93");
+            }
+            return false;
+        }
         s.cameraDraft = model;
         if (err) {
             *err = U(L"\u91CD\u6295\u5F71\u6B8B\u5DEE\u8D85\u8FC7\u9608\u503C\uFF0C\u672A\u5199\u6210\u751F\u6548");
+        }
+        return false;
+    }
+    model.present = true;
+    model.status = CalibValid;
+    int64_t rowId = 0;
+    if (!CalibDb::instance().recordPlate(m_impl->dir, cameraId.toString(), s.name,
+            s.imageWidth, s.imageHeight, s.param, model, halconSrc, offlineDir, &rowId, err)) {
+        if (err && err->empty()) {
+            *err = U(L"\u6807\u5B9A\u8BB0\u5F55\u6CA1\u6709\u5199\u5165\u6570\u636E\u5E93");
         }
         return false;
     }
@@ -688,12 +712,8 @@ bool CalibMgr::commitCamera(const ObjectId& cameraId, CamModel model, std::strin
         }
         return false;
     }
-    model.present = true;
-    model.status = CalibValid;
-    if (model.updatedAt.empty()) {
-        model.updatedAt = nowStamp();
-    }
     s.camera = model;
+    CalibDb::instance().markApplied("plate", rowId);
     expirePlaneAndRotate(&s);
     if (err) {
         err->clear();
@@ -712,9 +732,19 @@ bool CalibMgr::commitPlane(const ObjectId& cameraId, PlaneMap model, std::string
     std::lock_guard<std::mutex> lock(m_impl->mu);
     Slot& s = m_impl->ensure(cameraId.toString());
     s.id = cameraId;
+    if (model.updatedAt.empty()) {
+        model.updatedAt = nowStamp();
+    }
     if (model.rms > s.param.residualMaxMm || model.maxResidual > s.param.residualMaxMm) {
         model.present = true;
         model.status = CalibDraft;
+        int64_t rowId = 0;
+        if (!CalibDb::instance().recordPlane(m_impl->dir, cameraId.toString(), s.name, s.param, model, &rowId, err)) {
+            if (err && err->empty()) {
+                *err = U(L"\u6807\u5B9A\u8BB0\u5F55\u6CA1\u6709\u5199\u5165\u6570\u636E\u5E93");
+            }
+            return false;
+        }
         s.planeDraft = model;
         if (err) {
             *err = U(L"\u6BEB\u7C73\u6B8B\u5DEE\u8D85\u8FC7\u9608\u503C\uFF0C\u672A\u5199\u6210\u751F\u6548");
@@ -724,6 +754,15 @@ bool CalibMgr::commitPlane(const ObjectId& cameraId, PlaneMap model, std::string
     if (s.camera.present && s.camera.status == CalibValid) {
         model.parentModelStamp = s.camera.updatedAt;
     }
+    model.present = true;
+    model.status = CalibValid;
+    int64_t rowId = 0;
+    if (!CalibDb::instance().recordPlane(m_impl->dir, cameraId.toString(), s.name, s.param, model, &rowId, err)) {
+        if (err && err->empty()) {
+            *err = U(L"\u6807\u5B9A\u8BB0\u5F55\u6CA1\u6709\u5199\u5165\u6570\u636E\u5E93");
+        }
+        return false;
+    }
     const bool was = s.plane.present && s.plane.status == CalibValid;
     if (!m_impl->archive(cameraId.toString(), CalibKindPlane, was)) {
         if (err) {
@@ -731,12 +770,8 @@ bool CalibMgr::commitPlane(const ObjectId& cameraId, PlaneMap model, std::string
         }
         return false;
     }
-    model.present = true;
-    model.status = CalibValid;
-    if (model.updatedAt.empty()) {
-        model.updatedAt = nowStamp();
-    }
     s.plane = model;
+    CalibDb::instance().markApplied("plane", rowId);
     expirePlaneAndRotate(&s);
     if (err) {
         err->clear();
@@ -755,9 +790,19 @@ bool CalibMgr::commitRotate(const ObjectId& cameraId, RotateCenter model, std::s
     std::lock_guard<std::mutex> lock(m_impl->mu);
     Slot& s = m_impl->ensure(cameraId.toString());
     s.id = cameraId;
+    if (model.updatedAt.empty()) {
+        model.updatedAt = nowStamp();
+    }
     if (model.rms > s.param.residualMaxPx || model.maxResidual > s.param.residualMaxPx || model.radius < 1.0) {
         model.present = true;
         model.status = CalibDraft;
+        int64_t rowId = 0;
+        if (!CalibDb::instance().recordRotate(m_impl->dir, cameraId.toString(), s.name, s.param, model, &rowId, err)) {
+            if (err && err->empty()) {
+                *err = U(L"\u6807\u5B9A\u8BB0\u5F55\u6CA1\u6709\u5199\u5165\u6570\u636E\u5E93");
+            }
+            return false;
+        }
         s.rotateDraft = model;
         if (err) {
             *err = model.radius < 1.0
@@ -791,6 +836,18 @@ bool CalibMgr::commitRotate(const ObjectId& cameraId, RotateCenter model, std::s
             model.parentPlaneStamp = s.plane.updatedAt;
         }
     }
+    model.present = true;
+    model.status = CalibValid;
+    if (model.updatedAt.empty()) {
+        model.updatedAt = nowStamp();
+    }
+    int64_t rowId = 0;
+    if (!CalibDb::instance().recordRotate(m_impl->dir, cameraId.toString(), s.name, s.param, model, &rowId, err)) {
+        if (err && err->empty()) {
+            *err = U(L"\u6807\u5B9A\u8BB0\u5F55\u6CA1\u6709\u5199\u5165\u6570\u636E\u5E93");
+        }
+        return false;
+    }
     const bool was = s.rotate.present && s.rotate.status == CalibValid;
     if (!m_impl->archive(cameraId.toString(), CalibKindRotate, was)) {
         if (err) {
@@ -798,12 +855,8 @@ bool CalibMgr::commitRotate(const ObjectId& cameraId, RotateCenter model, std::s
         }
         return false;
     }
-    model.present = true;
-    model.status = CalibValid;
-    if (model.updatedAt.empty()) {
-        model.updatedAt = nowStamp();
-    }
     s.rotate = model;
+    CalibDb::instance().markApplied("rotate", rowId);
     if (err) {
         err->clear();
     }

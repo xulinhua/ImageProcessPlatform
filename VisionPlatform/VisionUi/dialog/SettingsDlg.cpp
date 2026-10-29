@@ -120,6 +120,16 @@ SettingsDlg::SettingsDlg(Session* session, QWidget* parent)
     gForm->addRow(QString(), m_autoOp);
     QLabel* lab_2040619317 = new QLabel(T("启动后默认进入"), this); bindTrKey(lab_2040619317, "启动后默认进入"); gForm->addRow(lab_2040619317, m_startupMode);
     gForm->addRow(m_closeHint);
+    m_permScope = new QComboBox(pageGeneral);
+    m_permScope->addItem(T("按页面或工具统一"), PermScopeUnified);
+    m_permScope->addItem(T("按流程实例分开"), PermScopeInstance);
+    QLabel* labScope = new QLabel(T("权限管控"), pageGeneral);
+    bindTrKey(labScope, "权限管控");
+    gForm->addRow(labScope, m_permScope);
+    QLabel* scopeHint = new QLabel(T("只有最高权限能改。权限记在本机 data，不写进方案。整个 data 一起拷走后可以继续用。"), pageGeneral);
+    scopeHint->setObjectName(QLatin1String("hint"));
+    scopeHint->setWordWrap(true);
+    gForm->addRow(scopeHint);
     gLay->addWidget(m_generalBox);
     gLay->addStretch();
 
@@ -148,14 +158,22 @@ SettingsDlg::SettingsDlg(Session* session, QWidget* parent)
     QFormLayout* pForm = new QFormLayout(pagePath);
     QLabel* labp1069909073 = new QLabel(T("数据目录"), this); bindTrKey(labp1069909073, "数据目录"); pForm->addRow(labp1069909073, makePathRow(pagePath, &m_dataDir, qs(AppPaths::dataDir()),
                                               this, SLOT(onOpenDataDir())));
-    QLabel* labp_db = new QLabel(T("数据库"), this); bindTrKey(labp_db, "数据库"); pForm->addRow(labp_db, makePathRow(pagePath, &m_dbFile, qs(AppPaths::databaseFile()),
+    QLabel* labp_auth = new QLabel(T("权限库"), this); bindTrKey(labp_auth, "权限库"); pForm->addRow(labp_auth, makePathRow(pagePath, &m_dbAuth, qs(AppPaths::authFile()),
+                                            this, SLOT(onOpenDataDir())));
+    QLabel* labp_log = new QLabel(T("日志库"), this); bindTrKey(labp_log, "日志库"); pForm->addRow(labp_log, makePathRow(pagePath, &m_dbLog, qs(AppPaths::logFile()),
+                                            this, SLOT(onOpenDataDir())));
+    QLabel* labp_prod = new QLabel(T("生产库"), this); bindTrKey(labp_prod, "生产库"); pForm->addRow(labp_prod, makePathRow(pagePath, &m_dbProd, qs(AppPaths::prodFile()),
+                                            this, SLOT(onOpenDataDir())));
+    QLabel* labp_verify = new QLabel(T("验证库"), this); bindTrKey(labp_verify, "验证库"); pForm->addRow(labp_verify, makePathRow(pagePath, &m_dbVerify, qs(AppPaths::verifyFile()),
+                                            this, SLOT(onOpenDataDir())));
+    QLabel* labp_calib = new QLabel(T("标定库"), this); bindTrKey(labp_calib, "标定库"); pForm->addRow(labp_calib, makePathRow(pagePath, &m_dbCalib, qs(AppPaths::calibFile()),
                                             this, SLOT(onOpenDataDir())));
     QLabel* labp_sols = new QLabel(T("方案目录"), this); bindTrKey(labp_sols, "方案目录"); pForm->addRow(labp_sols, makePathRow(pagePath, &m_solsDir, qs(AppPaths::solutionsDir()),
                                               this, SLOT(onOpenSolutionsDir())));
     m_lastSol = new QLineEdit(this);
     m_lastSol->setReadOnly(true);
     QLabel* lab_1172506318 = new QLabel(T("上次方案"), this); bindTrKey(lab_1172506318, "上次方案"); pForm->addRow(lab_1172506318, m_lastSol);
-    m_pathHint = new QLabel(T("用户与日志存在数据库中。数据根目录由安装约定决定，本页仅查看与打开，不支持随意改路径。"), pagePath);
+    m_pathHint = new QLabel(T("权限、日志、生产、验证、标定分五个库。数据根目录由安装约定决定，本页仅查看与打开，不支持随意改路径。"), pagePath);
     m_pathHint->setObjectName(QLatin1String("hint"));
     m_pathHint->setWordWrap(true);
     pForm->addRow(m_pathHint);
@@ -220,6 +238,7 @@ SettingsDlg::SettingsDlg(Session* session, QWidget* parent)
     m_closeAction->setEnabled(false);
     m_theme->setEnabled(m_canEdit);
     m_lang->setEnabled(m_canEdit);
+    m_permScope->setEnabled(m_canEdit && m_session && m_session->role() == RoleFactory);
     if (m_popupJobOk) {
         m_popupJobOk->setEnabled(m_canEdit);
     }
@@ -264,7 +283,11 @@ void SettingsDlg::loadFromSettings()
         }
     }
     m_dataDir->setText(qs(AppPaths::dataDir()));
-    m_dbFile->setText(qs(AppPaths::databaseFile()));
+    m_dbAuth->setText(qs(AppPaths::authFile()));
+    m_dbLog->setText(qs(AppPaths::logFile()));
+    m_dbProd->setText(qs(AppPaths::prodFile()));
+    m_dbVerify->setText(qs(AppPaths::verifyFile()));
+    m_dbCalib->setText(qs(AppPaths::calibFile()));
     m_solsDir->setText(qs(AppPaths::solutionsDir()));
     m_lastSol->setText(cur.lastSolutionPath.empty()
                            ? T("（尚无）")
@@ -278,6 +301,8 @@ void SettingsDlg::loadFromSettings()
     if (m_popupJobEx) {
         m_popupJobEx->setChecked(cur.popupJobException);
     }
+    const int scopeIndex = m_permScope->findData(cur.permScope);
+    m_permScope->setCurrentIndex(scopeIndex >= 0 ? scopeIndex : 0);
 }
 
 // 写盘并应用主题与语言
@@ -301,6 +326,12 @@ bool SettingsDlg::applySettings(bool interactivePrompt)
     }
     if (s.language.empty()) {
         s.language = "zh-CN";
+    }
+    if (m_session && m_session->role() == RoleFactory) {
+        s.permScope = m_permScope->currentData().toInt();
+        if (s.permScope != PermScopeInstance) {
+            s.permScope = PermScopeUnified;
+        }
     }
     if (!VisionCfgMgr::saveSettings(s)) {
         QMessageBox::warning(this, T("设置"), T("保存失败。"));
@@ -379,7 +410,7 @@ void SettingsDlg::retranslateUi()
         m_uiHint->setText(T("主界面立即切换。已打开的窗口关闭后重新打开，即为新语言。"));
     }
     if (m_pathHint) {
-        m_pathHint->setText(T("用户与日志存在数据库中。数据根目录由安装约定决定，本页仅查看与打开，不支持随意改路径。"));
+        m_pathHint->setText(T("权限、日志、生产、验证、标定分五个库。数据根目录由安装约定决定，本页仅查看与打开，不支持随意改路径。"));
     }
     if (m_runHint) {
         m_runHint->setText(T("产量清零、运行画面布局属于方案/运行态，请在运行页或「视图 → 画面配置」中修改。流程试跑结果弹窗在此配置；默认均不弹窗。"));

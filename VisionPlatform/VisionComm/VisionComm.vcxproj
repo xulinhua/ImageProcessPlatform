@@ -67,7 +67,7 @@
       <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>VisionCommon.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>VisionCommon.lib;winhttp.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -81,6 +81,9 @@
     <ClCompile Include="UdpChannel.cpp" />
     <ClCompile Include="StageTimer.cpp" />
     <ClCompile Include="CommFrame.cpp" />
+    <ClCompile Include="HttpClient.cpp" />
+    <ClCompile Include="NetUrl.cpp" />
+    <ClCompile Include="WebSocketClient.cpp" />
   </ItemGroup>
   <ItemGroup>
         <ClInclude Include="VisionCommExport.h" />
@@ -93,7 +96,11 @@
     <ClInclude Include="SerialChannel.h" />
     <ClInclude Include="TcpChannel.h" />
     <ClInclude Include="UdpChannel.h" />
-    <ClInclude Include="StageTimer.h" />  </ItemGroup>
+    <ClInclude Include="StageTimer.h" />
+    <ClInclude Include="HttpClient.h" />
+    <ClInclude Include="NetUrl.h" />
+    <ClInclude Include="WebSocketClient.h" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\VisionCommon\VisionCommon.vcxproj">
       <Project>{B4E91A10-7C22-4F18-9A01-A0B1C2D3E402}</Project>

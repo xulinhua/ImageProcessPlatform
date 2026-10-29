@@ -51,7 +51,7 @@
       <PreprocessorDefinitions>VISION_RUN_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>VisionCore.lib;VisionCommon.lib;VisionIpc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>VisionCore.lib;VisionCommon.lib;VisionIpc.lib;VisionDb.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -72,6 +72,7 @@
     <ProjectReference Include="..\VisionCore\VisionCore.vcxproj"><Project>{B4E91A10-7C22-4F18-9A01-A0B1C2D3E414}</Project></ProjectReference>
     <ProjectReference Include="..\VisionCommon\VisionCommon.vcxproj"><Project>{B4E91A10-7C22-4F18-9A01-A0B1C2D3E402}</Project></ProjectReference>
     <ProjectReference Include="..\VisionIpc\VisionIpc.vcxproj"><Project>{B4E91A10-7C22-4F18-9A01-A0B1C2D3E4B0}</Project></ProjectReference>
+    <ProjectReference Include="..\VisionDb\VisionDb.vcxproj"><Project>{B4E91A10-7C22-4F18-9A01-A0B1C2D3E430}</Project></ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
 </Project>

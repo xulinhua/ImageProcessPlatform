@@ -9,8 +9,11 @@
 #include "AuthDb.h"
 #include "SqliteDatabase.h"
 #include "AppPaths.h"
+#include "TextEncoding.h"
 #include <cstdio>
 #include <cstdlib>
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
 
 namespace Vision {
 
@@ -76,7 +79,7 @@ AuthDb& AuthDb::instance()
     return g;
 }
 
-// 创建用户表和角色权限表
+// 账号表和权限表。权限一行是「某角色的某一项」
 bool AuthDb::migrateSchema(std::string* error)
 {
     SchemaMigrator mig(&db());
@@ -107,32 +110,144 @@ bool AuthDb::migrateSchema(std::string* error)
                 error)) {
             return false;
         }
+    }
+    if (v < 2) {
         if (!db().exec(
-                "CREATE TABLE IF NOT EXISTS role_perm ("
+                "CREATE TABLE IF NOT EXISTS perm ("
                 "role INTEGER NOT NULL,"
-                "mask INTEGER NOT NULL,"
-                "PRIMARY KEY(role)"
+                "perm_id TEXT NOT NULL,"
+                "allowed INTEGER NOT NULL,"
+                "PRIMARY KEY(role, perm_id)"
                 ");",
                 error)) {
             return false;
         }
-        if (!mig.setVersion(1, error)) {
+        std::vector<std::vector<DbValue> > masks;
+        if (db().query("SELECT role, mask FROM role_perm;", std::vector<DbValue>(), &masks, 0)) {
+            for (size_t i = 0; i < masks.size(); ++i) {
+                if (masks[i].size() < 2) {
+                    continue;
+                }
+                if (!writeRolePerms(static_cast<int>(asInt(masks[i][0])),
+                        static_cast<uint32_t>(asInt(masks[i][1])), error)) {
+                    return false;
+                }
+            }
+        }
+        if (!mig.setVersion(2, error)) {
             return false;
         }
     }
     return true;
 }
 
-// 打开用户库并升级表结构
+// 把掩码拆成权限行。调用方负责事务
+bool AuthDb::writeRolePerms(int role, uint32_t mask, std::string* error)
+{
+    std::vector<DbValue> del;
+    del.push_back(DbValue::fromInt(role));
+    if (!db().exec("DELETE FROM perm WHERE role=?1;", del, error)) {
+        return false;
+    }
+    for (int i = 0; i < permissionCount(); ++i) {
+        const Perm bit = permissionAt(i);
+        if (bit == PermNone) {
+            continue;
+        }
+        const char* id = permissionId(bit);
+        if (!id || !id[0]) {
+            continue;
+        }
+        std::vector<DbValue> a;
+        a.push_back(DbValue::fromInt(role));
+        a.push_back(DbValue::fromText(id));
+        a.push_back(DbValue::fromInt((mask & static_cast<uint32_t>(bit)) != 0 ? 1 : 0));
+        if (!db().exec(
+                "INSERT INTO perm(role, perm_id, allowed) VALUES(?1,?2,?3);",
+                a, error)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+// 打开权限库。空库时从旧 vision.db 搬一次
 bool AuthDb::open(std::string* error)
 {
     AppPaths::ensureDirs();
     if (!db().isOpen()) {
-        if (!db().open(AppPaths::databaseFile(), error)) {
+        if (!db().open(AppPaths::authFile(), error)) {
             return false;
         }
     }
-    return migrateSchema(error);
+    if (!migrateSchema(error)) {
+        return false;
+    }
+    return importLegacy(error);
+}
+
+// 旧库不在或已经有用户时不动
+bool AuthDb::importLegacy(std::string* error)
+{
+    std::vector<std::vector<DbValue> > countRows;
+    if (!db().query("SELECT COUNT(*) FROM users;", std::vector<DbValue>(), &countRows, error)) {
+        return false;
+    }
+    if (!countRows.empty() && !countRows[0].empty() && asInt(countRows[0][0]) > 0) {
+        return true;
+    }
+    const std::wstring path = utf8ToWide(AppPaths::legacyDatabaseFile());
+    if (GetFileAttributesW(path.c_str()) == INVALID_FILE_ATTRIBUTES) {
+        return true;
+    }
+    SqliteDatabase oldDb;
+    if (!oldDb.open(AppPaths::legacyDatabaseFile(), 0)) {
+        return true;
+    }
+    std::vector<std::vector<DbValue> > users;
+    if (!oldDb.query(
+            "SELECT id,login_name,display_name,role,salt,pwd_hash,hash_kind,enabled,"
+            "must_change_pwd,created_at,last_login_at,fail_count,lock_until FROM users;",
+            std::vector<DbValue>(), &users, 0)) {
+        return true;
+    }
+    std::vector<std::vector<DbValue> > roles;
+    oldDb.query("SELECT role, mask FROM role_perm;", std::vector<DbValue>(), &roles, 0);
+    if (users.empty() && roles.empty()) {
+        return true;
+    }
+    if (!db().begin(error)) {
+        return false;
+    }
+    for (size_t i = 0; i < users.size(); ++i) {
+        const std::vector<DbValue>& r = users[i];
+        if (r.size() < 13) {
+            continue;
+        }
+        std::vector<DbValue> a;
+        for (size_t c = 0; c < 13; ++c) {
+            a.push_back(r[c]);
+        }
+        if (!db().exec(
+                "INSERT INTO users(id,login_name,display_name,role,salt,pwd_hash,hash_kind,enabled,"
+                "must_change_pwd,created_at,last_login_at,fail_count,lock_until) "
+                "VALUES(?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13);",
+                a, error)) {
+            db().rollback(0);
+            return false;
+        }
+    }
+    for (size_t i = 0; i < roles.size(); ++i) {
+        if (roles[i].size() < 2) {
+            continue;
+        }
+        if (!writeRolePerms(static_cast<int>(asInt(roles[i][0])),
+                static_cast<uint32_t>(asInt(roles[i][1])), error)) {
+            db().rollback(0);
+            return false;
+        }
+    }
+    return db().commit(error);
 }
 
 // 关闭数据库
@@ -231,13 +346,23 @@ bool AuthDb::loadRoleMask(UserRole role, uint32_t* mask, std::string* error)
     std::vector<DbValue> args;
     args.push_back(DbValue::fromInt(role));
     std::vector<std::vector<DbValue> > rows;
-    if (!db().query("SELECT mask FROM role_perm WHERE role=?1;", args, &rows, error)) {
+    if (!db().query("SELECT perm_id, allowed FROM perm WHERE role=?1;", args, &rows, error)) {
         return false;
     }
-    if (rows.empty() || rows[0].empty()) {
+    if (rows.empty()) {
         return false;
     }
-    *mask = static_cast<uint32_t>(asInt(rows[0][0])) | lockedPerms(role);
+    uint32_t bits = 0;
+    for (size_t i = 0; i < rows.size(); ++i) {
+        if (rows[i].size() < 2 || asInt(rows[i][1]) == 0) {
+            continue;
+        }
+        const Perm bit = permissionFromId(asText(rows[i][0]).c_str());
+        if (bit != PermNone) {
+            bits |= static_cast<uint32_t>(bit);
+        }
+    }
+    *mask = bits | lockedPerms(role);
     return true;
 }
 
@@ -248,10 +373,14 @@ bool AuthDb::saveRoleMask(UserRole role, uint32_t mask, std::string* error)
         return false;
     }
     mask |= lockedPerms(role);
-    std::vector<DbValue> a;
-    a.push_back(DbValue::fromInt(role));
-    a.push_back(DbValue::fromInt(mask));
-    return db().exec("INSERT OR REPLACE INTO role_perm(role,mask) VALUES(?1,?2);", a, error);
+    if (!db().begin(error)) {
+        return false;
+    }
+    if (!writeRolePerms(static_cast<int>(role), mask, error)) {
+        db().rollback(0);
+        return false;
+    }
+    return db().commit(error);
 }
 
 }

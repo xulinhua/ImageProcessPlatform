@@ -10,6 +10,7 @@
 #include "ToolBase.h"
 #include "ToolParamUi.h"
 #include "QtConv.h"
+#include "Session.h"
 #include "UiText.h"
 #include <QCheckBox>
 #include <QComboBox>
@@ -74,6 +75,21 @@ protected:
         }
         m_lay->addStretch(1);
         applyParamControlStyle(this);
+    }
+
+    bool allowField(const std::string& key) const
+    {
+        if (!m_session || !m_tool) {
+            return false;
+        }
+        std::string flowId;
+        if (m_sol) {
+            JobCfg* job = m_sol->findJobCfgOfTool(m_tool->id, 0);
+            if (job) {
+                flowId = job->id.toString();
+            }
+        }
+        return m_session->allowToolField(m_tool->toolName, flowId, m_tool->id.toString(), key);
     }
 
     void saveToTool()
@@ -223,6 +239,7 @@ private:
                 });
                 editor = wrap;
                 row.editor = line;
+                wrap->setEnabled(allowField(f.key));
                 m_rows.push_back(row);
                 m_lay->addWidget(mkParamCell(this, T(f.title.c_str()), wrap));
                 m_holders.push_back(wrap);
@@ -231,6 +248,9 @@ private:
             editor = line;
         }
         row.editor = editor;
+        if (editor) {
+            editor->setEnabled(allowField(f.key));
+        }
         m_rows.push_back(row);
         QWidget* cell = mkParamCell(this, T(f.title.c_str()), editor);
         m_lay->addWidget(cell);

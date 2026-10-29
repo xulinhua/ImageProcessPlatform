@@ -112,9 +112,73 @@ std::string permissionHint(Perm p)
     }
 }
 
-// 角色出厂权限掩码
+std::string permPageNodeId(int page)
+{
+    switch (page) {
+    case 0: return "page|runtime";
+    case 1: return "page|design";
+    case 2: return "page|device";
+    case 3: return "page|system";
+    case 4: return "page|log";
+    default: return std::string();
+    }
+}
+
+std::string permNodeId(Perm p)
+{
+    switch (p) {
+    case PermRuntimeView:           return "page|runtime|view";
+    case PermRuntimeStartStop:      return "page|runtime|start_stop";
+    case PermRuntimeResetCount:     return "page|runtime|reset_count";
+    case PermRuntimeSwitchSolution: return "page|runtime|switch_solution";
+    case PermEnterDesign:           return "page|design|enter";
+    case PermEditSolution:          return "page|design|edit_solution";
+    case PermRunJobDebug:           return "page|design|run_debug";
+    case PermEditDevice:            return "page|device|edit";
+    case PermEditComm:              return "page|device|comm";
+    case PermManageUsers:           return "page|system|users";
+    case PermEditAppSettings:       return "page|system|settings";
+    case PermViewLogs:              return "page|log|view";
+    case PermManageLogs:            return "page|log|manage";
+    default:                        return std::string();
+    }
+}
+
+bool permDefaultOn(UserRole role, Perm p)
+{
+    if (role == RoleFactory || p == PermRuntimeView || p == PermRuntimeStartStop) {
+        return true;
+    }
+    if (role == RoleOperator) {
+        return false;
+    }
+    if (p == PermManageUsers || p == PermEditAppSettings || p == PermManageLogs) {
+        return role == RoleAdmin;
+    }
+    return true;
+}
+
+bool permNodeLocked(UserRole role, Perm p)
+{
+    if (p == PermRuntimeView) {
+        return true;
+    }
+    if (role != RoleAdmin) {
+        return false;
+    }
+    return p == PermManageUsers || p == PermEditAppSettings || p == PermViewLogs || p == PermManageLogs;
+}
+
+// 角色出厂权限掩码。只给旧的角色表读取，界面判断走权限树
 uint32_t defaultPerms(UserRole role)
 {
+    if (role == RoleFactory) {
+        uint32_t all = 0;
+        for (int i = 0; i < permissionCount(); ++i) {
+            all |= static_cast<uint32_t>(permissionAt(i));
+        }
+        return all;
+    }
     uint32_t p = PermRuntimeView | PermRuntimeStartStop;
     if (role == RoleOperator) {
         return p;
@@ -130,6 +194,9 @@ uint32_t defaultPerms(UserRole role)
 // 角色锁定位：不能在设置里关掉
 uint32_t lockedPerms(UserRole role)
 {
+    if (role == RoleFactory) {
+        return defaultPerms(RoleFactory);
+    }
     uint32_t p = PermRuntimeView;
     if (role == RoleAdmin) {
         p |= PermManageUsers | PermEditAppSettings | PermViewLogs | PermManageLogs;
@@ -140,6 +207,9 @@ uint32_t lockedPerms(UserRole role)
 // 结合操作员两项开关后的有效掩码
 uint32_t permissionsForRole(UserRole role, bool operatorReset, bool operatorSwitch)
 {
+    if (role == RoleFactory) {
+        return defaultPerms(RoleFactory);
+    }
     uint32_t p = defaultPerms(role);
     if (role == RoleOperator) {
         if (operatorReset) {
@@ -224,6 +294,7 @@ std::string roleTitle(UserRole role)
     case RoleAdmin:    return Translate::tr("管理员");
     case RoleEngineer: return Translate::tr("工程师");
     case RoleOperator: return Translate::tr("操作员");
+    case RoleFactory:  return Translate::tr("厂家");
     default:           return Translate::tr("操作员");
     }
 }

@@ -15,6 +15,12 @@
     <ClCompile Include="db\SqliteDatabase.cpp">
       <Filter>db</Filter>
     </ClCompile>
+    <ClCompile Include="db\ProdDb.cpp">
+      <Filter>db</Filter>
+    </ClCompile>
+    <ClCompile Include="db\VerifyDb.cpp">
+      <Filter>db</Filter>
+    </ClCompile>
     <ClCompile Include="..\third_party\sqlite\sqlite3.c">
       <Filter>sqlite</Filter>
     </ClCompile>
@@ -30,6 +36,12 @@
       <Filter>db</Filter>
     </ClInclude>
     <ClInclude Include="db\SqliteDatabase.h">
+      <Filter>db</Filter>
+    </ClInclude>
+    <ClInclude Include="db\ProdDb.h">
+      <Filter>db</Filter>
+    </ClInclude>
+    <ClInclude Include="db\VerifyDb.h">
       <Filter>db</Filter>
     </ClInclude>
   </ItemGroup>

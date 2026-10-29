@@ -18,6 +18,9 @@
     <ClCompile Include="CalibMgr.cpp">
       <Filter>calib</Filter>
     </ClCompile>
+    <ClCompile Include="CalibDb.cpp">
+      <Filter>calib</Filter>
+    </ClCompile>
     <ClCompile Include="CalibTypes.cpp">
       <Filter>calib</Filter>
     </ClCompile>
@@ -30,6 +33,9 @@
       <Filter>calib</Filter>
     </ClInclude>
     <ClInclude Include="CalibMgr.h">
+      <Filter>calib</Filter>
+    </ClInclude>
+    <ClInclude Include="CalibDb.h">
       <Filter>calib</Filter>
     </ClInclude>
     <ClInclude Include="CalibTypes.h">

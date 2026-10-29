@@ -60,6 +60,23 @@ public:
     bool modbusWriteRegs(const ObjectId& id, const std::string& peerId, int slave, ModbusTable table,
                          int address, const std::vector<uint16_t>& regs, std::string* err);
 
+    /** @brief 关掉一个对端的连接。客户端忽略 peerId，只断当前套接字 */
+    void closePeer(const ObjectId& id, const std::string& peerId);
+
+    /**
+     * @brief 在已打开的 HTTP 通道上发一次请求
+     * @param path 为空则用打开时 url 里的路径
+     * @param status 返回 HTTP 状态码
+     * @param response 返回正文
+     */
+    bool httpExchange(const ObjectId& id, const std::string& method, const std::string& path,
+                      const std::string& contentType, const std::string& body,
+                      int* status, std::string* response, std::string* err);
+    /** @brief 在已打开的 WebSocket 通道上发一条完整消息 */
+    bool wsSend(const ObjectId& id, const CommBytes& data, bool text, std::string* err);
+    /** @brief 收一条完整 WebSocket 消息。超时返回空，err 为读超时 */
+    CommBytes wsRecv(const ObjectId& id, int timeoutMs, bool* text, std::string* err);
+
 private:
     /** @brief 只允许 instance 构造 */
     CommMgr();

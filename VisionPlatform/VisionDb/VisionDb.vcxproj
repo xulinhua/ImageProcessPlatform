@@ -73,6 +73,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="db\SqliteDatabase.cpp" />
+    <ClCompile Include="db\ProdDb.cpp" />
+    <ClCompile Include="db\VerifyDb.cpp" />
     <ClCompile Include="..\third_party\sqlite\sqlite3.c">
       <CompileAs>CompileAsC</CompileAs>
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
@@ -85,6 +87,8 @@
 <ClInclude Include="db\DbTypes.h" />
     <ClInclude Include="db\IDatabase.h" />
     <ClInclude Include="db\SqliteDatabase.h" />
+    <ClInclude Include="db\ProdDb.h" />
+    <ClInclude Include="db\VerifyDb.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\VisionCommon\VisionCommon.vcxproj">

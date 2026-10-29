@@ -586,6 +586,35 @@ std::string TcpServerChannel::waitIncoming(int timeoutMs)
     return std::string();
 }
 
+// 只断当前套接字。自动重连线程看到套接字失效后会再连
+void TcpClientChannel::closePeer(const std::string&)
+{
+    std::lock_guard<std::mutex> lock(m_mu);
+    if (m_sock != INVALID_SOCKET) {
+        closesocket(m_sock);
+        m_sock = INVALID_SOCKET;
+    }
+    m_remote.clear();
+}
+
+// 关掉一个或全部已接入客户端，监听套接字保留
+void TcpServerChannel::closePeer(const std::string& peerId)
+{
+    std::lock_guard<std::mutex> lock(m_mu);
+    if (peerId.empty()) {
+        std::vector<std::string> ids;
+        for (std::map<std::string, Client>::iterator it = m_clients.begin(); it != m_clients.end(); ++it) {
+            ids.push_back(it->first);
+        }
+        for (size_t i = 0; i < ids.size(); ++i) {
+            dropClient(ids[i]);
+        }
+    } else {
+        dropClient(peerId);
+    }
+    m_cv.notify_all();
+}
+
 // 传输类型
 CommTransport TcpClientChannel::transport() const
 {

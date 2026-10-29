@@ -1490,9 +1490,19 @@ bool VisionCfgMgr::saveSettings(const AppSettings& s)
     o.set("popupJobOk", s.popupJobOk);
     o.set("popupJobNg", s.popupJobNg);
     o.set("popupJobException", s.popupJobException);
-    o.set("permOperator", static_cast<double>(s.permOperator));
-    o.set("permEngineer", static_cast<double>(s.permEngineer));
-    o.set("permAdmin", static_cast<double>(s.permAdmin));
+    o.set("permScope", s.permScope);
+    JsonValue nodes;
+    nodes.makeArray();
+    for (size_t i = 0; i < s.permNodes.size(); ++i) {
+        JsonValue g;
+        g.makeObject();
+        g.set("id", s.permNodes[i].id);
+        g.set("op", s.permNodes[i].op);
+        g.set("eng", s.permNodes[i].eng);
+        g.set("admin", s.permNodes[i].admin);
+        nodes.append(g);
+    }
+    o.set("permNodes", nodes);
     return writeFileAtomic(AppPaths::settingsFile(), JsonValue::stringify(o, true));
 }
 
@@ -1548,21 +1558,45 @@ FileLoadStatus VisionCfgMgr::loadSettings(AppSettings* s, std::string* error)
     if (s->closeAction == CloseActionMinimizeTray) {
         s->closeAction = CloseActionExit;
     }
-    if (o.contains("permOperator")) {
-        s->permOperator = static_cast<uint32_t>(o.value("permOperator").toDouble());
-        s->permEngineer = static_cast<uint32_t>(o.value("permEngineer").toDouble());
-        s->permAdmin = static_cast<uint32_t>(o.value("permAdmin").toDouble());
-    } else {
-        s->permOperator = permissionsForRole(RoleOperator,
-                                             o.value("operatorCanResetCount").toBool(false),
-                                             o.value("operatorCanSwitchSolution").toBool(false));
-        s->permEngineer = defaultPerms(RoleEngineer);
-        s->permAdmin = defaultPerms(RoleAdmin);
+    s->permScope = o.value("permScope").toInt(PermScopeUnified);
+    if (s->permScope != PermScopeInstance) {
+        s->permScope = PermScopeUnified;
     }
-    s->permOperator |= lockedPerms(RoleOperator);
-    s->permEngineer |= lockedPerms(RoleEngineer);
-    s->permAdmin |= lockedPerms(RoleAdmin);
-    migrateLogPermBits(&s->permOperator, &s->permEngineer, &s->permAdmin);
+    s->permNodes.clear();
+    const JsonValue nodes = o.value("permNodes");
+    for (int i = 0; i < nodes.size(); ++i) {
+        const JsonValue g = nodes.at(i);
+        if (!g.isObject()) {
+            continue;
+        }
+        AppSettings::PermNodeGrant row;
+        row.id = g.stringOf("id");
+        if (row.id.empty()) {
+            continue;
+        }
+        row.op = g.flagOf("op", true);
+        row.eng = g.flagOf("eng", true);
+        row.admin = g.flagOf("admin", true);
+        s->permNodes.push_back(row);
+    }
+    if (o.contains("permOperator") || o.contains("permEngineer") || o.contains("permAdmin")
+        || o.contains("operatorCanResetCount")) {
+        uint32_t op = static_cast<uint32_t>(o.value("permOperator").toDouble());
+        uint32_t eng = static_cast<uint32_t>(o.value("permEngineer").toDouble());
+        uint32_t admin = static_cast<uint32_t>(o.value("permAdmin").toDouble());
+        if (!o.contains("permOperator")) {
+            op = permissionsForRole(RoleOperator,
+                                    o.value("operatorCanResetCount").toBool(false),
+                                    o.value("operatorCanSwitchSolution").toBool(false));
+            eng = defaultPerms(RoleEngineer);
+            admin = defaultPerms(RoleAdmin);
+        }
+        migrateLogPermBits(&op, &eng, &admin);
+        op |= lockedPerms(RoleOperator);
+        eng |= lockedPerms(RoleEngineer);
+        admin |= lockedPerms(RoleAdmin);
+        s->importLegacyMasks(op, eng, admin);
+    }
     return FileLoadOk;
 }
 

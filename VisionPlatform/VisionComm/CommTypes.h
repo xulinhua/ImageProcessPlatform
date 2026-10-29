@@ -27,13 +27,17 @@ namespace Vision {
  * TCP 客户端：host、port
  * TCP 服务端：port
  * UDP：port（本机）、host、remotePort
+ * HTTP：url、timeoutMs、token
+ * WebSocket：url、timeoutMs、token
  */
 enum CommChannelType {
     CommChannelTypeUndefined = -1, ///< 未定义
     CommSerial = 0,    ///< 串口
     CommTcpClient = 1, ///< TCP 客户端
     CommTcpServer = 2, ///< TCP 服务端
-    CommUdp = 3,        ///< UDP
+    CommUdp = 3,       ///< UDP
+    CommHttp = 4,      ///< HTTP 客户端
+    CommWebSocket = 5, ///< WebSocket 客户端
     CommChannelTypeMax ///< 个数，不是合法值
 };
 

@@ -47,6 +47,8 @@ public:
     void drain(const std::string& peerId);
     /** @brief 客户端没有多连接，始终返回空 */
     std::string waitIncoming(int timeoutMs);
+    /** @brief 断开当前套接字。自动重连开着时，重连线程会再连 */
+    void closePeer(const std::string& peerId);
 
 private:
     /** @brief 按已记下的主机和端口连一次。自动重连线程调用 */
@@ -95,6 +97,8 @@ public:
     void drain(const std::string& peerId);
     /** @brief 等到任一客户端有数据，返回其 id */
     std::string waitIncoming(int timeoutMs);
+    /** @brief 关掉指定客户端。peerId 为空则断开全部已接入客户端，监听保留 */
+    void closePeer(const std::string& peerId);
 
 private:
     /** @class Client @brief 已接入的一个客户端 */

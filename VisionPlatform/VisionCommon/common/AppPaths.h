@@ -36,8 +36,20 @@ public:
     static std::string compositesDir();
     /** @brief 本机设置：data\settings.json */
     static std::string settingsFile();
-    /** @brief SQLite：data\vision.db */
-    static std::string databaseFile();
+    /** @brief 旧的单一库 data\vision.db，只用于把已有用户和日志迁出 */
+    static std::string legacyDatabaseFile();
+    /** @brief 权限库：data\auth.db */
+    static std::string authFile();
+    /** @brief 日志库：data\log.db */
+    static std::string logFile();
+    /** @brief 生产库：data\prod.db */
+    static std::string prodFile();
+    /** @brief 验证复核库：data\verify.db */
+    static std::string verifyFile();
+    /** @brief 标定记录库：data\calib.db */
+    static std::string calibFile();
+    /** @brief 标定追溯文件：data\calib */
+    static std::string calibDir();
     /** @brief 插件根：exe\plugins */
     static std::string pluginsDir();
     /** @brief 工具壳：plugins\tools */

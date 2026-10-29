@@ -255,21 +255,64 @@ int64_t SqliteDatabase::lastInsertId() const
     return m_db ? sqlite3_last_insert_rowid(m_db) : 0;
 }
 
-// 取六位年月；不足则用当前月
+// 表名字符是否可直接拼进 SQL
+bool TableRouter::isSafeIdent(const std::string& name)
+{
+    if (name.empty() || name.size() > 64) {
+        return false;
+    }
+    for (size_t i = 0; i < name.size(); ++i) {
+        const char c = name[i];
+        const bool ok = (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')
+            || (c >= '0' && c <= '9') || c == '_';
+        if (!ok) {
+            return false;
+        }
+    }
+    return true;
+}
+
+namespace {
+
+// 从文本里取出年、月。认 YYYY-MM、YYYY_MM、YYYYMM
+bool readYearMonth(const std::string& text, int* year, int* month)
+{
+    if (!year || !month || text.size() < 6) {
+        return false;
+    }
+    if (text.size() >= 7 && (text[4] == '-' || text[4] == '_')) {
+        *year = atoi(text.substr(0, 4).c_str());
+        *month = atoi(text.substr(5, 2).c_str());
+        return *year >= 1970 && *month >= 1 && *month <= 12;
+    }
+    if (text[0] >= '0' && text[0] <= '9') {
+        *year = atoi(text.substr(0, 4).c_str());
+        *month = atoi(text.substr(4, 2).c_str());
+        return *year >= 1970 && *month >= 1 && *month <= 12;
+    }
+    return false;
+}
+
+} // namespace
+
+// 归一成 YYYY_MM。空串或无法识别时用当前月
 std::string TableRouter::monthSuffix(const std::string& yyyymm)
 {
-    if (yyyymm.size() >= 6) {
-        return yyyymm.substr(0, 6);
+    int year = 0;
+    int month = 0;
+    if (!readYearMonth(yyyymm, &year, &month)) {
+        time_t t = time(0);
+        struct tm lt;
+        localtime_s(&lt, &t);
+        year = lt.tm_year + 1900;
+        month = lt.tm_mon + 1;
     }
-    time_t t = time(0);
-    struct tm lt;
-    localtime_s(&lt, &t);
     char buf[16];
-    sprintf(buf, "%04d%02d", lt.tm_year + 1900, lt.tm_mon + 1);
+    sprintf(buf, "%04d_%02d", year, month);
     return std::string(buf);
 }
 
-// 逻辑表名加 _YYYYMM
+// 逻辑表名加 _YYYY_MM
 std::string TableRouter::physical(const std::string& logical, const std::string& yyyymm)
 {
     return logical + "_" + monthSuffix(yyyymm);
@@ -279,6 +322,19 @@ std::string TableRouter::physical(const std::string& logical, const std::string&
 std::string TableRouter::currentMonthPhysical(const std::string& logical)
 {
     return physical(logical, std::string());
+}
+
+// 按批次的物理表。未跨月不带月份
+std::string TableRouter::batchPhysical(const std::string& logical, int64_t batchId, const std::string& monthOrEmpty)
+{
+    char buf[32];
+    sprintf(buf, "%lld", static_cast<long long>(batchId));
+    std::string name = logical + "_" + buf;
+    if (!monthOrEmpty.empty()) {
+        name += "_";
+        name += monthSuffix(monthOrEmpty);
+    }
+    return name;
 }
 
 // 绑定要升级的库

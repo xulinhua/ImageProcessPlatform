@@ -17,7 +17,7 @@ namespace Vision {
 
 /**
  * @class LogDb
- * @brief 日志表 app_log。与用户库共用 data\vision.db，文本列为 UTF-8
+ * @brief 日志库 data\log.db。按种类和月份分表，如 op_log_2026_10
  */
 class LogDb {
 public:
@@ -35,8 +35,8 @@ public:
      * @return 成功删除的日期个数
      */
     int deleteDays(const std::vector<std::string>& keys);
-    /** @brief 删掉早于保留天数的记录 */
-    void pruneOlderThanDays(int days);
+    /** @brief 按种类丢掉过期月表：操作 180 天，运行诊断 30 天，调试 7 天 */
+    void prune();
 
 private:
     /** @brief 分配实现 */
@@ -48,8 +48,16 @@ private:
     /** @brief 禁止赋值 */
     LogDb& operator=(const LogDb&);
 
-    /** @brief 打开共用库并确保 app_log 表存在 */
+    /** @brief 打开日志库，并把旧 vision.db 的 app_log 迁进来一次 */
     bool ensureOpen();
+    /** @brief 没有这张月表就创建 */
+    bool ensureTable(const std::string& table);
+    /** @brief 这一条日志落在哪张物理表 */
+    std::string tableFor(const LogRecord& rec) const;
+    /** @brief 这个种类、这段日期要查的物理表 */
+    std::vector<std::string> tablesFor(LogKind kind, const std::string& dayFrom, const std::string& dayTo);
+    /** @brief 从旧 vision.db 拷出 app_log。文件不在则跳过 */
+    bool importLegacy();
 
     struct Impl;
     Impl* m; ///< 连接与临界区

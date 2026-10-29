@@ -67,7 +67,7 @@
       <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>VisionFile.lib;VisionCommon.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>VisionFile.lib;VisionCommon.lib;VisionDb.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -75,12 +75,14 @@
     <ClCompile Include="CalibJson.cpp" />
     <ClCompile Include="CalibMath.cpp" />
     <ClCompile Include="CalibMgr.cpp" />
+    <ClCompile Include="CalibDb.cpp" />
     <ClCompile Include="CalibTypes.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CalibJson.h" />
     <ClInclude Include="CalibMath.h" />
     <ClInclude Include="CalibMgr.h" />
+    <ClInclude Include="CalibDb.h" />
     <ClInclude Include="CalibTypes.h" />
     <ClInclude Include="VisionCalibExport.h" />
   </ItemGroup>
@@ -90,6 +92,9 @@
     </ProjectReference>
     <ProjectReference Include="..\VisionFile\VisionFile.vcxproj">
       <Project>{B4E91A10-7C22-4F18-9A01-A0B1C2D3E431}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\VisionDb\VisionDb.vcxproj">
+      <Project>{B4E91A10-7C22-4F18-9A01-A0B1C2D3E430}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

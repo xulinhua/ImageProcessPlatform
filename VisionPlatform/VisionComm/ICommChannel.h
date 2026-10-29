@@ -21,7 +21,9 @@ enum CommTransport {
     TransportSerial = 0,    ///< 串口
     TransportTcpClient = 1, ///< TCP 客户端
     TransportTcpServer = 2, ///< TCP 服务端
-    TransportUdp = 3        ///< UDP
+    TransportUdp = 3,       ///< UDP
+    TransportHttp = 4,      ///< HTTP 客户端
+    TransportWebSocket = 5  ///< WebSocket 客户端
 };
 
 /** @class CommPeer @brief 通道上的一个对端。串口 / TCP 客户端 / UDP 只有一个，id 为空 */
@@ -68,6 +70,8 @@ public:
      * @return 端点 id；超时或本通道不是服务端时为空
      */
     virtual std::string waitIncoming(int timeoutMs) = 0;
+    /** @brief 关掉一个对端。服务端只断该客户端；客户端只断当前套接字，自动重连仍可再连 */
+    virtual void closePeer(const std::string& peerId) { (void)peerId; }
 };
 
 /** @brief 写入错误文本；err 为空则忽略 */

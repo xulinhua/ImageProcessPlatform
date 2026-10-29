@@ -9,6 +9,7 @@
 #include "LogDb.h"
 #include "AppPaths.h"
 #include "SqliteDatabase.h"
+#include "TextEncoding.h"
 #include <cstdio>
 #include <cstdlib>
 #include <ctime>
@@ -73,13 +74,41 @@ std::string cutDay(int keepDays)
     return std::string(buf);
 }
 
-// 种类对应的删除键前缀
+// 种类对应的逻辑表和删除键前缀
 const char* kindKey(LogKind k)
 {
-    return k == LogKindDebug ? "debug" : "op";
+    if (k == LogKindDebug) {
+        return "debug";
+    }
+    if (k == LogKindRun) {
+        return "run";
+    }
+    return "op";
 }
 
-// 拆开 op|日期 或 debug|日期
+const char* logicalOf(LogKind k)
+{
+    if (k == LogKindDebug) {
+        return "debug_log";
+    }
+    if (k == LogKindRun) {
+        return "run_log";
+    }
+    return "op_log";
+}
+
+int keepDaysOf(LogKind k)
+{
+    if (k == LogKindDebug) {
+        return 7;
+    }
+    if (k == LogKindRun) {
+        return 30;
+    }
+    return 180;
+}
+
+// 拆开 op|日期、debug|日期 或 run|日期
 bool splitKey(const std::string& key, LogKind* kind, std::string* day)
 {
     const size_t bar = key.find('|');
@@ -91,8 +120,16 @@ bool splitKey(const std::string& key, LogKind* kind, std::string* day)
     if (day->size() != 10) {
         return false;
     }
-    *kind = (ks == "debug") ? LogKindDebug : LogKindOp;
-    return ks == "debug" || ks == "op";
+    if (ks == "debug") {
+        *kind = LogKindDebug;
+    } else if (ks == "run") {
+        *kind = LogKindRun;
+    } else if (ks == "op") {
+        *kind = LogKindOp;
+    } else {
+        return false;
+    }
+    return true;
 }
 
 // 查询行还原成一条日志
@@ -123,7 +160,7 @@ LogRecord rowToRecord(const std::vector<DbValue>& r)
 
 struct LogDb::Impl {
     CRITICAL_SECTION cs; ///< 保护连接
-    SqliteDatabase db;   ///< 共用 vision.db
+    SqliteDatabase db;   ///< data\log.db
     bool ready;          ///< 表已就绪
 
     Impl()
@@ -159,7 +196,7 @@ LogDb::~LogDb()
     }
 }
 
-// 打开共用库并确保 app_log 表存在
+// 打开日志库。月表在写入时创建
 bool LogDb::ensureOpen()
 {
     if (m->ready) {
@@ -167,41 +204,156 @@ bool LogDb::ensureOpen()
     }
     AppPaths::ensureDirs();
     std::string err;
-    if (!m->db.open(AppPaths::databaseFile(), &err)) {
+    if (!m->db.open(AppPaths::logFile(), &err)) {
         return false;
     }
-    if (!m->db.exec(
-            "CREATE TABLE IF NOT EXISTS app_log ("
-            "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-            "time_iso TEXT NOT NULL,"
-            "kind INTEGER NOT NULL,"
-            "channel INTEGER NOT NULL,"
-            "level INTEGER NOT NULL,"
-            "action TEXT,"
-            "login_name TEXT,"
-            "role TEXT,"
-            "target TEXT,"
-            "result TEXT,"
-            "detail TEXT,"
-            "station_id TEXT,"
-            "job_id TEXT,"
-            "tool_id TEXT,"
-            "elapsed_ms INTEGER"
-            ");",
-            0)) {
+    SchemaMigrator mig(&m->db);
+    if (!mig.ensureVersionTable(&err)) {
         return false;
     }
-    if (!m->db.exec(
-            "CREATE INDEX IF NOT EXISTS idx_app_log_kind_time ON app_log(kind, time_iso);",
-            0)) {
-        return false;
+    if (mig.currentVersion(&err) < 1) {
+        importLegacy();
+        if (!mig.setVersion(1, &err)) {
+            return false;
+        }
     }
     m->ready = true;
     return true;
 }
 
+// 没有这张月表就创建
+bool LogDb::ensureTable(const std::string& table)
+{
+    if (!TableRouter::isSafeIdent(table)) {
+        return false;
+    }
+    const std::string sql =
+        "CREATE TABLE IF NOT EXISTS " + table + " ("
+        "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+        "time_iso TEXT NOT NULL,"
+        "kind INTEGER NOT NULL,"
+        "channel INTEGER NOT NULL,"
+        "level INTEGER NOT NULL,"
+        "action TEXT,"
+        "login_name TEXT,"
+        "role TEXT,"
+        "target TEXT,"
+        "result TEXT,"
+        "detail TEXT,"
+        "station_id TEXT,"
+        "job_id TEXT,"
+        "tool_id TEXT,"
+        "elapsed_ms INTEGER);";
+    if (!m->db.exec(sql, 0)) {
+        return false;
+    }
+    const std::string index = "idx_" + table + "_time";
+    if (!TableRouter::isSafeIdent(index)) {
+        return false;
+    }
+    return m->db.exec("CREATE INDEX IF NOT EXISTS " + index + " ON " + table + "(time_iso);", 0);
+}
+
+// 调试先进调试表；运行通道进运行诊断；其余是操作
+std::string LogDb::tableFor(const LogRecord& rec) const
+{
+    LogKind kind = LogKindOp;
+    if (rec.kind == LogKindDebug) {
+        kind = LogKindDebug;
+    } else if (rec.kind == LogKindRun || rec.channel == LogChannelRun) {
+        kind = LogKindRun;
+    }
+    return TableRouter::physical(logicalOf(kind), rec.timeIso);
+}
+
+// 列出这个种类在日期范围内的物理表
+std::vector<std::string> LogDb::tablesFor(LogKind kind, const std::string& dayFrom, const std::string& dayTo)
+{
+    std::vector<std::string> out;
+    const std::string logical = logicalOf(kind);
+    std::vector<DbValue> args;
+    args.push_back(DbValue::fromText(logical + "_%"));
+    std::vector<std::vector<DbValue> > rows;
+    if (!m->db.query(
+            "SELECT name FROM sqlite_master WHERE type='table' AND name LIKE ?1 ORDER BY name;",
+            args, &rows, 0)) {
+        return out;
+    }
+    const std::string fromMonth = dayFrom.empty() ? std::string() : TableRouter::monthSuffix(dayFrom);
+    const std::string toMonth = dayTo.empty() ? std::string() : TableRouter::monthSuffix(dayTo);
+    for (size_t i = 0; i < rows.size(); ++i) {
+        if (rows[i].empty()) {
+            continue;
+        }
+        const std::string name = asText(rows[i][0]);
+        if (!TableRouter::isSafeIdent(name) || name.compare(0, logical.size() + 1, logical + "_") != 0) {
+            continue;
+        }
+        const std::string suffix = name.substr(logical.size() + 1);
+        if (!fromMonth.empty() && suffix < fromMonth) {
+            continue;
+        }
+        if (!toMonth.empty() && suffix > toMonth) {
+            continue;
+        }
+        out.push_back(name);
+    }
+    return out;
+}
+
+// 把旧 vision.db 里的 app_log 按月搬进新库
+bool LogDb::importLegacy()
+{
+    const std::wstring path = utf8ToWide(AppPaths::legacyDatabaseFile());
+    if (GetFileAttributesW(path.c_str()) == INVALID_FILE_ATTRIBUTES) {
+        return true;
+    }
+    SqliteDatabase oldDb;
+    std::string err;
+    if (!oldDb.open(AppPaths::legacyDatabaseFile(), &err)) {
+        return true;
+    }
+    std::vector<std::vector<DbValue> > rows;
+    if (!oldDb.query(
+            "SELECT time_iso,kind,channel,level,action,login_name,role,target,result,detail,"
+            "station_id,job_id,tool_id,elapsed_ms FROM app_log;",
+            std::vector<DbValue>(), &rows, 0)) {
+        return true;
+    }
+    for (size_t i = 0; i < rows.size(); ++i) {
+        LogRecord rec = rowToRecord(rows[i]);
+        const std::string table = tableFor(rec);
+        if (!ensureTable(table)) {
+            return false;
+        }
+        std::vector<DbValue> a;
+        a.push_back(DbValue::fromText(rec.timeIso));
+        a.push_back(DbValue::fromInt(rec.kind));
+        a.push_back(DbValue::fromInt(rec.channel));
+        a.push_back(DbValue::fromInt(rec.level));
+        a.push_back(DbValue::fromText(rec.action));
+        a.push_back(DbValue::fromText(rec.user));
+        a.push_back(DbValue::fromText(rec.role));
+        a.push_back(DbValue::fromText(rec.target));
+        a.push_back(DbValue::fromText(rec.result));
+        a.push_back(DbValue::fromText(rec.detail));
+        a.push_back(DbValue::fromText(rec.stationId));
+        a.push_back(DbValue::fromText(rec.jobId));
+        a.push_back(DbValue::fromText(rec.toolId));
+        a.push_back(DbValue::fromInt(rec.elapsedMs));
+        const std::string sql =
+            "INSERT INTO " + table + "(time_iso,kind,channel,level,action,login_name,role,target,result,"
+            "detail,station_id,job_id,tool_id,elapsed_ms) "
+            "VALUES(?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14);";
+        if (!m->db.exec(sql, a, 0)) {
+            return false;
+        }
+    }
+    return true;
+}
+
 // 插入一条日志
-static bool insertOne(SqliteDatabase& db, const LogRecord& in)
+static bool insertOne(SqliteDatabase& db, const std::string& table, const LogRecord& in)
 {
     LogRecord r = in;
     if (r.timeIso.empty()) {
@@ -226,7 +378,7 @@ static bool insertOne(SqliteDatabase& db, const LogRecord& in)
     a.push_back(DbValue::fromText(r.toolId));
     a.push_back(DbValue::fromInt(r.elapsedMs));
     return db.exec(
-        "INSERT INTO app_log(time_iso,kind,channel,level,action,login_name,role,target,result,"
+        "INSERT INTO " + table + "(time_iso,kind,channel,level,action,login_name,role,target,result,"
         "detail,station_id,job_id,tool_id,elapsed_ms) "
         "VALUES(?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14);",
         a, 0);
@@ -248,7 +400,8 @@ bool LogDb::insertMany(const std::vector<LogRecord>& rows)
         return false;
     }
     for (size_t i = 0; i < rows.size(); ++i) {
-        if (!insertOne(m->db, rows[i])) {
+        const std::string table = tableFor(rows[i]);
+        if (!ensureTable(table) || !insertOne(m->db, table, rows[i])) {
             m->db.rollback(0);
             LeaveCriticalSection(&m->cs);
             return false;
@@ -271,40 +424,41 @@ std::vector<LogRecord> LogDb::query(const LogQuery& q)
         LeaveCriticalSection(&m->cs);
         return out;
     }
-    std::string sql =
-        "SELECT time_iso,kind,channel,level,action,login_name,role,target,result,detail,"
-        "station_id,job_id,tool_id,elapsed_ms FROM app_log WHERE kind=?1";
-    std::vector<DbValue> args;
-    args.push_back(DbValue::fromInt(q.kind));
-    int n = 2;
-    if (!q.dayFrom.empty()) {
-        char mark[16];
-        sprintf(mark, "?%d", n++);
-        sql += " AND time_iso>=";
-        sql += mark;
-        args.push_back(DbValue::fromText(q.dayFrom));
-    }
-    if (!q.dayTo.empty()) {
-        char mark[16];
-        sprintf(mark, "?%d", n++);
-        sql += " AND time_iso<=";
-        sql += mark;
-        args.push_back(DbValue::fromText(q.dayTo + "T99"));
-    }
-    sql += " ORDER BY time_iso DESC";
-    if (q.maxRows > 0) {
+    const std::vector<std::string> tables = tablesFor(q.kind, q.dayFrom, q.dayTo);
+    const int cap = q.maxRows > 0 ? q.maxRows : 500;
+    for (size_t ti = tables.size(); ti > 0 && static_cast<int>(out.size()) < cap; --ti) {
+        const std::string& table = tables[ti - 1];
+        std::string sql =
+            "SELECT time_iso,kind,channel,level,action,login_name,role,target,result,detail,"
+            "station_id,job_id,tool_id,elapsed_ms FROM " + table + " WHERE 1=1";
+        std::vector<DbValue> args;
+        int n = 1;
+        if (!q.dayFrom.empty()) {
+            char mark[16];
+            sprintf(mark, "?%d", n++);
+            sql += " AND time_iso>=";
+            sql += mark;
+            args.push_back(DbValue::fromText(q.dayFrom));
+        }
+        if (!q.dayTo.empty()) {
+            char mark[16];
+            sprintf(mark, "?%d", n++);
+            sql += " AND time_iso<=";
+            sql += mark;
+            args.push_back(DbValue::fromText(q.dayTo + "T99"));
+        }
+        sql += " ORDER BY time_iso DESC";
         char lim[32];
-        sprintf(lim, " LIMIT %d", q.maxRows);
+        sprintf(lim, " LIMIT %d", cap);
         sql += lim;
-    }
-    sql += ";";
-    std::vector<std::vector<DbValue> > rows;
-    if (!m->db.query(sql, args, &rows, 0)) {
-        LeaveCriticalSection(&m->cs);
-        return out;
-    }
-    for (size_t i = 0; i < rows.size(); ++i) {
-        out.push_back(rowToRecord(rows[i]));
+        sql += ";";
+        std::vector<std::vector<DbValue> > rows;
+        if (!m->db.query(sql, args, &rows, 0)) {
+            continue;
+        }
+        for (size_t i = 0; i < rows.size() && static_cast<int>(out.size()) < cap; ++i) {
+            out.push_back(rowToRecord(rows[i]));
+        }
     }
     LeaveCriticalSection(&m->cs);
     return out;
@@ -319,26 +473,31 @@ std::vector<LogFileInfo> LogDb::listDays()
         LeaveCriticalSection(&m->cs);
         return out;
     }
-    std::vector<std::vector<DbValue> > rows;
-    if (!m->db.query(
-            "SELECT kind, substr(time_iso,1,10) AS day FROM app_log "
-            "GROUP BY kind, day ORDER BY day DESC;",
-            std::vector<DbValue>(), &rows, 0)) {
-        LeaveCriticalSection(&m->cs);
-        return out;
+    const LogKind kinds[3] = {LogKindOp, LogKindRun, LogKindDebug};
+    for (int k = 0; k < 3; ++k) {
+        const std::vector<std::string> tables = tablesFor(kinds[k], std::string(), std::string());
+        for (size_t t = 0; t < tables.size(); ++t) {
+            std::vector<std::vector<DbValue> > rows;
+            const std::string sql =
+                "SELECT substr(time_iso,1,10) AS day FROM " + tables[t]
+                + " GROUP BY day ORDER BY day DESC;";
+            if (!m->db.query(sql, std::vector<DbValue>(), &rows, 0)) {
+                continue;
+            }
+            for (size_t i = 0; i < rows.size(); ++i) {
+                if (rows[i].empty()) {
+                    continue;
+                }
+                LogFileInfo fi;
+                fi.kind = kinds[k];
+                fi.day = asText(rows[i][0]);
+                fi.fileName = fi.day;
+                fi.path = std::string(kindKey(fi.kind)) + "|" + fi.day;
+                out.push_back(fi);
+            }
+        }
     }
     LeaveCriticalSection(&m->cs);
-    for (size_t i = 0; i < rows.size(); ++i) {
-        if (rows[i].size() < 2) {
-            continue;
-        }
-        LogFileInfo fi;
-        fi.kind = static_cast<LogKind>(asInt(rows[i][0]));
-        fi.day = asText(rows[i][1]);
-        fi.fileName = fi.day;
-        fi.path = std::string(kindKey(fi.kind)) + "|" + fi.day;
-        out.push_back(fi);
-    }
     return out;
 }
 
@@ -357,11 +516,14 @@ int LogDb::deleteDays(const std::vector<std::string>& keys)
         if (!splitKey(keys[i], &kind, &day)) {
             continue;
         }
+        const std::string table = TableRouter::physical(logicalOf(kind), day);
+        if (!TableRouter::isSafeIdent(table)) {
+            continue;
+        }
         std::vector<DbValue> a;
-        a.push_back(DbValue::fromInt(kind));
         a.push_back(DbValue::fromText(day));
         if (m->db.exec(
-                "DELETE FROM app_log WHERE kind=?1 AND substr(time_iso,1,10)=?2;",
+                "DELETE FROM " + table + " WHERE substr(time_iso,1,10)=?1;",
                 a, 0)) {
             ++n;
         }
@@ -370,17 +532,31 @@ int LogDb::deleteDays(const std::vector<std::string>& keys)
     return n;
 }
 
-// 删掉早于保留天数的记录
-void LogDb::pruneOlderThanDays(int days)
+// 按种类丢掉过期记录，空月表直接删掉
+void LogDb::prune()
 {
     EnterCriticalSection(&m->cs);
     if (!ensureOpen()) {
         LeaveCriticalSection(&m->cs);
         return;
     }
-    std::vector<DbValue> a;
-    a.push_back(DbValue::fromText(cutDay(days)));
-    m->db.exec("DELETE FROM app_log WHERE time_iso < ?1;", a, 0);
+    const LogKind kinds[3] = {LogKindOp, LogKindRun, LogKindDebug};
+    for (int k = 0; k < 3; ++k) {
+        const std::string cut = cutDay(keepDaysOf(kinds[k]));
+        const std::vector<std::string> tables = tablesFor(kinds[k], std::string(), std::string());
+        for (size_t t = 0; t < tables.size(); ++t) {
+            std::vector<DbValue> a;
+            a.push_back(DbValue::fromText(cut));
+            m->db.exec("DELETE FROM " + tables[t] + " WHERE time_iso < ?1;", a, 0);
+            std::vector<std::vector<DbValue> > rows;
+            if (!m->db.query("SELECT COUNT(*) FROM " + tables[t] + ";", std::vector<DbValue>(), &rows, 0)) {
+                continue;
+            }
+            if (!rows.empty() && !rows[0].empty() && asInt(rows[0][0]) == 0) {
+                m->db.exec("DROP TABLE " + tables[t] + ";", 0);
+            }
+        }
+    }
     LeaveCriticalSection(&m->cs);
 }
 

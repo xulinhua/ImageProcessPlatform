@@ -8,9 +8,11 @@
 
 #include "CommMgr.h"
 #include "TextEncoding.h"
+#include "HttpClient.h"
 #include "SerialChannel.h"
 #include "TcpChannel.h"
 #include "UdpChannel.h"
+#include "WebSocketClient.h"
 #include <map>
 #include <memory>
 #include <mutex>
@@ -47,6 +49,12 @@ ICommChannel* createChannel(CommChannelType type)
     }
     if (type == CommUdp) {
         return new UdpChannel();
+    }
+    if (type == CommHttp) {
+        return new HttpClient();
+    }
+    if (type == CommWebSocket) {
+        return new WebSocketClient();
     }
     return new SerialChannel();
 }
@@ -121,6 +129,14 @@ bool CommMgr::openChannel(const CommChannel& ch, std::string* err)
     const bool master = ch.params.value("role").toString() != "slave";
     if (modbus && ch.type == CommUdp) {
         setCommErr(err, "UDP 不支持 MODBUS");
+        return false;
+    }
+    if (modbus && ch.type == CommHttp) {
+        setCommErr(err, "HTTP 不支持 MODBUS");
+        return false;
+    }
+    if (modbus && ch.type == CommWebSocket) {
+        setCommErr(err, "WebSocket 不支持 MODBUS");
         return false;
     }
     ICommChannel* channel = createChannel(ch.type);
@@ -380,6 +396,64 @@ bool CommMgr::modbusWriteRegs(const ObjectId& id, const std::string& peerId, int
     }
     const bool tcp = session->channel->transport() != TransportSerial;
     return modbusMasterWriteRegs(session->channel, peer, tcp, nextTid(session.get()), slave, address, regs, err);
+}
+
+void CommMgr::closePeer(const ObjectId& id, const std::string& peerId)
+{
+    std::string err;
+    std::shared_ptr<Session> session = takeSession(m_impl->sessions, m_impl->mu, id.toString(), &err);
+    if (!session || !session->channel) {
+        return;
+    }
+    std::lock_guard<std::mutex> lock(session->mu);
+    session->channel->closePeer(peerId);
+}
+
+bool CommMgr::httpExchange(const ObjectId& id, const std::string& method, const std::string& path,
+                           const std::string& contentType, const std::string& body,
+                           int* status, std::string* response, std::string* err)
+{
+    std::shared_ptr<Session> session = takeSession(m_impl->sessions, m_impl->mu, id.toString(), err);
+    if (!session || !session->channel) {
+        return false;
+    }
+    HttpClient* http = dynamic_cast<HttpClient*>(session->channel);
+    if (!http) {
+        setCommErr(err, "当前不是 HTTP 通道");
+        return false;
+    }
+    std::lock_guard<std::mutex> lock(session->mu);
+    return http->exchange(method, path, contentType, body, status, response, err);
+}
+
+bool CommMgr::wsSend(const ObjectId& id, const CommBytes& data, bool text, std::string* err)
+{
+    std::shared_ptr<Session> session = takeSession(m_impl->sessions, m_impl->mu, id.toString(), err);
+    if (!session || !session->channel) {
+        return false;
+    }
+    WebSocketClient* ws = dynamic_cast<WebSocketClient*>(session->channel);
+    if (!ws) {
+        setCommErr(err, "当前不是 WebSocket 通道");
+        return false;
+    }
+    std::lock_guard<std::mutex> lock(session->mu);
+    return ws->send(data, text, err);
+}
+
+CommBytes CommMgr::wsRecv(const ObjectId& id, int timeoutMs, bool* text, std::string* err)
+{
+    std::shared_ptr<Session> session = takeSession(m_impl->sessions, m_impl->mu, id.toString(), err);
+    if (!session || !session->channel) {
+        return CommBytes();
+    }
+    WebSocketClient* ws = dynamic_cast<WebSocketClient*>(session->channel);
+    if (!ws) {
+        setCommErr(err, "当前不是 WebSocket 通道");
+        return CommBytes();
+    }
+    std::lock_guard<std::mutex> lock(session->mu);
+    return ws->recv(timeoutMs, text, err);
 }
 
 }

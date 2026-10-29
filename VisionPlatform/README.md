@@ -39,7 +39,7 @@ VS2022（v143）+ Qt 5.15.2 + C++17。方案文件：`VisionPlatform.sln`，启�
 | engineer | 工程师 |
 | operator | 操作员 |
 
-用户库在 `exe\data\vision.db` 的 `users` 表里。
+用户在 `exe\data\auth.db` 的 `users` 表里，角色权限在同一库的 `perm` 表里，一项权限一行。
 
 > 当前 `main.cpp` 开发入口会 `enterAdminForDev()` 直接以管理员进主界面；正式登录流程仍保留在 Auth 模块。
 
@@ -52,7 +52,11 @@ exe/
   VisionPlatform.exe
   samples/          # 示例图（构建拷贝）
   data/
-    vision.db       # 用户与权限
+    auth.db         # 权限
+    log.db          # 日志，按种类和月份分表
+    prod.db         # 生产数据，按批次分表
+    verify.db       # 验证复核，按试验类型分表
+    calib.db        # 标定记录。运行仍读方案里的当前结果
     settings.json
     logs/
     solutions/      # 方案默认保存目录

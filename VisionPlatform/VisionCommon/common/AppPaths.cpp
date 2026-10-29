@@ -95,10 +95,46 @@ std::string AppPaths::settingsFile()
     return joinPath(rootDir(), "settings.json");
 }
 
-// SQLite 数据库路径
-std::string AppPaths::databaseFile()
+// 旧的单一库，只在迁移时打开
+std::string AppPaths::legacyDatabaseFile()
 {
     return joinPath(rootDir(), "vision.db");
+}
+
+// 权限库
+std::string AppPaths::authFile()
+{
+    return joinPath(rootDir(), "auth.db");
+}
+
+// 日志库
+std::string AppPaths::logFile()
+{
+    return joinPath(rootDir(), "log.db");
+}
+
+// 生产库
+std::string AppPaths::prodFile()
+{
+    return joinPath(rootDir(), "prod.db");
+}
+
+// 验证复核库
+std::string AppPaths::verifyFile()
+{
+    return joinPath(rootDir(), "verify.db");
+}
+
+// 标定记录库
+std::string AppPaths::calibFile()
+{
+    return joinPath(rootDir(), "calib.db");
+}
+
+// 标定追溯文件目录
+std::string AppPaths::calibDir()
+{
+    return joinPath(rootDir(), "calib");
 }
 
 // 插件根目录
@@ -123,6 +159,7 @@ std::string AppPaths::pluginsAlgosDir()
 void AppPaths::ensureDirs()
 {
     mkdirOne(rootDir());
+    mkdirOne(calibDir());
     mkdirOne(logsDir());
     mkdirOne(solutionsDir());
     mkdirOne(compositesDir());

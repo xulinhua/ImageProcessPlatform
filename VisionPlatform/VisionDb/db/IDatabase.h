@@ -56,16 +56,22 @@ public:
 
 /**
  * @class TableRouter
- * @brief 逻辑表名映射到按月物理表，如 result → result_202609
+ * @brief 逻辑表名映射到物理表。月份写成 2026_10
  */
 class VISION_DB_API TableRouter {
 public:
-    /** @brief 取六位年月；不足则用当前月 */
+    /** @brief 表名只含字母、数字和下划线 */
+    static bool isSafeIdent(const std::string& name);
+    /** @brief 归一成 YYYY_MM。空串或无法识别时用当前月 */
     static std::string monthSuffix(const std::string& yyyymm);
-    /** @brief 逻辑表名加 _YYYYMM */
+    /** @brief 逻辑表名加 _YYYY_MM，如 op_log_2026_10 */
     static std::string physical(const std::string& logical, const std::string& yyyymm);
     /** @brief 当前月的物理表名 */
     static std::string currentMonthPhysical(const std::string& logical);
+    /**
+     * @brief 按批次的物理表。月份空则 shot_12；跨月后为 shot_12_2026_11
+     */
+    static std::string batchPhysical(const std::string& logical, int64_t batchId, const std::string& monthOrEmpty);
 };
 
 /**

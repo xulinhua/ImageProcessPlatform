@@ -39,6 +39,12 @@
     <ClCompile Include="user\Perm.cpp">
       <Filter>permission</Filter>
     </ClCompile>
+    <ClCompile Include="user\PermGate.cpp">
+      <Filter>permission</Filter>
+    </ClCompile>
+    <ClCompile Include="user\FactoryAccount.cpp">
+      <Filter>user</Filter>
+    </ClCompile>
     <ClCompile Include="user\Sha256.cpp">
       <Filter>crypto</Filter>
     </ClCompile>
@@ -64,6 +70,12 @@
     </ClInclude>
     <ClInclude Include="user\Perm.h">
       <Filter>permission</Filter>
+    </ClInclude>
+    <ClInclude Include="user\PermGate.h">
+      <Filter>permission</Filter>
+    </ClInclude>
+    <ClInclude Include="user\FactoryAccount.h">
+      <Filter>user</Filter>
     </ClInclude>
     <ClInclude Include="user\PermMgr.h">
       <Filter>permission</Filter>

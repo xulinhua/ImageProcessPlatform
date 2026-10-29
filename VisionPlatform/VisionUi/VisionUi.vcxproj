@@ -68,7 +68,7 @@
       <PreprocessorDefinitions>VISION_UI_EXPORTS;QT_SVG_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>VisionWidgets.lib;VisionToolUi.lib;VisionCore.lib;VisionToolBase.lib;VisionAlgToolBase.lib;VisionComm.lib;VisionCalib.lib;VisionAuth.lib;VisionLog.lib;VisionCfgMgr.lib;VisionLang.lib;VisionCommon.lib;VisionGrabFile.lib;VisionPluginAPI.lib;VisionIpc.lib;VisionRun.lib;HsImageCtrl.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>VisionWidgets.lib;VisionToolUi.lib;VisionCore.lib;VisionToolBase.lib;VisionAlgToolBase.lib;VisionComm.lib;VisionCalib.lib;VisionAuth.lib;VisionLog.lib;VisionDb.lib;VisionCfgMgr.lib;VisionLang.lib;VisionCommon.lib;VisionGrabFile.lib;VisionPluginAPI.lib;VisionIpc.lib;VisionRun.lib;HsImageCtrl.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(OutDir);$(SolutionDir)third_party\HsImageCtrl\lib\$(Platform)\$(Configuration);$(SolutionDir)..\HsImage\bin\$(Platform)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PreBuildEvent>

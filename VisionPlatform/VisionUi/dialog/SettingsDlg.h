@@ -70,8 +70,13 @@ private:
     QComboBox* m_closeAction;    ///< 关闭主窗口行为
     QComboBox* m_theme;          ///< 主题
     QComboBox* m_lang;           ///< 语言
+    QComboBox* m_permScope;      ///< 统一或实例。只有厂家能改
     QLineEdit* m_dataDir;        ///< 数据目录
-    QLineEdit* m_dbFile;         ///< 数据库 vision.db
+    QLineEdit* m_dbAuth;         ///< 权限库 auth.db
+    QLineEdit* m_dbLog;          ///< 日志库 log.db
+    QLineEdit* m_dbProd;         ///< 生产库 prod.db
+    QLineEdit* m_dbVerify;       ///< 验证库 verify.db
+    QLineEdit* m_dbCalib;        ///< 标定库 calib.db
     QLineEdit* m_solsDir;        ///< 方案目录
     QLineEdit* m_lastSol;        ///< 上次方案
     QLabel* m_titleLabel;        ///< 无边框标题

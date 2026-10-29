@@ -56,6 +56,7 @@ unsigned long long nowMs()
 LinkService::LinkService()
     : m_channel(ObjectId::fromString("b4e91a10-7c22-4f18-9a01-a0b1c2d3e4c1"))
     , m_server(false)
+    , m_helloSent(false)
 {
 }
 
@@ -284,6 +285,24 @@ void LinkService::publishLatest()
     }
 }
 
+void LinkService::ensureHello()
+{
+    if (!CommMgr::instance().isOpen(m_channel)) {
+        m_helloSent = false;
+        m_peers.clear();
+        return;
+    }
+    if (m_helloSent) {
+        return;
+    }
+    std::string err;
+    if (!m_frames.writeFrame(m_channel, std::string(), CommFrame::TypeHello, makeHello(), &err)) {
+        return;
+    }
+    m_peers[std::string()].lastBeatMs = nowMs();
+    m_helloSent = true;
+}
+
 void LinkService::dropStale()
 {
     const unsigned long long now = nowMs();
@@ -297,8 +316,12 @@ void LinkService::dropStale()
                 frames.publishRemote(index, last.frameSeq, last.ok, last.cycleMs, last.total, last.pass, last.fail,
                                     true, last.summary, last.jpeg);
             }
-            frames.setFault(IpcFaultLink, it->second.nodeId + " 超过 3 秒没有心跳");
+            frames.setFault(IpcFaultLink, (it->second.nodeId.empty() ? std::string("链路") : it->second.nodeId) + " 超过 3 秒没有心跳");
+            CommMgr::instance().closePeer(m_channel, it->first);
             m_frames.clearPeer(it->first);
+            if (!m_server) {
+                m_helloSent = false;
+            }
             it = m_peers.erase(it);
         } else {
             ++it;
@@ -351,12 +374,14 @@ int LinkService::run()
         return 1;
     }
     if (!m_server) {
-        m_frames.writeFrame(m_channel, std::string(), CommFrame::TypeHello, makeHello(), &err);
-        m_peers[std::string()].lastBeatMs = nowMs();
+        m_helloSent = false;
     }
     unsigned long long nextBeat = nowMs();
     while (true) {
         frames.beatLink();
+        if (!m_server) {
+            ensureHello();
+        }
         const unsigned long long now = nowMs();
         if (now >= nextBeat) {
             std::vector<unsigned char> beat(8, 0);
@@ -367,7 +392,7 @@ int LinkService::run()
                 for (size_t i = 0; i < peers.size(); ++i) {
                     m_frames.writeFrame(m_channel, peers[i].id, CommFrame::TypeHeartbeat, beat, 0);
                 }
-            } else {
+            } else if (m_helloSent) {
                 m_frames.writeFrame(m_channel, std::string(), CommFrame::TypeHeartbeat, beat, 0);
             }
             nextBeat = now + static_cast<unsigned long long>(m_node.heartbeatMs > 0 ? m_node.heartbeatMs : 1000);

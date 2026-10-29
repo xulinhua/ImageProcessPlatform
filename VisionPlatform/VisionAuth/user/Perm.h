@@ -20,7 +20,14 @@ namespace Vision {
 enum UserRole {
     RoleOperator = 0, ///< 操作员
     RoleEngineer,     ///< 工程师
-    RoleAdmin         ///< 管理员
+    RoleAdmin,        ///< 管理员
+    RoleFactory       ///< 厂家。界面不列出，登录后显示等级，权限始终全开
+};
+
+/** @brief 流程工具权限按种类统一，或按流程里的实例分开 */
+enum PermScope {
+    PermScopeUnified = 0, ///< 同一种工具共用一套参数权限
+    PermScopeInstance = 1 ///< 不同流程里的同一工具参数分开
 };
 
 /** @brief 细粒度权限位。与系统设置里的角色权限表对应 */
@@ -75,7 +82,19 @@ VISION_AUTH_API std::string permissionTitle(Perm p);
 /** @brief 权限说明（设置表提示） */
 VISION_AUTH_API std::string permissionHint(Perm p);
 
-/** @brief 角色出厂权限掩码 */
+/** @brief 页面在权限树里的节点。page|runtime 这种 */
+VISION_AUTH_API std::string permPageNodeId(int page);
+
+/** @brief 控件在权限树里的节点。page|runtime|view 这种 */
+VISION_AUTH_API std::string permNodeId(Perm p);
+
+/** @brief 没有保存过该节点时，这一角色是否默认允许 */
+VISION_AUTH_API bool permDefaultOn(UserRole role, Perm p);
+
+/** @brief 这一项不能在权限树里关掉 */
+VISION_AUTH_API bool permNodeLocked(UserRole role, Perm p);
+
+/** @brief 角色出厂权限掩码。只给旧的角色表读取，界面判断走权限树 */
 VISION_AUTH_API uint32_t defaultPerms(UserRole role);
 
 /** @brief 角色锁定位：不能在设置里关掉 */
@@ -106,11 +125,11 @@ VISION_AUTH_API std::string roleTitle(UserRole role);
 /** @brief 整数转角色；越界回退操作员 */
 inline UserRole roleFromInt(int v)
 {
-    if (v == RoleAdmin || v == RoleEngineer) {
+    if (v == RoleAdmin || v == RoleEngineer || v == RoleFactory) {
         return static_cast<UserRole>(v);
     }
     return RoleOperator;
-}
+};
 
 }
 

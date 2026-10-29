@@ -7,6 +7,7 @@
  */
 
 #include "UserMgrDlg.h"
+#include "FactoryAccount.h"
 #include "AuditLog.h"
 #include "ChangePwdDlg.h"
 #include "QtConv.h"
@@ -105,6 +106,9 @@ void UserMgrDlg::refresh()
     int keepRow = -1;
     for (int i = 0; i < us.count(); ++i) {
         const UserAccount& u = us.at(i);
+        if (u.role == RoleFactory || FactoryAccount::ownsName(u.loginName)) {
+            continue;
+        }
         const int r = m_table->rowCount();
         m_table->insertRow(r);
         m_table->setItem(r, 0, new QTableWidgetItem(qs(u.loginName)));

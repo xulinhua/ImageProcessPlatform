@@ -13,6 +13,7 @@
 #include "Perm.h"
 #include <stdint.h>
 #include <string>
+#include <vector>
 
 namespace Vision {
 
@@ -43,9 +44,17 @@ struct VISION_AUTH_API AppSettings {
     bool popupJobOk;                     ///< 流程试跑 OK 时弹窗
     bool popupJobNg;                     ///< 流程试跑 NG 时弹窗
     bool popupJobException;              ///< 流程试跑异常时弹窗
-    uint32_t permOperator;               ///< 操作员权限掩码
-    uint32_t permEngineer;               ///< 工程师权限掩码
-    uint32_t permAdmin;                  ///< 管理员权限掩码
+    int permScope;                       ///< PermScope。只有厂家能改
+
+    /** @brief 工具或实例参数的一条勾选。三种角色各一位，厂家不记 */
+    struct PermNodeGrant {
+        std::string id; ///< 节点键
+        bool op;        ///< 操作员
+        bool eng;       ///< 工程师
+        bool admin;     ///< 管理员
+        PermNodeGrant() : op(true), eng(true), admin(true) {}
+    };
+    std::vector<PermNodeGrant> permNodes; ///< 记在本机设置里，不进方案
 
     AppSettings()
         : autoLoginOperator(false)
@@ -56,17 +65,19 @@ struct VISION_AUTH_API AppSettings {
         , popupJobOk(false)
         , popupJobNg(false)
         , popupJobException(false)
-        , permOperator(defaultPerms(RoleOperator))
-        , permEngineer(defaultPerms(RoleEngineer))
-        , permAdmin(defaultPerms(RoleAdmin))
+        , permScope(PermScopeUnified)
     {}
 
-    /** @brief 某角色当前掩码 */
-    uint32_t permMask(UserRole role) const;
-    /** @brief 写某角色掩码（调用方应 OR 上 lockedPerms） */
-    void setPermMask(UserRole role, uint32_t mask);
-    /** @brief 三角色恢复出厂权限 */
+    /** @brief 清掉树上的勾选，页面项回到内置默认 */
     void resetPermsToDefault();
+    /** @brief 读节点。页面项没有记录时用内置默认。工具项没有记录时允许。厂家始终允许 */
+    bool nodeGranted(UserRole role, const std::string& id, bool* found) const;
+    /** @brief 写入或覆盖一条节点 */
+    void setNodeGrant(const std::string& id, bool op, bool eng, bool admin);
+    /** @brief 清掉全部节点 */
+    void clearNodeGrants();
+    /** @brief 把旧的三位掩码转成树。已经有页面节点时不覆盖 */
+    void importLegacyMasks(uint32_t op, uint32_t eng, uint32_t admin);
     /**
      * @brief 流程试跑结束后是否弹窗
      * @param ok 判定 OK

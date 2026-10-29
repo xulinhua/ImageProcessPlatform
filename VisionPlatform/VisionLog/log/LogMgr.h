@@ -15,10 +15,11 @@
 
 namespace Vision {
 
-/** @brief 日志种类：操作或调试 */
+/** @brief 日志种类：操作、调试、运行诊断 */
 enum LogKind {
     LogKindOp = 0, ///< 操作（登录、开始停止、改权限等）
-    LogKindDebug   ///< 调试（运行本工具、本流程）
+    LogKindDebug,  ///< 调试（运行本工具、本流程）
+    LogKindRun     ///< 运行诊断（工站、流程、工具耗时）
 };
 
 /** @brief 日志通道 */

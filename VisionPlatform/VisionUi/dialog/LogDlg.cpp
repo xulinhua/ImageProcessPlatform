@@ -190,7 +190,8 @@ void LogDlg::fillFiles()
     const std::vector<LogFileInfo> files = LogMgr::listFiles();
     for (size_t i = 0; i < files.size(); ++i) {
         const LogFileInfo& fi = files[i];
-        const QString kind = (fi.kind == LogKindDebug) ? T("调试") : T("操作");
+        const QString kind = (fi.kind == LogKindDebug) ? T("调试")
+            : (fi.kind == LogKindRun ? T("运行") : T("操作"));
         QListWidgetItem* it = new QListWidgetItem(kind + QLatin1String("  ") + qs(fi.fileName), m_files);
         it->setData(Qt::UserRole, qs(fi.path));
         if (manage) {

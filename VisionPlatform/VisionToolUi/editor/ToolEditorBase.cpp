@@ -30,8 +30,16 @@ void ToolEditorBase::bind(ToolCfg* tool, Session* session, Solution* sol)
     m_tool = tool;
     m_session = session;
     m_sol = sol;
-    const bool canEdit = session && session->has(PermEditSolution);
-    setEnabled(canEdit && tool);
+    std::string flowId;
+    if (sol && tool) {
+        JobCfg* job = sol->findJobCfgOfTool(tool->id, 0);
+        if (job) {
+            flowId = job->id.toString();
+        }
+    }
+    const bool canEdit = session && tool && session->allowToolField(
+        tool->toolName, flowId, tool->id.toString(), std::string());
+    setEnabled(canEdit);
     reload();
     applyParamControlStyle(this);
 }

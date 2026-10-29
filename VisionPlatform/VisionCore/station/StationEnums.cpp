@@ -111,6 +111,8 @@ std::string commChannelTypeTitle(CommChannelType t)
     case CommTcpClient: return Translate::tr("TCP客户端");
     case CommTcpServer: return Translate::tr("TCP服务端");
     case CommUdp: return Translate::tr("UDP");
+    case CommHttp: return Translate::tr("HTTP");
+    case CommWebSocket: return Translate::tr("WebSocket");
     default: return Translate::tr("串口");
     }
 }

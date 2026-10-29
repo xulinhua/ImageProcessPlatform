@@ -20,8 +20,7 @@ namespace detail {
 namespace {
 
 enum {
-    kMaxQueue = 4096, ///< 待写队列上限
-    kKeepDays = 30    ///< 入库后保留天数
+    kMaxQueue = 4096 ///< 待写队列上限
 };
 
 } // namespace
@@ -238,7 +237,7 @@ void SpdlogFileSink::flush()
 // 后台循环：出队写库，并按天清理
 void SpdlogFileSink::runLoop()
 {
-    LogDb::instance().pruneOlderThanDays(kKeepDays);
+        LogDb::instance().prune();
     for (;;) {
         WaitForSingleObject(m->wake, 500);
         for (;;) {

@@ -11,42 +11,101 @@
 
 namespace Vision {
 
-// 该角色可配置掩码再并上锁定权限
-uint32_t AppSettings::permMask(UserRole role) const
-{
-    switch (role) {
-    case RoleAdmin:
-        return permAdmin | lockedPerms(RoleAdmin);
-    case RoleEngineer:
-        return permEngineer | lockedPerms(RoleEngineer);
-    default:
-        return permOperator | lockedPerms(RoleOperator);
-    }
-}
-
-// 写入掩码时强制保留锁定权限
-void AppSettings::setPermMask(UserRole role, uint32_t mask)
-{
-    mask |= lockedPerms(role);
-    switch (role) {
-    case RoleAdmin:
-        permAdmin = mask;
-        break;
-    case RoleEngineer:
-        permEngineer = mask;
-        break;
-    default:
-        permOperator = mask;
-        break;
-    }
-}
-
-// 三角色权限恢复出厂默认
 void AppSettings::resetPermsToDefault()
 {
-    permOperator = defaultPerms(RoleOperator);
-    permEngineer = defaultPerms(RoleEngineer);
-    permAdmin = defaultPerms(RoleAdmin);
+    permScope = PermScopeUnified;
+    permNodes.clear();
+}
+
+bool AppSettings::nodeGranted(UserRole role, const std::string& id, bool* found) const
+{
+    if (role == RoleFactory) {
+        if (found) {
+            *found = true;
+        }
+        return true;
+    }
+    for (size_t i = 0; i < permNodes.size(); ++i) {
+        if (permNodes[i].id != id) {
+            continue;
+        }
+        if (found) {
+            *found = true;
+        }
+        for (int n = 0; n < permissionCount(); ++n) {
+            const Perm perm = permissionAt(n);
+            if (permNodeId(perm) == id && permNodeLocked(role, perm)) {
+                return true;
+            }
+        }
+        if (role == RoleAdmin) {
+            return permNodes[i].admin;
+        }
+        if (role == RoleEngineer) {
+            return permNodes[i].eng;
+        }
+        return permNodes[i].op;
+    }
+    if (found) {
+        *found = false;
+    }
+    for (int n = 0; n < permissionCount(); ++n) {
+        const Perm perm = permissionAt(n);
+        if (permNodeId(perm) == id) {
+            return permDefaultOn(role, perm);
+        }
+    }
+    return true;
+}
+
+void AppSettings::setNodeGrant(const std::string& id, bool op, bool eng, bool admin)
+{
+    for (size_t i = 0; i < permNodes.size(); ++i) {
+        if (permNodes[i].id == id) {
+            permNodes[i].op = op;
+            permNodes[i].eng = eng;
+            permNodes[i].admin = admin;
+            return;
+        }
+    }
+    PermNodeGrant g;
+    g.id = id;
+    g.op = op;
+    g.eng = eng;
+    g.admin = admin;
+    permNodes.push_back(g);
+}
+
+void AppSettings::clearNodeGrants()
+{
+    permNodes.clear();
+}
+
+void AppSettings::importLegacyMasks(uint32_t op, uint32_t eng, uint32_t admin)
+{
+    for (size_t i = 0; i < permNodes.size(); ++i) {
+        if (permNodes[i].id.compare(0, 5, "page|") == 0) {
+            return;
+        }
+    }
+    for (int i = 0; i < permissionCount(); ++i) {
+        const Perm perm = permissionAt(i);
+        const uint32_t bit = static_cast<uint32_t>(perm);
+        setNodeGrant(permNodeId(perm), (op & bit) != 0, (eng & bit) != 0, (admin & bit) != 0);
+    }
+    for (int page = 0; page < permPageCount(); ++page) {
+        const PermPageDesc desc = permPageAt(page);
+        bool opOn = false;
+        bool engOn = false;
+        bool adminOn = false;
+        for (int i = 0; i < desc.itemCount; ++i) {
+            const uint32_t bit = static_cast<uint32_t>(desc.items[i]);
+            opOn = opOn || (op & bit) != 0;
+            engOn = engOn || (eng & bit) != 0;
+            adminOn = adminOn || (admin & bit) != 0;
+        }
+        setNodeGrant(permPageNodeId(page), opOn, engOn, adminOn);
+    }
 }
 
 // 流程试跑结果是否弹窗

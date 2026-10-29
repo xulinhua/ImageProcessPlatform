@@ -8,6 +8,8 @@
 
 #include "LogMgr.h"
 #include "LogDb.h"
+#include "ProdDb.h"
+#include "VerifyDb.h"
 #include "SpdlogFileSink.h"
 #include "Translate.h"
 #include <cstdio>
@@ -36,12 +38,15 @@ std::string nowIso()
 void LogMgr::startup()
 {
     detail::logSink().start();
+    ProdDb::instance().startup();
+    VerifyDb::instance().open(0);
 }
 
 // 停线程并刷完队列
 void LogMgr::shutdown()
 {
     detail::logSink().stop();
+    ProdDb::instance().shutdown();
 }
 
 // 写一条系统通道日志

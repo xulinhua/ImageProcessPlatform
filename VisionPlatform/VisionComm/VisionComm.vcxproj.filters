@@ -25,6 +25,12 @@
     <Filter Include="types">
       <UniqueIdentifier>{D4200001-0000-4000-8000-000000000008}</UniqueIdentifier>
     </Filter>
+    <Filter Include="http">
+      <UniqueIdentifier>{D4200001-0000-4000-8000-00000000000A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="websocket">
+      <UniqueIdentifier>{D4200001-0000-4000-8000-00000000000B}</UniqueIdentifier>
+    </Filter>
     <Filter Include="time">
       <UniqueIdentifier>{D4200001-0000-4000-8000-000000000009}</UniqueIdentifier>
     </Filter>
@@ -56,6 +62,15 @@
     </ClCompile>
     <ClCompile Include="StageTimer.cpp">
       <Filter>time</Filter>
+    </ClCompile>
+    <ClCompile Include="HttpClient.cpp">
+      <Filter>http</Filter>
+    </ClCompile>
+    <ClCompile Include="NetUrl.cpp">
+      <Filter>http</Filter>
+    </ClCompile>
+    <ClCompile Include="WebSocketClient.cpp">
+      <Filter>websocket</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -91,6 +106,15 @@
     </ClInclude>
     <ClInclude Include="VisionCommExport.h">
       <Filter>export</Filter>
+    </ClInclude>
+    <ClInclude Include="HttpClient.h">
+      <Filter>http</Filter>
+    </ClInclude>
+    <ClInclude Include="NetUrl.h">
+      <Filter>http</Filter>
+    </ClInclude>
+    <ClInclude Include="WebSocketClient.h">
+      <Filter>websocket</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

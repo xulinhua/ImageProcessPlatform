@@ -80,12 +80,16 @@
     <ClCompile Include="user\Pbkdf2.cpp" />
     <ClCompile Include="user\PermMgr.cpp" />
     <ClCompile Include="user\Perm.cpp" />
+    <ClCompile Include="user\PermGate.cpp" />
+    <ClCompile Include="user\FactoryAccount.cpp" />
     <ClCompile Include="user\AuthDb.cpp" />
   </ItemGroup>
   <ItemGroup>
         <ClInclude Include="VisionAuthExport.h" />
-<ClInclude Include="user\Perm.h" />
+    <ClInclude Include="user\Perm.h" />
     <ClInclude Include="user\PermMgr.h" />
+    <ClInclude Include="user\PermGate.h" />
+    <ClInclude Include="user\FactoryAccount.h" />
     <ClInclude Include="user\AppSettings.h" />
     <ClInclude Include="audit\AuditLog.h" />
     <ClInclude Include="user\AuthMgr.h" />

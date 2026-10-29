@@ -7,6 +7,7 @@
  */
 
 #include "RunHost.h"
+#include "ProdDb.h"
 #include "ThreadPool.h"
 
 namespace Vision {
@@ -76,7 +77,17 @@ void RunHost::onCycle(Slot* slot, const StationRunRst& result)
         ? static_cast<uint32_t>(result.source.frameId)
         : static_cast<uint32_t>(slot->total);
     const HsCommData::HsImage& raw = result.source.isNull() ? result.image : result.source;
-    m_raw.save(slot->stationId, seq, raw);
+    const std::string imagePath = m_raw.save(slot->stationId, seq, raw);
+    ProdShot shot;
+    shot.solution = m_sol ? m_sol->name : std::string();
+    shot.stationId = slot->stationId;
+    shot.frameNo = seq;
+    shot.ok = result.ok ? 1 : 0;
+    shot.summary = result.summary;
+    shot.cycleMs = result.cycleMs;
+    shot.elapsedMs = result.cycleMs;
+    shot.imagePath = imagePath;
+    ProdDb::instance().note(shot);
     std::vector<unsigned char> jpeg;
     const int quality = m_node ? m_node->jpegQuality : 70;
     m_encoder.encode(result.image.isNull() ? raw : result.image, quality, &jpeg);
