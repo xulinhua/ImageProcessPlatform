@@ -28,8 +28,8 @@ public:
     static const int kLongEdge = 1280;
     static const int kJpegQuality = 60;
     static const int kMaxFpsMin = 5;
-    static const int kMaxFpsMax = 30;
-    static const int kMaxFpsDefault = 15;
+    static const int kMaxFpsMax = 500;
+    static const int kMaxFpsDefault = 60;
     static const int kTextMax = 64;
     static const int kDiscoverPort = 19101;
     static const int kAuthFailMax = 5;          ///< 连续失败次数上限，之后锁定
@@ -79,10 +79,11 @@ struct ConfigMsg {
     uint8_t monitor;
     std::string title;
     std::string process;
-    uint8_t maxFps;         ///< 帧率上限 5–30；0 表示沿用被控端当前值/默认
+    uint16_t maxFps;        ///< 帧率上限 5–500；0 表示沿用被控端当前值/默认
     uint8_t jpegQuality;    ///< JPEG 质量 1–100；0 表示沿用
     uint16_t longEdge;      ///< 画面长边像素上限；0 表示沿用
-    ConfigMsg() : share(1), monitor(0), maxFps(0), jpegQuality(0), longEdge(0) {}
+    uint8_t codec;          ///< 0 沿用；1 JPEG；2 H.264；3 原图 BGRA
+    ConfigMsg() : share(1), monitor(0), maxFps(0), jpegQuality(0), longEdge(0), codec(0) {}
 };
 
 struct HelloAckMsg {
@@ -136,7 +137,7 @@ struct PictureMsg {
     uint32_t clientH;
     uint32_t imageW;
     uint32_t imageH;
-    uint8_t codec;          ///< 1 JPEG，2 H.264 Annex-B。负载仍放在 jpeg
+    uint8_t codec;          ///< 1 JPEG，2 H.264 Annex-B，3 原图 BGRA。负载仍放在 jpeg
     uint8_t key;            ///< 1 关键帧
     CommBytes jpeg;
     PictureMsg() : visible(0), operable(0), clientW(0), clientH(0), imageW(0), imageH(0), codec(1), key(0) {}
@@ -146,13 +147,14 @@ struct PictureMsg {
 struct SubscribeMsg {
     uint8_t stream;
     uint8_t enable;
-    uint8_t maxFps;
+    uint16_t maxFps;        ///< 帧率上限 5–500；0 沿用
     uint8_t jpegQuality;
     uint16_t longEdge;
-    SubscribeMsg() : stream(2), enable(1), maxFps(2), jpegQuality(60), longEdge(480) {}
+    uint8_t codec;          ///< 0 沿用被控端；1 JPEG；2 H.264；3 原图
+    SubscribeMsg() : stream(2), enable(1), maxFps(2), jpegQuality(60), longEdge(480), codec(0) {}
 };
 
-/** @brief 第三期：当前码流参数。codec 1=JPEG 2=H.264 */
+/** @brief 第三期：当前码流参数。codec 1=JPEG 2=H.264 3=原图 */
 struct StreamInfoMsg {
     uint8_t stream;
     uint8_t codec;
@@ -339,6 +341,10 @@ public:
     static CommBytes packDirEntries(const std::string& listing, std::string* err);
     /** @brief 拆目录列表 */
     static bool unpackDirEntries(const CommBytes& payload, std::string* listing);
+    /** @brief 打包在被控端建目录 */
+    static CommBytes packMkDir(uint32_t id, const std::string& path, std::string* err);
+    /** @brief 拆建目录 */
+    static bool unpackMkDir(const CommBytes& payload, uint32_t* id, std::string* path);
     /** @brief pull=1 被控端把文件发给控制端；pull=0 控制端上传 */
     static CommBytes packFileOpen(uint32_t id, uint8_t pull, const std::string& path, uint64_t size, std::string* err,
         const std::string& sha256 = std::string(), uint64_t resume = 0);

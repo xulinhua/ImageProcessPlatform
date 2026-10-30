@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!--
+    PCL 1.15.1 头文件、库、运行库在 VisionPlatform\third_party\PCL。
+    不读环境变量 PCL_ROOT。别人拉仓库即可编 Pcl.* 算法插件。
+    仅含 3D 插件用到的模块 + Eigen / Boost 头 / FLANN 头；不含 VTK、OpenNI、Qhull。
+  -->
+  <PropertyGroup>
+    <PclRoot>$(MSBuildThisFileDirectory)</PclRoot>
+    <PclInc>$(PclRoot)include\pcl-1.15</PclInc>
+    <PclEigenInc>$(PclRoot)3rdParty\Eigen3\include\eigen3</PclEigenInc>
+    <PclBoostInc>$(PclRoot)3rdParty\Boost\include\boost-1_87</PclBoostInc>
+    <PclFlannInc>$(PclRoot)3rdParty\FLANN\include</PclFlannInc>
+    <PclLib>$(PclRoot)lib</PclLib>
+    <PclBin>$(PclRoot)bin</PclBin>
+    <VisionHasPcl>false</VisionHasPcl>
+    <VisionHasPcl Condition="Exists('$(PclInc)\pcl\point_types.h') And Exists('$(PclLib)\pcl_common.lib')">true</VisionHasPcl>
+    <PclLibSuffix Condition="'$(Configuration)'=='Debug'">d</PclLibSuffix>
+    <PclLibSuffix Condition="'$(Configuration)'!='Debug'"></PclLibSuffix>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(VisionHasPcl)'=='true'">
+    <IncludePath>$(PclInc);$(PclEigenInc);$(PclBoostInc);$(PclFlannInc);$(IncludePath)</IncludePath>
+    <LibraryPath>$(PclLib);$(LibraryPath)</LibraryPath>
+    <ExecutablePath>$(PclBin);$(ExecutablePath)</ExecutablePath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(VisionHasPcl)'=='true'">
+    <ClCompile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <AdditionalIncludeDirectories>$(PclInc);$(PclEigenInc);$(PclBoostInc);$(PclFlannInc);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>VISION_HAS_PCL=1;EIGEN_MAX_ALIGN_BYTES=32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(PclLib);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>pcl_common$(PclLibSuffix).lib;pcl_filters$(PclLibSuffix).lib;pcl_sample_consensus$(PclLibSuffix).lib;pcl_segmentation$(PclLibSuffix).lib;pcl_registration$(PclLibSuffix).lib;pcl_search$(PclLibSuffix).lib;pcl_kdtree$(PclLibSuffix).lib;pcl_octree$(PclLibSuffix).lib;pcl_features$(PclLibSuffix).lib;pcl_ml$(PclLibSuffix).lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent>
+      <Command>cmd /c if exist "$(PclBin)\*.dll" (copy /Y "$(PclBin)\pcl_*$(PclLibSuffix).dll" "$(SolutionDir)bin\$(Platform)\$(Configuration)\") &amp; exit /B 0</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+</Project>

@@ -44,6 +44,15 @@ public:
     void closeEncoder();
     /** @brief 关掉解码器 */
     void closeDecoder();
+    /** @brief 编码器是否已打开 */
+    bool encodeReady() const;
+    /** @brief 已判定不可用（本进程内不再重试，直到 closeEncoder） */
+    bool isBroken() const;
+    /** @brief 最近一次打不开或编码失败的原因，UTF-8，供日志 */
+    const char* lastError() const;
+    /** @brief 按长边缩放 BGRA，宽高对齐到 16。原图 / H.264 共用 */
+    bool scaleBgra(const unsigned char* src, int srcW, int srcH, int longEdge,
+        std::vector<unsigned char>* dst, int* dstW, int* dstH) const;
 
 private:
     /** @brief 缩到长边限制内，宽高向下取偶数 */
@@ -123,7 +132,10 @@ private:
     int m_frames;           ///< 已编码帧数，用于周期性关键帧
     bool m_mfAsync;         ///< 硬件编码器走异步事件
     bool m_useOpen;         ///< 正在用 OpenH264，而不是 Media Foundation
+    bool m_broken;          ///< 打开失败或连续编码失败后闩住，避免每帧空转再走 JPEG
+    int m_primeFails;       ///< 打开后连续无输出的次数；成功编码后清零
     long long m_pts;        ///< 下一帧时间戳
+    char m_err[128];        ///< lastError 缓冲
 };
 
 }

@@ -12,6 +12,7 @@
 #include "AuditLog.h"
 #include "ControlConfig.h"
 #include "ControlSession.h"
+#include "H264Codec.h"
 #include "RemoteAuthHost.h"
 #include "DeviceStore.h"
 #include "DeviceTree.h"
@@ -38,6 +39,7 @@ class QTimer;
 
 namespace Vision {
 
+class RemoteLogWindow;
 class SegmentBar;
 class SessionWindow;
 class StatusDot;
@@ -65,13 +67,14 @@ protected:
 private:
     /** @brief 每台设备的帧率、码率，按秒结算 */
     struct Rate {
-        uint64_t seq;   ///< 上次结算时的画面帧序号
-        uint64_t bytes; ///< 上次结算时的累计接收字节
-        qint64 at;      ///< 上次结算时刻（epoch 毫秒），0 未开始
-        double fps;     ///< 最近一秒帧率
-        double kbps;    ///< 最近一秒下行码率 kbps
+        uint64_t seq;       ///< 上次结算时的主码流帧序号
+        uint64_t thumbSeq;  ///< 上次结算时的缩略图帧序号（监控墙只用子码流时靠它）
+        uint64_t bytes;     ///< 上次结算时的累计接收字节
+        qint64 at;          ///< 上次结算时刻（epoch 毫秒），0 未开始
+        double fps;         ///< 最近一秒帧率
+        double kbps;        ///< 最近一秒下行码率 kbps
         /** @brief 全部清零 */
-        Rate() : seq(0), bytes(0), at(0), fps(0), kbps(0) {}
+        Rate() : seq(0), thumbSeq(0), bytes(0), at(0), fps(0), kbps(0) {}
     };
 
     /** @brief 上一轮看到的状态，变化时写审计 */
@@ -167,6 +170,8 @@ private:
     void openSettings(int page);
     /** @brief 审计日志对话框 */
     void openAudit();
+    /** @brief 弹出运行日志窗口（画面链路耗时） */
+    void openRunLog();
     /** @brief 重命名设备；与上报名相同或留空时清掉别名 */
     void renameDevice(const QString& key);
     /** @brief 确认后删除设备，关闭其会话窗口并记审计 */
@@ -232,12 +237,14 @@ private:
     QSystemTrayIcon* m_tray;    ///< 托盘图标
     QMenu* m_trayMenu;          ///< 托盘菜单
     QIcon m_icon;               ///< 程序图标，资源缺失时用内置图标
+    RemoteLogWindow* m_logWin;  ///< 运行日志窗，按钮打开，关窗只隐藏
 
     std::map<QString, SessionWindow*> m_sessions;   ///< 已打开的会话窗口，按设备 key；窗口关闭时移除
     std::map<std::string, int> m_stream;            ///< peerId -> 已下发的码流：1 子码流，2 主+子
     std::map<QString, Rate> m_rates;                ///< 按设备 key 的帧率、码率
     std::map<QString, Seen> m_seen;                 ///< 按设备 key 的上一轮状态
     std::map<QString, Picture> m_pictures;          ///< 按设备 key 的监控墙画面缓存
+    std::map<QString, H264Codec> m_wallH264;        ///< 监控墙主码流 H.264 解码，按设备 key
     std::vector<QString> m_keys;                    ///< 未使用
 
     std::thread m_scan;                 ///< 局域网发现后台线程

@@ -9,6 +9,7 @@
 #include "AgentService.h"
 #include "AgentWindow.h"
 #include "RemoteCrash.h"
+#include "RemoteLog.h"
 #include "RemoteTheme.h"
 #include <QApplication>
 #include <QMessageBox>
@@ -48,7 +49,9 @@ void fixWorkingDirectory()
 int main(int argc, char* argv[])
 {
     Vision::RemoteCrash::install("client");
+    Vision::RemoteLog::install("client");
     Vision::RemoteCrash::checkpoint("main.enter");
+    Vision::RemoteLog::writef(Vision::RemoteLog::Info, "启动", "被控端启动");
     fixWorkingDirectory();
     Vision::RemoteCrash::checkpoint("main.cwd");
     if (hasArg(argc, argv, "--install-service")) {

@@ -39,6 +39,10 @@ ControlConfig::ControlConfig()
     , relayPort(19200)
     , rows(3)
     , cols(3)
+    , defaultFps(RemoteConst::kMaxFpsDefault)
+    , defaultQuality(1)
+    , streamCodec(0)
+    , adaptive(true)
     , m_path(RemoteFiles::exeFile("control.json"))
 {
 }
@@ -69,6 +73,22 @@ void ControlConfig::load()
     relayKey = obj.value("relayKey").toString(relayKey);
     rows = obj.value("rows").toInt(rows);
     cols = obj.value("cols").toInt(cols);
+    defaultFps = obj.value("defaultFps").toInt(defaultFps);
+    defaultQuality = obj.value("defaultQuality").toInt(defaultQuality);
+    streamCodec = obj.value("streamCodec").toInt(streamCodec);
+    adaptive = obj.value("adaptive").toBool(adaptive);
+    if (defaultFps < RemoteConst::kMaxFpsMin) {
+        defaultFps = RemoteConst::kMaxFpsMin;
+    }
+    if (defaultFps > RemoteConst::kMaxFpsMax) {
+        defaultFps = RemoteConst::kMaxFpsMax;
+    }
+    if (defaultQuality < 0 || defaultQuality > 2) {
+        defaultQuality = 1;
+    }
+    if (streamCodec < 0 || streamCodec > 3) {
+        streamCodec = 0;
+    }
 }
 
 void ControlConfig::save() const
@@ -93,6 +113,10 @@ void ControlConfig::save() const
     obj.insert("relayKey", relayKey);
     obj.insert("rows", rows);
     obj.insert("cols", cols);
+    obj.insert("defaultFps", defaultFps);
+    obj.insert("defaultQuality", defaultQuality);
+    obj.insert("streamCodec", streamCodec);
+    obj.insert("adaptive", adaptive);
     QSaveFile file(m_path);
     if (file.open(QIODevice::WriteOnly)) {
         file.write(QJsonDocument(obj).toJson());

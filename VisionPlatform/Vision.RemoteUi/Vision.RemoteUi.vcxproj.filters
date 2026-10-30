@@ -25,6 +25,15 @@
     <ClCompile Include="common\RemoteFiles.cpp">
       <Filter>common</Filter>
     </ClCompile>
+    <ClCompile Include="common\RemoteCrash.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="common\RemoteLog.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="widgets\RemoteLogWindow.cpp">
+      <Filter>widgets</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="theme\RemoteTheme.h">
@@ -36,7 +45,16 @@
     <ClInclude Include="widgets\RemoteWidgets.h">
       <Filter>widgets</Filter>
     </ClInclude>
+    <ClInclude Include="widgets\RemoteLogWindow.h">
+      <Filter>widgets</Filter>
+    </ClInclude>
     <ClInclude Include="common\RemoteFiles.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\RemoteCrash.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\RemoteLog.h">
       <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>

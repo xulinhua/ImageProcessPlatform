@@ -9,6 +9,7 @@
 #include "ControlSession.h"
 #include "LinkDial.h"
 #include "RemoteCrash.h"
+#include "RemoteLog.h"
 
 #include <windows.h>
 
@@ -17,6 +18,7 @@ namespace Vision {
 ControlSession::ControlSession()
     : m_run(false)
     , m_listening(false)
+    , m_adaptive(true)
 {
     RemoteCrash::checkpoint("ControlSession.ctor");
     std::string err;
@@ -50,6 +52,12 @@ void ControlSession::setSelfName(const std::string& name)
     }
     std::lock_guard<std::mutex> lock(m_mu);
     m_selfName = cut;
+}
+
+void ControlSession::setAdaptive(bool on)
+{
+    std::lock_guard<std::mutex> lock(m_mu);
+    m_adaptive = on;
 }
 
 bool ControlSession::start(const std::string& host, int port, std::string* err)
@@ -432,22 +440,31 @@ void ControlSession::readMain()
                 }
                 if ((packet.channel == Frame::ChVideo || packet.channel == Frame::ChThumb)
                     && packet.type == Frame::TypeVideoFrame) {
+                    const uint64_t t0 = RemoteLog::tickMs();
                     machine.tile.bytesRx += packet.payload.size();
                     PictureMsg picture;
                     if (!Messages::unpackPicture(packet.payload, &picture)) {
                         continue;
                     }
-                    if (picture.imageW > 8192 || picture.imageH > 8192 || picture.jpeg.size() > Frame::kMaxPayload) {
+                    // 原图 BGRA 经分片重组后可到十余 MB；JPEG/H.264 仍按更紧的上限过滤
+                    const uint8_t picCodec = picture.codec == 0 ? 1 : picture.codec;
+                    const size_t hardCap = picCodec == 3 ? 12u * 1024u * 1024u
+                        : (picCodec == 2 ? 2u * 1024u * 1024u : Frame::kMaxPayload);
+                    if (picture.imageW > 8192 || picture.imageH > 8192 || picture.jpeg.size() > hardCap) {
                         continue;
                     }
                     machine.tile.operable = picture.operable != 0;
-                    machine.tile.imageW = picture.imageW;
-                    machine.tile.imageH = picture.imageH;
                     if (packet.channel == Frame::ChVideo) {
-                        machine.tile.codec = picture.codec == 0 ? 1 : picture.codec;
+                        machine.tile.imageW = picture.imageW;
+                        machine.tile.imageH = picture.imageH;
+                        machine.tile.codec = picCodec;
+                    } else if (machine.tile.jpeg.empty()) {
+                        machine.tile.imageW = picture.imageW;
+                        machine.tile.imageH = picture.imageH;
                     }
                     CommBytes* slot = packet.channel == Frame::ChThumb ? &machine.tile.thumb : &machine.tile.jpeg;
-                    const size_t cap = picture.codec == 2 ? 2 * 1024 * 1024 : 512 * 1024;
+                    const size_t cap = picCodec == 3 ? 12u * 1024u * 1024u
+                        : (picCodec == 2 ? 2u * 1024u * 1024u : 512u * 1024u);
                     if (picture.jpeg.size() <= cap) {
                         slot->swap(picture.jpeg);
                     } else {
@@ -457,6 +474,16 @@ void ControlSession::readMain()
                         machine.tile.thumbSeq += 1;
                     } else {
                         machine.tile.pictureSeq += 1;
+                        const uint64_t unpackMs = RemoteLog::tickMs() - t0;
+                        RemoteLog::writef(RemoteLog::Info, "接收",
+                            "主画面 peer=%s seq=%llu 解包%llums %zuB codec=%u %ux%u",
+                            machine.tile.peerId.c_str(),
+                            static_cast<unsigned long long>(machine.tile.pictureSeq),
+                            static_cast<unsigned long long>(unpackMs),
+                            slot->size(),
+                            static_cast<unsigned>(machine.tile.codec),
+                            machine.tile.imageW,
+                            machine.tile.imageH);
                     }
                 } else if (packet.channel != Frame::ChControl) {
                     continue;
@@ -538,6 +565,7 @@ void ControlSession::writeMain()
         std::vector<bool> subs;
         std::vector<SubscribeMsg> subMsgs;
         std::vector<int> rtts;
+        bool adaptive = true;
         bool run = false;
         // 锁里取走待发标志和队列，锁外再写套接字
         {
@@ -556,6 +584,7 @@ void ControlSession::writeMain()
                 subs.push_back(m_machines[i].wantSub);
                 subMsgs.push_back(m_machines[i].subscribe);
                 rtts.push_back(m_machines[i].tile.rttMs);
+                adaptive = m_adaptive;
                 m_machines[i].wantAuth = false;
                 m_machines[i].wantRelease = false;
                 m_machines[i].wantConfig = false;
@@ -581,7 +610,7 @@ void ControlSession::writeMain()
                 if (i < rtts.size() && rtts[i] >= 0) {
                     NetStatsMsg stats;
                     stats.rttMs = static_cast<uint16_t>(rtts[i] > 65535 ? 65535 : rtts[i]);
-                    stats.congested = rtts[i] >= 200 ? 1 : 0;
+                    stats.congested = (adaptive && rtts[i] >= 800) ? 1 : 0;
                     m_tcp.write(peers[i], Messages::packNetStats(stats, &err), 1000, &err);
                 }
                 nextBeat[i] = now + RemoteConst::kHeartbeatMs;

@@ -29,9 +29,11 @@ enum class ToolType {
     Acquire3D,      ///< 三维采集。点云、三维位姿、三维形状
     Prepare3D,      ///< 点云预处理
     Measure3D,      ///< 三维测量
-    Align3D,        ///< 三维配准
+    Locate3D,       ///< 三维定位（模板匹配、ICP 等；原 Align3D）
     Infer,          ///< 深度学习推理
     Identify,       ///< 识别。二维码、一维码、字符
+    Detect3D,       ///< 三维检测。聚类、差分缺陷
+    Calib3D,        ///< 三维标定。手眼、外参
     Max ///< 个数，不是合法值
 };
 
@@ -66,7 +68,8 @@ inline bool toolTypeIsAcquire3D(ToolType t)
 inline bool toolTypeIsOverlaySource(ToolType t)
 {
     return t == ToolType::Locate || t == ToolType::Detect || t == ToolType::RstProcess
-        || t == ToolType::Infer || t == ToolType::Identify;
+        || t == ToolType::Infer || t == ToolType::Identify
+        || t == ToolType::Locate3D || t == ToolType::Detect3D;
 }
 
 /** @brief 工具类型是否参与 OK/NG 结果矩阵列 */
@@ -74,7 +77,7 @@ inline bool toolTypeProducesOkNg(ToolType t)
 {
     return t == ToolType::Locate || t == ToolType::Detect
         || t == ToolType::RstProcess || t == ToolType::Logic
-        || t == ToolType::Measure3D || t == ToolType::Align3D
+        || t == ToolType::Measure3D || t == ToolType::Locate3D || t == ToolType::Detect3D
         || t == ToolType::Infer || t == ToolType::Identify;
 }
 

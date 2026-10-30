@@ -52,6 +52,10 @@ public:
     QString relayKey;   ///< 中继口令，与被控端一致
     int rows;           ///< 监控墙行数
     int cols;           ///< 监控墙列数
+    int defaultFps;     ///< 新会话的帧率上限，5–500
+    int defaultQuality; ///< 新会话画质：0 流畅，1 均衡，2 清晰
+    int streamCodec;    ///< 发送编码：0 沿用被控端，1 JPEG，2 H.264，3 原图 BGRA
+    bool adaptive;      ///< 延迟很高时自动略降分辨率，不把帧率打到 1
 
 private:
     QString m_path;     ///< control.json 绝对路径（exe 同目录）

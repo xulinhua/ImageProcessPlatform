@@ -154,8 +154,12 @@ static QColor headerColor(ToolType ty)
         return QColor(0x13, 0xC2, 0xC2);
     case ToolType::Measure3D:
         return QColor(0xFA, 0xAD, 0x14);
-    case ToolType::Align3D:
+    case ToolType::Locate3D:
         return QColor(0x18, 0x90, 0xFF);
+    case ToolType::Detect3D:
+        return QColor(0xF5, 0x22, 0x2D);
+    case ToolType::Calib3D:
+        return QColor(0x13, 0xC2, 0xC2);
     case ToolType::Infer:
         return QColor(0xEB, 0x2F, 0x96);
     case ToolType::Identify:

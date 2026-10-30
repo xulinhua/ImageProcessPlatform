@@ -372,8 +372,14 @@ static ToolType typeFromToolName(const std::string& key)
     if (key.compare(0, 10, "measure3d.") == 0) {
         return ToolType::Measure3D;
     }
-    if (key.compare(0, 8, "align3d.") == 0) {
-        return ToolType::Align3D;
+    if (key.compare(0, 8, "align3d.") == 0 || key.compare(0, 9, "locate3d.") == 0) {
+        return ToolType::Locate3D;
+    }
+    if (key.compare(0, 9, "detect3d.") == 0) {
+        return ToolType::Detect3D;
+    }
+    if (key.compare(0, 8, "calib3d.") == 0) {
+        return ToolType::Calib3D;
     }
     if (key.compare(0, 6, "infer.") == 0) {
         return ToolType::Infer;
@@ -399,6 +405,11 @@ ToolCfg ToolCfg::createRegistered(const std::string& toolName, const ObjectId& d
     config.params = t->defaultParams();
     config.enabled = true;
     config.deviceId = deviceId;
+    // 三维工具缺省算法库为 PCL（采集类无算法库，保持默认即可）
+    if (config.type == ToolType::Prepare3D || config.type == ToolType::Measure3D
+        || config.type == ToolType::Locate3D || config.type == ToolType::Detect3D) {
+        config.algLib = AlgLibPcl;
+    }
     return config;
 }
 

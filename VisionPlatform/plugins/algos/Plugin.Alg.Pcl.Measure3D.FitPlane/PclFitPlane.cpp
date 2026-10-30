@@ -12,7 +12,6 @@
 #include <HsCommData/HsError.h>
 #include <HsCommData/HsTuple.h>
 #include <cmath>
-#include <random>
 #include <stdio.h>
 
 #if defined(__has_include)
@@ -47,74 +46,6 @@ HsCommData::Point3d PclFitPlane::orientNormal(const HsCommData::Point3d& n) cons
     return n;
 }
 
-bool PclFitPlane::fitRansac(const HsCommData::Cloud3& cloud, double distance,
-                            HsCommData::Plane3* plane, std::vector<int>* inliers, std::string* err) const
-{
-    const int n = static_cast<int>(cloud.xyz.size());
-    if (n < 3 || !plane || !inliers) {
-        if (err) {
-            *err = "点太少或退化";
-        }
-        return false;
-    }
-    // 固定种子随机取三点建面，迭代 1000 次，留内点最多的一组
-    std::mt19937 rng(1);
-    std::uniform_int_distribution<int> pick(0, n - 1);
-    int bestCount = 0;
-    HsCommData::Point3d bestN;
-    HsCommData::Point3d bestP;
-    for (int iter = 0; iter < 1000; ++iter) {
-        const int ia = pick(rng);
-        const int ib = pick(rng);
-        const int ic = pick(rng);
-        if (ia == ib || ib == ic || ia == ic) {
-            continue;
-        }
-        const HsCommData::Point3d& a = cloud.xyz[static_cast<size_t>(ia)];
-        const HsCommData::Point3d& b = cloud.xyz[static_cast<size_t>(ib)];
-        const HsCommData::Point3d& c = cloud.xyz[static_cast<size_t>(ic)];
-        const HsCommData::Point3d cr = HsCommData::cross(b - a, c - a);
-        if (HsCommData::length(cr) < 1e-8) {
-            continue;
-        }
-        const HsCommData::Point3d normal = orientNormal(HsCommData::normalized(cr));
-        int count = 0;
-        for (int i = 0; i < n; ++i) {
-            const double d = std::fabs(HsCommData::dot(normal, cloud.xyz[static_cast<size_t>(i)] - a));
-            if (d <= distance) {
-                ++count;
-            }
-        }
-        if (count > bestCount) {
-            bestCount = count;
-            bestN = normal;
-            bestP = a;
-        }
-    }
-    if (bestCount < 3) {
-        if (err) {
-            *err = "点太少或退化";
-        }
-        return false;
-    }
-    // 按最佳平面重取内点，原点取内点质心在平面上的投影
-    inliers->clear();
-    HsCommData::Point3d sum;
-    for (int i = 0; i < n; ++i) {
-        const HsCommData::Point3d& p = cloud.xyz[static_cast<size_t>(i)];
-        if (std::fabs(HsCommData::dot(bestN, p - bestP)) <= distance) {
-            inliers->push_back(i);
-            sum += p;
-        }
-    }
-    const double inv = 1.0 / static_cast<double>(inliers->size());
-    const HsCommData::Point3d centroid = sum * inv;
-    const double shift = HsCommData::dot(bestN, centroid - bestP);
-    plane->normal = bestN;
-    plane->origin = centroid - bestN * shift;
-    return plane->isNormalUnit();
-}
-
 bool PclFitPlane::fit(const HsCommData::Cloud3& cloud, double distance,
                       HsCommData::Plane3* plane, std::vector<int>* inliers, std::string* err) const
 {
@@ -126,7 +57,6 @@ bool PclFitPlane::fit(const HsCommData::Cloud3& cloud, double distance,
         }
         return false;
     }
-    // 转成 PCL 点云，用 SACSegmentation 做 RANSAC；固定种子保证结果可复现
     pcl::PointCloud<pcl::PointXYZ>::Ptr pts(new pcl::PointCloud<pcl::PointXYZ>());
     pts->resize(static_cast<size_t>(n));
     for (int i = 0; i < n; ++i) {
@@ -141,7 +71,6 @@ bool PclFitPlane::fit(const HsCommData::Cloud3& cloud, double distance,
     seg.setMethodType(pcl::SAC_RANSAC);
     seg.setDistanceThreshold(static_cast<double>(distance));
     seg.setMaxIterations(1000);
-    seg.setSeed(1);
     seg.setInputCloud(pts);
     pcl::PointIndices idx;
     pcl::ModelCoefficients coeff;
@@ -152,7 +81,6 @@ bool PclFitPlane::fit(const HsCommData::Cloud3& cloud, double distance,
         }
         return false;
     }
-    // ax+by+cz+d=0 归一化成单位法向并定号；法向翻转时 d 同步取反，原点取平面上离坐标原点最近的点
     const double a = coeff.values[0];
     const double b = coeff.values[1];
     const double c = coeff.values[2];
@@ -179,14 +107,20 @@ bool PclFitPlane::fit(const HsCommData::Cloud3& cloud, double distance,
     }
     return true;
 #else
-    return fitRansac(cloud, distance, plane, inliers, err);
+    (void)cloud;
+    (void)distance;
+    (void)plane;
+    (void)inliers;
+    if (err) {
+        *err = "未安装 PCL";
+    }
+    return false;
 #endif
 }
 
 void PclFitPlane::publish(const AlgToolIn& in, const HsCommData::Cloud3& cloud,
                           const HsCommData::Plane3& plane, const std::vector<int>& inliers, AlgToolOut* out) const
 {
-    // 内点到平面的有符号距离求 RMS，同时收集内点云
     double sumSq = 0;
     HsCommData::Cloud3 kept;
     kept.xyz.reserve(inliers.size());
@@ -209,7 +143,6 @@ void PclFitPlane::publish(const AlgToolIn& in, const HsCommData::Cloud3& cloud,
     out->values.insert("inliers", static_cast<int>(inliers.size()));
     out->values.insert("points", static_cast<int>(cloud.xyz.size()));
 
-    // 平面图形、inlier 端口内点云，以及与测值同序的元组
     PortShape3 shape;
     shape.kind = Shape3Kind::Plane;
     shape.plane = plane;
@@ -238,7 +171,6 @@ void PclFitPlane::publish(const AlgToolIn& in, const HsCommData::Cloud3& cloud,
     sprintf_s(msg, "rms %.4f  内点 %d", rms, static_cast<int>(inliers.size()));
     out->message = msg;
 
-    // 判定：启用且为数值的测值越界则 NG，errCode 仍为 HS_OK
     for (size_t i = 0; i < in.judge.size(); ++i) {
         const JudgeParam& row = in.judge[i];
         if (!row.enable || !out->values.contains(row.name)) {

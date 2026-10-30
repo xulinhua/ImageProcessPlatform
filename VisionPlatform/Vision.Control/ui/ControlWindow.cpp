@@ -14,6 +14,7 @@
 #include "DeviceDialog.h"
 #include "RemoteBeacon.h"
 #include "RemoteCrash.h"
+#include "RemoteLogWindow.h"
 #include "Messages.h"
 #include "RemoteFiles.h"
 #include "RemoteTheme.h"
@@ -64,6 +65,7 @@ ControlWindow::ControlWindow(QWidget* parent)
     , m_dirty(false)
     , m_relayStatus(0)
     , m_userStatus(0)
+    , m_logWin(0)
 {
     setWindowTitle(QString::fromUtf8("中控台"));
     resize(1600, 940);
@@ -290,12 +292,23 @@ QMenuBar* ControlWindow::buildMenus()
     // 工具与帮助；「局域网扫描」复用添加设备对话框
     QMenu* tools = bar->addMenu(QString::fromUtf8("工具"));
     QAction* audit = tools->addAction(RemoteTheme::icon("list"), QString::fromUtf8("审计日志…"));
+    QAction* runLog = tools->addAction(RemoteTheme::icon("list"), QString::fromUtf8("运行日志…"));
     QAction* found = tools->addAction(RemoteTheme::icon("wifi"), QString::fromUtf8("局域网扫描…"));
-    tools->addSeparator();
-    QAction* settings = tools->addAction(RemoteTheme::icon("sliders"), QString::fromUtf8("设置…"));
     QObject::connect(audit, &QAction::triggered, [this]() { openAudit(); });
+    QObject::connect(runLog, &QAction::triggered, [this]() { openRunLog(); });
     QObject::connect(found, &QAction::triggered, [this]() { openAddDevice(); });
+
+    QMenu* settingsMenu = bar->addMenu(QString::fromUtf8("设置"));
+    QAction* settings = settingsMenu->addAction(RemoteTheme::icon("sliders"), QString::fromUtf8("设置…"));
+    settings->setShortcut(QKeySequence::Preferences);
+    settingsMenu->addSeparator();
+    QAction* setPicture = settingsMenu->addAction(RemoteTheme::icon("monitor"), QString::fromUtf8("画面…"));
+    QAction* setNetwork = settingsMenu->addAction(RemoteTheme::icon("globe"), QString::fromUtf8("网络…"));
+    QAction* setRecord = settingsMenu->addAction(RemoteTheme::icon("film"), QString::fromUtf8("录屏…"));
     QObject::connect(settings, &QAction::triggered, [this]() { openSettings(0); });
+    QObject::connect(setPicture, &QAction::triggered, [this]() { openSettings(2); });
+    QObject::connect(setNetwork, &QAction::triggered, [this]() { openSettings(1); });
+    QObject::connect(setRecord, &QAction::triggered, [this]() { openSettings(4); });
 
     QMenu* help = bar->addMenu(QString::fromUtf8("帮助"));
     QAction* usage = help->addAction(RemoteTheme::icon("info"), QString::fromUtf8("使用说明"));
@@ -362,6 +375,8 @@ QWidget* ControlWindow::buildToolbar()
     m_page = new QLabel("1 / 1", bar);
     m_page->setStyleSheet("padding:0 6px;color:#595959;");
     QPushButton* full = RemoteTheme::button(QString::fromUtf8("全屏墙"), "full", 0, bar);
+    QPushButton* logBtn = RemoteTheme::button(QString::fromUtf8("运行日志"), "list", 0, bar);
+    logBtn->setToolTip(QString::fromUtf8("查看接收、解码等分步耗时"));
 
     QLabel* layoutLabel = new QLabel(QString::fromUtf8("布局"), bar);
     QLabel* rowsLabel = new QLabel(QString::fromUtf8("行"), bar);
@@ -395,9 +410,11 @@ QWidget* ControlWindow::buildToolbar()
     row->addWidget(m_next);
     row->addWidget(new ToolSeparator(bar));
     row->addWidget(full);
+    row->addWidget(logBtn);
 
     // 信号连接；改轮巡间隔立即存配置，轮巡中则按新间隔重启
     QObject::connect(add, &QPushButton::clicked, [this]() { openAddDevice(); });
+    QObject::connect(logBtn, &QPushButton::clicked, [this]() { openRunLog(); });
     QObject::connect(refresh, &QPushButton::clicked, [this]() {
         foundNow();
         refreshTree(m_session.tiles());
@@ -483,6 +500,7 @@ void ControlWindow::startListen()
         QMessageBox::warning(this, windowTitle(), QString::fromUtf8("监听端口无效：%1").arg(port));
         return;
     }
+    m_session.setAdaptive(m_config.adaptive);
     const bool ok = m_session.start(m_config.host.toUtf8().constData(), port, &err);
     m_listenDot->setTone(ok ? "green" : "red");
     if (ok) {
@@ -596,6 +614,22 @@ std::vector<QString> ControlWindow::wallKeys() const
 
 void ControlWindow::syncStreams(const std::vector<ControlSession::Tile>& tiles)
 {
+    // 当前墙页上的设备也要订主码流，否则只靠 2 fps 缩略图，比会话窗慢很多
+    const std::vector<QString> wall = wallKeys();
+    const int per = m_rows->value() * m_cols->value();
+    std::map<QString, bool> onPage;
+    for (int i = 0; i < per; ++i) {
+        const size_t index = static_cast<size_t>(m_pageIndex * per + i);
+        if (index >= wall.size()) {
+            break;
+        }
+        onPage[wall[index]] = true;
+    }
+
+    const uint16_t fps = static_cast<uint16_t>(
+        m_config.defaultFps >= RemoteConst::kMaxFpsMin && m_config.defaultFps <= RemoteConst::kMaxFpsMax
+            ? m_config.defaultFps : RemoteConst::kMaxFpsDefault);
+
     std::map<std::string, int> live;
     for (size_t i = 0; i < tiles.size(); ++i) {
         const ControlSession::Tile& tile = tiles[i];
@@ -604,25 +638,30 @@ void ControlWindow::syncStreams(const std::vector<ControlSession::Tile>& tiles)
         }
         // 会话窗口按设备 ID 索引，不是连接时的 d:/w: 地址键
         const QString key = keyOf(tile);
-        const bool main = !key.isEmpty() && m_sessions.find(key) != m_sessions.end();
-        const int want = main ? 2 : 1;
+        const bool session = !key.isEmpty() && m_sessions.find(key) != m_sessions.end();
+        const bool wallVis = !key.isEmpty() && onPage.find(key) != onPage.end();
+        const bool wantMain = session || wallVis;
+        // 1=仅缩略图，2=主码流（墙上/会话）
+        const int want = wantMain ? 2 : 1;
         live[tile.peerId] = want;
         if (m_stream[tile.peerId] == want) {
             continue;
         }
         SubscribeMsg thumb;
         thumb.stream = 2;
-        thumb.enable = 1;
+        thumb.enable = wantMain ? 0 : 1;
         thumb.maxFps = 2;
         thumb.jpegQuality = 60;
         thumb.longEdge = 480;
         m_session.subscribe(tile.peerId, thumb);
         SubscribeMsg full;
         full.stream = 1;
-        full.enable = main ? 1 : 0;
-        full.maxFps = static_cast<uint8_t>(RemoteConst::kMaxFpsDefault);
+        full.enable = wantMain ? 1 : 0;
+        full.maxFps = fps;
         full.jpegQuality = static_cast<uint8_t>(RemoteConst::kJpegQuality);
         full.longEdge = static_cast<uint16_t>(RemoteConst::kLongEdge);
+        full.codec = static_cast<uint8_t>(m_config.streamCodec >= 0 && m_config.streamCodec <= 3
+            ? m_config.streamCodec : 0);
         m_session.subscribe(tile.peerId, full);
         m_stream[tile.peerId] = want;
     }
@@ -678,6 +717,7 @@ void ControlWindow::trackTiles(const std::vector<ControlSession::Tile>& tiles)
             open->second->close();
         }
         m_pictures.erase(manual);
+        m_wallH264.erase(manual);
         m_rates.erase(manual);
         m_seen.erase(manual);
     }
@@ -758,9 +798,11 @@ void ControlWindow::updateRates(const std::vector<ControlSession::Tile>& tiles)
             rate = Rate();
             continue;
         }
-        if (rate.at == 0 || tiles[i].pictureSeq < rate.seq || tiles[i].bytesRx < rate.bytes) {
+        if (rate.at == 0 || tiles[i].pictureSeq < rate.seq || tiles[i].thumbSeq < rate.thumbSeq
+            || tiles[i].bytesRx < rate.bytes) {
             rate.at = now;
             rate.seq = tiles[i].pictureSeq;
+            rate.thumbSeq = tiles[i].thumbSeq;
             rate.bytes = tiles[i].bytesRx;
             continue;
         }
@@ -768,9 +810,14 @@ void ControlWindow::updateRates(const std::vector<ControlSession::Tile>& tiles)
         if (dt < 1000) {
             continue;
         }
-        rate.fps = (tiles[i].pictureSeq - rate.seq) * 1000.0 / dt;
+        // 监控墙默认只订缩略图；有主码流时优先用主码流帧差
+        const uint64_t dMain = tiles[i].pictureSeq - rate.seq;
+        const uint64_t dThumb = tiles[i].thumbSeq - rate.thumbSeq;
+        const uint64_t dFrames = dMain > 0 ? dMain : dThumb;
+        rate.fps = dFrames * 1000.0 / dt;
         rate.kbps = (tiles[i].bytesRx - rate.bytes) * 8.0 / dt;
         rate.seq = tiles[i].pictureSeq;
+        rate.thumbSeq = tiles[i].thumbSeq;
         rate.bytes = tiles[i].bytesRx;
         rate.at = now;
     }
@@ -824,17 +871,43 @@ void ControlWindow::refreshWall(const std::vector<ControlSession::Tile>& tiles)
             cell.lastSeen = device->lastSeen.date() == QDate::currentDate()
                 ? device->lastSeen.toString("HH:mm:ss") : device->lastSeen.toString("yyyy-MM-dd HH:mm");
         }
-        // 有新帧或恢复在线时重新解码；离线时把最后一帧转灰度
+        // 优先主码流（与会话同帧率）；没有主画面时才用缩略图
         Picture& picture = m_pictures[key];
-        const CommBytes* wallJpeg = tile ? &tile->jpeg : 0;
-        uint64_t wallSeq = tile ? tile->pictureSeq : 0;
-        if (tile && !tile->thumb.empty()) {
+        const CommBytes* wallJpeg = 0;
+        uint64_t wallSeq = 0;
+        uint8_t wallCodec = 1;
+        if (tile && !tile->jpeg.empty()) {
+            wallJpeg = &tile->jpeg;
+            wallSeq = tile->pictureSeq;
+            wallCodec = tile->codec == 0 ? 1 : tile->codec;
+        } else if (tile && !tile->thumb.empty()) {
             wallJpeg = &tile->thumb;
             wallSeq = tile->thumbSeq;
+            wallCodec = 1;
         }
         if (tile && wallJpeg && !wallJpeg->empty() && (wallSeq != picture.seq || picture.gray == cell.online)) {
             if (wallSeq != picture.seq || picture.image.isNull() || (picture.gray && cell.online)) {
-                picture.image = RemoteTheme::imageFromJpeg(wallJpeg->data(), static_cast<int>(wallJpeg->size()));
+                if (wallCodec == 2) {
+                    std::vector<unsigned char> bgra;
+                    int w = 0;
+                    int h = 0;
+                    H264Codec& dec = m_wallH264[key];
+                    if (dec.decode(wallJpeg->data(), static_cast<int>(wallJpeg->size()), &bgra, &w, &h)
+                        && w > 0 && h > 0) {
+                        picture.image = QImage(bgra.data(), w, h, w * 4, QImage::Format_ARGB32).copy();
+                    } else {
+                        dec.closeDecoder();
+                    }
+                } else if (wallCodec == 3) {
+                    const int w = static_cast<int>(tile->imageW);
+                    const int h = static_cast<int>(tile->imageH);
+                    const size_t need = static_cast<size_t>(w) * static_cast<size_t>(h) * 4u;
+                    if (w > 0 && h > 0 && wallJpeg->size() >= need) {
+                        picture.image = QImage(wallJpeg->data(), w, h, w * 4, QImage::Format_ARGB32).copy();
+                    }
+                } else {
+                    picture.image = RemoteTheme::imageFromJpeg(wallJpeg->data(), static_cast<int>(wallJpeg->size()));
+                }
             }
             if (!cell.online) {
                 picture.image = picture.image.convertToFormat(QImage::Format_Grayscale8);
@@ -1032,8 +1105,8 @@ void ControlWindow::wakeSelected()
     if (mac.trimmed().isEmpty()) {
         mac = QInputDialog::getText(this, QString::fromUtf8("远程唤醒"), QString::fromUtf8("MAC 地址"), QLineEdit::Normal, mac);
         if (mac.trimmed().isEmpty()) {
-            return;
-        }
+        return;
+    }
         device->mac = mac.trimmed();
         m_store.save();
     }
@@ -1259,6 +1332,9 @@ void ControlWindow::openProperties(const QString& key)
 
 void ControlWindow::openSettings(int page)
 {
+    const int oldFps = m_config.defaultFps;
+    const int oldQuality = m_config.defaultQuality;
+    const int oldCodec = m_config.streamCodec;
     SettingsDialog dialog(&m_config, m_session.listening(), m_audit.dir(), [this](bool moved) {
         if (moved) {
             m_session.stop();
@@ -1271,15 +1347,31 @@ void ControlWindow::openSettings(int page)
             m_tourTimer->start(m_config.tourSeconds * 1000);
         }
         m_audit.prune(m_config.auditDays);
+        m_session.setAdaptive(m_config.adaptive);
     }, this);
     dialog.setPage(page);
     dialog.exec();
+    if (m_config.defaultFps != oldFps || m_config.defaultQuality != oldQuality
+        || m_config.streamCodec != oldCodec) {
+        m_stream.clear();
+        for (std::map<QString, SessionWindow*>::iterator it = m_sessions.begin(); it != m_sessions.end(); ++it) {
+            it->second->usePictureDefaults();
+        }
+    }
 }
 
 void ControlWindow::openAudit()
 {
     AuditDialog dialog(&m_audit, this);
     dialog.exec();
+}
+
+void ControlWindow::openRunLog()
+{
+    if (!m_logWin) {
+        m_logWin = new RemoteLogWindow(QString::fromUtf8("中控台 · 运行日志"), this);
+    }
+    m_logWin->showAndRaise();
 }
 
 void ControlWindow::renameDevice(const QString& key)
@@ -1318,6 +1410,7 @@ void ControlWindow::removeDevice(const QString& key)
     m_store.remove(key);
     m_store.save();
     m_pictures.erase(key);
+    m_wallH264.erase(key);
     refreshTree(m_session.tiles());
 }
 
@@ -1469,7 +1562,7 @@ void ControlWindow::showFromTray()
     if (m_wallFull) {
         showFullScreen();
     } else {
-        showNormal();
+    showNormal();
     }
     raise();
     activateWindow();

@@ -78,15 +78,19 @@
     <ClCompile Include="theme\RemoteTheme.cpp" />
     <ClCompile Include="theme\RemoteStyle.cpp" />
     <ClCompile Include="widgets\RemoteWidgets.cpp" />
+    <ClCompile Include="widgets\RemoteLogWindow.cpp" />
     <ClCompile Include="common\RemoteFiles.cpp" />
     <ClCompile Include="common\RemoteCrash.cpp" />
+    <ClCompile Include="common\RemoteLog.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="theme\RemoteTheme.h" />
     <ClInclude Include="theme\RemoteStyle.h" />
     <ClInclude Include="widgets\RemoteWidgets.h" />
+    <ClInclude Include="widgets\RemoteLogWindow.h" />
     <ClInclude Include="common\RemoteFiles.h" />
     <ClInclude Include="common\RemoteCrash.h" />
+    <ClInclude Include="common\RemoteLog.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
 </Project>

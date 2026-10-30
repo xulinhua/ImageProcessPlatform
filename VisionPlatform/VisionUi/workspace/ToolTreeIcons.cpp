@@ -124,8 +124,10 @@ int toolTreeIconKeyForType(ToolType type)
     case ToolType::Calib: return ToolTreeIconResult;
     case ToolType::Acquire3D: return ToolTreeIconCamera;
     case ToolType::Prepare3D: return ToolTreeIconPreprocess;
+    case ToolType::Locate3D: return ToolTreeIconLocate;
     case ToolType::Measure3D: return ToolTreeIconDetect;
-    case ToolType::Align3D: return ToolTreeIconLocate;
+    case ToolType::Detect3D: return ToolTreeIconDetect;
+    case ToolType::Calib3D: return ToolTreeIconResult;
     case ToolType::Infer: return ToolTreeIconDetect;
     case ToolType::Identify: return ToolTreeIconDetect;
     }

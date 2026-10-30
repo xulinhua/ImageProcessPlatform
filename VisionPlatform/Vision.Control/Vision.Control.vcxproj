@@ -102,6 +102,7 @@
     <ClCompile Include="dialog\AddDeviceDialog.cpp" />
     <ClCompile Include="dialog\SettingsDialog.cpp" />
     <ClCompile Include="dialog\AuditDialog.cpp" />
+    <ClCompile Include="dialog\FileTransferDialog.cpp" />
     <ClCompile Include="view\FrameView.cpp" />
     <ClCompile Include="view\WallView.cpp" />
     <ClCompile Include="session\ControlSession.cpp" />
@@ -123,6 +124,7 @@
     <ClInclude Include="dialog\AddDeviceDialog.h" />
     <ClInclude Include="dialog\SettingsDialog.h" />
     <ClInclude Include="dialog\AuditDialog.h" />
+    <ClInclude Include="dialog\FileTransferDialog.h" />
     <ClInclude Include="view\FrameView.h" />
     <ClInclude Include="view\WallView.h" />
     <ClInclude Include="session\ControlSession.h" />

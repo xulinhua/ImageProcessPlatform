@@ -4,6 +4,7 @@ VS2022（v143）+ Qt 5.15.2 + C++17。方案文件：`VisionPlatform.sln`，启�
 
 - **使用**（本文）：环境、编译、运行、账户、数据目录与许可
 - **架构**：[docs/architecture.md](docs/architecture.md)（工程分层、领域模型、调度与版本流）
+- **三维工具**：[docs/3d-tools.md](docs/3d-tools.md)（大类、工具清单与分期，对照 VM3D / Smart3 / Mech-Vision）
 - **版本号约定**：[docs/versioning.md](docs/versioning.md)
 
 ---
@@ -17,6 +18,8 @@ VS2022（v143）+ Qt 5.15.2 + C++17。方案文件：`VisionPlatform.sln`，启�
 | IDE / 工具集 | Visual Studio 2022，平台工具集 **v143**，C++17 |
 | Qt | 5.15.2。必须设置环境变量 **`QTDIR`** 为套件目录：x64 用 `msvc2019_64`，Win32 用 `msvc2019`。工程内不写默认路径 |
 | Halcon | 17.12，已放在 `third_party\Halcon`（x64-win64）。`halcon.props` 只认这个相对路径 |
+| PCL | 1.15.1 精简包在 `third_party\PCL`（含 Eigen/Boost/FLANN 头）。`pcl.props` 只认这个相对路径，不读 `PCL_ROOT` |
+| Open3D | 0.20.0 在 `third_party\Open3D`。`open3d.props` 只认这个相对路径，不读 `OPEN3D_ROOT` |
 | 推荐配置 | **x64 \| Debug** |
 
 ### 编译与运行

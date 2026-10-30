@@ -99,7 +99,8 @@ public:
         TypeFileOpen = 3,
         TypeFileChunk = 4,
         TypeFileAck = 5,
-        TypeFileDone = 6
+        TypeFileDone = 6,
+        TypeMkDir = 7           ///< 在被控端建目录，含上级
     };
 
     /** @brief 聊天通道类型 */

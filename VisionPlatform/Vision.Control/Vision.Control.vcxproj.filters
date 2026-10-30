@@ -43,6 +43,9 @@
     <ClCompile Include="dialog\AuditDialog.cpp">
       <Filter>dialog</Filter>
     </ClCompile>
+    <ClCompile Include="dialog\FileTransferDialog.cpp">
+      <Filter>dialog</Filter>
+    </ClCompile>
     <ClCompile Include="view\FrameView.cpp">
       <Filter>view</Filter>
     </ClCompile>
@@ -100,6 +103,9 @@
       <Filter>dialog</Filter>
     </ClInclude>
     <ClInclude Include="dialog\AuditDialog.h">
+      <Filter>dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="dialog\FileTransferDialog.h">
       <Filter>dialog</Filter>
     </ClInclude>
     <ClInclude Include="view\FrameView.h">

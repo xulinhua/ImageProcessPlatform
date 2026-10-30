@@ -259,20 +259,30 @@ CommBytes Messages::packSubscribe(const SubscribeMsg& msg, std::string* err)
     CommBytes body;
     Frame::appendU8(&body, msg.stream);
     Frame::appendU8(&body, msg.enable);
-    Frame::appendU8(&body, msg.maxFps);
+    Frame::appendU16(&body, msg.maxFps);
     Frame::appendU8(&body, msg.jpegQuality);
     Frame::appendU16(&body, msg.longEdge);
+    Frame::appendU8(&body, msg.codec);
     return finish(Frame::TypeSubscribe, Frame::ChControl, body, err);
 }
 
 bool Messages::unpackSubscribe(const CommBytes& payload, SubscribeMsg* msg)
 {
     size_t off = 0;
-    return Frame::readU8(payload, &off, &msg->stream)
-        && Frame::readU8(payload, &off, &msg->enable)
-        && Frame::readU8(payload, &off, &msg->maxFps)
-        && Frame::readU8(payload, &off, &msg->jpegQuality)
-        && Frame::readU16(payload, &off, &msg->longEdge);
+    if (!Frame::readU8(payload, &off, &msg->stream)
+        || !Frame::readU8(payload, &off, &msg->enable)
+        || !Frame::readU16(payload, &off, &msg->maxFps)
+        || !Frame::readU8(payload, &off, &msg->jpegQuality)
+        || !Frame::readU16(payload, &off, &msg->longEdge)) {
+        return false;
+    }
+    msg->codec = 0;
+    if (off < payload.size()) {
+        if (!Frame::readU8(payload, &off, &msg->codec)) {
+            return false;
+        }
+    }
+    return true;
 }
 
 CommBytes Messages::packStreamInfo(const StreamInfoMsg& msg, std::string* err)
@@ -456,10 +466,11 @@ CommBytes Messages::packConfig(const ConfigMsg& msg, std::string* err)
     if (!packText(&body, msg.title, err) || !packText(&body, msg.process, err)) {
         return CommBytes();
     }
-    // 尾部可选：旧被控端忽略；新字段控制帧率与画质
-    Frame::appendU8(&body, msg.maxFps);
+    // 尾部可选：旧被控端忽略；新字段控制帧率与画质（maxFps 为 u16，支持到 500）
+    Frame::appendU16(&body, msg.maxFps);
     Frame::appendU8(&body, msg.jpegQuality);
     Frame::appendU16(&body, msg.longEdge);
+    Frame::appendU8(&body, msg.codec);
     return finish(Frame::TypeConfig, Frame::ChControl, body, err);
 }
 
@@ -475,8 +486,9 @@ bool Messages::unpackConfig(const CommBytes& payload, ConfigMsg* msg)
     msg->maxFps = 0;
     msg->jpegQuality = 0;
     msg->longEdge = 0;
-    if (off < payload.size()) {
-        if (!Frame::readU8(payload, &off, &msg->maxFps)) {
+    msg->codec = 0;
+    if (off + 1 < payload.size()) {
+        if (!Frame::readU16(payload, &off, &msg->maxFps)) {
             return false;
         }
     }
@@ -487,6 +499,11 @@ bool Messages::unpackConfig(const CommBytes& payload, ConfigMsg* msg)
     }
     if (off + 1 < payload.size()) {
         if (!Frame::readU16(payload, &off, &msg->longEdge)) {
+            return false;
+        }
+    }
+    if (off < payload.size()) {
+        if (!Frame::readU8(payload, &off, &msg->codec)) {
             return false;
         }
     }
@@ -657,6 +674,22 @@ bool Messages::unpackDirEntries(const CommBytes& payload, std::string* listing)
 {
     size_t off = 0;
     return unpackLong(payload, &off, listing);
+}
+
+CommBytes Messages::packMkDir(uint32_t id, const std::string& path, std::string* err)
+{
+    CommBytes body;
+    Frame::appendU32(&body, id);
+    if (!packLong(&body, path, err)) {
+        return CommBytes();
+    }
+    return finish(Frame::TypeMkDir, Frame::ChFile, body, err);
+}
+
+bool Messages::unpackMkDir(const CommBytes& payload, uint32_t* id, std::string* path)
+{
+    size_t off = 0;
+    return Frame::readU32(payload, &off, id) && unpackLong(payload, &off, path);
 }
 
 CommBytes Messages::packFileOpen(uint32_t id, uint8_t pull, const std::string& path, uint64_t size, std::string* err,

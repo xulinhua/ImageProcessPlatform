@@ -20,6 +20,7 @@
 #include <wmcodecdsp.h>
 #include <strmif.h>
 
+#include <cstdio>
 #include <cstring>
 
 #pragma comment(lib, "mfplat.lib")
@@ -44,8 +45,11 @@ H264Codec::H264Codec()
     , m_frames(0)
     , m_mfAsync(false)
     , m_useOpen(false)
+    , m_broken(false)
+    , m_primeFails(0)
     , m_pts(0)
 {
+    m_err[0] = 0;
 }
 
 H264Codec::~H264Codec()
@@ -61,6 +65,27 @@ H264Codec::~H264Codec()
 void H264Codec::requestKey()
 {
     m_frames = 0;
+}
+
+bool H264Codec::encodeReady() const
+{
+    return !m_broken && (m_mf != 0 || m_open != 0);
+}
+
+bool H264Codec::isBroken() const
+{
+    return m_broken;
+}
+
+const char* H264Codec::lastError() const
+{
+    return m_err;
+}
+
+bool H264Codec::scaleBgra(const unsigned char* src, int srcW, int srcH, int longEdge,
+    std::vector<unsigned char>* dst, int* dstW, int* dstH) const
+{
+    return fit(src, srcW, srcH, longEdge, dst, dstW, dstH);
 }
 
 void H264Codec::closeEncoder()
@@ -88,10 +113,13 @@ void H264Codec::closeEncoder()
     }
     m_useOpen = false;
     m_mfAsync = false;
+    m_broken = false;
+    m_primeFails = 0;
     m_encW = 0;
     m_encH = 0;
     m_frames = 0;
     m_pts = 0;
+    m_err[0] = 0;
 }
 
 void H264Codec::closeDecoder()
@@ -116,9 +144,10 @@ bool H264Codec::fit(const unsigned char* src, int srcW, int srcH, int longEdge, 
         outW = outW * longEdge / edge;
         outH = outH * longEdge / edge;
     }
-    outW &= ~1;
-    outH &= ~1;
-    if (outW < 2 || outH < 2) {
+    // H.264 宏块对齐到 16；再保底偶数列行
+    outW &= ~15;
+    outH &= ~15;
+    if (outW < 16 || outH < 16) {
         return false;
     }
     dst->resize(static_cast<size_t>(outW) * static_cast<size_t>(outH) * 4);
@@ -223,46 +252,53 @@ bool H264Codec::openMf(int width, int height, int fps, int bitrate)
 {
     CoInitializeEx(0, COINIT_MULTITHREADED);
     if (MFStartup(MF_VERSION, MFSTARTUP_LITE) != S_OK) {
+        sprintf_s(m_err, "MFStartup失败");
         return false;
-    }
-    MFT_REGISTER_TYPE_INFO inInfo = { MFMediaType_Video, MFVideoFormat_NV12 };
-    MFT_REGISTER_TYPE_INFO outInfo = { MFMediaType_Video, MFVideoFormat_H264 };
-    IMFActivate** items = 0;
-    UINT32 count = 0;
-    if (MFTEnumEx(MFT_CATEGORY_VIDEO_ENCODER, MFT_ENUM_FLAG_HARDWARE | MFT_ENUM_FLAG_SORTANDFILTER, &inInfo, &outInfo, &items, &count) != S_OK
-        || count == 0) {
-        if (items) {
-            CoTaskMemFree(items);
-            items = 0;
-        }
-        count = 0;
-        if (MFTEnumEx(MFT_CATEGORY_VIDEO_ENCODER, MFT_ENUM_FLAG_SYNCMFT | MFT_ENUM_FLAG_SORTANDFILTER, &inInfo, &outInfo, &items, &count) != S_OK
-            || count == 0) {
-            if (items) {
-                CoTaskMemFree(items);
-            }
-            return false;
-        }
     }
     IMFTransform* transform = 0;
-    const HRESULT activated = items[0]->ActivateObject(__uuidof(IMFTransform), reinterpret_cast<void**>(&transform));
-    for (UINT32 i = 0; i < count; ++i) {
-        items[i]->Release();
+    // 优先微软同步软编（CLSID 固定），再枚举其它同步 MFT；跳过异步硬编
+    if (CoCreateInstance(CLSID_CMSH264EncoderMFT, 0, CLSCTX_INPROC_SERVER,
+            __uuidof(IMFTransform), reinterpret_cast<void**>(&transform)) != S_OK) {
+        transform = 0;
     }
-    CoTaskMemFree(items);
-    if (activated != S_OK || !transform) {
+    if (!transform) {
+        MFT_REGISTER_TYPE_INFO inInfo = { MFMediaType_Video, MFVideoFormat_NV12 };
+        MFT_REGISTER_TYPE_INFO outInfo = { MFMediaType_Video, MFVideoFormat_H264 };
+        IMFActivate** items = 0;
+        UINT32 count = 0;
+        const DWORD flagsSync = MFT_ENUM_FLAG_SYNCMFT | MFT_ENUM_FLAG_LOCALMFT | MFT_ENUM_FLAG_SORTANDFILTER;
+        if (MFTEnumEx(MFT_CATEGORY_VIDEO_ENCODER, flagsSync, &inInfo, &outInfo, &items, &count) == S_OK && count > 0) {
+            for (UINT32 i = 0; i < count && !transform; ++i) {
+                IMFTransform* cand = 0;
+                if (items[i]->ActivateObject(__uuidof(IMFTransform), reinterpret_cast<void**>(&cand)) != S_OK || !cand) {
+                    continue;
+                }
+                IMFAttributes* attr = 0;
+                bool async = false;
+                if (cand->GetAttributes(&attr) == S_OK && attr) {
+                    UINT32 flag = 0;
+                    if (attr->GetUINT32(MF_TRANSFORM_ASYNC, &flag) == S_OK && flag) {
+                        async = true;
+                    }
+                    attr->Release();
+                }
+                if (async) {
+                    cand->Release();
+                    continue;
+                }
+                transform = cand;
+            }
+            for (UINT32 i = 0; i < count; ++i) {
+                items[i]->Release();
+            }
+            CoTaskMemFree(items);
+        }
+    }
+    if (!transform) {
+        sprintf_s(m_err, "没有同步H264编码器");
         return false;
     }
-    IMFAttributes* attr = 0;
-    if (transform->GetAttributes(&attr) == S_OK && attr) {
-        UINT32 async = 0;
-        if (attr->GetUINT32(MF_TRANSFORM_ASYNC, &async) == S_OK && async) {
-            attr->SetUINT32(MF_TRANSFORM_ASYNC_UNLOCK, TRUE);
-            m_mfAsync = true;
-            transform->QueryInterface(__uuidof(IMFMediaEventGenerator), &m_mfEvents);
-        }
-        attr->Release();
-    }
+    m_mfAsync = false;
     IMFMediaType* outType = 0;
     MFCreateMediaType(&outType);
     outType->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Video);
@@ -275,6 +311,7 @@ bool H264Codec::openMf(int width, int height, int fps, int bitrate)
     if (transform->SetOutputType(0, outType, 0) != S_OK) {
         outType->Release();
         transform->Release();
+        sprintf_s(m_err, "MF SetOutputType失败");
         return false;
     }
     outType->Release();
@@ -289,6 +326,7 @@ bool H264Codec::openMf(int width, int height, int fps, int bitrate)
     if (transform->SetInputType(0, inType, 0) != S_OK) {
         inType->Release();
         transform->Release();
+        sprintf_s(m_err, "MF SetInputType失败");
         return false;
     }
     inType->Release();
@@ -306,6 +344,7 @@ bool H264Codec::openMf(int width, int height, int fps, int bitrate)
     transform->ProcessMessage(MFT_MESSAGE_NOTIFY_START_OF_STREAM, 0);
     m_mf = transform;
     m_useOpen = false;
+    sprintf_s(m_err, "MF同步编码器 %dx%d", width, height);
     return true;
 }
 
@@ -315,6 +354,7 @@ bool H264Codec::openOpen(int width, int height, int fps, int bitrate)
         m_openLib = LoadLibraryW(L"openh264.dll");
     }
     if (!m_openLib) {
+        sprintf_s(m_err, "无openh264.dll");
         return false;
     }
     OpenCreate create = reinterpret_cast<OpenCreate>(GetProcAddress(static_cast<HMODULE>(m_openLib), "WelsCreateSVCEncoder"));
@@ -455,46 +495,71 @@ bool H264Codec::encodeFrame(const unsigned char* bgra, int width, int height, bo
     HRESULT hr = transform->ProcessInput(0, sample, 0);
     sample->Release();
     if (hr != S_OK) {
+        sprintf_s(m_err, "MF ProcessInput 0x%08lx", static_cast<unsigned long>(hr));
         return false;
     }
     if (m_mfAsync && m_mfEvents) {
         IMFMediaEventGenerator* events = static_cast<IMFMediaEventGenerator*>(m_mfEvents);
         IMFMediaEvent* ev = 0;
         if (events->GetEvent(MF_EVENT_FLAG_NO_WAIT, &ev) != S_OK) {
+            sprintf_s(m_err, "MF异步无输出事件");
             return false;
         }
         MediaEventType kind = MEUnknown;
         ev->GetType(&kind);
         ev->Release();
         if (kind != METransformHaveOutput) {
+            sprintf_s(m_err, "MF异步事件=%u", static_cast<unsigned>(kind));
             return false;
         }
     }
     MFT_OUTPUT_STREAM_INFO streamInfo;
     std::memset(&streamInfo, 0, sizeof(streamInfo));
     transform->GetOutputStreamInfo(0, &streamInfo);
-    MFT_OUTPUT_DATA_BUFFER out;
-    std::memset(&out, 0, sizeof(out));
-    IMFSample* outSample = 0;
-    if ((streamInfo.dwFlags & MFT_OUTPUT_STREAM_PROVIDES_SAMPLES) == 0) {
-        MFCreateSample(&outSample);
-        IMFMediaBuffer* outBuf = 0;
-        const DWORD cap = streamInfo.cbSize > 0 ? streamInfo.cbSize : 1024 * 1024;
-        MFCreateMemoryBuffer(cap, &outBuf);
-        outSample->AddBuffer(outBuf);
-        outBuf->Release();
-        out.pSample = outSample;
+    // 同步编码器偶发 NEED_MORE_INPUT，多取几次；STREAM_CHANGE 后重配输出类型再取
+    for (int tryOut = 0; tryOut < 6; ++tryOut) {
+        MFT_OUTPUT_DATA_BUFFER out;
+        std::memset(&out, 0, sizeof(out));
+        IMFSample* outSample = 0;
+        if ((streamInfo.dwFlags & MFT_OUTPUT_STREAM_PROVIDES_SAMPLES) == 0) {
+            MFCreateSample(&outSample);
+            IMFMediaBuffer* outBuf = 0;
+            const DWORD cap = streamInfo.cbSize > 0 ? streamInfo.cbSize : 1024 * 1024;
+            MFCreateMemoryBuffer(cap, &outBuf);
+            outSample->AddBuffer(outBuf);
+            outBuf->Release();
+            out.pSample = outSample;
+        }
+        DWORD status = 0;
+        hr = transform->ProcessOutput(0, 1, &out, &status);
+        if (hr == S_OK && out.pSample) {
+            const bool ok = sampleBytes(out.pSample, annexb);
+            out.pSample->Release();
+            if (ok) {
+                return true;
+            }
+        } else if (outSample) {
+            outSample->Release();
+        }
+        if (hr == MF_E_TRANSFORM_NEED_MORE_INPUT) {
+            // 软编常有 1～2 帧延迟，本帧先交出去，下一帧再取；不算硬失败
+            sprintf_s(m_err, "MF还需输入(预热)");
+            return false;
+        }
+        if (hr == MF_E_TRANSFORM_STREAM_CHANGE) {
+            IMFMediaType* type = 0;
+            if (transform->GetOutputAvailableType(0, 0, &type) == S_OK && type) {
+                transform->SetOutputType(0, type, 0);
+                type->Release();
+            }
+            transform->GetOutputStreamInfo(0, &streamInfo);
+            continue;
+        }
+        sprintf_s(m_err, "MF ProcessOutput 0x%08lx", static_cast<unsigned long>(hr));
+        return false;
     }
-    DWORD status = 0;
-    hr = transform->ProcessOutput(0, 1, &out, &status);
-    bool ok = false;
-    if (hr == S_OK && out.pSample) {
-        ok = sampleBytes(out.pSample, annexb);
-        out.pSample->Release();
-    } else if (outSample) {
-        outSample->Release();
-    }
-    return ok;
+    sprintf_s(m_err, "MF无编码输出");
+    return false;
 }
 
 bool H264Codec::encode(const std::vector<unsigned char>& bgra, int width, int height, int longEdge, int fps, int bitrate,
@@ -503,10 +568,14 @@ bool H264Codec::encode(const std::vector<unsigned char>& bgra, int width, int he
     if (!annexb || bgra.empty()) {
         return false;
     }
+    if (m_broken) {
+        return false;
+    }
     std::vector<unsigned char> fitted;
     int fw = 0;
     int fh = 0;
     if (!fit(bgra.data(), width, height, longEdge, &fitted, &fw, &fh)) {
+        sprintf_s(m_err, "缩放失败");
         return false;
     }
     if (fps < 1) {
@@ -515,19 +584,50 @@ bool H264Codec::encode(const std::vector<unsigned char>& bgra, int width, int he
     if (bitrate < 100000) {
         bitrate = 1500000;
     }
-    if (!m_mf && !m_open || fw != m_encW || fh != m_encH || fps != m_fps || bitrate != m_bitrate) {
+    if ((!m_mf && !m_open) || fw != m_encW || fh != m_encH || fps != m_fps || bitrate != m_bitrate) {
         closeEncoder();
         m_fps = fps;
         m_bitrate = bitrate;
-        if (!openMf(fw, fh, fps, bitrate) && !openOpen(fw, fh, fps, bitrate)) {
+        // OpenH264 更稳；没有 dll 再走 MF 软编
+        if (!openOpen(fw, fh, fps, bitrate) && !openMf(fw, fh, fps, bitrate)) {
+            m_broken = true;
             return false;
         }
         m_encW = fw;
         m_encH = fh;
     }
-    const bool force = m_frames == 0 || (m_frames % (fps * 2) == 0);
+    const bool force = m_frames == 0 || m_primeFails > 0 || (m_frames % (fps * 2) == 0);
     if (!encodeFrame(fitted.data(), fw, fh, force, annexb)) {
-        return false;
+        m_primeFails += 1;
+        // MF 预热期允许连续空输出；之后换另一后端再试一轮
+        if (m_primeFails < 24 && (m_mf || m_open)) {
+            return false;
+        }
+        const bool wasOpen = m_useOpen;
+        closeEncoder();
+        m_fps = fps;
+        m_bitrate = bitrate;
+        const bool opened = wasOpen ? openMf(fw, fh, fps, bitrate) : openOpen(fw, fh, fps, bitrate);
+        if (!opened || !encodeFrame(fitted.data(), fw, fh, true, annexb)) {
+            // 再试一次另一后端
+            closeEncoder();
+            m_fps = fps;
+            m_bitrate = bitrate;
+            const bool again = wasOpen ? openOpen(fw, fh, fps, bitrate) : openMf(fw, fh, fps, bitrate);
+            if (!again || !encodeFrame(fitted.data(), fw, fh, true, annexb)) {
+                closeEncoder();
+                m_broken = true;
+                if (m_err[0] == 0) {
+                    sprintf_s(m_err, "编码输出空");
+                }
+                return false;
+            }
+        }
+        m_encW = fw;
+        m_encH = fh;
+        m_primeFails = 0;
+    } else {
+        m_primeFails = 0;
     }
     m_frames += 1;
     if (outW) {

@@ -1,0 +1,53 @@
+// ----------------------------------------------------------------------------
+// -                        Open3D: www.open3d.org                            -
+// ----------------------------------------------------------------------------
+// Copyright (c) 2018-2026 www.open3d.org
+// SPDX-License-Identifier: MIT
+// ----------------------------------------------------------------------------
+
+#pragma once
+
+#include <string>
+#include <vector>
+
+#include "FileDialog.h"
+
+struct GLFWwindow;
+
+namespace open3d {
+namespace visualization {
+namespace gui {
+
+void* GetNativeDrawable(GLFWwindow* glfw_window);
+// GLFW uses the generic Windows application icon unless the native window is
+// assigned the icon embedded in the executable.
+#ifdef _WIN32
+void SetNativeWindowIcon(GLFWwindow* glfw_window);
+#endif  // _WIN32
+// Note that Windows cannot post an expose event so it must draw immediately.
+// Therefore this function cannot be called while drawing.
+void PostNativeExposeEvent(GLFWwindow* glfw_window);
+void ShowNativeAlert(const char* message);
+
+#ifdef __APPLE__
+void MacTransformIntoApp();
+void SetNativeMenubar(void* menubar);
+// Synchronize the CAMetalLayer's drawableSize and contentsScale with the
+// window's current backing-store pixel dimensions after the window resizes
+// or moves to a different display (Retina ↔ non-Retina).  Must be called
+// before recreating the Filament swap chain so drawable and viewport agree.
+void ResizeNativeWindow(GLFWwindow* glfw_window);
+#endif  // __APPLE_
+
+#if defined(__APPLE__) || defined(_WIN32)
+void ShowNativeFileDialog(
+        FileDialog::Mode mode,
+        const std::string& path,
+        const std::vector<std::pair<std::string, std::string>>& filters,
+        std::function<void(const char*)> on_ok,
+        std::function<void()> on_cancel);
+#endif  // __APPLE__ || _WIN32
+
+}  // namespace gui
+}  // namespace visualization
+}  // namespace open3d

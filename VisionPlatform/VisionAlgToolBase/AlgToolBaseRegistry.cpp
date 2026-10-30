@@ -193,6 +193,12 @@ AlgToolBase* AlgToolBaseRegistry::getPreferred(const std::string& toolName, AlgL
     if (AlgToolBase* d = get(toolName, AlgLibCv)) {
         return d;
     }
+    if (AlgToolBase* d = get(toolName, AlgLibPcl)) {
+        return d;
+    }
+    if (AlgToolBase* d = get(toolName, AlgLibOpen3d)) {
+        return d;
+    }
     std::map<std::string, std::map<AlgLibKind, AlgToolBase*> >::const_iterator it = m_dets.find(toolName);
     if (it == m_dets.end() || it->second.empty()) {
         return 0;

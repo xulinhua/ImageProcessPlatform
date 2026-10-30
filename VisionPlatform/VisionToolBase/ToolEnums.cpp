@@ -11,19 +11,37 @@
 
 namespace Vision {
 
-// 转存盘整数
+namespace {
+const ToolType kDisplayOrder[] = {
+    ToolType::Acquire,
+    ToolType::Preprocess,
+    ToolType::Locate,
+    ToolType::Detect,
+    ToolType::Identify,
+    ToolType::RstProcess,
+    ToolType::Calib,
+    ToolType::Logic,
+    ToolType::Comm,
+    ToolType::Acquire3D,
+    ToolType::Prepare3D,
+    ToolType::Locate3D,
+    ToolType::Measure3D,
+    ToolType::Detect3D,
+    ToolType::Calib3D,
+    ToolType::Infer
+};
+}
+
 int toolTypeToInt(ToolType t)
 {
     return static_cast<int>(t);
 }
 
-// 工具类型种数
 int toolTypeCount()
 {
     return static_cast<int>(ToolType::Max);
 }
 
-// 整数转工具类型
 ToolType toolTypeFromInt(int v)
 {
     if (v < 0 || v >= toolTypeCount()) {
@@ -32,72 +50,43 @@ ToolType toolTypeFromInt(int v)
     return static_cast<ToolType>(v);
 }
 
-// 工具库展示顺序
 ToolType toolTypeDisplayAt(int i)
 {
-    static const ToolType kOrder[] = {
-        ToolType::Acquire,
-        ToolType::Preprocess,
-        ToolType::Locate,
-        ToolType::Detect,
-        ToolType::Identify,
-        ToolType::RstProcess,
-        ToolType::Calib,
-        ToolType::Logic,
-        ToolType::Comm,
-        ToolType::Acquire3D,
-        ToolType::Measure3D,
-        ToolType::Infer
-    };
-    const int n = static_cast<int>(sizeof(kOrder) / sizeof(kOrder[0]));
+    const int n = static_cast<int>(sizeof(kDisplayOrder) / sizeof(kDisplayOrder[0]));
     if (i < 0 || i >= n) {
         return ToolType::Acquire;
     }
-    return kOrder[i];
+    return kDisplayOrder[i];
 }
 
 int toolTypeDisplayCount()
 {
-    static const ToolType kOrder[] = {
-        ToolType::Acquire,
-        ToolType::Preprocess,
-        ToolType::Locate,
-        ToolType::Detect,
-        ToolType::Identify,
-        ToolType::RstProcess,
-        ToolType::Calib,
-        ToolType::Logic,
-        ToolType::Comm,
-        ToolType::Acquire3D,
-        ToolType::Measure3D,
-        ToolType::Infer
-    };
-    return static_cast<int>(sizeof(kOrder) / sizeof(kOrder[0]));
+    return static_cast<int>(sizeof(kDisplayOrder) / sizeof(kDisplayOrder[0]));
 }
 
-// 工具类型界面显示名
 std::string toolTypeTitle(ToolType t)
 {
     switch (t) {
-    case ToolType::Acquire:        return Translate::tr("采集");
-    case ToolType::Preprocess:    return Translate::tr("预处理");
-    case ToolType::Locate:        return Translate::tr("定位");
-    case ToolType::Detect:        return Translate::tr("检测");
-    case ToolType::Logic:         return Translate::tr("逻辑");
-    case ToolType::Comm:          return Translate::tr("通信");
-    case ToolType::RstProcess: return Translate::tr("结果处理");
-    case ToolType::Calib:         return Translate::tr("标定");
-    case ToolType::Acquire3D:     return Translate::tr("三维采集");
-    case ToolType::Prepare3D:     return Translate::tr("点云预处理");
-    case ToolType::Measure3D:     return Translate::tr("测量");
-    case ToolType::Align3D:       return Translate::tr("配准");
-    case ToolType::Infer:         return Translate::tr("深度学习");
-    case ToolType::Identify:      return Translate::tr("识别");
-    default:                      return Translate::tr("采集");
+    case ToolType::Acquire:     return Translate::tr("采集");
+    case ToolType::Preprocess:  return Translate::tr("预处理");
+    case ToolType::Locate:      return Translate::tr("定位");
+    case ToolType::Detect:      return Translate::tr("检测");
+    case ToolType::Logic:       return Translate::tr("逻辑");
+    case ToolType::Comm:        return Translate::tr("通信");
+    case ToolType::RstProcess:  return Translate::tr("结果处理");
+    case ToolType::Calib:       return Translate::tr("标定");
+    case ToolType::Acquire3D:   return Translate::tr("三维采集");
+    case ToolType::Prepare3D:   return Translate::tr("点云预处理");
+    case ToolType::Locate3D:    return Translate::tr("三维定位");
+    case ToolType::Measure3D:   return Translate::tr("三维测量");
+    case ToolType::Detect3D:    return Translate::tr("三维检测");
+    case ToolType::Calib3D:     return Translate::tr("三维标定");
+    case ToolType::Infer:       return Translate::tr("深度学习");
+    case ToolType::Identify:    return Translate::tr("识别");
+    default:                    return Translate::tr("采集");
     }
 }
 
-// 端口数据类型界面显示名
 std::string portDataTitle(PortData d)
 {
     switch (d) {

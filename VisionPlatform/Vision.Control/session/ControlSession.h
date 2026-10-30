@@ -54,7 +54,7 @@ public:
         uint16_t cursorX;       ///< 远程光标图像坐标
         uint16_t cursorY;
         uint8_t cursorOn;       ///< 1 光标在画面内
-        uint8_t codec;          ///< 主码流 1 JPEG，2 H.264
+        uint8_t codec;          ///< 主码流 1 JPEG，2 H.264，3 原图 BGRA
         uint8_t forceRecord;    ///< 被控端要求取得操作后录屏
         CommBytes cursorShape;  ///< 光标 PNG
         uint16_t cursorHotX;
@@ -74,11 +74,12 @@ public:
         std::string sysInfo;    ///< CPU、内存、磁盘，以及工站文字
         std::string station;    ///< 从系统信息里拆出的工站一句，空表示没有
         bool stationNg;         ///< 工站信息里带 NG
-        std::string dirList;    ///< 目录列表，一行：D/F/E、大小、名称
+        std::string dirList;    ///< 目录列表，一行：D/F/E、大小、名称、修改时间
         uint64_t dirSeq;
         std::string fileNote;   ///< 当前文件传输说明
         uint64_t fileGot;       ///< 已传输字节
         uint64_t fileBytes;     ///< 文件总字节，未知为 0
+        uint64_t fileSeq;       ///< 一次传输结束时加一，文件窗口用来排队
         std::string viewers;    ///< 观看端，一行：名字、指纹、是否在操作
         uint64_t viewerSeq;
         /** @brief 离线、单显示器、延迟未知 */
@@ -111,6 +112,7 @@ public:
             , dirSeq(0)
             , fileGot(0)
             , fileBytes(0)
+            , fileSeq(0)
             , viewerSeq(0)
             , stationNg(false)
         {}
@@ -124,6 +126,8 @@ public:
     /************************************************** 监听 **************************************************/
     /** @brief 回给被控端的控制端显示名，超过 64 字节按字符截断 */
     void setSelfName(const std::string& name);
+    /** @brief 是否在延迟很高时通知被控端降画质。关掉后帧率保持在会话上限 */
+    void setAdaptive(bool on);
     /**
      * @brief 先 stop() 再开始监听，清空已知设备并启动读写线程
      * @param err 失败原因
@@ -157,8 +161,8 @@ public:
     void subscribe(const std::string& peerId, const SubscribeMsg& msg);
     /** @brief 把一帧放进该连接的发送队列 */
     void post(const std::string& peerId, const CommBytes& bytes);
-    /** @brief 准备接收被控端发来的文件。须在发出 FileOpen 之前调用 */
-    void armDownload(const std::string& peerId, uint32_t id, const std::string& localPath);
+    /** @brief 准备接收被控端发来的文件。须在发出 FileOpen 之前调用。total 为远端大小，未知传 0 */
+    void armDownload(const std::string& peerId, uint32_t id, const std::string& localPath, uint64_t total = 0);
     /** @brief 准备把本机文件上传到被控端 */
     /** @return 本地文件的 SHA-256，打不开则为空 */
     std::string armUpload(const std::string& peerId, uint32_t id, const std::string& localPath, const std::string& remotePath);
@@ -245,6 +249,10 @@ private:
     static std::wstring widePath(const std::string& text);
     /** @brief 文件 SHA-256 小写十六进制。打不开返回空 */
     std::string sha256File(const std::wstring& path) const;
+    /** @brief 列本机目录给被控端。空路径列盘符 */
+    std::string listLocalDirectory(const std::wstring& path) const;
+    /** @brief 本机逐级建目录 */
+    bool makeLocalDirectory(const std::wstring& path) const;
     /** @brief 开机以来毫秒数 */
     uint64_t nowMs() const;
 
@@ -255,6 +263,7 @@ private:
     std::thread m_write;                ///< 写线程
     bool m_run;                         ///< 线程运行标志，stop() 置 false
     bool m_listening;                   ///< 监听中
+    bool m_adaptive;                    ///< 延迟很高时才向被控端报拥塞
     std::string m_selfName;             ///< 回给被控端的控制端显示名，UTF-8
     std::vector<Machine> m_machines;    ///< 已知被控端，含已绑定但离线的条目
 };

@@ -38,8 +38,10 @@ QColor categoryBadgeColor(ToolType ty)
     case ToolType::Calib: return QColor(0xE1, 0xF5, 0xFE);
     case ToolType::Acquire3D: return QColor(0xE0, 0xF7, 0xFA);
     case ToolType::Prepare3D: return QColor(0xE8, 0xF5, 0xE9);
+    case ToolType::Locate3D: return QColor(0xF3, 0xE5, 0xF5);
     case ToolType::Measure3D: return QColor(0xFF, 0xF8, 0xE1);
-    case ToolType::Align3D: return QColor(0xF3, 0xE5, 0xF5);
+    case ToolType::Detect3D: return QColor(0xFF, 0xEB, 0xEE);
+    case ToolType::Calib3D: return QColor(0xE1, 0xF5, 0xFE);
     case ToolType::Infer: return QColor(0xFC, 0xE4, 0xEC);
     case ToolType::Identify: return QColor(0xE0, 0xF2, 0xF1);
     }

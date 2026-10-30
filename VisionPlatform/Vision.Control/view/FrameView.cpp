@@ -9,6 +9,7 @@
 #include "FrameView.h"
 
 #include <vector>
+#include "RemoteLog.h"
 #include "RemoteTheme.h"
 
 #include <QKeyEvent>
@@ -64,10 +65,14 @@ void FrameView::setCursorShape(const CommBytes& png, int hotX, int hotY)
 
 void FrameView::setImage(const CommBytes& jpeg, uint32_t imageW, uint32_t imageH, uint8_t codec)
 {
+    const uint64_t t0 = RemoteLog::tickMs();
     m_imageW = imageW;
     m_imageH = imageH;
+    const char* pathName = "空";
+    bool ok = false;
     if (jpeg.empty()) {
         m_image = QImage();
+        pathName = "空包";
     } else if (codec == 2) {
         std::vector<unsigned char> bgra;
         int w = 0;
@@ -76,9 +81,25 @@ void FrameView::setImage(const CommBytes& jpeg, uint32_t imageW, uint32_t imageH
             m_image = QImage(bgra.data(), w, h, w * 4, QImage::Format_ARGB32).copy();
             m_imageW = static_cast<uint32_t>(w);
             m_imageH = static_cast<uint32_t>(h);
+            pathName = "H264";
+            ok = true;
         } else {
             // 共享源切换后先到的是非关键帧。丢掉坏状态，下一帧关键帧才能解出来
             m_h264.closeDecoder();
+            pathName = "H264失败";
+        }
+    } else if (codec == 3) {
+        m_h264.closeDecoder();
+        const int w = static_cast<int>(imageW);
+        const int h = static_cast<int>(imageH);
+        const size_t need = static_cast<size_t>(w) * static_cast<size_t>(h) * 4u;
+        if (w > 0 && h > 0 && jpeg.size() >= need) {
+            m_image = QImage(jpeg.data(), w, h, w * 4, QImage::Format_ARGB32).copy();
+            pathName = "原图";
+            ok = !m_image.isNull();
+        } else {
+            m_image = QImage();
+            pathName = "原图失败";
         }
     } else {
         m_h264.closeDecoder();
@@ -87,7 +108,17 @@ void FrameView::setImage(const CommBytes& jpeg, uint32_t imageW, uint32_t imageH
             m_imageW = static_cast<uint32_t>(m_image.width());
             m_imageH = static_cast<uint32_t>(m_image.height());
         }
+        pathName = "JPEG";
+        ok = !m_image.isNull();
     }
+    const uint64_t decodeMs = RemoteLog::tickMs() - t0;
+    RemoteLog::writef(ok ? RemoteLog::Info : RemoteLog::Warn, "解码",
+        "%s %llums %zuB → %ux%u",
+        pathName,
+        static_cast<unsigned long long>(decodeMs),
+        jpeg.size(),
+        m_imageW,
+        m_imageH);
     update();
 }
 

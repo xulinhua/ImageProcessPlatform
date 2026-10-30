@@ -24,7 +24,7 @@ enum AlgLibKind {
     AlgLibHray = 2,  ///< 华睿等，登记名 hray，列名 Hray
     AlgLibCv = 3,    ///< OpenCV，登记名 opencv，列名 CV
     AlgLibPcl = 4,   ///< PCL，登记名 pcl，列名 PCL
-    AlgLibOpen3d = 5,///< Open3D，登记名 open3d，列名 Open3D。本机先不放插件
+    AlgLibOpen3d = 5,///< Open3D，登记名 open3d，列名 Open3D
     AlgLibOnnx = 6,  ///< ONNX Runtime，登记名 onnx，列名 Onnx
     AlgLibKindMax ///< 种类个数（哨兵，不作合法值）
 };

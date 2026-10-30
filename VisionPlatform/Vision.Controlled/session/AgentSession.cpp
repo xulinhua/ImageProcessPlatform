@@ -9,10 +9,12 @@
 #include "AgentSession.h"
 #include "AgentService.h"
 #include "RemoteCrash.h"
+#include "RemoteLog.h"
 #include "SasSender.h"
 
 #include <algorithm>
 #include <cstdio>
+#include <cstring>
 #include <windows.h>
 
 namespace Vision {
@@ -30,6 +32,8 @@ int AgentSession::captureMsFromFps(int maxFps)
 
 AgentSession::AgentSession()
     : m_run(false)
+    , m_pipelineWorkers(0)
+    , m_preferCodec(0)
     , m_port(0)
     , m_desktop(false)
     , m_monitor(0)
@@ -52,6 +56,11 @@ AgentSession::AgentSession()
     , m_streamW(0)
     , m_streamH(0)
     , m_cursorHash(0)
+    , m_lastCursorShapeMs(0)
+    , m_dirSeq(0)
+    , m_fileUiSeq(0)
+    , m_fileUiGot(0)
+    , m_fileUiBytes(0)
     , m_forceRecord(false)
     , m_httpView(false)
     , m_previewW(0)
@@ -65,6 +74,7 @@ AgentSession::AgentSession()
     , m_thumbSeq(0)
     , m_thumbSent(0)
     , m_lastThumbMs(0)
+    , m_lastPreviewMs(0)
     , m_cursorDirty(false)
     , m_privacy(false)
     , m_clipImageHash(0)
@@ -89,6 +99,8 @@ AgentSession::AgentSession()
     , m_operateAt(0)
     , m_pictureSeq(0)
     , m_sentSeq(0)
+    , m_rawSeq(0)
+    , m_rawTaken(0)
     , m_confirm(ConfirmNever)
     , m_lockOnEnd(false)
     , m_allow(PermView | PermOperate | PermClipboard | PermFile | PermPower | PermPrivacy)
@@ -300,7 +312,19 @@ bool AgentSession::start(const std::string& host, int port, const std::wstring& 
     publishBeacon();
     std::string beaconErr;
     m_beacon.listen(&beaconErr);
+    {
+        std::lock_guard<std::mutex> rawLock(m_rawMu);
+        m_rawSeq = 0;
+        m_rawTaken = 0;
+        m_raw = RawFrame();
+    }
     m_captureThread = std::thread(&AgentSession::captureMain, this);
+    m_encodeThreads.clear();
+    // JPEG/Qt 编码非重入，并行只开一条编码线程；再多只会互相拖成百毫秒
+    const int workers = m_pipelineWorkers > 0 ? 1 : 0;
+    for (int i = 0; i < workers; ++i) {
+        m_encodeThreads.push_back(std::thread(&AgentSession::encodeMain, this));
+    }
     m_read = std::thread(&AgentSession::readMain, this);
     m_write = std::thread(&AgentSession::writeMain, this);
     ok = true;
@@ -319,6 +343,7 @@ void AgentSession::stop()
         bye = m_wantBye;
         m_wantBye = false;
     }
+    m_rawCv.notify_all();
     // 还有没发出的 Bye：等发包线程退出后独占连接尽力发出，再关连接
     if (bye) {
         if (m_write.joinable()) {
@@ -339,6 +364,12 @@ void AgentSession::stop()
     if (m_captureThread.joinable()) {
         m_captureThread.join();
     }
+    for (size_t i = 0; i < m_encodeThreads.size(); ++i) {
+        if (m_encodeThreads[i].joinable()) {
+            m_encodeThreads[i].join();
+        }
+    }
+    m_encodeThreads.clear();
     // 收包线程已退出，这里独占 m_input
     m_input.releaseAll();
     {
@@ -347,6 +378,106 @@ void AgentSession::stop()
     }
     m_watch.stop();
     m_beacon.close();
+}
+
+void AgentSession::setPipelineWorkers(int workers)
+{
+    if (workers < 0) {
+        workers = 0;
+    }
+    if (workers > 1) {
+        workers = 1;
+    }
+    std::lock_guard<std::mutex> lock(m_mu);
+    m_pipelineWorkers = workers;
+}
+
+int AgentSession::pipelineWorkers() const
+{
+    std::lock_guard<std::mutex> lock(m_mu);
+    return m_pipelineWorkers;
+}
+
+void AgentSession::setPreferCodec(int codec)
+{
+    if (codec < 0 || codec > 3) {
+        codec = 0;
+    }
+    bool changed = false;
+    {
+        std::lock_guard<std::mutex> lock(m_mu);
+        if (m_preferCodec == codec) {
+            return;
+        }
+        m_preferCodec = codec;
+        m_mainLatched = false;
+        m_shareGen += 1;
+        changed = true;
+    }
+    if (changed) {
+        m_h264.closeEncoder();
+        m_h264.requestKey();
+        RemoteLog::writef(RemoteLog::Info, "画面", "本地编码切换 codec=%d", codec);
+    }
+}
+
+int AgentSession::preferCodec() const
+{
+    std::lock_guard<std::mutex> lock(m_mu);
+    return m_preferCodec;
+}
+
+AgentSession::FileUi AgentSession::fileUi() const
+{
+    FileUi out;
+    std::lock_guard<std::mutex> lock(m_mu);
+    out.online = m_tcp.isOpen() && m_connectedAt != 0;
+    out.dirList = m_dirList;
+    out.dirSeq = m_dirSeq;
+    out.fileSeq = m_fileUiSeq;
+    out.fileGot = m_fileUiGot;
+    out.fileBytes = m_fileUiBytes;
+    out.fileNote = m_fileUiNote;
+    return out;
+}
+
+void AgentSession::requestRemoteDir(const std::string& path)
+{
+    std::string err;
+    enqueue(Messages::packListDir(path, &err));
+}
+
+void AgentSession::requestRemoteMkDir(uint32_t id, const std::string& remotePath)
+{
+    std::string err;
+    enqueue(Messages::packMkDir(id, remotePath, &err));
+}
+
+void AgentSession::publishRaw(CommBytes& bgra, int width, int height, int originX, int originY, bool desktop,
+    bool operable, bool forcePublish, uint32_t shareGen, int jpegQuality, int longEdge, int captureMs,
+    bool subMain, bool subThumb, uint64_t started, uint64_t grabMs)
+{
+    {
+        std::lock_guard<std::mutex> lock(m_rawMu);
+        m_raw.bgra.swap(bgra);
+        m_raw.width = width;
+        m_raw.height = height;
+        m_raw.originX = originX;
+        m_raw.originY = originY;
+        m_raw.desktop = desktop;
+        m_raw.operable = operable;
+        m_raw.forcePublish = forcePublish;
+        m_raw.shareGen = shareGen;
+        m_raw.jpegQuality = jpegQuality;
+        m_raw.longEdge = longEdge;
+        m_raw.captureMs = captureMs;
+        m_raw.subMain = subMain;
+        m_raw.subThumb = subThumb;
+        m_raw.started = started;
+        m_raw.grabMs = grabMs;
+        m_rawSeq += 1;
+    }
+    m_rawCv.notify_one();
 }
 
 std::string AgentSession::status() const
@@ -404,6 +535,21 @@ void AgentSession::keepPreview(const PictureMsg& jpegShot)
     m_previewJpeg = jpegShot.jpeg;
     m_previewW = jpegShot.imageW;
     m_previewH = jpegShot.imageH;
+}
+
+void AgentSession::refreshLocalPreview(CommBytes& bgra, int width, int height, uint64_t nowMs)
+{
+    if (bgra.empty() || width <= 0 || height <= 0) {
+        return;
+    }
+    // 预览只给被控端小窗看，不必跟主码流同帧率；每帧再压一份 JPEG 会明显拖慢编码
+    if (m_lastPreviewMs != 0 && nowMs - m_lastPreviewMs < 250) {
+        return;
+    }
+    PictureMsg local = m_capture.fromBgra(bgra, width, height, width, height, true, 40, 480);
+    local.codec = 1;
+    keepPreview(local);
+    m_lastPreviewMs = nowMs;
 }
 
 void AgentSession::setPolicy(int confirm, const std::vector<std::string>& trusted, bool lockOnEnd)
@@ -663,6 +809,12 @@ void AgentSession::applyControl(const ConfigMsg& cfg)
         if (cfg.longEdge > 0) {
             m_longEdge = cfg.longEdge < 320 ? 320 : cfg.longEdge;
         }
+        bool codecChanged = false;
+        if (cfg.codec >= 1 && cfg.codec <= 3 && m_preferCodec != static_cast<int>(cfg.codec)) {
+            m_preferCodec = cfg.codec;
+            m_mainLatched = false;
+            codecChanged = true;
+        }
         if (desktop) {
             m_source = "桌面";
         } else if (!process.empty()) {
@@ -672,14 +824,20 @@ void AgentSession::applyControl(const ConfigMsg& cfg)
         } else {
             m_source = "进程画面";
         }
-        if (shareChanged) {
+        if (shareChanged || codecChanged) {
             m_needHello = true;
-            m_pushed = true;
             m_shareGen += 1;
+        }
+        if (shareChanged) {
+            m_pushed = true;
             m_operating = false;
             m_releaseInput = true;
             m_status = "中控台已设置";
         }
+    }
+    if (cfg.codec >= 1 && cfg.codec <= 3) {
+        m_h264.closeEncoder();
+        m_h264.requestKey();
     }
     if (!shareChanged) {
         return;
@@ -694,24 +852,38 @@ void AgentSession::applyControl(const ConfigMsg& cfg)
 
 void AgentSession::applySubscribe(const SubscribeMsg& msg)
 {
-    std::lock_guard<std::mutex> lock(m_mu);
-    const bool on = msg.enable != 0;
-    if (msg.stream == 1) {
-        m_subMain = on;
-        if (msg.maxFps > 0) {
-            m_baseCaptureMs = captureMsFromFps(msg.maxFps);
-            m_captureMs = m_baseCaptureMs;
+    bool codecChanged = false;
+    {
+        std::lock_guard<std::mutex> lock(m_mu);
+        const bool on = msg.enable != 0;
+        if (msg.stream == 1) {
+            m_subMain = on;
+            if (msg.maxFps > 0) {
+                m_baseCaptureMs = captureMsFromFps(msg.maxFps);
+                m_captureMs = m_baseCaptureMs;
+            }
+            if (msg.jpegQuality > 0) {
+                m_jpegQuality = msg.jpegQuality > 100 ? 100 : msg.jpegQuality;
+                m_baseQuality = m_jpegQuality;
+            }
+            if (msg.longEdge > 0) {
+                m_longEdge = msg.longEdge < 320 ? 320 : msg.longEdge;
+                m_baseEdge = m_longEdge;
+            }
+            if (msg.codec >= 1 && msg.codec <= 3 && m_preferCodec != static_cast<int>(msg.codec)) {
+                m_preferCodec = msg.codec;
+                m_mainLatched = false;
+                m_shareGen += 1;
+                codecChanged = true;
+            }
+        } else if (msg.stream == 2) {
+            m_subThumb = on;
         }
-        if (msg.jpegQuality > 0) {
-            m_jpegQuality = msg.jpegQuality > 100 ? 100 : msg.jpegQuality;
-            m_baseQuality = m_jpegQuality;
-        }
-        if (msg.longEdge > 0) {
-            m_longEdge = msg.longEdge < 320 ? 320 : msg.longEdge;
-            m_baseEdge = m_longEdge;
-        }
-    } else if (msg.stream == 2) {
-        m_subThumb = on;
+    }
+    if (codecChanged) {
+        m_h264.closeEncoder();
+        m_h264.requestKey();
+        RemoteLog::writef(RemoteLog::Info, "画面", "中控台指定编码 codec=%u", static_cast<unsigned>(msg.codec));
     }
 }
 
@@ -720,11 +892,11 @@ void AgentSession::applyNetStats(const NetStatsMsg& msg)
     std::lock_guard<std::mutex> lock(m_mu);
     const uint64_t now = nowMs();
     const int backlog = m_pictureSeq > m_sentSeq ? static_cast<int>(m_pictureSeq - m_sentSeq) : 0;
-    bool bad = msg.congested != 0 || backlog > 2;
+    bool bad = msg.congested != 0 || backlog > 4;
     if (m_rttBase <= 0 && msg.rttMs > 0) {
         m_rttBase = msg.rttMs;
     }
-    if (m_rttBase > 0 && msg.rttMs > m_rttBase + m_rttBase / 2) {
+    if (!bad && m_rttBase > 0 && msg.rttMs > 800 && msg.rttMs > m_rttBase + m_rttBase / 2) {
         bad = true;
     } else if (!bad && msg.rttMs > 0) {
         m_rttBase = (m_rttBase * 3 + msg.rttMs) / 4;
@@ -734,38 +906,41 @@ void AgentSession::applyNetStats(const NetStatsMsg& msg)
 
 void AgentSession::stepAdapt(bool bad, uint64_t now)
 {
-    if (m_lastAdapt != 0 && now - m_lastAdapt < (bad ? 1000 : 5000)) {
+    if (m_lastAdapt != 0 && now - m_lastAdapt < 2000) {
         return;
     }
+    const int beforeEdge = m_longEdge;
+    const int beforeQ = m_jpegQuality;
+    const int beforeMs = m_captureMs;
+    const int fpsFloor = 100;
     if (bad) {
-        if (m_jpegQuality > 20) {
-            m_jpegQuality = m_jpegQuality * 70 / 100;
-            if (m_jpegQuality < 20) {
-                m_jpegQuality = 20;
+        if (m_longEdge > 960) {
+            m_longEdge = m_longEdge * 4 / 5;
+            if (m_longEdge < 960) {
+                m_longEdge = 960;
             }
-        } else if (m_captureMs < 1000) {
-            const int slower = m_captureMs * 2;
-            m_captureMs = slower > 1000 ? 1000 : slower;
-        } else if (m_longEdge > 640) {
-            m_longEdge = m_longEdge * 70 / 100;
-            if (m_longEdge < 640) {
-                m_longEdge = 640;
+        } else if (m_jpegQuality > 45) {
+            m_jpegQuality = m_jpegQuality * 4 / 5;
+            if (m_jpegQuality < 45) {
+                m_jpegQuality = 45;
             }
+        } else if (m_captureMs < fpsFloor) {
+            int slower = m_captureMs + 15;
+            if (slower > fpsFloor) {
+                slower = fpsFloor;
+            }
+            m_captureMs = slower;
         }
         m_lastAdapt = now;
+        if (beforeEdge != m_longEdge || beforeQ != m_jpegQuality || beforeMs != m_captureMs) {
+            RemoteLog::writef(RemoteLog::Warn, "画面",
+                "自适应降档 边%d→%d Q%d→%d 间隔%d→%dms",
+                beforeEdge, m_longEdge, beforeQ, m_jpegQuality, beforeMs, m_captureMs);
+        }
         return;
     }
-    if (m_jpegQuality < m_baseQuality) {
-        int step = m_baseQuality / 10;
-        if (step < 1) {
-            step = 1;
-        }
-        m_jpegQuality += step;
-        if (m_jpegQuality > m_baseQuality) {
-            m_jpegQuality = m_baseQuality;
-        }
-    } else if (m_captureMs > m_baseCaptureMs) {
-        m_captureMs = m_captureMs * 9 / 10;
+    if (m_captureMs > m_baseCaptureMs) {
+        m_captureMs = m_captureMs / 2;
         if (m_captureMs < m_baseCaptureMs) {
             m_captureMs = m_baseCaptureMs;
         }
@@ -778,8 +953,22 @@ void AgentSession::stepAdapt(bool bad, uint64_t now)
         if (m_longEdge > m_baseEdge) {
             m_longEdge = m_baseEdge;
         }
+    } else if (m_jpegQuality < m_baseQuality) {
+        int step = m_baseQuality / 5;
+        if (step < 1) {
+            step = 1;
+        }
+        m_jpegQuality += step;
+        if (m_jpegQuality > m_baseQuality) {
+            m_jpegQuality = m_baseQuality;
+        }
     }
     m_lastAdapt = now;
+    if (beforeEdge != m_longEdge || beforeQ != m_jpegQuality || beforeMs != m_captureMs) {
+        RemoteLog::writef(RemoteLog::Info, "画面",
+            "自适应恢复 边%d→%d Q%d→%d 间隔%d→%dms",
+            beforeEdge, m_longEdge, beforeQ, m_jpegQuality, beforeMs, m_captureMs);
+    }
 }
 
 void AgentSession::setFileRoots(const std::vector<std::wstring>& roots)
@@ -1032,7 +1221,7 @@ void AgentSession::setForceRecord(bool on)
     m_needHello = true;
 }
 
-bool AgentSession::encodeMain(const CommBytes& bgra, int width, int height, int quality, int longEdge, int fps, PictureMsg* shot)
+bool AgentSession::encodePicture(const CommBytes& bgra, int width, int height, int quality, int longEdge, int fps, PictureMsg* shot)
 {
     if (!shot || bgra.empty()) {
         return false;
@@ -1043,7 +1232,19 @@ bool AgentSession::encodeMain(const CommBytes& bgra, int width, int height, int 
     uint8_t key = 0;
     const int bitrate = (quality < 1 ? 60 : quality) * 40000;
     if (!m_h264.encode(bgra, width, height, longEdge, fps, bitrate, &annex, &outW, &outH, &key)) {
+        if (m_h264.isBroken()) {
+            static bool s_brokenLog = false;
+            if (!s_brokenLog) {
+                s_brokenLog = true;
+                RemoteLog::writef(RemoteLog::Warn, "画面", "H264不可用 · %s", m_h264.lastError());
+            }
+        }
         return false;
+    }
+    static bool s_okLog = false;
+    if (!s_okLog) {
+        s_okLog = true;
+        RemoteLog::writef(RemoteLog::Info, "画面", "H264已启用 · %s %dx%d", m_h264.lastError(), outW, outH);
     }
     shot->visible = 1;
     shot->operable = 1;
@@ -1057,8 +1258,94 @@ bool AgentSession::encodeMain(const CommBytes& bgra, int width, int height, int 
     return true;
 }
 
+bool AgentSession::encodeRaw(const CommBytes& bgra, int width, int height, int longEdge, PictureMsg* shot)
+{
+    if (!shot || bgra.empty() || width < 2 || height < 2) {
+        return false;
+    }
+    // 原图带宽大，长边默认再压一档，避免单帧爆炸
+    int edge = longEdge > 0 ? longEdge : 1280;
+    if (edge > 1600) {
+        edge = 1600;
+    }
+    std::vector<unsigned char> scaled;
+    int outW = 0;
+    int outH = 0;
+    if (!m_h264.scaleBgra(bgra.data(), width, height, edge, &scaled, &outW, &outH) || scaled.empty()) {
+        return false;
+    }
+    shot->visible = 1;
+    shot->operable = 1;
+    shot->clientW = static_cast<uint32_t>(width);
+    shot->clientH = static_cast<uint32_t>(height);
+    shot->imageW = static_cast<uint32_t>(outW);
+    shot->imageH = static_cast<uint32_t>(outH);
+    shot->codec = 3;
+    shot->key = 1;
+    shot->jpeg.assign(scaled.begin(), scaled.end());
+    return true;
+}
+
+bool AgentSession::encodeByPrefer(const CommBytes& bgra, int width, int height, int quality, int longEdge, int fps,
+    PictureMsg* shot, const char** pathName)
+{
+    if (!shot) {
+        return false;
+    }
+    int prefer = 0;
+    {
+        std::lock_guard<std::mutex> lock(m_mu);
+        prefer = m_preferCodec;
+    }
+    if (prefer == 3) {
+        if (!encodeRaw(bgra, width, height, longEdge, shot)) {
+            return false;
+        }
+        if (pathName) {
+            *pathName = "原图";
+        }
+        keepPreview(m_capture.fromBgra(const_cast<CommBytes&>(bgra), width, height, width, height, true, 50, 480));
+        return true;
+    }
+    if (prefer == 1) {
+        *shot = m_capture.fromBgra(const_cast<CommBytes&>(bgra), width, height, width, height, true, quality, longEdge);
+        shot->codec = 1;
+        keepPreview(*shot);
+        if (pathName) {
+            *pathName = "JPEG";
+        }
+        return !shot->jpeg.empty();
+    }
+    // 2=强制 H.264，0=自动优先 H.264
+    if (encodePicture(bgra, width, height, quality, longEdge, fps, shot)) {
+        if (pathName) {
+            *pathName = "H264";
+        }
+        return true;
+    }
+    if (prefer == 2 && !m_h264.isBroken()) {
+        // 预热中：本帧跳过，避免夹 JPEG 把中控台解码器打乱
+        if (pathName) {
+            *pathName = "H264预热";
+        }
+        return false;
+    }
+    *shot = m_capture.fromBgra(const_cast<CommBytes&>(bgra), width, height, width, height, true, quality, longEdge);
+    shot->codec = 1;
+    keepPreview(*shot);
+    if (pathName) {
+        *pathName = prefer == 2 ? "JPEG(H264失败)" : "JPEG";
+    }
+    return !shot->jpeg.empty();
+}
+
 CommBytes AgentSession::captureCursorShape()
 {
+    const uint64_t now = nowMs();
+    if (m_lastCursorShapeMs != 0 && now - m_lastCursorShapeMs < 100) {
+        return CommBytes();
+    }
+    m_lastCursorShapeMs = now;
     CURSORINFO info;
     info.cbSize = sizeof(info);
     if (!GetCursorInfo(&info) || !info.hCursor) {
@@ -1177,6 +1464,162 @@ std::wstring AgentSession::toWide(const std::string& text)
     return out;
 }
 
+void AgentSession::commitEncoded(PictureMsg& shot, PictureMsg* thumb, bool haveThumb, const CursorPosMsg* cursor,
+    bool haveCursor, int originX, int originY, bool desktop, bool forcePublish, uint32_t shareGen,
+    bool subMain, int captureMs, uint64_t started, const char* pathName, uint64_t grabMs,
+    uint64_t encodeMs, uint64_t previewMs, uint64_t thumbMs)
+{
+    (void)forcePublish;
+    const int fps = captureMs > 0 ? 1000 / captureMs : 15;
+    std::lock_guard<std::mutex> lock(m_mu);
+    if (desktop) {
+        m_originX = originX;
+        m_originY = originY;
+    }
+    if (haveCursor && cursor) {
+        if (cursor->x != m_cursor.x || cursor->y != m_cursor.y || cursor->visible != m_cursor.visible) {
+            m_cursor = *cursor;
+            m_cursorDirty = true;
+        }
+    }
+    if (subMain && !shot.jpeg.empty()) {
+        m_picture = shot;
+        m_pictureSeq += 1;
+        m_mainLatched = true;
+        m_shareSeen = shareGen;
+        if (shot.codec != m_sentCodec || shot.imageW != m_streamW || shot.imageH != m_streamH) {
+            m_sentCodec = shot.codec == 0 ? 1 : shot.codec;
+            m_streamW = shot.imageW;
+            m_streamH = shot.imageH;
+            StreamInfoMsg info;
+            info.stream = 1;
+            info.codec = m_sentCodec;
+            info.width = static_cast<uint16_t>(shot.imageW > 65535 ? 65535 : shot.imageW);
+            info.height = static_cast<uint16_t>(shot.imageH > 65535 ? 65535 : shot.imageH);
+            info.fps = static_cast<uint8_t>(fps > 255 ? 255 : fps);
+            std::string infoErr;
+            const CommBytes packet = Messages::packStreamInfo(info, &infoErr);
+            if (!packet.empty()) {
+                if (m_out.size() >= 64) {
+                    m_out.erase(m_out.begin());
+                }
+                m_out.push_back(packet);
+            }
+        }
+        // 流水线下积压 1–2 帧是正常的（发不过来就丢旧帧），不要当成拥塞去降帧率
+        if (m_pictureSeq > m_sentSeq + 8) {
+            stepAdapt(true, started);
+        }
+        RemoteLog::writef(RemoteLog::Info, "画面",
+            "抓%llums 预览%llums 编%llums(%s) 拇指%llums 目标间隔%dms %ux%u Q%d 边%d %zuB 流水线%d",
+            static_cast<unsigned long long>(grabMs),
+            static_cast<unsigned long long>(previewMs),
+            static_cast<unsigned long long>(encodeMs),
+            pathName ? pathName : "-",
+            static_cast<unsigned long long>(thumbMs),
+            captureMs,
+            shot.imageW,
+            shot.imageH,
+            m_jpegQuality,
+            m_longEdge,
+            shot.jpeg.size(),
+            m_pipelineWorkers);
+    }
+    if (haveThumb && thumb && !thumb->jpeg.empty()) {
+        m_thumb = *thumb;
+        m_thumbSeq += 1;
+        m_lastThumbMs = started;
+    }
+    if (m_suspended) {
+        m_status = "已断开";
+    } else if (!m_tcp.isOpen()) {
+        m_status = shot.visible ? "未连接" : (desktop ? "没有这块显示器" : "未找到窗口");
+    } else if (subMain && shot.jpeg.empty()) {
+        m_status = "没有抓到画面";
+    } else if (m_status == "没有抓到画面" || m_status == "没有这块显示器" || m_status == "未找到窗口") {
+        m_status = m_operating ? "操作中" : "只看";
+    }
+}
+
+void AgentSession::encodeMain()
+{
+    try {
+    while (true) {
+        RawFrame raw;
+        uint64_t seq = 0;
+        {
+            std::unique_lock<std::mutex> lock(m_rawMu);
+            m_rawCv.wait(lock, [this]() {
+                return !m_run || m_rawSeq != m_rawTaken;
+            });
+            if (!m_run && m_rawSeq == m_rawTaken) {
+                return;
+            }
+            seq = m_rawSeq;
+            m_rawTaken = m_rawSeq;
+            raw.bgra.swap(m_raw.bgra);
+            raw.width = m_raw.width;
+            raw.height = m_raw.height;
+            raw.originX = m_raw.originX;
+            raw.originY = m_raw.originY;
+            raw.desktop = m_raw.desktop;
+            raw.operable = m_raw.operable;
+            raw.forcePublish = m_raw.forcePublish;
+            raw.shareGen = m_raw.shareGen;
+            raw.jpegQuality = m_raw.jpegQuality;
+            raw.longEdge = m_raw.longEdge;
+            raw.captureMs = m_raw.captureMs;
+            raw.subMain = m_raw.subMain;
+            raw.subThumb = m_raw.subThumb;
+            raw.started = m_raw.started;
+            raw.grabMs = m_raw.grabMs;
+        }
+        (void)seq;
+        if (raw.bgra.empty() || raw.width <= 0 || raw.height <= 0) {
+            continue;
+        }
+        PictureMsg shot;
+        PictureMsg thumb;
+        const int fps = raw.captureMs > 0 ? 1000 / raw.captureMs : 15;
+        const uint64_t e0 = RemoteLog::tickMs();
+        const char* pathName = "JPEG";
+        if (!encodeByPrefer(raw.bgra, raw.width, raw.height, raw.jpegQuality, raw.longEdge, fps, &shot, &pathName)) {
+            continue;
+        }
+        if (!raw.desktop) {
+            shot.operable = raw.operable ? 1 : 0;
+            if (pathName && pathName[0] == 'H') {
+                pathName = "窗H264";
+            } else if (pathName && std::strcmp(pathName, "JPEG") == 0) {
+                pathName = "窗JPEG";
+            } else if (pathName && std::strcmp(pathName, "原图") == 0) {
+                pathName = "窗原图";
+            }
+        } else {
+            shot.operable = 1;
+            shot.visible = 1;
+        }
+        const uint64_t encodeMs = RemoteLog::tickMs() - e0;
+        uint64_t thumbMs = 0;
+        bool haveThumb = false;
+        if (raw.subThumb && (m_lastThumbMs == 0 || raw.started - m_lastThumbMs >= 500)) {
+            const uint64_t t0 = RemoteLog::tickMs();
+            thumb = m_capture.fromBgra(raw.bgra, raw.width, raw.height, raw.width, raw.height, true,
+                RemoteConst::kJpegQuality, 480);
+            thumbMs = RemoteLog::tickMs() - t0;
+            haveThumb = !thumb.jpeg.empty();
+        }
+        commitEncoded(shot, &thumb, haveThumb, 0, false, raw.originX, raw.originY, raw.desktop,
+            raw.forcePublish, raw.shareGen, raw.subMain, raw.captureMs, raw.started, pathName,
+            raw.grabMs, encodeMs, 0, thumbMs);
+    }
+    } catch (const std::exception& e) {
+        RemoteCrash::alert("AgentSession.encodeMain", e.what(), true);
+    } catch (...) {
+        RemoteCrash::alert("AgentSession.encodeMain", "编码线程未知异常", true);
+    }
+}
+
 void AgentSession::captureMain()
 {
     try {
@@ -1189,6 +1632,7 @@ void AgentSession::captureMain()
         int captureMs = RemoteConst::kCaptureMs;
         bool subMain = true;
         bool subThumb = false;
+        int pipelineWorkers = 0;
         {
             std::lock_guard<std::mutex> lock(m_mu);
             if (!m_run) {
@@ -1202,6 +1646,7 @@ void AgentSession::captureMain()
             subMain = m_subMain;
             subThumb = m_subThumb;
             shareGen = m_shareGen;
+            pipelineWorkers = m_pipelineWorkers;
         }
         // 主码流刚被会话打开，或共享源刚从进程切回桌面时，静止画面也要补一帧关键帧
         if (!subMain) {
@@ -1213,8 +1658,14 @@ void AgentSession::captureMain()
         }
         // 抓屏在锁外做；整个桌面恒可操作，并记下显示器原点供输入换算
         const uint64_t started = nowMs();
+        const uint64_t tick0 = RemoteLog::tickMs();
         PictureMsg shot;
         bool frameChanged = true;
+        uint64_t grabMs = 0;
+        uint64_t encodeMs = 0;
+        uint64_t previewMs = 0;
+        uint64_t thumbMs = 0;
+        const char* pathName = "-";
         if (desktop) {
             int ox = 0;
             int oy = 0;
@@ -1223,7 +1674,9 @@ void AgentSession::captureMain()
             int bh = 0;
             bool dxgiOk = false;
             if (monitor != 255) {
+                const uint64_t g0 = RemoteLog::tickMs();
                 dxgiOk = m_dxgi.grab(monitor, &bgra, &bw, &bh, &ox, &oy, &frameChanged);
+                grabMs = RemoteLog::tickMs() - g0;
             } else {
                 m_dxgi.reset();
             }
@@ -1231,9 +1684,13 @@ void AgentSession::captureMain()
             if (dxgiOk && !frameChanged && !(forcePublish && !bgra.empty())) {
                 shot.visible = 1;
                 shot.operable = 1;
+                pathName = "静帧";
             } else if (dxgiOk && frameChanged && m_capture.blank(bgra, bw, bh)) {
+                const uint64_t e0 = RemoteLog::tickMs();
                 shot = m_capture.grabDesktop(monitor, true, &ox, &oy, jpegQuality, longEdge);
+                encodeMs = RemoteLog::tickMs() - e0;
                 shot.codec = 1;
+                pathName = "GDI空白";
                 keepPreview(shot);
                 frameChanged = !shot.jpeg.empty();
                 if (!shot.jpeg.empty()) {
@@ -1243,18 +1700,27 @@ void AgentSession::captureMain()
                 frameChanged = true;
                 publishHttpBgra(bgra, bw, bh);
                 {
-                    PictureMsg local = m_capture.fromBgra(bgra, bw, bh, bw, bh, true, 40, 480);
-                    local.codec = 1;
-                    keepPreview(local);
+                    const uint64_t p0 = RemoteLog::tickMs();
+                    refreshLocalPreview(bgra, bw, bh, started);
+                    previewMs = RemoteLog::tickMs() - p0;
                 }
-                if (!encodeMain(bgra, bw, bh, jpegQuality, longEdge, fps, &shot)) {
-                    shot = m_capture.fromBgra(bgra, bw, bh, bw, bh, true, jpegQuality, longEdge);
-                    shot.codec = 1;
-                    keepPreview(shot);
+                if (pipelineWorkers > 0) {
+                    pathName = "流水线";
+                    publishRaw(bgra, bw, bh, ox, oy, true, true, forcePublish, shareGen,
+                        jpegQuality, longEdge, captureMs, subMain, subThumb, started, grabMs);
+                } else {
+                    const uint64_t e0 = RemoteLog::tickMs();
+                    if (!encodeByPrefer(bgra, bw, bh, jpegQuality, longEdge, fps, &shot, &pathName)) {
+                        pathName = 0;
+                    }
+                    encodeMs = RemoteLog::tickMs() - e0;
                 }
             } else {
+                const uint64_t e0 = RemoteLog::tickMs();
                 shot = m_capture.grabDesktop(monitor, true, &ox, &oy, jpegQuality, longEdge);
+                encodeMs = RemoteLog::tickMs() - e0;
                 shot.codec = 1;
+                pathName = "GDI";
                 keepPreview(shot);
                 frameChanged = !shot.jpeg.empty();
                 if (shot.codec == 1) {
@@ -1265,77 +1731,52 @@ void AgentSession::captureMain()
             if (!shape.empty()) {
                 enqueue(shape);
             }
-            const bool wantThumb = subThumb && (m_lastThumbMs == 0 || started - m_lastThumbMs >= 500);
-            PictureMsg thumb;
-            if (wantThumb && frameChanged && !bgra.empty()) {
-                thumb = m_capture.fromBgra(bgra, bw, bh, bw, bh, true, RemoteConst::kJpegQuality, 480);
-            } else if (wantThumb && frameChanged && !shot.jpeg.empty() && longEdge <= 480) {
-                thumb = shot;
-            }
             POINT pt;
             const bool havePt = GetCursorPos(&pt) != FALSE;
-            std::lock_guard<std::mutex> lock(m_mu);
-            const uint32_t clientW = shot.clientW > 0 ? shot.clientW : m_picture.clientW;
-            const uint32_t clientH = shot.clientH > 0 ? shot.clientH : m_picture.clientH;
-            const uint32_t imageW = shot.imageW > 0 ? shot.imageW : m_picture.imageW;
-            const uint32_t imageH = shot.imageH > 0 ? shot.imageH : m_picture.imageH;
             CursorPosMsg cursor;
-            if (havePt && clientW > 0 && imageW > 0 && clientH > 0 && imageH > 0) {
-                const int ix = (pt.x - ox) * static_cast<int>(imageW) / static_cast<int>(clientW);
-                const int iy = (pt.y - oy) * static_cast<int>(imageH) / static_cast<int>(clientH);
-                cursor.visible = (ix >= 0 && iy >= 0 && ix < static_cast<int>(imageW) && iy < static_cast<int>(imageH)) ? 1 : 0;
-                cursor.x = static_cast<uint16_t>(ix < 0 ? 0 : ix);
-                cursor.y = static_cast<uint16_t>(iy < 0 ? 0 : iy);
-            }
-            m_originX = ox;
-            m_originY = oy;
-            if (frameChanged && subMain) {
-                m_picture = shot;
-                m_pictureSeq += 1;
-                if (!shot.jpeg.empty()) {
-                    m_mainLatched = true;
-                    m_shareSeen = shareGen;
+            {
+                std::lock_guard<std::mutex> lock(m_mu);
+                const uint32_t clientW = shot.clientW > 0 ? shot.clientW : m_picture.clientW;
+                const uint32_t clientH = shot.clientH > 0 ? shot.clientH : m_picture.clientH;
+                const uint32_t imageW = shot.imageW > 0 ? shot.imageW : m_picture.imageW;
+                const uint32_t imageH = shot.imageH > 0 ? shot.imageH : m_picture.imageH;
+                if (havePt && clientW > 0 && imageW > 0 && clientH > 0 && imageH > 0) {
+                    const int ix = (pt.x - ox) * static_cast<int>(imageW) / static_cast<int>(clientW);
+                    const int iy = (pt.y - oy) * static_cast<int>(imageH) / static_cast<int>(clientH);
+                    cursor.visible = (ix >= 0 && iy >= 0 && ix < static_cast<int>(imageW) && iy < static_cast<int>(imageH)) ? 1 : 0;
+                    cursor.x = static_cast<uint16_t>(ix < 0 ? 0 : ix);
+                    cursor.y = static_cast<uint16_t>(iy < 0 ? 0 : iy);
                 }
-                if (shot.codec != m_sentCodec || shot.imageW != m_streamW || shot.imageH != m_streamH) {
-                    m_sentCodec = shot.codec == 0 ? 1 : shot.codec;
-                    m_streamW = shot.imageW;
-                    m_streamH = shot.imageH;
-                    StreamInfoMsg info;
-                    info.stream = 1;
-                    info.codec = m_sentCodec;
-                    info.width = static_cast<uint16_t>(shot.imageW > 65535 ? 65535 : shot.imageW);
-                    info.height = static_cast<uint16_t>(shot.imageH > 65535 ? 65535 : shot.imageH);
-                    info.fps = static_cast<uint8_t>(fps > 255 ? 255 : fps);
-                    std::string infoErr;
-                    const CommBytes packet = Messages::packStreamInfo(info, &infoErr);
-                    if (!packet.empty()) {
-                        if (m_out.size() >= 64) {
-                            m_out.erase(m_out.begin());
-                        }
-                        m_out.push_back(packet);
-                    }
-                }
-                if (m_pictureSeq > m_sentSeq + 2) {
-                    stepAdapt(true, started);
+                m_originX = ox;
+                m_originY = oy;
+                if (cursor.x != m_cursor.x || cursor.y != m_cursor.y || cursor.visible != m_cursor.visible) {
+                    m_cursor = cursor;
+                    m_cursorDirty = true;
                 }
             }
-            if (wantThumb && frameChanged && !thumb.jpeg.empty()) {
-                m_thumb = thumb;
-                m_thumbSeq += 1;
-                m_lastThumbMs = started;
-            }
-            if (cursor.x != m_cursor.x || cursor.y != m_cursor.y || cursor.visible != m_cursor.visible) {
-                m_cursor = cursor;
-                m_cursorDirty = true;
-            }
-            if (m_suspended) {
-                m_status = "已断开";
-            } else if (!m_tcp.isOpen()) {
-                m_status = shot.visible ? "未连接" : "没有这块显示器";
-            } else if (frameChanged && shot.jpeg.empty() && subMain) {
-                m_status = "没有抓到画面";
-            } else if (m_status == "没有抓到画面" || m_status == "没有这块显示器") {
-                m_status = m_operating ? "操作中" : "只看";
+            // 流水线模式主画面由编码线程提交；内联模式在这里提交
+            if (pipelineWorkers <= 0 && frameChanged && pathName && std::strcmp(pathName, "静帧") != 0
+                && std::strcmp(pathName, "流水线") != 0) {
+                const bool wantThumb = subThumb && (m_lastThumbMs == 0 || started - m_lastThumbMs >= 500);
+                PictureMsg thumb;
+                const uint64_t t0 = RemoteLog::tickMs();
+                if (wantThumb && !bgra.empty()) {
+                    thumb = m_capture.fromBgra(bgra, bw, bh, bw, bh, true, RemoteConst::kJpegQuality, 480);
+                } else if (wantThumb && !shot.jpeg.empty() && longEdge <= 480) {
+                    thumb = shot;
+                }
+                thumbMs = RemoteLog::tickMs() - t0;
+                commitEncoded(shot, &thumb, wantThumb && !thumb.jpeg.empty(), &cursor, true, ox, oy, true,
+                    forcePublish, shareGen, subMain, captureMs, started, pathName, grabMs, encodeMs, previewMs, thumbMs);
+            } else if (!frameChanged && pathName && std::strcmp(pathName, "静帧") == 0) {
+                static uint64_t s_lastSkipLog = 0;
+                const uint64_t nowTick = RemoteLog::tickMs();
+                if (s_lastSkipLog == 0 || nowTick - s_lastSkipLog >= 2000) {
+                    s_lastSkipLog = nowTick;
+                    RemoteLog::writef(RemoteLog::Info, "画面",
+                        "画面未变，跳过编码 · 抓%llums 间隔%dms",
+                        static_cast<unsigned long long>(grabMs), captureMs);
+                }
             }
         } else {
             // 进程画面：目标权限比本进程高时标记不可操作
@@ -1345,46 +1786,74 @@ void AgentSession::captureMain()
             int ww = 0;
             int wh = 0;
             const int fps = captureMs > 0 ? 1000 / captureMs : 15;
-            if (m_capture.grabBgra(hwnd, &windowBgra, &ww, &wh)) {
+            {
+                const uint64_t g0 = RemoteLog::tickMs();
+                m_capture.grabBgra(hwnd, &windowBgra, &ww, &wh);
+                grabMs = RemoteLog::tickMs() - g0;
+            }
+            if (!windowBgra.empty()) {
                 publishHttpBgra(windowBgra, ww, wh);
-                PictureMsg local = m_capture.fromBgra(windowBgra, ww, wh, ww, wh, true, 40, 480);
-                local.codec = 1;
-                keepPreview(local);
+                const uint64_t p0 = RemoteLog::tickMs();
+                refreshLocalPreview(windowBgra, ww, wh, started);
+                previewMs = RemoteLog::tickMs() - p0;
             }
-            if (!windowBgra.empty()
-                && encodeMain(windowBgra, ww, wh, jpegQuality, longEdge, fps, &shot)) {
-                shot.operable = can ? 1 : 0;
+            if (pipelineWorkers > 0 && !windowBgra.empty()) {
+                pathName = "流水线";
+                publishRaw(windowBgra, ww, wh, 0, 0, false, can, forcePublish, shareGen,
+                    jpegQuality, longEdge, captureMs, subMain, subThumb, started, grabMs);
             } else {
-                shot = m_capture.grab(hwnd, can, jpegQuality, longEdge);
-                shot.codec = 1;
-                keepPreview(shot);
-                publishHttp(shot.jpeg);
+                const uint64_t e0 = RemoteLog::tickMs();
+                bool encoded = false;
+                if (!windowBgra.empty()) {
+                    encoded = encodeByPrefer(windowBgra, ww, wh, jpegQuality, longEdge, fps, &shot, &pathName);
+                    if (encoded) {
+                        shot.operable = can ? 1 : 0;
+                        if (pathName && pathName[0] == 'H') {
+                            pathName = "窗H264";
+                        } else if (pathName && std::strcmp(pathName, "JPEG") == 0) {
+                            pathName = "窗JPEG";
+                        } else if (pathName && std::strcmp(pathName, "原图") == 0) {
+                            pathName = "窗原图";
+                        }
+                    }
+                }
+                if (!encoded) {
+                    shot = m_capture.grab(hwnd, can, jpegQuality, longEdge);
+                    shot.codec = 1;
+                    keepPreview(shot);
+                    publishHttp(shot.jpeg);
+                    pathName = "窗JPEG";
+                    encoded = !shot.jpeg.empty();
+                }
+                encodeMs = RemoteLog::tickMs() - e0;
+                const CommBytes shape = captureCursorShape();
+                if (!shape.empty()) {
+                    enqueue(shape);
+                }
+                if (encoded) {
+                    commitEncoded(shot, 0, false, 0, false, 0, 0, false, forcePublish, shareGen, subMain,
+                        captureMs, started, pathName, grabMs, encodeMs, previewMs, 0);
+                }
             }
-            const CommBytes shape = captureCursorShape();
-            if (!shape.empty()) {
-                enqueue(shape);
-            }
-            std::lock_guard<std::mutex> lock(m_mu);
-            m_picture = shot;
-            m_pictureSeq += 1;
-            if (subMain && !shot.jpeg.empty()) {
-                m_mainLatched = true;
-                m_shareSeen = shareGen;
-            }
-            if (m_suspended) {
-                m_status = "已断开";
-            } else if (!m_tcp.isOpen()) {
-                m_status = hwnd ? "未连接" : "未找到窗口";
+            if (pipelineWorkers > 0) {
+                const CommBytes shape = captureCursorShape();
+                if (!shape.empty()) {
+                    enqueue(shape);
+                }
             }
         }
         if (captureMs < 1) {
             captureMs = RemoteConst::kCaptureMs;
         }
-        // 间隔按「抓+编」耗时扣减，避免编码慢时再额外 Sleep 把帧率压到上限一半以下
-        const uint64_t spent = nowMs() - started;
-        if (spent < static_cast<uint64_t>(captureMs)) {
-            Sleep(static_cast<DWORD>(captureMs - static_cast<int>(spent)));
+        // 帧率管整个周期：已经超时就不再 Sleep
+        const uint64_t spentWall = nowMs() - started;
+        if (spentWall < static_cast<uint64_t>(captureMs)) {
+            Sleep(static_cast<DWORD>(captureMs - static_cast<int>(spentWall)));
         }
+        (void)tick0;
+        (void)encodeMs;
+        (void)previewMs;
+        (void)thumbMs;
     }
     } catch (const std::exception& e) {
         RemoteCrash::alert("AgentSession.captureMain", e.what(), true);
@@ -1774,12 +2243,17 @@ void AgentSession::writeMain()
             if (ready && !wantBye) {
                 needHello = m_needHello;
                 m_needHello = false;
-                picture = m_picture;
                 seq = m_pictureSeq;
                 sent = m_sentSeq;
-                thumb = m_thumb;
+                // 只有真有新帧才拷主画面/缩略图，避免空转时每圈复制几十 KB
+                if (seq != sent) {
+                    picture = m_picture;
+                }
                 thumbSeq = m_thumbSeq;
                 thumbSent = m_thumbSent;
+                if (thumbSeq != thumbSent) {
+                    thumb = m_thumb;
+                }
                 cursor = m_cursor;
                 cursorDirty = m_cursorDirty;
                 m_cursorDirty = false;
@@ -1840,10 +2314,32 @@ void AgentSession::writeMain()
             m_tcp.write("", Messages::packHeartbeat(beat, &err), 1000, &err);
             nextBeat = now + RemoteConst::kHeartbeatMs;
         }
+        bool sentPicture = false;
         if (seq != sent) {
-            m_tcp.write("", Messages::packPicture(picture, Frame::ChVideo, &err), 1000, &err);
-            std::lock_guard<std::mutex> lock(m_mu);
-            m_sentSeq = seq;
+            const uint64_t t0 = RemoteLog::tickMs();
+            const CommBytes packet = Messages::packPicture(picture, Frame::ChVideo, &err);
+            const uint64_t packMs = RemoteLog::tickMs() - t0;
+            const uint64_t t1 = RemoteLog::tickMs();
+            const bool ok = m_tcp.write("", packet, 1000, &err);
+            const uint64_t writeMs = RemoteLog::tickMs() - t1;
+            int backlog = 0;
+            {
+                std::lock_guard<std::mutex> lock(m_mu);
+                m_sentSeq = seq;
+                backlog = m_pictureSeq > m_sentSeq ? static_cast<int>(m_pictureSeq - m_sentSeq) : 0;
+            }
+            RemoteLog::writef(ok ? RemoteLog::Info : RemoteLog::Warn, "发送",
+                "主画面 seq=%llu 打包%llums 写出%llums %zuB codec=%u %ux%u 积压%d %s",
+                static_cast<unsigned long long>(seq),
+                static_cast<unsigned long long>(packMs),
+                static_cast<unsigned long long>(writeMs),
+                packet.size(),
+                static_cast<unsigned>(picture.codec),
+                picture.imageW,
+                picture.imageH,
+                backlog,
+                ok ? "ok" : err.c_str());
+            sentPicture = true;
         }
         if (thumbSeq != thumbSent && !thumb.jpeg.empty()) {
             m_tcp.write("", Messages::packPicture(thumb, Frame::ChThumb, &err), 1000, &err);
@@ -1861,7 +2357,17 @@ void AgentSession::writeMain()
         for (size_t i = 0; i < batch.size(); ++i) {
             m_tcp.write("", batch[i], 1000, &err);
         }
-        Sleep(20);
+        // 还有待发画面就立刻再转；空转才睡，避免人为把帧率卡死
+        bool pending = false;
+        {
+            std::lock_guard<std::mutex> lock(m_mu);
+            pending = m_pictureSeq != m_sentSeq || !m_out.empty();
+        }
+        if (pending || sentPicture) {
+            Sleep(0);
+        } else {
+            Sleep(10);
+        }
     }
     } catch (const std::exception& e) {
         RemoteCrash::alert("AgentSession.writeMain", e.what(), true);

@@ -25,6 +25,7 @@
 #include "WindowWatch.h"
 
 class QImage;
+#include <condition_variable>
 #include <mutex>
 #include <string>
 #include <thread>
@@ -35,7 +36,7 @@ namespace Vision {
 /**
  * @class AgentSession
  * @brief 被控端会话：反连控制端，抓屏发 JPEG，收键鼠输入并注入，处理操作申请与现场确认
- * @note 内部三条线程：抓屏（captureMain）、收包与重连（readMain）、发包（writeMain）；
+ * @note 内部线程：抓屏、可选编码流水线、收包与重连、发包；
  *       共享状态都由 m_mu 保护。界面线程只通过公有方法轮询和下指令
  */
 class WatchLink;
@@ -45,6 +46,24 @@ class AgentSession {
 public:
     /** @brief 来访确认：从不、信任的控制端免确认、每次都确认 */
     enum Confirm { ConfirmNever = 0, ConfirmUntrusted = 1, ConfirmAlways = 2 };
+
+    /** @brief 文件传输窗口轮询用的进度快照（被控端发起时） */
+    struct FileUi {
+        bool online;                ///< 已连上中控台
+        std::string dirList;        ///< 中控台回的目录列表
+        uint64_t dirSeq;            ///< 目录列表序号
+        uint64_t fileSeq;           ///< 一次传输结束时加一
+        uint64_t fileGot;           ///< 已传字节
+        uint64_t fileBytes;         ///< 总字节，未知为 0
+        std::string fileNote;       ///< 状态文字
+        FileUi()
+            : online(false)
+            , dirSeq(0)
+            , fileSeq(0)
+            , fileGot(0)
+            , fileBytes(0)
+        {}
+    };
 
     /** @brief 界面轮询用的连接快照 */
     struct Info {
@@ -138,6 +157,36 @@ public:
     uint32_t allowMask() const;
     /** @brief 文件传输允许的根目录。空则用 D:\，D:\ 不存在时退回系统盘 */
     void setFileRoots(const std::vector<std::wstring>& roots);
+    /**
+     * @brief 抓屏 / 编码流水线。0=抓屏线程内联编码，1=独立编码线程（抓/编/发重叠）
+     * @note JPEG 编码不可重入，最多 1；改完下次 start 生效
+     */
+    void setPipelineWorkers(int workers);
+    /** @brief 当前流水线并行度 */
+    int pipelineWorkers() const;
+    /**
+     * @brief 主码流编码：0 自动(优先 H.264)，1 JPEG，2 H.264，3 原图 BGRA
+     * @note 中控台 Subscribe/Config 带 codec≠0 时会覆盖；本地设置作默认
+     */
+    void setPreferCodec(int codec);
+    /** @brief 当前主码流编码偏好 */
+    int preferCodec() const;
+    /** @brief 文件传输窗口轮询 */
+    FileUi fileUi() const;
+    /** @brief 向中控台要目录列表。空路径列盘符 */
+    void requestRemoteDir(const std::string& path);
+    /** @brief 在中控台建目录 */
+    void requestRemoteMkDir(uint32_t id, const std::string& remotePath);
+    /**
+     * @brief 本机文件推到中控台。返回 SHA-256，打不开为空
+     * @note 须已连接且允许文件；与中控台侧上传对称
+     */
+    std::string armPushToRemote(uint32_t id, const std::string& localPath, const std::string& remotePath);
+    /**
+     * @brief 从中控台拉文件到本机。须在发出前调用，resume 为续传偏移
+     */
+    void armPullFromRemote(uint32_t id, const std::string& localPath, const std::string& remotePath,
+        uint64_t total, uint64_t resume);
     /** @brief 中控台取得操作权后是否必须录屏 */
     void setForceRecord(bool on);
     /** @brief 打开后抓屏线程额外留一份 JPEG，给局域网网页看 */
@@ -193,10 +242,12 @@ private:
     /************************************************** 线程 **************************************************/
     /** @brief 收包线程：断线时重连，判心跳超时，按类型处理控制端报文，申请超时时回 code 4 */
     void readMain();
-    /** @brief 发包线程：约 20 ms 一轮，按需发 Bye、Hello、心跳、新画面和待发队列；未连上时不动这些待发项 */
+    /** @brief 发包线程：有积压不空等；按需发 Bye、Hello、心跳、新画面和待发队列 */
     void writeMain();
-    /** @brief 抓屏线程：每 kCaptureMs 抓一帧存入 m_picture，并按结果更新状态文字 */
+    /** @brief 抓屏线程：抓 BGRA；流水线关闭时当场编码，打开时交给编码线程 */
     void captureMain();
+    /** @brief 编码线程：取最新一帧 BGRA 编码并写入 m_picture */
+    void encodeMain();
 
     /************************************************** 会话 **************************************************/
     /** @brief 放入待发队列，满 64 条时丢最旧的；空帧忽略 */
@@ -222,16 +273,41 @@ private:
     bool pathAllowed(const std::wstring& path) const;
     /** @brief 把路径收成绝对路径并解开符号链接，失败时退回 GetFullPathName 的结果 */
     std::wstring canonicalPath(const std::wstring& path) const;
-    /** @brief 主码流优先 H.264，失败时返回 false，调用方改 JPEG */
-    bool encodeMain(const CommBytes& bgra, int width, int height, int quality, int longEdge, int fps, PictureMsg* shot);
-    /** @brief 光标形状变了才组一包，没变返回空 */
+    /** @brief 主码流 H.264，失败返回 false */
+    bool encodePicture(const CommBytes& bgra, int width, int height, int quality, int longEdge, int fps, PictureMsg* shot);
+    /** @brief 主码流原图 BGRA（按 longEdge 缩放） */
+    bool encodeRaw(const CommBytes& bgra, int width, int height, int longEdge, PictureMsg* shot);
+    /**
+     * @brief 按 m_preferCodec 编码一帧。成功写入 shot
+     * @return false 表示本帧跳过（H.264 预热中）
+     */
+    bool encodeByPrefer(const CommBytes& bgra, int width, int height, int quality, int longEdge, int fps,
+        PictureMsg* shot, const char** pathName);
+    /** @brief 光标形状变了才组一包，没变返回空。约 100ms 节流 */
     CommBytes captureCursorShape();
+    /** @brief 把抓到的 BGRA 交给编码流水线；workers=0 时不调用 */
+    void publishRaw(CommBytes& bgra, int width, int height, int originX, int originY, bool desktop,
+        bool operable, bool forcePublish, uint32_t shareGen, int jpegQuality, int longEdge, int captureMs,
+        bool subMain, bool subThumb, uint64_t started, uint64_t grabMs);
+    /**
+     * @brief 编码完成后写入主画面 / 子码流 / 状态。调用方不持锁
+     * @note desktop 分支会更新显示器原点；window 分支 operable 进 PictureMsg
+     */
+    void commitEncoded(PictureMsg& shot, PictureMsg* thumb, bool haveThumb, const CursorPosMsg* cursor,
+        bool haveCursor, int originX, int originY, bool desktop, bool forcePublish, uint32_t shareGen,
+        bool subMain, int captureMs, uint64_t started, const char* pathName, uint64_t grabMs,
+        uint64_t encodeMs, uint64_t previewMs, uint64_t thumbMs);
     /** @brief 网页查看开着时，把这一帧 JPEG 留一份。调用方不必持锁 */
     void publishHttp(const CommBytes& jpeg);
     /** @brief 网页查看开着时，把 BGRA 压成一帧较小的 JPEG */
     void publishHttpBgra(CommBytes& bgra, int width, int height);
     /** @brief 留一张 JPEG 给本机预览。主码流可能是 H.264，界面不能拿它当 JPEG */
     void keepPreview(const PictureMsg& jpegShot);
+    /**
+     * @brief 本机预览：BGRA 压成小 JPEG。约 250 ms 一次，避免跟主码流抢 CPU
+     * @note 只在抓屏线程调用；nowMs 用 AgentSession::nowMs()
+     */
+    void refreshLocalPreview(CommBytes& bgra, int width, int height, uint64_t nowMs);
     /** @brief 取出一条待接入的直连套接字并挂到 m_tcp。没有则返回 false */
     bool takeInbound();
     /** @brief 连中继并完成登记。成功后套接字留在 m_tcp，调用方再做 TLS */
@@ -242,6 +318,8 @@ private:
     void stepAdapt(bool bad, uint64_t now);
     /** @brief 列出目录。空路径返回根目录。不允许的路径返回空 */
     std::string listDirectory(const std::wstring& path) const;
+    /** @brief 逐级创建目录。须在允许的根下，目录已存在也算成功 */
+    bool makeDirectory(const std::wstring& path) const;
     /** @brief CPU、内存、磁盘，以及工站一句 */
     std::string systemText() const;
     /** @brief 文件 SHA-256 小写十六进制。打不开返回空 */
@@ -313,7 +391,10 @@ private:
     std::thread m_read;             ///< 收包线程
     std::thread m_write;            ///< 发包线程
     std::thread m_captureThread;    ///< 抓屏线程
-    bool m_run;                     ///< 三条线程是否继续，stop 时置 false
+    std::vector<std::thread> m_encodeThreads; ///< 编码流水线，条数由 m_pipelineWorkers 决定
+    bool m_run;                     ///< 线程是否继续，stop 时置 false
+    int m_pipelineWorkers;          ///< 0=内联编码，1=独立编码线程
+    int m_preferCodec;              ///< 0 自动，1 JPEG，2 H.264，3 原图
     std::string m_host;             ///< 控制端地址
     int m_port;                     ///< 控制端端口
     std::string m_status;           ///< 状态文字，界面显示用；“本地暂停”同时作为 localPause 的判断依据
@@ -341,7 +422,14 @@ private:
     uint32_t m_streamW;             ///< 已通知的画面宽
     uint32_t m_streamH;             ///< 已通知的画面高
     uint64_t m_cursorHash;          ///< 上一帧光标像素散列，形状没变不重发
+    uint64_t m_lastCursorShapeMs;   ///< 上次抓光标形状的时刻，节流用
     std::vector<std::wstring> m_roots; ///< 文件根目录
+    std::string m_dirList;          ///< 中控台回的目录列表，给本机文件窗
+    uint64_t m_dirSeq;              ///< 目录列表序号
+    uint64_t m_fileUiSeq;           ///< 本机发起的传输结束序号
+    uint64_t m_fileUiGot;           ///< 本机发起传输已传字节
+    uint64_t m_fileUiBytes;         ///< 本机发起传输总字节
+    std::string m_fileUiNote;       ///< 本机发起传输状态
     bool m_forceRecord;             ///< Hello 里带给中控台，取得操作后自动录屏
     bool m_httpView;                ///< 局域网网页查看
     CommBytes m_httpJpeg;           ///< 网页用的 JPEG，和主码流分开
@@ -363,6 +451,7 @@ private:
     uint64_t m_thumbSeq;            ///< 子码流帧序号
     uint64_t m_thumbSent;           ///< 已发出的子码流序号
     uint64_t m_lastThumbMs;         ///< 上次压子码流的时刻
+    uint64_t m_lastPreviewMs;       ///< 上次本机预览 JPEG 的时刻
     CursorPosMsg m_cursor;          ///< 最新光标（图像坐标）
     bool m_cursorDirty;             ///< 光标待发
     bool m_privacy;                 ///< 隐私屏
@@ -396,10 +485,52 @@ private:
     uint64_t m_connectedAt;         ///< 本次会话登记时刻 ms，0 为未登记；发包线程只在它非 0 时发 Hello、心跳、画面和队列
     uint64_t m_operateAt;           ///< 本次获得操作权的时刻 ms
     std::string m_controller;       ///< 控制端显示名，来自 HelloAck，断开时清空
-    PictureMsg m_picture;           ///< 最新一帧，抓屏线程写，发包线程与界面预览读
-    uint64_t m_pictureSeq;          ///< 已抓帧数，每抓一帧加 1
+    PictureMsg m_picture;           ///< 最新一帧，编码后写，发包线程与界面预览读
+    uint64_t m_pictureSeq;          ///< 已编码帧数，每成功一帧加 1
     uint64_t m_sentSeq;             ///< 已发出的最新帧序号，与 m_pictureSeq 不等时发新帧
     std::vector<CommBytes> m_out;   ///< 待发报文队列（AuthAck、Release、HeartbeatAck 等），最多 64 条；登记新会话时清空
+
+    /** @brief 抓屏交给编码线程的原始帧；只保留最新一帧 */
+    struct RawFrame {
+        CommBytes bgra;
+        int width;
+        int height;
+        int originX;
+        int originY;
+        bool desktop;
+        bool operable;
+        bool forcePublish;
+        uint32_t shareGen;
+        int jpegQuality;
+        int longEdge;
+        int captureMs;
+        bool subMain;
+        bool subThumb;
+        uint64_t started;
+        uint64_t grabMs;
+        RawFrame()
+            : width(0)
+            , height(0)
+            , originX(0)
+            , originY(0)
+            , desktop(false)
+            , operable(true)
+            , forcePublish(false)
+            , shareGen(0)
+            , jpegQuality(0)
+            , longEdge(0)
+            , captureMs(0)
+            , subMain(true)
+            , subThumb(false)
+            , started(0)
+            , grabMs(0)
+        {}
+    };
+    mutable std::mutex m_rawMu;     ///< 保护原始帧槽
+    std::condition_variable m_rawCv; ///< 有新原始帧或停机
+    RawFrame m_raw;                 ///< 最新原始帧
+    uint64_t m_rawSeq;              ///< 原始帧序号，抓屏线程写
+    uint64_t m_rawTaken;            ///< 编码线程已取到的序号
 
     int m_confirm;                      ///< 来访确认策略，取 Confirm 的值
     std::vector<std::string> m_trusted; ///< 信任的控制端显示名（UTF-8）

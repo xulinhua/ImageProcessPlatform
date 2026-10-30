@@ -62,6 +62,7 @@ SessionWindow::SessionWindow(ControlSession* session, const ControlConfig* confi
     , m_kbps(0)
     , m_floatBar(0)
     , m_quality(0)
+    , m_codec(0)
     , m_maxFps(0)
     , m_infoCrypto(0)
     , m_infoFingerprint(0)
@@ -166,14 +167,28 @@ QWidget* SessionWindow::buildToolbar()
     m_quality->addItem(QString::fromUtf8("流畅"));
     m_quality->addItem(QString::fromUtf8("均衡"));
     m_quality->addItem(QString::fromUtf8("清晰"));
-    m_quality->setCurrentIndex(1);
+    m_quality->setCurrentIndex(m_config && m_config->defaultQuality >= 0 && m_config->defaultQuality <= 2
+        ? m_config->defaultQuality : 1);
     m_quality->setFixedWidth(96);
     m_quality->setToolTip(QString::fromUtf8("流畅：低画质高帧率；清晰：高画质低带宽压力"));
+    m_codec = new QComboBox(bar);
+    m_codec->addItem(QString::fromUtf8("沿用"), 0);
+    m_codec->addItem(QString::fromUtf8("JPEG"), 1);
+    m_codec->addItem(QString::fromUtf8("H.264"), 2);
+    m_codec->addItem(QString::fromUtf8("原图"), 3);
+    {
+        const int want = m_config ? m_config->streamCodec : 0;
+        const int idx = m_codec->findData(want);
+        m_codec->setCurrentIndex(idx >= 0 ? idx : 0);
+    }
+    m_codec->setFixedWidth(88);
+    m_codec->setToolTip(QString::fromUtf8("发送方式：JPEG / H.264 / 原图 BGRA，方便对比带宽与画质"));
     m_maxFps = new QSpinBox(bar);
     m_maxFps->setRange(RemoteConst::kMaxFpsMin, RemoteConst::kMaxFpsMax);
-    m_maxFps->setValue(RemoteConst::kMaxFpsDefault);
+    m_maxFps->setValue(m_config && m_config->defaultFps >= RemoteConst::kMaxFpsMin
+        ? m_config->defaultFps : RemoteConst::kMaxFpsDefault);
     m_maxFps->setSuffix(QString::fromUtf8(" fps"));
-    m_maxFps->setFixedWidth(84);
+    m_maxFps->setFixedWidth(100);
     m_maxFps->setToolTip(QString::fromUtf8("帧率上限；实际帧率受编码耗时与带宽限制"));
     m_fitSeg = new SegmentBar(bar);
     m_fitSeg->addButton(QString::fromUtf8("适应"), "fit");
@@ -193,7 +208,7 @@ QWidget* SessionWindow::buildToolbar()
     QPushButton* clip = RemoteTheme::button(QString(), "clipboard", "icon", bar);
     clip->setToolTip(QString::fromUtf8("把本机剪贴板文本发到被控端。对方复制后会自动回到这里"));
     QPushButton* file = RemoteTheme::button(QString::fromUtf8("文件"), "folder", 0, bar);
-    file->setToolTip(QString::fromUtf8("浏览被控端目录，上传或下载"));
+    file->setToolTip(QString::fromUtf8("在本机和被控端之间选择路径并传文件"));
     m_chat = RemoteTheme::button(QString::fromUtf8("聊天"), "chat", 0, bar);
     m_chat->setCheckable(true);
     m_chat->setChecked(true);
@@ -215,10 +230,12 @@ QWidget* SessionWindow::buildToolbar()
     monitorLabel->setProperty("role", "key");
     QLabel* qualityLabel = new QLabel(QString::fromUtf8("画质"), bar);
     qualityLabel->setProperty("role", "key");
+    QLabel* codecLabel = new QLabel(QString::fromUtf8("编码"), bar);
+    codecLabel->setProperty("role", "key");
     QLabel* fpsLabel = new QLabel(QString::fromUtf8("上限"), bar);
     fpsLabel->setProperty("role", "key");
 
-    // 排布：返回 | 操作 | 显示器、画质、帧率上限 | 缩放、全屏 | 组合键 | 工具 …… 电源、断开
+    // 排布：返回 | 操作 | 显示器、画质、编码、帧率上限 | 缩放、全屏 | 组合键 | 工具 …… 电源、断开
     row->addWidget(back);
     row->addWidget(new ToolSeparator(bar));
     row->addWidget(m_operate);
@@ -228,6 +245,9 @@ QWidget* SessionWindow::buildToolbar()
     row->addSpacing(6);
     row->addWidget(qualityLabel);
     row->addWidget(m_quality);
+    row->addSpacing(6);
+    row->addWidget(codecLabel);
+    row->addWidget(m_codec);
     row->addSpacing(6);
     row->addWidget(fpsLabel);
     row->addWidget(m_maxFps);
@@ -260,7 +280,7 @@ QWidget* SessionWindow::buildToolbar()
     m_monitors->setOnChanged([this](int index) { pickMonitor(index); });
     QObject::connect(m_quality, QOverload<int>::of(&QComboBox::currentIndexChanged), [this](int index) {
         // 切档时顺带把帧率上限调到该档推荐值，用户仍可再改
-        const int presets[] = { 25, 15, 10 };
+        const int presets[] = { 60, 30, 20 };
         if (index >= 0 && index < 3) {
             m_maxFps->blockSignals(true);
             m_maxFps->setValue(presets[index]);
@@ -270,6 +290,9 @@ QWidget* SessionWindow::buildToolbar()
     });
     QObject::connect(m_maxFps, QOverload<int>::of(&QSpinBox::valueChanged), [this](int) {
         pushPictureConfig(QString::fromUtf8("帧率上限 %1 fps").arg(m_maxFps->value()));
+    });
+    QObject::connect(m_codec, QOverload<int>::of(&QComboBox::currentIndexChanged), [this](int) {
+        pushPictureConfig(QString::fromUtf8("编码：%1").arg(m_codec->currentText()));
     });
     m_fitSeg->setOnChanged([this](int index) { m_view->setFit(index == 0); });
     QObject::connect(full, &QPushButton::clicked, [this]() { setFullScreenMode(true); });
@@ -603,7 +626,10 @@ void SessionWindow::fillQuality(ConfigMsg* cfg) const
         cfg->jpegQuality = static_cast<uint8_t>(RemoteConst::kJpegQuality);
         cfg->longEdge = static_cast<uint16_t>(RemoteConst::kLongEdge);
     }
-    cfg->maxFps = static_cast<uint8_t>(m_maxFps ? m_maxFps->value() : RemoteConst::kMaxFpsDefault);
+    cfg->maxFps = static_cast<uint16_t>(m_maxFps ? m_maxFps->value() : RemoteConst::kMaxFpsDefault);
+    if (m_codec) {
+        cfg->codec = static_cast<uint8_t>(m_codec->currentData().toInt());
+    }
 }
 
 ConfigMsg SessionWindow::makeConfig() const
@@ -615,6 +641,41 @@ ConfigMsg SessionWindow::makeConfig() const
     cfg.process = m_tile.process;
     fillQuality(&cfg);
     return cfg;
+}
+
+void SessionWindow::usePictureDefaults()
+{
+    if (m_quality) {
+        m_quality->blockSignals(true);
+    }
+    if (m_codec) {
+        m_codec->blockSignals(true);
+    }
+    if (m_maxFps) {
+        m_maxFps->blockSignals(true);
+    }
+    if (m_config) {
+        if (m_quality && m_config->defaultQuality >= 0 && m_config->defaultQuality <= 2) {
+            m_quality->setCurrentIndex(m_config->defaultQuality);
+        }
+        if (m_codec) {
+            const int idx = m_codec->findData(m_config->streamCodec);
+            m_codec->setCurrentIndex(idx >= 0 ? idx : 0);
+        }
+        if (m_maxFps) {
+            m_maxFps->setValue(m_config->defaultFps);
+        }
+    }
+    if (m_quality) {
+        m_quality->blockSignals(false);
+    }
+    if (m_codec) {
+        m_codec->blockSignals(false);
+    }
+    if (m_maxFps) {
+        m_maxFps->blockSignals(false);
+    }
+    pushPictureConfig(QString::fromUtf8("已按设置里的默认画质、编码和帧率下发"));
 }
 
 void SessionWindow::pushPictureConfig(const QString& reason)
@@ -952,6 +1013,9 @@ void SessionWindow::syncControls()
     m_altTab->setEnabled(operating);
     m_shot->setEnabled(m_online);
     m_quality->setEnabled(m_online);
+    if (m_codec) {
+        m_codec->setEnabled(m_online);
+    }
     m_maxFps->setEnabled(m_online);
     m_view->setInputEnabled(operating);
     m_view->setOperating(operating);
@@ -978,8 +1042,10 @@ void SessionWindow::syncControls()
     m_stDot->setTone(m_online ? "green" : "gray");
     m_stState->setText(m_online ? QString::fromUtf8("<b style='color:#262626'>已连接</b>") : QString::fromUtf8("<b>已断开</b>"));
     if (m_online && m_tile.imageW > 0) {
-        m_stImage->setText(QString::fromUtf8("<b style='color:#262626'>%1×%2</b> · JPEG · <b style='color:#262626'>%3 fps</b>")
-                               .arg(m_tile.imageW).arg(m_tile.imageH).arg(m_fps, 0, 'f', 0));
+        const QString codec = m_tile.codec == 3 ? QString::fromUtf8("原图")
+            : (m_tile.codec == 2 ? QString::fromUtf8("H.264") : QString::fromUtf8("JPEG"));
+        m_stImage->setText(QString::fromUtf8("<b style='color:#262626'>%1×%2</b> · %3 · <b style='color:#262626'>%4 fps</b>")
+                               .arg(m_tile.imageW).arg(m_tile.imageH).arg(codec).arg(m_fps, 0, 'f', 0));
     } else {
         m_stImage->setText("-");
     }
@@ -998,7 +1064,11 @@ void SessionWindow::syncControls()
     m_infoAddress->setText(m_tile.address.empty() ? QString("-") : QString::fromUtf8(m_tile.address.c_str()));
     m_infoSystem->setText(m_tile.system.empty() ? QString("-") : QString::fromUtf8(m_tile.system.c_str()));
     m_infoShare->setText(m_online ? shareText(m_tile) : QString("-"));
-    m_infoImage->setText(m_online && m_tile.imageW > 0 ? QString("%1×%2 · JPEG").arg(m_tile.imageW).arg(m_tile.imageH) : QString("-"));
+    m_infoImage->setText(m_online && m_tile.imageW > 0
+        ? QString("%1×%2 · %3").arg(m_tile.imageW).arg(m_tile.imageH).arg(
+            m_tile.codec == 3 ? QString::fromUtf8("原图")
+                : (m_tile.codec == 2 ? QString::fromUtf8("H.264") : QString::fromUtf8("JPEG")))
+        : QString("-"));
     m_infoFps->setText(m_online ? QString("%1 fps").arg(m_fps, 0, 'f', 1) : QString("-"));
     m_infoRate->setText(m_online ? rateText(m_kbps) : QString("-"));
     m_infoRtt->setText(m_online && m_tile.rttMs >= 0 ? QString("%1 ms").arg(m_tile.rttMs) : QString("-"));

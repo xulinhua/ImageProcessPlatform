@@ -7,12 +7,14 @@
  */
 
 #include "AgentWindow.h"
+#include "AgentFileTransferDialog.h"
 #include "AgentService.h"
 #include "ConfirmDialog.h"
 #include "ControlBar.h"
 #include "ProcessCombo.h"
 #include "RemoteCrash.h"
 #include "RemoteFiles.h"
+#include "RemoteLogWindow.h"
 #include "RemoteTheme.h"
 #include "RemoteWidgets.h"
 
@@ -84,6 +86,8 @@ AgentWindow::AgentWindow(QWidget* parent)
     , m_fileRoots(0)
     , m_httpOn(0)
     , m_httpPort(0)
+    , m_pipelineWorkers(0)
+    , m_preferCodec(0)
     , m_httpUrl(0)
     , m_directOn(0)
     , m_directPort(0)
@@ -93,6 +97,7 @@ AgentWindow::AgentWindow(QWidget* parent)
     , m_relayKey(0)
     , m_production(0)
     , m_fpLabel(0)
+    , m_logWin(0)
 {
     // 图标优先用 exe 资源，取不到时用内置线条图标
     setWindowTitle(QString::fromUtf8("被控端 — %1").arg(RemoteFiles::computerName()));
@@ -119,11 +124,15 @@ AgentWindow::AgentWindow(QWidget* parent)
     foot->setSpacing(8);
     QPushButton* svc = RemoteTheme::button(QString::fromUtf8("安装服务"), 0, 0, this);
     svc->setToolTip(QString::fromUtf8("安装 Windows 服务，开机守护会话代理并支持 Ctrl+Alt+Del"));
+    QPushButton* logBtn = RemoteTheme::button(QString::fromUtf8("运行日志"), "list", 0, this);
+    logBtn->setToolTip(QString::fromUtf8("查看抓屏、编码、发送等分步耗时"));
     QPushButton* save = RemoteTheme::button(QString::fromUtf8("保存并重连"), 0, "primary", this);
     foot->addStretch(1);
     foot->addWidget(svc);
+    foot->addWidget(logBtn);
     foot->addWidget(save);
     QObject::connect(svc, &QPushButton::clicked, [this]() { installService(true); });
+    QObject::connect(logBtn, &QPushButton::clicked, [this]() { openRunLog(); });
 
     QVBoxLayout* main = new QVBoxLayout();
     main->setContentsMargins(14, 14, 14, 14);
@@ -216,10 +225,12 @@ QMenuBar* AgentWindow::buildMenus()
     QMenu* file = bar->addMenu(QString::fromUtf8("文件"));
     QAction* save = file->addAction(QString::fromUtf8("保存并重连"));
     QAction* again = file->addAction(RemoteTheme::icon("refresh"), QString::fromUtf8("重新连接"));
+    QAction* transfer = file->addAction(RemoteTheme::icon("folder"), QString::fromUtf8("文件传输…"));
     file->addSeparator();
     QAction* quit = file->addAction(QString::fromUtf8("退出"));
     QObject::connect(save, &QAction::triggered, [this]() { apply(); });
     QObject::connect(again, &QAction::triggered, [this]() { m_session.resume(); });
+    QObject::connect(transfer, &QAction::triggered, [this]() { openFileTransfer(); });
     QObject::connect(quit, &QAction::triggered, [this]() { quitApp(); });
 
     // 共享：切换后同步面板单选并立即重连生效
@@ -266,6 +277,10 @@ QMenuBar* AgentWindow::buildMenus()
     QAction* uninstall = safe->addAction(QString::fromUtf8("卸载 Windows 服务"));
     QObject::connect(install, &QAction::triggered, [this]() { installService(true); });
     QObject::connect(uninstall, &QAction::triggered, [this]() { installService(false); });
+
+    QMenu* view = bar->addMenu(QString::fromUtf8("查看"));
+    QAction* runLog = view->addAction(RemoteTheme::icon("list"), QString::fromUtf8("运行日志…"));
+    QObject::connect(runLog, &QAction::triggered, [this]() { openRunLog(); });
 
     QMenu* help = bar->addMenu(QString::fromUtf8("帮助"));
     QAction* about = help->addAction(RemoteTheme::icon("info"), QString::fromUtf8("关于"));
@@ -631,6 +646,33 @@ QFrame* AgentWindow::buildShare()
     m_httpUrl->setWordWrap(true);
     m_httpUrl->setTextInteractionFlags(Qt::TextSelectableByMouse);
     col->addWidget(m_httpUrl);
+
+    QLabel* pipeLabel = new QLabel(QString::fromUtf8("抓/编并行"), frame);
+    pipeLabel->setProperty("role", "key");
+    m_pipelineWorkers = new QSpinBox(frame);
+    m_pipelineWorkers->setRange(0, 1);
+    m_pipelineWorkers->setValue(1);
+    m_pipelineWorkers->setFixedWidth(80);
+    m_pipelineWorkers->setToolTip(QString::fromUtf8("0=抓屏线程内联编码（最省 CPU）；1=独立编码线程，抓/编/发重叠。JPEG 编码不可重入，不要开多条。改完后保存并重连生效"));
+    col->addWidget(line(pipeLabel, m_pipelineWorkers));
+
+    QLabel* codecLabel = new QLabel(QString::fromUtf8("发送编码"), frame);
+    codecLabel->setProperty("role", "key");
+    m_preferCodec = new QComboBox(frame);
+    m_preferCodec->addItem(QString::fromUtf8("自动(优先 H.264)"), 0);
+    m_preferCodec->addItem(QString::fromUtf8("JPEG"), 1);
+    m_preferCodec->addItem(QString::fromUtf8("H.264"), 2);
+    m_preferCodec->addItem(QString::fromUtf8("原图 BGRA"), 3);
+    m_preferCodec->setFixedWidth(160);
+    m_preferCodec->setToolTip(QString::fromUtf8("本机默认发送方式。中控台会话里指定编码时会覆盖。改完保存即生效，可与 JPEG/H.264/原图对比"));
+    col->addWidget(line(codecLabel, m_preferCodec));
+    QObject::connect(m_preferCodec, QOverload<int>::of(&QComboBox::currentIndexChanged), [this](int) {
+        if (!m_preferCodec) {
+            return;
+        }
+        m_session.setPreferCodec(m_preferCodec->currentData().toInt());
+        saveConfig();
+    });
 
     m_relayOn = new QCheckBox(QString::fromUtf8("中继"), frame);
     m_relayOn->setFixedWidth(120);
@@ -998,6 +1040,18 @@ void AgentWindow::loadConfig()
     if (m_whitelist) {
         m_whitelist->setText(obj.value("whitelist").toString());
     }
+    if (m_pipelineWorkers) {
+        const int workers = obj.value("pipelineWorkers").toInt(1);
+        m_pipelineWorkers->setValue(workers <= 0 ? 0 : 1);
+    }
+    if (m_preferCodec) {
+        const int codec = obj.value("preferCodec").toInt(0);
+        const int idx = m_preferCodec->findData(codec >= 0 && codec <= 3 ? codec : 0);
+        m_preferCodec->blockSignals(true);
+        m_preferCodec->setCurrentIndex(idx >= 0 ? idx : 0);
+        m_preferCodec->blockSignals(false);
+        m_session.setPreferCodec(m_preferCodec->currentData().toInt());
+    }
     applyWhitelist();
     refreshCodeUi();
     if (m_fpLabel) {
@@ -1038,6 +1092,8 @@ void AgentWindow::saveConfig() const
     obj.insert("httpPort", m_httpPort ? m_httpPort->value() : 19180);
     obj.insert("passwordHash", m_passwordHash);
     obj.insert("whitelist", m_whitelist ? m_whitelist->text().trimmed() : QString());
+    obj.insert("pipelineWorkers", m_pipelineWorkers ? m_pipelineWorkers->value() : 0);
+    obj.insert("preferCodec", m_preferCodec ? m_preferCodec->currentData().toInt() : 0);
     QSaveFile file(RemoteFiles::exeFile("controlled.json"));
     if (file.open(QIODevice::WriteOnly)) {
         file.write(QJsonDocument(obj).toJson());
@@ -1126,6 +1182,12 @@ void AgentWindow::apply()
         }
         m_session.setFileRoots(roots);
     }
+    if (m_pipelineWorkers) {
+        m_session.setPipelineWorkers(m_pipelineWorkers->value());
+    }
+    if (m_preferCodec) {
+        m_session.setPreferCodec(m_preferCodec->currentData().toInt());
+    }
     std::string err;
     if (!m_session.start(host.toUtf8().constData(), port, m_title->text().trimmed().toStdWString(),
             m_process->process().toStdWString(), m_desktop->isChecked(),
@@ -1153,6 +1215,20 @@ void AgentWindow::applyLink()
         }
     }
     saveConfig();
+}
+
+void AgentWindow::openRunLog()
+{
+    if (!m_logWin) {
+        m_logWin = new RemoteLogWindow(QString::fromUtf8("被控端 · 运行日志"), this);
+    }
+    m_logWin->showAndRaise();
+}
+
+void AgentWindow::openFileTransfer()
+{
+    AgentFileTransferDialog dialog(&m_session, this);
+    dialog.exec();
 }
 
 void AgentWindow::applyHttp()

@@ -60,11 +60,24 @@ if exist "%APPICON%\app.png" (
 set HALROOT=%~5
 set HALARCH=%~6
 if "%HALARCH%"=="" set HALARCH=x64-win64
-if "%HALROOT%"=="" goto :done
-call :copydll "%HALROOT%\bin\%HALARCH%\halcon.dll" "%DST%"
-call :copydll "%HALROOT%\bin\%HALARCH%\halconcpp.dll" "%DST%"
-call :copydll "%HALROOT%\bin\%HALARCH%\hAcqFile.dll" "%DST%"
-call :copydll "%HALROOT%\bin\%HALARCH%\hAcqDirectFile.dll" "%DST%"
+if not "%HALROOT%"=="" (
+  call :copydll "%HALROOT%\bin\%HALARCH%\halcon.dll" "%DST%"
+  call :copydll "%HALROOT%\bin\%HALARCH%\halconcpp.dll" "%DST%"
+  call :copydll "%HALROOT%\bin\%HALARCH%\hAcqFile.dll" "%DST%"
+  call :copydll "%HALROOT%\bin\%HALARCH%\hAcqDirectFile.dll" "%DST%"
+)
+
+rem PCL / Open3D runtime next to exe (from third_party)
+set ROOT=%~dp0
+set PCLBIN=%ROOT%third_party\PCL\bin
+set O3DBIN=%ROOT%third_party\Open3D\bin
+set PCLS=
+if /I "%CONF%"=="Debug" set PCLS=d
+for %%M in (common filters sample_consensus segmentation registration search kdtree octree features ml) do (
+  call :copydll "%PCLBIN%\pcl_%%M%PCLS%.dll" "%DST%"
+)
+call :copydll "%O3DBIN%\Open3D.dll" "%DST%"
+call :copydll "%O3DBIN%\tbb12.dll" "%DST%"
 
 :done
 endlocal

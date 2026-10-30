@@ -14,6 +14,7 @@
 #include "RemoteWidgets.h"
 
 #include <QCheckBox>
+#include <QComboBox>
 #include <QDesktopServices>
 #include <QDir>
 #include <QFileDialog>
@@ -263,17 +264,6 @@ QWidget* SettingsDialog::buildNetwork(bool listening)
     udpPort->setFixedWidth(90);
     udpPort->setToolTip(QString::fromUtf8("发现端口固定，与被控端一致"));
     addRow(found, QString::fromUtf8("局域网发现"), line(m_discovery, udp, udpPort));
-    QSlider* cap = new QSlider(Qt::Horizontal, body);
-    cap->setRange(1, 10);
-    cap->setValue(4);
-    cap->setFixedWidth(220);
-    QSpinBox* capValue = new QSpinBox(body);
-    capValue->setRange(1, 10);
-    capValue->setValue(4);
-    capValue->setFixedWidth(70);
-    QWidget* capRow = line(cap, capValue, new QLabel("Mbps", body));
-    RemoteTheme::markLater(capRow, QString::fromUtf8("带宽上限在第三期（子码流）"));
-    addRow(found, QString::fromUtf8("监控墙带宽上限"), capRow);
     col->addStretch(1);
     return body;
 }
@@ -309,11 +299,32 @@ QWidget* SettingsDialog::buildPicture()
             m_shotDir->setText(QDir::toNativeSeparators(dir));
         }
     });
+    QGridLayout* picture = group(col, QString::fromUtf8("默认画面"));
+    m_defaultQuality = new QComboBox(body);
+    m_defaultQuality->addItem(QString::fromUtf8("流畅"));
+    m_defaultQuality->addItem(QString::fromUtf8("均衡"));
+    m_defaultQuality->addItem(QString::fromUtf8("清晰"));
+    m_defaultQuality->setFixedWidth(120);
+    m_defaultFps = new QSpinBox(body);
+    m_defaultFps->setRange(RemoteConst::kMaxFpsMin, RemoteConst::kMaxFpsMax);
+    m_defaultFps->setSuffix(QString::fromUtf8(" fps"));
+    m_defaultFps->setFixedWidth(100);
+    m_adaptive = new SwitchButton(body);
+    addRow(picture, QString::fromUtf8("默认画质"), line(m_defaultQuality));
+    addRow(picture, QString::fromUtf8("默认帧率上限"), line(m_defaultFps,
+        new QLabel(QString::fromUtf8("新打开的会话用这个值，会话里还能再改"), body)));
+    addRow(picture, QString::fromUtf8("网络差时自动调整"), line(m_adaptive,
+        new QLabel(QString::fromUtf8("只在延迟超过 800 ms 时略降分辨率，帧率不低于 10"), body)));
     QGridLayout* codec = group(col, QString::fromUtf8("编码"));
-    QLabel* now = new QLabel(QString::fromUtf8("JPEG · 会话内可调画质与帧率上限（默认 %1 fps）")
-                                 .arg(RemoteConst::kMaxFpsDefault), body);
-    TagLabel* later = new TagLabel(QString::fromUtf8("H.264 在第三期"), "gray", body);
-    addRow(codec, QString::fromUtf8("当前"), line(now, later));
+    m_streamCodec = new QComboBox(body);
+    m_streamCodec->addItem(QString::fromUtf8("沿用被控端"), 0);
+    m_streamCodec->addItem(QString::fromUtf8("JPEG"), 1);
+    m_streamCodec->addItem(QString::fromUtf8("H.264"), 2);
+    m_streamCodec->addItem(QString::fromUtf8("原图 BGRA"), 3);
+    m_streamCodec->setFixedWidth(140);
+    m_streamCodec->setToolTip(QString::fromUtf8("新会话默认发送方式。会话工具条可随时改，方便对比带宽与画质"));
+    addRow(codec, QString::fromUtf8("默认发送"), line(m_streamCodec,
+        new QLabel(QString::fromUtf8("原图带宽很大；H.264 需 openh264.dll 或系统编码器"), body)));
     col->addStretch(1);
     return body;
 }
@@ -353,7 +364,14 @@ QWidget* SettingsDialog::buildRecord()
     m_recordDays->setSuffix(QString::fromUtf8(" 天"));
     m_recordDays->setFixedWidth(90);
     addRow(rec, QString::fromUtf8("取得操作时自动录制"), line(m_autoRecord));
-    addRow(rec, QString::fromUtf8("保存目录"), line(m_recordDir));
+    QPushButton* browseRecord = RemoteTheme::button(QString::fromUtf8("浏览…"), "folder", 0, body);
+    addRow(rec, QString::fromUtf8("保存目录"), line(m_recordDir, browseRecord));
+    QObject::connect(browseRecord, &QPushButton::clicked, [this]() {
+        const QString dir = QFileDialog::getExistingDirectory(this, QString::fromUtf8("录屏目录"), m_recordDir->text());
+        if (!dir.isEmpty()) {
+            m_recordDir->setText(QDir::toNativeSeparators(dir));
+        }
+    });
     addRow(rec, QString::fromUtf8("保留"), line(m_recordDays));
     col->addStretch(1);
     return body;
@@ -389,6 +407,13 @@ void SettingsDialog::load(const ControlConfig& config)
     m_port->setValue(config.port);
     m_discovery->setChecked(config.discovery);
     m_fit->setChecked(config.fitDefault);
+    m_defaultQuality->setCurrentIndex(config.defaultQuality);
+    m_defaultFps->setValue(config.defaultFps);
+    {
+        const int idx = m_streamCodec->findData(config.streamCodec);
+        m_streamCodec->setCurrentIndex(idx >= 0 ? idx : 0);
+    }
+    m_adaptive->setChecked(config.adaptive);
     m_rows->setValue(config.rows);
     m_cols->setValue(config.cols);
     m_tour->setValue(config.tourSeconds);
@@ -414,6 +439,10 @@ void SettingsDialog::store()
     m_config->port = m_port->value();
     m_config->discovery = m_discovery->isChecked();
     m_config->fitDefault = m_fit->isChecked();
+    m_config->defaultQuality = m_defaultQuality->currentIndex();
+    m_config->defaultFps = m_defaultFps->value();
+    m_config->streamCodec = m_streamCodec->currentData().toInt();
+    m_config->adaptive = m_adaptive->isChecked();
     m_config->rows = m_rows->value();
     m_config->cols = m_cols->value();
     m_config->tourSeconds = m_tour->value();

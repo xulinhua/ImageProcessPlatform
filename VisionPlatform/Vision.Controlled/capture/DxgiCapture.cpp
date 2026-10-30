@@ -28,6 +28,9 @@ struct DxgiCapture::Impl {
         : device(0)
         , context(0)
         , dup(0)
+        , stage(0)
+        , stageW(0)
+        , stageH(0)
         , monitor(-1)
         , width(0)
         , height(0)
@@ -39,6 +42,9 @@ struct DxgiCapture::Impl {
     ID3D11Device* device;
     ID3D11DeviceContext* context;
     IDXGIOutputDuplication* dup;
+    ID3D11Texture2D* stage;             ///< 复用的 CPU 可读暂存纹理；每帧新建会把提交内存顶到近 GB
+    int stageW;
+    int stageH;
     int monitor;
     int width;
     int height;
@@ -47,6 +53,20 @@ struct DxgiCapture::Impl {
     std::vector<unsigned char> held;
     int heldW;
     int heldH;
+
+    /** @brief 把 bgra 收成与 held 同尺寸，再拷贝，避免 assign 反复扩容 */
+    void copyHeldTo(CommBytes* bgra) const
+    {
+        if (!bgra) {
+            return;
+        }
+        const size_t bytes = held.size();
+        if (bgra->size() != bytes) {
+            bgra->assign(held.begin(), held.end());
+        } else if (bytes > 0) {
+            std::memcpy(bgra->data(), held.data(), bytes);
+        }
+    }
 
     /** @brief 整帧拷贝。脏矩形不能当底图，首帧是黑的时没再脏到的地方会一直黑 */
     bool takeFrame(const unsigned char* src, int pitch, int w, int h, bool* changed, CommBytes* bgra)
@@ -65,10 +85,12 @@ struct DxgiCapture::Impl {
         }
         if (!changedPx) {
             *changed = false;
-            bgra->assign(held.begin(), held.end());
+            copyHeldTo(bgra);
             return true;
         }
-        held.resize(bytes);
+        if (held.size() != bytes) {
+            held.resize(bytes);
+        }
         for (int y = 0; y < h; ++y) {
             std::memcpy(held.data() + static_cast<size_t>(y) * rowBytes,
                 src + static_cast<size_t>(y) * static_cast<size_t>(pitch), rowBytes);
@@ -76,8 +98,18 @@ struct DxgiCapture::Impl {
         heldW = w;
         heldH = h;
         *changed = true;
-        bgra->assign(held.begin(), held.end());
+        copyHeldTo(bgra);
         return true;
+    }
+
+    void releaseStage()
+    {
+        if (stage) {
+            stage->Release();
+            stage = 0;
+        }
+        stageW = 0;
+        stageH = 0;
     }
 
     void releaseDup()
@@ -90,6 +122,7 @@ struct DxgiCapture::Impl {
     void releaseAll()
     {
         releaseDup();
+        releaseStage();
         if (context) {
             context->Release();
             context = 0;
@@ -100,8 +133,31 @@ struct DxgiCapture::Impl {
         }
         monitor = -1;
         held.clear();
+        held.shrink_to_fit();
         heldW = 0;
         heldH = 0;
+    }
+
+    /** @brief 按分辨率复用 staging，避免驱动堆里堆积未释放的纹理 */
+    bool ensureStage(const D3D11_TEXTURE2D_DESC& srcDesc)
+    {
+        const int w = static_cast<int>(srcDesc.Width);
+        const int h = static_cast<int>(srcDesc.Height);
+        if (stage && stageW == w && stageH == h) {
+            return true;
+        }
+        releaseStage();
+        D3D11_TEXTURE2D_DESC td = srcDesc;
+        td.BindFlags = 0;
+        td.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+        td.Usage = D3D11_USAGE_STAGING;
+        td.MiscFlags = 0;
+        if (device->CreateTexture2D(&td, 0, &stage) != S_OK || !stage) {
+            return false;
+        }
+        stageW = w;
+        stageH = h;
+        return true;
     }
 };
 
@@ -223,21 +279,15 @@ bool DxgiCapture::grab(int monitor, CommBytes* bgra, int* width, int* height, in
     }
     D3D11_TEXTURE2D_DESC td;
     tex->GetDesc(&td);
-    td.BindFlags = 0;
-    td.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
-    td.Usage = D3D11_USAGE_STAGING;
-    td.MiscFlags = 0;
-    ID3D11Texture2D* stage = 0;
-    if (m_impl->device->CreateTexture2D(&td, 0, &stage) != S_OK) {
+    if (!m_impl->ensureStage(td)) {
         tex->Release();
         m_impl->dup->ReleaseFrame();
         return false;
     }
-    m_impl->context->CopyResource(stage, tex);
+    m_impl->context->CopyResource(m_impl->stage, tex);
     tex->Release();
     D3D11_MAPPED_SUBRESOURCE map;
-    if (m_impl->context->Map(stage, 0, D3D11_MAP_READ, 0, &map) != S_OK) {
-        stage->Release();
+    if (m_impl->context->Map(m_impl->stage, 0, D3D11_MAP_READ, 0, &map) != S_OK) {
         m_impl->dup->ReleaseFrame();
         return false;
     }
@@ -245,8 +295,7 @@ bool DxgiCapture::grab(int monitor, CommBytes* bgra, int* width, int* height, in
     const int h = static_cast<int>(td.Height);
     bool frameChanged = true;
     m_impl->takeFrame(static_cast<const unsigned char*>(map.pData), static_cast<int>(map.RowPitch), w, h, &frameChanged, bgra);
-    m_impl->context->Unmap(stage, 0);
-    stage->Release();
+    m_impl->context->Unmap(m_impl->stage, 0);
     m_impl->dup->ReleaseFrame();
     m_impl->width = w;
     m_impl->height = h;

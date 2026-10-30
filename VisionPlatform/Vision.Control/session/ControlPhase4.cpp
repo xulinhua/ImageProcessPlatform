@@ -43,7 +43,7 @@ void ControlSession::post(const std::string& peerId, const CommBytes& bytes)
     enqueue(&m_machines[static_cast<size_t>(index)], bytes);
 }
 
-void ControlSession::armDownload(const std::string& peerId, uint32_t id, const std::string& localPath)
+void ControlSession::armDownload(const std::string& peerId, uint32_t id, const std::string& localPath, uint64_t total)
 {
     std::lock_guard<std::mutex> lock(m_mu);
     const int index = indexOfPeer(peerId);
@@ -61,7 +61,7 @@ void ControlSession::armDownload(const std::string& peerId, uint32_t id, const s
         size.HighPart = have.nFileSizeHigh;
         machine.tile.fileGot = size.QuadPart;
     }
-    machine.tile.fileBytes = 0;
+    machine.tile.fileBytes = total;
     machine.tile.fileNote = "正在下载";
 }
 
@@ -109,6 +109,11 @@ std::string ControlSession::armUpload(const std::string& peerId, uint32_t id, co
         return std::string();
     }
     Machine& machine = m_machines[static_cast<size_t>(index)];
+    if (sha.empty()) {
+        machine.tile.fileNote = "打不开本地文件";
+        machine.tile.fileSeq += 1;
+        return std::string();
+    }
     machine.upOn = true;
     machine.upId = id;
     machine.upOff = 0;
@@ -189,6 +194,91 @@ bool ControlSession::takePhase4(Machine* machine, const Frame::Packet& packet)
     if (packet.channel != Frame::ChFile) {
         return false;
     }
+    // 被控端发起的列目录 / 建目录 / 打开文件：中控台当服务端
+    if (packet.type == Frame::TypeListDir) {
+        std::string path;
+        if (Messages::unpackListDir(packet.payload, &path)) {
+            std::string err;
+            enqueue(machine, Messages::packDirEntries(listLocalDirectory(widePath(path)), &err));
+        }
+        return true;
+    }
+    if (packet.type == Frame::TypeMkDir) {
+        uint32_t id = 0;
+        std::string path;
+        if (Messages::unpackMkDir(packet.payload, &id, &path)) {
+            const bool ok = makeLocalDirectory(widePath(path));
+            std::string err;
+            enqueue(machine, Messages::packFileDone(id, ok ? 1 : 0, ok ? "完成" : "不能建目录", &err));
+        }
+        return true;
+    }
+    if (packet.type == Frame::TypeFileOpen) {
+        uint32_t id = 0;
+        uint8_t pull = 0;
+        std::string path;
+        uint64_t size = 0;
+        std::string sha;
+        uint64_t resume = 0;
+        if (!Messages::unpackFileOpen(packet.payload, &id, &pull, &path, &size, &sha, &resume)) {
+            return true;
+        }
+        std::string err;
+        if (pull == 0) {
+            // 被控端推文件到中控台
+            const std::wstring wide = widePath(path);
+            if (wide.empty()) {
+                enqueue(machine, Messages::packFileDone(id, 0, "路径不允许", &err));
+                return true;
+            }
+            const size_t slash = wide.find_last_of(L'\\');
+            if (slash != std::wstring::npos && slash > 2) {
+                makeLocalDirectory(wide.substr(0, slash));
+            }
+            machine->downId = id;
+            machine->downPath = path;
+            machine->tile.fileGot = resume;
+            machine->tile.fileBytes = size;
+            machine->tile.fileNote = "正在接收被控端文件";
+            FILE* file = _wfopen(wide.c_str(), resume == 0 ? L"wb" : L"r+b");
+            if (!file) {
+                enqueue(machine, Messages::packFileDone(id, 0, "不能写入", &err));
+                machine->downPath.clear();
+                return true;
+            }
+            fclose(file);
+            enqueue(machine, Messages::packFileAck(id, resume, &err));
+        } else {
+            // 被控端要从中控台拉文件
+            const std::string shaLocal = sha256File(widePath(path));
+            if (shaLocal.empty()) {
+                enqueue(machine, Messages::packFileDone(id, 0, "打不开本地文件", &err));
+                return true;
+            }
+            machine->upOn = true;
+            machine->upId = id;
+            machine->upOff = 0;
+            machine->upAcked = static_cast<uint32_t>(resume);
+            machine->upNext = static_cast<uint32_t>(resume);
+            machine->upSha = shaLocal;
+            machine->upReady = true;
+            machine->upFinished = false;
+            machine->upLocal = path;
+            machine->upRemote = path;
+            WIN32_FILE_ATTRIBUTE_DATA info;
+            machine->upSize = 0;
+            if (GetFileAttributesExW(widePath(path).c_str(), GetFileExInfoStandard, &info)) {
+                ULARGE_INTEGER u;
+                u.LowPart = info.nFileSizeLow;
+                u.HighPart = info.nFileSizeHigh;
+                machine->upSize = u.QuadPart;
+            }
+            machine->tile.fileGot = resume;
+            machine->tile.fileBytes = machine->upSize;
+            machine->tile.fileNote = "正在发给被控端";
+        }
+        return true;
+    }
     if (packet.type == Frame::TypeDirEntries) {
         std::string listing;
         if (Messages::unpackDirEntries(packet.payload, &listing)) {
@@ -252,6 +342,7 @@ bool ControlSession::takePhase4(Machine* machine, const Frame::Packet& packet)
                 }
             }
             machine->tile.fileNote = shown;
+            machine->tile.fileSeq += 1;
             machine->downPath.clear();
             machine->upOn = false;
         }
@@ -306,6 +397,7 @@ void ControlSession::pumpUpload(const std::string& peerId)
         if (index >= 0) {
             m_machines[static_cast<size_t>(index)].upOn = false;
             m_machines[static_cast<size_t>(index)].tile.fileNote = "打不开本地文件";
+            m_machines[static_cast<size_t>(index)].tile.fileSeq += 1;
         }
         return;
     }
@@ -361,6 +453,91 @@ void ControlSession::fillStation(Tile* tile, const std::string& text)
         tile->station = text.substr(at);
     }
     tile->stationNg = text.find("NG") != std::string::npos;
+}
+
+std::string ControlSession::listLocalDirectory(const std::wstring& path) const
+{
+    std::string out;
+    if (path.empty()) {
+        const DWORD mask = GetLogicalDrives();
+        for (int i = 0; i < 26; ++i) {
+            if ((mask & (1u << i)) == 0) {
+                continue;
+            }
+            wchar_t root[4] = { static_cast<wchar_t>(L'A' + i), L':', L'\\', 0 };
+            out += "D\t0\t";
+            char utf8[8];
+            WideCharToMultiByte(CP_UTF8, 0, root, -1, utf8, 8, 0, 0);
+            out += utf8;
+            out += "\t\n";
+        }
+        return out;
+    }
+    std::wstring pattern = path;
+    if (!pattern.empty() && pattern.back() != L'\\') {
+        pattern += L'\\';
+    }
+    pattern += L'*';
+    WIN32_FIND_DATAW data;
+    HANDLE found = FindFirstFileW(pattern.c_str(), &data);
+    if (found == INVALID_HANDLE_VALUE) {
+        return std::string("E\t0\t打不开目录\n");
+    }
+    do {
+        if (wcscmp(data.cFileName, L".") == 0 || wcscmp(data.cFileName, L"..") == 0) {
+            continue;
+        }
+        const bool dir = (data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
+        const bool link = (data.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT) != 0;
+        ULARGE_INTEGER size;
+        size.LowPart = data.nFileSizeLow;
+        size.HighPart = data.nFileSizeHigh;
+        out += link ? "R\t0\t" : (dir ? "D\t0\t" : "F\t");
+        if (!dir) {
+            out += std::to_string(size.QuadPart);
+            out += "\t";
+        }
+        char name[520];
+        WideCharToMultiByte(CP_UTF8, 0, data.cFileName, -1, name, 520, 0, 0);
+        out += name;
+        out += "\t";
+        SYSTEMTIME utc;
+        SYSTEMTIME local;
+        if (FileTimeToSystemTime(&data.ftLastWriteTime, &utc)
+            && SystemTimeToTzSpecificLocalTime(0, &utc, &local)) {
+            char stamp[32];
+            sprintf_s(stamp, "%04u-%02u-%02u %02u:%02u",
+                local.wYear, local.wMonth, local.wDay, local.wHour, local.wMinute);
+            out += stamp;
+        }
+        out += "\n";
+        if (out.size() > 200000) {
+            out += "E\t0\t还有更多，没有列完\t\n";
+            break;
+        }
+    } while (FindNextFileW(found, &data));
+    FindClose(found);
+    return out;
+}
+
+bool ControlSession::makeLocalDirectory(const std::wstring& path) const
+{
+    if (path.empty()) {
+        return false;
+    }
+    std::wstring full = path;
+    if (!full.empty() && full.back() != L'\\') {
+        full.push_back(L'\\');
+    }
+    for (size_t i = 0; i < full.size(); ++i) {
+        if (full[i] != L'\\' || i < 3) {
+            continue;
+        }
+        const std::wstring part = full.substr(0, i);
+        CreateDirectoryW(part.c_str(), 0);
+    }
+    return GetFileAttributesW(path.c_str()) != INVALID_FILE_ATTRIBUTES
+        && (GetFileAttributesW(path.c_str()) & FILE_ATTRIBUTE_DIRECTORY) != 0;
 }
 
 }

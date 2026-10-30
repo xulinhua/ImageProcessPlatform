@@ -1,0 +1,26 @@
+// ----------------------------------------------------------------------------
+// -                        Open3D: www.open3d.org                            -
+// ----------------------------------------------------------------------------
+// Copyright (c) 2018-2026 www.open3d.org
+// SPDX-License-Identifier: MIT
+// ----------------------------------------------------------------------------
+//
+#pragma once
+
+#include "torch/script.h"
+
+template <class T>
+torch::Tensor ReduceSubarraysSumCPU(const torch::Tensor& values,
+                                    const torch::Tensor& row_splits);
+
+#ifdef BUILD_CUDA_MODULE
+template <class T>
+torch::Tensor ReduceSubarraysSumCUDA(const torch::Tensor& values,
+                                     const torch::Tensor& row_splits);
+#endif
+
+#ifdef BUILD_SYCL_MODULE
+template <class T>
+torch::Tensor ReduceSubarraysSumSYCL(const torch::Tensor& values,
+                                     const torch::Tensor& row_splits);
+#endif

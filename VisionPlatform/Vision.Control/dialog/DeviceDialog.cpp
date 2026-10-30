@@ -423,7 +423,7 @@ void DeviceDialog::applyPicture()
     cfg.monitor = static_cast<uint8_t>(m_monitor->currentIndex() < 0 ? 0 : m_monitor->currentIndex());
     cfg.title = m_title->text().trimmed().toUtf8().constData();
     cfg.process = m_process->text().trimmed().toUtf8().constData();
-    cfg.maxFps = static_cast<uint8_t>(RemoteConst::kMaxFpsDefault);
+    cfg.maxFps = static_cast<uint16_t>(RemoteConst::kMaxFpsDefault);
     cfg.jpegQuality = static_cast<uint8_t>(RemoteConst::kJpegQuality);
     cfg.longEdge = static_cast<uint16_t>(RemoteConst::kLongEdge);
     if (cfg.share != 1 && cfg.title.empty() && cfg.process.empty()) {

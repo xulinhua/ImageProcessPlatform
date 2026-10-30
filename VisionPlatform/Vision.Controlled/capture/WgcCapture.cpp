@@ -31,6 +31,9 @@ struct WgcCapture::Impl {
     Impl()
         : device(0)
         , context(0)
+        , stage(0)
+        , stageW(0)
+        , stageH(0)
         , hwnd(0)
         , width(0)
         , height(0)
@@ -46,12 +49,23 @@ struct WgcCapture::Impl {
     ~Impl()
     {
         stop();
+        releaseStage();
         if (context) {
             context->Release();
         }
         if (device) {
             device->Release();
         }
+    }
+
+    void releaseStage()
+    {
+        if (stage) {
+            stage->Release();
+            stage = 0;
+        }
+        stageW = 0;
+        stageH = 0;
     }
 
     void stop()
@@ -70,6 +84,7 @@ struct WgcCapture::Impl {
         item = nullptr;
         hwnd = 0;
         have = false;
+        releaseStage();
     }
 
     bool ensureDevice()
@@ -155,22 +170,26 @@ struct WgcCapture::Impl {
             }
             D3D11_TEXTURE2D_DESC desc;
             tex->GetDesc(&desc);
-            desc.BindFlags = 0;
-            desc.MiscFlags = 0;
-            desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
-            desc.Usage = D3D11_USAGE_STAGING;
-            ID3D11Texture2D* stage = 0;
-            if (device->CreateTexture2D(&desc, 0, &stage) != S_OK) {
-                return;
+            const int w = static_cast<int>(desc.Width);
+            const int h = static_cast<int>(desc.Height);
+            if (!stage || stageW != w || stageH != h) {
+                releaseStage();
+                D3D11_TEXTURE2D_DESC td = desc;
+                td.BindFlags = 0;
+                td.MiscFlags = 0;
+                td.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+                td.Usage = D3D11_USAGE_STAGING;
+                if (device->CreateTexture2D(&td, 0, &stage) != S_OK || !stage) {
+                    return;
+                }
+                stageW = w;
+                stageH = h;
             }
             context->CopyResource(stage, tex.get());
             D3D11_MAPPED_SUBRESOURCE map;
             if (context->Map(stage, 0, D3D11_MAP_READ, 0, &map) != S_OK) {
-                stage->Release();
                 return;
             }
-            const int w = static_cast<int>(desc.Width);
-            const int h = static_cast<int>(desc.Height);
             CommBytes copy(static_cast<size_t>(w) * static_cast<size_t>(h) * 4);
             for (int y = 0; y < h; ++y) {
                 memcpy(copy.data() + static_cast<size_t>(y) * static_cast<size_t>(w) * 4,
@@ -178,7 +197,6 @@ struct WgcCapture::Impl {
                     static_cast<size_t>(w) * 4);
             }
             context->Unmap(stage, 0);
-            stage->Release();
             std::lock_guard<std::mutex> lock(mu);
             latest.swap(copy);
             width = w;
@@ -190,6 +208,9 @@ struct WgcCapture::Impl {
 
     ID3D11Device* device;
     ID3D11DeviceContext* context;
+    ID3D11Texture2D* stage;     ///< 复用 staging，避免每帧 CreateTexture2D
+    int stageW;
+    int stageH;
     winrt::Windows::Graphics::DirectX::Direct3D11::IDirect3DDevice winrtDevice;
     winrt::Windows::Graphics::Capture::GraphicsCaptureItem item;
     winrt::Windows::Graphics::Capture::Direct3D11CaptureFramePool pool;

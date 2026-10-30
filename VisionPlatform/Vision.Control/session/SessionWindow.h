@@ -72,6 +72,8 @@ public:
     void setOnBack(const std::function<void()>& back);
     /** @brief 窗口关闭时的回调，参数为设备 key */
     void setOnClosed(const std::function<void(const QString&)>& closed);
+    /** @brief 用中控台设置里的默认画质和帧率，并下发 */
+    void usePictureDefaults();
 
     /************************************************** 格式化 **************************************************/
     /** @brief 码率文字：>= 1000 kbps 显示 Mbps，保留一位小数 */
@@ -115,6 +117,7 @@ private:
     ConfigMsg makeConfig() const;
     /** @brief 画质档或帧率上限变化时下发配置 */
     void pushPictureConfig(const QString& reason);
+    /** @brief 用中控台设置里的默认画质和帧率，并下发 */
     /** @brief 画质档位 → JPEG 质量、长边；帧率上限取自 m_maxFps */
     void fillQuality(ConfigMsg* cfg) const;
     /** @brief 在线时切换操作权：持有则释放，否则申请 */
@@ -135,8 +138,6 @@ private:
     void stopRecord();
     /** @brief 往当前录像追加一帧。优先 MP4，失败时写 AVI */
     void appendRecord(const CommBytes& jpeg, uint32_t width, uint32_t height);
-    /** @brief 目标已存在时问覆盖、跳过或改名。跳过返回空 */
-    QString resolveConflict(const QString& path, bool exists);
     /** @brief 把对方剪贴板里的文件逐个拉到临时目录，齐了再放到本机剪贴板 */
     void pullClipFiles(const QString& listing);
     /** @brief 上一个剪贴板文件传完后发下一个 */
@@ -180,7 +181,8 @@ private:
     SegmentBar* m_monitors;         ///< 显示器选择，末项「全部」暂不可用
     SegmentBar* m_fitSeg;           ///< 缩放方式：0 适应，1 原始 1:1
     QComboBox* m_quality;           ///< 画质档位：流畅 / 均衡 / 清晰
-    QSpinBox* m_maxFps;             ///< 帧率上限 5–30
+    QComboBox* m_codec;             ///< 发送编码：沿用 / JPEG / H.264 / 原图
+    QSpinBox* m_maxFps;             ///< 帧率上限 5–500
     QPushButton* m_win;             ///< 发送 Win 键
     QPushButton* m_altTab;          ///< 发送 Alt+Tab
     QPushButton* m_chat;            ///< 显示/隐藏右侧面板

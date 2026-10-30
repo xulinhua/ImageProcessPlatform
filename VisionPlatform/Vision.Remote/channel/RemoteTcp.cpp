@@ -94,11 +94,14 @@ public:
     }
 };
 
-/** @brief 关 Nagle，小报文（输入、心跳）立即发出 */
+/** @brief 关 Nagle，小报文（输入、心跳）立即发出；放大收发缓冲减轻画面突发反压 */
 void setNoDelay(SOCKET sock)
 {
     BOOL on = TRUE;
     setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, reinterpret_cast<const char*>(&on), sizeof(on));
+    int buf = 1024 * 1024;
+    setsockopt(sock, SOL_SOCKET, SO_SNDBUF, reinterpret_cast<const char*>(&buf), sizeof(buf));
+    setsockopt(sock, SOL_SOCKET, SO_RCVBUF, reinterpret_cast<const char*>(&buf), sizeof(buf));
 }
 
 /** @brief 循环 send 直到发完；timeoutMs<=0 按 3000 设发送超时，出错返回 false */
@@ -382,14 +385,52 @@ CommBytes RemoteTcpClient::read(const std::string& peerId, int maxBytes, int tim
 {
     (void)peerId;
     CommBytes out;
-    std::lock_guard<std::mutex> lock(m_impl->mu);
-    SOCKET sock = m_impl->sock;
-    TlsPipe* tls = m_impl->tls;
-    if (sock == INVALID_SOCKET || maxBytes <= 0) {
+    if (maxBytes <= 0) {
         return out;
     }
+    // 先在锁内看有没有已解密缓冲；没有则锁外 poll，避免把 write 堵满一个收包超时（日志里写出≈200ms）
+    SOCKET sock = INVALID_SOCKET;
+    {
+        std::lock_guard<std::mutex> lock(m_impl->mu);
+        sock = m_impl->sock;
+        TlsPipe* tls = m_impl->tls;
+        if (sock == INVALID_SOCKET) {
+            return out;
+        }
+        if (tls) {
+            std::string local;
+            out = tls->read(maxBytes, 1, &local);
+            if (!out.empty()) {
+                return out;
+            }
+            if (!local.empty() && local != "超时") {
+                if (err) {
+                    *err = local;
+                }
+                delete m_impl->tls;
+                m_impl->tls = nullptr;
+                closesocket(m_impl->sock);
+                m_impl->sock = INVALID_SOCKET;
+                m_impl->peer = CommPeer();
+                return out;
+            }
+        }
+    }
+    const int wait = timeoutMs <= 0 ? 200 : timeoutMs;
+    if (wait > 1) {
+        WSAPOLLFD fd;
+        fd.fd = sock;
+        fd.events = POLLIN;
+        fd.revents = 0;
+        WSAPoll(&fd, 1, wait);
+    }
+    std::lock_guard<std::mutex> lock(m_impl->mu);
+    if (m_impl->sock != sock) {
+        return CommBytes();
+    }
+    TlsPipe* tls = m_impl->tls;
     if (tls) {
-        out = tls->read(maxBytes, timeoutMs, err);
+        out = tls->read(maxBytes, 1, err);
         if (err && !err->empty() && *err != "超时") {
             delete m_impl->tls;
             m_impl->tls = nullptr;
@@ -399,7 +440,7 @@ CommBytes RemoteTcpClient::read(const std::string& peerId, int maxBytes, int tim
         }
         return out;
     }
-    DWORD tv = timeoutMs <= 0 ? 200 : static_cast<DWORD>(timeoutMs);
+    DWORD tv = 1;
     setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<const char*>(&tv), sizeof(tv));
     out.resize(static_cast<size_t>(maxBytes));
     const int n = recv(sock, reinterpret_cast<char*>(&out[0]), maxBytes, 0);

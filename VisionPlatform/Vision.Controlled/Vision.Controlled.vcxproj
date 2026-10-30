@@ -70,7 +70,7 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>$(ProjectDir)ui;$(ProjectDir)security;$(ProjectDir)service;$(ProjectDir)watch;$(ProjectDir)capture;$(ProjectDir)input;$(ProjectDir)session;$(SolutionDir)Vision.RemoteUi\theme;$(SolutionDir)Vision.RemoteUi\widgets;$(SolutionDir)Vision.RemoteUi\common;$(SolutionDir)Vision.Remote\protocol;$(SolutionDir)Vision.Remote\channel;$(SolutionDir)Vision.Remote\security;$(SolutionDir)Vision.Remote\codec;$(SolutionDir)VisionCommon\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)ui;$(ProjectDir)dialog;$(ProjectDir)security;$(ProjectDir)service;$(ProjectDir)watch;$(ProjectDir)capture;$(ProjectDir)input;$(ProjectDir)session;$(SolutionDir)Vision.RemoteUi\theme;$(SolutionDir)Vision.RemoteUi\widgets;$(SolutionDir)Vision.RemoteUi\common;$(SolutionDir)Vision.Remote\protocol;$(SolutionDir)Vision.Remote\channel;$(SolutionDir)Vision.Remote\security;$(SolutionDir)Vision.Remote\codec;$(SolutionDir)VisionCommon\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -98,6 +98,7 @@
     <ClCompile Include="app\main.cpp" />
     <ClCompile Include="ui\AgentWindow.cpp" />
     <ClCompile Include="ui\ProcessCombo.cpp" />
+    <ClCompile Include="dialog\AgentFileTransferDialog.cpp" />
     <ClCompile Include="security\ConfirmDialog.cpp" />
     <ClCompile Include="security\ControlBar.cpp" />
     <ClCompile Include="watch\WindowWatch.cpp" />

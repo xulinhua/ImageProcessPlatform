@@ -40,6 +40,7 @@ namespace Vision {
 class ConfirmDialog;
 class ControlBar;
 class ProcessCombo;
+class RemoteLogWindow;
 class StatusDot;
 class TagLabel;
 
@@ -115,6 +116,10 @@ private:
     void applyHttp();
     /** @brief 直连、中继、生产保护 */
     void applyLink();
+    /** @brief 弹出运行日志窗口（抓屏/编码/发送耗时） */
+    void openRunLog();
+    /** @brief 弹出与中控台互传的双栏文件窗 */
+    void openFileTransfer();
 
     /************************************************** 托盘 **************************************************/
     /** @brief 建托盘图标与菜单（打开界面、重新连接、退出），单击或双击打开界面 */
@@ -181,6 +186,8 @@ private:
     QLineEdit* m_relayKey;              ///< 中继口令
     QCheckBox* m_production;            ///< 生产保护，操作必须现场确认
     QSpinBox* m_httpPort;               ///< HTTP 端口
+    QSpinBox* m_pipelineWorkers;        ///< 抓/编并行：0 内联，1–2 独立编码线程
+    QComboBox* m_preferCodec;           ///< 发送编码：自动 / JPEG / H.264 / 原图
     QLabel* m_httpUrl;                  ///< 浏览器地址
     HttpPreview m_http;                 ///< 局域网查看服务
     QLabel* m_codeLabel;                ///< 一次性验证码大号显示
@@ -205,6 +212,7 @@ private:
     QStringList m_trusted;              ///< 信任的控制端证书指纹（兼容旧配置里的显示名）
     uint64_t m_shownSeq;                ///< 已弹出过确认框的申请序号，避免同一申请重复弹
     QString m_passwordHash;             ///< 无人值守密码 salt:hash，空表示未设置
+    RemoteLogWindow* m_logWin;          ///< 运行日志窗，按钮打开，关窗只隐藏
 };
 
 }

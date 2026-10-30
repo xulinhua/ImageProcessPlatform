@@ -196,11 +196,22 @@ std::vector<PortDesc> defaultPortsForType(ToolType type)
         p.push_back(PortDesc(PortDir::Out, PortData::Tuple));
         p.push_back(PortDesc(PortDir::Out, PortData::Logic));
         break;
-    case ToolType::Align3D:
+    case ToolType::Locate3D:
         p.push_back(PortDesc(PortDir::In, PortData::Cloud));
         p.push_back(PortDesc(PortDir::Out, PortData::Pose3));
         p.push_back(PortDesc(PortDir::Out, PortData::Tuple));
         p.push_back(PortDesc(PortDir::Out, PortData::Logic));
+        break;
+    case ToolType::Detect3D:
+        p.push_back(PortDesc(PortDir::In, PortData::Cloud));
+        p.push_back(PortDesc(PortDir::Out, PortData::Cloud));
+        p.push_back(PortDesc(PortDir::Out, PortData::Tuple));
+        p.push_back(PortDesc(PortDir::Out, PortData::Logic));
+        break;
+    case ToolType::Calib3D:
+        p.push_back(PortDesc(PortDir::In, PortData::Cloud));
+        p.push_back(PortDesc(PortDir::Out, PortData::Pose3));
+        p.push_back(PortDesc(PortDir::Out, PortData::Tuple));
         break;
     // 推理与读码：图进，判定、区域或位姿出
     case ToolType::Infer:
@@ -286,7 +297,9 @@ ToolCaps ToolBase::capabilities() const
 {
     ToolCaps c;
     const ToolType t = type();
-    if (t == ToolType::Acquire || t == ToolType::Acquire3D || t == ToolType::Logic
+    if (t == ToolType::Acquire || t == ToolType::Acquire3D || t == ToolType::Prepare3D
+        || t == ToolType::Measure3D || t == ToolType::Locate3D || t == ToolType::Detect3D
+        || t == ToolType::Calib3D || t == ToolType::Logic
         || t == ToolType::Comm || t == ToolType::Calib) {
         c.usesRoi = false;
     }

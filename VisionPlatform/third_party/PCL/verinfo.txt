@@ -1,0 +1,5 @@
+﻿PCL 1.15.1 (vendored subset for VisionPlatform 3D plugins)
+Modules: common, filters, sample_consensus, segmentation, registration, search, kdtree, octree, features, ml
+3rdParty: Eigen3 + Boost headers + FLANN headers
+Skipped: VTK / OpenNI2 / Qhull / Boost lib / unused PCL modules
+No system PCL_ROOT required.

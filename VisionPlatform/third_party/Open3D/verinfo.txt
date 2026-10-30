@@ -1,0 +1,3 @@
+﻿Open3D 0.20.0 (devel windows-amd64, CPU)
+Vendored from open3d-devel-windows-amd64-0.20.0.zip
+No system OPEN3D_ROOT required.

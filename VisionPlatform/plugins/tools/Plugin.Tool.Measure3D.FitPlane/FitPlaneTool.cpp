@@ -131,7 +131,10 @@ bool FitPlaneTool::loadFileCloud(const ToolIn& in, HsCommData::Cloud3* cloud, st
 ToolOut FitPlaneTool::execute(const ToolIn& in)
 {
     ToolIn shot = in;
-    shot.algLib = AlgLibPcl;
+    // 三维测量只认 PCL / Open3D；旧方案若仍是 Hal 则回落到 PCL
+    if (shot.algLib != AlgLibPcl && shot.algLib != AlgLibOpen3d) {
+        shot.algLib = AlgLibPcl;
+    }
     if (shot.inputIo.clouds.empty()) {
         HsCommData::Cloud3 cloud;
         std::string err;

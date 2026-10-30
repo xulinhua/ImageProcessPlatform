@@ -193,13 +193,9 @@ PictureMsg WindowCapture::encode(CommBytes& bgra, int width, int height, bool vi
     if (longEdgeLimit < 320) {
         longEdgeLimit = RemoteConst::kLongEdge;
     }
-    for (size_t i = 3; i < bgra.size(); i += 4) {
-        bgra[i] = 255;
-    }
-
     int outW = width;
     int outH = height;
-    CommBytes pixels = bgra;
+    CommBytes pixels;
     const int longEdge = width > height ? width : height;
     if (longEdge > longEdgeLimit) {
         const double scale = static_cast<double>(longEdgeLimit) / static_cast<double>(longEdge);
@@ -211,21 +207,25 @@ PictureMsg WindowCapture::encode(CommBytes& bgra, int width, int height, bool vi
         if (outH < 1) {
             outH = 1;
         }
+        // 先缩再转 RGB，避免在整屏 BGRA 上逐像素刷 alpha
         QImage image(bgra.data(), width, height, width * 4, QImage::Format_ARGB32);
-        const QImage scaled = image.copy().scaled(outW, outH, Qt::IgnoreAspectRatio, Qt::FastTransformation)
-                                  .convertToFormat(QImage::Format_ARGB32);
+        const QImage scaled = image.scaled(outW, outH, Qt::IgnoreAspectRatio, Qt::FastTransformation)
+                                  .convertToFormat(QImage::Format_RGB32);
         pixels.resize(static_cast<size_t>(outW) * static_cast<size_t>(outH) * 4);
         if (!scaled.isNull() && scaled.bits()) {
             std::memcpy(pixels.data(), scaled.bits(), pixels.size());
         }
+    } else {
+        pixels = bgra;
     }
 
     QByteArray bytes;
     QBuffer buffer(&bytes);
     if (buffer.open(QIODevice::WriteOnly)) {
-        QImage image(pixels.data(), outW, outH, outW * 4, QImage::Format_ARGB32);
+        QImage image(pixels.data(), outW, outH, outW * 4,
+            longEdge > longEdgeLimit ? QImage::Format_RGB32 : QImage::Format_ARGB32);
         // 直接存 ARGB 时 Qt JPEG 插件可能写出全黑，先收成 RGB32
-        QImage copy = image.copy().convertToFormat(QImage::Format_RGB32);
+        QImage copy = image.convertToFormat(QImage::Format_RGB32);
         if (!copy.save(&buffer, "JPEG", jpegQuality)) {
             buffer.close();
             bytes.clear();

@@ -12,6 +12,7 @@
 #include <QDialog>
 #include <functional>
 
+class QComboBox;
 class QGridLayout;
 class QLabel;
 class QLineEdit;
@@ -80,6 +81,10 @@ private:
     QSpinBox* m_port;               ///< 监听端口 1~65535
     SwitchButton* m_discovery;      ///< 局域网发现
     SwitchButton* m_fit;            ///< 会话窗口默认适应窗口
+    QComboBox* m_defaultQuality;    ///< 新会话画质：流畅 / 均衡 / 清晰
+    QSpinBox* m_defaultFps;         ///< 新会话帧率上限
+    QComboBox* m_streamCodec;       ///< 发送编码：沿用 / JPEG / H.264 / 原图
+    SwitchButton* m_adaptive;       ///< 延迟很高时自动略降分辨率
     QSpinBox* m_rows;               ///< 监控墙默认行数 1~4
     QSpinBox* m_cols;               ///< 监控墙默认列数 1~4
     QSpinBox* m_tour;               ///< 轮巡间隔 3~600 秒

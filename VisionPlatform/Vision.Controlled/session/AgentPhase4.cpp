@@ -66,7 +66,10 @@ std::wstring AgentSession::canonicalPath(const std::wstring& path) const
         return full;
     }
     std::wstring out = finalPath;
-    if (out.size() >= 8 && out.compare(0, 4, L"\\\\?\\") == 0) {
+    // \\?\D:\ 只有 7 个字符，盘符根目录以前被长度判断漏掉，整盘都会变成「路径不允许」
+    if (out.size() >= 8 && _wcsnicmp(out.c_str(), L"\\\\?\\UNC\\", 8) == 0) {
+        out.replace(0, 8, L"\\\\");
+    } else if (out.size() >= 6 && out.compare(0, 4, L"\\\\?\\") == 0) {
         out.erase(0, 4);
     }
     return out;
@@ -101,6 +104,34 @@ bool AgentSession::pathAllowed(const std::wstring& path) const
     return false;
 }
 
+bool AgentSession::makeDirectory(const std::wstring& path) const
+{
+    if (path.empty() || !pathAllowed(path)) {
+        return false;
+    }
+    std::wstring full = canonicalPath(path);
+    if (!full.empty() && full.back() != L'\\') {
+        full.push_back(L'\\');
+    }
+    for (size_t i = 0; i < full.size(); ++i) {
+        if (full[i] != L'\\' || i < 3) {
+            continue;
+        }
+        const std::wstring part = full.substr(0, i);
+        if (GetFileAttributesW(part.c_str()) != INVALID_FILE_ATTRIBUTES) {
+            continue;
+        }
+        if (!CreateDirectoryW(part.c_str(), 0)) {
+            return false;
+        }
+    }
+    if (!full.empty() && full.back() == L'\\') {
+        full.pop_back();
+    }
+    const DWORD attr = GetFileAttributesW(full.c_str());
+    return attr != INVALID_FILE_ATTRIBUTES && (attr & FILE_ATTRIBUTE_DIRECTORY) != 0;
+}
+
 std::string AgentSession::listDirectory(const std::wstring& path) const
 {
     std::string out;
@@ -116,7 +147,7 @@ std::string AgentSession::listDirectory(const std::wstring& path) const
         for (size_t i = 0; i < roots.size(); ++i) {
             out += "D\t0\t";
             out += utf8Full(roots[i]);
-            out += "\n";
+            out += "\t\n";
         }
         return out;
     }
@@ -135,17 +166,29 @@ std::string AgentSession::listDirectory(const std::wstring& path) const
             continue;
         }
         const bool dir = (data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
+        const bool link = (data.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT) != 0;
         ULARGE_INTEGER size;
         size.LowPart = data.nFileSizeLow;
         size.HighPart = data.nFileSizeHigh;
-        out += dir ? "D\t0\t" : "F\t";
+        out += link ? "R\t0\t" : (dir ? "D\t0\t" : "F\t");
         if (!dir) {
             out += std::to_string(size.QuadPart);
             out += "\t";
         }
         out += utf8Full(data.cFileName);
+        out += "\t";
+        SYSTEMTIME utc;
+        SYSTEMTIME local;
+        wchar_t stamp[32] = L"";
+        if (FileTimeToSystemTime(&data.ftLastWriteTime, &utc)
+            && SystemTimeToTzSpecificLocalTime(0, &utc, &local)) {
+            swprintf_s(stamp, L"%04u-%02u-%02u %02u:%02u",
+                local.wYear, local.wMonth, local.wDay, local.wHour, local.wMinute);
+        }
+        out += utf8Full(stamp);
         out += "\n";
-        if (out.size() > 14000) {
+        if (out.size() > 200000) {
+            out += "E\t0\t还有更多，没有列完\t\n";
             break;
         }
     } while (FindNextFileW(found, &data));
@@ -285,6 +328,111 @@ bool AgentSession::takePhase4(const Frame::Packet& packet)
         return true;
     }
     if (packet.channel == Frame::ChFile) {
+        // 中控台回的目录 / 块 / 完成：本机文件窗用，不要求对方持有操作权
+        if (packet.type == Frame::TypeDirEntries) {
+            std::string listing;
+            if (Messages::unpackDirEntries(packet.payload, &listing)) {
+                std::lock_guard<std::mutex> lock(m_mu);
+                m_dirList = listing;
+                m_dirSeq += 1;
+            }
+            return true;
+        }
+        if (packet.type == Frame::TypeFileAck) {
+            uint32_t id = 0;
+            uint64_t offset = 0;
+            if (!Messages::unpackFileAck(packet.payload, &id, &offset)) {
+                return true;
+            }
+            std::lock_guard<std::mutex> fileLock(m_fileMu);
+            if (m_filePull && id == m_fileId && offset >= m_fileAcked && offset <= m_fileNext) {
+                m_fileAcked = static_cast<uint32_t>(offset);
+                std::lock_guard<std::mutex> lock(m_mu);
+                m_fileUiGot = offset;
+                m_fileUiNote = "正在上传";
+            }
+            return true;
+        }
+        if (packet.type == Frame::TypeFileChunk) {
+            uint32_t id = 0;
+            uint32_t offset = 0;
+            CommBytes data;
+            if (!Messages::unpackFileChunk(packet.payload, &id, &offset, &data)) {
+                return true;
+            }
+            std::lock_guard<std::mutex> fileLock(m_fileMu);
+            if (!m_file || m_filePull || id != m_fileId) {
+                return true;
+            }
+            if (offset != m_fileOff) {
+                return true;
+            }
+            _fseeki64(m_file, offset, SEEK_SET);
+            fwrite(data.data(), 1, data.size(), m_file);
+            m_fileOff = offset + static_cast<uint32_t>(data.size());
+            enqueue(Messages::packFileAck(id, m_fileOff, &err));
+            {
+                std::lock_guard<std::mutex> lock(m_mu);
+                m_fileUiGot = m_fileOff;
+                m_fileUiNote = "正在下载";
+            }
+            return true;
+        }
+        if (packet.type == Frame::TypeFileDone) {
+            uint32_t id = 0;
+            uint8_t ok = 0;
+            std::string note;
+            Messages::unpackFileDone(packet.payload, &id, &ok, &note);
+            std::wstring path;
+            std::string sha;
+            bool wasPull = false;
+            {
+                std::lock_guard<std::mutex> fileLock(m_fileMu);
+                if (m_file) {
+                    fclose(m_file);
+                    m_file = 0;
+                }
+                path = m_filePath;
+                sha = m_fileSha;
+                wasPull = m_filePull;
+                m_filePull = false;
+                m_filePath.clear();
+                m_fileSha.clear();
+            }
+            std::string shown = ok ? "完成" : (note.empty() ? "失败" : note);
+            // 只有存在 .vrpart 才是接收收尾（上传完成时 path 是本机源文件，不能当接收处理）
+            const std::wstring part = path + L".vrpart";
+            WIN32_FILE_ATTRIBUTE_DATA partInfo;
+            const bool hasPart = !path.empty() && !wasPull
+                && GetFileAttributesExW(part.c_str(), GetFileExInfoStandard, &partInfo);
+            if (hasPart) {
+                std::string got;
+                bool match = ok != 0;
+                if (match && !sha.empty()) {
+                    got = sha256File(part);
+                    match = got == sha;
+                } else if (match && sha.empty() && note.size() == 64) {
+                    got = sha256File(part);
+                    match = got == note;
+                    sha = note;
+                }
+                if (match) {
+                    MoveFileExW(part.c_str(), path.c_str(), MOVEFILE_REPLACE_EXISTING);
+                    enqueue(Messages::packFileDone(id, 1, sha.empty() ? sha256File(path) : (got.empty() ? sha : got), &err));
+                    shown = "完成";
+                } else {
+                    DeleteFileW(part.c_str());
+                    enqueue(Messages::packFileDone(id, 0, "SHA-256 不一致", &err));
+                    shown = "SHA-256 不一致";
+                }
+            }
+            {
+                std::lock_guard<std::mutex> lock(m_mu);
+                m_fileUiNote = shown;
+                m_fileUiSeq += 1;
+            }
+            return true;
+        }
         bool operating = false;
         {
             std::lock_guard<std::mutex> lock(m_mu);
@@ -307,6 +455,20 @@ bool AgentSession::takePhase4(const Frame::Packet& packet)
             enqueue(Messages::packDirEntries(listDirectory(wide), &err));
             return true;
         }
+        if (packet.type == Frame::TypeMkDir) {
+            uint32_t id = 0;
+            std::string path;
+            if (!Messages::unpackMkDir(packet.payload, &id, &path)) {
+                return true;
+            }
+            const std::wstring wide = toWide(path);
+            const bool ok = makeDirectory(wide);
+            enqueue(Messages::packFileDone(id, ok ? 1 : 0, ok ? "完成" : "不能建目录", &err));
+            if (!ok) {
+                m_audit.add("file.reject", path);
+            }
+            return true;
+        }
         if (packet.type == Frame::TypeFileOpen) {
             uint32_t id = 0;
             uint8_t pull = 0;
@@ -322,6 +484,12 @@ bool AgentSession::takePhase4(const Frame::Packet& packet)
                 enqueue(Messages::packFileDone(id, 0, "路径不允许", &err));
                 m_audit.add("file.reject", path);
                 return true;
+            }
+            if (pull == 0) {
+                const size_t slash = wide.find_last_of(L'\\');
+                if (slash != std::wstring::npos && slash > 2) {
+                    makeDirectory(wide.substr(0, slash));
+                }
             }
             std::lock_guard<std::mutex> fileLock(m_fileMu);
             if (m_file) {
@@ -370,71 +538,6 @@ bool AgentSession::takePhase4(const Frame::Packet& packet)
                 }
                 _fseeki64(m_file, static_cast<int64_t>(resume), SEEK_SET);
                 enqueue(Messages::packFileAck(id, resume, &err));
-            }
-            return true;
-        }
-        if (packet.type == Frame::TypeFileAck) {
-            uint32_t id = 0;
-            uint64_t offset = 0;
-            if (!Messages::unpackFileAck(packet.payload, &id, &offset)) {
-                return true;
-            }
-            std::lock_guard<std::mutex> fileLock(m_fileMu);
-            if (m_filePull && id == m_fileId && offset >= m_fileAcked && offset <= m_fileNext) {
-                m_fileAcked = static_cast<uint32_t>(offset);
-            }
-            return true;
-        }
-        if (packet.type == Frame::TypeFileChunk) {
-            uint32_t id = 0;
-            uint32_t offset = 0;
-            CommBytes data;
-            if (!Messages::unpackFileChunk(packet.payload, &id, &offset, &data)) {
-                return true;
-            }
-            std::lock_guard<std::mutex> fileLock(m_fileMu);
-            if (!m_file || m_filePull || id != m_fileId) {
-                return true;
-            }
-            if (offset != m_fileOff) {
-                return true;
-            }
-            _fseeki64(m_file, offset, SEEK_SET);
-            fwrite(data.data(), 1, data.size(), m_file);
-            m_fileOff = offset + static_cast<uint32_t>(data.size());
-            enqueue(Messages::packFileAck(id, m_fileOff, &err));
-            return true;
-        }
-        if (packet.type == Frame::TypeFileDone) {
-            uint32_t id = 0;
-            uint8_t ok = 0;
-            std::string note;
-            Messages::unpackFileDone(packet.payload, &id, &ok, &note);
-            std::wstring path;
-            std::string sha;
-            {
-                std::lock_guard<std::mutex> fileLock(m_fileMu);
-                if (m_file) {
-                    fclose(m_file);
-                    m_file = 0;
-                }
-                path = m_filePath;
-                sha = m_fileSha;
-                m_filePull = false;
-            }
-            const std::wstring part = path + L".vrpart";
-            std::string got;
-            bool match = ok && !path.empty();
-            if (match && !sha.empty()) {
-                got = sha256File(part);
-                match = got == sha;
-            }
-            if (match) {
-                MoveFileExW(part.c_str(), path.c_str(), MOVEFILE_REPLACE_EXISTING);
-                enqueue(Messages::packFileDone(id, 1, sha.empty() ? sha256File(path) : got, &err));
-            } else if (!path.empty()) {
-                DeleteFileW(part.c_str());
-                enqueue(Messages::packFileDone(id, 0, "SHA-256 不一致", &err));
             }
             return true;
         }
@@ -647,6 +750,12 @@ void AgentSession::pumpPhase4(std::vector<CommBytes>* extra)
             data.resize(got);
             extra->push_back(Messages::packFileChunk(m_fileId, m_fileNext, data, &err));
             m_fileNext += static_cast<uint32_t>(got);
+            {
+                std::lock_guard<std::mutex> lock(m_mu);
+                m_fileUiGot = m_fileNext;
+                m_fileUiBytes = m_fileSize;
+                m_fileUiNote = "正在上传";
+            }
         }
         if (m_fileAcked >= m_fileSize) {
             donePath = m_filePath;
@@ -659,7 +768,120 @@ void AgentSession::pumpPhase4(std::vector<CommBytes>* extra)
     }
     if (done) {
         extra->push_back(Messages::packFileDone(doneId, 1, sha256File(donePath), &err));
+        std::lock_guard<std::mutex> lock(m_mu);
+        m_fileUiNote = "上传完成，等待校验";
     }
+}
+
+std::string AgentSession::armPushToRemote(uint32_t id, const std::string& localPath, const std::string& remotePath)
+{
+    const std::wstring wide = toWide(localPath);
+    const std::string sha = sha256File(wide);
+    if (sha.empty()) {
+        std::lock_guard<std::mutex> lock(m_mu);
+        m_fileUiNote = "打不开本地文件";
+        m_fileUiSeq += 1;
+        return std::string();
+    }
+    WIN32_FILE_ATTRIBUTE_DATA info;
+    uint64_t size = 0;
+    if (GetFileAttributesExW(wide.c_str(), GetFileExInfoStandard, &info)) {
+        ULARGE_INTEGER u;
+        u.LowPart = info.nFileSizeLow;
+        u.HighPart = info.nFileSizeHigh;
+        size = u.QuadPart;
+    }
+    {
+        std::lock_guard<std::mutex> fileLock(m_fileMu);
+        if (m_file) {
+            fclose(m_file);
+            m_file = 0;
+        }
+        m_file = _wfopen(wide.c_str(), L"rb");
+        if (!m_file) {
+            std::lock_guard<std::mutex> lock(m_mu);
+            m_fileUiNote = "打不开本地文件";
+            m_fileUiSeq += 1;
+            return std::string();
+        }
+        m_filePull = true;
+        m_fileId = id;
+        m_filePath = wide;
+        m_fileSha = sha;
+        m_fileSize = size;
+        m_fileOff = 0;
+        m_fileAcked = 0;
+        m_fileNext = 0;
+    }
+    {
+        std::lock_guard<std::mutex> lock(m_mu);
+        m_fileUiGot = 0;
+        m_fileUiBytes = size;
+        m_fileUiNote = "正在上传";
+    }
+    std::string err;
+    enqueue(Messages::packFileOpen(id, 0, remotePath, size, &err, sha, 0));
+    return sha;
+}
+
+void AgentSession::armPullFromRemote(uint32_t id, const std::string& localPath, const std::string& remotePath,
+    uint64_t total, uint64_t resume)
+{
+    const std::wstring wide = toWide(localPath);
+    if (wide.empty() || !pathAllowed(wide)) {
+        std::lock_guard<std::mutex> lock(m_mu);
+        m_fileUiNote = "路径不允许";
+        m_fileUiSeq += 1;
+        return;
+    }
+    const size_t slash = wide.find_last_of(L'\\');
+    if (slash != std::wstring::npos && slash > 2) {
+        makeDirectory(wide.substr(0, slash));
+    }
+    const std::wstring part = wide + L".vrpart";
+    {
+        std::lock_guard<std::mutex> fileLock(m_fileMu);
+        if (m_file) {
+            fclose(m_file);
+            m_file = 0;
+        }
+        if (resume == 0) {
+            WIN32_FILE_ATTRIBUTE_DATA info;
+            if (GetFileAttributesExW(part.c_str(), GetFileExInfoStandard, &info)) {
+                ULARGE_INTEGER have;
+                have.LowPart = info.nFileSizeLow;
+                have.HighPart = info.nFileSizeHigh;
+                resume = have.QuadPart;
+            }
+        }
+        if (total > 0 && resume > total) {
+            resume = 0;
+        }
+        m_file = _wfopen(part.c_str(), resume == 0 ? L"wb" : L"r+b");
+        if (!m_file) {
+            std::lock_guard<std::mutex> lock(m_mu);
+            m_fileUiNote = "不能写入";
+            m_fileUiSeq += 1;
+            return;
+        }
+        _fseeki64(m_file, static_cast<int64_t>(resume), SEEK_SET);
+        m_filePull = false;
+        m_fileId = id;
+        m_filePath = wide;
+        m_fileSha.clear();
+        m_fileSize = total;
+        m_fileOff = static_cast<uint32_t>(resume);
+        m_fileAcked = m_fileOff;
+        m_fileNext = m_fileOff;
+    }
+    {
+        std::lock_guard<std::mutex> lock(m_mu);
+        m_fileUiGot = resume;
+        m_fileUiBytes = total;
+        m_fileUiNote = "正在下载";
+    }
+    std::string err;
+    enqueue(Messages::packFileOpen(id, 1, remotePath, 0, &err, std::string(), resume));
 }
 
 }
