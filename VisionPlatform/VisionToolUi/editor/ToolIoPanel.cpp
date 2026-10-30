@@ -77,7 +77,7 @@ static bool toolHasPort(ToolType type, PortDir dir, PortData data)
     return false;
 }
 
-// 
+// 一行输入：下拉在左，状态或采集源说明在右
 static QWidget* makeLinkRow(QComboBox* combo, QLabel* hint, QLabel* camText)
 {
     QWidget* row = new QWidget(combo->parentWidget());
@@ -114,7 +114,7 @@ static PortData linkComboPortData(const QComboBox* combo)
     return static_cast<PortData>(combo->property("portData").toInt());
 }
 
-// 
+// 标签在上、控件在下加入卡片
 void addLinkField(QVBoxLayout* lay, QLabel* label, QWidget* field)
 {
     label->setObjectName(QLatin1String("toolDebugFieldLabel"));
@@ -124,7 +124,7 @@ void addLinkField(QVBoxLayout* lay, QLabel* label, QWidget* field)
 
 }
 
-// 
+// 只读单元格；数值右对齐
 static QTableWidgetItem* roiCell(const QString& text, bool numeric)
 {
     QTableWidgetItem* it = new QTableWidgetItem(text);
@@ -144,7 +144,7 @@ static QTableWidgetItem* roiNum(double v, bool ok)
     return roiCell(QString::number(v, 'f', 1), true);
 }
 
-// 
+// 几何种类，未初始化或为空时 -1
 int roiKindOf(const HsCommData::HsObject& r)
 {
     return r.isInitialized() && !r.isEmpty() ? static_cast<int>(r.kind()) : -1;
@@ -155,6 +155,8 @@ static void roiNumbers(const HsCommData::HsObject& r, double* x, double* y, doub
 {
     double xx = 0, yy = 0, aa = 0, bb = 0, pp = 0;
     int nn = 0;
+    // 圆：a 为半径；椭圆、旋转矩形：a/b 为半轴，带角度；矩形：左上角与宽高；
+    // 直线：起点与 dx/dy；轮廓：首点与点数
     if (r.isInitialized() && !r.isEmpty()) {
         using namespace HsCommData;
         const ObjectKind k = r.kind();
@@ -213,7 +215,7 @@ static QString formatRoiPosition(const HsCommData::HsObject& r)
     return QString::fromUtf8("%1, %2").arg(x, 0, 'f', 1).arg(y, 0, 'f', 1);
 }
 
-// 
+// 尺寸列文本：圆为半径，旋转矩形和椭圆为全长全宽，直线为长度，轮廓为顶点数
 QString formatRoiSize(const HsCommData::HsObject& r, int kind)
 {
     double x = 0, y = 0, a = 0, b = 0;
@@ -223,10 +225,10 @@ QString formatRoiSize(const HsCommData::HsObject& r, int kind)
         return QString::fromUtf8("R=%1").arg(a, 0, 'f', 1);
     }
     if (kind == static_cast<int>(HsCommData::ObjRect1)) {
-        return QString::fromUtf8("%1 脳 %2").arg(a, 0, 'f', 1).arg(b, 0, 'f', 1);
+        return QString::fromUtf8("%1 × %2").arg(a, 0, 'f', 1).arg(b, 0, 'f', 1);
     }
     if (kind == static_cast<int>(HsCommData::ObjRect2) || kind == static_cast<int>(HsCommData::ObjEllipse)) {
-        return QString::fromUtf8("%1 脳 %2").arg(a * 2.0, 0, 'f', 1).arg(b * 2.0, 0, 'f', 1);
+        return QString::fromUtf8("%1 × %2").arg(a * 2.0, 0, 'f', 1).arg(b * 2.0, 0, 'f', 1);
     }
     if (kind == static_cast<int>(HsCommData::ObjLine)) {
         const double len = std::sqrt(a * a + b * b);
@@ -235,7 +237,7 @@ QString formatRoiSize(const HsCommData::HsObject& r, int kind)
     if (kind == static_cast<int>(HsCommData::ObjContour)) {
         return QString::fromUtf8("顶点=%1").arg(n);
     }
-    return QString::fromUtf8("%1 脳 %2").arg(a, 0, 'f', 1).arg(b, 0, 'f', 1);
+    return QString::fromUtf8("%1 × %2").arg(a, 0, 'f', 1).arg(b, 0, 'f', 1);
 }
 
 // 全部同类则用专列表头，否则用通用 A/B
@@ -449,7 +451,7 @@ void ToolIoPanel::fillLinkCombo(QComboBox* combo, const JobCfg& job, const Objec
     }
 }
 
-// 
+// 按流程里现有连线选中下拉项，没有连线时停在「未连接」
 void ToolIoPanel::selectCurrentLink(QComboBox* combo, const JobCfg& job, const ObjectId& toId,
                                    const PortSlot& toPort)
 {
@@ -470,7 +472,6 @@ void ToolIoPanel::selectCurrentLink(QComboBox* combo, const JobCfg& job, const O
 }
 
 // 刷新单个输入端口下拉与状态行
-// 刷新单个输入端口下拉与状态行
 void ToolIoPanel::refreshLinkRow(QComboBox* combo, QLabel* hint, QLabel* camText,
                                  const JobCfg* jobConfig, const ToolCfg* tool, Job* job,
                                  PortData data, bool canEdit, bool showRow)
@@ -489,6 +490,7 @@ void ToolIoPanel::refreshLinkRow(QComboBox* combo, QLabel* hint, QLabel* camText
         return;
     }
 
+    // 取图工具的图像行不给下拉，改显示采集源尺寸和当前文件
     const bool isCam = tool && tool->type == ToolType::Acquire;
     const bool camImageRow = isCam && data == PortData::Image;
     combo->setVisible(!camImageRow);
@@ -501,7 +503,7 @@ void ToolIoPanel::refreshLinkRow(QComboBox* combo, QLabel* hint, QLabel* camText
             QString line = T("本工具为采集源");
             if (job && job->hasCache(tool->id)) {
                 const HsCommData::HsImage fb = job->cachedImage(tool->id);
-                line += QString::fromUtf8("  (%1脳%2)").arg(fb.width).arg(fb.height);
+                line += QString::fromUtf8("  (%1×%2)").arg(fb.width).arg(fb.height);
             } else {
                 line += QLatin1String("  ") + T("未运行");
             }
@@ -520,6 +522,7 @@ void ToolIoPanel::refreshLinkRow(QComboBox* combo, QLabel* hint, QLabel* camText
         }
     }
 
+    // 重填下拉期间屏蔽信号，避免误发连线变更
     m_fillingLinks = true;
     combo->blockSignals(true);
     if (jobConfig && tool && !camImageRow) {
@@ -537,6 +540,7 @@ void ToolIoPanel::refreshLinkRow(QComboBox* combo, QLabel* hint, QLabel* camText
     if (!hint || camImageRow) {
         return;
     }
+    // 状态行：有缓存显示上游值，已连线但无缓存显示「未运行」
     hint->clear();
     if (!jobConfig || !tool) {
         return;
@@ -545,7 +549,7 @@ void ToolIoPanel::refreshLinkRow(QComboBox* combo, QLabel* hint, QLabel* camText
         if (job) {
             const HsCommData::HsImage in = job->cachedInputImage(*jobConfig, tool->id);
             if (!in.isNull()) {
-                hint->setText(QString::fromUtf8("(%1脳%2)").arg(in.width).arg(in.height));
+                hint->setText(QString::fromUtf8("(%1×%2)").arg(in.width).arg(in.height));
             } else if (jobConfig->findLinkToPort(tool->id, portSlotIn(PortData::Image))) {
                 hint->setText(T("未运行"));
             }
@@ -615,6 +619,7 @@ void ToolIoPanel::refresh(Solution* sol, ToolCfg* tool, Job* job, bool canEdit)
         return;
     }
 
+    // 输入行：图像；逻辑和通信工具把第二行改作逻辑输入，其余为定位；区域行仅在流程内显示
     JobCfg* jobConfig = sol ? sol->findJobCfgOfTool(tool->id, 0) : nullptr;
     const bool usesRoi = tool->usesRoi();
     const bool isCam = (tool->type == ToolType::Acquire);
@@ -645,6 +650,7 @@ void ToolIoPanel::refresh(Solution* sol, ToolCfg* tool, Job* job, bool canEdit)
     refreshLinkRow(m_regionCombo, m_regionHint, 0, jobConfig, tool, job,
                    PortData::Region, canEdit, showRegion);
 
+    // ROI 区：不用 ROI 的工具整块隐藏；重画只对单 ROI 工具且已有 ROI 时可用
     const bool usesMulti = tool->usesMultiRoi();
     if (!usesRoi) {
         fillRoiTable(std::vector<HsCommData::HsObject>());
@@ -681,7 +687,7 @@ void ToolIoPanel::refresh(Solution* sol, ToolCfg* tool, Job* job, bool canEdit)
     m_btnClear->setEnabled(roiOn && hasRoi);
     syncLinkPageHeight(m_linkPage);
 }
-// 
+// 表格当前行，无表格时 -1
 int ToolIoPanel::selectedRoiRow() const
 {
     return m_roiTable ? m_roiTable->currentRow() : -1;
@@ -707,7 +713,7 @@ void ToolIoPanel::clearRoiSelection()
     m_fillingRoiTable = false;
 }
 
-// 
+// 选中指定行，越界则取消选中；不发选中变化信号
 void ToolIoPanel::selectRoiRow(int row)
 {
     if (!m_roiTable) {
@@ -731,7 +737,7 @@ void ToolIoPanel::selectRoiRow(int row)
     m_fillingRoiTable = false;
 }
 
-// 
+// 用户改了表格选中，转发行号；程序填表时不转发
 void ToolIoPanel::onRoiSelectionChanged()
 {
     if (m_fillingRoiTable) {
@@ -751,7 +757,7 @@ void ToolIoPanel::onDeleteClicked()
     }
 }
 
-// 
+// 行内删除按钮：下一轮事件循环再发删除请求（按钮所在表格会被重建）
 void ToolIoPanel::onDeleteRowClicked()
 {
     QToolButton* btn = qobject_cast<QToolButton*>(sender());
@@ -770,6 +776,7 @@ void ToolIoPanel::fillRoiTable(const std::vector<HsCommData::HsObject>& rs)
     if (!m_roiTable) {
         return;
     }
+    // 同一种类或为空时用紧凑表（ID、类型、位置、尺寸、删除），混合种类时用数值表
     const int keep = m_roiTable->currentRow();
     int kind = roiTableKind(rs);
     const bool compact = (kind >= 0 || rs.empty());
@@ -805,7 +812,7 @@ void ToolIoPanel::fillRoiTable(const std::vector<HsCommData::HsObject>& rs)
             cellLay->setAlignment(Qt::AlignCenter);
             QToolButton* del = new QToolButton(cell);
             del->setObjectName(QLatin1String("toolDebugRoiDel"));
-            del->setText(QString::fromUtf8("脳"));
+            del->setText(QString::fromUtf8("×"));
             del->setToolTip(T("删除该 ROI"));
             del->setProperty("roiRow", i);
             del->setAutoRaise(true);
@@ -843,6 +850,7 @@ void ToolIoPanel::fillRoiTable(const std::vector<HsCommData::HsObject>& rs)
         }
     }
 
+    // 尽量保留原选中行
     if (keep >= 0 && keep < m_roiTable->rowCount()) {
         m_roiTable->selectRow(keep);
     } else {
@@ -856,7 +864,7 @@ void ToolIoPanel::fillRoiTable(const std::vector<HsCommData::HsObject>& rs)
     m_fillingRoiTable = false;
 }
 
-// 
+// 在 ROI 旁标注序号和几何；onlyIndex >= 0 时只标这一条
 void overlayRoiDetails(HsCtrl::HsImageWindow* view, const ToolCfg* tool, int onlyIndex,
                        bool showLabels)
 {

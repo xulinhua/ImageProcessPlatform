@@ -31,6 +31,7 @@ public:
     bool open(const std::string& path, std::string* error);
     /** @brief 关闭连接 */
     void close();
+    /** @brief 是否已打开 */
     bool isOpen() const;
     /** @brief 执行不返回行的语句 */
     bool exec(const std::string& sql, std::string* error);
@@ -51,6 +52,7 @@ public:
     bool rollback(std::string* error);
     /** @brief 最近一次插入的 rowid */
     int64_t lastInsertId() const;
+    /** @brief 引擎标识，固定为 "sqlite" */
     std::string engineId() const;
 
 private:

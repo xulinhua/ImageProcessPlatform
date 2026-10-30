@@ -34,10 +34,12 @@ public:
     void apply(const Session& session) const;
 
 private:
+    /** @brief 一条绑定：控件或动作二选一，加所需权限 */
     struct Item {
         QWidget* widget;   ///< 控件，可空
         QAction* action;   ///< 动作，可空
         Perm perm;   ///< 所需权限
+        /** @brief 空绑定，权限为 PermNone */
         Item()
             : widget(nullptr)
             , action(nullptr)

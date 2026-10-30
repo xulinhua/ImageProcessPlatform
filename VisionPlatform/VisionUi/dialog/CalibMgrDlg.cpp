@@ -97,6 +97,7 @@ CalibMgrDlg::CalibMgrDlg(Solution* solution, QWidget* parent)
     setModal(true);
     resize(920, 560);
 
+    // 左栏：相机列表、添加临时相机、绑定到台账相机
     m_list = new QListWidget(this);
     connect(m_list, SIGNAL(currentRowChanged(int)), this, SLOT(onCameraChanged()));
 
@@ -106,6 +107,7 @@ CalibMgrDlg::CalibMgrDlg(Solution* solution, QWidget* parent)
     m_bindBtn = new QPushButton(T("绑定"), this);
     connect(m_bindBtn, SIGNAL(clicked()), this, SLOT(onBindCamera()));
 
+    // 参数控件；按标定方式分三页：标定板、九点、旋转
     m_plate = new QComboBox(this);
     m_plate->addItem(T("棋盘格"), CalibPlateCheckerboard);
     m_plate->addItem(T("圆点阵"), CalibPlateCircleGrid);
@@ -184,6 +186,7 @@ CalibMgrDlg::CalibMgrDlg(Solution* solution, QWidget* parent)
     btns->addStretch();
     form->addRow(btns);
 
+    // 右栏：参数在上，生效结果在下
     QGroupBox* paramBox = new QGroupBox(T("参数"), this);
     paramBox->setLayout(form);
     onKindChanged();
@@ -333,6 +336,7 @@ void CalibMgrDlg::showResult()
         m_result->setPlainText(T("请先选择相机"));
         return;
     }
+    // 生效结果：相机模型、平面映射、旋转中心各一行
     const ObjectId oid(ss(m_currentId));
     const CalibRst r = CalibMgr::instance().active(oid);
     QString text;
@@ -365,6 +369,7 @@ void CalibMgrDlg::showResult()
             text += QString("  world (%1, %2)").arg(r.rotate.worldX, 0, 'f', 3).arg(r.rotate.worldY, 0, 'f', 3);
         }
     }
+    // 追加未生效的 draft 残差、三类历史文件名和离线目录
     const CalibRst draft = CalibMgr::instance().draft(oid);
     if (draft.camera.present || draft.plane.present || draft.rotate.present) {
         text += QLatin1String("\ndraft");

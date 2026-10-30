@@ -104,14 +104,23 @@ private: // 示教原图。点保存时写入工具目录
     std::string data_dir_; ///< 原图所在的工具数据目录
 
 private: // 基类仍用这套名字，都转到上面的接口
+    /** @brief 转 tool_name */
     std::string toolName() const override { return tool_name(); }
+    /** @brief 转 display_name */
     std::string displayName() const override { return display_name(); }
+    /** @brief 转 version_notes */
     std::vector<VerNote> versionNotes() const override { return version_notes(); }
+    /** @brief 转 default_params */
     ParamMap defaultParams() const override { return default_params(); }
+    /** @brief 示教与运行参数说明合在一起 */
     std::vector<ParamField> paramFields() const override;
+    /** @brief 转 cfg_roi */
     ToolCaps capabilities() const override { return cfg_roi(); }
+    /** @brief 转 tool_param */
     const ToolParaBase* toolParam() const override { return tool_param(); }
+    /** @brief 转 execute(in, out)，返回的错误码不往外传 */
     ToolOut execute(const ToolIn& in) override;
+    /** @brief 转 teach_model，返回的错误码不往外传 */
     ToolOut teach(const ToolIn& in) override;
 };
 

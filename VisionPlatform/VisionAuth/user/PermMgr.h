@@ -24,6 +24,7 @@ struct PermDesc {
     std::string id;    ///< 点分标识
     std::string group; ///< 分组，如 runtime / design
     Perm bit;    ///< 对应权限位
+    /** @brief 无权限位 */
     PermDesc() : bit(PermNone) {}
 };
 
@@ -41,6 +42,7 @@ public:
     void ensureBuiltins();
     /** @brief 该标识是否已登记 */
     bool contains(const std::string& id) const;
+    /** @brief 全部已登记权限，按登记顺序 */
     const std::vector<PermDesc>& all() const;
     /** @brief 读某角色的权限掩码 */
     bool loadRoleMask(UserRole role, uint32_t* mask, std::string* error);
@@ -48,6 +50,7 @@ public:
     bool saveRoleMask(UserRole role, uint32_t mask, std::string* error);
 
 private:
+    /** @brief 单例私有构造 */
     PermMgr() {}
     std::vector<PermDesc> m_items; ///< 已登记权限
 };

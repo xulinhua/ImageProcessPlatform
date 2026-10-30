@@ -1,0 +1,56 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="ui.css">
+<style>
+.win { width: 1280px; height: 720px; }
+.filter { background: #fff; padding: 12px; display: flex; gap: 8px; align-items: center; border-bottom: 1px solid #E8E8E8; flex-wrap: wrap; }
+.stat { display: flex; gap: 12px; padding: 12px; }
+.stat .card { flex: 1; padding: 12px 16px; display: flex; flex-direction: column; gap: 4px; }
+.stat .card b { font-size: 22px; font-weight: 600; }
+.stat .card span { color: #8C8C8C; font-size: 12px; }
+.list { margin: 0 12px; flex: 1; overflow: hidden; }
+.mono { font-family: Consolas, "Microsoft YaHei UI", monospace; }
+.pager { display: flex; justify-content: flex-end; align-items: center; gap: 6px; padding: 10px 12px; font-size: 12px; color: #595959; }
+.pager .btn { height: 26px; min-width: 26px; padding: 0 6px; font-size: 12px; }
+.play { color: #1677FF; display: inline-flex; gap: 4px; align-items: center; }
+.play svg.i { width: 13px; height: 13px; }
+tr.bad td { background: #FFFBFA; }
+</style></head>
+<body>
+<div class="win">
+  <div class="title"><span class="logo"><i data-i="list"></i></span><span class="name">审计日志</span><span class="wb"><i data-i="minus"></i></span><span class="wb"><i data-i="square"></i></span><span class="wb x"><i data-i="x"></i></span></div>
+  <div class="filter">
+    <span class="input" style="width:250px"><i data-i="calendar"></i>2026-10-01  ~  2026-10-29</span>
+    <span class="input sel" style="width:130px">全部设备<i data-i="down"></i></span>
+    <span class="input sel" style="width:130px">全部事件<i data-i="down"></i></span>
+    <span class="input sel" style="width:130px">全部操作者<i data-i="down"></i></span>
+    <span class="input ph" style="width:220px"><i data-i="search"></i>搜索 IP、路径、详情</span>
+    <span class="btn pri"><i data-i="search"></i>查询</span>
+    <span class="btn"><i data-i="download"></i>导出 CSV</span>
+  </div>
+  <div class="stat">
+    <div class="card"><span>会话</span><b>1,284</b></div>
+    <div class="card"><span>累计时长</span><b>312 小时</b></div>
+    <div class="card"><span>文件传输</span><b>2,046</b></div>
+    <div class="card"><span>认证失败</span><b style="color:#CF1322">17</b></div>
+    <div class="card"><span>录屏</span><b>96</b></div>
+  </div>
+  <div class="list card">
+    <table class="tbl">
+      <tr><th>时间</th><th>设备</th><th>操作者</th><th>事件</th><th>来源</th><th>详情</th><th>录屏</th></tr>
+      <tr><td class="mono">10-29 14:20:07</td><td>检测二号</td><td>张工</td><td><span class="tag">会话结束</span></td><td class="mono">192.168.1.10</td><td>用户断开 · 时长 16 分 56 秒</td><td><span class="play"><i data-i="play"></i>播放</span></td></tr>
+      <tr><td class="mono">10-29 14:07:42</td><td>检测二号</td><td>张工</td><td><span class="tag blue">上传文件</span></td><td class="mono">192.168.1.10</td><td>D:\recipe\A12.json · 20 KB · SHA-256 一致</td><td></td></tr>
+      <tr><td class="mono">10-29 14:06:10</td><td>检测二号</td><td>李工</td><td><span class="tag">加入观看</span></td><td class="mono">192.168.3.21</td><td>局域网直连 · 权限 观看</td><td></td></tr>
+      <tr><td class="mono">10-29 14:03:11</td><td>检测二号</td><td>张工</td><td><span class="tag green">会话开始</span></td><td class="mono">192.168.1.10</td><td>无人值守密码 · 反连 · 观看 操作 剪贴板 文件</td><td></td></tr>
+      <tr class="bad"><td class="mono">10-29 13:41:55</td><td>贴装一号</td><td>—</td><td><span class="tag red">已锁定</span></td><td class="mono">10.8.0.77</td><td>连续 5 次认证失败，锁定 5 分钟</td><td></td></tr>
+      <tr class="bad"><td class="mono">10-29 13:41:40</td><td>贴装一号</td><td>—</td><td><span class="tag red">认证失败</span></td><td class="mono">10.8.0.77</td><td>密码错误，剩余 1 次</td><td></td></tr>
+      <tr><td class="mono">10-29 11:15:03</td><td>点胶六号</td><td>赵工</td><td><span class="tag orange">远程重启</span></td><td class="mono">192.168.1.10</td><td>重启后 42 秒自动回连</td><td><span class="play"><i data-i="play"></i>播放</span></td></tr>
+      <tr><td class="mono">10-29 10:02:47</td><td>客户A-检测机</td><td>售后-孙工</td><td><span class="tag green">会话开始</span></td><td class="mono">中继</td><td>一次性验证码 · 现场确认 · 观看 操作</td><td><span class="play"><i data-i="play"></i>播放</span></td></tr>
+      <tr><td class="mono">10-29 09:30:18</td><td>包装四号</td><td>张工</td><td><span class="tag blue">下载文件</span></td><td class="mono">192.168.1.10</td><td>D:\log\vision_20261028.log · 6.1 MB</td><td></td></tr>
+      <tr><td class="mono">10-28 18:12:33</td><td>贴装七号</td><td>王工</td><td><span class="tag purple">隐私屏</span></td><td class="mono">192.168.1.10</td><td>开启 · 持续 12 分钟</td><td></td></tr>
+      <tr><td class="mono">10-28 17:58:02</td><td>检测三号</td><td>王工</td><td><span class="tag">剪贴板</span></td><td class="mono">192.168.1.10</td><td>文本 128 字 · 控制端 → 被控端</td><td></td></tr>
+    </table>
+  </div>
+  <div class="pager">共 1,284 条 <span class="btn"><i data-i="left"></i></span><span class="btn pri">1</span><span class="btn">2</span><span class="btn">3</span><span>…</span><span class="btn">117</span><span class="btn"><i data-i="right"></i></span><span class="input sel sm" style="width:90px">11 条/页<i data-i="down"></i></span></div>
+</div>
+<script src="ui.js"></script>
+</body></html>

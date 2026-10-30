@@ -33,6 +33,7 @@ struct StationRunRst {
     HsCommData::HsImage image;             ///< 本帧输出图
     std::vector<HsCommData::HsObject> objects; ///< 本帧结果几何
     HsCommData::HsImage source;            ///< 本帧源图
+    /** @brief 默认 NG、未运行任何流程 */
     StationRunRst()
         : ok(false)
         , cycleMs(0)
@@ -49,6 +50,7 @@ struct StationRuntime {
     bool lastOk;               ///< 上一周期 OK
     int lastCycleMs;           ///< 上一周期耗时
     std::string lastSummary;   ///< 上一周期摘要
+    /** @brief 未运行、上一周期 NG */
     StationRuntime()
         : running(false)
         , lastOk(false)

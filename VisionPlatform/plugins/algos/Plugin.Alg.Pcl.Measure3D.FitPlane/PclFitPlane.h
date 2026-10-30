@@ -23,11 +23,21 @@ namespace Vision {
  */
 class PclFitPlane : public AlgToolBase {
 public:
+    /** @brief 挂到 measure3d.fit_plane 工具壳 */
     std::string toolName() const { return "measure3d.fit_plane"; }
+    /** @brief 算法库为 PCL */
     AlgLibKind algLib() const { return AlgLibPcl; }
+    /** @brief 算法版本号 */
     std::string version() const { return std::string("1.0.0.0"); }
+    /** @brief 版本变更记录 */
     std::vector<VerNote> versionNotes() const;
+    /**
+     * @brief 对第一个输入点云拟合平面，输出法向、原点、RMS、内点云并按判定项判 OK/NG
+     * @note 读 run 里的 distance：内点到平面的距离阈值，单位同点云坐标，缺省 0.5，负数按 0
+     * @return 拟合成功返回 HS_OK（判定 NG 也是 HS_OK）；没有点云或点退化返回错误码
+     */
     int execute(const AlgToolIn& in, AlgToolOut* out) override;
+    /** @brief 新建一个同类实例 */
     AlgToolBase* clone() const { return new PclFitPlane(); }
 
 private:

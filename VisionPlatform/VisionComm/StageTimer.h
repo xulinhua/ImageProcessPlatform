@@ -17,12 +17,14 @@
 namespace Vision {
 
 /**
+ * @class StageSpan
  * @brief 一段已经结束的计时
  */
 struct StageSpan {
     std::string name; ///< 阶段名
     double ms;        ///< 本段毫秒
     int64_t us;       ///< 本段微秒
+    /** @brief 耗时清零 */
     StageSpan();
 };
 
@@ -32,6 +34,7 @@ struct StageSpan {
  */
 class VISION_COMM_API StageTimer {
 public:
+    /** @brief 空计时器 */
     StageTimer();
 
     /** @brief 清空已结束片段，并丢掉还没结束的段 */
@@ -81,6 +84,7 @@ private:
     struct OpenSpan {
         std::string name; ///< 阶段名
         int64_t tick;     ///< 开始时的 QPC 计数
+        /** @brief 计数清零 */
         OpenSpan();
     };
 

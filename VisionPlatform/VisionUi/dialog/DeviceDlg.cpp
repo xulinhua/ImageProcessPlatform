@@ -90,6 +90,7 @@ DeviceDlg::DeviceDlg(Session* session, Solution* solution, const QString& device
     setWindowTitle(T("单设备配置"));
     resize(520, 460);
     enableDialogResize(this);
+    // 控件：名称、种类，以及按种类显示的路径、图像列表、厂商地址、PLC 通道与从站号
     const bool can = session->has(PermEditDevice);
     m_name = new QLineEdit(this);
     m_kind = new QComboBox(this);
@@ -131,6 +132,7 @@ DeviceDlg::DeviceDlg(Session* session, Solution* solution, const QString& device
     m_slave = new QSpinBox(this);
     m_slave->setRange(1, 247);
 
+    // 在 draft 上编辑，另存一份打开时快照用于判断是否改过
     HardwareDevice* formal = m_sol->findDevice(oid(m_id));
     if (formal) {
         m_draft.loadFrom(*formal);
@@ -155,6 +157,7 @@ DeviceDlg::DeviceDlg(Session* session, Solution* solution, const QString& device
     connect(m_comm, SIGNAL(currentIndexChanged(int)), this, SLOT(onEdited()));
     connect(m_slave, SIGNAL(valueChanged(int)), this, SLOT(onEdited()));
 
+    // 无编辑设备权限时全部只读
     m_name->setReadOnly(!can);
     m_kind->setEnabled(can);
     m_backend->setEnabled(can);

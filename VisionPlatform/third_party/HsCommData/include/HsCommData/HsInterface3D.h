@@ -1,12 +1,15 @@
+/**
+ * @file HsInterface3D.h
+ * @brief 三维自由函数。点、位姿以及以后的三维自由函数放这里
+ * @author Hoson
+ *
+ * @copyright Copyright (c) 2026 Hoson. All rights reserved.
+ */
+
 #ifndef HSCOMMDATA_HSINTERFACE3D_H
 #define HSCOMMDATA_HSINTERFACE3D_H
 
 #include <HsCommData/HsCommDataExport.h>
-
-/**
- * @file HsInterface3D.h
- * @brief 三维自由函数。点、位姿以及以后的三维自由函数放这里
- */
 
 #include <HsCommData/Geom3.h>
 

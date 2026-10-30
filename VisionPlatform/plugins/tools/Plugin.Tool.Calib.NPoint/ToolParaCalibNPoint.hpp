@@ -25,8 +25,9 @@ public:
     };
     /** @brief 运行参数 */
     struct Run {
-        std::string tablePath;      ///< 点表
-        std::string imageDir;       ///< imageDir
+        std::string tablePath;      ///< 点表文件（每行 imageX,imageY,worldX,worldY）；空则用标定板图自动提点
+        std::string imageDir;       ///< 标定板图目录，空则取 CalibMgr 的离线目录；自动提点时 board.csv 写在这里
+        /** @brief 全部置空 */
         Run()
             : tablePath("")
             , imageDir("")

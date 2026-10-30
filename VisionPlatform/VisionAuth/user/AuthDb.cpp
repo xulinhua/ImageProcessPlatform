@@ -90,6 +90,7 @@ bool AuthDb::migrateSchema(std::string* error)
     if (v < 0) {
         return false;
     }
+    // 版本 1：用户表
     if (v < 1) {
         if (!db().exec(
                 "CREATE TABLE IF NOT EXISTS users ("
@@ -111,6 +112,7 @@ bool AuthDb::migrateSchema(std::string* error)
             return false;
         }
     }
+    // 版本 2：权限行表，并把旧 role_perm 掩码拆成行；直接记为版本 2
     if (v < 2) {
         if (!db().exec(
                 "CREATE TABLE IF NOT EXISTS perm ("
@@ -196,6 +198,7 @@ bool AuthDb::importLegacy(std::string* error)
     if (!countRows.empty() && !countRows[0].empty() && asInt(countRows[0][0]) > 0) {
         return true;
     }
+    // 旧库读不到时静默跳过，不算失败
     const std::wstring path = utf8ToWide(AppPaths::legacyDatabaseFile());
     if (GetFileAttributesW(path.c_str()) == INVALID_FILE_ATTRIBUTES) {
         return true;
@@ -216,6 +219,7 @@ bool AuthDb::importLegacy(std::string* error)
     if (users.empty() && roles.empty()) {
         return true;
     }
+    // 用户与权限在一个事务里搬，任一失败整体回滚
     if (!db().begin(error)) {
         return false;
     }

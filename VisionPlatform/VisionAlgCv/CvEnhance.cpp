@@ -85,6 +85,7 @@ static bool applyEnhanceOp(cv::Mat* img, const EnhanceStep& st, std::string* err
     case EnhanceOp::EquHisto:
         cv::equalizeHist(*img, *img);
         return true;
+    // 锐化：原图 + coeff ×（原图 − 均值模糊），掩膜边长强制为奇数
     case EnhanceOp::Emphasize: {
         int mw = st.maskW < 1 ? 1 : st.maskW;
         int mh = st.maskH < 1 ? 1 : st.maskH;
@@ -107,6 +108,7 @@ static bool applyEnhanceOp(cv::Mat* img, const EnhanceStep& st, std::string* err
         sum.convertTo(*img, CV_8U);
         return true;
     }
+    // 光照均衡：原图 ÷ 均值模糊，再乘 128×coeff 拉回灰度范围
     case EnhanceOp::Illuminate: {
         int mw = st.maskW < 1 ? 1 : st.maskW;
         int mh = st.maskH < 1 ? 1 : st.maskH;
@@ -128,6 +130,7 @@ static bool applyEnhanceOp(cv::Mat* img, const EnhanceStep& st, std::string* err
         out.convertTo(*img, CV_8U);
         return true;
     }
+    // 灰度缩放：scaleMax 时拉伸到 0~255，否则按 coeff、coeff2 做线性变换
     case EnhanceOp::Scale:
         if (st.scaleMax) {
             double mn = 0;

@@ -8,9 +8,12 @@
 
 #include "StationRuntimePanel.h"
 #include "Station.h"
+#include "Job.h"
 #include "QtConv.h"
 #include "Theme.h"
 #include "UiText.h"
+#include "CloudViewBinder.h"
+#include "ToolIo.h"
 #include <QButtonGroup>
 #include <QDateTime>
 #include <QFrame>
@@ -97,12 +100,14 @@ StationRuntimePanel::StationRuntimePanel(QWidget* parent)
     , m_station(nullptr)
 {
     for (int i = 0; i < 9; ++i) {
+        m_shells[i] = 0;
         m_cells[i] = 0;
         m_cellTitles[i] = 0;
         m_cellPanes[i] = 0;
     }
     m_viewConfig.normalize();
 
+    // 图像区：状态指示 + 3×3 预建的图像窗，实际显示几个由 applyLayout 决定
     m_online = new QLabel(T("● 在线"), this);
     m_online->setStyleSheet(QLatin1String("color:#52C41A;"));
     m_live = new QLabel(T("● Live"), this);
@@ -127,14 +132,16 @@ StationRuntimePanel::StationRuntimePanel(QWidget* parent)
         v->setSpacing(2);
         QLabel* title = new QLabel(T("窗口") + QString::number(i + 1), pane);
         title->setObjectName(QLatin1String("hint"));
-        HsCtrl::HsImageWindow* w = new HsCtrl::HsImageWindow(pane);
+        HsCtrl::HsViewShell* shell = new HsCtrl::HsViewShell(pane);
+        HsCtrl::HsImageWindow* w = shell->imageWindow();
         w->setWindowMode(HsCtrl::WindowRuntime);
         w->setOverlayToolbarVisible(true);
         w->setDrawTool(HsCtrl::ToolBrowse);
         v->addWidget(title);
-        v->addWidget(w, 1);
+        v->addWidget(shell, 1);
         m_cellPanes[i] = pane;
         m_cellTitles[i] = title;
+        m_shells[i] = shell;
         m_cells[i] = w;
         m_gridLay->addWidget(pane, i / 3, i % 3);
     }
@@ -144,6 +151,7 @@ StationRuntimePanel::StationRuntimePanel(QWidget* parent)
     imgLay->addLayout(imgHead);
     imgLay->addWidget(gridHost, 1);
 
+    // 右侧统计卡：判定横幅与产量、良率、节拍
     m_stationTitle = new QLabel(T("工站：-"), this);
     m_stationTitle->setObjectName(QLatin1String("section"));
     m_banner = new QLabel(QLatin1String("OK"), this);
@@ -170,6 +178,7 @@ StationRuntimePanel::StationRuntimePanel(QWidget* parent)
     top->addWidget(imgCard, 1);
     top->addWidget(stats);
 
+    // 底部结果历史：全部 / OK / NG 互斥过滤 + 横向滚动的缩略图行
     QLabel* histTitle = new QLabel(T("结果历史"), this);
     histTitle->setObjectName(QLatin1String("section"));
     m_fAll = new QPushButton(T("全部"), this);
@@ -456,6 +465,16 @@ void StationRuntimePanel::applyImages()
         if (m_needFit) {
             m_cells[i]->fitToWindow();
         }
+        // 格绑定工具若有点云输出，灌入该格壳并可切 3D
+        if (m_shells[i] && m_station && !pane.imageToolId.isNull()) {
+            Job* job = m_station->findJobOfTool(pane.imageToolId);
+            if (job) {
+                const bool got3d = CloudViewBinder::apply(m_shells[i], job->cachedIo(pane.imageToolId), true);
+                if (!got3d) {
+                    m_shells[i]->setViewMode(HsCtrl::ViewModeImage2D);
+                }
+            }
+        }
     }
     m_needFit = false;
 }
@@ -476,6 +495,7 @@ void StationRuntimePanel::onHistFilter()
 // 按过滤条件重建最多 12 张历史缩略图
 void StationRuntimePanel::rebuildHist()
 {
+    // 清掉旧缩略图，保留末尾的弹簧
     while (m_ngLay->count() > 1) {
         QLayoutItem* it = m_ngLay->takeAt(0);
         if (!it) {
@@ -496,6 +516,7 @@ void StationRuntimePanel::rebuildHist()
         if (m_histFilter == 2 && rec.ok) {
             continue;
         }
+        // 每格：缩略图（无图时显示 OK/NG 色块）、判定徽标、时间，悬停显示详情
         QFrame* cell = makeCard(m_ngRow);
         cell->setFixedSize(128, 96);
         QVBoxLayout* v = new QVBoxLayout(cell);

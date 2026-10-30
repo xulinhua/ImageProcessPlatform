@@ -39,6 +39,7 @@ enum TupleElemKind {
  */
 struct HSCOMMDATA_EXPORT TupleElem {
     TupleElemKind kind; ///< 本元素种类
+    /** @brief 数值存储，按 kind 取整数或浮点 */
     union {
         int64_t i; ///< ElemLong
         double d;  ///< ElemDouble
@@ -320,7 +321,7 @@ public:
 private:
     /** @brief 负下标收到 [0, length())。非法则抛 */
     int resolveIndex(int index) const;
-    struct Body;
+    struct Body; ///< 共享数据体，定义在 HsTuple.cpp
 
     /** @brief 确保已分配缓冲 */
     void ensure();

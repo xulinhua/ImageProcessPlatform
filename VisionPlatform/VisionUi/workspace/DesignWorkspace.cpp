@@ -24,7 +24,9 @@
 #include "ToolRstPanel.h"
 #include "ToolLibrary.h"
 #include "ToolIoPanel.h"
+#include "CloudViewBinder.h"
 #include "Station.h"
+#include "Job.h"
 #include <QAbstractItemView>
 #include <QAction>
 #include <QCursor>
@@ -204,7 +206,8 @@ DesignWorkspace::DesignWorkspace(Session* session, Solution* solution, Station* 
     connect(m_toolLib, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
             this, SLOT(onAlgLibDouble(QTreeWidgetItem*,int)));
 
-    m_view = new HsCtrl::HsImageWindow(this);
+    m_shell = new HsCtrl::HsViewShell(this);
+    m_view = m_shell->imageWindow();
     m_view->setWindowMode(HsCtrl::WindowDesign);
     // 隐藏叠加工具条
     m_view->setOverlayToolbarVisible(false);
@@ -297,7 +300,7 @@ DesignWorkspace::DesignWorkspace(Session* session, Solution* solution, Station* 
     bindTrKey(iTitle, "图像");
     iTitle->setObjectName(QLatin1String("section"));
     imgLay->addWidget(iTitle);
-    imgLay->addWidget(m_view, 1);
+    imgLay->addWidget(m_shell, 1);
     imgLay->addWidget(m_status);
 
     m_result = new ToolRstPanel(this);
@@ -854,6 +857,7 @@ void DesignWorkspace::showJobResult(const JobCfg* job, const ToolOut& jobOut)
     m_lastRun = jobOut;
     m_hasLastRun = true;
 
+    // 底图：流程源图，其次第一个有缓存的取图工具，最后用流程输出图
     HsCommData::HsImage base = jobOut.source;
     if (base.isNull()) {
         for (size_t i = 0; i < job->tools.size(); ++i) {
@@ -868,6 +872,7 @@ void DesignWorkspace::showJobResult(const JobCfg* job, const ToolOut& jobOut)
         base = jobOut.image;
     }
 
+    // 叠加按执行顺序拼各工具缓存，都没有时用流程输出对象
     QVector<HsCommData::Graphic> ov;
     const std::vector<ObjectId> order = job->execOrder();
     for (size_t i = 0; i < order.size(); ++i) {
@@ -895,6 +900,14 @@ void DesignWorkspace::showJobResult(const JobCfg* job, const ToolOut& jobOut)
         m_view->setOverlays(toStd(ov));
     }
     m_view->setDrawings(std::vector<HsCommData::Graphic>());
+    if (m_shell) {
+        for (int i = static_cast<int>(order.size()) - 1; i >= 0; --i) {
+            const ToolIo io = jobRt->cachedIo(order[static_cast<size_t>(i)]);
+            if (CloudViewBinder::apply(m_shell, io, true)) {
+                break;
+            }
+        }
+    }
     m_status->setText(T("流程 ") + qs(job->name) + T("：显示采集底图与各工具叠加"));
 
     m_result->refreshJob(m_sol, job, jobRt, &jobOut);
@@ -977,6 +990,7 @@ void DesignWorkspace::showToolResult(const QString& toolId, const HsCommData::Hs
         m_hasLastRun = true;
     }
 
+    // 底图：取图工具用传入图或缓存，其余工具用上游输入图（传入的 fb 不用）
     StationCfg* st = nullptr;
     JobCfg* job = t ? m_sol->findJobCfgOfTool(t->id, &st) : nullptr;
     const bool isCam = t && (t->type == ToolType::Acquire);
@@ -1001,6 +1015,7 @@ void DesignWorkspace::showToolResult(const QString& toolId, const HsCommData::Hs
         }
     }
 
+    // 刚跑完本工具（非取图）时保留当前底图，只换叠加
     const bool replaceBase = isCam || !metaMatches;
     if (replaceBase && !showFb.isNull()) {
         applyFrame(m_view, showFb);
@@ -1022,6 +1037,13 @@ void DesignWorkspace::showToolResult(const QString& toolId, const HsCommData::Hs
     m_view->setDrawings(toStd(drawings));
     const bool showLabels = m_view && m_view->drawTool() != HsCtrl::ToolBrowse;
     overlayRoiDetails(m_view, t, -1, showLabels);
+    if (m_shell && t) {
+        if (metaMatches && runMeta) {
+            CloudViewBinder::apply(m_shell, runMeta->io, true);
+        } else if (jobRt) {
+            CloudViewBinder::apply(m_shell, jobRt->cachedIo(t->id), true);
+        }
+    }
     refreshResult(metaMatches ? runMeta : 0, afterJobRun);
     syncDrawingInteractionView();
     if (job) {
@@ -1216,6 +1238,7 @@ void DesignWorkspace::onTreeMenu(const QPoint& pos)
         refreshCanvas();
     }
     updateToolButtons();
+    // 方案、工站、流程节点只有重命名；工具节点另有移动、复制、删除
     const bool canEdit = m_session->has(PermEditSolution);
     QMenu menu(this);
     if (kind == KindSol || kind == KindStation || kind == KindJob) {
@@ -1295,6 +1318,7 @@ void DesignWorkspace::onCanvasMenu(const QString& id, int kind, const QPoint& gl
     if (!job) {
         job = m_sol->findJobCfgOfTool(oid(m_toolId), 0);
     }
+    // 连线：恢复自动路由或断开，需编辑权限
     const bool canEdit = m_session->has(PermEditSolution);
     if (kind == CanvasHitWire) {
         if (!canEdit || !job) {
@@ -1317,6 +1341,7 @@ void DesignWorkspace::onCanvasMenu(const QString& id, int kind, const QPoint& gl
     if (kind == CanvasHitTool && !id.isEmpty()) {
         selectTool(id);
     }
+    // 节点或空白处：添加工具子菜单列出全部注册工具，其余项可用性跟随工具按钮
     updateToolButtons();
     QMenu menu(this);
     QMenu* addMenu = menu.addMenu(T("在此处添加工具"));
@@ -1380,6 +1405,7 @@ void DesignWorkspace::onCanvasMenu(const QString& id, int kind, const QPoint& gl
         onDeleteTool();
         return;
     }
+    // 添加工具：默认绑定所属工站的第一台设备（经流程第一个工具反查工站，空流程时不绑），按点击的节点挂到执行树
     const QString tn = chosen->data().toString();
     if (tn.isEmpty() || !job || !canEdit) {
         return;
@@ -1401,8 +1427,6 @@ void DesignWorkspace::onCanvasMenu(const QString& id, int kind, const QPoint& gl
     reloadTree();
     selectTool(qs(t.id));
 }
-
-// 双击算法库
 
 // 双击算法库
 void DesignWorkspace::onAlgLibDouble(QTreeWidgetItem* item, int)

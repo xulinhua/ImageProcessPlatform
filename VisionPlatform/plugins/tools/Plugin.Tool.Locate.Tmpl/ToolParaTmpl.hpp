@@ -1,6 +1,9 @@
 /**
  * @file ToolParaTmpl.hpp
  * @brief 模板定位的示教参数和运行参数
+ * @author Hoson
+ *
+ * @copyright Copyright (c) 2026 Hoson. All rights reserved.
  */
 
 #ifndef VISION_TOOLPARATMPL_H
@@ -16,52 +19,63 @@
 
 namespace Vision {
 
-/** @brief 模板工具落盘键 */
+/**
+ * @class TmplKey
+ * @brief 模板工具落盘键、ROI 槽名、输出键与动作 id
+ */
 struct TmplKey {
-    static constexpr const char* method = "method";
-    static constexpr const char* angleRange = "angleRange";
-    static constexpr const char* angleStep = "angleStep";
-    static constexpr const char* numLevels = "numLevels";
-    static constexpr const char* metric = "metric";
-    static constexpr const char* optimization = "optimization";
-    static constexpr const char* minContrast = "minContrast";
-    static constexpr const char* rebuildModel = "rebuildModel";
-    static constexpr const char* contrast = "contrast";
-    static constexpr const char* modelFile = "modelFile";
-    static constexpr const char* minScore = "minScore";
-    static constexpr const char* numMatches = "numMatches";
-    static constexpr const char* maxOverlap = "maxOverlap";
-    static constexpr const char* subPixel = "subPixel";
-    static constexpr const char* findLevels = "findLevels";
-    static constexpr const char* greediness = "greediness";
-    static constexpr const char* search = "search";
-    static constexpr const char* follow = "follow";
-    static constexpr const char* teach = "teach";
-    static constexpr const char* score = "score";
-    static constexpr const char* count = "count";
-    static constexpr const char* offset = "offset";
-    static constexpr const char* offsetX = "offsetX";
-    static constexpr const char* offsetY = "offsetY";
-    static constexpr const char* offsetAngle = "offsetAngle";
-    static constexpr const char* teachRoi = "teachRoi";
-    static constexpr const char* resultRoi = "resultRoi";
-    static constexpr const char* followRoi = "followRoi";
-    static constexpr const char* pose = "pose";
-    static constexpr const char* verdict = "verdict";
-    static constexpr const char* teachModel = "teach.model";
-    static constexpr const char* inspContour = "insp.contour";
+    static constexpr const char* method = "method"; ///< 建模方式：ncc 或 shape；空按 ncc，其他值记 HS_ERR_TMPL_METHOD
+    static constexpr const char* angleRange = "angleRange"; ///< 角度范围（度），0~180，缺省 15；建模和定位都搜 ±angleRange
+    static constexpr const char* angleStep = "angleStep"; ///< 角度步长（度）：auto、一个数或“下限,上限”，0 按 auto
+    static constexpr const char* numLevels = "numLevels"; ///< 建模金字塔层数：auto 或 1~10，0 按 auto
+    static constexpr const char* metric = "metric"; ///< 极性：use_polarity / ignore_global_polarity / ignore_local_polarity / ignore_color_polarity
+    static constexpr const char* optimization = "optimization"; ///< 形状模板点压缩：auto / none / point_reduction_low/medium/high，只用于 shape
+    static constexpr const char* minContrast = "minContrast"; ///< 形状模板最小对比度（灰度）：auto 或 1~255，0 按 auto；只用于 shape
+    static constexpr const char* rebuildModel = "rebuildModel"; ///< 下次运行强制重建模型，Job 跑完一次后清回 false；HalTmpl 当前不读
+    static constexpr const char* contrast = "contrast"; ///< 形状模板对比度：auto / auto_contrast / auto_contrast_hyst 或一个数，缺省 30，0 按 auto
+    static constexpr const char* modelFile = "modelFile"; ///< 模型文件名，空按方法取 model.ncm 或 model.shm；HalTmpl 当前不读
+    static constexpr const char* minScore = "minScore"; ///< 最低匹配分数，0~1，缺省 0.5
+    static constexpr const char* numMatches = "numMatches"; ///< 最多匹配个数，1~999，缺省 1
+    static constexpr const char* maxOverlap = "maxOverlap"; ///< 两个匹配允许的最大重叠比例，0~1，缺省 0.5
+    static constexpr const char* subPixel = "subPixel"; ///< 亚像素：none / interpolation / least_squares / least_squares_high，缺省 least_squares
+    static constexpr const char* findLevels = "findLevels"; ///< 定位用的金字塔层数 0~10；0 用模型全部层数
+    static constexpr const char* greediness = "greediness"; ///< 形状匹配贪婪度，0~1，缺省 0.9；只用于 shape
+    static constexpr const char* search = "search"; ///< ROI 槽名：搜索区
+    static constexpr const char* follow = "follow"; ///< ROI 槽名：跟随区，按匹配位姿变换后从 followRoi 输出
+    static constexpr const char* teach = "teach"; ///< ROI 槽名：示教区，从中裁出模板图
+    static constexpr const char* score = "score"; ///< 输出值键：首个匹配的分数，0~1
+    static constexpr const char* count = "count"; ///< 输出值键：匹配个数
+    static constexpr const char* offset = "offset"; ///< 判定键：相对参考位姿的平移距离（像素），缺省范围 0~14
+    static constexpr const char* offsetX = "offsetX"; ///< 判定键：相对参考位姿的 X 偏移（像素），缺省 ±10
+    static constexpr const char* offsetY = "offsetY"; ///< 判定键：相对参考位姿的 Y 偏移（像素），缺省 ±10
+    static constexpr const char* offsetAngle = "offsetAngle"; ///< 判定键：相对参考位姿的角度偏移（弧度），缺省 ±0.2
+    static constexpr const char* teachRoi = "teachRoi"; ///< 显示图形槽：示教区
+    static constexpr const char* resultRoi = "resultRoi"; ///< 显示图形槽：示教区按每个匹配位姿变换后的区域；轮廓预览时为模型轮廓
+    static constexpr const char* followRoi = "followRoi"; ///< 显示图形槽：跟随区按每个匹配位姿变换后的区域
+    static constexpr const char* pose = "pose"; ///< 显示文字槽：匹配位姿，锚在结果点
+    static constexpr const char* verdict = "verdict"; ///< 显示文字槽：OK/NG 结论，锚在图像角
+    static constexpr const char* teachModel = "teach.model"; ///< 动作 id：用示教区建模并试匹配
+    static constexpr const char* inspContour = "insp.contour"; ///< 动作 id：按 contrast 预览形状模型轮廓
 };
 
+/** @brief 模板建模方式 */
 enum class TmplMethod {
-    Ncc,
-    Shape
+    Ncc,  ///< 归一化互相关，模型文件 model.ncm
+    Shape ///< 形状匹配，模型文件 model.shm
 };
 
+/** @brief 建模方式的落盘名：ncc 或 shape */
 inline const char* tmplMethodName(TmplMethod method)
 {
     return method == TmplMethod::Shape ? "shape" : "ncc";
 }
 
+/**
+ * @brief 落盘名转建模方式
+ * @param text 落盘名，空串按 ncc
+ * @param out 输出方式，不可空
+ * @return 识别成功返回 true；未知名或 out 为空返回 false
+ */
 inline bool tmplMethodFrom(const std::string& text, TmplMethod* out)
 {
     if (out == nullptr) {
@@ -78,19 +92,25 @@ inline bool tmplMethodFrom(const std::string& text, TmplMethod* out)
     return false;
 }
 
+/** @brief 建模方式对应的缺省模型文件名：model.shm 或 model.ncm */
 inline const char* tmplModelFile(TmplMethod method)
 {
     return method == TmplMethod::Shape ? "model.shm" : "model.ncm";
 }
 
-/** @brief 词、一个数，或下限和上限 */
+/**
+ * @class NumOrString
+ * @brief 词、一个数，或下限和上限
+ */
 struct NumOrString {
-    enum Form { Word, Number, Pair };
-    Form form;
-    std::string word;
-    double low;
-    double high;
+    enum Form { Word, Number, Pair }; ///< 取值形式：词（如 auto）、一个数、下限和上限
+    Form form;        ///< 当前形式
+    std::string word; ///< Word 时的词
+    double low;       ///< Number 时的数；Pair 时的下限
+    double high;      ///< Pair 时的上限
+    /** @brief 缺省为空词 */
     NumOrString() : form(Word), low(0), high(0) {}
+    /** @brief 构造词形式，空指针按空串 */
     static NumOrString from_word(const char* text)
     {
         NumOrString one;
@@ -98,6 +118,7 @@ struct NumOrString {
         one.word = text != nullptr ? text : "";
         return one;
     }
+    /** @brief 构造一个数的形式 */
     static NumOrString from_number(double n)
     {
         NumOrString one;
@@ -113,21 +134,25 @@ struct NumOrString {
  */
 class ToolParaTmpl : public ToolParaBase {
 public:
+    /** @brief 参数类型名，toolParaAs 按它识别 */
     static const char* typeId() { return "ToolParaTmpl"; }
+    /** @brief 返回 typeId() */
     const char* typeName() const override { return typeId(); }
 
+    /** @brief 示教参数：建模用，learn 里有就读 learn，否则读 run */
     struct Teach {
-        TmplMethod method;
-        double angleRange;
-        double angleRad;
-        NumOrString angleStep;
-        NumOrString numLevels;
-        std::string metric;
-        std::string optimization;
-        NumOrString contrast;
-        NumOrString minContrast;
-        std::string modelFile;
-        bool rebuildModel;
+        TmplMethod method;         ///< 建模方式
+        double angleRange;         ///< 角度范围（度），搜 ±angleRange
+        double angleRad;           ///< angleRange 换算的弧度，load 时算
+        NumOrString angleStep;     ///< 角度步长（度）；Word 为 auto
+        NumOrString numLevels;     ///< 建模金字塔层数；Word 为 auto
+        std::string metric;        ///< 极性，见 TmplKey::metric
+        std::string optimization;  ///< 形状模板点压缩方式
+        NumOrString contrast;      ///< 形状模板对比度
+        NumOrString minContrast;   ///< 形状模板最小对比度
+        std::string modelFile;     ///< 模型文件名；HalTmpl 当前不读
+        bool rebuildModel;         ///< 强制重建标志；HalTmpl 当前不读
+        /** @brief 缺省：NCC，±15 度，步长和层数自动，对比度 30 */
         Teach()
             : method(TmplMethod::Ncc)
             , angleRange(15.0)
@@ -142,13 +167,15 @@ public:
             , rebuildModel(false)
         {}
     };
+    /** @brief 运行参数：定位用，只从 run 读 */
     struct Run {
-        double minScore;
-        int numMatches;
-        double maxOverlap;
-        std::string subPixel;
-        int findLevels;
-        double greediness;
+        double minScore;      ///< 最低匹配分数，0~1
+        int numMatches;       ///< 最多匹配个数
+        double maxOverlap;    ///< 匹配间最大重叠比例，0~1
+        std::string subPixel; ///< 亚像素方式
+        int findLevels;       ///< 定位金字塔层数；0 用模型全部层数
+        double greediness;    ///< 形状匹配贪婪度，0~1
+        /** @brief 缺省：分数 0.5，找 1 个，最小二乘亚像素，贪婪度 0.9 */
         Run()
             : minScore(0.5)
             , numMatches(1)
@@ -159,11 +186,13 @@ public:
         {}
     };
 
-    Teach teach;
-    Run run;
+    Teach teach; ///< 示教参数
+    Run run;     ///< 运行参数
 
+    /** @brief 最近一次 load 的结果：HS_OK，或首个非法字段的错误码 */
     int loadCode() const { return loadCode_; }
 
+    /** @brief 从 ToolParam 填写。非法值回缺省，错误码记入 loadCode() */
     void load(const ToolParam& src) override
     {
         loadCode_ = HS_OK;
@@ -212,6 +241,12 @@ public:
     }
 
 private:
+    /**
+     * @brief 读一个“词或数”字段，learn 里有就读 learn，否则读 run
+     * @param key 字段键
+     * @param allowPair 是否接受“下限,上限”
+     * @param slot 写入位置；字段缺失时保持原值，非法时保持原值并记错误码
+     */
     void takeNum(const ParamMap& learnMap, const ParamMap& runMap, const char* key, bool allowPair, NumOrString* slot)
     {
         if (slot == nullptr) {
@@ -264,7 +299,7 @@ private:
         }
     }
 
-    int loadCode_ = HS_OK;
+    int loadCode_ = HS_OK; ///< 最近一次 load 的错误码，只记第一个
 };
 
 }

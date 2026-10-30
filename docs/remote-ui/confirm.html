@@ -1,0 +1,50 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="ui.css">
+<style>
+body { padding: 0; }
+.desk { width: 1440px; height: 810px; position: relative; overflow: hidden; }
+.desk > .rs { width: 1440px; }
+.bar { position: absolute; top: 0; left: 50%; transform: translateX(-50%); background: rgba(20, 24, 31, .92); color: #fff; border-radius: 0 0 10px 10px; padding: 8px 10px 8px 16px; display: flex; align-items: center; gap: 12px; box-shadow: 0 6px 20px rgba(0, 0, 0, .3); font-size: 13px; }
+.bar .live { width: 8px; height: 8px; border-radius: 50%; background: #FF4D4F; box-shadow: 0 0 0 3px rgba(255, 77, 79, .3); }
+.bar .btn { height: 26px; font-size: 12px; background: rgba(255, 255, 255, .12); border-color: transparent; color: #fff; }
+.bar .btn.danger { background: #FF4D4F; }
+.bar .grip { color: #8C8C8C; letter-spacing: -2px; }
+.dlg { position: absolute; right: 32px; bottom: 70px; width: 420px; background: #fff; border-radius: 10px; box-shadow: 0 16px 48px rgba(0, 0, 0, .35); overflow: hidden; }
+.dh { padding: 16px 20px 10px; display: flex; gap: 12px; align-items: flex-start; }
+.dh .ic { width: 40px; height: 40px; border-radius: 10px; background: #FFF7E6; color: #FA8C16; display: flex; align-items: center; justify-content: center; flex: none; }
+.dh .ic svg.i { width: 22px; height: 22px; }
+.dh h3 { margin: 0 0 4px; font-size: 16px; }
+.dh p { margin: 0; color: #595959; font-size: 12px; line-height: 1.6; }
+.db { padding: 6px 20px 14px; display: flex; flex-direction: column; gap: 10px; }
+.perm { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; background: #FAFAFA; border-radius: 6px; padding: 10px 12px; }
+.df { padding: 12px 20px; border-top: 1px solid #F0F0F0; display: flex; align-items: center; gap: 8px; }
+.df .t { margin-right: auto; color: #8C8C8C; font-size: 12px; }
+.prog { height: 3px; background: #F0F0F0; }
+.prog i { display: block; height: 3px; width: 77%; background: #FA8C16; }
+.mono { font-family: Consolas, "Microsoft YaHei UI", monospace; }
+.cap { position: absolute; left: 24px; bottom: 60px; background: rgba(0, 0, 0, .6); color: #fff; font-size: 12px; padding: 6px 10px; border-radius: 4px; }
+</style></head>
+<body>
+<div class="desk">
+  <div class="rs dense" data-v="pcb" data-task="1" data-okn="8,214" data-ngn="6" data-cursor="45,52" data-clock="14:21"></div>
+  <div class="bar"><span class="grip">⋮⋮</span><span class="live"></span><span>张工（中控室-01）正在远程操作此电脑</span><span class="btn"><i data-i="chat"></i>聊天</span><span class="btn"><i data-i="pause"></i>暂停操作</span><span class="btn danger"><i data-i="x"></i>断开</span></div>
+  <div class="dlg">
+    <div class="dh"><span class="ic"><i data-i="shield"></i></span><div><h3>远程连接请求</h3><p><b>李工 · 办公室-03</b>（<span class="mono">192.168.3.21</span>）请求连接本机<br>认证方式：一次性验证码 · 局域网直连 · 证书指纹已校验</p></div></div>
+    <div class="db">
+      <span class="muted" style="font-size:12px">允许对方：</span>
+      <div class="perm">
+        <span class="opt"><span class="ck on"><i data-i="check"></i></span>观看</span>
+        <span class="opt"><span class="ck on"><i data-i="check"></i></span>操作</span>
+        <span class="opt"><span class="ck"></span>剪贴板</span>
+        <span class="opt"><span class="ck on"><i data-i="check"></i></span>文件</span>
+        <span class="opt"><span class="ck"></span>电源</span>
+        <span class="opt"><span class="ck"></span>隐私屏</span>
+      </div>
+      <span class="opt"><span class="ck"></span>以后信任这台设备，不再询问</span>
+    </div>
+    <div class="prog"><i></i></div>
+    <div class="df"><span class="t">23 秒后自动拒绝</span><span class="btn">拒绝</span><span class="btn pri">允许</span></div>
+  </div>
+</div>
+<script src="ui.js"></script>
+</body></html>

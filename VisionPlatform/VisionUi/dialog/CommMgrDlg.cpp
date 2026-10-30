@@ -85,6 +85,7 @@ CommMgrDlg::CommMgrDlg(Session* session, Solution* solution, QWidget* parent)
     setWindowTitle(T("通信管理"));
     resize(1080, 680);
     enableDialogResize(this);
+    // 无编辑通信权限时只能连接、收发调试，不能增删改通道
     const bool can = session->has(PermEditComm);
 
     m_list = new QListWidget(this);
@@ -103,6 +104,7 @@ CommMgrDlg::CommMgrDlg(Session* session, Solution* solution, QWidget* parent)
     m_protocol->setEnabled(can);
     m_protocolLabel = new QLabel(T("协议"), this);
 
+    // 各通道类型的参数控件
     m_serialPort = new QComboBox(this);
     m_baud = new QSpinBox(this);
     m_baud->setRange(1200, 921600);
@@ -151,6 +153,7 @@ CommMgrDlg::CommMgrDlg(Session* session, Solution* solution, QWidget* parent)
     m_mbValue = new QSpinBox(this);
     m_mbValue->setRange(0, 65535);
 
+    // 参数页顺序：串口、TCP 客户端、TCP 服务端、UDP
     m_stack = new QStackedWidget(this);
     QWidget* serialPage = new QWidget(m_stack);
     QFormLayout* sf = new QFormLayout(serialPage);
@@ -195,6 +198,7 @@ CommMgrDlg::CommMgrDlg(Session* session, Solution* solution, QWidget* parent)
     m_sendEdit = new QLineEdit(this);
     m_sendEdit->setPlaceholderText(T("要发送的文本"));
 
+    // 按钮与信号
     QPushButton* addSerial = new QPushButton(T("串口"), this);
     QPushButton* addClient = new QPushButton(T("TCP客户端"), this);
     QPushButton* addServer = new QPushButton(T("TCP服务端"), this);
@@ -237,6 +241,7 @@ CommMgrDlg::CommMgrDlg(Session* session, Solution* solution, QWidget* parent)
     connect(m_list, SIGNAL(itemSelectionChanged()), this, SLOT(onSel()));
     connect(m_protocol, SIGNAL(currentIndexChanged(int)), this, SLOT(onProtocolChanged()));
 
+    // 布局：左为通道列表与新增按钮；右上连接参数，右下收发调试（原始字节或 MODBUS）
     QFrame* leftCard = makeCard(this);
     leftCard->setMinimumWidth(260);
     leftCard->setMaximumWidth(320);

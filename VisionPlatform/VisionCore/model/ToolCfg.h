@@ -21,7 +21,9 @@ namespace Vision {
 struct RoutePoint {
     double x; ///< 场景 X
     double y; ///< 场景 Y
+    /** @brief 原点 */
     RoutePoint() : x(0), y(0) {}
+    /** @brief 指定场景坐标 */
     RoutePoint(double xx, double yy) : x(xx), y(yy) {}
 };
 
@@ -39,6 +41,7 @@ struct ToolLink {
     int index;             ///< 上游该口的第几个；-1 表示整口
     RegionUse use;          ///< 区域用途，只对 Region / Roi 有意义
     ToolLinkOrigin origin; ///< ToolLinkOrigin
+    /** @brief 默认图像出口接图像入口、整口、普通区域、手动连线 */
     ToolLink()
         : fromPort(portSlotOut(PortData::Image))
         , toPort(portSlotIn(PortData::Image))

@@ -1814,11 +1814,13 @@ void MainWindow::showRuntimePage()
     applyMode(ModeRuntime);
 }
 
+// 服务模式下从共享内存拉各工站最新画面刷到运行面板
 void MainWindow::pullSharedPreview()
 {
     if (!m_serviceRun || !m_runtime) {
         return;
     }
+    // 窗口不可见时退订远端画面
     SharedFrames& frames = SharedFrames::instance();
     if (!isVisible()) {
         frames.setSubscribe(false);
@@ -1833,6 +1835,7 @@ void MainWindow::pullSharedPreview()
         if (!panel || panel->stationId().isNull()) {
             continue;
         }
+        // 先找本机槽，找不到再找远端槽；不比较帧序号，每次都重新解码
         const std::string sid = panel->stationId().toString();
         IpcPreview preview;
         bool got = false;
@@ -1855,6 +1858,7 @@ void MainWindow::pullSharedPreview()
         if (!got || preview.jpeg.empty()) {
             continue;
         }
+        // JPEG 解成 RGB8，底图与结果图用同一张，不带叠加
         QImage img;
         if (!img.loadFromData(preview.jpeg.data(), static_cast<int>(preview.jpeg.size()), "JPEG")) {
             continue;

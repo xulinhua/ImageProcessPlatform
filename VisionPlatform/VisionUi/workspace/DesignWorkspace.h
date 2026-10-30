@@ -11,6 +11,7 @@
 #include "VisionUiExport.h"
 
 #include <HsCtrl/HsImageWindow.h>
+#include <HsCtrl/HsViewShell.h>
 #include "ToolBase.h"
 #include <QVector>
 #include <QWidget>
@@ -186,7 +187,8 @@ private:
     QLabel* m_algoTitle;                ///< 算法库标题
     QLabel* m_canvasTitle;              ///< 画布标题
     JobFlowCanvasPanel* m_flowCanvas;   ///< 当前 JobCfg 画布（含连线写回）
-    HsCtrl::HsImageWindow* m_view;     ///< 图像窗
+    HsCtrl::HsViewShell* m_shell;      ///< 图像/点云壳
+    HsCtrl::HsImageWindow* m_view;     ///< 图像窗（壳内）
     QLabel* m_status;                   ///< 状态/坐标
     QTableWidget* m_log;                ///< 日志表
     ToolRstPanel* m_result;          ///< 调试与结果显示

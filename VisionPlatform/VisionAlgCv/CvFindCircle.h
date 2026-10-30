@@ -19,8 +19,11 @@ namespace Vision {
  */
 class CvFindCircle : public AlgToolBase {
 public:
+    /** @brief 挂到 locate.find_circle 工具壳 */
     std::string toolName() const { return "locate.find_circle"; }
-    AlgLibKind algLib() const { return AlgLibCv; }
+    /** @brief 算法库：OpenCV */
+    AlgLibKind algLib() const { return AlgLibCv; }
+    /** @brief 算法版本号 */
     std::string version() const;
     /** @brief 版本变更，只追加 */
     std::vector<VerNote> versionNotes() const;
@@ -39,7 +42,9 @@ public:
         }
         return out->errCode;
     }
+    /** @brief 搜索区内 Canny 取轮廓，按 minR/maxR 和圆度筛选，取半径最大的最小外接圆；找不到时 ok 为 false */
     AlgToolOut run(const AlgToolIn& in);
+    /** @brief 克隆一份新实例 */
     AlgToolBase* clone() const { return new CvFindCircle(); }
 };
 

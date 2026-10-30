@@ -31,6 +31,7 @@ enum class ToolType {
     Measure3D,      ///< 三维测量
     Align3D,        ///< 三维配准
     Infer,          ///< 深度学习推理
+    Identify,       ///< 识别。二维码、一维码、字符
     Max ///< 个数，不是合法值
 };
 
@@ -65,7 +66,7 @@ inline bool toolTypeIsAcquire3D(ToolType t)
 inline bool toolTypeIsOverlaySource(ToolType t)
 {
     return t == ToolType::Locate || t == ToolType::Detect || t == ToolType::RstProcess
-        || t == ToolType::Infer;
+        || t == ToolType::Infer || t == ToolType::Identify;
 }
 
 /** @brief 工具类型是否参与 OK/NG 结果矩阵列 */
@@ -74,7 +75,7 @@ inline bool toolTypeProducesOkNg(ToolType t)
     return t == ToolType::Locate || t == ToolType::Detect
         || t == ToolType::RstProcess || t == ToolType::Logic
         || t == ToolType::Measure3D || t == ToolType::Align3D
-        || t == ToolType::Infer;
+        || t == ToolType::Infer || t == ToolType::Identify;
 }
 
 }

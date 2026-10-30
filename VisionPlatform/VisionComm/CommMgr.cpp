@@ -10,7 +10,8 @@
 #include "TextEncoding.h"
 #include "HttpClient.h"
 #include "SerialChannel.h"
-#include "TcpChannel.h"
+#include "TcpClientChannel.h"
+#include "TcpServerChannel.h"
 #include "UdpChannel.h"
 #include "WebSocketClient.h"
 #include <map>

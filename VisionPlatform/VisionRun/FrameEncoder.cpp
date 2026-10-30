@@ -42,6 +42,7 @@ bool FrameEncoder::encode(const HsCommData::HsImage& image, int quality, std::ve
     if (image.isNull() || image.pixels.empty()) {
         return true;
     }
+    // 只编 8 位单通道、BGR、RGB；其他格式发空图
     GUID format = GUID_WICPixelFormat8bppGray;
     int channels = 1;
     if (image.encoding == HsCommData::EncodeBgr && image.kind == HsCommData::PixelByte) {
@@ -59,6 +60,7 @@ bool FrameEncoder::encode(const HsCommData::HsImage& image, int quality, std::ve
     if (quality > 100) {
         quality = 100;
     }
+    // WIC 编码器写进内存流；任一步失败都返回 true 且 jpeg 为空
     ensureCom();
     Microsoft::WRL::ComPtr<IWICImagingFactory> factory;
     if (FAILED(CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&factory)))) {
@@ -80,6 +82,7 @@ bool FrameEncoder::encode(const HsCommData::HsImage& image, int quality, std::ve
     if (FAILED(encoder->CreateNewFrame(&frame, &bag))) {
         return true;
     }
+    // 质量通过属性包 ImageQuality 传入，取值 0~1
     if (bag) {
         PROPBAG2 opt;
         ZeroMemory(&opt, sizeof(opt));
@@ -110,6 +113,7 @@ bool FrameEncoder::encode(const HsCommData::HsImage& image, int quality, std::ve
     }
     frame->Commit();
     encoder->Commit();
+    // 从内存流拷出编码结果
     HGLOBAL mem = 0;
     if (FAILED(GetHGlobalFromStream(stream.Get(), &mem)) || !mem) {
         return true;

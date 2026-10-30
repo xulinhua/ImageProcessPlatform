@@ -36,6 +36,9 @@ VISION_HALCOM_API bool hObjectToHsImage(const HalconCpp::HObject& himg, int64_t 
 /** @brief HsImage 转灰度 HImage，并写出宽高。空图失败。 */
 VISION_HALCOM_API bool hsImageToGray(const HsCommData::HsImage& img, HalconCpp::HImage*& gray, int* w, int* h, std::string* err);
 
+/** @brief 同库指针优先，否则从 HsImage 转换。保留原通道数 */
+VISION_HALCOM_API bool inputToHObject(void* native, int algLib, const HsCommData::HsImage& img, HalconCpp::HObject*& out, std::string* err);
+
 /** @brief 同库指针优先，否则从 HsImage 转灰度，并写出宽高 */
 VISION_HALCOM_API bool inputToGray(void* native, int algLib, const HsCommData::HsImage& img, HalconCpp::HObject*& gray, int* w, int* h, std::string* err);
 

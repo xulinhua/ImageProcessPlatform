@@ -48,6 +48,7 @@ struct CommChannel {
     CommChannelType type;   ///< 类型
     bool enabled;           ///< 是否启用
     ParamMap params;        ///< 类型相关参数
+    /** @brief 类型未定、启用 */
     CommChannel()
         : type(CommChannelTypeUndefined)
         , enabled(true)

@@ -39,6 +39,7 @@ QString showVer(const std::string& s)
     return QString::fromUtf8(s.empty() ? "0.0.0.0" : s.c_str());
 }
 
+// 整行底色：mark 0 绿（相同），1 红（不同），2 黄（未保存或未写入）
 void paintRow(QTableWidgetItem* g, QTableWidgetItem* k, QTableWidgetItem* b, QTableWidgetItem* a, int mark)
 {
     QColor color(232, 245, 233);
@@ -53,6 +54,7 @@ void paintRow(QTableWidgetItem* g, QTableWidgetItem* k, QTableWidgetItem* b, QTa
     a->setBackground(color);
 }
 
+// 追加一行对比；值不同标红；值相同但存盘里没有该键或方案未保存时标黄
 void addValueRow(QTableWidget* table, const char* group, const QString& key,
                  const QString& before, const QString& after, bool inMap, bool dirty)
 {
@@ -78,6 +80,7 @@ void addValueRow(QTableWidget* table, const char* group, const QString& key,
     paintRow(g, k, b, a, mark);
 }
 
+// 两张参数表按键并集逐行对比，缺的一侧显示「-」
 void addMapRows(QTableWidget* table, const char* group, const ParamMap& before, const ParamMap& after, bool dirty)
 {
     std::map<std::string, int> keys;
@@ -98,6 +101,7 @@ void addMapRows(QTableWidget* table, const char* group, const ParamMap& before, 
     }
 }
 
+// 判定项按下标对比「名称 [下限,上限]」
 void addJudgeRows(QTableWidget* table, const std::vector<JudgeParam>& before, const std::vector<JudgeParam>& after)
 {
     const size_t n = before.size() > after.size() ? before.size() : after.size();
@@ -129,8 +133,10 @@ void addJudgeRows(QTableWidget* table, const std::vector<JudgeParam>& before, co
 }
 }
 
+// 单个工具的参数对比：左为存盘值，右为在副本上适配到当前版本后的值，不改方案
 class ParaCompareDlg : public QDialog {
 public:
+    // dirty 传方案整体的未保存标记，为 true 时相同项也标黄
     ParaCompareDlg(const QString& station, const QString& job, const QString& toolName,
                    const ToolCfg& tool, bool dirty, QWidget* parent)
         : QDialog(parent)
@@ -153,6 +159,7 @@ public:
             ToolBase* inst = proto->clone();
             inst->adaptParam(after, tool.param.paraVersion, current, &detail);
             inst->destroy();
+            // 算法版本取同名、同算法库的第一条已加载算法登记；版本日志取两端之间的说明
             const std::string wantLib = algLibKindTitle(tool.param.algLib);
             const std::vector<ToolLibReg> regs = ToolLibMgr::instance().registrations();
             std::vector<VerNote> algNotes;
@@ -206,6 +213,7 @@ public:
         table->horizontalHeader()->setStretchLastSection(true);
         table->setEditTriggers(QAbstractItemView::NoEditTriggers);
         table->setSelectionBehavior(QAbstractItemView::SelectRows);
+        // 行：设备、算法库；工具壳声明但两边都没有的字段（显示默认值）；学习、运行参数；判定项
         addValueRow(table, "运行", u("deviceId"),
                     QString::fromUtf8(tool.param.deviceId.toString().c_str()),
                     QString::fromUtf8(after.deviceId.toString().c_str()),
@@ -296,6 +304,7 @@ ParaAdaptDlg::ParaAdaptDlg(Solution* sol, QWidget* parent)
     reload();
 }
 
+// 按工站、流程、工具顺序列出全部工具
 void ParaAdaptDlg::reload()
 {
     m_table->setRowCount(0);
@@ -346,6 +355,7 @@ void ParaAdaptDlg::reload()
                             break;
                         }
                     }
+                    // 状态：版本相同为一致；存盘更新为文件比程序新；需人工或无适配步骤为需确认
                     const int cmp = ToolParaBase::compareVersion(saved, current);
                     if (cmp == 0) {
                         state = "已一致";
@@ -370,6 +380,7 @@ void ParaAdaptDlg::reload()
     m_table->resizeColumnsToContents();
 }
 
+// 在方案里的工具参数上直接适配
 bool ParaAdaptDlg::applyRow(int row, const std::string& target)
 {
     if (!m_sol || row < 0) {

@@ -90,6 +90,7 @@ std::string buildZip(const std::vector<ZipEntry>& in)
 {
     std::vector<ZipEntry> files = in;
     std::string out;
+    // 本地文件头 + 原始数据（存储方式 0，不压缩）
     for (size_t i = 0; i < files.size(); ++i) {
         files[i].crc = crc32Of(files[i].data.data(), files[i].data.size());
         files[i].offset = static_cast<uint32_t>(out.size());
@@ -108,6 +109,7 @@ std::string buildZip(const std::vector<ZipEntry>& in)
         out += files[i].name;
         out += files[i].data;
     }
+    // 中央目录，记录各文件头偏移
     const uint32_t cdStart = static_cast<uint32_t>(out.size());
     for (size_t i = 0; i < files.size(); ++i) {
         const uint32_t sz = static_cast<uint32_t>(files[i].data.size());
@@ -130,6 +132,7 @@ std::string buildZip(const std::vector<ZipEntry>& in)
         put32(&out, files[i].offset);
         out += files[i].name;
     }
+    // 中央目录结束记录
     const uint32_t cdSize = static_cast<uint32_t>(out.size()) - cdStart;
     out.append("PK\x05\x06", 4);
     put16(&out, 0);

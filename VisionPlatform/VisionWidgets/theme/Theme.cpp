@@ -354,6 +354,7 @@ QString appStyleSheet(const std::string& themeId)
         hint = QLatin1String("#444444");
     }
 
+    // 以标准档写死颜色和字号，后面按档做文本替换
     QString qss = QString::fromUtf8(
         "QWidget { color: #333333; font-family: 'Microsoft YaHei','Segoe UI'; font-size: 13px; }"
         "QMainWindow, QDialog { background: #F5F7FA; }"
@@ -515,6 +516,7 @@ QString appStyleSheet(const std::string& themeId)
         "QSplitter#toolDebugSplit::handle { background: #E8E8E8; height: 4px; margin: 0 4px; }"
         "QSplitter#toolDebugSplit::handle:hover { background: #1890FF; }"
     );
+    // 替换按顺序生效，前一步的结果会被后一步再次匹配
     qss.replace(QLatin1String("color: #333333"), QString::fromLatin1("color: ") + text);
     qss.replace(QLatin1String("#D9D9D9"), border);
     qss.replace(QLatin1String("#888888"), hint);

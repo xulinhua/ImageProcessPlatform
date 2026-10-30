@@ -50,6 +50,7 @@ struct CanvasWireRef {
     QString fromKey;         ///< 起点针脚键
     QString toKey;           ///< 终点针脚键
     int linkIndex;           ///< job.links 下标
+    /** @brief 无图元，linkIndex 为 -1 */
     CanvasWireRef() : item(nullptr), linkIndex(-1) {}
 };
 
@@ -61,6 +62,7 @@ struct CanvasOrderRef {
     QGraphicsPathItem* item; ///< 虚线 + 终点箭头
     QGraphicsItem* from;     ///< 上一节点（工具或组框）
     QGraphicsItem* to;       ///< 下一节点
+    /** @brief 全部图元指针为空 */
     CanvasOrderRef() : item(nullptr), from(nullptr), to(nullptr) {}
 };
 

@@ -1,6 +1,9 @@
 /**
  * @file LicenseGate.cpp
  * @brief 启动对话框和运行中的倒计时。倒计时这版固定 10 分钟
+ * @author Hoson
+ *
+ * @copyright Copyright (c) 2026 Hoson. All rights reserved.
  */
 
 #include "LicenseGate.h"
@@ -19,16 +22,19 @@ namespace Vision {
 
 namespace {
 
-const int kPollMs = 30000;
-const int kCountdownSec = 10 * 60;
+const int kPollMs = 30000;          ///< 运行中复查许可的间隔，毫秒
+const int kCountdownSec = 10 * 60;  ///< 许可失效后到停工站的倒计时，秒
 
+/** @brief std::string（UTF-8）转 QString */
 QString utf8(const std::string& text)
 {
     return QString::fromUtf8(text.c_str());
 }
 
+/** @brief 挂在主窗口上：定时复查许可，失效时弹倒计时框，到点排队调用 MainWindow::stopStation */
 class LicenseWatch : public QObject {
 public:
+    /** @brief 启动 30 秒复查定时器和 1 秒倒计时定时器，随主窗口销毁 */
     explicit LicenseWatch(MainWindow* window)
         : QObject(window)
         , m_window(window)
@@ -47,7 +53,17 @@ public:
         tick->start(1000);
     }
 
+    /** @brief 倒计时框无父对象，随本对象一起释放 */
+    ~LicenseWatch()
+    {
+        delete m_dlg;
+    }
+
 private:
+    /**
+     * @brief 复查许可：恢复则关掉倒计时框；失效且尚未弹框时从 10 分钟开始倒计时
+     * @note 用户点 X 只是隐藏了倒计时框，倒计时照走；这里把同一个框重新显示，不重置剩余时间
+     */
     void onPoll()
     {
         SoftLicense license;
@@ -60,9 +76,16 @@ private:
             m_left = kCountdownSec;
             m_stopped = false;
             showCountdown(license, reason);
+            return;
+        }
+        if (!m_dlg->isVisible()) {
+            m_dlg->show();
+            m_dlg->raise();
+            m_dlg->activateWindow();
         }
     }
 
+    /** @brief 每秒刷新剩余时间；归零时停工站，只停一次 */
     void onTick()
     {
         if (!m_dlg || m_stopped) {
@@ -78,6 +101,7 @@ private:
                                   .arg(min, 2, 10, QLatin1Char('0'))
                                   .arg(sec, 2, 10, QLatin1Char('0')));
         }
+        // 到点只停工站，不退出进程，留着窗口让用户补注册码
         if (m_left == 0) {
             m_stopped = true;
             QMetaObject::invokeMethod(m_window, "stopStation", Qt::QueuedConnection);
@@ -87,6 +111,7 @@ private:
         }
     }
 
+    /** @brief 弹出置顶的非模态倒计时框：原因、剩余时间、申请码、注册码输入 */
     void showCountdown(SoftLicense& license, LicenseReason reason)
     {
         m_dlg = new QDialog();
@@ -115,6 +140,7 @@ private:
         m_dlg->show();
     }
 
+    /** @brief 验粘贴的注册码，通过则关框，失败显示原因 */
     void applyCode()
     {
         if (!m_paste) {
@@ -131,6 +157,7 @@ private:
         }
     }
 
+    /** @brief 关闭并延迟释放倒计时框，清空控件指针 */
     void closeCountdown()
     {
         if (m_dlg) {
@@ -144,13 +171,13 @@ private:
         m_stopped = false;
     }
 
-    MainWindow* m_window;
-    int m_left;
-    bool m_stopped;
-    QDialog* m_dlg;
-    QLabel* m_remain;
-    QPlainTextEdit* m_paste;
-    QLabel* m_status;
+    MainWindow* m_window;      ///< 主窗口，也是本对象的父对象
+    int m_left;                ///< 倒计时剩余秒数
+    bool m_stopped;            ///< 本轮倒计时已到点并停了工站
+    QDialog* m_dlg;            ///< 倒计时框，无父对象，未弹出时为空
+    QLabel* m_remain;          ///< 剩余时间标签，属于 m_dlg
+    QPlainTextEdit* m_paste;   ///< 注册码输入框，属于 m_dlg
+    QLabel* m_status;          ///< 结果提示，属于 m_dlg
 };
 
 }
@@ -160,6 +187,7 @@ bool promptLicense(SoftLicense* license, LicenseReason reason)
     if (!license) {
         return false;
     }
+    // 反复弹框直到许可有效；注册成功后再按启动流程 open 一次确认
     while (reason != LicenseOk) {
         QDialog dlg;
         dlg.setWindowTitle(QString::fromUtf8("许可"));

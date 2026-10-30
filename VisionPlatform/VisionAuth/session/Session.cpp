@@ -146,6 +146,7 @@ void Session::refreshCurrentUser()
 // 校验口令后进入；失败把原因写到 error
 bool Session::login(const std::string& loginName, const std::string& password, std::string* error)
 {
+    // 出厂账户不在用户库里，单独校验
     if (FactoryAccount::ownsName(loginName)) {
         if (!FactoryAccount::matches(loginName, password)) {
             auditLog("login_fail", loginName, std::string());
@@ -182,6 +183,7 @@ bool Session::login(const std::string& loginName, const std::string& password, s
         return false;
     }
 #endif
+    // 连续错 5 次锁 5 分钟
     if (!m_users.verifyPassword(*u, password)) {
         u->failCount += 1;
         if (u->failCount >= 5) {
@@ -202,6 +204,7 @@ bool Session::login(const std::string& loginName, const std::string& password, s
         }
         return false;
     }
+    // 旧哈希登录成功时顺带升级为 PBKDF2
     if (u->hashKind != HashKindPbkdf2) {
         m_users.setPassword(u, password);
     }

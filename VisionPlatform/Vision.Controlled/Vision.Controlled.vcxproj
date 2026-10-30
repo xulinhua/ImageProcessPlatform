@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{B4E91A10-7C22-4F18-9A01-A0B1C2D3E4CA}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>RemoteClient</RootNamespace>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <LanguageStandard>stdcpp17</LanguageStandard>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <LanguageStandard>stdcpp17</LanguageStandard>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <LanguageStandard>stdcpp17</LanguageStandard>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <LanguageStandard>stdcpp17</LanguageStandard>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings" />
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\qt.props" />
+  </ImportGroup>
+  <PropertyGroup>
+    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)obj\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <TargetName>RemoteClient</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>$(ProjectDir)ui;$(ProjectDir)security;$(ProjectDir)service;$(ProjectDir)watch;$(ProjectDir)capture;$(ProjectDir)input;$(ProjectDir)session;$(SolutionDir)Vision.RemoteUi\theme;$(SolutionDir)Vision.RemoteUi\widgets;$(SolutionDir)Vision.RemoteUi\common;$(SolutionDir)Vision.Remote\protocol;$(SolutionDir)Vision.Remote\channel;$(SolutionDir)Vision.Remote\security;$(SolutionDir)Vision.Remote\codec;$(SolutionDir)VisionCommon\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <AdditionalDependencies>Vision.Remote.lib;Vision.RemoteUi.lib;dwmapi.lib;d3d11.lib;dxgi.lib;bcrypt.lib;crypt32.lib;secur32.lib;wtsapi32.lib;userenv.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
+    <Link>
+      <AdditionalDependencies>qtmaind.lib;Qt5Svgd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent>
+      <Command>if not exist "$(OutDir)platforms" mkdir "$(OutDir)platforms" &amp; if not exist "$(OutDir)imageformats" mkdir "$(OutDir)imageformats" &amp; copy /Y "$(QTDIR)\bin\Qt5Cored.dll" "$(OutDir)" &amp; copy /Y "$(QTDIR)\bin\Qt5Guid.dll" "$(OutDir)" &amp; copy /Y "$(QTDIR)\bin\Qt5Widgetsd.dll" "$(OutDir)" &amp; copy /Y "$(QTDIR)\bin\Qt5Svgd.dll" "$(OutDir)" &amp; copy /Y "$(QTDIR)\plugins\platforms\qwindowsd.dll" "$(OutDir)platforms\" &amp; copy /Y "$(QTDIR)\plugins\imageformats\qjpegd.dll" "$(OutDir)imageformats"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
+    <Link>
+      <AdditionalDependencies>qtmain.lib;Qt5Svg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent>
+      <Command>if not exist "$(OutDir)platforms" mkdir "$(OutDir)platforms" &amp; if not exist "$(OutDir)imageformats" mkdir "$(OutDir)imageformats" &amp; copy /Y "$(QTDIR)\bin\Qt5Core.dll" "$(OutDir)" &amp; copy /Y "$(QTDIR)\bin\Qt5Gui.dll" "$(OutDir)" &amp; copy /Y "$(QTDIR)\bin\Qt5Widgets.dll" "$(OutDir)" &amp; copy /Y "$(QTDIR)\bin\Qt5Svg.dll" "$(OutDir)" &amp; copy /Y "$(QTDIR)\plugins\platforms\qwindows.dll" "$(OutDir)platforms\" &amp; copy /Y "$(QTDIR)\plugins\imageformats\qjpeg.dll" "$(OutDir)imageformats"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="app\main.cpp" />
+    <ClCompile Include="ui\AgentWindow.cpp" />
+    <ClCompile Include="ui\ProcessCombo.cpp" />
+    <ClCompile Include="security\ConfirmDialog.cpp" />
+    <ClCompile Include="security\ControlBar.cpp" />
+    <ClCompile Include="watch\WindowWatch.cpp" />
+    <ClCompile Include="capture\WindowCapture.cpp" />
+    <ClCompile Include="capture\DxgiCapture.cpp" />
+    <ClCompile Include="capture\WgcCapture.cpp">
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalOptions>/utf-8 /std:c++17 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\cppwinrt;C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\winrt;C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um;C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="input\WindowInput.cpp" />
+    <ClCompile Include="session\AgentSession.cpp" />
+    <ClCompile Include="session\AgentPhase4.cpp" />
+    <ClCompile Include="session\AgentWatch.cpp" />
+    <ClCompile Include="session\DirectListen.cpp" />
+    <ClCompile Include="session\HttpPreview.cpp" />
+    <ClCompile Include="security\PrivacyGuard.cpp" />
+    <ClCompile Include="security\AgentAudit.cpp" />
+    <ClCompile Include="service\AgentService.cpp" />
+    <ClCompile Include="service\SasSender.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ui\AgentWindow.h" />
+    <ClInclude Include="ui\ProcessCombo.h" />
+    <ClInclude Include="security\ConfirmDialog.h" />
+    <ClInclude Include="security\ControlBar.h" />
+    <ClInclude Include="security\PrivacyGuard.h" />
+    <ClInclude Include="security\AgentAudit.h" />
+    <ClInclude Include="watch\WindowWatch.h" />
+    <ClInclude Include="capture\WindowCapture.h" />
+    <ClInclude Include="capture\DxgiCapture.h" />
+    <ClInclude Include="capture\WgcCapture.h" />
+    <ClInclude Include="input\WindowInput.h" />
+    <ClInclude Include="session\AgentSession.h" />
+    <ClInclude Include="session\DirectListen.h" />
+    <ClInclude Include="session\HttpPreview.h" />
+    <ClInclude Include="service\AgentService.h" />
+    <ClInclude Include="service\SasSender.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="app\app.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Vision.Remote\Vision.Remote.vcxproj">
+      <Project>{B4E91A10-7C22-4F18-9A01-A0B1C2D3E4C8}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Vision.RemoteUi\Vision.RemoteUi.vcxproj">
+      <Project>{B4E91A10-7C22-4F18-9A01-A0B1C2D3E4CB}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+</Project>

@@ -24,9 +24,11 @@ namespace Vision {
  */
 class ISessionListener {
 public:
+    /** @brief 虚析构 */
     virtual ~ISessionListener() {}
     /** @brief 当前用户或权限变了 */
     virtual void onUserChanged() = 0;
+    /** @brief 界面语言切换了；缺省不处理 */
     virtual void onUiLocaleChanged() {}
 };
 
@@ -36,6 +38,7 @@ public:
  */
 class VISION_AUTH_API Session {
 public:
+    /************************************************** 实例 **************************************************/
     /** @brief 准备目录、内置权限和出厂用户 */
     Session();
     /** @brief 进程内唯一会话。用户、权限都从这里取 */
@@ -44,13 +47,21 @@ public:
     /** @brief 设置界面回调，可空 */
     void setListener(ISessionListener* listener);
 
+    /** @brief 内存用户库 */
     AuthMgr& users();
+    /** @brief 内存用户库（只读） */
     const AuthMgr& users() const;
+    /** @brief 本机设置（含权限树） */
     AppSettings& settings();
+    /** @brief 本机设置（只读） */
     const AppSettings& settings() const;
 
+    /************************************************** 权限 **************************************************/
+    /** @brief 当前用户 id 非空即视为已登录 */
     bool isLoggedIn() const;
+    /** @brief 当前用户；未登录时为空账户 */
     const UserAccount& user() const;
+    /** @brief 当前用户角色 */
     UserRole role() const;
     /** @brief 当前角色在权限树上是否有该标识 */
     bool has(const std::string& permId) const;
@@ -63,6 +74,7 @@ public:
     bool allowToolField(const std::string& toolName, const std::string& flowId,
                         const std::string& toolId, const std::string& field) const;
 
+    /************************************************** 登录 **************************************************/
     /** @brief 校验口令后进入；失败写 error */
     bool login(const std::string& loginName, const std::string& password, std::string* error);
     /** @brief 不校验口令，直接以该启用用户进入 */
@@ -79,6 +91,7 @@ public:
                  const std::string& neededPerm, std::string* error);
     /** @brief 结束提权，回到提权前的用户 */
     void dropElevate();
+    /** @brief 是否处于提权 */
     bool isElevated() const;
     /** @brief 把内存用户库写回数据库 */
     bool persistUsers();
@@ -86,6 +99,8 @@ public:
     bool autoLoginOperator();
     /** @brief 清除当前用户并通知界面 */
     void logout();
+
+    /************************************************** 刷新 **************************************************/
     /** @brief 权限记在树上，这里不再刷新掩码 */
     void reloadPerms();
     /** @brief 用给定账户替换当前用户（不含口令哈希） */

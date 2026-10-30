@@ -12,6 +12,7 @@
 
 #include "Solution.h"
 #include <HsCtrl/HsImageWindow.h>
+#include <HsCtrl/HsViewShell.h>
 #include <HsCommData/HsImage.h>
 #include <HsCommData/Graphic.h>
 #include <QImage>
@@ -77,6 +78,7 @@ private:
         QString tip;   ///< 摘要
         QString time;  ///< 时间
         QImage thumb;  ///< 缩略图
+        /** @brief 默认 NG */
         HistItem() : ok(false) {}
     };
     /** @brief 按过滤重排历史条 */
@@ -88,7 +90,8 @@ private:
     /** @brief 工具实例名；空 id 为工站结果 */
     QString toolCaption(const ObjectId& id) const;
 
-    HsCtrl::HsImageWindow* m_cells[9]; ///< 最多 9 个图像窗
+    HsCtrl::HsViewShell* m_shells[9];   ///< 最多 9 个图像/点云壳
+    HsCtrl::HsImageWindow* m_cells[9]; ///< 各壳内图像窗（兼容旧调用）
     QLabel* m_cellTitles[9];            ///< 各格标题
     QWidget* m_cellPanes[9];            ///< 各格容器
     QGridLayout* m_gridLay;             ///< 图像网格

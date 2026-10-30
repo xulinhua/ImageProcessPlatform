@@ -459,8 +459,10 @@ SmoothStep smoothStepFromVariant(const QVariant& data)
 
 }
 
+// 增强 / 平滑共用的步骤列表参数页：列表行的 UserRole 存该步骤的 QVariantList
 class PipelineEditor : public ToolEditorBase {
 public:
+    // enhance 为 true 时编辑增强步骤，否则编辑平滑步骤
     PipelineEditor(QWidget* parent, bool enhance)
         : ToolEditorBase(parent)
         , m_enhance(enhance)
@@ -516,6 +518,7 @@ public:
     }
 
 protected:
+    // 从工具参数重建步骤列表，并选中第一步
     void loadFromTool()
     {
         m_block = true;
@@ -541,6 +544,7 @@ protected:
         }
         m_block = false;
     }
+    // 先把当前行的控件值写回列表，再按列表顺序整体写入工具参数
     void saveToTool()
     {
         if (!m_tool) {
@@ -587,6 +591,7 @@ private:
         }
         return smoothStepFromVariant(m_list->item(row)->data(Qt::UserRole));
     }
+    // 控件值写回该行；只写当前算子用到的字段（双边：系数为 sigmaRange，高为 sigmaSpace）
     void writeArgsToItem(QListWidgetItem* it)
     {
         if (!it) {
@@ -633,6 +638,7 @@ private:
             it->setData(Qt::UserRole, smoothStepToVariant(st));
         }
     }
+    // 该行步骤值填进控件，期间屏蔽编辑回调
     void loadArgsFromItem(QListWidgetItem* it)
     {
         m_block = true;
@@ -682,6 +688,7 @@ private:
         updateArgWidgets();
         m_block = false;
     }
+    // 按当前行算子显隐宽、高、系数三个控件
     void updateArgWidgets()
     {
         bool showW = false;
@@ -729,6 +736,7 @@ private:
     {
         writeArgsToItem(m_list->currentItem());
     }
+    // 切行：先存上一行，再载入新行
     void onItemChanged(QListWidgetItem* cur, QListWidgetItem* prev)
     {
         if (m_block) {
@@ -737,6 +745,7 @@ private:
         writeArgsToItem(prev);
         loadArgsFromItem(cur);
     }
+    // 按下拉算子追加一步并选中；照度给 101x101、0.7 的初值，其余用默认值
     void onAdd()
     {
         if (m_enhance) {
@@ -790,12 +799,12 @@ private:
         m_list->setCurrentRow(row + 1);
         onEdited();
     }
-    bool m_enhance;
-    QListWidget* m_list;
-    QComboBox* m_op;
-    QSpinBox* m_w;
-    QSpinBox* m_h;
-    QDoubleSpinBox* m_factor;
+    bool m_enhance;             ///< true 为增强步骤，false 为平滑步骤
+    QListWidget* m_list;        ///< 步骤列表，顺序即执行顺序
+    QComboBox* m_op;            ///< 待添加的算子
+    QSpinBox* m_w;              ///< 宽 / 核
+    QSpinBox* m_h;              ///< 高；双边时为 sigmaSpace
+    QDoubleSpinBox* m_factor;   ///< 系数；双边时为 sigmaRange
 };
 
 // 增强预处理参数页

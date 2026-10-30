@@ -25,13 +25,14 @@ public:
     };
     /** @brief 运行参数 */
     struct Run {
-        std::string polarity;       ///< 极性
-        std::string select;         ///< 选择
-        double minLength;           ///< 最短长度
-        double sigma;               ///< 平滑
-        int low;                    ///< 低阈值
-        int high;                   ///< 高阈值
-        int searchCount;            ///< 查找条数
+        std::string polarity;       ///< 边缘极性：all / positive / negative；当前 Hal 算法不读
+        std::string select;         ///< 每框取舍（按长度降序）：best 取前 searchCount 条 / first 只留最长 / last 只留最短
+        double minLength;           ///< 线段最短长度（像素），更短的丢弃
+        double sigma;               ///< Canny 边缘平滑 sigma，0.4~20
+        int low;                    ///< Canny 低阈值，0~255
+        int high;                   ///< Canny 高阈值，0~255
+        int searchCount;            ///< 每个 ROI 最多输出条数，1~50
+        /** @brief 缺省值与 FindLineTool 参数说明一致 */
         Run()
             : polarity("all")
             , select("best")

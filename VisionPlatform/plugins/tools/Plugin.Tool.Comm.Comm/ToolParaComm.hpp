@@ -25,16 +25,17 @@ public:
     };
     /** @brief 运行参数 */
     struct Run {
-        std::string action;         ///< 动作
-        int address;                ///< 起始地址
-        std::string values;         ///< 写值(逗号分隔)
-        std::string expect;         ///< 期望值(逗号分隔)
-        int timeoutMs;              ///< 超时ms
-        int pollMs;                 ///< 轮询ms
-        double scale;               ///< 位姿比例
-        int slaveId;                ///< 从站号
-        std::string peerId;         ///< 对端id
-        std::string commChannelId;  ///< 通道id
+        std::string action;         ///< 动作：writeRegs 写寄存器 / waitRegs 等到位 / writePose 写上游位姿
+        int address;                ///< 保持寄存器起始地址，0~65535
+        std::string values;         ///< writeRegs 要写的值，逗号分隔，每个钳到 0~65535
+        std::string expect;         ///< waitRegs 期望值，逗号分隔，从 address 起逐个比对
+        int timeoutMs;              ///< waitRegs 超时（ms），负数不限时
+        int pollMs;                 ///< waitRegs 轮询间隔（ms），小于 1 按 1
+        double scale;               ///< writePose 比例：x、y、角度（度）乘以它后取整成 int16
+        int slaveId;                ///< MODBUS 从站号，1~247
+        std::string peerId;         ///< 通道上的对端 id，可空
+        std::string commChannelId;  ///< 通信通道 id；空时 Job 从绑定的 PLC 设备补
+        /** @brief 缺省值与 CommTool::defaultParams 对齐，action 除外（这里为空） */
         Run()
             : action("")
             , address(0)

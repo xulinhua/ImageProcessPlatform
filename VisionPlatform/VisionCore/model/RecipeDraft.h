@@ -21,6 +21,7 @@ struct VISIONCORE_API ToolRecipe {
     std::vector<HsCommData::HsObject> rois;    ///< ROI 列表（界面绘制，属参数）
     ObjectId deviceId;            ///< 绑定设备
     AlgLibKind algLib;            ///< 算法库
+    /** @brief 默认 Halcon 算法库 */
     ToolRecipe() : algLib(AlgLibHal) {}
     /** @brief 从配置加载配方字段 */
     void loadFrom(const ToolCfg& t);
@@ -67,6 +68,7 @@ struct VISIONCORE_API DeviceRecipe {
     CameraBackend cameraBackend; ///< 相机后端
     ParamMap defaultParams;     ///< 默认参数
 
+    /** @brief 种类与相机后端均未定 */
     DeviceRecipe()
         : kind(DeviceKindUndefined)
         , cameraBackend(CameraBackendUndefined)

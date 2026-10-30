@@ -164,6 +164,7 @@ Vision::ToolOut Vision::CommTool::execute(const Vision::ToolIn& in)
         out.io.logics = in.inputIo.logics;
     }
 
+    // 先确认通道已绑定且已打开
     const std::string action = in.param.run.value("action").toString();
     const std::string chStr = in.param.run.value("commChannelId").toString();
     if (chStr.empty()) {
@@ -183,6 +184,7 @@ Vision::ToolOut Vision::CommTool::execute(const Vision::ToolIn& in)
     }
 
     std::string err;
+    // 写位姿：取第一个上游位姿，x、y、角度按比例压成三个寄存器
     if (action == "writePose") {
         if (in.inputIo.poses.empty()) {
             out.error = true;
@@ -209,6 +211,7 @@ Vision::ToolOut Vision::CommTool::execute(const Vision::ToolIn& in)
         return out;
     }
 
+    // 写寄存器：把逗号分隔的值从起始地址连续写入
     if (action == "writeRegs") {
         std::vector<uint16_t> regs;
         if (!parseRegs(in.param.run.value("values").toString(), &regs, &err)) {
@@ -231,6 +234,7 @@ Vision::ToolOut Vision::CommTool::execute(const Vision::ToolIn& in)
         return out;
     }
 
+    // 等到位：轮询读寄存器，全部等于期望值即 OK，超时 NG
     if (action == "waitRegs") {
         std::vector<uint16_t> expect;
         if (!parseRegs(in.param.run.value("expect").toString(), &expect, &err)) {

@@ -1,10 +1,13 @@
-#ifndef HSCOMMDATA_HSCONST_H
-#define HSCOMMDATA_HSCONST_H
-
 /**
  * @file HsConst.h
  * @brief 库内共用的数值常量。只放多处会用到的数，某个类型自己的比例留在该类型里
+ * @author Hoson
+ *
+ * @copyright Copyright (c) 2026 Hoson. All rights reserved.
  */
+
+#ifndef HSCOMMDATA_HSCONST_H
+#define HSCOMMDATA_HSCONST_H
 
 namespace HsCommData {
 

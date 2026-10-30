@@ -72,6 +72,7 @@ Solution* solution, const QString& stationId, QWidget* parent)
     enableDialogResize(this);
     const bool canEdit = m_session->has(PermEditSolution);
 
+    // 基本信息表单
     m_name = new QLineEdit(this);
     m_enabled = new QCheckBox(T("启用工站"), this);
     m_code = new QLineEdit(this);
@@ -92,6 +93,7 @@ Solution* solution, const QString& stationId, QWidget* parent)
     form->addRow(T("默认超时"), m_timeout);
     form->addRow(T("绑定设备"), m_devices);
 
+    // 流程表与增删、打开、切换使能按钮；打开流程不受编辑权限限制
     m_jobs = new QTableWidget(this);
     m_jobs->setColumnCount(5);
     QStringList h;
@@ -143,6 +145,7 @@ Solution* solution, const QString& stationId, QWidget* parent)
     m_timeout->setEnabled(canEdit);
     m_devices->setEnabled(canEdit);
 
+    // 在 draft 上编辑，另存打开时快照用于判断是否改过
     StationCfg* formal = m_sol->findStationConfig(oid(stationId));
     if (formal) {
         m_draft.loadFrom(*formal);

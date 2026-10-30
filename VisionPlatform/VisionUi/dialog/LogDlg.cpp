@@ -72,6 +72,7 @@ LogDlg::LogDlg(Session* session, QWidget* parent)
     setModal(true);
     resize(900, 560);
 
+    // 日期过滤，默认近 7 天
     m_from = new QDateEdit(this);
     m_from->setCalendarPopup(true);
     m_from->setDisplayFormat(QLatin1String("yyyy-MM-dd"));
@@ -93,6 +94,7 @@ LogDlg::LogDlg(Session* session, QWidget* parent)
     filter->addWidget(refresh);
     filter->addStretch();
 
+    // 页签：操作日志表、调试日志表、按日期删除的管理页
     m_opTable = makeLogTable(this);
     m_dbgTable = makeLogTable(this);
 

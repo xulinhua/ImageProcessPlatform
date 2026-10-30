@@ -94,6 +94,7 @@ RecheckWorkspace::RecheckWorkspace(Session* session, Solution* solution, QWidget
     , m_stepBusy(false)
     , m_canRun(true)
 {
+    // 配置区：目录、工站、流程，运行按钮、进度、统计、过滤与导出；bindTrKey 让切换语言时重译
     m_folder = new QLineEdit(this);
     m_folder->setPlaceholderText(T("图像文件夹"));
     m_folder->setProperty("vpTr", QByteArray("图像文件夹"));
@@ -176,6 +177,7 @@ RecheckWorkspace::RecheckWorkspace(Session* session, Solution* solution, QWidget
     cfgLay->addLayout(cfg1);
     cfgLay->addLayout(cfg2);
 
+    // 左：每张图一行的结果表；右：选中行的结果图与各工具明细
     m_table = new QTableWidget(this);
     m_table->setColumnCount(5);
     QStringList headers;
@@ -505,6 +507,7 @@ void RecheckWorkspace::onStepNext()
     if (m_paused && !m_stopRequested) {
         return;
     }
+    // 停止或队列跑完：收尾并按需自动存报告
     if (m_stopRequested || m_queueIndex >= static_cast<int>(m_queue.size())) {
         m_running = false;
         m_paused = false;
@@ -534,11 +537,13 @@ void RecheckWorkspace::onStepNext()
         QMessageBox::warning(this, T("复检"), T("找不到该流程运行实例。"));
         return;
     }
+    // 流程正被别处运行时 50ms 后再试
     if (job->isRunning()) {
         QTimer::singleShot(50, this, SLOT(onStepNext()));
         return;
     }
 
+    // 复制配方并把取图改成这张图；改不了直接记为失败
     const std::string path = m_queue[static_cast<size_t>(m_queueIndex)];
     ++m_queueIndex;
     JobCfg* draft = new JobCfg(*formal);
@@ -559,6 +564,7 @@ void RecheckWorkspace::onStepNext()
         return;
     }
 
+    // 线程池里用配方副本跑一遍，结果按 OK/NG 记录（运行出错也记 NG），排队回 onStepFinished
     m_stepBusy = true;
     Solution* sol = m_sol;
     ThreadPool::shared().enqueue([this, job, sol, draft, path]() {
@@ -770,6 +776,7 @@ void RecheckWorkspace::showDetail(const Item* item)
         m_toolTable->setRowCount(0);
         return;
     }
+    // 结果图为空时退回源图
     m_detailTitle->setText(item->fileName + QLatin1String("  ")
                            + verdictText(item->verdict) + QLatin1String("  ")
                            + QString::number(item->elapsedMs) + QLatin1String("ms"));
@@ -781,6 +788,7 @@ void RecheckWorkspace::showDetail(const Item* item)
     m_view->fitToWindow();
     m_view->setOverlay(toStd(item->graphics), m_view->currentFrameId());
 
+    // 工具明细：没有逐工具结果时只给一行汇总
     m_toolTable->setRowCount(0);
     if (item->tools.isEmpty()) {
         const int r = m_toolTable->rowCount();
@@ -877,6 +885,7 @@ bool RecheckWorkspace::writeReportFile(const QString& path, QString* err) const
             ++fail;
         }
     }
+    // 手写 JSON：会话信息、统计，再逐图列出结果和各工具明细
     QTextStream out(&f);
     out.setCodec("UTF-8");
     out << QLatin1String("{\n");

@@ -1,6 +1,9 @@
 /**
  * @file VisionObfusExport.h
  * @brief 混淆库导出。业务工程本期不链接本库
+ * @author Hoson
+ *
+ * @copyright Copyright (c) 2026 Hoson. All rights reserved.
  */
 
 #ifndef VISION_OBFUS_EXPORT_H

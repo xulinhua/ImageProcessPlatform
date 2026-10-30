@@ -73,7 +73,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\HsImageCtrl\include;$(ProjectDir)..\HsCommData\include;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtWidgets;$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\..\VisionPlatform\HsImageCtrl\include;$(ProjectDir)..\..\VisionPlatform\HsCommData\include;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtWidgets;$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>UNICODE;_UNICODE;WIN32;QT_CORE_LIB;QT_GUI_LIB;QT_WIDGETS_LIB;QT_DEPRECATED_WARNINGS;HSIMAGE_MOC_FROM_INTDIR;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
@@ -92,7 +92,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PreBuildEvent>
-      <Command>set "MOC_I1=$(ProjectDir)..\HsImageCtrl\include" &amp; set "MOC_I2=$(ProjectDir)." &amp; call "$(SolutionDir)tools\run_moc.bat" "$(ProjectDir)MainWindow.h" "$(SolutionDir)obj\$(ProjectName)\$(Platform)\$(Configuration)\moc_MainWindow.cpp" "$(QTDIR)\bin\moc.exe" -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DUNICODE -D_UNICODE -DWIN32</Command>
+      <Command>set "MOC_I1=$(ProjectDir)..\..\VisionPlatform\HsImageCtrl\include" &amp; set "MOC_I2=$(ProjectDir)." &amp; call "$(SolutionDir)tools\run_moc.bat" "$(ProjectDir)MainWindow.h" "$(IntDir)moc_MainWindow.cpp" "$(QTDIR)\bin\moc.exe" -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DUNICODE -D_UNICODE -DWIN32</Command>
       <Message>MOC MainWindow.h</Message>
     </PreBuildEvent>
   </ItemDefinitionGroup>
@@ -150,7 +150,7 @@
     <ClInclude Include="HalconAlgo.h" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\HsImageCtrl\HsImageCtrl.vcxproj">
+    <ProjectReference Include="..\..\VisionPlatform\HsImageCtrl\HsImageCtrl.vcxproj">
       <Project>{A7C4E91B-2D3F-4A18-9B6C-8E0F1A2B3C4D}</Project>
     </ProjectReference>
   </ItemGroup>

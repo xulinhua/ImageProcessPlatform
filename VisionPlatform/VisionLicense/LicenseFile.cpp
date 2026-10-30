@@ -1,6 +1,9 @@
 /**
  * @file LicenseFile.cpp
  * @brief 魔数 VPL1。密文随随机数变化
+ * @author Hoson
+ *
+ * @copyright Copyright (c) 2026 Hoson. All rights reserved.
  */
 
 #include "LicenseFile.h"
@@ -207,6 +210,7 @@ bool LicenseFile::read(const std::string& digest, std::string* body, unsigned ch
         file.append(buf, buf + n);
     }
     CloseHandle(h);
+    // 头部：魔数 4 + 版本 2 + 随机数 12 + 标签 16
     if (file.size() < 4 + 2 + 12 + 16 || file.compare(0, 4, "VPL1") != 0) {
         if (damaged) {
             *damaged = true;
@@ -221,6 +225,7 @@ bool LicenseFile::read(const std::string& digest, std::string* body, unsigned ch
         }
         return false;
     }
+    // 标签校验失败不算损坏，多半是硬件摘要变了
     unsigned char key[32];
     fileKey(digest, key);
     const unsigned char* nonce = reinterpret_cast<const unsigned char*>(file.data() + 6);
@@ -232,6 +237,7 @@ bool LicenseFile::read(const std::string& digest, std::string* body, unsigned ch
     if (!aes(false, key, nonce, cipher, cn, plain.empty() ? 0 : &plain[0], tag)) {
         return false;
     }
+    // 明文：正文长度 2 + 正文 + 签名 64
     if (plain.size() < 2 + 64) {
         if (damaged) {
             *damaged = true;

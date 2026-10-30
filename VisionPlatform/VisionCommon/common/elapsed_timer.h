@@ -15,14 +15,19 @@
 
 namespace Vision {
 
-/** @brief 一段耗时。label 只用于打印，按 sections 的顺序读取。 */
+/**
+ * @class Section
+ * @brief 一段耗时。label 只用于打印，按 sections 的顺序读取。
+ */
 struct Section {
-    std::string label;
-    double ms = 0;
+    std::string label; ///< 段名，仅打印用
+    double ms = 0;     ///< 本段耗时（毫秒）
 };
 
 /**
+ * @class SectionTimer
  * @brief 分段计时。start 之后每次 mark 记下刚结束的一段，stop 记下最后一段。
+ * @note 未 start 或已 stop 时 mark/stop 不记录
  */
 class SectionTimer {
 public:
@@ -72,6 +77,7 @@ public:
 private:
     using Clock = std::chrono::steady_clock;
 
+    /** @brief 记下从上一标记到现在的一段，并把标记移到现在 */
     void push(const std::string& label)
     {
         const Clock::time_point now = Clock::now();
@@ -82,9 +88,9 @@ private:
         mark_ = now;
     }
 
-    Clock::time_point mark_ {};
-    std::vector<Section> sections_;
-    bool running_ = false;
+    Clock::time_point mark_ {};     ///< 当前段的起点
+    std::vector<Section> sections_; ///< 已记下的分段
+    bool running_ = false;          ///< 是否在计时（start 后、stop 前）
 };
 
 }

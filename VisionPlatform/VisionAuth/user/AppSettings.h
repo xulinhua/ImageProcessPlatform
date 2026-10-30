@@ -52,10 +52,12 @@ struct VISION_AUTH_API AppSettings {
         bool op;        ///< 操作员
         bool eng;       ///< 工程师
         bool admin;     ///< 管理员
+        /** @brief 三种角色都允许 */
         PermNodeGrant() : op(true), eng(true), admin(true) {}
     };
     std::vector<PermNodeGrant> permNodes; ///< 记在本机设置里，不进方案
 
+    /** @brief 出厂设置：工业主题、简体中文、设计模式启动、关窗即退出、不弹窗、权限统一 */
     AppSettings()
         : autoLoginOperator(false)
         , themeId("industrial")

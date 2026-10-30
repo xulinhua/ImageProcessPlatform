@@ -19,8 +19,11 @@ namespace Vision {
  */
 class CvEnhance : public AlgToolBase {
 public:
+    /** @brief 挂到 preprocess.enhance 工具壳 */
     std::string toolName() const { return "preprocess.enhance"; }
-    AlgLibKind algLib() const { return AlgLibCv; }
+    /** @brief 算法库：OpenCV */
+    AlgLibKind algLib() const { return AlgLibCv; }
+    /** @brief 算法版本号 */
     std::string version() const;
     /** @brief 版本变更，只追加 */
     std::vector<VerNote> versionNotes() const;
@@ -39,7 +42,9 @@ public:
         }
         return out->errCode;
     }
+    /** @brief 按 pl_n、pl_i_* 解出增强步骤依次处理灰度图（无步骤时做一次直方图均衡），只把搜索区写回输出图 */
     AlgToolOut run(const AlgToolIn& in);
+    /** @brief 克隆一份新实例 */
     AlgToolBase* clone() const { return new CvEnhance(); }
 };
 

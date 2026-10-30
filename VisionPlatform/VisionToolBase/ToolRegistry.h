@@ -59,6 +59,7 @@ public:
     ToolBase* create(const std::string& toolName) const;
 
 private:
+    /** @brief 只经 instance 取得 */
     ToolRegistry() {}
     std::vector<ToolBase*> m_tools; ///< 已登记的原型，本类拥有
     std::string m_incomingStamp;    ///< 当前正在加载的工具 DLL 时间戳

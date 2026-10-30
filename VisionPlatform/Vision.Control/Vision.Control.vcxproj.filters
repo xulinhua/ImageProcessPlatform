@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <!-- 与磁盘目录对齐。app 入口；ui 主窗口；dialog 弹窗；view 画面控件；session 连接与会话窗口；store 设备库、审计、配置 -->
+    <Filter Include="app">
+      <UniqueIdentifier>{E4C90001-0000-4000-8000-000000000001}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ui">
+      <UniqueIdentifier>{E4C90001-0000-4000-8000-000000000002}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="dialog">
+      <UniqueIdentifier>{E4C90001-0000-4000-8000-000000000003}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="view">
+      <UniqueIdentifier>{E4C90001-0000-4000-8000-000000000004}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="session">
+      <UniqueIdentifier>{E4C90001-0000-4000-8000-000000000005}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="store">
+      <UniqueIdentifier>{E4C90001-0000-4000-8000-000000000006}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="app\main.cpp">
+      <Filter>app</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\ControlWindow.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\DeviceTree.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="dialog\DeviceDialog.cpp">
+      <Filter>dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="dialog\AddDeviceDialog.cpp">
+      <Filter>dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="dialog\SettingsDialog.cpp">
+      <Filter>dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="dialog\AuditDialog.cpp">
+      <Filter>dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="view\FrameView.cpp">
+      <Filter>view</Filter>
+    </ClCompile>
+    <ClCompile Include="view\WallView.cpp">
+      <Filter>view</Filter>
+    </ClCompile>
+    <ClCompile Include="session\ControlSession.cpp">
+      <Filter>session</Filter>
+    </ClCompile>
+    <ClCompile Include="session\SessionWindow.cpp">
+      <Filter>session</Filter>
+    </ClCompile>
+    <ClCompile Include="session\ControlPhase4.cpp">
+      <Filter>session</Filter>
+    </ClCompile>
+    <ClCompile Include="session\LinkDial.cpp">
+      <Filter>session</Filter>
+    </ClCompile>
+    <ClCompile Include="session\RemoteAuthHost.cpp">
+      <Filter>session</Filter>
+    </ClCompile>
+    <ClCompile Include="session\SessionPhase4.cpp">
+      <Filter>session</Filter>
+    </ClCompile>
+    <ClCompile Include="session\Mp4Record.cpp">
+      <Filter>session</Filter>
+    </ClCompile>
+    <ClCompile Include="store\WakeOnLan.cpp">
+      <Filter>store</Filter>
+    </ClCompile>
+    <ClCompile Include="store\DeviceStore.cpp">
+      <Filter>store</Filter>
+    </ClCompile>
+    <ClCompile Include="store\AuditLog.cpp">
+      <Filter>store</Filter>
+    </ClCompile>
+    <ClCompile Include="store\ControlConfig.cpp">
+      <Filter>store</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ui\ControlWindow.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\DeviceTree.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="dialog\DeviceDialog.h">
+      <Filter>dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="dialog\AddDeviceDialog.h">
+      <Filter>dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="dialog\SettingsDialog.h">
+      <Filter>dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="dialog\AuditDialog.h">
+      <Filter>dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="view\FrameView.h">
+      <Filter>view</Filter>
+    </ClInclude>
+    <ClInclude Include="view\WallView.h">
+      <Filter>view</Filter>
+    </ClInclude>
+    <ClInclude Include="session\LinkDial.h">
+      <Filter>session</Filter>
+    </ClInclude>
+    <ClInclude Include="session\RemoteAuthHost.h">
+      <Filter>session</Filter>
+    </ClInclude>
+    <ClInclude Include="session\ControlSession.h">
+      <Filter>session</Filter>
+    </ClInclude>
+    <ClInclude Include="session\SessionWindow.h">
+      <Filter>session</Filter>
+    </ClInclude>
+    <ClInclude Include="session\Mp4Record.h">
+      <Filter>session</Filter>
+    </ClInclude>
+    <ClInclude Include="store\WakeOnLan.h">
+      <Filter>store</Filter>
+    </ClInclude>
+    <ClInclude Include="store\DeviceStore.h">
+      <Filter>store</Filter>
+    </ClInclude>
+    <ClInclude Include="store\AuditLog.h">
+      <Filter>store</Filter>
+    </ClInclude>
+    <ClInclude Include="store\ControlConfig.h">
+      <Filter>store</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="app\app.rc">
+      <Filter>app</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>

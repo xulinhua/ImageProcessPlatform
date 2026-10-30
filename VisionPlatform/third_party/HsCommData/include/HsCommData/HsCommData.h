@@ -1,12 +1,14 @@
-#ifndef HSCOMMDATA_HSCOMMDATA_H
-#define HSCOMMDATA_HSCOMMDATA_H
-
 /**
  * @file HsCommData.h
- * @brief Umbrella header for geometry and image protocol. No Qt.
- * Define HSCOMMDATA_LIB when building the DLL.
- * Leaf headers include HsCommDataExport.h only.
+ * @brief 几何与图像协议的总头文件，不依赖 Qt。编 DLL 时定义 HSCOMMDATA_LIB；
+ *        各叶子头文件只包含 HsCommDataExport.h
+ * @author Hoson
+ *
+ * @copyright Copyright (c) 2026 Hoson. All rights reserved.
  */
+
+#ifndef HSCOMMDATA_HSCOMMDATA_H
+#define HSCOMMDATA_HSCOMMDATA_H
 
 #include <HsCommData/HsCommDataExport.h>
 #include <HsCommData/HsException.h>

@@ -1,6 +1,9 @@
 /**
  * @file HardwareProbe.cpp
  * @brief CPUID、SMBIOS 原始表、系统卷总线。不用 WMI，不打开 PhysicalDrive
+ * @author Hoson
+ *
+ * @copyright Copyright (c) 2026 Hoson. All rights reserved.
  */
 
 #include "HardwareProbe.h"
@@ -147,6 +150,7 @@ std::string HardwareProbe::biosPart(bool* haveUuid) const
     if (haveUuid) {
         *haveUuid = false;
     }
+    // RawSMBIOSData：8 字节头，偏移 4 处是表长
     const DWORD bytes = GetSystemFirmwareTable('RSMB', 0, 0, 0);
     if (bytes < 8) {
         return std::string();
@@ -168,6 +172,7 @@ std::string HardwareProbe::biosPart(bool* haveUuid) const
     std::string boardSerial;
     std::string biosVendor;
     std::string biosVer;
+    // 逐个结构：格式化区后接以双 0 结尾的字符串区，字段里存的是字符串序号
     while (p + 4 <= end) {
         const unsigned char type = p[0];
         const unsigned char len = p[1];
@@ -203,6 +208,7 @@ std::string HardwareProbe::biosPart(bool* haveUuid) const
             }
             return std::string();
         };
+        // 类型 1 系统信息、类型 2 主板、类型 0 BIOS；UUID 前三段按小端显示
         if (type == 1 && len >= 0x19) {
             unsigned char u[16];
             memcpy(u, p + 8, 16);

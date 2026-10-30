@@ -1,6 +1,6 @@
 /**
  * @file ConvertBench.cpp
- * @brief ConvertBench实现
+ * @brief 图像转换评测实现：测试图生成与各转换方式的分段计时
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.

@@ -212,6 +212,7 @@ bool typedToHObject(const HsCommData::HsImage& img, HalconCpp::HObject* out, std
         setErr(err, "unsupported pixel kind");
         return false;
     }
+    // 复数图只支持单通道；行有填充时先压成紧凑缓冲再交给 Halcon 拷贝
     if (img.kind == HsCommData::PixelComplex64) {
         if (img.encoding != HsCommData::EncodeMono) {
             setErr(err, "complex image must be mono");
@@ -242,6 +243,7 @@ bool typedToHObject(const HsCommData::HsImage& img, HalconCpp::HObject* out, std
         HalconCpp::GenImage1(out, ht, img.width, img.height, static_cast<Hlong>(reinterpret_cast<uintptr_t>(ptr)));
         return true;
     }
+    // 16 位彩色走交错接口，四通道时忽略 alpha
     if (img.kind == HsCommData::PixelUInt16) {
         const unsigned char* ptr = nullptr;
         std::vector<unsigned char> pack;
@@ -262,6 +264,7 @@ bool typedToHObject(const HsCommData::HsImage& img, HalconCpp::HObject* out, std
                                        img.width, img.height, 0, 0, -1, 0);
         return true;
     }
+    // 其余彩色按 R、G、B 拆成三个平面，BGR 系交换 R/B 偏移
     int rOff = 0;
     int bOff = 2;
     if (img.encoding == HsCommData::EncodeBgr || img.encoding == HsCommData::EncodeBgra) {
@@ -367,6 +370,7 @@ bool hObjectToHsImage(const HalconCpp::HObject& himg, int64_t frameId, HsCommDat
             return false;
         }
         switch (ch[0].L()) {
+        // 单通道：int1 扩成 int16，其余类型按字节整块拷贝
         case 1: {
             HalconCpp::HTuple pointer;
             HalconCpp::HTuple type;
@@ -410,6 +414,7 @@ bool hObjectToHsImage(const HalconCpp::HObject& himg, int64_t frameId, HsCommDat
             *out = fb;
             return true;
         }
+        // 三通道：先交错成 rgb 再整块拷贝；其它通道数不支持
         case 3: {
             HalconCpp::HTuple type;
             HalconCpp::HTuple w;
@@ -495,6 +500,24 @@ bool hsImageToGray(const HsCommData::HsImage& img, HalconCpp::HImage*& gray, int
     }
 }
 
+bool inputToHObject(void* native, int algLib, const HsCommData::HsImage& img, HalconCpp::HObject*& out, std::string* err)
+{
+    if (!out) {
+        setErr(err, "no input image");
+        return false;
+    }
+    if (native != nullptr && algLib == static_cast<int>(AlgLibHal)) {
+        try {
+            *out = *static_cast<const HalconCpp::HObject*>(native);
+            return true;
+        } catch (const HalconCpp::HException& e) {
+            setHalconErr(err, e);
+            return false;
+        }
+    }
+    return hsImageToHObject(img, out, err);
+}
+
 bool inputToGray(void* native, int algLib, const HsCommData::HsImage& img, HalconCpp::HObject*& gray, int* w, int* h, std::string* err)
 {
     if (!gray || !w || !h) {
@@ -502,18 +525,9 @@ bool inputToGray(void* native, int algLib, const HsCommData::HsImage& img, Halco
         return false;
     }
     HalconCpp::HObject ho;
-    if (native != nullptr && algLib == static_cast<int>(AlgLibHal)) {
-        try {
-            ho = *static_cast<const HalconCpp::HObject*>(native);
-        } catch (const HalconCpp::HException& e) {
-            setHalconErr(err, e);
-            return false;
-        }
-    } else {
-        HalconCpp::HObject* held = &ho;
-        if (!hsImageToHObject(img, held, err)) {
-            return false;
-        }
+    HalconCpp::HObject* held = &ho;
+    if (!inputToHObject(native, algLib, img, held, err)) {
+        return false;
     }
     try {
         HalconCpp::HTuple ch;

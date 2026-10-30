@@ -23,6 +23,7 @@ struct HSCOMMDATA_EXPORT PolySeg {
     int last;  ///< 原轮廓终点下标，含
 
     PolySeg(); ///< 下标为 -1
+    /** @brief 按控制点与原轮廓下标范围构造 */
     PolySeg(const Point2d& pt, int first, int last);
 };
 

@@ -497,6 +497,7 @@ QToolButton* MainWindow::addToolButton(QWidget* parent, const QIcon& icon, const
 // 组装菜单与三栏布局
 void MainWindow::buildUi()
 {
+    // 文件菜单
     QMenu* fileMenu = menuBar()->addMenu(u8("文件"));
     QAction* actOpen = fileMenu->addAction(u8("打开图像..."));
     QAction* actFolder = fileMenu->addAction(u8("打开文件夹..."));
@@ -514,6 +515,7 @@ void MainWindow::buildUi()
     connect(actOverlay, &QAction::triggered, this, &MainWindow::mockOverlay);
     connect(actLive, &QAction::toggled, this, &MainWindow::toggleLive);
 
+    // 顶部标题栏：显示当前工具
     QWidget* root = new QWidget;
     QVBoxLayout* rootLay = new QVBoxLayout(root);
     rootLay->setContentsMargins(0, 0, 0, 0);
@@ -534,6 +536,7 @@ void MainWindow::buildUi()
     bodyLay->setContentsMargins(0, 0, 0, 0);
     bodyLay->setSpacing(0);
 
+    // 左栏：工具按钮两列网格、适应窗口 / 1:1、清空叠加
     QWidget* left = new QWidget;
     left->setFixedWidth(156);
     left->setStyleSheet(QStringLiteral("background:#FFFFFF; border-right:1px solid #D9D9D9;"));
@@ -601,6 +604,7 @@ void MainWindow::buildUi()
     connect(clearLeft, &QToolButton::clicked, this, &MainWindow::clearOverlay);
     leftLay->addWidget(clearLeft, 0, Qt::AlignHCenter);
 
+    // 中间画布；画布切换工具时同步左栏按钮选中态
     m_api = new image_widget::ImageWidgetApi;
     m_api->setWindowMode(WindowDesign);
     m_api->setHudVisible(true);
@@ -624,6 +628,7 @@ void MainWindow::buildUi()
     });
     m_api->widget()->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
+    // 右栏：两列参数面板
     QWidget* right = new QWidget;
     right->setFixedWidth(560);
     right->setStyleSheet(QStringLiteral("background:#F5F7FA; border-left:1px solid #D9D9D9;"));
@@ -646,6 +651,7 @@ void MainWindow::buildUi()
     colLay->addWidget(colL, 1);
     colLay->addWidget(colR, 1);
 
+    // 加载图像：单张 / 文件夹与上一张、下一张
     QGroupBox* imageBox = new QGroupBox(u8("加载图像"));
     QVBoxLayout* imageLay = new QVBoxLayout(imageBox);
     QHBoxLayout* imageBtnRow = new QHBoxLayout;
@@ -669,6 +675,7 @@ void MainWindow::buildUi()
     connect(m_prevImageBtn, &QPushButton::clicked, this, &MainWindow::showPrevImage);
     connect(m_nextImageBtn, &QPushButton::clicked, this, &MainWindow::showNextImage);
 
+    // 换底图刷新策略
     QGroupBox* refreshBox = new QGroupBox(u8("刷新策略"));
     QVBoxLayout* refreshLay = new QVBoxLayout(refreshBox);
     QLabel* refreshHint = new QLabel(u8("勾选后换底图时清掉对应层。T 工具 / 放置的文字只受「绘制文字」控制，不受「交互 ROI」影响。"));
@@ -687,6 +694,7 @@ void MainWindow::buildUi()
     connect(m_refreshDrawing, &QCheckBox::toggled, this, &MainWindow::applyRefreshPolicyFromUi);
     connect(m_refreshText, &QCheckBox::toggled, this, &MainWindow::applyRefreshPolicyFromUi);
 
+    // 工具栏：测量按钮选择、标定、显示单位、停靠位置、排列与皮肤
     QGroupBox* barBox = new QGroupBox(u8("工具栏"));
     QVBoxLayout* barLay = new QVBoxLayout(barBox);
     m_toolbarVisible = new QCheckBox(u8("显示浮动工具栏"));
@@ -806,6 +814,7 @@ void MainWindow::buildUi()
     barLay->addLayout(skinRow);
     connect(m_toolbarSkin, SIGNAL(currentIndexChanged(int)), this, SLOT(onToolbarSkin(int)));
 
+    // 视口背景
     QGroupBox* vpBox = new QGroupBox(u8("视口背景"));
     QVBoxLayout* vpLay = new QVBoxLayout(vpBox);
     QLabel* vpHint = new QLabel(u8("letterbox / 无图区域。棋盘格按屏幕像素画，不随缩放变格。"));
@@ -833,6 +842,7 @@ void MainWindow::buildUi()
     connect(m_viewportBg, SIGNAL(currentIndexChanged(int)), this, SLOT(onViewportBackground(int)));
     connect(m_viewportColorBtn, &QToolButton::clicked, this, &MainWindow::onViewportColor);
 
+    // 画笔：线宽、线型、颜色、描边 / 填充
     QGroupBox* brush = new QGroupBox(u8("画笔"));
     QVBoxLayout* bl = new QVBoxLayout(brush);
     QHBoxLayout* widthRow = new QHBoxLayout;
@@ -898,6 +908,7 @@ void MainWindow::buildUi()
     connect(m_widthSpin, SIGNAL(valueChanged(int)), this, SLOT(onWidthChanged(int)));
     connect(m_strokeRadio, &QRadioButton::toggled, this, &MainWindow::onDrawModeChanged);
 
+    // 当前 ROI 信息与文本工具参数
     QGroupBox* roiBox = new QGroupBox(u8("当前ROI"));
     QVBoxLayout* roiLay = new QVBoxLayout(roiBox);
     QHBoxLayout* typeRow = new QHBoxLayout;
@@ -970,6 +981,7 @@ void MainWindow::buildUi()
     connect(m_textFontSpin, SIGNAL(valueChanged(int)), this, SLOT(syncTextToolToView()));
     connect(placeTextBtn, &QPushButton::clicked, this, &MainWindow::onPlaceText);
 
+    // 图层显隐与像素检验
     QGroupBox* layerBox = new QGroupBox(u8("图层"));
     QVBoxLayout* layerLay = new QVBoxLayout(layerBox);
     m_layerImage = new QCheckBox(u8("图像"));
@@ -994,6 +1006,7 @@ void MainWindow::buildUi()
     connect(m_pixelInspect, &QCheckBox::toggled, this, &MainWindow::onPixelInspect);
     m_view->setPixelInspect(true);
 
+    // 算法测试：阈值提取区域叠加，颜色、透明度与刷新压测
     QGroupBox* algoBox = new QGroupBox(u8("算法测试"));
     QVBoxLayout* algoLay = new QVBoxLayout(algoBox);
     algoLay->setSpacing(6);
@@ -1084,6 +1097,7 @@ void MainWindow::buildUi()
     connect(m_algoOpacitySpin, SIGNAL(valueChanged(int)), this, SLOT(onAlgoOpacityChanged(int)));
     connect(m_algoStress, &QCheckBox::toggled, this, &MainWindow::onAlgoStress);
 
+    // 底部按钮行
     QHBoxLayout* btnRow = new QHBoxLayout;
     QPushButton* clearDraw = new QPushButton(u8("清空"));
     QPushButton* clearOv = new QPushButton(u8("清空叠加"));
@@ -1100,6 +1114,7 @@ void MainWindow::buildUi()
 
     ll->addWidget(imageBox);
 
+    // 绘制会话：模态圆 / 矩形 / 区域、屏蔽涂抹与笔半径
     QGroupBox* sessionBox = new QGroupBox(u8("绘制会话"));
     QVBoxLayout* sessionLay = new QVBoxLayout(sessionBox);
     QLabel* sessionHint = new QLabel(u8("一次一条。形状松开即提交。多边形右键或 Enter 结束。涂抹：左键涂、右键擦，Enter 或「确定」提交。Esc 取消。Ctrl+Z 撤销一笔，Delete 清空。双击不再适应窗口。"));
@@ -1141,6 +1156,7 @@ void MainWindow::buildUi()
     connect(radiusSpin, SIGNAL(valueChanged(double)), this, SLOT(onBrushRadius(double)));
     ll->addWidget(sessionBox);
 
+    // 组装两列、滚动区与三栏
     ll->addWidget(vpBox);
     ll->addWidget(refreshBox);
     ll->addWidget(roiBox, 1);
@@ -1166,6 +1182,7 @@ void MainWindow::buildUi()
     rootLay->addWidget(body, 1);
     setCentralWidget(root);
 
+    // 画布信号与初始状态同步
     connect(m_view, &HsImageWindow::roiCommitted, this, &MainWindow::onRoiCommitted);
     connect(m_view, &HsImageWindow::roiSelected, this, &MainWindow::onRoiSelected);
     connect(m_view, &HsImageWindow::drawSessionFinished, this, &MainWindow::onDrawSessionFinished);
@@ -1883,6 +1900,7 @@ void MainWindow::showRoiGeom(const HsCommData::Graphic& g)
     const QString deg = QString::fromUtf8("°");
     const QString unit = HsCommData::HsSystem::instance().angleUnit == HsCommData::HsSystem::UnitDegree ? deg : QString::fromUtf8("rad");
     QString t;
+    // 几何对象只显示第 0 格；多边形等未列出的种类显示为空
     if (g.kind == HsCommData::KindObject && g.geom.isInitialized()) {
     switch (g.geom.kind()) {
     case HsCommData::ObjCircle:
@@ -1961,6 +1979,7 @@ void MainWindow::showRoiGeom(const HsCommData::Graphic& g)
         break;
     }
     } else {
+    // 十字、箭头、文字显示第一个元素，其它种类只显示 id
     switch (g.kind) {
     case HsCommData::KindCross:
         if (g.cross.empty()) {
@@ -2001,7 +2020,7 @@ void MainWindow::showRoiGeom(const HsCommData::Graphic& g)
                 .arg(QString::fromUtf8(g.text[0].content.data(), static_cast<int>(g.text[0].content.size())))
                 .arg(g.text[0].anchor.x, 0, 'f', 2)
                 .arg(g.text[0].anchor.y, 0, 'f', 2)
-                .arg(qRound(g.text[0].fontPx));
+                .arg(qRound(g.textStyle.fontPx));
         break;
     default:
         t = u8("id  ") + QString::fromStdString(g.id);
@@ -2024,7 +2043,7 @@ void MainWindow::fillTextUi(const HsCommData::Graphic& g)
     m_textEdit->setText(QString::fromUtf8(g.text[0].content.data(), static_cast<int>(g.text[0].content.size())));
     m_textXSpin->setValue(g.text[0].anchor.x);
     m_textYSpin->setValue(g.text[0].anchor.y);
-    const int px = qRound(g.text[0].fontPx);
+    const int px = qRound(g.textStyle.fontPx);
     if (px >= m_textFontSpin->minimum() && px <= m_textFontSpin->maximum()) {
         m_textFontSpin->setValue(px);
     }
@@ -2087,7 +2106,7 @@ void MainWindow::onPlaceText()
         }
         g.text[0].content.assign(bytes.constData(), static_cast<size_t>(bytes.size()));
         g.text[0].anchor = HsCommData::Point2d(pos.x(), pos.y());
-        g.text[0].fontPx = px;
+        g.textStyle.fontPx = px;
         g.geomStyle = m_view->drawingStyle();
         m_view->setDrawing(g);
         return;
@@ -2100,7 +2119,7 @@ void MainWindow::onPlaceText()
     t.text[0].anchor = HsCommData::Point2d(pos.x(), pos.y());
     const QByteArray bytes = msg.toUtf8();
     t.text[0].content.assign(bytes.constData(), static_cast<size_t>(bytes.size()));
-    t.text[0].fontPx = px;
+    t.textStyle.fontPx = px;
     t.visible = true;
     m_view->setDrawing(t);
 }
@@ -2227,6 +2246,7 @@ void MainWindow::runAlgoRefresh()
         return;
     }
 
+    // 提示图像未绑定时补绑一次再跑；判断依据是错误文字里的「尚未」
     const int t = m_thSpin->value();
     ThresholdRst r = runGrayThreshold(t, 255);
     if (!r.ok && r.error.contains(QString::fromUtf8("尚未"))) {
@@ -2234,6 +2254,7 @@ void MainWindow::runAlgoRefresh()
         r = runGrayThreshold(t, 255);
     }
 
+    // 结果区域包成 Stack 填充图元；失败时推一个空叠加清掉旧结果
     QElapsedTimer clock;
     clock.start();
     std::shared_ptr<HsCommData::FrameOverlay> sc = HsCommData::FrameOverlay::create(m_view->currentFrameId());
@@ -2260,6 +2281,7 @@ void MainWindow::runAlgoRefresh()
         pathUs = clock.nsecsElapsed() / 1000;
     }
 
+    // 上屏；压测时立即重绘，把绘制耗时算进刷新时间
     clock.restart();
     m_view->setOverlay(sc);
     if (m_algoStress && m_algoStress->isChecked()) {
@@ -2267,6 +2289,7 @@ void MainWindow::runAlgoRefresh()
     }
     const qint64 refreshUs = clock.nsecsElapsed() / 1000;
 
+    // 每 400 ms 统计一次推送频率；压测时也按这个节奏刷新统计文字
     ++m_algoPushCount;
     const qint64 hzMs = m_algoHzClock.elapsed();
     const bool report = !m_algoStress->isChecked() || hzMs >= 400;

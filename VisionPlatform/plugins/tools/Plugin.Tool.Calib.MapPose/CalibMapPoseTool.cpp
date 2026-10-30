@@ -189,7 +189,7 @@ Vision::CamModel modelFrom(const Vision::ParamMap& v)
 
 }
 
-// 位姿换算工具名
+// 工具版本
 std::string Vision::CalibMapPoseTool::version() const
 {
     return std::string(kToolVersion);
@@ -201,6 +201,7 @@ std::vector<Vision::VerNote> Vision::CalibMapPoseTool::versionNotes() const
     return Vision::verNotesFrom(kVerNotes, static_cast<int>(sizeof(kVerNotes) / sizeof(kVerNotes[0])));
 }
 
+// 注册名
 std::string Vision::CalibMapPoseTool::toolName() const { return "calib.map_pose"; }
 // 类型为标定
 Vision::ToolType Vision::CalibMapPoseTool::type() const { return Vision::ToolType::Calib; }

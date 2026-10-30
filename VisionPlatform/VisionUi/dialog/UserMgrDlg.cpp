@@ -38,6 +38,7 @@ UserMgrDlg::UserMgrDlg(Session* session, QWidget* parent)
     hint->setWordWrap(true);
     hint->setObjectName(QLatin1String("hint"));
 
+    // 用户表，双击编辑
     m_table = new QTableWidget(this);
     m_table->setColumnCount(5);
     QStringList headers;
@@ -62,6 +63,7 @@ UserMgrDlg::UserMgrDlg(Session* session, QWidget* parent)
     connect(resetBtn, SIGNAL(clicked()), this, SLOT(onResetPwd()));
     connect(enBtn, SIGNAL(clicked()), this, SLOT(onToggleEnabled()));
 
+    // 无用户管理权限时只能查看
     const bool can = m_session->has(PermManageUsers);
     addBtn->setEnabled(can);
     editBtn->setEnabled(can);

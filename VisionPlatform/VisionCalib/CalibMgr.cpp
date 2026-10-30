@@ -163,6 +163,7 @@ struct CalibMgr::Impl {
     }
 
     bool archive(const std::string& id, CalibKind kind, bool wasValid);
+    static void expireDependents(Slot* s);
 };
 
 CalibMgr& CalibMgr::instance()
@@ -226,6 +227,7 @@ bool CalibMgr::load(const std::string& solutionDir, std::string* err)
     if (h == INVALID_HANDLE_VALUE) {
         return true;
     }
+    // calib 下每个子目录是一路相机，目录名即相机 id；跳过 history 和非法名
     do {
         if ((fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0) {
             continue;
@@ -239,6 +241,7 @@ bool CalibMgr::load(const std::string& solutionDir, std::string* err)
         if (!safeId(id) || id == "history") {
             continue;
         }
+        // 参数、三份生效结果、三份草稿逐个读；文件缺失或解析失败就保持默认值
         Slot slot;
         slot.id = ObjectId(id);
         const std::string folder = m_impl->camDir(id);
@@ -305,6 +308,8 @@ bool CalibMgr::save(std::string* err)
         }
         return false;
     }
+    // 每路相机：参数总写；生效结果有才写，失败即返回
+    bool draftsOk = true;
     for (std::map<std::string, Slot>::iterator it = m_impl->slots.begin(); it != m_impl->slots.end(); ++it) {
         const Slot& slot = it->second;
         const std::string folder = m_impl->camDir(it->first);
@@ -345,15 +350,25 @@ bool CalibMgr::save(std::string* err)
                 return false;
             }
         }
-        if (slot.cameraDraft.present) {
-            calibWriteText(pathJoin(folder, "camera.draft.json"), JsonValue::stringify(cameraToJson(slot.cameraDraft)));
+        // 草稿写失败不中断，其余相机照写，最后整体返回失败
+        if (slot.cameraDraft.present
+            && !calibWriteText(pathJoin(folder, "camera.draft.json"), JsonValue::stringify(cameraToJson(slot.cameraDraft)))) {
+            draftsOk = false;
         }
-        if (slot.planeDraft.present) {
-            calibWriteText(pathJoin(folder, "plane.draft.json"), JsonValue::stringify(planeToJson(slot.planeDraft)));
+        if (slot.planeDraft.present
+            && !calibWriteText(pathJoin(folder, "plane.draft.json"), JsonValue::stringify(planeToJson(slot.planeDraft)))) {
+            draftsOk = false;
         }
-        if (slot.rotateDraft.present) {
-            calibWriteText(pathJoin(folder, "rotate.draft.json"), JsonValue::stringify(rotateToJson(slot.rotateDraft)));
+        if (slot.rotateDraft.present
+            && !calibWriteText(pathJoin(folder, "rotate.draft.json"), JsonValue::stringify(rotateToJson(slot.rotateDraft)))) {
+            draftsOk = false;
         }
+    }
+    if (!draftsOk) {
+        if (err) {
+            *err = U(L"\u5199\u5165\u6807\u5B9A\u8349\u7A3F\u5931\u8D25");
+        }
+        return false;
     }
     if (err) {
         err->clear();
@@ -642,11 +657,10 @@ bool CalibMgr::Impl::archive(const std::string& id, CalibKind kind, bool wasVali
     return calibWriteText(dst, JsonValue::stringify(j));
 }
 
-namespace {
-
-void expirePlaneAndRotate(Slot* s)
+// 平面映射只有 parentModelStamp 非空才依赖内参；旋转中心只有带毫米圆心时才依赖平面映射
+void CalibMgr::Impl::expireDependents(Slot* s)
 {
-    if (s->plane.present && s->plane.status == CalibValid) {
+    if (s->plane.present && s->plane.status == CalibValid && !s->plane.parentModelStamp.empty()) {
         if (!s->camera.present || s->camera.status != CalibValid
             || s->plane.parentModelStamp != s->camera.updatedAt) {
             s->plane.status = CalibExpired;
@@ -658,8 +672,6 @@ void expirePlaneAndRotate(Slot* s)
             s->rotate.status = CalibExpired;
         }
     }
-}
-
 }
 
 bool CalibMgr::commitCamera(const ObjectId& cameraId, CamModel model, std::string* err)
@@ -678,6 +690,7 @@ bool CalibMgr::commitCamera(const ObjectId& cameraId, CamModel model, std::strin
     }
     const std::string halconSrc = pathJoin(m_impl->camDir(cameraId.toString()), "camera.halcon.dat");
     const std::string offlineDir = pathJoin(m_impl->camDir(cameraId.toString()), "offline");
+    // 像素残差超限：入库后只存草稿，返回 false 并给出原因
     if (model.rms > s.param.residualMaxPx || model.maxResidual > s.param.residualMaxPx) {
         model.present = true;
         model.status = CalibDraft;
@@ -695,6 +708,7 @@ bool CalibMgr::commitCamera(const ObjectId& cameraId, CamModel model, std::strin
         }
         return false;
     }
+    // 生效：入库、归档旧文件、替换内存结果、标记已应用，再让对不上的平面和旋转失效
     model.present = true;
     model.status = CalibValid;
     int64_t rowId = 0;
@@ -714,7 +728,7 @@ bool CalibMgr::commitCamera(const ObjectId& cameraId, CamModel model, std::strin
     }
     s.camera = model;
     CalibDb::instance().markApplied("plate", rowId);
-    expirePlaneAndRotate(&s);
+    Impl::expireDependents(&s);
     if (err) {
         err->clear();
     }
@@ -735,6 +749,7 @@ bool CalibMgr::commitPlane(const ObjectId& cameraId, PlaneMap model, std::string
     if (model.updatedAt.empty()) {
         model.updatedAt = nowStamp();
     }
+    // 毫米残差超限：入库后只存草稿，返回 false
     if (model.rms > s.param.residualMaxMm || model.maxResidual > s.param.residualMaxMm) {
         model.present = true;
         model.status = CalibDraft;
@@ -751,9 +766,9 @@ bool CalibMgr::commitPlane(const ObjectId& cameraId, PlaneMap model, std::string
         }
         return false;
     }
-    if (s.camera.present && s.camera.status == CalibValid) {
-        model.parentModelStamp = s.camera.updatedAt;
-    }
+    // 生效：有生效内参时记下其时间戳表示依赖它，否则留空表示不依赖内参；流程同 commitCamera
+    model.parentModelStamp = (s.camera.present && s.camera.status == CalibValid)
+        ? s.camera.updatedAt : std::string();
     model.present = true;
     model.status = CalibValid;
     int64_t rowId = 0;
@@ -772,7 +787,7 @@ bool CalibMgr::commitPlane(const ObjectId& cameraId, PlaneMap model, std::string
     }
     s.plane = model;
     CalibDb::instance().markApplied("plane", rowId);
-    expirePlaneAndRotate(&s);
+    Impl::expireDependents(&s);
     if (err) {
         err->clear();
     }
@@ -793,7 +808,48 @@ bool CalibMgr::commitRotate(const ObjectId& cameraId, RotateCenter model, std::s
     if (model.updatedAt.empty()) {
         model.updatedAt = nowStamp();
     }
-    if (model.rms > s.param.residualMaxPx || model.maxResidual > s.param.residualMaxPx || model.radius < 1.0) {
+    model.worldValid = false;
+    model.parentPlaneStamp.clear();
+    std::string reject;
+    if (model.radius < 1.0) {
+        reject = U(L"\u65CB\u8F6C\u534A\u5F84\u8FC7\u5C0F\uFF0C\u672A\u5199\u6210\u751F\u6548");
+    } else if (model.rms > s.param.residualMaxPx || model.maxResidual > s.param.residualMaxPx) {
+        reject = U(L"\u65CB\u8F6C\u6B8B\u5DEE\u8D85\u8FC7\u9608\u503C\uFF0C\u672A\u5199\u6210\u751F\u6548");
+    } else if (s.plane.present && s.plane.status == CalibValid) {
+        // 有生效平面映射时，把样本映射到毫米再拟合一次得到毫米圆心；拿不到就不生效，
+        // 否则 mapPose 会因为没有毫米圆心而悄悄跳过旋转补偿
+        std::vector<RotateSample> worldSamples;
+        worldSamples.reserve(model.samples.size());
+        std::string worldErr;
+        bool mapped = true;
+        for (size_t i = 0; i < model.samples.size(); ++i) {
+            double wx = 0.0;
+            double wy = 0.0;
+            if (!mapImageToWorld(s.plane.imageToWorld, model.samples[i].imageX, model.samples[i].imageY, &wx, &wy)) {
+                mapped = false;
+                break;
+            }
+            RotateSample ws;
+            ws.angleDeg = model.samples[i].angleDeg;
+            ws.imageX = wx;
+            ws.imageY = wy;
+            worldSamples.push_back(ws);
+        }
+        RotateCenter worldFit;
+        if (!mapped) {
+            worldErr = U(L"\u6837\u672C\u70B9\u65E0\u6CD5\u6620\u5C04\u5230\u6BEB\u7C73");
+        } else if (fitRotateCenter(worldSamples, &worldFit, &worldErr)) {
+            model.worldX = worldFit.imageX;
+            model.worldY = worldFit.imageY;
+            model.worldValid = true;
+            model.parentPlaneStamp = s.plane.updatedAt;
+        }
+        if (!model.worldValid) {
+            reject = U(L"\u6BEB\u7C73\u5706\u5FC3\u62DF\u5408\u5931\u8D25\uFF0C\u672A\u5199\u6210\u751F\u6548\uFF1A") + worldErr;
+        }
+    }
+    // 半径不足 1 像素、像素残差超限或拿不到毫米圆心：入库后只存草稿，返回 false
+    if (!reject.empty()) {
         model.present = true;
         model.status = CalibDraft;
         int64_t rowId = 0;
@@ -805,37 +861,11 @@ bool CalibMgr::commitRotate(const ObjectId& cameraId, RotateCenter model, std::s
         }
         s.rotateDraft = model;
         if (err) {
-            *err = model.radius < 1.0
-                ? U(L"\u65CB\u8F6C\u534A\u5F84\u8FC7\u5C0F\uFF0C\u672A\u5199\u6210\u751F\u6548")
-                : U(L"\u65CB\u8F6C\u6B8B\u5DEE\u8D85\u8FC7\u9608\u503C\uFF0C\u672A\u5199\u6210\u751F\u6548");
+            *err = reject;
         }
         return false;
     }
-    model.worldValid = false;
-    if (s.plane.present && s.plane.status == CalibValid) {
-        std::vector<RotateSample> worldSamples;
-        worldSamples.reserve(model.samples.size());
-        for (size_t i = 0; i < model.samples.size(); ++i) {
-            double wx = 0.0;
-            double wy = 0.0;
-            if (!mapImageToWorld(s.plane.imageToWorld, model.samples[i].imageX, model.samples[i].imageY, &wx, &wy)) {
-                worldSamples.clear();
-                break;
-            }
-            RotateSample ws;
-            ws.angleDeg = model.samples[i].angleDeg;
-            ws.imageX = wx;
-            ws.imageY = wy;
-            worldSamples.push_back(ws);
-        }
-        RotateCenter worldFit;
-        if (worldSamples.size() >= 3 && fitRotateCenter(worldSamples, &worldFit, 0)) {
-            model.worldX = worldFit.imageX;
-            model.worldY = worldFit.imageY;
-            model.worldValid = true;
-            model.parentPlaneStamp = s.plane.updatedAt;
-        }
-    }
+    // 生效：入库、归档旧文件、替换内存结果、标记已应用
     model.present = true;
     model.status = CalibValid;
     if (model.updatedAt.empty()) {
@@ -932,6 +962,8 @@ bool CalibMgr::importResult(const ObjectId& cameraId, const std::string& filePat
         }
         return false;
     }
+    // 按特征字段认种类：fx 是相机模型，imageToWorld 是平面映射，radius 是旋转中心；
+    // 来源记为导入，清空时间戳让提交时重新打戳
     if (j.contains("fx")) {
         CamModel model;
         if (!cameraFromJson(j, &model)) {

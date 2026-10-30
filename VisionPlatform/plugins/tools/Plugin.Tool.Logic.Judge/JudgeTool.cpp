@@ -179,6 +179,7 @@ Vision::ToolOut Vision::JudgeTool::execute(const Vision::ToolIn& in)
         Vision::ToolOut out;
         bool ok = true;
         std::string parts;
+        // 汇总上游逻辑口：任一 NG 则整体 NG
         const bool useOkAnd = in.param.run.value("useOkAnd").toBool(true);
         if (useOkAnd) {
             for (int i = 0; i < static_cast<int>(in.inputIo.logics.size()); ++i) {
@@ -197,6 +198,7 @@ Vision::ToolOut Vision::JudgeTool::execute(const Vision::ToolIn& in)
                 }
             }
         }
+        // 逐条数值条件：先查引用工具的结果，再查上游数值；取不到值算 NG
         const int termCount = in.param.run.value("termCount").toInt(0);
         for (int i = 0; i < termCount; ++i) {
             JudgeTerm term;
@@ -229,6 +231,7 @@ Vision::ToolOut Vision::JudgeTool::execute(const Vision::ToolIn& in)
             }
             parts += buf;
         }
+        // 结果写到数值与逻辑口，供下游判定
         out.ok = ok;
         Vision::paramSet(&out.values, Vision::ValueKey::Ok, ok);
         Vision::PortLogic L;

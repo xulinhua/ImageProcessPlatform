@@ -176,6 +176,7 @@ void JobRstRulePanel::flushToJob(JobCfg* job)
     if (!job) {
         return;
     }
+    // 整表重建规则：只收已启用且非忽略的格；禁用的格（含只读状态）不写入
     job->resultRules.clear();
     for (int row = 0; row < m_table->rowCount(); ++row) {
         QTableWidgetItem* nameItem = m_table->item(row, ColName);
@@ -217,6 +218,7 @@ void JobRstRulePanel::flushToJob(JobCfg* job)
             term.state = state;
             rule.terms.push_back(term);
         }
+        // 名称留空时用默认名
         if (rule.name.empty()) {
             rule.name = std::string(Translate::tr("逻辑判断"));
         }
@@ -243,6 +245,7 @@ void JobRstRulePanel::rebuildTable()
         m_table->setColumnCount(0);
         return;
     }
+    // 列：名称、绑定工具、各 OK/NG 工具，再加前 N-1 条规则（规则可引用之前的规则）
     const std::vector<ObjectId> tools = m_editJob->okNgToolIds();
     const int toolCount = static_cast<int>(tools.size());
     const int ruleCount = static_cast<int>(m_editJob->resultRules.size());
@@ -286,6 +289,7 @@ void JobRstRulePanel::rebuildTable()
         connect(bind, SIGNAL(currentIndexChanged(int)), this, SLOT(onRuleMetaChanged()));
         m_table->setCellWidget(row, ColBindTool, bind);
 
+        // 条件格三态；columnSource 判定无效的格（如引用自身或之后的规则）禁用
         for (int col = ColTermStart; col < colCount; ++col) {
             int kind = RstTermTool;
             ObjectId sourceId;

@@ -72,20 +72,19 @@ HALCONARCH=$(HALCONARCH)</LocalDebuggerEnvironment>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)third_party\HsImageCtrl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)HsImageCtrl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <AdditionalDependencies>VisionWidgets.lib;VisionUi.lib;VisionToolUi.lib;VisionLang.lib;VisionCommon.lib;VisionCore.lib;VisionToolBase.lib;VisionAlgToolBase.lib;VisionComm.lib;VisionAuth.lib;VisionLog.lib;VisionCfgMgr.lib;VisionGrabFile.lib;VisionDb.lib;VisionFile.lib;VisionPluginAPI.lib;VisionIpc.lib;VisionLicense.lib;HsImageCtrl.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(OutDir);$(SolutionDir)third_party\HsImageCtrl\lib\$(Platform)\$(Configuration);$(SolutionDir)..\HsImage\bin\$(Platform)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PreLinkEvent>
       <Command>call "$(SolutionDir)tools\free_exe.bat" "$(TargetPath)"</Command>
       <Message>Move previous exe aside if it is running</Message>
     </PreLinkEvent>
     <PostBuildEvent>
-      <Command>call "$(SolutionDir)CopyQt.bat" $(Configuration) "$(TargetDir)." "$(QTDIR)" "$(SolutionDir)samples" "$(HalconRoot)" $(HALCONARCH)
-if exist "$(SolutionDir)third_party\HsImageCtrl\bin\$(Platform)\$(Configuration)\HsImageCtrl.dll" (copy /Y "$(SolutionDir)third_party\HsImageCtrl\bin\$(Platform)\$(Configuration)\HsImageCtrl.dll" "$(OutDir)") else if exist "$(SolutionDir)..\HsImage\bin\$(Platform)\$(Configuration)\HsImageCtrl.dll" copy /Y "$(SolutionDir)..\HsImage\bin\$(Platform)\$(Configuration)\HsImageCtrl.dll" "$(OutDir)"</Command>
+      <Command>call "$(SolutionDir)CopyQt.bat" $(Configuration) "$(TargetDir)." "$(QTDIR)" "$(SolutionDir)samples" "$(HalconRoot)" $(HALCONARCH)</Command>
       <Message>Copy Qt runtime, samples, icons, Halcon dlls</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -163,6 +162,9 @@ if exist "$(SolutionDir)third_party\HsImageCtrl\bin\$(Platform)\$(Configuration)
     </ProjectReference>
     <ProjectReference Include="..\VisionLicense\VisionLicense.vcxproj">
       <Project>{B4E91A10-7C22-4F18-9A01-A0B1C2D3E4C2}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\HsImageCtrl\HsImageCtrl.vcxproj">
+      <Project>{A7C4E91B-2D3F-4A18-9B6C-8E0F1A2B3C4D}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

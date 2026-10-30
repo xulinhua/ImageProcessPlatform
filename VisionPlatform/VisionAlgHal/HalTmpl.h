@@ -20,13 +20,15 @@ namespace Vision {
 	/**
 	 * @class HalTmpl
 	 * @brief NCC 与形状模板定位（Halcon）
+	 * @note 正式模板放在工具数据目录的 hal 子目录；示教只建临时模板，save 时才转正并落盘。
+	 *       单拍状态存在成员里，同一实例不可并发 execute
 	 */
 	class HalTmpl : public AlgToolBase
 	{
 	public://基础、骨架接口
-		//构造
+		/** @brief 模板句柄置 -1，图像和区域置空 */
 		HalTmpl();
-		//析构
+		/** @brief 释放正式和临时的形状、NCC 模板 */
 		~HalTmpl();
 
 		/** @brief 克隆本实例 */
@@ -43,7 +45,7 @@ namespace Vision {
 		std::vector<VerNote> version_notes() const override;
 
 	public:
-		/*********************************对外接口**************************************/
+		/************************************************** 对外接口 **************************************************/
 		/** @brief 自动或调试定位。不创建模板 */
 		int execute(const AlgToolIn& in, AlgToolOut* out) override;
 		/** @brief 按示教区创建临时模板并定位。正式句柄留到保存 */
@@ -53,7 +55,7 @@ namespace Vision {
 		/** @brief 按动作 id 执行。teach.model 学习，insp.contour 看轮廓 */
 		int action(const std::string& id, const AlgToolIn& in, AlgToolOut* out) override;
 
-		/*****************************算法工具配置读写**********************************/
+		/************************************************** 模型读写 **************************************************/
 		/**
 		 * @brief 把已保存的模型装进内存
 		 * @param toolDataDir 本工具数据目录
@@ -66,29 +68,58 @@ namespace Vision {
 		void save(const std::string& toolDataDir) override;
 
 	private://内部接口
-		int tool_reset();//工具复位
-		int proc_input(const AlgToolIn& in);//输入检查+处理
-		int build_model(const AlgToolIn& in);//按示教区创建临时模板
-		int alg_run(const AlgToolIn& in);//算法运行：定位，并丢掉越界结果
-		int judge_tol(const AlgToolIn& in) override;//偏移和个数做公差，结果留在 tol_
-		int alg_rst_proc(const AlgToolIn& in, AlgToolOut* out);//结果处理：仿射区域并写出输出
+		/************************************************** 单拍流程 **************************************************/
+		/** @brief 清空本拍匹配、公差、结果区域、错误码和临时建模标记 */
+		int tool_reset();
+		/**
+		 * @brief 取灰度图并按口名收集搜索区、示教区、跟随区；有示教区时裁出模板图并记原点
+		 * @return 无图返回 HS_ERR_IMAGE_EMPTY，参数对象不是 ToolParaTmpl 返回 HS_ERR_TYPE
+		 */
+		int proc_input(const AlgToolIn& in);
+		/** @brief 按示教区裁剪图创建临时模板，并记下调试快照；无示教图返回 HS_ERR_TMPL_NO_TEACH */
+		int build_model(const AlgToolIn& in);
+		/** @brief 取可用模板后定位，并丢掉越界结果 */
+		int alg_run(const AlgToolIn& in);
+		/** @brief 首个匹配相对原点（示教参数 refX/refY/refA 优先）的偏移和个数做公差，结果留在 tol_ */
+		int judge_tol(const AlgToolIn& in) override;
+		/** @brief 把本拍匹配、公差和示教区/跟随区的仿射结果写进 out，返回本拍错误码 */
+		int alg_rst_proc(const AlgToolIn& in, AlgToolOut* out);
 
-		int read_model(HalconCpp::HTuple* model_id, const std::string& path, bool shape);//按建模方式加载，无效时写入 -1
-		int write_model(const HalconCpp::HTuple* model_id, const std::string& path, bool shape);//按建模方式保存
-		std::string lib_dir(const std::string& toolDataDir) const;//本算法库的缓存目录
-		int ensure_model(const AlgToolIn& in, bool shape, const HalconCpp::HTuple** model);//正式模板读失败时按原图重建到临时句柄
-		int locate(const AlgToolIn& in, const HalconCpp::HTuple& model, bool shape);//在当前 image_ 上定位
-		int rebuild_from_org(const AlgToolIn& in, bool shape);//用工具保存的原图和当前示教区重建
-		void keep_teach_snapshot();//记下创建时的模板图、示教区和原点，供调试文件使用
-		bool read_numbers(const std::string& path, double* a, double* b, double* c);//按 Halcon 的 UTF-8 路径读三个数
-		void write_numbers(const std::string& path, double a, double b, double c);//按 Halcon 的 UTF-8 路径写三个数
-		void take_region(const AlgToolIn& in, const char* port, HalconCpp::HObject* region);//按口名收成一块区域
+		/************************************************** 模板文件 **************************************************/
+		/** @brief 按建模方式加载模板文件，失败或无效时写入 -1 并返回文件类错误码 */
+		int read_model(HalconCpp::HTuple* model_id, const std::string& path, bool shape);
+		/** @brief 按建模方式保存模板；句柄无效返回 HS_ERR_TMPL_NO_MODEL */
+		int write_model(const HalconCpp::HTuple* model_id, const std::string& path, bool shape);
+		/** @brief 本算法库的缓存目录：toolDataDir 下的 hal 子目录 */
+		std::string lib_dir(const std::string& toolDataDir) const;
+		/**
+		 * @brief 选出本拍用的模板句柄
+		 * @note 学习、测试或本拍已建模时优先临时模板；否则读正式模板（hal 子目录优先，再找旧位置）；
+		 *       都没有且不是学习模式时，用 image_org.png 重建到临时句柄
+		 */
+		int ensure_model(const AlgToolIn& in, bool shape, const HalconCpp::HTuple** model);
+		/** @brief 在当前 image_ 的搜索区内定位，丢掉图外和搜索区外的结果；一个都没有返回 HS_ERR_TMPL_NO_MATCH */
+		int locate(const AlgToolIn& in, const HalconCpp::HTuple& model, bool shape);
+		/** @brief 用工具保存的原图和当前示教区重建临时模板，并在原图上定位得到 pose_org_；结束后恢复本拍图像和搜索区 */
+		int rebuild_from_org(const AlgToolIn& in, bool shape);
+		/** @brief 记下创建时的模板图、示教区和原点，供调试文件使用 */
+		void keep_teach_snapshot();
+		/** @brief 按 Halcon 的 UTF-8 路径读首行三个数；文件不存在或格式不对返回 false */
+		bool read_numbers(const std::string& path, double* a, double* b, double* c);
+		/** @brief 按 Halcon 的 UTF-8 路径写一行三个数（覆盖写），Halcon 异常向上抛 */
+		void write_numbers(const std::string& path, double a, double b, double c);
+		/**
+		 * @brief 按口名把普通区并起来再减去屏蔽区
+		 * @note search 口同时收口名为空或 roi 的区域；没有普通区时 region 为空
+		 */
+		void take_region(const AlgToolIn& in, const char* port, HalconCpp::HObject* region);
 
 	private:
 		/** @brief 一条匹配：分数和位姿 */
 		struct MatchOne {
 			double score_; ///< 匹配分数
 			HsCommData::Pose2 pose_; ///< 匹配位姿，角度为弧度
+			/** @brief 分数清零 */
 			MatchOne() : score_(0) {}
 		};
 
@@ -135,8 +166,11 @@ namespace Vision {
 		double origin_col_keep_; ///< 创建时的原点列
 		bool teach_keep_; ///< 已有创建时的调试快照
 
+		/** @brief 转到 tool_name：locate.template */
 		std::string toolName() const override { return tool_name(); }
+		/** @brief 转到 alg_lib：Halcon */
 		AlgLibKind algLib() const override { return alg_lib(); }
+		/** @brief 转到 version_notes */
 		std::vector<VerNote> versionNotes() const override { return version_notes(); }
 	};
 

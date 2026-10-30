@@ -83,6 +83,7 @@
     <ClCompile Include="common\ToolGeom.cpp" />
     <ClCompile Include="common\ToolIo.cpp" />
     <ClCompile Include="common\PortTypes.cpp" />
+    <ClCompile Include="common\CloudFileGrabber.cpp" />
     <ClCompile Include="thread\ThreadPool.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -90,6 +91,7 @@
 <ClInclude Include="common\ParamKeys.h" />
     <ClInclude Include="common\ObjectId.h" />
     <ClInclude Include="common\ParamValue.h" />
+    <ClInclude Include="common\CommPeer.h" />
     <ClInclude Include="common\VpUtil.h" />
     <ClInclude Include="common\AppPaths.h" />
     <ClInclude Include="common\SolutionDataPaths.h" />
@@ -99,7 +101,13 @@
     <ClInclude Include="common\ToolGeom.h" />
     <ClInclude Include="common\PortTypes.h" />
     <ClInclude Include="common\ToolIo.h" />
+    <ClInclude Include="common\CloudFileGrabber.h" />
     <ClInclude Include="thread\ThreadPool.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\HsCommData\HsCommData.vcxproj">
+      <Project>{E7A1B2C3-4D5E-4F60-8A71-9B0C1D2E3F40}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
 </Project>

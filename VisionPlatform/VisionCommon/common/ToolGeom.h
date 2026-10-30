@@ -60,14 +60,20 @@ struct PortLogic {
     bool ok;             ///< true 为 OK，false 为 NG
     bool valid;          ///< 是否有效
     std::string message; ///< 说明
+    /** @brief 无效的 NG */
     PortLogic() : ok(false), valid(false) {}
 };
 
-/** @brief 一种允许绘制的形状 */
+/**
+ * @class RoiShapeRule
+ * @brief 一种允许绘制的形状
+ */
 struct RoiShapeRule {
     HsCommData::ObjectKind kind; ///< 几何种类。新形状只在 ObjectKind 末尾追加
     int maxCount;                ///< 该种类最多几块。0 表示不单独限制
+    /** @brief 空种类、不限块数 */
     RoiShapeRule() : kind(HsCommData::ObjEmpty), maxCount(0) {}
+    /** @brief 指定种类与最多块数 */
     RoiShapeRule(HsCommData::ObjectKind k, int n) : kind(k), maxCount(n) {}
 };
 
@@ -78,6 +84,7 @@ struct RoiSlotRule {
     int maxCount;                       ///< 该分区最多几条。0 表示不限制
     std::vector<RoiShapeRule> shapes;   ///< 允许绘制的形状。空表示这个分区不能手画
     std::vector<RoiItemKind> itemKinds; ///< 该分区允许的类型，取四种的子集
+    /** @brief 不限条数 */
     RoiSlotRule() : maxCount(0) {}
 };
 
@@ -92,6 +99,7 @@ struct ToolRoiItem {
     int refIndex;                  ///< 引用该输出的第几块。-1 表示整口
     bool followPose;               ///< 是否用某个工具的位姿做仿射
     ObjectId poseToolId;           ///< followPose 时，提供位姿的工具。每条自己指定
+    /** @brief 启用、必须有、类型未定、整口引用、不跟随位姿 */
     ToolRoiItem()
         : enabled(true)
         , presence(RoiPresence::Required)
@@ -111,11 +119,19 @@ struct ResolvedRoi {
 struct ToolCaps {
     bool usesRoi;                    ///< 本工具要不要在图上画搜索区
     std::vector<RoiSlotRule> slotRules;  ///< 分区。空表且 usesRoi 为假表示不画
+    /** @brief 默认要画搜索区 */
     ToolCaps() : usesRoi(true) {}
+    /** @brief 任一分区条数上限不是 1 即为多 ROI */
     VISION_COMMON_API bool usesMultiRoi() const;
 
+    /** @brief 所有分区只允许同一种形状时返回该 ObjectKind，否则 -1 */
     VISION_COMMON_API int preferredRoiKind() const;
 
+    /**
+     * @brief 形状是否被某分区允许
+     * @param kind HsCommData::ObjectKind；负数返回 false
+     * @return 未列任何形状时为 true；允许直线时也接受轮廓
+     */
     VISION_COMMON_API bool kindMatches(int kind) const;
 
 };
@@ -128,30 +144,40 @@ struct JudgeParam {
     double maxVal;      ///< 上限
     bool enable;        ///< 是否参与总判定
     std::string unit;   ///< 单位；可空
+    /** @brief 上下限为 0、参与总判定 */
     JudgeParam() : minVal(0), maxVal(0), enable(true) {}
+};
+
+/**
+ * @class TeachRef
+ * @brief 示教文件。方案里只存相对路径和内容指纹
+ */
+struct TeachRef {
+    std::string relPath;      ///< 相对方案文件的路径
+    std::string fingerprint;  ///< 内容指纹
+    /** @brief 空引用 */
+    TeachRef() {}
+    /** @brief 是否有路径 */
+    bool valid() const { return !relPath.empty(); }
+};
+
+/**
+ * @class DisplayCfg
+ * @brief 一项显示配置
+ */
+struct DisplayCfg {
+    bool text;     ///< 文字项
+    bool enabled;  ///< 是否显示
+    int alpha;     ///< 透明度，0 到 100
+    int anchor;    ///< 0 图像角，1 结果点，2 图形旁
+    /** @brief 图形项、显示、不透明、锚在图像角 */
+    DisplayCfg() : text(false), enabled(true), alpha(100), anchor(0) {}
 };
 
 /**
  * @class ToolParam
  * @brief 写入方案的工具参数：学习、运行、判断三块
  */
-/** @brief 示教文件。方案里只存相对路径和内容指纹 */
-struct TeachRef {
-    std::string relPath;      ///< 相对方案文件的路径
-    std::string fingerprint;  ///< 内容指纹
-    TeachRef() {}
-    bool valid() const { return !relPath.empty(); }
-};
-
-/** @brief 一项显示配置 */
-struct DisplayCfg {
-    bool text;     ///< 文字项
-    bool enabled;  ///< 是否显示
-    int alpha;     ///< 透明度，0 到 100
-    int anchor;    ///< 0 图像角，1 结果点，2 图形旁
-    DisplayCfg() : text(false), enabled(true), alpha(100), anchor(0) {}
-};
-
 struct ToolParam {
     ParamMap learn;                  ///< 示教参数明文。对应 teachCfg
     ParamMap run;                    ///< 运行参数。配方界面写
@@ -164,8 +190,9 @@ struct ToolParam {
     ObjectId deviceId;               ///< 绑定设备（采集类）
     std::vector<HsCommData::HsObject> rois;       ///< 界面绘制的搜索区
     std::vector<ToolRoiItem> roiItems; ///< 搜索区记录。绘制和引用同一结构，落盘的是来源
-    std::string paraVersion;
-    std::string algVersion;
+    std::string paraVersion;         ///< 参数结构版本（四段），参数适配按它升降级；空视为 0.0.0.0
+    std::string algVersion;          ///< 保存时的算法版本，仅供参数适配页对比；可空
+    /** @brief Halcon 算法库，参数版本 1.0.0.0 */
     ToolParam()
         : algLib(AlgLibHal)
         , paraVersion("1.0.0.0")

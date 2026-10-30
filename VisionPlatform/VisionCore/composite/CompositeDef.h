@@ -29,6 +29,7 @@ struct CompositePort {
     PortData data;         ///< 数据类型
     ObjectId innerToolId;  ///< 内部工具
     PortSlot innerPort;    ///< 内部那一口
+    /** @brief 默认图像输入针 */
     CompositePort() : dir(PortDir::In), data(PortData::Image) {}
 };
 
@@ -45,6 +46,7 @@ struct CompositeParaPub {
     ObjectId innerToolId;  ///< 内部工具
     std::string key;       ///< 内部参数键
     bool learn;            ///< true 取学习参数，否则取运行参数
+    /** @brief 默认取运行参数 */
     CompositeParaPub() : learn(false) {}
 };
 
@@ -59,6 +61,7 @@ struct VISIONCORE_API CompositeDef {
     std::vector<CompositePort> ports;         ///< 公开针脚
     std::vector<CompositeRoiPub> rois;        ///< 公开的 ROI 分区
     std::vector<CompositeParaPub> paras;      ///< 公开的参数键
+    /** @brief 默认独立组合、版本 1.0.0.0 */
     CompositeDef() : scope(CompositeLibrary), version("1.0.0.0") {}
     /** @brief 抄入已公开字段，生成流程节点 */
     ToolCfg makeNode() const;
@@ -66,7 +69,9 @@ struct VISIONCORE_API CompositeDef {
 
 /** @brief 按 id 查找。由 CompositeMgr 注册 */
 typedef const CompositeDef* (*CompositeFindFn)(const ObjectId& id);
+/** @brief 注册全局组合定义查找函数（主窗口启动时注入 CompositeMgr::findRaw） */
 VISIONCORE_API void setCompositeFinder(CompositeFindFn fn);
+/** @brief 按 id 取组合定义；未注册查找函数或 id 为空时返回空 */
 VISIONCORE_API const CompositeDef* findComposite(const ObjectId& id);
 
 

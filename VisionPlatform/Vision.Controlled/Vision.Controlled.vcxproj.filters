@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <!-- 与磁盘目录对齐。app 入口；ui 主界面；security 来访确认与被控提示；session 反连会话；capture、watch、input 采集、找窗口、注入 -->
+    <Filter Include="app">
+      <UniqueIdentifier>{E4CA0001-0000-4000-8000-000000000001}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ui">
+      <UniqueIdentifier>{E4CA0001-0000-4000-8000-000000000002}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="security">
+      <UniqueIdentifier>{E4CA0001-0000-4000-8000-000000000003}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="session">
+      <UniqueIdentifier>{E4CA0001-0000-4000-8000-000000000004}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="capture">
+      <UniqueIdentifier>{E4CA0001-0000-4000-8000-000000000005}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="watch">
+      <UniqueIdentifier>{E4CA0001-0000-4000-8000-000000000006}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="input">
+      <UniqueIdentifier>{E4CA0001-0000-4000-8000-000000000007}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="service">
+      <UniqueIdentifier>{E4CA0001-0000-4000-8000-000000000008}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="app\main.cpp">
+      <Filter>app</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\AgentWindow.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\ProcessCombo.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="security\ConfirmDialog.cpp">
+      <Filter>security</Filter>
+    </ClCompile>
+    <ClCompile Include="security\ControlBar.cpp">
+      <Filter>security</Filter>
+    </ClCompile>
+    <ClCompile Include="session\AgentSession.cpp">
+      <Filter>session</Filter>
+    </ClCompile>
+    <ClCompile Include="session\AgentPhase4.cpp">
+      <Filter>session</Filter>
+    </ClCompile>
+    <ClCompile Include="session\AgentWatch.cpp">
+      <Filter>session</Filter>
+    </ClCompile>
+    <ClCompile Include="session\DirectListen.cpp">
+      <Filter>session</Filter>
+    </ClCompile>
+    <ClCompile Include="session\HttpPreview.cpp">
+      <Filter>session</Filter>
+    </ClCompile>
+    <ClCompile Include="capture\WindowCapture.cpp">
+      <Filter>capture</Filter>
+    </ClCompile>
+    <ClCompile Include="capture\DxgiCapture.cpp">
+      <Filter>capture</Filter>
+    </ClCompile>
+    <ClCompile Include="capture\WgcCapture.cpp">
+      <Filter>capture</Filter>
+    </ClCompile>
+    <ClCompile Include="security\PrivacyGuard.cpp">
+      <Filter>security</Filter>
+    </ClCompile>
+    <ClCompile Include="security\AgentAudit.cpp">
+      <Filter>security</Filter>
+    </ClCompile>
+    <ClCompile Include="service\AgentService.cpp">
+      <Filter>service</Filter>
+    </ClCompile>
+    <ClCompile Include="service\SasSender.cpp">
+      <Filter>service</Filter>
+    </ClCompile>
+    <ClCompile Include="watch\WindowWatch.cpp">
+      <Filter>watch</Filter>
+    </ClCompile>
+    <ClCompile Include="input\WindowInput.cpp">
+      <Filter>input</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ui\AgentWindow.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\ProcessCombo.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="security\ConfirmDialog.h">
+      <Filter>security</Filter>
+    </ClInclude>
+    <ClInclude Include="security\ControlBar.h">
+      <Filter>security</Filter>
+    </ClInclude>
+    <ClInclude Include="session\AgentSession.h">
+      <Filter>session</Filter>
+    </ClInclude>
+    <ClInclude Include="session\DirectListen.h">
+      <Filter>session</Filter>
+    </ClInclude>
+    <ClInclude Include="session\HttpPreview.h">
+      <Filter>session</Filter>
+    </ClInclude>
+    <ClInclude Include="capture\WindowCapture.h">
+      <Filter>capture</Filter>
+    </ClInclude>
+    <ClInclude Include="capture\DxgiCapture.h">
+      <Filter>capture</Filter>
+    </ClInclude>
+    <ClInclude Include="capture\WgcCapture.h">
+      <Filter>capture</Filter>
+    </ClInclude>
+    <ClInclude Include="security\PrivacyGuard.h">
+      <Filter>security</Filter>
+    </ClInclude>
+    <ClInclude Include="security\AgentAudit.h">
+      <Filter>security</Filter>
+    </ClInclude>
+    <ClInclude Include="service\AgentService.h">
+      <Filter>service</Filter>
+    </ClInclude>
+    <ClInclude Include="service\SasSender.h">
+      <Filter>service</Filter>
+    </ClInclude>
+    <ClInclude Include="watch\WindowWatch.h">
+      <Filter>watch</Filter>
+    </ClInclude>
+    <ClInclude Include="input\WindowInput.h">
+      <Filter>input</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="app\app.rc">
+      <Filter>app</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>

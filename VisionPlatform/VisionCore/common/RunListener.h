@@ -36,6 +36,7 @@ struct VISIONCORE_API RunLogEvent {
     ObjectId toolId;     ///< 工具配置 id（可空）
     std::string message; ///< 正文
     int elapsedMs;       ///< 耗时；未知为 -1
+    /** @brief 默认 Info 级、耗时未知 */
     RunLogEvent()
         : level(RunLogInfo)
         , elapsedMs(-1)

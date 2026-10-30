@@ -1,3 +1,11 @@
+/**
+ * @file SolutionIoCheck.cpp
+ * @brief 方案存取自检：在临时目录做空方案/最小方案往返、缺失文件与非法路径加载检查
+ * @author Hoson
+ *
+ * @copyright Copyright (c) 2026 Hoson. All rights reserved.
+ */
+
 #include "JobCfg.h"
 #include "PortTypes.h"
 #include "Solution.h"
@@ -14,8 +22,13 @@
 
 namespace Vision {
 
+/**
+ * @class SolutionIoCheck
+ * @brief VisionCfgMgr 方案读写的回归检查；失败项打印到 stdout
+ */
 class SolutionIoCheck {
 public:
+    /** @brief 依次跑全部检查，返回失败项个数 */
     int run()
     {
         m_failed = 0;
@@ -29,6 +42,7 @@ public:
     }
 
 private:
+    /** @brief 在系统临时目录下建 VisionCoreTest-<pid> 工作目录 */
     void prepareDir()
     {
         wchar_t buf[MAX_PATH];
@@ -41,6 +55,7 @@ private:
         m_dir = wideToUtf8(dir.c_str());
     }
 
+    /** @brief 删除工作目录 */
     void removeDir()
     {
         if (m_dir.empty()) {
@@ -50,11 +65,13 @@ private:
         std::filesystem::remove_all(std::filesystem::path(utf8ToWide(m_dir)), ec);
     }
 
+    /** @brief 工作目录下的文件路径（UTF-8） */
     std::string filePath(const char* name) const
     {
         return m_dir + name;
     }
 
+    /** @brief 打印一条失败并计数 */
     void fail(const char* name, const std::string& detail)
     {
         std::cout << "FAIL " << name;
@@ -65,6 +82,7 @@ private:
         ++m_failed;
     }
 
+    /** @brief 全部工站的流程总数 */
     static int jobCount(const Solution& s)
     {
         int n = 0;
@@ -74,6 +92,7 @@ private:
         return n;
     }
 
+    /** @brief 全部流程的工具总数 */
     static int toolCount(const Solution& s)
     {
         int n = 0;
@@ -86,6 +105,7 @@ private:
         return n;
     }
 
+    /** @brief 按 in.filePath 存盘后再读回到 out */
     bool saveLoad(const Solution& in, Solution* out, std::string* error)
     {
         if (!VisionCfgMgr::saveSolution(in, error)) {
@@ -94,6 +114,7 @@ private:
         return VisionCfgMgr::loadSolution(in.filePath, out, error);
     }
 
+    /** @brief 空方案往返：计数为 0、名字保留 */
     void checkEmptyRoundTrip()
     {
         const char* name = "empty-roundtrip";
@@ -115,6 +136,7 @@ private:
         }
     }
 
+    /** @brief 一工站一流程一工具一连线往返：id、连线和端口保留 */
     void checkMinimalRoundTrip()
     {
         const char* name = "minimal-roundtrip";
@@ -153,6 +175,7 @@ private:
         station.jobs.push_back(job);
         in.stations.push_back(station);
 
+        // 存盘读回后逐层核对
         Solution out;
         std::string error;
         if (!saveLoad(in, &out, &error)) {
@@ -180,6 +203,7 @@ private:
         }
     }
 
+    /** @brief 加载不存在的文件必须失败并给出错误 */
     void checkMissingFile()
     {
         const char* name = "missing-file";
@@ -191,6 +215,7 @@ private:
         }
     }
 
+    /** @brief 路径是目录时加载必须失败并给出错误 */
     void checkUnreadablePath()
     {
         const char* name = "unreadable-path";
@@ -204,8 +229,8 @@ private:
         }
     }
 
-    std::string m_dir;
-    int m_failed;
+    std::string m_dir; ///< 工作目录（UTF-8，以反斜杠结尾）
+    int m_failed;      ///< 失败项计数
 };
 
 } // namespace Vision

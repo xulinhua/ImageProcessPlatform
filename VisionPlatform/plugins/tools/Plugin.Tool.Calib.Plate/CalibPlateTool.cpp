@@ -189,7 +189,7 @@ Vision::CamModel modelFrom(const Vision::ParamMap& v)
 
 }
 
-// 标定板工具名
+// 工具版本
 std::string Vision::CalibPlateTool::version() const
 {
     return std::string(kToolVersion);
@@ -201,6 +201,7 @@ std::vector<Vision::VerNote> Vision::CalibPlateTool::versionNotes() const
     return Vision::verNotesFrom(kVerNotes, static_cast<int>(sizeof(kVerNotes) / sizeof(kVerNotes[0])));
 }
 
+// 注册名
 std::string Vision::CalibPlateTool::toolName() const { return "calib.plate"; }
 // 类型为标定
 Vision::ToolType Vision::CalibPlateTool::type() const { return Vision::ToolType::Calib; }
@@ -244,6 +245,7 @@ Vision::ToolOut Vision::CalibPlateTool::execute(const Vision::ToolIn& in)
     }
     const std::string path = in.param.run.value("resultPath").toString();
     std::string err;
+    // 给了结果文件：直接导入相机模型
     if (!path.empty()) {
         if (!Vision::CalibMgr::instance().importResult(cameraOf(in), path, &err)
             || !Vision::CalibMgr::instance().save(&err)) {
@@ -256,6 +258,7 @@ Vision::ToolOut Vision::CalibPlateTool::execute(const Vision::ToolIn& in)
         out.syncIo();
         return out;
     }
+    // 没给结果文件：用标定板图现算，Halcon 标定板强制走 Halcon 算法库
     Vision::AlgToolIn ain;
     ain.mode = in.mode;
     ain.run = in.param.run;
@@ -272,6 +275,7 @@ Vision::ToolOut Vision::CalibPlateTool::execute(const Vision::ToolIn& in)
         out.message = aout.message.empty() ? err : aout.message;
         return out;
     }
+    // 算法结果补上标定板规格，提交到 CalibMgr 并落盘
     Vision::CamModel model = modelFrom(aout.values);
     model.plateKind = board.plateKind;
     model.rows = board.rows;
@@ -287,7 +291,10 @@ Vision::ToolOut Vision::CalibPlateTool::execute(const Vision::ToolIn& in)
         Vision::CalibMgr::instance().writeHalconDat(cameraOf(in), halconCam, &err);
     }
     if (!Vision::CalibMgr::instance().commitCamera(cameraOf(in), model, &err)) {
-        Vision::CalibMgr::instance().save(&err);
+        std::string saveErr;
+        if (!Vision::CalibMgr::instance().save(&saveErr)) {
+            err += U(L"\uff1b") + saveErr;
+        }
         out.ok = false;
         out.message = err;
         return out;

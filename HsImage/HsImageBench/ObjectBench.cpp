@@ -1,6 +1,6 @@
 /**
  * @file ObjectBench.cpp
- * @brief ObjectBench实现
+ * @brief HsObject 结构评测实现：样本构造、拷贝计时与多线程读写验证
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -213,6 +213,7 @@ ObjectSampleStats fillSample(HsCommData::HsObject* dst, int kind, int count, int
     ObjectSampleStats st;
     st.imageW = kCanvasW;
     st.imageH = kCanvasH;
+    // 参数与估算体积检查，失败时不碰 dst
     if (!dst || count < 1 || payload < 1 || kind < SampleRegion || kind > SampleMixed) {
         st.fail = 1;
         return st;
@@ -224,11 +225,13 @@ ObjectSampleStats fillSample(HsCommData::HsObject* dst, int kind, int count, int
         return st;
     }
     try {
+        // 先在局部对象里逐格构造，全部成功后再一次性赋给 dst
         HsCommData::HsObject built;
         int64_t units = 0;
         for (int i = 0; i < count; ++i) {
             const Cell cell = cellAt(i, count);
             int slot = kind;
+            // 混合样本按 区域、轮廓、圆、线段 轮换，-1 表示线段
             if (kind == SampleMixed) {
                 const int mix[4] = { SampleRegion, SampleContour, SampleCircle, -1 };
                 slot = mix[i % 4];
@@ -274,6 +277,7 @@ CopyTimings benchCopy(const HsCommData::HsObject& src, int loops)
         return out;
     }
     try {
+        // touch 累加拷贝结果，意在让拷贝不被编译器当作无用代码去掉
         int64_t touch = 0;
         const std::chrono::steady_clock::time_point tHandle = std::chrono::steady_clock::now();
         for (int i = 0; i < loops; ++i) {
@@ -291,6 +295,7 @@ CopyTimings benchCopy(const HsCommData::HsObject& src, int loops)
         }
         out.msClone = elapsedMs(tClone) / loops;
 
+        // 隔离检查：改句柄副本 a 的第 0 个元素并 append，clone 出的 b 应不受影响
         HsCommData::HsObject a = src;
         HsCommData::HsObject b = a.clone();
         const int c0 = b.count();
@@ -327,6 +332,7 @@ LockTimings benchLock(HsCommData::HsObject* shared, int readers, int writers, in
     if (!shared || shared->isEmpty() || readers < 1 || writers < 0 || opsEach < 1) {
         return out;
     }
+    // 记录起始个数与第 0 个元素签名；读者看到的个数必须落在 [start, cap]
     out.startCount = shared->count();
     const int64_t baseSig = sig0(*shared);
     const int start = out.startCount;
@@ -339,6 +345,7 @@ LockTimings benchLock(HsCommData::HsObject* shared, int readers, int writers, in
     const std::chrono::steady_clock::time_point t0 = std::chrono::steady_clock::now();
     std::vector<std::thread> pool;
     pool.reserve(static_cast<size_t>(readers + writers));
+    // 读者：拷贝句柄检查个数，每 32 次 clone 第 0 个比对签名
     for (int r = 0; r < readers; ++r) {
         pool.push_back(std::thread([shared, opsEach, start, cap, baseSig, &errors, &readerOps, &cloneBad]() {
             for (int i = 0; i < opsEach; ++i) {
@@ -362,6 +369,7 @@ LockTimings benchLock(HsCommData::HsObject* shared, int readers, int writers, in
             }
         }));
     }
+    // 写者：只向末尾 append 小圆，不改已有元素
     for (int w = 0; w < writers; ++w) {
         pool.push_back(std::thread([shared, opsEach, w, &errors, &writerOps]() {
             for (int i = 0; i < opsEach; ++i) {
@@ -380,6 +388,7 @@ LockTimings benchLock(HsCommData::HsObject* shared, int readers, int writers, in
     for (size_t i = 0; i < pool.size(); ++i) {
         pool[i].join();
     }
+    // 汇总：最终个数应等于起始个数加成功 append 数
     out.ms = elapsedMs(t0);
     out.errors = errors.load();
     out.readerOps = readerOps.load();

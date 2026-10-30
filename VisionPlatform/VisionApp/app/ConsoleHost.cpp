@@ -49,9 +49,9 @@ ConsoleHost::~ConsoleHost()
 void ConsoleHost::printStatus()
 {
     Vision::SharedFrames& frames = Vision::SharedFrames::instance();
-    const char* fault = frames.fault() == Vision::IpcFaultNone ? "none" : frames.faultText().c_str();
+    const std::string fault = frames.fault() == Vision::IpcFaultNone ? std::string("none") : frames.faultText();
     printf("stationBeatAgeMs=%d linkBeatAgeMs=%d fault=%s local=%d remote=%d\n",
-           frames.stationBeatAgeMs(), frames.linkBeatAgeMs(), fault,
+           frames.stationBeatAgeMs(), frames.linkBeatAgeMs(), fault.c_str(),
            frames.localCount(), frames.remoteCount());
     fflush(stdout);
 }
@@ -62,6 +62,7 @@ void ConsoleHost::loop()
     if (input == INVALID_HANDLE_VALUE) {
         return;
     }
+    // 先 Peek 再读，没有输入时短睡，让 m_run 置假后能及时退出
     std::string line;
     while (m_run) {
         INPUT_RECORD rec;
@@ -83,6 +84,7 @@ void ConsoleHost::loop()
         if (ch == 0) {
             continue;
         }
+        // 自己回显：只收 ASCII，回车结束一行
         HANDLE output = GetStdHandle(STD_OUTPUT_HANDLE);
         if (ch != L'\r' && ch != L'\n') {
             if (ch < 128) {
@@ -99,6 +101,7 @@ void ConsoleHost::loop()
             DWORD wrote = 0;
             WriteConsoleW(output, L"\r\n", 2, &wrote, 0);
         }
+        // 单机设了本地回调就直接调，否则写共享内存命令给服务
         if (line == "status") {
             printStatus();
         } else if (line == "start") {

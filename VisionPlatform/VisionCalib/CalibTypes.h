@@ -75,6 +75,7 @@ struct VISION_CALIB_API CalibParam {
     int minPlateImages;       ///< 标定板最少张数
     int minRotateAngles;      ///< 旋转中心最少角度数
 
+    /** @brief 板型未定义，间距 1 毫米，仿射拟合，残差上限 0.5，至少 10 张图、3 个角度 */
     CalibParam();
 };
 
@@ -104,10 +105,14 @@ struct VISION_CALIB_API CamModel {
     double spacingMm;         ///< 标定时的间距
     int count;                ///< 实际采用的图像张数
 
+    /** @brief 空模型：不存在、草稿，系数全 0 */
     CamModel();
 };
 
-/** @brief 九点或比例尺的一对点 */
+/**
+ * @class PlaneSample
+ * @brief 九点或比例尺的一对点
+ */
 struct VISION_CALIB_API PlaneSample {
     double imageX; ///< 像素 x
     double imageY; ///< 像素 y
@@ -115,6 +120,7 @@ struct VISION_CALIB_API PlaneSample {
     double worldY; ///< 毫米 y
     bool used;     ///< 参与拟合
 
+    /** @brief 坐标全 0，默认参与拟合 */
     PlaneSample();
 };
 
@@ -136,15 +142,20 @@ struct VISION_CALIB_API PlaneMap {
     std::string parentModelStamp;    ///< 标定时相机模型的更新时间
     std::vector<PlaneSample> samples; ///< 点对
 
+    /** @brief 空映射：不存在、草稿、仿射，两个矩阵都是单位阵 */
     PlaneMap();
 };
 
-/** @brief 旋转中心的一个角度样本 */
+/**
+ * @class RotateSample
+ * @brief 旋转中心的一个角度样本
+ */
 struct VISION_CALIB_API RotateSample {
     double angleDeg; ///< 平台角度，度
     double imageX;   ///< 标记像素 x
     double imageY;   ///< 标记像素 y
 
+    /** @brief 角度与坐标全 0 */
     RotateSample();
 };
 
@@ -168,6 +179,7 @@ struct VISION_CALIB_API RotateCenter {
     std::string parentPlaneStamp;  ///< 标定时平面映射的更新时间
     std::vector<RotateSample> samples; ///< 样本
 
+    /** @brief 空结果：不存在、草稿，毫米圆心无效 */
     RotateCenter();
 };
 
@@ -180,6 +192,7 @@ struct VISION_CALIB_API CalibRst {
     PlaneMap plane;      ///< 平面映射
     RotateCenter rotate; ///< 旋转中心
 
+    /** @brief 三份都是空结果 */
     CalibRst();
 };
 
@@ -193,15 +206,20 @@ struct VISION_CALIB_API CalibHistItem {
     std::string updatedAt; ///< 当时的更新时间
     CalibStatus status;    ///< 一般是失效
 
+    /** @brief 种类未定义，状态为失效 */
     CalibHistItem();
 };
 
-/** @brief 像素或毫米位姿。角度为度，逆时针为正 */
+/**
+ * @class CalibPose
+ * @brief 像素或毫米位姿。角度为度，逆时针为正
+ */
 struct VISION_CALIB_API CalibPose {
     double x;     ///< x
     double y;     ///< y
     double angle; ///< 度
 
+    /** @brief 零位姿 */
     CalibPose();
 };
 

@@ -48,8 +48,10 @@ class HSCOMMDATA_EXPORT ObjectUnion {
 
 public:
     ObjectUnion(); ///< 空
+    /** @brief 释放当前种类的存储 */
     ~ObjectUnion();
     ObjectUnion(const ObjectUnion& other); ///< 深拷当前种类
+    /** @brief 先释放自身，再深拷对方当前种类 */
     ObjectUnion& operator=(const ObjectUnion& other);
 
     /** @brief 当前种类 */
@@ -80,6 +82,7 @@ private:
     void setLine(const LineP& value);
 
     ObjectKind m_kind; ///< 当前种类
+    /** @brief 各种类的存储指针，只有 m_kind 对应的那个有效 */
     union {
         HsImage* image;     ///< ObjImage
         HsRegion* region;   ///< ObjRegion

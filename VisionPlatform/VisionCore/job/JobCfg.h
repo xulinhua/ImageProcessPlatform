@@ -23,6 +23,7 @@ struct RstRuleTerm {
     int kind;           ///< RstTermKind
     ObjectId sourceId;  ///< 工具 id 或规则 id
     int state;          ///< RstTermState
+    /** @brief 默认来源为工具、状态忽略 */
     RstRuleTerm() : kind(RstTermTool), state(RstTermIgnore) {}
 };
 
@@ -32,6 +33,7 @@ struct VISIONCORE_API RstRule {
     std::string name;                ///< 显示名，如「逻辑判断1」
     ObjectId toolId;                 ///< 可选绑定工具（取图像/数值）
     std::vector<RstRuleTerm> terms; ///< 非 Ignore 的项做 AND
+    /** @brief 空规则 */
     RstRule() {}
 
     /** @brief 读规则项三态；没有则为 Ignore */
@@ -55,6 +57,7 @@ struct VISIONCORE_API ToolGroup {
     double canvasX;                   ///< 组框左上角场景 X（用户拖过后）
     double canvasY;                   ///< 组框左上角场景 Y
     bool canvasPlaced;                ///< 是否已由用户拖到自定义位置
+    /** @brief 未定义语义，循环 1 次，并行上限默认，未摆放 */
     ToolGroup()
         : kind(GroupKindUndefined)
         , condWant(CondThenOnOk)
@@ -65,9 +68,9 @@ struct VISIONCORE_API ToolGroup {
         , canvasPlaced(false)
     {}
 
-    /** @brief 收集组内全部工具 id */
     /** @brief 深拷贝 */
     ToolGroup clone() const;
+    /** @brief 收集组内全部工具 id */
     std::vector<ObjectId> toolIds() const;
 };
 
@@ -77,6 +80,7 @@ struct JobNodeLayout {
     double canvasX;    ///< 左上角 X
     double canvasY;    ///< 左上角 Y
     bool canvasPlaced; ///< 是否用户拖过
+    /** @brief 原点、未摆放 */
     JobNodeLayout()
         : canvasX(0)
         , canvasY(0)
@@ -90,6 +94,7 @@ struct JobRouteLayout {
     PortSlot toPort;   ///< 下游输入口
     bool routeCustom;  ///< 是否自定义拐点
     std::vector<RoutePoint> routePoints; ///< 中间拐点（场景坐标）
+    /** @brief 默认图像输入口、自动走线 */
     JobRouteLayout()
         : toPort(portSlotIn(PortData::Image))
         , routeCustom(false)
@@ -140,6 +145,7 @@ struct VISIONCORE_API JobCfg {
     int ngLimit;                         ///< NG 数量线
     int yieldAction;                     ///< 0 报警并停 / 1 只报警
     int singleToolScope;                 ///< 0 上游加自己 / 1 只跑自己
+    /** @brief 主动执行、超时 500ms、失败停工站，其余为界面缺省 */
     JobCfg()
         : execMode(ExecActive)
         , timeoutMs(500)
@@ -181,11 +187,11 @@ struct VISIONCORE_API JobCfg {
     ToolCfg* findToolAt(int index);
     /** @brief 按下标取工具（只读） */
     const ToolCfg* findToolAt(int index) const;
-    /** @brief 工具在列表中的下标；找不到为 -1 */
     /** @brief 深拷贝 */
     JobCfg clone() const;
     /** @brief 配方是否相同 */
     bool equals(const JobCfg& other) const;
+    /** @brief 工具在列表中的下标；找不到或 id 为空为 -1 */
     int indexOf(const ObjectId& id) const;
     /** @brief 流程内工具的执行顺序 */
     std::vector<ObjectId> execOrder() const;

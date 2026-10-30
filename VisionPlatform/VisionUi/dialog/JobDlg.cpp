@@ -1225,6 +1225,7 @@ void JobDlg::onToolMenu(const QPoint& pos)
 // 弹出流程菜单
 void JobDlg::popupFlowMenu(const QPoint& globalPos)
 {
+    // 各项可用性跟随工具栏对应按钮；启用/禁用项只在可编辑且有选中节点时出现
     QMenu menu(this);
     QAction* addTool = menu.addAction(T("在此处添加工具"));
     QAction* branch = menu.addAction(T("添加支路"));
@@ -1258,6 +1259,7 @@ void JobDlg::popupFlowMenu(const QPoint& globalPos)
     QAction* autoLay = menu.addAction(T("自动布局"));
     autoLay->setEnabled(canEdit());
     QAction* zoom = menu.addAction(T("复位缩放"));
+    // 按选中项分派
     QAction* chosen = menu.exec(globalPos);
     if (chosen == addTool) {
         onAdd();

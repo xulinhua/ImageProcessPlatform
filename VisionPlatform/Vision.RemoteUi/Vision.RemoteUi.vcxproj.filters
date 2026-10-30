@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <!-- theme 配色、样式表、图标；widgets 小控件；common 路径与本机信息 -->
+    <Filter Include="theme">
+      <UniqueIdentifier>{E4CB0001-0000-4000-8000-000000000001}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="widgets">
+      <UniqueIdentifier>{E4CB0001-0000-4000-8000-000000000002}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common">
+      <UniqueIdentifier>{E4CB0001-0000-4000-8000-000000000003}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="theme\RemoteTheme.cpp">
+      <Filter>theme</Filter>
+    </ClCompile>
+    <ClCompile Include="theme\RemoteStyle.cpp">
+      <Filter>theme</Filter>
+    </ClCompile>
+    <ClCompile Include="widgets\RemoteWidgets.cpp">
+      <Filter>widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="common\RemoteFiles.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="theme\RemoteTheme.h">
+      <Filter>theme</Filter>
+    </ClInclude>
+    <ClInclude Include="theme\RemoteStyle.h">
+      <Filter>theme</Filter>
+    </ClInclude>
+    <ClInclude Include="widgets\RemoteWidgets.h">
+      <Filter>widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="common\RemoteFiles.h">
+      <Filter>common</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

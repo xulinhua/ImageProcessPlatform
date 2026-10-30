@@ -27,13 +27,19 @@
 
 namespace Vision {
 
-/** @brief cpp 里的一行变更。note 按 UTF-8 存放 */
+/**
+ * @class VerNoteRaw
+ * @brief cpp 里的一行变更。note 按 UTF-8 存放
+ */
 struct VerNoteRaw {
     const char* ver;  ///< 四段版本
     const char* note; ///< 这一版改了什么
 };
 
-/** @brief 交给界面的一行变更。note 为 UTF-8 */
+/**
+ * @class VerNote
+ * @brief 交给界面的一行变更。note 为 UTF-8
+ */
 struct VerNote {
     std::string ver;  ///< 四段版本
     std::string note; ///< 这一版改了什么
@@ -51,6 +57,7 @@ struct VersionInfo {
     std::string modified; ///< 工具 DLL 修改时间（本地）
     bool algoTool;        ///< 是否算法工具
     bool hasAlgLib[AlgLibKindMax]; ///< 各算法库是否已登记（Hal/Hik/Hray/CV）
+    /** @brief 非算法工具，各算法库均未登记 */
     VersionInfo()
         : algoTool(false)
     {

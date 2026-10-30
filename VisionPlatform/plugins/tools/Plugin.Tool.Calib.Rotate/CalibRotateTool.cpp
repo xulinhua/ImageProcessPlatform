@@ -189,7 +189,7 @@ Vision::CamModel modelFrom(const Vision::ParamMap& v)
 
 }
 
-// 旋转中心工具名
+// 工具版本
 std::string Vision::CalibRotateTool::version() const
 {
     return std::string(kToolVersion);
@@ -201,6 +201,7 @@ std::vector<Vision::VerNote> Vision::CalibRotateTool::versionNotes() const
     return Vision::verNotesFrom(kVerNotes, static_cast<int>(sizeof(kVerNotes) / sizeof(kVerNotes[0])));
 }
 
+// 注册名
 std::string Vision::CalibRotateTool::toolName() const { return "calib.rotate"; }
 // 类型为标定
 Vision::ToolType Vision::CalibRotateTool::type() const { return Vision::ToolType::Calib; }

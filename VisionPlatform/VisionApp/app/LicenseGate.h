@@ -1,6 +1,9 @@
 /**
  * @file LicenseGate.h
  * @brief 主程序的许可入口。启动时挡住，运行中倒计时
+ * @author Hoson
+ *
+ * @copyright Copyright (c) 2026 Hoson. All rights reserved.
  */
 
 #ifndef VISION_APP_LICENSE_GATE_H

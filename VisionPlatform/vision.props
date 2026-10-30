@@ -12,7 +12,7 @@
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>
         $(ProjectDir);
-        $(SolutionDir)third_party\HsCommData\include;
+        $(SolutionDir)HsCommData\include;
         $(SolutionDir)include;
         $(SolutionDir)VisionCommon;
         $(SolutionDir)VisionCommon\common;
@@ -72,11 +72,8 @@
       </AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(SolutionDir)third_party\HsCommData\lib\$(Platform)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>HsCommData.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-    <PostBuildEvent>
-      <Command>cmd /c if exist "$(SolutionDir)third_party\HsCommData\bin\$(Platform)\$(Configuration)\HsCommData.dll" (copy /Y "$(SolutionDir)third_party\HsCommData\bin\$(Platform)\$(Configuration)\HsCommData.dll" "$(OutDir)HsCommData.dll") &amp; exit /B 0</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
 </Project>

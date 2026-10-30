@@ -30,7 +30,10 @@ public:
      * @param solutionDir 方案文件所在目录， UTF-8
      */
     bool load(const std::string& solutionDir, std::string* err);
-    /** @brief 把内存中的参数和生效结果写回当前方案目录 */
+    /**
+     * @brief 把内存中的参数、结果和草稿写回当前方案目录
+     * @return 任一文件写失败返回假并写 err；草稿写失败时其余文件仍会写完
+     */
     bool save(std::string* err);
     /** @brief 卸掉当前方案的标定，不删磁盘 */
     void unload();
@@ -65,11 +68,20 @@ public:
     /** @brief 同相机、同种类的历史文件 */
     std::vector<CalibHistItem> history(const ObjectId& cameraId, CalibKind kind) const;
 
-    /** @brief 提交相机模型。残差超阈值则不替换当前生效结果 */
+    /**
+     * @brief 提交相机模型并写入标定库。像素残差超阈值时只存草稿并返回假；
+     *        生效后与之对不上的平面映射和旋转中心会被标成失效
+     */
     bool commitCamera(const ObjectId& cameraId, CamModel model, std::string* err);
-    /** @brief 提交平面映射 */
+    /**
+     * @brief 提交平面映射并写入标定库。毫米残差超阈值时只存草稿并返回假；
+     *        提交时有生效相机模型则依赖它，内参变化后失效；没有则不依赖内参
+     */
     bool commitPlane(const ObjectId& cameraId, PlaneMap model, std::string* err);
-    /** @brief 提交旋转中心。若已有生效平面映射，会补毫米圆心 */
+    /**
+     * @brief 提交旋转中心并写入标定库。像素残差超阈值或半径小于 1 像素时只存草稿并返回假；
+     *        已有生效平面映射时必须补出毫米圆心，补不出同样只存草稿并返回假
+     */
     bool commitRotate(const ObjectId& cameraId, RotateCenter model, std::string* err);
 
     /**
@@ -84,17 +96,25 @@ public:
 
     /**
      * @brief 用生效的平面映射和旋转中心把像素位姿换成毫米
-     * @param out 没有生效平面映射时不改，并返回假
+     * @param out 先写成 in 原样；没有生效平面映射或映射失败时保持原样并返回假。
+     *            有生效且带毫米圆心的旋转中心时，点绕圆心转过（角度 - 示教角），角度输出为该差值
      */
     bool mapPose(const ObjectId& cameraId, const CalibPose& in, CalibPose* out, std::string* err) const;
 
 private:
+    /** @brief 只经 instance 取得 */
     CalibMgr();
+    /** @brief 释放相机表 */
     ~CalibMgr();
+    /** @brief 禁止拷贝，只声明不实现 */
     CalibMgr(const CalibMgr&);
+    /** @brief 禁止赋值，只声明不实现 */
     CalibMgr& operator=(const CalibMgr&);
 
-    /** @class Impl @brief 按相机存放的参数和结果 */
+    /**
+     * @class Impl
+     * @brief 按相机存放的参数和结果，定义在 CalibMgr.cpp
+     */
     struct Impl;
     Impl* m_impl; ///< 相机表
 };

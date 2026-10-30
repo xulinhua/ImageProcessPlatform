@@ -48,6 +48,7 @@ AlgToolOut HalFindCircle::run(const AlgToolIn& in)
         const double high = in.run.value("high").toDouble(40.0);
         const double minR = in.run.value("minR").toDouble(8.0);
         const double maxR = in.run.value("maxR").toDouble(400.0);
+        // 搜索区内提亚像素边缘，再切成直线段和圆弧段
         HalconCpp::HObject local;
         HalconCpp::ReduceDomain(gray, toolRoisToHObject(plainRois(in.rois), w, h), &local);
         HalconCpp::HObject edges;
@@ -58,6 +59,7 @@ AlgToolOut HalFindCircle::run(const AlgToolIn& in)
         HalconCpp::HTuple n;
         HalconCpp::CountObj(segs, &n);
         const Hlong nObj = n.Length() > 0 ? n[0].L() : 0;
+        // 每段都拟合圆（不区分线段与圆弧），拟合失败跳过，保留半径在范围内最大的
         double bestR = 0;
         double bestCx = 0;
         double bestCy = 0;
@@ -97,6 +99,7 @@ AlgToolOut HalFindCircle::run(const AlgToolIn& in)
             out.message = "未找到圆";
             return out;
         }
+        // 位姿角度固定 0，分数固定 1
         out.ok = true;
         out.values.insert("cx", bestCx);
         out.values.insert("cy", bestCy);

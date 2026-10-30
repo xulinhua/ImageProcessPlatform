@@ -50,6 +50,7 @@ public:
     HsException(const HsException& other);
     /** @brief 深拷说明和用户元组 */
     HsException& operator=(const HsException& other);
+    /** @brief 释放说明与用户元组 */
     virtual ~HsException();
 
     /** @brief 按实际类型再抛出。派生类不会被切成基类 */
@@ -94,7 +95,7 @@ public:
     virtual const char* what() const noexcept;
 
 private:
-    struct Data;
+    struct Data; ///< 私有数据，定义在 HsException.cpp
 
     /** @brief 填算子名、错误码和主说明，并重拼 what */
     void init(const char* procName, HsError code, const char* message);
@@ -119,6 +120,7 @@ public:
      * 说明为空则用错误码表
      */
     HsTupleAccessException(const char* message, HsError code);
+    /** @brief 无额外资源 */
     virtual ~HsTupleAccessException();
 
     /** @brief 按本类型再抛出 */

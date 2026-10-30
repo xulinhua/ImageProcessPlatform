@@ -38,15 +38,20 @@ std::string nowIso()
 void LogMgr::startup()
 {
     detail::logSink().start();
+    ProdDb::instance().setDropHandler([](const std::string& reason, int64_t shots) {
+        writeSystem(LogLevelError, "prod_db_drop",
+                    std::to_string(shots) + " shots dropped: " + reason);
+    });
     ProdDb::instance().startup();
     VerifyDb::instance().open(0);
 }
 
-// 停线程并刷完队列
+// 停线程并刷完队列。生产库先停，停止时放弃的批次还能写进日志
 void LogMgr::shutdown()
 {
-    detail::logSink().stop();
     ProdDb::instance().shutdown();
+    ProdDb::instance().setDropHandler(std::function<void(const std::string&, int64_t)>());
+    detail::logSink().stop();
 }
 
 // 写一条系统通道日志
@@ -135,6 +140,7 @@ int LogMgr::deleteFiles(const std::vector<std::string>& paths)
 // 动作键的中文名，供界面表格
 std::string LogMgr::actionTitle(const std::string& action)
 {
+    // 逐个比对已知动作键，未登记的统一显示「其他」
     if (action == "login") {
         return Translate::tr("登录");
     }

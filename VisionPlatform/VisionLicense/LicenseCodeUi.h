@@ -1,6 +1,9 @@
 /**
  * @file LicenseCodeUi.h
  * @brief 申请码、注册码的 txt 导入导出，以及弹出二维码
+ * @author Hoson
+ *
+ * @copyright Copyright (c) 2026 Hoson. All rights reserved.
  */
 
 #ifndef VISION_LICENSE_CODE_UI_H
@@ -18,6 +21,7 @@
 #include <QVBoxLayout>
 #include <exception>
 
+/** @brief 文本框内容去首尾空白。box 为空时返回空串 */
 inline QString licenseCodeText(const QPlainTextEdit* box)
 {
     if (!box) {
@@ -26,6 +30,7 @@ inline QString licenseCodeText(const QPlainTextEdit* box)
     return box->toPlainText().trimmed();
 }
 
+/** @brief 去掉码里所有空格、制表和换行，得到单行码 */
 inline QString licenseCodeCompact(const QString& code)
 {
     QString out;
@@ -40,6 +45,13 @@ inline QString licenseCodeCompact(const QString& code)
     return out;
 }
 
+/**
+ * @brief 弹保存框，把压成单行的码以 UTF-8 写进 txt
+ * @param parent 对话框父窗口
+ * @param code 要导出的码，空时只提示不弹框
+ * @param status 结果提示标签，可空
+ * @param name 码的称呼（如「申请码」），用于标题、默认文件名和提示
+ */
 inline void exportLicenseCode(QWidget* parent, const QString& code, QLabel* status, const QString& name)
 {
     const QString compact = licenseCodeCompact(code);
@@ -68,6 +80,13 @@ inline void exportLicenseCode(QWidget* parent, const QString& code, QLabel* stat
     }
 }
 
+/**
+ * @brief 弹打开框读 txt，压成单行后填进文本框
+ * @param parent 对话框父窗口
+ * @param box 目标文本框，为空时直接返回
+ * @param status 结果提示标签，可空
+ * @param name 码的称呼，用于标题和提示
+ */
 inline void importLicenseCode(QWidget* parent, QPlainTextEdit* box, QLabel* status, const QString& name)
 {
     if (!box) {
@@ -98,8 +117,16 @@ inline void importLicenseCode(QWidget* parent, QPlainTextEdit* box, QLabel* stat
     }
 }
 
+/** @brief 把二维码画成图并弹窗显示（前置声明，定义见下方） */
 inline void paintLicenseQr(QWidget* parent, const qrcodegen::QrCode& qr, const QString& title);
 
+/**
+ * @brief 把码编码成中等纠错的二维码并弹窗显示
+ * @param parent 对话框父窗口
+ * @param code 要显示的码，空时只提示
+ * @param title 弹窗标题，也用作提示里的称呼
+ * @param status 结果提示标签，可空；码太长编码失败时写提示
+ */
 inline void showLicenseQr(QWidget* parent, const QString& code, const QString& title, QLabel* status)
 {
     const QString compact = licenseCodeCompact(code);
@@ -121,6 +148,7 @@ inline void showLicenseQr(QWidget* parent, const QString& code, const QString& t
     }
 }
 
+/** @brief 按模块画成黑白图（留 4 模块静区，每模块 3~8 像素，尽量不超过 520 像素），模态弹窗显示 */
 inline void paintLicenseQr(QWidget* parent, const qrcodegen::QrCode& qr, const QString& title)
 {
     const int quiet = 4;

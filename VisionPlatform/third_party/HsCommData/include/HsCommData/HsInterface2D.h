@@ -1,12 +1,15 @@
+/**
+ * @file HsInterface2D.h
+ * @brief 与维数无关以及平面上的自由函数。角度、长度、容差在这里，以后的平面自由函数也放这里
+ * @author Hoson
+ *
+ * @copyright Copyright (c) 2026 Hoson. All rights reserved.
+ */
+
 #ifndef HSCOMMDATA_HSINTERFACE2D_H
 #define HSCOMMDATA_HSINTERFACE2D_H
 
 #include <HsCommData/HsCommDataExport.h>
-
-/**
- * @file HsInterface2D.h
- * @brief 与维数无关以及平面上的自由函数。角度、长度、容差在这里，以后的平面自由函数也放这里
- */
 
 namespace HsCommData {
 

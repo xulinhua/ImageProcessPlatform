@@ -1,9 +1,7 @@
-#ifndef VISION_PLUGINENTRY_H
-#define VISION_PLUGINENTRY_H
-
 /**
  * @file PluginEntry.h
  * @brief 插件 DLL 入口约定（工具 / 算法插件共用）
+ * @author Hoson
  *
  * 每个 plugins\\tools\\*.dll、plugins\\algos\\*.dll 须导出下列 C 符号，
  * 宿主 loadVisionPlugins 用 GetProcAddress 查找；apiVersion 须为 1。
@@ -19,7 +17,12 @@
  *
  * @note 插件工程只需包含本头（及 ToolBase / AlgToolBase），不必链接 VisionPluginAPI.lib。
  * @note 子类头文件仅留在插件工程内，平台不可见。
+ *
+ * @copyright Copyright (c) 2026 Hoson. All rights reserved.
  */
+
+#ifndef VISION_PLUGINENTRY_H
+#define VISION_PLUGINENTRY_H
 
 #include "PluginHost.h"
 

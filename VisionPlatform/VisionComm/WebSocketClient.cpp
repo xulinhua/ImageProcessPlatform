@@ -53,6 +53,7 @@ bool WebSocketClient::open(const ParamMap& params, std::string* err)
         setCommErr(err, "WebSocket 只接受 ws 或 wss");
         return false;
     }
+    // WinHTTP 会话、连接、请求逐级建立；任一步失败都要把已开句柄关掉
     HINTERNET session = WinHttpOpen(L"VisionPlatform/1.0", WINHTTP_ACCESS_TYPE_DEFAULT_PROXY,
                                     WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0);
     if (!session) {
@@ -95,6 +96,7 @@ bool WebSocketClient::open(const ParamMap& params, std::string* err)
         setCommErr(err, "WebSocket 握手失败");
         return false;
     }
+    // 握手完成后请求句柄即可关闭，保留会话、连接和 WebSocket 句柄
     HINTERNET socket = WinHttpWebSocketCompleteUpgrade(req, 0);
     WinHttpCloseHandle(req);
     if (!socket) {

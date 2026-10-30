@@ -20,6 +20,7 @@ namespace Vision {
 /** @class CompositeMgr @brief 组合工具目录。进程内唯一 */
 class VISION_CONFIG_API CompositeMgr {
 public:
+    /** @brief 进程内唯一目录 */
     static CompositeMgr& instance();
     /** @brief 扫描 data\composites\ */
     bool load(std::string* error);
@@ -33,6 +34,7 @@ public:
     ObjectId create(CompositeScope scope, const std::string& name, std::string* error);
     /** @brief 按 id 取定义 */
     CompositeDef* find(const ObjectId& id);
+    /** @brief 按 id 取定义（只读） */
     const CompositeDef* find(const ObjectId& id) const;
     /** @brief 删除。流程里还引用着的不允许删 */
     bool remove(const ObjectId& id, std::string* error);
@@ -42,6 +44,7 @@ public:
     static const CompositeDef* findRaw(const ObjectId& id);
 
 private:
+    /** @brief 单例私有构造；未关联方案 */
     CompositeMgr();
     std::vector<CompositeDef> m_library;       ///< 独立组合
     std::vector<CompositeDef>* m_solution;     ///< 项目组合，不拥有

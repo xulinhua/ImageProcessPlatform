@@ -6,7 +6,7 @@
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
  */
 
-#include "CommNet.h"
+#include "CommNet.h"
 #include "TextEncoding.h"
 #include <cstdio>
 #include <cstring>
@@ -162,6 +162,13 @@ std::string commEndpointText(const sockaddr_in& addr)
     char buf[80];
     sprintf_s(buf, "%s:%u", ip, static_cast<unsigned>(ntohs(addr.sin_port)));
     return std::string(buf);
+}
+
+// 关闭 Nagle，小包尽快发出
+void commTcpSetNoDelay(SOCKET sock)
+{
+    BOOL on = TRUE;
+    setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, reinterpret_cast<const char*>(&on), sizeof(on));
 }
 
 }

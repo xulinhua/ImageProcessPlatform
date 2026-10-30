@@ -1,6 +1,9 @@
 /**
  * @file ObfusValue.cpp
  * @brief 寄存器值的整数和指针两种读法
+ * @author Hoson
+ *
+ * @copyright Copyright (c) 2026 Hoson. All rights reserved.
  */
 
 #include "ObfusValue.h"

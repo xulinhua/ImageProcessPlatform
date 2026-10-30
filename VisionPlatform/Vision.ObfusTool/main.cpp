@@ -1,6 +1,9 @@
 /**
  * @file main.cpp
  * @brief 开发机工具。读一份手写指令列表，写出 C++ 字节数组。不扫描业务 cpp
+ * @author Hoson
+ *
+ * @copyright Copyright (c) 2026 Hoson. All rights reserved.
  */
 
 #include "ObfusProgram.h"
@@ -12,6 +15,7 @@
 
 namespace {
 
+/** @brief 是否合法 C 标识符（字母或下划线开头，后接字母、数字、下划线） */
 bool identifier(const std::string& name)
 {
     if (name.empty()) {
@@ -30,6 +34,7 @@ bool identifier(const std::string& name)
     return true;
 }
 
+/** @brief 二进制读整个文件；打不开时写 error 并返回空串 */
 std::string readAll(const std::string& path, std::string* error)
 {
     std::ifstream in(path.c_str(), std::ios::binary);
@@ -44,6 +49,7 @@ std::string readAll(const std::string& path, std::string* error)
     return ss.str();
 }
 
+/** @brief 写出带包含守卫的头文件：symbol 字节数组和 symbolSize 长度常量，每行 12 字节 */
 bool writeHeader(const std::string& path, const std::string& symbol, const std::vector<unsigned char>& bytes)
 {
     std::ofstream out(path.c_str(), std::ios::binary);
@@ -95,6 +101,7 @@ int main(int argc, char** argv)
         std::cerr << error << "\n";
         return 1;
     }
+    // 编码后立刻按运行时的方式解一遍，确认产物能被加载
     std::vector<unsigned char> bytes;
     if (!Vision::ObfusProgram::encode(text, &bytes, &error)) {
         std::cerr << (error.empty() ? "encode failed" : error) << "\n";

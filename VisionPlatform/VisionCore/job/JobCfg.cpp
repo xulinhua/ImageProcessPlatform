@@ -517,7 +517,7 @@ static void fillLinkPorts(JobCfg* job)
         }
         if (from && from->type == ToolType::Locate
             && (to->type == ToolType::Locate || to->type == ToolType::Detect
-                || to->type == ToolType::RstProcess)) {
+                || to->type == ToolType::RstProcess || to->type == ToolType::Identify)) {
             ToolLink L = src;
             L.fromPort = portSlotOut(PortData::Pose);
             L.toPort = portSlotIn(PortData::Pose);
@@ -600,7 +600,7 @@ void JobCfg::rebuildLinksFromTree()
         }
         if (from && from->type == ToolType::Locate
             && (to->type == ToolType::Locate || to->type == ToolType::Detect
-                || to->type == ToolType::RstProcess)
+                || to->type == ToolType::RstProcess || to->type == ToolType::Identify)
             && !hasLinkToPort(out, a.toId, portSlotIn(PortData::Pose))) {
             ToolLink L = a;
             L.fromPort = portSlotOut(PortData::Pose);

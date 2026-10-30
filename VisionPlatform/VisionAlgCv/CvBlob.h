@@ -19,8 +19,11 @@ namespace Vision {
  */
 class CvBlob : public AlgToolBase {
 public:
+    /** @brief 挂到 detect.blob 工具壳 */
     std::string toolName() const { return "detect.blob"; }
-    AlgLibKind algLib() const { return AlgLibCv; }
+    /** @brief 算法库：OpenCV */
+    AlgLibKind algLib() const { return AlgLibCv; }
+    /** @brief 算法版本号 */
     std::string version() const;
     /** @brief 版本变更，只追加 */
     std::vector<VerNote> versionNotes() const;
@@ -39,7 +42,9 @@ public:
         }
         return out->errCode;
     }
+    /** @brief 阈值分割、连通域筛选并按数量/总面积判定；失败时 ok 为 false 并带 message */
     AlgToolOut run(const AlgToolIn& in);
+    /** @brief 克隆一份新实例 */
     AlgToolBase* clone() const { return new CvBlob(); }
 };
 

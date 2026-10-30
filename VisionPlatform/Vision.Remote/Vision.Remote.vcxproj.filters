@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="protocol">
+      <UniqueIdentifier>{E4C80001-0000-4000-8000-000000000001}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="channel">
+      <UniqueIdentifier>{E4C80001-0000-4000-8000-000000000002}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="security">
+      <UniqueIdentifier>{E4C80001-0000-4000-8000-000000000003}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="codec">
+      <UniqueIdentifier>{E4C80001-0000-4000-8000-000000000004}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="protocol\Frame.cpp">
+      <Filter>protocol</Filter>
+    </ClCompile>
+    <ClCompile Include="protocol\Messages.cpp">
+      <Filter>protocol</Filter>
+    </ClCompile>
+    <ClCompile Include="channel\RemoteTcp.cpp">
+      <Filter>channel</Filter>
+    </ClCompile>
+    <ClCompile Include="channel\RemoteBeacon.cpp">
+      <Filter>channel</Filter>
+    </ClCompile>
+    <ClCompile Include="security\FirewallRule.cpp">
+      <Filter>security</Filter>
+    </ClCompile>
+    <ClCompile Include="security\RemoteAuth.cpp">
+      <Filter>security</Filter>
+    </ClCompile>
+    <ClCompile Include="security\RemoteIdentity.cpp">
+      <Filter>security</Filter>
+    </ClCompile>
+    <ClCompile Include="security\TlsPipe.cpp">
+      <Filter>security</Filter>
+    </ClCompile>
+    <ClCompile Include="codec\H264Codec.cpp">
+      <Filter>codec</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="protocol\Frame.h">
+      <Filter>protocol</Filter>
+    </ClInclude>
+    <ClInclude Include="protocol\Messages.h">
+      <Filter>protocol</Filter>
+    </ClInclude>
+    <ClInclude Include="channel\RemoteTcp.h">
+      <Filter>channel</Filter>
+    </ClInclude>
+    <ClInclude Include="channel\RemoteBeacon.h">
+      <Filter>channel</Filter>
+    </ClInclude>
+    <ClInclude Include="security\FirewallRule.h">
+      <Filter>security</Filter>
+    </ClInclude>
+    <ClInclude Include="security\IRemoteAuth.h">
+      <Filter>security</Filter>
+    </ClInclude>
+    <ClInclude Include="security\RemoteAuth.h">
+      <Filter>security</Filter>
+    </ClInclude>
+    <ClInclude Include="security\RemoteIdentity.h">
+      <Filter>security</Filter>
+    </ClInclude>
+    <ClInclude Include="security\TlsPipe.h">
+      <Filter>security</Filter>
+    </ClInclude>
+    <ClInclude Include="codec\H264Codec.h">
+      <Filter>codec</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

@@ -115,6 +115,7 @@ ToolRstPanel::ToolRstPanel(QWidget* parent)
     m_toolLab->setWordWrap(true);
     m_toolLab->setObjectName(QLatin1String("section"));
 
+    // 上：状态与消息（耗时行默认隐藏）
     QGroupBox* runBox = new QGroupBox(T("运行结果"), this);
     QVBoxLayout* runLay = new QVBoxLayout(runBox);
     runLay->setContentsMargins(8, 6, 8, 6);
@@ -130,6 +131,7 @@ ToolRstPanel::ToolRstPanel(QWidget* parent)
     runLay->addWidget(m_msgLab);
     runBox->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
 
+    // 下：只读的输出键值表，两块用不可折叠的分隔条上下排
     QGroupBox* outBox = new QGroupBox(T("输出数据"), this);
     QVBoxLayout* outLay = new QVBoxLayout(outBox);
     outLay->setContentsMargins(8, 6, 8, 6);

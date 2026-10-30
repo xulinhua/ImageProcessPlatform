@@ -29,6 +29,7 @@ struct DeviceProbeInfo {
  */
 class VISIONCORE_API IDeviceControl {
 public:
+    /** @brief 虚析构 */
     virtual ~IDeviceControl() {}
     /** @brief 遍历本机/可用设备候选 */
     virtual std::vector<DeviceProbeInfo> enumerate() = 0;

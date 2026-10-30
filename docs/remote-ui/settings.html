@@ -1,0 +1,62 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="ui.css">
+<style>
+.win { width: 960px; height: 660px; }
+.main { flex: 1; display: flex; min-height: 0; background: #fff; }
+.nav { width: 180px; border-right: 1px solid #F0F0F0; padding: 10px 8px; background: #FAFBFC; flex: none; }
+.nav div { height: 38px; display: flex; align-items: center; gap: 10px; padding: 0 12px; border-radius: 4px; color: #595959; }
+.nav div.on { background: #E6F4FF; color: #1677FF; }
+.content { flex: 1; padding: 20px 28px; display: flex; flex-direction: column; gap: 18px; overflow: hidden; }
+.grp h3 { margin: 0 0 10px; font-size: 14px; font-weight: 600; }
+.grp .rows { display: flex; flex-direction: column; gap: 12px; padding-left: 2px; }
+.row { display: flex; align-items: center; gap: 10px; }
+.row .k { width: 110px; color: #595959; flex: none; }
+.mono { font-family: Consolas, "Microsoft YaHei UI", monospace; }
+.ok { color: #389E0D; font-size: 12px; display: flex; align-items: center; gap: 4px; }
+.order { display: flex; flex-direction: column; gap: 6px; }
+.order div { display: flex; align-items: center; gap: 10px; border: 1px solid #F0F0F0; border-radius: 4px; padding: 6px 10px; width: 420px; }
+.order .n { width: 20px; height: 20px; border-radius: 50%; background: #E6F4FF; color: #1677FF; font-size: 12px; display: flex; align-items: center; justify-content: center; }
+.order .muted { margin-left: auto; font-size: 12px; }
+.slider { width: 220px; height: 4px; background: #F0F0F0; border-radius: 2px; position: relative; }
+.slider i { position: absolute; left: 0; top: 0; height: 4px; width: 40%; background: #1890FF; border-radius: 2px; }
+.slider b { position: absolute; left: 40%; top: -6px; width: 16px; height: 16px; margin-left: -8px; border-radius: 50%; background: #fff; border: 2px solid #1890FF; }
+.foot { padding: 12px 20px; background: #FAFAFA; border-top: 1px solid #F0F0F0; display: flex; justify-content: flex-end; gap: 8px; }
+</style></head>
+<body>
+<div class="win">
+  <div class="title"><span class="logo"><i data-i="sliders"></i></span><span class="name">设置</span><span class="wb x"><i data-i="x"></i></span></div>
+  <div class="main">
+    <div class="nav">
+      <div><i data-i="sliders"></i>常规</div>
+      <div class="on"><i data-i="globe"></i>网络</div>
+      <div><i data-i="monitor"></i>画面</div>
+      <div><i data-i="shield"></i>安全</div>
+      <div><i data-i="film"></i>录屏</div>
+      <div><i data-i="list"></i>日志</div>
+    </div>
+    <div class="content">
+      <div class="grp"><h3>反连监听</h3><div class="rows">
+        <div class="row"><span class="k">监听地址</span><span class="input mono" style="width:200px">0.0.0.0</span><span class="lbl">端口</span><span class="input mono" style="width:90px">19100</span><span class="ok"><i data-i="check"></i>监听中</span></div>
+      </div></div>
+      <div class="grp"><h3>中继服务器</h3><div class="rows">
+        <div class="row"><span class="k">启用中继</span><span class="sw on"></span></div>
+        <div class="row"><span class="k">地址</span><span class="input mono" style="width:200px">relay.company.local</span><span class="lbl">端口</span><span class="input mono" style="width:90px">19200</span></div>
+        <div class="row"><span class="k">注册口令</span><span class="input" style="width:200px">••••••••••</span><span class="btn sm">测试连接</span><span class="ok"><i data-i="check"></i>已连接 · 延迟 12 ms</span></div>
+      </div></div>
+      <div class="grp"><h3>连接顺序</h3><div class="rows">
+        <div class="order">
+          <div><span class="n">1</span><span class="ck on"><i data-i="check"></i></span>已有反连</div>
+          <div><span class="n">2</span><span class="ck on"><i data-i="check"></i></span>局域网直连<span class="muted">超时 2 秒</span></div>
+          <div><span class="n">3</span><span class="ck on"><i data-i="check"></i></span>中继</div>
+        </div>
+      </div></div>
+      <div class="grp"><h3>发现与带宽</h3><div class="rows">
+        <div class="row"><span class="k">局域网发现</span><span class="sw on"></span><span class="lbl" style="margin-left:12px">UDP 端口</span><span class="input mono" style="width:90px">19101</span></div>
+        <div class="row"><span class="k">监控墙带宽上限</span><span class="slider"><i></i><b></b></span><span class="input mono" style="width:70px">4</span><span class="lbl">Mbps</span></div>
+      </div></div>
+    </div>
+  </div>
+  <div class="foot"><span class="btn" style="margin-right:auto">恢复默认</span><span class="btn">取消</span><span class="btn">应用</span><span class="btn pri">确定</span></div>
+</div>
+<script src="ui.js"></script>
+</body></html>

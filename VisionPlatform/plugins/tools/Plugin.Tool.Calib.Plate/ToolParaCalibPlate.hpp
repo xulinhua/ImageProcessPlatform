@@ -25,8 +25,9 @@ public:
     };
     /** @brief 运行参数 */
     struct Run {
-        std::string resultPath;     ///< 结果文件
-        std::string imageDir;       ///< imageDir
+        std::string resultPath;     ///< 已算好的相机模型 json；非空则直接导入，空则用标定板图现算
+        std::string imageDir;       ///< 标定板图目录，空则取 CalibMgr 的离线目录
+        /** @brief 全部置空 */
         Run()
             : resultPath("")
             , imageDir("")

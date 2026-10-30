@@ -77,6 +77,7 @@ VersionDlg::VersionDlg(QWidget* parent)
     m_summary->setWordWrap(true);
     m_summary->setObjectName(QLatin1String("hint"));
 
+    // 模块表：模块名、版本
     m_modules = new QTableWidget(this);
     m_modules->setColumnCount(2);
     m_modules->setHorizontalHeaderLabels(QStringList() << T("模块") << T("版本"));
@@ -86,6 +87,7 @@ VersionDlg::VersionDlg(QWidget* parent)
     m_modules->setSelectionBehavior(QAbstractItemView::SelectRows);
     m_modules->setAlternatingRowColors(true);
 
+    // 工具表：6 个固定列，每种算法库一列，末尾空列拉伸
     m_tools = new QTableWidget(this);
     const int libCols = static_cast<int>(AlgLibKindMax);
     const int stretchCol = 6 + libCols;

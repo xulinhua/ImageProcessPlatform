@@ -106,6 +106,7 @@ void morphMask(const FilterStep& st, int* maskH, int* maskW, const char** shape)
 bool applyFilterOp(HalconCpp::HObject* img, const FilterStep& st, std::string* err)
 {
     switch (st.op) {
+    // 增强类：直方图均衡、锐化、光照均衡、灰度缩放、取反
     case FilterOp::EquHisto: {
         HalconCpp::HObject out;
         HalconCpp::EquHistoImage(*img, &out);
@@ -145,6 +146,7 @@ bool applyFilterOp(HalconCpp::HObject* img, const FilterStep& st, std::string* e
         *img = out;
         return true;
     }
+    // 平滑类：均值用 maskW×maskH，中值把 maskW 当圆形半径
     case FilterOp::Mean: {
         const int w = st.maskW < 1 ? 1 : st.maskW;
         const int h = st.maskH < 1 ? 1 : st.maskH;
@@ -160,6 +162,7 @@ bool applyFilterOp(HalconCpp::HObject* img, const FilterStep& st, std::string* e
         *img = out;
         return true;
     }
+    // Halcon 高斯只接受 3~11 的奇数尺寸，取不大于 maskW 的最大一档
     case FilterOp::Gauss: {
         static const int kGaussSizes[] = { 3, 5, 7, 9, 11 };
         int best = st.maskW < 3 ? 3 : st.maskW;
@@ -177,6 +180,7 @@ bool applyFilterOp(HalconCpp::HObject* img, const FilterStep& st, std::string* e
         *img = out;
         return true;
     }
+    // 双边：coeff2 为空间标准差，coeff 为灰度标准差，以自身为引导图
     case FilterOp::Bilateral: {
         HalconCpp::HTuple empty;
         HalconCpp::HObject out;
@@ -184,6 +188,7 @@ bool applyFilterOp(HalconCpp::HObject* img, const FilterStep& st, std::string* e
         *img = out;
         return true;
     }
+    // 灰度形态学：结构元取 maskW、maskH 较大者的奇数方形窗
     case FilterOp::GrayOpen: {
         int mh = 0;
         int mw = 0;
@@ -224,6 +229,7 @@ bool applyFilterOp(HalconCpp::HObject* img, const FilterStep& st, std::string* e
         *img = out;
         return true;
     }
+    // 顶帽 = 原图 − 开运算；底帽 = 闭运算 − 原图
     case FilterOp::TopHat: {
         int mh = 0;
         int mw = 0;
@@ -349,6 +355,7 @@ AlgToolOut HalFilter::run(const AlgToolIn& in)
     ToolParaFilter para;
     para.load(bag);
 
+    // 先把参数步骤全部校验并转换，算子未知或双边标准差非正时整步失败
     std::vector<FilterStep> steps;
     for (size_t i = 0; i < para.run.steps.size(); ++i) {
         const ToolParaFilter::Step& src = para.run.steps[i];
@@ -383,6 +390,7 @@ AlgToolOut HalFilter::run(const AlgToolIn& in)
         }
         const std::vector<HalconCpp::HObject> stepRois = collectStepRois(in, imgW, imgH);
         HalconCpp::HObject work = gray;
+        // 绑定了区域的步骤只处理该区域再覆盖回原图；区域序号越界或与图无交集时跳过该步
         for (size_t i = 0; i < steps.size(); ++i) {
             const int ri = steps[i].roiIndex;
             if (ri >= 0) {
@@ -407,6 +415,7 @@ AlgToolOut HalFilter::run(const AlgToolIn& in)
                 return AlgToolOut::fail(err);
             }
         }
+        // 输出整幅结果图和尺寸，并把各步用到的区域作为叠加几何
         AlgToolOut out = writeFullImage(in, HalconCpp::HImage(work), "图像滤波完成");
         if (out.ok) {
             out.values.insert(FilterKey::outWidth, out.image.image.width);

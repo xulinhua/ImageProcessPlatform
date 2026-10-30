@@ -40,6 +40,9 @@ VISION_COMM_API int commRecvSome(SOCKET sock, int maxBytes, int timeoutMs, CommB
 /** @brief 点分地址加端口 */
 VISION_COMM_API std::string commEndpointText(const sockaddr_in& addr);
 
+/** @brief 关闭 Nagle，小包尽快发出 */
+VISION_COMM_API void commTcpSetNoDelay(SOCKET sock);
+
 }
 
 #endif

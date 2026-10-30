@@ -121,6 +121,7 @@ JobCfg JobCfg::clone() const
 // 两份 JobCfg 配方是否相同
 bool JobCfg::equals(const JobCfg& other) const
 {
+    // 流程级标量字段
     if (id != other.id || name != other.name || timeoutMs != other.timeoutMs
         || failPolicy != other.failPolicy || execMode != other.execMode
         || order != other.order || enabled != other.enabled
@@ -143,6 +144,7 @@ bool JobCfg::equals(const JobCfg& other) const
     if (tools.size() != other.tools.size() || links.size() != other.links.size()) {
         return false;
     }
+    // 工具按下标逐个比身份、画布坐标和配方字段
     for (size_t i = 0; i < tools.size(); ++i) {
         const ToolCfg& ta = tools[i];
         const ToolCfg& tb = other.tools[i];
@@ -172,6 +174,7 @@ bool JobCfg::equals(const JobCfg& other) const
             }
         }
     }
+    // 结果规则；执行树 root 与 layout 不参与比较
     if (resultFromRuleId != other.resultFromRuleId
         || resultRules.size() != other.resultRules.size()) {
         return false;

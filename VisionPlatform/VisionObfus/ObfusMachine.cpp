@@ -1,6 +1,9 @@
 /**
  * @file ObfusMachine.cpp
  * @brief 逐条解释。失败只返回，不抛异常
+ * @author Hoson
+ *
+ * @copyright Copyright (c) 2026 Hoson. All rights reserved.
  */
 
 #include "ObfusMachine.h"
@@ -37,6 +40,7 @@ ObfusValue ObfusMachine::run(const ObfusProgram& program,
                              int callCount,
                              bool* ok) const
 {
+    // 先校验程序和入参，任何一项不对都按失败返回
     if (ok) {
         *ok = false;
     }
@@ -58,6 +62,7 @@ ObfusValue ObfusMachine::run(const ObfusProgram& program,
         regs[static_cast<std::size_t>(i)] = entry[i];
     }
 
+    // 主循环限步数，防止字节码死循环卡住调用方
     int ip = program.entry();
     for (int step = 0; step < kMaxSteps; ++step) {
         if (ip < 0 || ip >= program.opCount()) {
@@ -68,6 +73,7 @@ ObfusValue ObfusMachine::run(const ObfusProgram& program,
         const int dest = op.dest();
         const int src0 = op.src0();
         const int src1 = op.src1();
+        // 控制流指令自己改 ip，越界留到下一轮检查
         if (code == ObfusJump) {
             ip = src0;
             continue;
@@ -92,6 +98,7 @@ ObfusValue ObfusMachine::run(const ObfusProgram& program,
             }
             return regs[static_cast<std::size_t>(dest)];
         }
+        // 数据指令：先查寄存器和下标范围，再按 64 位无符号运算
         if (code == ObfusLoadImm) {
             if (!regOk(dest, program.regCount()) || src0 < 0 || src0 >= program.constantCount()) {
                 return ObfusValue();

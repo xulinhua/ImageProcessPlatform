@@ -58,6 +58,7 @@ bool CalibDb::open(std::string* error)
     if (!mig.ensureVersionTable(error)) {
         return false;
     }
+    // 已是版本 1 就不再建表；数值统一存 TEXT（%.17g），避免精度损失
     if (mig.currentVersion(error) >= 1) {
         return true;
     }
@@ -117,6 +118,7 @@ bool CalibDb::recordPlate(const std::string& solutionDir, const std::string& cam
     if (!open(error)) {
         return false;
     }
+    // 参数顺序与下面 INSERT 的列一一对应；halcon_path 先写空，拷完文件再回填
     std::vector<DbValue> a;
     a.push_back(DbValue::fromText(model.updatedAt));
     a.push_back(DbValue::fromText(solutionDir));
@@ -153,6 +155,10 @@ bool CalibDb::recordPlate(const std::string& solutionDir, const std::string& cam
     a.push_back(DbValue::fromText(num(param.residualMaxMm)));
     a.push_back(DbValue::fromText(std::string()));
     a.push_back(DbValue::fromText(offlineDir));
+    // 主表、路径回填和图片登记在同一个事务里，任一条写库失败整体回滚
+    if (!g_db.begin(error)) {
+        return false;
+    }
     if (!g_db.exec(
             "INSERT INTO plate(time_iso,solution,camera_id,camera_name,source,status,applied,"
             "rms,max_residual,residual_limit,fx,fy,cx,cy,k1,k2,k3,p1,p2,"
@@ -162,30 +168,32 @@ bool CalibDb::recordPlate(const std::string& solutionDir, const std::string& cam
             "VALUES(?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15,?16,?17,?18,?19,"
             "?20,?21,?22,?23,?24,?25,?26,?27,?28,?29,?30,?31,?32,?33,?34,?35);",
             a, error)) {
+        g_db.rollback(0);
         return false;
     }
     const int64_t rowId = g_db.lastInsertId();
-    if (id) {
-        *id = rowId;
-    }
+    // 归档到 calib\plate_<id>：Halcon 参数文件和离线图，拷贝失败只跳过不报错
     char folderName[64];
     sprintf(folderName, "plate_%lld", static_cast<long long>(rowId));
     const std::string folder = pathJoin(AppPaths::calibDir(), folderName);
     ensureDir(folder);
+    std::vector<std::string> copied;
+    bool ok = true;
     if (!halconSrc.empty() && GetFileAttributesW(utf8ToWide(halconSrc).c_str()) != INVALID_FILE_ATTRIBUTES) {
         const std::string dst = pathJoin(folder, "camera.halcon.dat");
         if (copyFileTo(halconSrc, dst)) {
+            copied.push_back(dst);
             std::vector<DbValue> u;
             u.push_back(DbValue::fromText(dst));
             u.push_back(DbValue::fromInt(rowId));
-            g_db.exec("UPDATE plate SET halcon_path=?1 WHERE id=?2;", u, 0);
+            ok = g_db.exec("UPDATE plate SET halcon_path=?1 WHERE id=?2;", u, error);
         }
     }
     const std::wstring pattern = utf8ToWide(pathJoin(offlineDir, "*"));
     WIN32_FIND_DATAW fd;
-    HANDLE h = offlineDir.empty() ? INVALID_HANDLE_VALUE : FindFirstFileW(pattern.c_str(), &fd);
+    HANDLE h = (!ok || offlineDir.empty()) ? INVALID_HANDLE_VALUE : FindFirstFileW(pattern.c_str(), &fd);
+    const std::string imageDir = pathJoin(folder, "offline");
     if (h != INVALID_HANDLE_VALUE) {
-        const std::string imageDir = pathJoin(folder, "offline");
         ensureDir(imageDir);
         do {
             if (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
@@ -198,12 +206,32 @@ bool CalibDb::recordPlate(const std::string& solutionDir, const std::string& cam
             if (!copyFileTo(src, dst)) {
                 continue;
             }
+            copied.push_back(dst);
             std::vector<DbValue> img;
             img.push_back(DbValue::fromInt(rowId));
             img.push_back(DbValue::fromText(dst));
-            g_db.exec("INSERT INTO plate_image(plate_id, path) VALUES(?1,?2);", img, 0);
+            if (!g_db.exec("INSERT INTO plate_image(plate_id, path) VALUES(?1,?2);", img, error)) {
+                ok = false;
+                break;
+            }
         } while (FindNextFileW(h, &fd));
         FindClose(h);
+    }
+    if (ok) {
+        ok = g_db.commit(error);
+    }
+    // 回滚后行号会被复用，已拷进归档目录的文件一并删掉，免得混进下一条记录
+    if (!ok) {
+        g_db.rollback(0);
+        for (size_t i = 0; i < copied.size(); ++i) {
+            DeleteFileW(utf8ToWide(copied[i]).c_str());
+        }
+        RemoveDirectoryW(utf8ToWide(imageDir).c_str());
+        RemoveDirectoryW(utf8ToWide(folder).c_str());
+        return false;
+    }
+    if (id) {
+        *id = rowId;
     }
     return true;
 }
@@ -217,6 +245,11 @@ bool CalibDb::recordPlane(const std::string& solutionDir, const std::string& cam
     if (!open(error)) {
         return false;
     }
+    // 主表和样本点在同一个事务里，任一条失败整体回滚
+    if (!g_db.begin(error)) {
+        return false;
+    }
+    // 父记录：同相机最近一条有效内参，没有则为 0
     int64_t parent = 0;
     std::vector<DbValue> q;
     q.push_back(DbValue::fromText(cameraId));
@@ -253,12 +286,10 @@ bool CalibDb::recordPlane(const std::string& solutionDir, const std::string& cam
             "VALUES(?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,"
             "?13,?14,?15,?16,?17,?18,?19,?20,?21,?22,?23,?24,?25,?26,?27,?28,?29,?30);",
             a, error)) {
+        g_db.rollback(0);
         return false;
     }
     const int64_t rowId = g_db.lastInsertId();
-    if (id) {
-        *id = rowId;
-    }
     for (size_t i = 0; i < model.samples.size(); ++i) {
         std::vector<DbValue> p;
         p.push_back(DbValue::fromInt(rowId));
@@ -271,8 +302,16 @@ bool CalibDb::recordPlane(const std::string& solutionDir, const std::string& cam
                 "INSERT INTO plane_point(plane_id,image_x,image_y,world_x,world_y,used) "
                 "VALUES(?1,?2,?3,?4,?5,?6);",
                 p, error)) {
+            g_db.rollback(0);
             return false;
         }
+    }
+    if (!g_db.commit(error)) {
+        g_db.rollback(0);
+        return false;
+    }
+    if (id) {
+        *id = rowId;
     }
     return true;
 }
@@ -286,6 +325,11 @@ bool CalibDb::recordRotate(const std::string& solutionDir, const std::string& ca
     if (!open(error)) {
         return false;
     }
+    // 主表和角度样本在同一个事务里，任一条失败整体回滚
+    if (!g_db.begin(error)) {
+        return false;
+    }
+    // 父记录：同相机最近一条有效平面映射，没有则为 0
     int64_t parent = 0;
     std::vector<DbValue> q;
     q.push_back(DbValue::fromText(cameraId));
@@ -318,12 +362,10 @@ bool CalibDb::recordRotate(const std::string& solutionDir, const std::string& ca
             "image_x,image_y,world_x,world_y,world_valid,radius,rms,max_residual) "
             "VALUES(?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15,?16);",
             a, error)) {
+        g_db.rollback(0);
         return false;
     }
     const int64_t rowId = g_db.lastInsertId();
-    if (id) {
-        *id = rowId;
-    }
     for (size_t i = 0; i < model.samples.size(); ++i) {
         std::vector<DbValue> p;
         p.push_back(DbValue::fromInt(rowId));
@@ -333,8 +375,16 @@ bool CalibDb::recordRotate(const std::string& solutionDir, const std::string& ca
         if (!g_db.exec(
                 "INSERT INTO rotate_angle(rotate_id,angle_deg,image_x,image_y) VALUES(?1,?2,?3,?4);",
                 p, error)) {
+            g_db.rollback(0);
             return false;
         }
+    }
+    if (!g_db.commit(error)) {
+        g_db.rollback(0);
+        return false;
+    }
+    if (id) {
+        *id = rowId;
     }
     return true;
 }
@@ -345,6 +395,9 @@ bool CalibDb::markApplied(const char* table, int64_t id)
         return false;
     }
     std::lock_guard<std::mutex> lock(g_mu);
+    if (!open(0)) {
+        return false;
+    }
     std::vector<DbValue> a;
     a.push_back(DbValue::fromInt(id));
     return g_db.exec(std::string("UPDATE ") + table + " SET applied=1 WHERE id=?1;", a, 0);

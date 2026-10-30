@@ -75,6 +75,7 @@ static void drawGeomCell(cv::Mat* mask, const HsCommData::HsObject& obj, int ind
         return;
     }
     const ObjectKind k = obj.kindAt(index);
+    // 面状几何直接填充；角度存弧度，OpenCV 要角度
     if (k == ObjRect1) {
         const Rect1P* rc = obj.rect1At(index);
         if (!rc) {
@@ -124,6 +125,7 @@ static void drawGeomCell(cv::Mat* mask, const HsCommData::HsObject& obj, int ind
                    cvRound(c->r), cv::Scalar(255), cv::FILLED);
         return;
     }
+    // 线和两点轮廓画成约 16 像素宽的条带；多点轮廓按闭合多边形填充
     if (k == ObjLine) {
         const LineP* ln = obj.lineAt(index);
         if (!ln) {
@@ -151,6 +153,7 @@ static void drawGeomCell(cv::Mat* mask, const HsCommData::HsObject& obj, int ind
         cv::fillPoly(*mask, &p0, &n, 1, cv::Scalar(255));
         return;
     }
+    // 行程区域并入已有掩膜
     if (k == ObjRegion) {
         const HsRegion* reg = obj.regionAt(index);
         if (!reg || reg->runsEmpty()) {

@@ -1,28 +1,33 @@
-#ifndef HSIMAGE_HSIMAGEWINDOWTYPES_H
-#define HSIMAGE_HSIMAGEWINDOWTYPES_H
-
 /**
  * @file HsImageWindowTypes.h
- * @brief »­²¼´°¿Ú²à¹«¹²Ã¶¾ÙÓë»»µ×Í¼²ßÂÔ£¨²»ÒÀÀµ QGraphicsView / HsCommData::Graphic£©¡£
+ * @brief ç”»å¸ƒçª—å£ä¾§å…¬å…±æšä¸¾ä¸æ¢åº•å›¾ç­–ç•¥ï¼ˆä¸ä¾èµ– QGraphicsView / HsCommData::Graphicï¼‰ã€‚
+ * @author Hoson
+ *
+ * @copyright Copyright (c) 2026 Hoson. All rights reserved.
  */
+
+#ifndef HSIMAGE_HSIMAGEWINDOWTYPES_H
+#define HSIMAGE_HSIMAGEWINDOWTYPES_H
 
 #include <HsCtrl/HsImgCtrlExport.h>
 
 namespace HsCtrl {
 
+/** @brief çª—å£æ¨¡å¼ */
 enum WindowMode {
-    WindowDesign = 0, ///< Éè¼ÆÌ¬£¬¿É»­ ROI
-    WindowRuntime     ///< ÔËĞĞÌ¬£¬Ö»ä¯ÀÀ
+    WindowDesign = 0, ///< è®¾è®¡æ€ï¼Œå¯ç”» ROI
+    WindowRuntime     ///< è¿è¡Œæ€ï¼Œåªæµè§ˆ
 };
 
-/** @brief Í¼Ïñ´°¿ÚÍ¼²ã¡£´ÓÏÂµ½ÉÏ£¬ÅĞ¶Ï¹é²ãºÍÏÔÒşÊ±ÓÃÕâ¸ö */
+/** @brief å›¾åƒçª—å£å›¾å±‚ã€‚ä»ä¸‹åˆ°ä¸Šï¼Œåˆ¤æ–­å½’å±‚å’Œæ˜¾éšæ—¶ç”¨è¿™ä¸ª */
 enum WindowLayer {
-    LayerImage = 0,   ///< µ×Í¼
-    LayerStack,       ///< ½á¹ûµş²ã
-    LayerDrawing,     ///< Éè¼ÆÌ¬ ROI
-    LayerMeasure,     ///< ÁÙÊ±²âÁ¿
-    LayerForeground   ///< Ç°¾°£º¶ÁÊı¡¢drawInfo Óë HUD
+    LayerImage = 0,   ///< åº•å›¾
+    LayerStack,       ///< ç»“æœå å±‚
+    LayerDrawing,     ///< è®¾è®¡æ€ ROI
+    LayerMeasure,     ///< ä¸´æ—¶æµ‹é‡
+    LayerForeground   ///< å‰æ™¯ï¼šè¯»æ•°ã€drawInfo ä¸ HUD
 };
+/** @brief å›¾å±‚åœ¨åœºæ™¯é‡Œçš„ Z å€¼ï¼šåº•å›¾ 0ï¼Œä¹‹åæ¯å±‚åŠ  10 */
 inline int windowLayerZ(WindowLayer layer)
 {
     switch (layer) {
@@ -34,64 +39,67 @@ inline int windowLayerZ(WindowLayer layer)
     }
     return 0;
 }
+/** @brief ç»˜åˆ¶ / æµ‹é‡å·¥å…· */
 enum DrawTool {
-    ToolBrowse = 0, ///< ä¯ÀÀ£¬²»Âä±Ê
-    ToolCircle,     ///< Ô²
-    ToolRect1,      ///< Öá¶ÔÆë¾ØĞÎ
-    ToolRect2,      ///< Ğı×ª¾ØĞÎ
-    ToolEllipse,    ///< ÍÖÔ²
-    ToolLine,       ///< Ö±Ïß
-    ToolCross,      ///< Ê®×Ö
-    ToolContour,    ///< XLD ÕÛÏß
-    ToolPolygon,    ///< ¶à±ßĞÎ ¡ú HsCommData::HsRegion
-    ToolText,       ///< ÎÄ±¾£¨µ¥»÷·ÅÖÃ£©
-    ToolBrush,       ///< ½ö»æÖÆ»á»°¡£Ô²»­±ÊÍ¿³É HsCommData::HsRegion
-    ToolMeasureDist,    ///< Á½µã¾àÀë
-    ToolMeasureAngle,   ///< Èıµã¼Ğ½Ç
-    ToolMeasureRadius,  ///< Ô²°ë¾¶ºÍÖ±¾¶
-    ToolMeasureRect,    ///< ¾ØĞÎ¿í¸ß
-    ToolMeasureEllipse,  ///< ÍÖÔ²°ëÖá
-    ToolMax ///< ¸öÊı£¬²»ÊÇºÏ·¨Öµ
+    ToolBrowse = 0, ///< æµè§ˆï¼Œä¸è½ç¬”
+    ToolCircle,     ///< åœ†
+    ToolRect1,      ///< è½´å¯¹é½çŸ©å½¢
+    ToolRect2,      ///< æ—‹è½¬çŸ©å½¢
+    ToolEllipse,    ///< æ¤­åœ†
+    ToolLine,       ///< ç›´çº¿
+    ToolCross,      ///< åå­—
+    ToolContour,    ///< XLD æŠ˜çº¿
+    ToolPolygon,    ///< å¤šè¾¹å½¢ â†’ HsCommData::HsRegion
+    ToolText,       ///< æ–‡æœ¬ï¼ˆå•å‡»æ”¾ç½®ï¼‰
+    ToolBrush,       ///< ä»…ç»˜åˆ¶ä¼šè¯ã€‚åœ†ç”»ç¬”æ¶‚æˆ HsCommData::HsRegion
+    ToolMeasureDist,    ///< ä¸¤ç‚¹è·ç¦»
+    ToolMeasureAngle,   ///< ä¸‰ç‚¹å¤¹è§’
+    ToolMeasureRadius,  ///< åœ†åŠå¾„å’Œç›´å¾„
+    ToolMeasureRect,    ///< çŸ©å½¢å®½é«˜
+    ToolMeasureEllipse,  ///< æ¤­åœ†åŠè½´
+    ToolMax ///< ä¸ªæ•°ï¼Œä¸æ˜¯åˆæ³•å€¼
 };
 
+/** @brief å åŠ æ–‡å­—é”šç‚¹æ‰€åœ¨çš„åæ ‡ç³» */
 enum DrawInfoSpace {
-    DrawInfoImage = 0, ///< Í¼ÏñÏñËØÃªµã£¬ËæËõ·ÅÆ½ÒÆ£»×ÖºÅ±£³ÖÆÁÄ»ÏñËØ
-    DrawInfoWindow     ///< ¿Ø¼şÏñËØÃªµã£¬Î»ÖÃÓë×ÖºÅ¾ù¹Ì¶¨
+    DrawInfoImage = 0, ///< å›¾åƒåƒç´ é”šç‚¹ï¼Œéšç¼©æ”¾å¹³ç§»ï¼›å­—å·ä¿æŒå±å¹•åƒç´ 
+    DrawInfoWindow     ///< æ§ä»¶åƒç´ é”šç‚¹ï¼Œä½ç½®ä¸å­—å·å‡å›ºå®š
 };
 
 /**
- * @brief ÊÓ¿Ú±³¾°£¨ÎŞÍ¼ / letterbox£©¡£²»¶ÁÍâ²¿Ö÷Ìâ£¬²»ÊÜÈ«¾Ö QSS ÑÕÉ«Ó°Ïì¡£
- *        ÆåÅÌ¸ñ°´ÆÁÄ»ÏñËØ»æÖÆ£¬²»ËæËõ·Å±ä¸ñ¡£
+ * @brief è§†å£èƒŒæ™¯ï¼ˆæ— å›¾ / letterboxï¼‰ã€‚ä¸è¯»å¤–éƒ¨ä¸»é¢˜ï¼Œä¸å—å…¨å±€ QSS é¢œè‰²å½±å“ã€‚
+ *        æ£‹ç›˜æ ¼æŒ‰å±å¹•åƒç´ ç»˜åˆ¶ï¼Œä¸éšç¼©æ”¾å˜æ ¼ã€‚
  */
 enum ViewportBackground {
-    ViewportDark = 0,         ///< ¹¤ÒµÉîÉ«
-    ViewportMid,              ///< ÖĞĞÔ»Ò
-    ViewportLight,            ///< Ç³»Ò¹¤×÷Çø
-    ViewportCheckerboard,     ///< Ç³É«ÆåÅÌ¸ñ£¨Í¸Ã÷ÏÔÊ¾Ï°¹ß£©
-    ViewportCheckerboardDark, ///< ÉîÉ«ÆåÅÌ¸ñ
-    ViewportCustom            ///< ´¿É«£¬¼û setBackgroundColor
+    ViewportDark = 0,         ///< å·¥ä¸šæ·±è‰²
+    ViewportMid,              ///< ä¸­æ€§ç°
+    ViewportLight,            ///< æµ…ç°å·¥ä½œåŒº
+    ViewportCheckerboard,     ///< æµ…è‰²æ£‹ç›˜æ ¼ï¼ˆé€æ˜æ˜¾ç¤ºä¹ æƒ¯ï¼‰
+    ViewportCheckerboardDark, ///< æ·±è‰²æ£‹ç›˜æ ¼
+    ViewportCustom            ///< çº¯è‰²ï¼Œè§ setBackgroundColor
 };
 
 /**
- * @brief ¸¡¶¯¹¤¾ßÌõÆ¤·ô¡£²»¶ÁÍâ²¿Ö÷Ìâ¡£
+ * @brief æµ®åŠ¨å·¥å…·æ¡çš®è‚¤ã€‚ä¸è¯»å¤–éƒ¨ä¸»é¢˜ã€‚
  */
 enum OverlayToolbarSkin {
-    ToolbarSkinDark = 0,      ///< ÉîÉ«°ëÍ¸Ã÷
-    ToolbarSkinLight,         ///< Ç³É«°ëÍ¸Ã÷
-    ToolbarSkinTransparent,   ///< È«Í¸Ã÷
-    ToolbarSkinDarkSolid,     ///< ÉîÉ«²»Í¸Ã÷
-    ToolbarSkinLightSolid     ///< Ç³É«²»Í¸Ã÷
+    ToolbarSkinDark = 0,      ///< æ·±è‰²åŠé€æ˜
+    ToolbarSkinLight,         ///< æµ…è‰²åŠé€æ˜
+    ToolbarSkinTransparent,   ///< å…¨é€æ˜
+    ToolbarSkinDarkSolid,     ///< æ·±è‰²ä¸é€æ˜
+    ToolbarSkinLightSolid     ///< æµ…è‰²ä¸é€æ˜
 };
 
 /**
  * @class ImageRefreshPolicy
- * @brief »»µ×Í¼Ê±¸÷²ãÊÇ·ñÒ»²¢Çåµô¡£Ä¬ÈÏÈ«±£Áô£¬ÓëÔ­ÏÈ setImage ĞĞÎªÒ»ÖÂ¡£
+ * @brief æ¢åº•å›¾æ—¶å„å±‚æ˜¯å¦ä¸€å¹¶æ¸…æ‰ã€‚é»˜è®¤å…¨ä¿ç•™ï¼Œä¸åŸå…ˆ setImage è¡Œä¸ºä¸€è‡´ã€‚
  */
 struct HSCTRL_EXPORT ImageRefreshPolicy {
-    bool refreshStack;   ///< true£ºsetImage Ê±Çå¿Õ Stack
-    bool refreshDrawing; ///< true£ºÇå¿Õ¼¸ºÎ ROI£¨²»º¬ HsCommData::KindText£©
-    bool refreshText;    ///< true£ºÇå¿Õ drawInfo Óë Drawing ²ãÎÄ×Ö
+    bool refreshStack;   ///< trueï¼šsetImage æ—¶æ¸…ç©º Stack
+    bool refreshDrawing; ///< trueï¼šæ¸…ç©ºå‡ ä½• ROIï¼ˆä¸å« HsCommData::KindTextï¼‰
+    bool refreshText;    ///< trueï¼šæ¸…ç©º drawInfo ä¸ Drawing å±‚æ–‡å­—
 
+    /** @brief é»˜è®¤ä¸‰é¡¹éƒ½ä¸º falseï¼Œæ¢å›¾æ—¶å…¨éƒ¨ä¿ç•™ */
     ImageRefreshPolicy()
         : refreshStack(false)
         , refreshDrawing(false)

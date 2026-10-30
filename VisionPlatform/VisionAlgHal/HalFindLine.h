@@ -15,12 +15,15 @@ namespace Vision {
 
 /**
  * @class HalFindLine
- * @brief 沿卡尺边缘点拟合直线，支持多 ROI（Halcon）
+ * @brief 各 ROI 内亚像素边缘切成直线段后拟合直线，支持多 ROI（Halcon）
  */
 class HalFindLine : public AlgToolBase {
 public:
+    /** @brief 挂到 locate.find_line 工具壳 */
     std::string toolName() const { return "locate.find_line"; }
-    AlgLibKind algLib() const { return AlgLibHal; }
+    /** @brief 算法库：Halcon */
+    AlgLibKind algLib() const { return AlgLibHal; }
+    /** @brief 算法版本号 */
     std::string version() const;
     /** @brief 版本变更，只追加 */
     std::vector<VerNote> versionNotes() const;
@@ -39,7 +42,13 @@ public:
         }
         return out->errCode;
     }
+    /**
+     * @brief 无 ROI 时用整幅图；每块 ROI 按长度降序最多取 searchCount 条（短于 minLength 的丢弃），
+     *        select 为 first/last 时只留最长/最短一条
+     * @return 位姿取第一条线的中点和方向；objects 为各条线段，末尾附一块线条带并集区域
+     */
     AlgToolOut run(const AlgToolIn& in);
+    /** @brief 克隆一份新实例 */
     AlgToolBase* clone() const { return new HalFindLine(); }
 };
 

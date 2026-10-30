@@ -19,8 +19,11 @@ namespace Vision {
  */
 class HalCaliper : public AlgToolBase {
 public:
+    /** @brief 挂到 locate.caliper 工具壳 */
     std::string toolName() const { return "locate.caliper"; }
-    AlgLibKind algLib() const { return AlgLibHal; }
+    /** @brief 算法库：Halcon */
+    AlgLibKind algLib() const { return AlgLibHal; }
+    /** @brief 算法版本号 */
     std::string version() const;
     /** @brief 版本变更，只追加 */
     std::vector<VerNote> versionNotes() const;
@@ -39,7 +42,9 @@ public:
         }
         return out->errCode;
     }
+    /** @brief mode 为 edge 时找单边，否则找边对测宽；一个都没测到时 ok 为 false */
     AlgToolOut run(const AlgToolIn& in);
+    /** @brief 克隆一份新实例 */
     AlgToolBase* clone() const { return new HalCaliper(); }
 };
 

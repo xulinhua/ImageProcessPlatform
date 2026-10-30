@@ -58,6 +58,7 @@ struct LogRecord {
     std::string jobId;     ///< 流程 id
     std::string toolId;    ///< 工具 id
     int elapsedMs;         ///< 耗时毫秒
+    /** @brief 默认操作日志、审计通道、信息级 */
     LogRecord()
         : kind(LogKindOp)
         , channel(LogChannelAudit)
@@ -72,10 +73,11 @@ struct LogRecord {
  * @brief 库中某一日、某一种类的日志。path 为删除用的键，不是文件路径
  */
 struct LogFileInfo {
-    std::string path;     ///< 完整路径
-    std::string fileName; ///< 文件名
+    std::string path;     ///< 删除键，形如「种类键|YYYY-MM-DD」
+    std::string fileName; ///< 显示名，即日期
     std::string day;      ///< YYYY-MM-DD
     LogKind kind;         ///< 操作或调试
+    /** @brief 默认操作日志 */
     LogFileInfo()
         : kind(LogKindOp)
     {
@@ -91,6 +93,7 @@ struct LogQuery {
     std::string dayFrom; ///< 起始日 YYYY-MM-DD，空=不限
     std::string dayTo;   ///< 结束日，空=不限
     int maxRows;         ///< 最多返回条数
+    /** @brief 查操作日志，最多 500 条，日期不限 */
     LogQuery()
         : kind(LogKindOp)
         , maxRows(500)

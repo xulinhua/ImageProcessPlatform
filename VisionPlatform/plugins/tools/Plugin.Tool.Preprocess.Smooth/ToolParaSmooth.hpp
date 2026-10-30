@@ -25,12 +25,13 @@ public:
     };
     /** @brief 运行参数 */
     struct Run {
-        int pl_n;                   ///< 步骤数
-        int pl_0_op;                ///< 算子
-        int pl_0_w;                 ///< 掩膜宽
-        int pl_0_h;                 ///< 掩膜高
-        double pl_0_c0;             ///< 灰度域
-        double pl_0_c1;             ///< 空间域
+        int pl_n;                   ///< 叠加步骤数，0~8；本结构只存第 0 步
+        int pl_0_op;                ///< 第 0 步算子：0 均值 / 1 中值 / 2 高斯 / 3 双边
+        int pl_0_w;                 ///< 掩膜宽（像素）；中值当半径用，高斯当核尺寸（至少 3，偶数加 1）
+        int pl_0_h;                 ///< 掩膜高（像素），仅均值用
+        double pl_0_c0;             ///< 双边滤波灰度域 sigma
+        double pl_0_c1;             ///< 双边滤波空间域 sigma
+        /** @brief 缺省一步 3 像素中值 */
         Run()
             : pl_n(1)
             , pl_0_op(1)

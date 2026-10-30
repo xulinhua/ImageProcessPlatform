@@ -85,6 +85,7 @@ bool SerialChannel::open(const ParamMap& params, std::string* err)
         setCommErr(err, "未填写串口");
         return false;
     }
+    // 数据位夹到 5~8，停止位只区分 1 和 2
     const int baud = params.value("baud").toInt(9600);
     int dataBits = params.value("dataBits").toInt(8);
     if (dataBits < 5) {
@@ -105,6 +106,7 @@ bool SerialChannel::open(const ParamMap& params, std::string* err)
         return false;
     }
 
+    // 二进制模式，关闭硬件/软件流控，DTR/RTS 常开
     DCB dcb;
     std::memset(&dcb, 0, sizeof(dcb));
     dcb.DCBlength = sizeof(dcb);

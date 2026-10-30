@@ -56,6 +56,7 @@ struct LiveStationSlot {
     int pendingFail;      ///< 待并入 NG
     std::atomic<bool> uiQueued; ///< 是否已有 Queued 刷屏任务
     long long lastHistMs;    ///< 上次追加历史的时刻（节流）
+    /** @brief 计数清零，未绑定主窗和工站 */
     LiveStationSlot()
         : window(nullptr)
         , station(nullptr)
@@ -165,7 +166,9 @@ private slots:
     void about();
     /** @brief 打开版本管理对话框 */
     void openVersionManager();
+    /** @brief 打开参数版本对话框 */
     void openParaAdapt();
+    /** @brief 打开组合工具管理对话框 */
     void openComposites();
     /** @brief 设计树选中工站 */
     void onStation(const QString& id);
@@ -283,6 +286,7 @@ private:
         int pass;  ///< OK
         int fail;  ///< NG
         int cycleMs; ///< 最近节拍
+        /** @brief 全部清零 */
         StationProdAccum() : total(0), pass(0), fail(0), cycleMs(0) {}
     };
     QHash<QString, StationProdAccum> m_prodAccum; ///< stationId → 产量累计

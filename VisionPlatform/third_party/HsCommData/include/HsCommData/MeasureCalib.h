@@ -1,10 +1,13 @@
-#ifndef HSCOMMDATA_MEASURECALIB_H
-#define HSCOMMDATA_MEASURECALIB_H
-
 /**
  * @file MeasureCalib.h
  * @brief 图像平面的像素比例。几何仍用像素，测量时再换成显示单位。
+ * @author Hoson
+ *
+ * @copyright Copyright (c) 2026 Hoson. All rights reserved.
  */
+
+#ifndef HSCOMMDATA_MEASURECALIB_H
+#define HSCOMMDATA_MEASURECALIB_H
 
 #include <HsCommData/HsCommDataExport.h>
 #include <HsCommData/Geom.h>
@@ -32,6 +35,7 @@ struct HSCOMMDATA_EXPORT UnitFactor {
     double xPerPixel;    ///< 列方向
     double yPerPixel;    ///< 行方向
 
+    /** @brief 默认像素单位，比例 1 */
     UnitFactor() : unit(UnitPx), xPerPixel(1.0), yPerPixel(1.0) {}
 };
 

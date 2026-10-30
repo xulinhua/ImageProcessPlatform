@@ -130,7 +130,9 @@ void ToolBase::setRuntime(const ParamMap& value)
 std::vector<PortDesc> defaultPortsForType(ToolType type)
 {
     std::vector<PortDesc> p;
+    // 未列出的大类（如 Undefined）返回空表
     switch (type) {
+    // 2D 图像链：采集出图，预处理图进图出，定位/检测/结果处理再带位姿、区域和判定口
     case ToolType::Acquire:
         p.push_back(PortDesc(PortDir::Out, PortData::Image));
         break;
@@ -163,6 +165,7 @@ std::vector<PortDesc> defaultPortsForType(ToolType type)
         p.push_back(PortDesc(PortDir::Out, PortData::Region));
         p.push_back(PortDesc(PortDir::Out, PortData::Logic));
         break;
+    // 逻辑与通信只走判定口；标定图像和位姿都进出
     case ToolType::Logic:
         p.push_back(PortDesc(PortDir::In, PortData::Logic));
         p.push_back(PortDesc(PortDir::Out, PortData::Logic));
@@ -176,6 +179,7 @@ std::vector<PortDesc> defaultPortsForType(ToolType type)
         p.push_back(PortDesc(PortDir::In, PortData::Pose));
         p.push_back(PortDesc(PortDir::Out, PortData::Pose));
         break;
+    // 3D 链：点云、三维位姿、三维形状和数值元组
     case ToolType::Acquire3D:
         p.push_back(PortDesc(PortDir::Out, PortData::Cloud));
         p.push_back(PortDesc(PortDir::Out, PortData::Pose3));
@@ -198,12 +202,21 @@ std::vector<PortDesc> defaultPortsForType(ToolType type)
         p.push_back(PortDesc(PortDir::Out, PortData::Tuple));
         p.push_back(PortDesc(PortDir::Out, PortData::Logic));
         break;
+    // 推理与读码：图进，判定、区域或位姿出
     case ToolType::Infer:
         p.push_back(PortDesc(PortDir::In, PortData::Image));
         p.push_back(PortDesc(PortDir::Out, PortData::Logic));
         p.push_back(PortDesc(PortDir::Out, PortData::Tuple));
         p.push_back(PortDesc(PortDir::Out, PortData::Region));
         p.push_back(PortDesc(PortDir::Out, PortData::Roi));
+        break;
+    case ToolType::Identify:
+        p.push_back(PortDesc(PortDir::In, PortData::Image));
+        p.push_back(PortDesc(PortDir::In, PortData::Pose));
+        p.push_back(PortDesc(PortDir::In, PortData::Roi));
+        p.push_back(PortDesc(PortDir::Out, PortData::Region));
+        p.push_back(PortDesc(PortDir::Out, PortData::Pose));
+        p.push_back(PortDesc(PortDir::Out, PortData::Logic));
         break;
     }
     return p;
@@ -249,6 +262,19 @@ std::vector<ParamField> ToolBase::paramFields() const
     return std::vector<ParamField>();
 }
 
+// 按参数说明拼缺省参数
+ParamMap ToolBase::defaultsFrom(const std::vector<ParamField>& fields) const
+{
+    ParamMap m;
+    for (size_t i = 0; i < fields.size(); ++i) {
+        if (fields[i].type == ParamFieldType::Device) {
+            continue;
+        }
+        m.insert(fields[i].key, fields[i].def);
+    }
+    return m;
+}
+
 // 默认端口由类型决定
 std::vector<PortDesc> ToolBase::ports() const
 {
@@ -260,7 +286,8 @@ ToolCaps ToolBase::capabilities() const
 {
     ToolCaps c;
     const ToolType t = type();
-    if (t == ToolType::Acquire || t == ToolType::Logic || t == ToolType::Comm || t == ToolType::Calib) {
+    if (t == ToolType::Acquire || t == ToolType::Acquire3D || t == ToolType::Logic
+        || t == ToolType::Comm || t == ToolType::Calib) {
         c.usesRoi = false;
     }
     return c;

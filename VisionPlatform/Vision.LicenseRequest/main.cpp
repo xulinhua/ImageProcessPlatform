@@ -1,6 +1,9 @@
 /**
  * @file main.cpp
  * @brief 客户电脑上的申请和注册。打出申请码，验过注册码后写入许可证
+ * @author Hoson
+ *
+ * @copyright Copyright (c) 2026 Hoson. All rights reserved.
  */
 
 #include "LicenseCodeUi.h"
@@ -21,12 +24,13 @@
 
 namespace {
 
-const int kMaxRegisterPerMinute = 50;
-const qint64 kRegisterWindowMs = 60 * 1000;
+const int kMaxRegisterPerMinute = 50;          ///< 滑动窗口内允许的注册次数
+const qint64 kRegisterWindowMs = 60 * 1000;    ///< 限流滑动窗口，毫秒
 
 /** @brief 一分钟内最多 50 次注册。超出后禁用按钮，到点再放开 */
 class RegisterPace : public QObject {
 public:
+    /** @brief 记下按钮初始是否可用；初始禁用的按钮到点也不放开 */
     RegisterPace(QPushButton* button, QLabel* status, QWidget* parent)
         : QObject(parent)
         , m_button(button)
@@ -38,10 +42,12 @@ public:
         QObject::connect(m_timer, &QTimer::timeout, this, [this]() { release(); });
     }
 
+    /** @brief 本次点击是否放行；放行则记下时间，超限则禁用按钮并弹窗 */
     bool allow()
     {
         const qint64 now = QDateTime::currentMSecsSinceEpoch();
         dropExpired(now);
+        // 窗口内次数已满：禁用按钮，等最早一次滑出窗口再放开
         if (m_at.size() >= kMaxRegisterPerMinute) {
             hold(now);
             QMessageBox::warning(window(), QString::fromUtf8("注册"),
@@ -53,6 +59,7 @@ public:
     }
 
 private:
+    /** @brief 丢掉滑出窗口的记录 */
     void dropExpired(qint64 now)
     {
         while (!m_at.isEmpty() && now - m_at.first() >= kRegisterWindowMs) {
@@ -60,6 +67,7 @@ private:
         }
     }
 
+    /** @brief 禁用按钮，定时到最早一次记录滑出窗口 */
     void hold(qint64 now)
     {
         m_button->setEnabled(false);
@@ -74,6 +82,7 @@ private:
         m_timer->start(static_cast<int>(wait));
     }
 
+    /** @brief 定时到点：仍超限就继续等，否则恢复按钮 */
     void release()
     {
         const qint64 now = QDateTime::currentMSecsSinceEpoch();
@@ -89,18 +98,20 @@ private:
         m_status->setText(QString::fromUtf8("可以继续注册。"));
     }
 
+    /** @brief 弹窗用的父窗口 */
     QWidget* window() const
     {
         return qobject_cast<QWidget*>(parent());
     }
 
-    QPushButton* m_button;
-    QLabel* m_status;
-    bool m_open;
-    QTimer* m_timer;
-    QVector<qint64> m_at;
+    QPushButton* m_button;   ///< 注册按钮，不持有
+    QLabel* m_status;        ///< 状态提示，不持有
+    bool m_open;             ///< 构造时按钮可用；为 false 时到点也不放开
+    QTimer* m_timer;         ///< 单次定时，到点调用 release
+    QVector<qint64> m_at;    ///< 窗口内每次放行的时间戳（毫秒），按时间先后
 };
 
+/** @brief 换状态胶囊的样式名和文字，并刷新样式 */
 void setPill(QLabel* pill, const char* name, const QString& text)
 {
     pill->setObjectName(QString::fromLatin1(name));
@@ -108,6 +119,7 @@ void setPill(QLabel* pill, const char* name, const QString& text)
     polishWidget(pill);
 }
 
+/** @brief 按校验结果刷新状态胶囊、许可信息行和提示文字 */
 void showLicense(QLabel* pill, QWidget* facts, QLabel* idValue, QLabel* kindValue, QLabel* serialValue,
                  QLabel* note, QLabel* status, const Vision::SoftLicense& license, Vision::LicenseReason reason,
                  bool hardwareOk)
@@ -157,6 +169,7 @@ int main(int argc, char* argv[])
     window.setWindowTitle(QString::fromUtf8("注册"));
     window.resize(560, 480);
 
+    // 控件：标题与状态、许可信息行、申请码区、注册码区
     QLabel* product = new QLabel(QStringLiteral("VisionPlatform"));
     product->setObjectName(QStringLiteral("product"));
     QLabel* pill = new QLabel();
@@ -194,6 +207,7 @@ int main(int argc, char* argv[])
     QPushButton* applyBtn = new QPushButton(QString::fromUtf8("注册"));
     applyBtn->setProperty("primary", true);
 
+    // 现算申请码；硬件信息不够时禁用所有操作，只显示原因
     Vision::SoftLicense license;
     const std::string request = license.requestCode();
     const bool hardwareOk = !request.empty();
@@ -209,6 +223,7 @@ int main(int argc, char* argv[])
     showLicense(pill, facts, idValue, kindValue, serialValue, note, status, license, opened, hardwareOk);
     polishWidget(applyBtn);
 
+    // 申请码的复制、导出、二维码，注册码导入
     QObject::connect(copyBtn, &QPushButton::clicked, &window, [code, status]() {
         QApplication::clipboard()->setText(code->toPlainText());
         status->setText(QString::fromUtf8("已复制申请码。"));
@@ -222,6 +237,7 @@ int main(int argc, char* argv[])
     QObject::connect(importBtn, &QPushButton::clicked, &window, [&window, paste, status]() {
         importLicenseCode(&window, paste, status, QString::fromUtf8("注册码"));
     });
+    // 注册：先限流，再验注册码并落地许可证
     RegisterPace* pace = new RegisterPace(applyBtn, status, &window);
     QObject::connect(applyBtn, &QPushButton::clicked, &window,
                      [paste, status, pace, pill, facts, idValue, kindValue, serialValue, note]() {
@@ -238,6 +254,7 @@ int main(int argc, char* argv[])
         status->setText(QString::fromUtf8(license.reasonText(reason).c_str()));
     });
 
+    // 布局
     QHBoxLayout* head = new QHBoxLayout();
     head->addWidget(product);
     head->addStretch(1);

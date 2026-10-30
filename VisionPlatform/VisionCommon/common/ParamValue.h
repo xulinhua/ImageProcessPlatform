@@ -34,11 +34,17 @@ public:
         KindString    ///< 文本
     };
 
+    /** @brief 未设置 */
     ParamValue() : m_kind(KindNull), m_b(false), m_i(0), m_d(0) {}
+    /** @brief 布尔；同时缓存 0/1 的整数和浮点 */
     ParamValue(bool v) : m_kind(KindBool), m_b(v), m_i(v ? 1 : 0), m_d(v ? 1.0 : 0.0) {}
+    /** @brief 整数；同时缓存布尔（非 0 为真）和浮点 */
     ParamValue(int v) : m_kind(KindInt), m_b(v != 0), m_i(v), m_d(static_cast<double>(v)) {}
+    /** @brief 浮点；整数缓存为截断值 */
     ParamValue(double v) : m_kind(KindDouble), m_b(v != 0.0), m_i(static_cast<int>(v)), m_d(v) {}
+    /** @brief 文本；空指针按空串 */
     ParamValue(const char* v) : m_kind(KindString), m_b(false), m_i(0), m_d(0), m_s(v ? v : "") {}
+    /** @brief 文本 */
     ParamValue(const std::string& v) : m_kind(KindString), m_b(false), m_i(0), m_d(0), m_s(v) {}
 
     /** @brief 当前种类 */

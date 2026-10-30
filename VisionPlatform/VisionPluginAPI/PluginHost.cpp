@@ -96,9 +96,10 @@ int loadDir(const std::string& dir, IPluginHost* host)
         }
         FnApiVersion ver = reinterpret_cast<FnApiVersion>(GetProcAddress(mod, "VisionPlugin_apiVersion"));
         FnRegister reg = reinterpret_cast<FnRegister>(GetProcAddress(mod, "VisionPlugin_register"));
-        // 缺符号或版本不是 1：跳过（模块仍留在进程中，避免反复加载）
+        // 缺符号或版本不是 1：跳过并卸载，尚未登记任何对象
         if (!ver || !reg || ver() != 1) {
             LogMgr::writeSystem(LogLevelWarn, "plugin_load", name + " api mismatch");
+            FreeLibrary(mod);
             continue;
         }
         // 登记期内把 DLL 文件时间写入注册表侧，便于版本对话框展示
@@ -223,6 +224,7 @@ int ToolLibMgr::loadAll()
         if (h == INVALID_HANDLE_VALUE) {
             continue;
         }
+        // 只认 Plugin.*.dll；同目录同名已加载过的跳过
         do {
             if (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
                 continue;
@@ -245,8 +247,10 @@ int ToolLibMgr::loadAll()
             FnRegister reg = reinterpret_cast<FnRegister>(GetProcAddress(mod, "VisionPlugin_register"));
             if (!ver || !reg || ver() != 1) {
                 LogMgr::writeSystem(LogLevelWarn, "plugin_load", name + " api mismatch");
+                FreeLibrary(mod);
                 continue;
             }
+            // 登记期间记下来源文件，addTool/addAlg 据此填登记表
             const std::string stamp = fileTimeStamp(fd.ftLastWriteTime);
             m_impl->loadingFile = name;
             m_impl->loadingKind = kinds[d];

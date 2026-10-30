@@ -35,6 +35,7 @@ struct UserAccount {
     std::string createdAt;               ///< 创建时间文本
     std::string lastLoginAt;             ///< 上次登录时间文本
 
+    /** @brief 默认启用的操作员、SHA256、无强制改密 */
     UserAccount()
         : role(RoleOperator)
         , hashKind(0)
@@ -42,7 +43,7 @@ struct UserAccount {
         , enabled(true)
         , mustChangePwd(false)
     {
-    } ///< 默认操作员、无强制改密
+    }
 };
 
 /**

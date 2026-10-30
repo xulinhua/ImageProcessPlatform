@@ -20,5 +20,8 @@ set "ARGS=%ARGS% %1"
 shift
 goto argloop
 :run
-"%MOC%" "%HEADER%" -o "%OUTFILE%" %ARGS%
+set "INCARGS="
+if defined MOC_I1 set INCARGS=%INCARGS% -I"%MOC_I1%"
+if defined MOC_I2 set INCARGS=%INCARGS% -I"%MOC_I2%"
+"%MOC%" "%HEADER%" -o "%OUTFILE%" %INCARGS% %ARGS%
 exit /b %ERRORLEVEL%

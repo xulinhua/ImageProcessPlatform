@@ -84,6 +84,7 @@ HObject roiToRegion(const HsCommData::HsObject& roi, int imgW, int imgH)
     }
     HObject r;
     const ObjectKind k = roi.kind();
+    // 只看第一格几何；轴对齐矩形的 w、h 是像素数，Halcon 要闭区间右下角
     if (k == ObjRect1) {
         const Rect1P* rc = roi.rect1At(0);
         const double c1 = rc->r.x;
@@ -98,6 +99,7 @@ HObject roiToRegion(const HsCommData::HsObject& roi, int imgW, int imgH)
         GenRectangle2(&r, rc->c.y, rc->c.x, rc->phi, rc->l1, rc->l2);
         return r;
     }
+    // 椭圆当前用同中心、同角度、半边长取 ra/rb 的旋转矩形生成
     if (k == ObjEllipse) {
         const EllipseP* e = roi.ellipseAt(0);
         GenRectangle2(&r, e->c.y, e->c.x, e->phi, e->ra, e->rb);
@@ -108,6 +110,7 @@ HObject roiToRegion(const HsCommData::HsObject& roi, int imgW, int imgH)
         GenCircle(&r, c->c.y, c->c.x, c->r);
         return r;
     }
+    // 线和两点轮廓按半径 8 膨胀成条带；多点轮廓填充，结果为空时退回整幅图
     if (k == ObjLine) {
         const LineP* ln = roi.lineAt(0);
         return lineStripRegion(ln->a.x, ln->a.y, ln->b.x, ln->b.y, 8.0);
@@ -131,6 +134,7 @@ HObject roiToRegion(const HsCommData::HsObject& roi, int imgW, int imgH)
         }
         return fullImageRegion(imgW, imgH);
     }
+    // 行程区域按原样还原，为空时退回整幅图
     if (k == ObjRegion) {
         const HsRegion* reg = roi.regionAt(0);
         if (reg && !reg->runsEmpty()) {

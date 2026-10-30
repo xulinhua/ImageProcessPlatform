@@ -53,6 +53,7 @@ private:
         int total;              ///< 产量
         int pass;               ///< OK
         int fail;               ///< NG
+        /** @brief 指针为空、下标 -1、计数清零 */
         Slot()
             : host(0)
             , station(0)

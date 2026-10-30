@@ -1,3 +1,12 @@
+/**
+ * @file HsImgCtrlExport.h
+ * @brief HsImageCtrl 的 DLL 导出宏。编 DLL 时定义 HSCTRL_LIB，静态链接时定义 HSCTRL_STATIC；
+ *        协议头不依赖 Qt，所以不用 Q_DECL_EXPORT
+ * @author Hoson
+ *
+ * @copyright Copyright (c) 2026 Hoson. All rights reserved.
+ */
+
 #ifndef HSIMAGE_HSIMGCTRLEXPORT_H
 #define HSIMAGE_HSIMGCTRLEXPORT_H
 
@@ -6,12 +15,6 @@
 #pragma warning(disable: 4251)
 #endif
 
-/**
- * @file HsImgCtrlExport.h
- * @brief DLL export macro for HsImageCtrl.
- * Define HSCTRL_LIB when building the DLL. Define HSCTRL_STATIC for static link.
- * Protocol headers do not depend on Qt, so this does not use Q_DECL_EXPORT.
- */
 
 #ifdef HSCTRL_STATIC
 #  define HSCTRL_EXPORT

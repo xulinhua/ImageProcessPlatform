@@ -1,6 +1,9 @@
 /**
  * @file HalOps.h
  * @brief 模板句柄和区域的共用操作
+ * @author Hoson
+ *
+ * @copyright Copyright (c) 2026 Hoson. All rights reserved.
  */
 
 #ifndef VISION_HAL_OPS_H

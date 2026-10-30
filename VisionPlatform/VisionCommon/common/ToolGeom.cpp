@@ -130,6 +130,7 @@ HsCommData::HsObject toolRoiFromLegacy(int kind, double x, double y, double a, d
                           const std::vector<std::int32_t>& runCe)
 {
     using namespace HsCommData;
+    // 按旧 kind 编号逐种构造；其余编号返回空对象
     HsCommData::HsObject r;
     if (kind == 0) {
         CircleP c;
@@ -166,6 +167,7 @@ HsCommData::HsObject toolRoiFromLegacy(int kind, double x, double y, double a, d
         for (size_t i = 0; i < n; ++i) {
             c.pushPt(Point2d(polyX[i], polyY[i]));
         }
+        // 没有折线点时退化成 (x,y) 到 (x+a,y+b) 的两点线
         if (c.ptsEmpty()) {
             c.pushPt(Point2d(x, y));
             c.pushPt(Point2d(x + a, y + b));
@@ -227,6 +229,7 @@ void applyPoseToRois(std::vector<HsCommData::HsObject>* rois, const ParamMap& pa
     const double da = pose.angle - taught.angle;
     const double c = std::cos(da);
     const double s = std::sin(da);
+    // 各点绕示教点旋转 da 后平移到当前位姿；区域等未列出的种类保持不变
     for (size_t i = 0; i < rois->size(); ++i) {
         HsCommData::HsObject& roi = (*rois)[i];
         if (!roi.isInitialized() || roi.isEmpty()) {
@@ -247,6 +250,7 @@ void applyPoseToRois(std::vector<HsCommData::HsObject>* rois, const ParamMap& pa
             o->phi += da;
         } else if (k == ObjRect1) {
             Rect1P* o = g.rect1At(0);
+            // 有转角时轴对齐矩形无法表达，改成旋转矩形
             if (std::fabs(da) < 1e-9) {
                 double x2 = o->r.x + o->r.w;
                 double y2 = o->r.y + o->r.h;
@@ -304,7 +308,7 @@ std::vector<HsCommData::Graphic> objectsToGraphics(const std::vector<HsCommData:
 }
 
 
-// 工具画布能力。由工具 DLL 填写，平台不按名字猜测
+// 任一分区条数上限不是 1 即视为多 ROI
 bool ToolCaps::usesMultiRoi() const
 {
         for (size_t i = 0; i < slotRules.size(); ++i) {
@@ -315,7 +319,7 @@ bool ToolCaps::usesMultiRoi() const
         return false;
     }
 
-// 工具画布能力。由工具 DLL 填写，平台不按名字猜测
+// 所有分区只允许同一种形状时返回该种类，否则 -1
 int ToolCaps::preferredRoiKind() const
 {
         int found = -1;
@@ -334,7 +338,7 @@ int ToolCaps::preferredRoiKind() const
         return found;
     }
 
-// 工具画布能力。由工具 DLL 填写，平台不按名字猜测
+// 形状是否被某分区允许；未列任何形状时都允许，允许直线时也接受轮廓
 bool ToolCaps::kindMatches(int kind) const
 {
         if (kind < 0) {

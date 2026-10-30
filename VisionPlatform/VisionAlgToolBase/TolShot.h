@@ -15,6 +15,7 @@
 namespace Vision {
 
 /**
+ * @class TolShot
  * @brief 本拍测值和公差结果。算法先写在这里，再交给 AlgToolOut
  */
 struct VISION_ALGOR_API TolShot {
@@ -22,6 +23,7 @@ struct VISION_ALGOR_API TolShot {
     bool ok;                     ///< 已写入的数值是否都在上下限内
     std::vector<TolMiss> miss;   ///< 未通过的项
     std::vector<char> poseOk;    ///< 与定位结果对齐。1 通过，0 不通过
+    /** @brief 空结果，缺省判定通过 */
     TolShot() : ok(true) {}
     /** @brief 清空本拍 */
     void reset();

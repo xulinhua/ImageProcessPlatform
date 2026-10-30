@@ -68,6 +68,7 @@ ToolLibDlg::ToolLibDlg(QWidget* parent)
     m_tree->setAlternatingRowColors(true);
     m_tree->header()->setStretchLastSection(true);
     m_tree->header()->setSectionResizeMode(0, QHeaderView::Stretch);
+    // 右侧只读详情，随树上选中节点刷新
     QWidget* detail = new QWidget(this);
     detail->setMinimumWidth(240);
     QFormLayout* form = new QFormLayout(detail);
@@ -231,6 +232,7 @@ void ToolLibDlg::showNode(QTreeWidgetItem* item)
     if (!item) {
         return;
     }
+    // 分组节点：统计该类 DLL 数与登记条数
     const QString node = item->data(0, kNodeRole).toString();
     if (node == "group") {
         const QString kind = item->data(0, kIndexRole).toString();
@@ -251,6 +253,7 @@ void ToolLibDlg::showNode(QTreeWidgetItem* item)
         m_desc->setText(QString::number(dlls) + T(" 个 DLL，") + QString::number(leaves) + T(" 条登记"));
         return;
     }
+    // DLL 节点：文件名、时间和该 DLL 的登记条数
     if (node == "dll") {
         const int fileIndex = item->data(0, kIndexRole).toInt();
         if (fileIndex < 0 || fileIndex >= static_cast<int>(m_files.size())) {
@@ -269,6 +272,7 @@ void ToolLibDlg::showNode(QTreeWidgetItem* item)
         m_desc->setText(QString::number(leaves) + T(" 条登记"));
         return;
     }
+    // 其余为单条登记
     const int regIndex = item->data(0, kIndexRole).toInt();
     if (regIndex < 0 || regIndex >= static_cast<int>(m_regs.size())) {
         return;

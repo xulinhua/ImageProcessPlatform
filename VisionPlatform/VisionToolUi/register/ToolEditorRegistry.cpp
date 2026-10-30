@@ -26,11 +26,14 @@ void ToolEditorRegistry::add(const std::string& toolName, ToolEditorFactory fact
     }
 }
 
-// 参数页一律按工具壳的参数说明生成
+// 有专用页用专用页，其余按工具壳参数说明生成
 ToolEditorBase* ToolEditorRegistry::create(const std::string& toolName, QWidget* parent)
 {
     if (toolName == "preprocess.filter" || toolName == "detect.blob") {
         return createStepEditor(toolName, parent);
+    }
+    if (toolName == "acquire3d.load_cloud") {
+        return createAcquire3DEditor(parent);
     }
     return createGenericEditor(parent);
 }

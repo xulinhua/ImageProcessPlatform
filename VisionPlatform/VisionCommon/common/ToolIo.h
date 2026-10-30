@@ -37,11 +37,15 @@ enum ToolTraceKind {
 /** @class PortDesc @brief 工具端口：槽位与序列化键 */
 struct VISION_COMMON_API PortDesc {
     PortSlot slot; ///< 方向、数据类型、口名
+    /** @brief 缺省图像输出口 */
     PortDesc() {}
+    /** @brief 指定方向和类型的缺省口 */
     PortDesc(PortDir d, PortData t) : slot(d, t) {}
     /** @brief 由槽位生成 in.xxx / out.xxx，有口名时带上口名 */
     std::string key() const;
+    /** @brief 槽位方向 */
     PortDir dir() const;
+    /** @brief 槽位数据类型 */
     PortData data() const;
 };
 
@@ -52,6 +56,7 @@ struct VISION_COMMON_API PortDesc {
 struct NativeRef {
     AlgLibKind algLib; ///< 原生对象所属库
     void* ptr;           ///< 同库自行转换；跨库和界面只用旁边的 Hs 对象
+    /** @brief 空指针 */
     NativeRef() : algLib(AlgLibHal), ptr(nullptr) {}
 };
 
@@ -61,6 +66,7 @@ struct PortImage {
     int index;                     ///< 该口上的序号
     HsCommData::HsImage image;     ///< 共用图像
     NativeRef native;              ///< 同库指针，可空
+    /** @brief 序号 0 */
     PortImage() : index(0) {}
 };
 
@@ -71,6 +77,7 @@ struct PortRegion {
     RegionUse use;                 ///< 正常、屏蔽或无效
     HsCommData::HsObject object;   ///< 共用区域
     NativeRef native;              ///< 同库指针，可空
+    /** @brief 序号 0，正常区域 */
     PortRegion() : index(0), use(RegionUse::Normal) {}
 };
 
@@ -80,6 +87,7 @@ struct PortContour {
     int index;                     ///< 该口上的序号
     HsCommData::HsObject object;   ///< 共用轮廓
     NativeRef native;              ///< 同库指针，可空
+    /** @brief 序号 0 */
     PortContour() : index(0) {}
 };
 
@@ -89,6 +97,7 @@ struct PortRoi {
     int index;         ///< 该口上的序号
     RegionUse use;     ///< 正常、屏蔽或无效
     HsCommData::HsObject roi;       ///< 搜索区
+    /** @brief 序号 0，正常搜索区 */
     PortRoi() : index(0), use(RegionUse::Normal) {}
 };
 
@@ -97,6 +106,7 @@ struct PortPose {
     std::string port;  ///< 口名；空为缺省口
     int index;         ///< 该口上的序号
     HsCommData::Pose2 pose;     ///< 位姿
+    /** @brief 序号 0 */
     PortPose() : index(0) {}
 };
 
@@ -105,6 +115,7 @@ struct PortTuple {
     std::string port;       ///< 口名；空为缺省口
     int index;              ///< 该口上的序号
     HsCommData::HsTuple value; ///< 数值
+    /** @brief 序号 0 */
     PortTuple() : index(0) {}
 };
 
@@ -125,6 +136,7 @@ struct PortCloud {
     int index;                   ///< 该口上的序号
     HsCommData::Cloud3 cloud;    ///< 点云，毫米
     NativeRef native;            ///< 同库指针，可空
+    /** @brief 序号 0 */
     PortCloud() : index(0) {}
 };
 
@@ -133,6 +145,7 @@ struct PortPose3 {
     std::string port;     ///< 口名；空为缺省口
     int index;            ///< 该口上的序号
     HsCommData::Pose3 pose; ///< 平移加四元数
+    /** @brief 序号 0 */
     PortPose3() : index(0) {}
 };
 
@@ -147,6 +160,7 @@ struct PortShape3 {
     HsCommData::Cylinder3 cylinder;///< kind 为 Cylinder
     HsCommData::Line3 line;        ///< kind 为 Line
     HsCommData::Circle3 circle;    ///< kind 为 Circle
+    /** @brief 序号 0，平面 */
     PortShape3() : index(0), kind(Shape3Kind::Plane) {}
 };
 
@@ -155,6 +169,7 @@ struct ResultLabel {
     double x;          ///< 图像坐标，向右
     double y;          ///< 图像坐标，向下
     std::string text;  ///< 已拼好的文字
+    /** @brief 图像原点 */
     ResultLabel() : x(0), y(0) {}
 };
 
@@ -164,6 +179,7 @@ struct NamedObject {
     int index;                   ///< 该口上的序号
     HsCommData::HsObject object; ///< 共用几何
     NativeRef native;            ///< 同库指针，可空
+    /** @brief 序号 0 */
     NamedObject() : index(0) {}
 };
 
@@ -200,12 +216,12 @@ struct VISION_COMMON_API ToolIo {
     void appendByType(const ToolIo& src, const PortSlot& fromPort, const PortSlot& toPort, int index, RegionUse use);
 };
 
+class ToolParaBase;
+
 /**
  * @class ToolIn
  * @brief execute 入参。调度填好，工具看不见方案、工站、流程
  */
-class ToolParaBase;
-
 struct ToolIn {
     RunMode mode;                                      ///< 本拍运行模式
     const ToolParaBase* toolParam;                      ///< 本拍参数对象，不拥有
@@ -224,6 +240,7 @@ struct ToolIn {
     ParamMap upstream;                                 ///< 上游数值。Tuple 口接上之前判断工具仍读
     std::map<std::string, ParamMap> refValues;         ///< 其他工具数值，键为工具 id
     std::map<std::string, std::string> refNames;       ///< 其他工具显示名，键为工具 id
+    /** @brief 自动模式、无参数对象、Halcon 库、ROI 未解析 */
     ToolIn() : mode(RunMode::Auto), toolParam(nullptr), algLib(AlgLibHal), ownRoisResolved(false) {}
 };
 
@@ -237,6 +254,7 @@ struct ToolTrace {
     ToolTraceKind kind;   ///< 操作日志或调试记录
     std::string action;   ///< 短键
     std::string detail;   ///< 正文
+    /** @brief 信息级操作日志 */
     ToolTrace() : level(2), kind(ToolTraceLog) {}
 };
 
@@ -271,6 +289,7 @@ struct VISION_COMMON_API ToolOut {
     std::vector<ToolTrace> traces;                  ///< 日志和调试记录
     std::vector<ToolInfoItem> infos;                ///< 信息记录，不进端口
     std::vector<ResultLabel> labels;                ///< 图像文字。不进端口
+    /** @brief 默认 NG、无异常 */
     ToolOut() : frameId(0), ok(false), error(false), errCode(0), elapsedMs(0) {}
 
     /** @brief 补齐 io 与 image、objects、ok 互相同步 */

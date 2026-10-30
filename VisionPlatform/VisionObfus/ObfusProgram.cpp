@@ -1,6 +1,9 @@
 /**
  * @file ObfusProgram.cpp
  * @brief 字节码布局 VOB1：寄存器数、入口、常量池、指令
+ * @author Hoson
+ *
+ * @copyright Copyright (c) 2026 Hoson. All rights reserved.
  */
 
 #include "ObfusProgram.h"
@@ -204,6 +207,7 @@ ObfusProgram::ObfusProgram(const unsigned char* bytes, int size)
     , m_regCount(0)
     , m_entry(0)
 {
+    // 头：魔数 4 + 版本 2 + 寄存器数 2 + 入口 4 + 常量数 4，再加指令数 4，至少 20 字节
     if (!bytes || size < 20) {
         return;
     }
@@ -224,6 +228,7 @@ ObfusProgram::ObfusProgram(const unsigned char* bytes, int size)
     if (!readU32(bytes, size, &off, &entry) || !readU32(bytes, size, &off, &constCount)) {
         return;
     }
+    // 常量池：每个 8 字节小端
     std::vector<std::int64_t> constants;
     constants.reserve(constCount);
     for (unsigned i = 0; i < constCount; ++i) {
@@ -237,6 +242,7 @@ ObfusProgram::ObfusProgram(const unsigned char* bytes, int size)
     if (!readU32(bytes, size, &off, &opCount) || opCount == 0 || entry >= opCount) {
         return;
     }
+    // 指令：操作码 1 + dest 1 + src0 2 + src1 2，只校验操作码，操作数到执行时再查
     std::vector<ObfusOp> ops;
     ops.reserve(opCount);
     for (unsigned i = 0; i < opCount; ++i) {
@@ -254,6 +260,7 @@ ObfusProgram::ObfusProgram(const unsigned char* bytes, int size)
         ops.push_back(ObfusOp(static_cast<int>(code), static_cast<int>(dest),
                               static_cast<int>(src0), static_cast<int>(src1)));
     }
+    // 必须恰好读完，全部通过才落到成员
     if (off != size) {
         return;
     }
@@ -319,6 +326,7 @@ bool ObfusProgram::encode(const std::string& text, std::vector<unsigned char>* o
     bool entrySet = false;
     std::vector<std::int64_t> constants;
     std::vector<DraftOp> ops;
+    // 逐行解析：头指令 regs / entry / const，其余为指令，按操作码校验操作数个数和范围
     std::istringstream in(text);
     std::string raw;
     int lineNo = 0;
@@ -418,6 +426,7 @@ bool ObfusProgram::encode(const std::string& text, std::vector<unsigned char>* o
             }
             op.src0 = static_cast<int>(target);
         } else if (code == ObfusCallOut) {
+            // 两个参数寄存器各占 8 位，打包进 src1
             std::int64_t fn = 0;
             int arg0 = 0;
             int arg1 = 0;
@@ -436,6 +445,7 @@ bool ObfusProgram::encode(const std::string& text, std::vector<unsigned char>* o
         ops.push_back(op);
     }
 
+    // 全文读完后再查入口和跳转目标，跳转可以向后引用
     if (regCount < 0) {
         if (error) {
             *error = "regs is missing";
@@ -462,6 +472,7 @@ bool ObfusProgram::encode(const std::string& text, std::vector<unsigned char>* o
         }
     }
 
+    // 按 VOB1 布局小端写出，与构造函数的解码一一对应
     std::vector<unsigned char> bytes;
     bytes.reserve(20 + constants.size() * 8 + ops.size() * kOpBytes);
     bytes.push_back('V');

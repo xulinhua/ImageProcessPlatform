@@ -1,6 +1,9 @@
 /**
  * @file LicenseCodec.h
  * @brief 申请码和注册码的字符串格式。签名不在这里
+ * @author Hoson
+ *
+ * @copyright Copyright (c) 2026 Hoson. All rights reserved.
  */
 
 #ifndef VISION_LICENSE_CODEC_H
@@ -12,12 +15,20 @@
 
 namespace Vision {
 
+/**
+ * @class LicenseCodec
+ * @brief 申请码、注册码与签名正文的编解码（Base32 分组，换行分隔字段）
+ * @note 全是静态方法，主程序、申请工具、签发工具共用
+ */
 class VISION_LICENSE_API LicenseCodec {
 public:
+    /************************************************** 申请码 **************************************************/
     /** @brief 产品名、硬件摘要和当前序号，前缀 VP-A1-。serial 小于 0 时为空 */
     static std::string requestFromDigest(const std::string& digest, int serial);
     /** @brief 解开申请码。旧申请码没有序号时，序号为 0 */
     static bool splitRequest(const std::string& code, std::string* digest, int* serial);
+
+    /************************************************** 注册码 **************************************************/
     /** @brief 待签名的正文。serial 从 1 起，主程序只接受更大的序号 */
     static std::string payload(const std::string& licenseId, const std::string& machine,
                                bool perpetual, const std::string& until, int serial);

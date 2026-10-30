@@ -28,9 +28,10 @@ namespace Vision {
 
 namespace {
 
+// 一行参数：字段说明与对应控件
 struct FieldRow {
-    ParamField field;
-    QWidget* editor;
+    ParamField field;   ///< 工具壳给出的字段说明
+    QWidget* editor;    ///< 取值控件；路径行为其中的 QLineEdit，不拥有
     FieldRow() : editor(nullptr) {}
 };
 
@@ -51,6 +52,7 @@ public:
     }
 
 protected:
+    // 按工具壳 paramFields 重建表单；没有字段时只放一行提示
     void loadFromTool()
     {
         clearRows();
@@ -77,6 +79,7 @@ protected:
         applyParamControlStyle(this);
     }
 
+    // 当前用户能否改该字段（按工具名、所属流程、工具 id 查权限）
     bool allowField(const std::string& key) const
     {
         if (!m_session || !m_tool) {
@@ -92,6 +95,7 @@ protected:
         return m_session->allowToolField(m_tool->toolName, flowId, m_tool->id.toString(), key);
     }
 
+    // 控件值写回参数；设备字段写 deviceId，下拉写当前显示文本
     void saveToTool()
     {
         if (!m_tool) {
@@ -135,6 +139,7 @@ protected:
     }
 
 private:
+    // 删除全部行控件和布局项
     void clearRows()
     {
         m_rows.clear();
@@ -157,6 +162,7 @@ private:
         }
     }
 
+    // 按字段类型建控件：布尔、整数、浮点、设备、候选下拉，其余为文本框（路径另带浏览按钮）
     void addRow(const ParamField& f)
     {
         FieldRow row;
@@ -182,6 +188,7 @@ private:
             connect(box, SIGNAL(valueChanged(double)), this, SLOT(onEdited()));
             editor = box;
         } else if (f.type == ParamFieldType::Device) {
+            // 取图、标定工具只列相机、文件夹、图像三类设备
             QComboBox* box = mkParamCombo(this);
             box->addItem(T("（无）"), QString());
             if (m_sol) {
@@ -257,9 +264,9 @@ private:
         m_holders.push_back(cell);
     }
 
-    QVBoxLayout* m_lay;
-    std::vector<FieldRow> m_rows;
-    std::vector<QWidget*> m_holders;
+    QVBoxLayout* m_lay;                 ///< 表单纵向布局
+    std::vector<FieldRow> m_rows;       ///< 各字段行，顺序同 paramFields
+    std::vector<QWidget*> m_holders;    ///< 本页建的行容器，clearRows 时删除
 };
 
 // 按注册工具的参数说明生成参数页

@@ -1,6 +1,6 @@
 /**
  * @file main.cpp
- * @brief main实现
+ * @brief HsImageBench 程序入口：创建应用并显示评测主窗口
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.

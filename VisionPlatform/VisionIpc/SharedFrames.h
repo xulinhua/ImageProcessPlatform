@@ -44,7 +44,10 @@ enum NodeRole {
     NodeRoleClient = 2      ///< 客户端
 };
 
-/** @brief 从槽里拷出的一帧显示数据。JPEG 已离开共享内存 */
+/**
+ * @class IpcPreview
+ * @brief 从槽里拷出的一帧显示数据。JPEG 已离开共享内存
+ */
 struct IpcPreview {
     std::string stationId; ///< 工站 id
     std::string nodeId;    ///< 所属节点
@@ -58,6 +61,7 @@ struct IpcPreview {
     int pass;             ///< OK 数
     int fail;             ///< NG 数
     uint32_t frameSeq;     ///< 拍号
+    /** @brief 标志清零、计数为 0 */
     IpcPreview()
         : ok(false)
         , offline(false)
@@ -77,6 +81,7 @@ struct IpcPreview {
  */
 class VISION_IPC_API SharedFrames {
 public:
+    /************************************************** 容量 **************************************************/
     /** @brief 本机工站个数上限。槽数在创建时按这个上限定死 */
     static const int kMaxLocal = 8;
     /** @brief 远端工站个数上限 */
@@ -88,17 +93,21 @@ public:
     /** @brief 默认槽字节数，1 MB */
     static const uint32_t kDefaultSlotBytes = 1048576;
 
+    /************************************************** 映射 **************************************************/
     /** @brief 进程内唯一映射 */
     static SharedFrames& instance();
 
     /**
-     * @brief 创建或打开共享内存
-     * @param slotBytes 每槽字节。小于 64KB 时抬到 64KB
+     * @brief 创建或打开共享内存，并打开命令、新帧两个事件
+     * @param slotBytes 每槽字节。小于 64KB 时抬到 64KB；只在新建时生效，打开已有对象时以头部记录为准
+     * @param err 失败原因，可空
+     * @return 映射和两个事件都成功才为 true；失败时不保留任何句柄
      */
     bool map(uint32_t slotBytes, std::string* err);
     /** @brief 是否已映射 */
     bool mapped() const;
 
+    /************************************************** 命令 **************************************************/
     /** @brief 写入命令并触发 Global\Vision.Command。订阅命令额外写头部开关 */
     void writeCommand(IpcCommand cmd, uint32_t arg);
     /** @brief 堵到有命令或超时。超时返回 IpcCmdNone */
@@ -108,6 +117,7 @@ public:
     /** @brief 运行画面是否打开着 */
     bool subscribe() const;
 
+    /************************************************** 心跳状态 **************************************************/
     /** @brief 服务每秒写一次，托盘用它判断进程还在不在 */
     void beatStation();
     /** @brief 链路服务每秒写一次 */
@@ -128,6 +138,7 @@ public:
     /** @brief 本节点角色 */
     NodeRole role() const;
 
+    /************************************************** 画面槽 **************************************************/
     /**
      * @brief 登记本机工站在槽表里的下标
      * @return 下标；满了返回 -1
@@ -162,6 +173,7 @@ public:
     /** @brief 按下标读远端工站 id */
     std::string remoteStationId(int index) const;
 
+    /************************************************** 新帧事件 **************************************************/
     /** @brief 有新的本机帧时被触发。Link 没启动时 Station 仍然 SetEvent，不等待 */
     void signalFrame();
     /** @brief 等到新帧或超时 */
@@ -177,7 +189,9 @@ private:
     /** @brief 禁止赋值 */
     SharedFrames& operator=(const SharedFrames&);
 
+    /** @brief 共享内存头部：命令、心跳、故障、角色、工站表与发布序号，布局见 .cpp */
     struct Head;
+    /** @brief 单个画面槽：定长前缀（拍号、统计、摘要）后接 JPEG，布局见 .cpp */
     struct Slot;
 
     /** @brief 槽的起始地址。local 为真时 index 是本机工站，copy 是第几个副本 */
@@ -189,11 +203,27 @@ private:
     /** @brief 读最新偶数序号的副本 */
     bool readAt(bool local, int index, int copies, IpcPreview* out) const;
 
-    void* m_view;       ///< 映射基址
+    /** @brief 拷进定长字符数组，保证有结尾 0 */
+    void copyText(char* dst, int cap, const std::string& src) const;
+    /** @brief 毫秒计时，心跳用 */
+    uint64_t nowMs() const;
+    /** @brief 头部加全部槽的总字节数；超出 32 位返回 0 */
+    uint32_t layoutBytes(uint32_t slotBytes) const;
+
+    /** @brief IpcBase 的共享内存与命令、新帧两个事件，隐藏 Windows 头 */
+    struct Transport;
+
+    /**
+     * @brief map 失败收尾：释放未完成的共享内存与事件，写失败原因
+     * @param transport 可空
+     * @param reason 为空时保留 err 里已有的原因
+     * @return 固定 false
+     */
+    bool failMap(Transport* transport, std::string* err, const char* reason) const;
+
+    void* m_view;       ///< 映射基址，由基础库持有
     Head* m_head;       ///< 头部
-    void* m_mapping;    ///< 映射句柄
-    void* m_command;    ///< 命令事件
-    void* m_frame;      ///< 新帧事件
+    Transport* m_transport; ///< 共享内存和事件，IpcBase
     uint32_t m_slotBytes; ///< 每槽字节
 };
 

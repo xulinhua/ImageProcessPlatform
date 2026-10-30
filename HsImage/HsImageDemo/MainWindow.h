@@ -38,6 +38,7 @@ class QComboBox;
 class MainWindow : public QMainWindow {
     Q_OBJECT
 public:
+    /** @brief 搭建界面并连接画布信号 */
     explicit MainWindow(QWidget* parent = 0);
     /** @brief 先释放 ImageWidgetApi，再交给 Qt 拆子控件 */
     ~MainWindow();
@@ -226,7 +227,7 @@ private:
     QCheckBox* m_measRadius;        ///< 工具条是否显示圆
     QCheckBox* m_measRect;          ///< 工具条是否显示矩形
     QCheckBox* m_measEllipse;       ///< 工具条是否显示椭圆
-    QComboBox* m_calibPreset;
+    QComboBox* m_calibPreset;        ///< 标定预设：1:1 px / 0.012 mm / mm + μm / pulse
     QComboBox* m_calibUnit;          ///< 标定单位
     QDoubleSpinBox* m_calibX;        ///< 列方向每像素
     QDoubleSpinBox* m_calibY;        ///< 行方向每像素

@@ -30,6 +30,7 @@ struct ToolAction {
     std::string title; ///< 按钮文字
     ActionPlace place; ///< 按钮所在页
     bool live;         ///< 参数变化时是否自动执行
+    /** @brief 缺省放在基础参数页，不自动执行 */
     ToolAction() : place(ActionPlace::Run), live(false) {}
 };
 
@@ -39,21 +40,31 @@ enum class OutputKind {
     Text        ///< 文本
 };
 
-/** @class OutputField @brief 一项对外输出 */
+/**
+ * @class OutputField
+ * @brief 一项对外输出
+ */
 struct OutputField {
     std::string key;   ///< 测值键
     std::string title; ///< 界面名称
     std::string unit;  ///< 单位，可空
     OutputKind kind;   ///< 数值或文本
+    /** @brief 缺省为数值项 */
     OutputField() : kind(OutputKind::Number) {}
 };
 
-/** @class OutputSpec @brief 工具对外输出表。cfg_output 返回这个 */
+/**
+ * @class OutputSpec
+ * @brief 工具对外输出表。cfg_output 返回这个
+ */
 struct OutputSpec {
     std::vector<OutputField> fields; ///< 输出项
 };
 
-/** @class TolField @brief 一项公差。默认上下限，界面可改 */
+/**
+ * @class TolField
+ * @brief 一项公差。默认上下限，界面可改
+ */
 struct TolField {
     std::string key;    ///< 项键，与本拍测值的键相同
     std::string title;  ///< 界面名称
@@ -62,20 +73,28 @@ struct TolField {
     double defMin;      ///< 默认下限
     double defMax;      ///< 默认上限
     bool integer;       ///< 整数项。个数用整数上下限，面积和偏移用小数
+    /** @brief 上下限为 0 的小数项 */
     TolField() : defMin(0), defMax(0), integer(false) {}
 };
 
-/** @class TolSpec @brief 工具公差表。cfg_tol 返回这个 */
+/**
+ * @class TolSpec
+ * @brief 工具公差表。cfg_tol 返回这个
+ */
 struct TolSpec {
     std::vector<TolField> items; ///< 公差项
 };
 
-/** @class GraphicSlot @brief 一项可开关的结果图形 */
+/**
+ * @class GraphicSlot
+ * @brief 一项可开关的结果图形
+ */
 struct GraphicSlot {
     std::string key;   ///< 图形键，如 teachRoi、resultRoi、followRoi
     std::string title; ///< 界面名称
     bool defEnable;    ///< 新建时是否显示
     bool region;       ///< 区域。界面可选填充或边缘，以及透明度
+    /** @brief 缺省显示，非区域图形 */
     GraphicSlot() : defEnable(true), region(false) {}
 };
 
@@ -86,16 +105,23 @@ enum class TextAnchor {
     BesideGraphic    ///< 图形旁边
 };
 
-/** @class TextSlot @brief 一项可开关的结果文字 */
+/**
+ * @class TextSlot
+ * @brief 一项可开关的结果文字
+ */
 struct TextSlot {
     std::string key;      ///< 文字键，如 pose、verdict
     std::string title;    ///< 界面名称
     TextAnchor defAnchor; ///< 默认位置
     bool defEnable;       ///< 新建时是否显示
+    /** @brief 缺省锚在结果位置并显示 */
     TextSlot() : defAnchor(TextAnchor::ResultPoint), defEnable(true) {}
 };
 
-/** @class DisplaySpec @brief 工具显示表。cfg_display 返回这个 */
+/**
+ * @class DisplaySpec
+ * @brief 工具显示表。cfg_display 返回这个
+ */
 struct DisplaySpec {
     std::vector<GraphicSlot> graphics; ///< 图形。搜索区、示教区、跟随区、结果区域等
     std::vector<TextSlot> texts;       ///< 文字。位姿、判定等

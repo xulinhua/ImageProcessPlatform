@@ -41,6 +41,7 @@ QColor categoryBadgeColor(ToolType ty)
     case ToolType::Measure3D: return QColor(0xFF, 0xF8, 0xE1);
     case ToolType::Align3D: return QColor(0xF3, 0xE5, 0xF5);
     case ToolType::Infer: return QColor(0xFC, 0xE4, 0xEC);
+    case ToolType::Identify: return QColor(0xE0, 0xF2, 0xF1);
     }
     return QColor(0xEE, 0xEE, 0xEE);
 }
@@ -73,6 +74,7 @@ void fillRegisteredToolTree(QTreeWidget* lib, bool withFlowStructure)
         cats[static_cast<size_t>(idx)] = cat;
     }
 
+    // 具体工具：UserRole 存 toolName，提示里带版本和描述
     const std::vector<ToolBase*> tools = ToolRegistry::instance().all();
     for (int i = 0; i < static_cast<int>(tools.size()); ++i) {
         const ToolDesc d = tools[static_cast<size_t>(i)]->desc();
@@ -89,6 +91,7 @@ void fillRegisteredToolTree(QTreeWidget* lib, bool withFlowStructure)
         }
         it->setToolTip(0, tip);
     }
+    // 流程结构节点，UserRole 为 group.parallel / group.if / group.loop
     if (withFlowStructure) {
         QTreeWidgetItem* st = new QTreeWidgetItem(lib, QStringList(T("流程结构")));
         st->setIcon(0, badgeVisionIcon(toolTreeIcon(ToolTreeIconParallel), QColor(0xE3, 0xF2, 0xFD), 20));
@@ -102,6 +105,7 @@ void fillRegisteredToolTree(QTreeWidget* lib, bool withFlowStructure)
         lg->setData(0, Qt::UserRole, QLatin1String("group.loop"));
         lg->setIcon(0, toolTreeIcon(ToolTreeIconBranch));
     }
+    // 组合工具按作用域分两类，UserRole 为 composite:作用域:id
     QTreeWidgetItem* libCat = new QTreeWidgetItem(lib, QStringList(QString::fromUtf8("独立组合工具")));
     QTreeWidgetItem* solCat = new QTreeWidgetItem(lib, QStringList(QString::fromUtf8("项目组合工具")));
     const std::vector<CompositeDef*> defs = CompositeMgr::instance().all();

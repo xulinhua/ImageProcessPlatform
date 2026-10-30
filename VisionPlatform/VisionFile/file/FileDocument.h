@@ -21,6 +21,7 @@ namespace Vision {
  */
 class ITableWriter {
 public:
+    /** @brief 虚析构 */
     virtual ~ITableWriter() {}
     /** @brief 设置列名 */
     virtual void setHeaders(const std::vector<std::string>& headers) = 0;

@@ -318,6 +318,7 @@ bool XmlParser::parseElement(XmlValue* out)
         return false;
     }
     out->setName(name);
+    // 属性，直到 > 或自闭合 />
     while (true) {
         skipWs();
         if (starts("/>")) {
@@ -343,6 +344,7 @@ bool XmlParser::parseElement(XmlValue* out)
         }
         out->setAttr(key, val);
     }
+    // 内容：子元素递归解析，文本拼起来后去首尾空白
     std::string text;
     while (i < t.size()) {
         if (starts("</")) {

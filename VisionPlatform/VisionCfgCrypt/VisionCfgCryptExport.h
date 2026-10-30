@@ -1,6 +1,9 @@
 /**
  * @file VisionCfgCryptExport.h
  * @brief 配置加密库导出
+ * @author Hoson
+ *
+ * @copyright Copyright (c) 2026 Hoson. All rights reserved.
  */
 
 #ifndef VISION_CFGCRYPT_EXPORT_H

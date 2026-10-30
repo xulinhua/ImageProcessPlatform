@@ -1,10 +1,13 @@
-#ifndef HSCOMMDATA_HSTUPLEOPS_H
-#define HSCOMMDATA_HSTUPLEOPS_H
-
 /**
  * @file HsTupleOps.h
  * @brief HsTuple 与标量的比较、算术运算符。由 HsTuple.h 末尾包含，勿单独包含
+ * @author Hoson
+ *
+ * @copyright Copyright (c) 2026 Hoson. All rights reserved.
  */
+
+#ifndef HSCOMMDATA_HSTUPLEOPS_H
+#define HSCOMMDATA_HSTUPLEOPS_H
 
 namespace HsCommData {
 

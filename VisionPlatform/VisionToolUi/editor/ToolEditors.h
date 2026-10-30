@@ -21,6 +21,9 @@ VISION_TOOLUI_API ToolEditorBase* createGenericEditor(QWidget* parent);
 /** @brief 滤波和斑点的多步骤参数页 */
 VISION_TOOLUI_API ToolEditorBase* createStepEditor(const std::string& toolName, QWidget* parent);
 
+/** @brief 三维采集：文件 / 文件夹点云来源 */
+VISION_TOOLUI_API ToolEditorBase* createAcquire3DEditor(QWidget* parent);
+
 }
 
 #endif

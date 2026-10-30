@@ -1,10 +1,13 @@
-#ifndef HSCOMMDATA_GEOMOPS_H
-#define HSCOMMDATA_GEOMOPS_H
-
 /**
  * @file GeomOps.h
- * @brief Compatibility include. 2D ops live in Geom.h.
+ * @brief 兼容旧包含路径，二维几何运算已并入 Geom.h
+ * @author Hoson
+ *
+ * @copyright Copyright (c) 2026 Hoson. All rights reserved.
  */
+
+#ifndef HSCOMMDATA_GEOMOPS_H
+#define HSCOMMDATA_GEOMOPS_H
 
 #include <HsCommData/Geom.h>
 

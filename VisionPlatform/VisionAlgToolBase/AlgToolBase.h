@@ -49,16 +49,21 @@ struct AlgToolIn {
     std::vector<PortCloud> clouds;             ///< 点云
     std::vector<PortPose3> poses3;             ///< 三维位姿
     std::vector<PortShape3> shapes3;           ///< 三维形状
+    /** @brief 自动模式，参数对象和外部图指针为空 */
     AlgToolIn() : mode(RunMode::Auto), param(nullptr), imagePtr(nullptr) {}
 };
 
-/** @brief 一项没通过的公差 */
+/**
+ * @class TolMiss
+ * @brief 一项没通过的公差
+ */
 struct TolMiss {
     std::string name; ///< 公差名
     bool hasValue;    ///< 本拍有没有这个测值
     double value;     ///< 测值
     double minVal;    ///< 下限
     double maxVal;    ///< 上限
+    /** @brief 无测值，上下限为 0 */
     TolMiss() : hasValue(false), value(0), minVal(0), maxVal(0) {}
 };
 
@@ -90,6 +95,7 @@ struct AlgToolOut {
     std::vector<PortShape3> shapes3;           ///< 输出三维形状
     std::vector<PortTuple> tuples;             ///< 输出数值元组
     std::vector<ResultLabel> labels;           ///< 图像文字，不进端口
+    /** @brief 未判定、未跑通；公差缺省通过 */
     AlgToolOut() : ok(false), errCode(0), poseOrgOk(false), runOk(false), judgeOk(true), algMs(0) {}
 
     /** @brief 运行失败，不带输出图 */
@@ -103,10 +109,7 @@ struct AlgToolOut {
     }
 };
 
-/**
- * @class AlgToolBase
- * @brief 图像算法。按 toolName 挂到已有工具壳上
- */
+/** @brief 本拍输入图：imagePtr 非空优先，其次 image，都没有时返回静态空图 */
 inline const HsCommData::HsImage& inputImage(const AlgToolIn& in)
 {
     static const HsCommData::HsImage kNone;
@@ -119,8 +122,14 @@ inline const HsCommData::HsImage& inputImage(const AlgToolIn& in)
     return kNone;
 }
 
+/**
+ * @class AlgToolBase
+ * @brief 图像算法。按 toolName 挂到已有工具壳上
+ */
 class VISION_ALGOR_API AlgToolBase {
 public:
+    /************************************************** 描述 **************************************************/
+    /** @brief 虚析构，派生类经 destroy 释放 */
     virtual ~AlgToolBase() {}
     /** @brief 挂到哪一个工具壳，如 locate.find_circle */
     virtual std::string toolName() const = 0;
@@ -132,9 +141,11 @@ public:
     virtual std::vector<VerNote> version_notes() const;
     /** @brief 算法库 */
     virtual AlgLibKind algLib() const = 0;
+    /** @brief 算法版本号，缺省 1.0.0.0 */
     virtual std::string version() const { return std::string("1.0.0.0"); }
     /** @brief 版本变更。只追加，不删旧项 */
     virtual std::vector<VerNote> versionNotes() const;
+    /************************************************** 执行 **************************************************/
     /** @brief 像素计算，须可重入 */
     virtual int execute(const AlgToolIn& in, AlgToolOut* out) = 0;
     /** @brief 公差。判定成功后把本拍测值转成公差结果 */
@@ -143,8 +154,20 @@ public:
     virtual int shot_init(const AlgToolIn& in, AlgToolOut* out);
     /** @brief 一拍结束后的收尾。缺省空 */
     virtual int settle_result(const AlgToolIn& in, AlgToolOut* out);
+    /**
+     * @brief 一拍完整流程：execute，跑通后 judge_tol，最后 settle_result
+     * @param mode 当前未使用
+     * @return out->errCode；out 为空时返回 HS_ERR_NULL 或 execute 的错误码
+     * @note 写 out->runOk、judgeOk；公差不过时 ok 置 false
+     */
     int run(ExecMode mode, const AlgToolIn& in, AlgToolOut* out);
+    /**
+     * @brief 清空 out 并写成失败
+     * @param code 错误码，传 HS_OK 时改记 HS_ERR_OPERATOR
+     * @return 实际写入的错误码；out 为空返回 HS_ERR_NULL
+     */
     int fail(int code, const std::string& msg, AlgToolOut* out) const;
+    /************************************************** 实例与模型 **************************************************/
     /**
      * @brief 克隆一份实例
      * @return 新对象，由调用方 destroy
@@ -166,8 +189,28 @@ public:
     virtual void clear(const std::string& toolDataDir);
     /** @brief 按分段写成算法日志，并把合计毫秒写入 out->algMs */
     void write_alg_steps(AlgToolOut* out, const std::vector<Section>& sections, double totalMs) const;
+    /** @brief 释放本对象（delete this），跨 DLL 释放时用它而不是直接 delete */
     virtual void destroy();
 protected:
+    /**
+     * @brief 取本工具参数对象。工具壳没传或类型不符时用 in.run、in.judge 填 local
+     * @return para 或 local，不会为空
+     */
+    template <class T>
+    const T* paraOf(const AlgToolIn& in, T* local) const
+    {
+        const T* para = toolParaAs<T>(in.param);
+        if (para != nullptr) {
+            return para;
+        }
+        ToolParam src;
+        src.run = in.run;
+        src.judge = in.judge;
+        src.learn = in.teach;
+        local->load(src);
+        return local;
+    }
+
     SectionTimer run_timer_; ///< execute 分段计时。每次 start 先清空上一拍
 };
 
@@ -195,6 +238,7 @@ public:
     ~AlgToolBaseRegistry();
 
 private:
+    /** @brief 只经 instance 取得 */
     AlgToolBaseRegistry() {}
     std::map<std::string, std::map<AlgLibKind, AlgToolBase*> > m_dets; ///< 按工具名再按库持有
 };

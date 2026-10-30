@@ -1,6 +1,9 @@
 /**
  * @file LicenseCodec.cpp
  * @brief 申请码 VP-A1-，注册码 VP-R1-
+ * @author Hoson
+ *
+ * @copyright Copyright (c) 2026 Hoson. All rights reserved.
  */
 
 #include "LicenseCodec.h"

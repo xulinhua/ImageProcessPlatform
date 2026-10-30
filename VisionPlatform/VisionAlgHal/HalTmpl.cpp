@@ -1,6 +1,9 @@
 /**
  * @file HalTmpl.cpp
  * @brief NCC 与形状模板定位（Halcon）
+ * @author Hoson
+ *
+ * @copyright Copyright (c) 2026 Hoson. All rights reserved.
  */
 
 #include "HalTmpl.h"
@@ -86,6 +89,7 @@ void HalTmpl::take_region(const AlgToolIn& in, const char* port, HalconCpp::HObj
     HalconCpp::GenEmptyObj(region);
     const std::string name = port != nullptr ? port : "";
     const bool search = name == TmplKey::search;
+    // 先按用途分别收集普通区和屏蔽区，转换失败或为空的块跳过
     HalconCpp::HObject normals;
     HalconCpp::HObject masks;
     bool anyNormal = false;
@@ -120,6 +124,7 @@ void HalTmpl::take_region(const AlgToolIn& in, const char* port, HalconCpp::HObj
             *acc = joined;
         }
     }
+    // 普通区并集减去屏蔽区并集；只有屏蔽区时结果为空
     if (!anyNormal) {
         return;
     }
@@ -290,6 +295,7 @@ int HalTmpl::locate(const AlgToolIn& in, const HalconCpp::HTuple& model, bool sh
         HalconCpp::ReduceDomain(image_, search_region_, &reduced);
         src = &reduced;
     }
+    // 角度范围与建模一致；重叠度和贪婪度夹到 0~1
     HalconCpp::HTuple row, col, ang, score;
     const double angleRad = para->teach.angleRad;
     const double minScore = para->run.minScore;
@@ -307,6 +313,7 @@ int HalTmpl::locate(const AlgToolIn& in, const HalconCpp::HTuple& model, bool sh
         HalconCpp::FindNccModel(*src, model, -angleRad, 2.0 * angleRad, minScore, matchNum, overlap,
             ncc_sub_pixel(para->run.subPixel).c_str(), para->run.findLevels, &row, &col, &ang, &score);
     }
+    // 匹配中心落在图外或搜索区外的结果丢掉
     HalconCpp::HTuple inside;
     if (regionHasArea(search_region_) && row.TupleLength() > 0) {
         HalconCpp::TestRegionPoint(search_region_, row, col, &inside);
@@ -344,6 +351,7 @@ int HalTmpl::rebuild_from_org(const AlgToolIn& in, bool shape)
     if (!pathFileExists(orgPath)) {
         return HS_ERR_TMPL_NO_MODEL;
     }
+    // 先保存本拍图像和搜索区，任何出口都要还原
     HalconCpp::HObject shotImage = image_;
     HalconCpp::HObject shotSearch = search_region_;
     const int shotW = img_w_;
@@ -359,6 +367,7 @@ int HalTmpl::rebuild_from_org(const AlgToolIn& in, bool shape)
             HalconCpp::Rgb1ToGray(org, &gray);
             org = gray;
         }
+        // 原图转灰度后按当前示教区裁模板图；没有示教区时整幅原图作模板
         HalconCpp::HTuple width;
         HalconCpp::HTuple height;
         HalconCpp::GetImageSize(org, &width, &height);
@@ -385,6 +394,7 @@ int HalTmpl::rebuild_from_org(const AlgToolIn& in, bool shape)
             img_h_ = shotH;
             return built;
         }
+        // 在整幅原图上定位一次，首个结果作为原点位姿
         image_ = org;
         img_w_ = width[0].I();
         img_h_ = height[0].I();
@@ -537,6 +547,7 @@ int HalTmpl::alg_rst_proc(const AlgToolIn&, AlgToolOut* out)
     if (out == nullptr) {
         return HS_ERR_TYPE;
     }
+    // 判定：跑通且有匹配为 runOk，再叠加公差才算 ok
     AlgToolOut result;
     result.errCode = shot_err_;
     result.ok = shot_err_ == HS_OK && !matches_.empty() && tol_.ok;
@@ -552,6 +563,7 @@ int HalTmpl::alg_rst_proc(const AlgToolIn&, AlgToolOut* out)
         result.portObjects.push_back(teachOut);
         result.objects.push_back(teachOut.object);
     }
+    // 每个匹配输出位姿和十字；示教区、跟随区按「原点到匹配位姿」的刚体变换映射过去
     const bool hasTeach = regionHasArea(teach_region_);
     const bool hasFollow = regionHasArea(follow_region_);
     for (size_t i = 0; i < matches_.size(); ++i) {

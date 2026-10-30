@@ -1,15 +1,18 @@
-#ifndef VISION_SOLUTION_H
-#define VISION_SOLUTION_H
-#include "VisionCoreExport.h"
-
 /**
  * @file Solution.h
  * @brief 整包视觉方案 Solution（*.vpsol 根对象）
+ * @author Hoson
  *
  * 相关类型见：
  * - job/JobCfg.h、station/StationCfg.h
  * - ToolCfg.h、HardwareDevice.h
+ *
+ * @copyright Copyright (c) 2026 Hoson. All rights reserved.
  */
+
+#ifndef VISION_SOLUTION_H
+#define VISION_SOLUTION_H
+#include "VisionCoreExport.h"
 
 #include "HardwareDevice.h"
 #include "StationCfg.h"
@@ -37,6 +40,7 @@ struct VISIONCORE_API Solution {
     bool dirty;                            ///< 是否有未保存修改
     bool haltAll;                          ///< 停全部。不进方案文件
 
+    /** @brief 空方案：多工站分页签显示，未修改 */
     Solution()
         : runtimeStationLayout(RuntimeStationsTabs)
         , dirty(false)

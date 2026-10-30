@@ -24,6 +24,7 @@ struct RuntimePane {
     std::vector<ObjectId> overlayToolIds; ///< 叠加工具；空 id 表示工站本拍图形
     bool showOverlay;                     ///< 是否画叠加
     bool enabled;                         ///< 该格是否显示
+    /** @brief 默认显示且画叠加 */
     RuntimePane()
         : showOverlay(true)
         , enabled(true)
@@ -38,6 +39,7 @@ struct VISIONCORE_API RuntimeView {
     bool showHistory;               ///< 底部结果历史
     bool showSideButtons;           ///< 左侧开始/停止列
     std::vector<RuntimePane> panes; ///< 最多 9 格，按行优先
+    /** @brief 1×1 布局，统计/历史/侧边按钮全显示 */
     RuntimeView()
         : rows(1)
         , cols(1)
@@ -45,13 +47,11 @@ struct VISIONCORE_API RuntimeView {
         , showHistory(true)
         , showSideButtons(true)
     {}
-    /** @brief 格子数 */
+    /** @brief 当前布局的格子数（行乘列） */
     int slotCount() const;
     /** @brief 行列夹到 1 至 3，窗格补到 9 */
     void normalize();
 };
-
-/** @brief 当前布局的格子数（行乘列） */
 
 /**
  * @class StationCfg
@@ -69,6 +69,7 @@ struct StationCfg {
     int timeoutMs;                       ///< 超时毫秒
     FailPolicy failPolicy;               ///< 失败策略
     RuntimeView runtimeView;             ///< 运行主界面布局
+    /** @brief 使能、流程串行、超时 500ms、失败停工站 */
     StationCfg()
         : enabled(true)
         , jobSchedule(ScheduleSequence)

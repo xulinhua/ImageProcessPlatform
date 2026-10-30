@@ -45,7 +45,7 @@ public:
     bool enabled(LogChannel ch) const;
     /** @brief 后台线程入口 */
     void runLoop();
-    struct Impl;
+    struct Impl; ///< 私有实现
     Impl* m; ///< 队列、线程与通道开关
 
 private:

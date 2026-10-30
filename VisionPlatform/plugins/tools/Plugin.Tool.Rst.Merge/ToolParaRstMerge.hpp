@@ -25,8 +25,9 @@ public:
     };
     /** @brief 运行参数 */
     struct Run {
-        double minArea;             ///< 最小面积
-        int maxCount;               ///< 最大数量
+        double minArea;             ///< 合并后各区域外接框面积之和（像素²）的下限，小于它判 NG
+        int maxCount;               ///< 合并后区域数上限，超过判 NG；0 不限
+        /** @brief 缺省不设限 */
         Run()
             : minArea(0.0)
             , maxCount(0)

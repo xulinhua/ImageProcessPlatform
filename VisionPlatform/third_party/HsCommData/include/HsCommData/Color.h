@@ -48,6 +48,7 @@ struct HSCOMMDATA_EXPORT Color4 {
     unsigned char a; ///< 透明度，255 为不透明
 
     Color4() : r(0), g(0), b(0), a(0) {} ///< 全 0 表示未设置
+    /** @brief 按分量构造，透明度缺省为不透明 */
     Color4(unsigned char r_, unsigned char g_, unsigned char b_, unsigned char a_ = 255)
         : r(r_), g(g_), b(b_), a(a_) {}
 

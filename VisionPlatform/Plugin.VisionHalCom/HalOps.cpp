@@ -1,6 +1,9 @@
 /**
  * @file HalOps.cpp
  * @brief 模板句柄和区域的共用操作
+ * @author Hoson
+ *
+ * @copyright Copyright (c) 2026 Hoson. All rights reserved.
  */
 
 #include "HalOps.h"

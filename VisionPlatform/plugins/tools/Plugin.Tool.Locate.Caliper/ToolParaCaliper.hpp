@@ -25,12 +25,13 @@ public:
     };
     /** @brief 运行参数 */
     struct Run {
-        std::string mode;           ///< 模式
-        double sigma;               ///< 平滑
-        double threshold;           ///< 阈值
-        std::string transition;     ///< 极性
-        std::string select;         ///< 选择
-        int searchCount;            ///< 查找条数
+        std::string mode;           ///< 模式：width 按边对测宽 / edge 找单边
+        double sigma;               ///< 测量平滑 sigma，0.4~20
+        double threshold;           ///< 最小边缘幅值（灰度差）
+        std::string transition;     ///< 边缘极性：all / positive / negative
+        std::string select;         ///< 边缘取舍：all / first / last（Halcon 测量语义）
+        int searchCount;            ///< 每个卡尺 ROI 最多取的结果数，1~50
+        /** @brief 缺省测宽、取全部边 */
         Run()
             : mode("width")
             , sigma(1.0)

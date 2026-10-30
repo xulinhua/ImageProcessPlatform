@@ -67,7 +67,7 @@
       <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>VisionCommon.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>VisionCommon.lib;gdi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -76,12 +76,22 @@
     <ClCompile Include="file\XlsxDocument.cpp" />
     <ClCompile Include="file\Json.cpp" />
     <ClCompile Include="file\Xml.cpp" />
+    <ClCompile Include="file\ReportDocument.cpp" />
+    <ClCompile Include="file\HtmlReportWriter.cpp" />
+    <ClCompile Include="file\PdfReportWriter.cpp" />
+    <ClCompile Include="file\TtfSubset.cpp" />
+    <ClCompile Include="file\Serialize.cpp" />
   </ItemGroup>
   <ItemGroup>
-        <ClInclude Include="VisionFileExport.h" />
-<ClInclude Include="file\FileDocument.h" />
+    <ClInclude Include="VisionFileExport.h" />
+    <ClInclude Include="file\FileDocument.h" />
     <ClInclude Include="file\Json.h" />
     <ClInclude Include="file\Xml.h" />
+    <ClInclude Include="file\ReportDocument.h" />
+    <ClInclude Include="file\HtmlReportWriter.h" />
+    <ClInclude Include="file\PdfReportWriter.h" />
+    <ClInclude Include="file\TtfSubset.h" />
+    <ClInclude Include="file\Serialize.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\VisionCommon\VisionCommon.vcxproj">

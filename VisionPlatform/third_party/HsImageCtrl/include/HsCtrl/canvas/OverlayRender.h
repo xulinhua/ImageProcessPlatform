@@ -1,6 +1,6 @@
 /**
  * @file OverlayRender.h
- * @brief OverlayRenderÍ·ÎÄ¼ş
+ * @brief OverlayRenderå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -21,19 +21,19 @@ namespace HsCtrl {
 
 /**
  * @class OverlayRender
- * @brief ÔÚÒÑÉèºÃµÄÍ¼Ïñ×ø±êÏµÀï»­Ò»Ìõ»òÒ»Åú HsCommData::Graphic¡£
+ * @brief åœ¨å·²è®¾å¥½çš„å›¾åƒåæ ‡ç³»é‡Œç”»ä¸€æ¡æˆ–ä¸€æ‰¹ HsCommData::Graphicã€‚
  *
- * HsCommData::KindRegion µÄ mask LOD ÈÔÓÉ GraphicItem ¸ºÔğ£¬ÕâÀïÖ»»­ÆäÓà kind¡£
+ * HsCommData::KindRegion çš„ mask LOD ä»ç”± GraphicItem è´Ÿè´£ï¼Œè¿™é‡Œåªç”»å…¶ä½™ kindã€‚
  */
 class HSCTRL_EXPORT OverlayRender {
 public:
     /**
-     * @brief ÔÚµ±Ç°±ä»»ÏÂ»­Ò»Ìõ HsCommData::Graphic
-     * @param selected true Ê±ÓÃ¸ßÁÁ±Ê
+     * @brief åœ¨å½“å‰å˜æ¢ä¸‹ç”»ä¸€æ¡ HsCommData::Graphic
+     * @param selected true æ—¶ç”¨é«˜äº®ç¬”
      */
     static void paintScene(QPainter* painter, const HsCommData::Graphic& g, bool selected);
     /**
-     * @brief Ì×ÉÏ image¡údevice ºó»­Ò»Åú HsCommData::Graphic
+     * @brief å¥—ä¸Š imageâ†’device åç”»ä¸€æ‰¹ HsCommData::Graphic
      */
     static void paintList(QPainter* painter, const std::vector<HsCommData::Graphic>& items,
                           const QTransform& imageToDevice);

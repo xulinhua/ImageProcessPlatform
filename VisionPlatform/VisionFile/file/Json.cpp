@@ -621,6 +621,7 @@ static void dump(const JsonValue& v, std::string* o, bool pretty, int indent)
         break;
     }
     case JsonValue::Object: {
+        // 对象键按 std::map 顺序（字典序）输出
         o->push_back('{');
         const std::map<std::string, JsonValue>& m = v.object();
         int i = 0;

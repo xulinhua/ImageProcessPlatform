@@ -59,6 +59,7 @@ struct HSCOMMDATA_EXPORT Box2 {
     double h; ///< height in pixels
 
     Box2() : x(0.0), y(0.0), w(0.0), h(0.0) {} ///< empty
+    /** @brief 按左上角与宽高构造 */
     Box2(double x_, double y_, double w_, double h_) : x(x_), y(y_), w(w_), h(h_) {}
 };
 
@@ -73,6 +74,7 @@ struct HSCOMMDATA_EXPORT IRect {
     int height; ///< height in pixels
 
     IRect() : x(0), y(0), width(0), height(0) {} ///< empty
+    /** @brief 按左上角与宽高构造 */
     IRect(int x_, int y_, int w_, int h_) : x(x_), y(y_), width(w_), height(h_) {}
 };
 

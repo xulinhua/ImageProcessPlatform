@@ -42,6 +42,7 @@ struct VISIONCORE_API JobRuntime {
     int64_t frameSeq;                                             ///< 帧序号
     int loopIndex;                                                ///< 当前循环下标；-1 表示不在循环内
     int loopCount;                                                ///< 当前循环总次数
+    /** @brief 帧序号从 1 起，不在循环内 */
     JobRuntime() : frameSeq(1), loopIndex(-1), loopCount(0) {}
     /** @brief 清空缓存 */
     void clear();
@@ -188,8 +189,12 @@ private:
     ToolOut runToolBody(Solution* sol, const ObjectId& toolId, const ToolCfg* recipeTool);
 
     /************************************************** 实例数据 **************************************************/
-    /** @brief 把 ToolCfg 四件套写入工具实例 */
+    /**
+     * @brief 参数指纹：拼接 paraVersion、algLib、deviceId、learn/run 参数（按键排序）、判定项和 ROI 个数
+     * @note 供 initAutoParas 判断是否要重新填参；ROI 只计个数，不含坐标
+     */
     std::string paramStamp(const ToolParam& param) const;
+    /** @brief 把 ToolCfg 四件套写入工具实例（links 传空，info/param/runtime 照写） */
     void applyToolConfig(ToolBase* inst, const ToolCfg& config);
     /** @brief 把实例四件套收回配置，不动画布坐标 */
     void harvestToolConfig(const ToolBase* inst, ToolCfg* config);
@@ -197,9 +202,11 @@ private:
     ToolOut runToolInstance(ToolBase* inst, const ToolIn& in, ToolCfg* formal);
 
     /************************************************** 成员 **************************************************/
+    /** @brief 运行态只读视图：执行线程直接指向草稿，其它线程握住已发布快照 */
     struct RtView {
         const JobRuntime* rt; ///< 可读的运行态
         std::shared_ptr<const JobRuntime> keep; ///< 握住已发布快照
+        /** @brief 空视图 */
         RtView() : rt(0) {}
     };
     /** @brief 执行线程读草稿，其它线程读已发布快照 */
@@ -216,7 +223,7 @@ private:
     ObjectId m_stationId;             ///< 日志标签用工站 id（非上级指针）
     std::atomic<bool> m_executing;    ///< 执行占用（防重入）
     bool m_autoPrepared;              ///< 自动运行参数是否已填好
-    std::map<std::string, std::string> m_paramStamp;
+    std::map<std::string, std::string> m_paramStamp; ///< 工具 id -> 上次填参时的参数指纹（initAutoParas 用）
     const JobCfg* m_recipeJob;        ///< 当前试跑用的流程草稿
     const ToolCfg* m_recipeTool;      ///< 当前试跑用的单工具草稿
 };

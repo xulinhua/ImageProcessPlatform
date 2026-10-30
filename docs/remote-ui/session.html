@@ -1,0 +1,100 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="ui.css">
+<style>
+.win { width: 1600px; height: 940px; }
+.tb { gap: 5px; }
+.tb .btn { padding: 0 10px; }
+.main { flex: 1; display: flex; min-height: 0; }
+.view { flex: 1; background: #15181D; display: flex; align-items: center; justify-content: center; position: relative; min-width: 0; padding: 16px; }
+.view .rs { width: 100%; max-height: 100%; outline: 2px solid #1890FF; outline-offset: 0; }
+.notice { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); background: rgba(24, 144, 255, .95); color: #fff; padding: 5px 14px; border-radius: 14px; font-size: 12px; display: flex; gap: 6px; align-items: center; z-index: 2; }
+.notice svg.i { width: 13px; height: 13px; }
+.panel { width: 300px; background: #fff; border-left: 1px solid #E8E8E8; display: flex; flex-direction: column; flex: none; }
+.ptabs { display: flex; gap: 20px; padding: 0 16px; border-bottom: 1px solid #F0F0F0; }
+.ptabs span { padding: 12px 0 10px; color: #595959; }
+.ptabs span.on { color: #1677FF; border-bottom: 2px solid #1677FF; }
+.chat { flex: 1; padding: 14px; display: flex; flex-direction: column; gap: 12px; overflow: hidden; }
+.sys { align-self: center; font-size: 11px; color: #8C8C8C; background: #F5F5F5; padding: 2px 10px; border-radius: 10px; }
+.msg { display: flex; flex-direction: column; gap: 4px; max-width: 86%; }
+.msg .who { font-size: 11px; color: #8C8C8C; }
+.msg .txt { background: #F5F7FA; border: 1px solid #EEF0F3; padding: 7px 10px; border-radius: 6px; line-height: 1.5; }
+.msg.me { align-self: flex-end; align-items: flex-end; }
+.msg.me .txt { background: #1890FF; border-color: #1890FF; color: #fff; }
+.compose { padding: 10px; border-top: 1px solid #F0F0F0; display: flex; gap: 8px; }
+.compose .input { flex: 1; }
+.viewers { border-top: 1px solid #F0F0F0; padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; }
+.viewers h4 { margin: 0; font-size: 12px; font-weight: 400; color: #8C8C8C; display: flex; justify-content: space-between; }
+.vrow { display: flex; align-items: center; gap: 8px; }
+.ava { width: 26px; height: 26px; border-radius: 50%; background: #1890FF; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 12px; flex: none; }
+.ava.g { background: #13C2C2; }
+.ava.o { background: #FA8C16; }
+.vrow .r { margin-left: auto; }
+.rec { color: #FF4D4F; display: flex; align-items: center; gap: 6px; }
+.rec .dot { background: #FF4D4F; }
+</style></head>
+<body>
+<div class="win">
+  <div class="title"><span class="logo"><i data-i="monitor"></i></span><span class="name">检测二号 — 远程控制</span><span class="wb"><i data-i="minus"></i></span><span class="wb"><i data-i="square"></i></span><span class="wb x"><i data-i="x"></i></span></div>
+  <div class="tb">
+    <span class="btn"><i data-i="left"></i>监控墙</span>
+    <span class="sep"></span>
+    <span class="btn danger"><i data-i="mouse"></i>释放操作</span>
+    <span class="sep"></span>
+    <span class="lbl">显示器</span>
+    <span class="seg"><span class="btn on">1</span><span class="btn">2</span><span class="btn">全部</span></span>
+    <span class="lbl" style="margin-left:6px">画质</span>
+    <span class="input sel" style="width:96px">均衡<i data-i="down"></i></span>
+    <span class="sep"></span>
+    <span class="seg"><span class="btn on"><i data-i="fit"></i>适应</span><span class="btn">1:1</span></span>
+    <span class="btn ico"><i data-i="full"></i></span>
+    <span class="sep"></span>
+    <span class="btn"><i data-i="keyboard"></i>Ctrl+Alt+Del</span>
+    <span class="btn ico"><i data-i="win"></i></span>
+    <span class="btn ico"><i data-i="tab"></i></span>
+    <span class="sep"></span>
+    <span class="btn ico"><i data-i="clipboard"></i></span>
+    <span class="btn"><i data-i="folder"></i>文件</span>
+    <span class="btn on"><i data-i="chat"></i>聊天</span>
+    <span class="btn ico"><i data-i="camera"></i></span>
+    <span class="btn danger"><i data-i="record"></i>00:04:12</span>
+    <span class="grow"></span>
+    <span class="btn"><i data-i="power"></i><i data-i="down"></i></span>
+    <span class="btn danger fill"><i data-i="x"></i>断开</span>
+  </div>
+  <div class="main">
+    <div class="view">
+      <span class="notice"><i data-i="mouse"></i>你正在操作 · 现场动鼠标时自动暂停</span>
+      <div class="rs mid" data-v="pcb" data-task="1" data-okn="8,214" data-ngn="6" data-cursor="47,41"></div>
+    </div>
+    <div class="panel">
+      <div class="ptabs"><span class="on">聊天</span><span>会话信息</span><span>快捷键</span></div>
+      <div class="chat">
+        <span class="sys">14:03 张工 取得操作权</span>
+        <div class="msg"><span class="who">王师傅（现场） 14:04</span><span class="txt">3 号相机这两批曝光偏暗，焊点偶尔误判，帮看下。</span></div>
+        <div class="msg me"><span class="who">我 14:05</span><span class="txt">收到，我把曝光从 3000 调到 3800，先跑 50 片看看。</span></div>
+        <span class="sys">14:06 李工 加入观看</span>
+        <div class="msg"><span class="who">李工 14:07</span><span class="txt">顺便把方案备份一份到 D:\recipe\backup。</span></div>
+        <div class="msg me"><span class="who">我 14:07</span><span class="txt">好的，已上传 A12.json。</span></div>
+      </div>
+      <div class="viewers">
+        <h4><span>在线 3 人</span><span>操作权</span></h4>
+        <div class="vrow"><span class="ava">张</span>张工（我）<span class="r tag blue">操作中</span></div>
+        <div class="vrow"><span class="ava g">李</span>李工 · 办公室-03<span class="r btn sm">交接</span></div>
+        <div class="vrow"><span class="ava o">王</span>王师傅 · 现场<span class="r tag">本机</span></div>
+      </div>
+      <div class="compose"><span class="input ph">输入消息，Enter 发送</span><span class="btn pri ico"><i data-i="send"></i></span></div>
+    </div>
+  </div>
+  <div class="status">
+    <span class="it"><span class="dot"></span><b>已连接</b></span>
+    <span class="it"><i data-i="link"></i>局域网直连 · TLS 1.3</span>
+    <span class="it"><i data-i="monitor"></i><b>1920×1080</b> · H.264 硬编 · <b>30 fps</b></span>
+    <span class="it">延迟 <b style="color:#389E0D">18 ms</b></span>
+    <span class="it"><i data-i="download"></i><b>6.2 Mbps</b></span>
+    <span class="rec"><span class="dot"></span>录制中 00:04:12</span>
+    <span class="grow"></span>
+    <span class="it"><i data-i="shieldOk"></i>权限：观看 · 操作 · 剪贴板 · 文件</span>
+  </div>
+</div>
+<script src="ui.js"></script>
+</body></html>

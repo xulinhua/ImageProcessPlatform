@@ -131,6 +131,7 @@ Vision::AlgToolOut Vision::HalCalibPlate::run(const Vision::AlgToolIn& in)
         return out;
     }
     try {
+        // 按行列和间距在图片目录里生成 Halcon 标定板描述文件，初值用第一张图的尺寸
         const std::string descr = pathJoin(dir, "caltab.descr");
         const std::string ps = pathJoin(dir, "caltab.ps");
         HalconCpp::HMisc::GenCaltab(cols, rows, spacingMm / 1000.0, 0.5, descr.c_str(), ps.c_str());
@@ -152,6 +153,7 @@ Vision::AlgToolOut Vision::HalCalibPlate::run(const Vision::AlgToolIn& in)
         HalconCpp::HCalibData data("calibration_object", 1, 1);
         data.SetCalibDataCalibObject(0, descr.c_str());
         data.SetCalibDataCamParam(HalconCpp::HTuple(0), "area_scan_division", HalconCpp::HCamPar(start));
+        // 逐张找板，找不到的图忽略，姿态序号只给找到的图递增
         int used = 0;
         for (size_t i = 0; i < files.size(); ++i) {
             try {
@@ -166,6 +168,7 @@ Vision::AlgToolOut Vision::HalCalibPlate::run(const Vision::AlgToolIn& in)
             out.values.insert("count", used);
             return out;
         }
+        // 把 area_scan_division 参数折成 fx/fy/cx/cy；kappa 放进 k1，其余畸变项置 0，fy 取 fx
         const double rms = data.CalibrateCameras();
         const HalconCpp::HTuple cam = data.GetCalibData("camera", HalconCpp::HTuple(0), HalconCpp::HTuple("params"));
         const std::string text = tupleText(cam);

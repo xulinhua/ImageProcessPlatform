@@ -83,6 +83,7 @@ StationMgrDlg::StationMgrDlg(Session* session, Solution* solution, QWidget* pare
     setWindowTitle(T("通用视觉平台 - 工站管理"));
     resize(1080, 640);
 
+    // 左栏：工站列表与添加、删除（需编辑方案权限）
     m_list = new QListWidget(this);
     connect(m_list, SIGNAL(itemSelectionChanged()), this, SLOT(onSel()));
     connect(m_list, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(onOpen()));
@@ -107,6 +108,7 @@ StationMgrDlg::StationMgrDlg(Session* session, Solution* solution, QWidget* pare
     lb->addWidget(delBtn);
     left->addLayout(lb);
 
+    // 右栏：概要、绑定设备、通信通道单选、流程摘要
     QHBoxLayout* kv = new QHBoxLayout();
     kv->addWidget(kvCell(this, T("名称"), &m_name), 1);
     kv->addWidget(kvCell(this, T("工位编号"), &m_code), 1);
@@ -166,6 +168,7 @@ StationMgrDlg::StationMgrDlg(Session* session, Solution* solution, QWidget* pare
     actions->addWidget(jobBtn);
     actions->addStretch();
 
+    // 确定 = 关闭后再应用；应用 = 不关窗直接应用
     QDialogButtonBox* box = new QDialogButtonBox(
         QDialogButtonBox::Ok | QDialogButtonBox::Cancel | QDialogButtonBox::Apply, this);
     box->button(QDialogButtonBox::Ok)->setText(T("确定"));

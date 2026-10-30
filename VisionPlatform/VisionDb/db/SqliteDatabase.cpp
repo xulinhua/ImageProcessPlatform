@@ -161,6 +161,7 @@ bool SqliteDatabase::query(const std::string& sql, const std::vector<DbValue>& a
         sqlite3_finalize(stmt);
         return false;
     }
+    // 按列的存储类型取值；浮点等其余类型按文本读出
     const int cols = sqlite3_column_count(stmt);
     int rc;
     while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {

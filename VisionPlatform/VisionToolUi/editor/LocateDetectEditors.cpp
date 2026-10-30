@@ -30,6 +30,7 @@ static void setComboData(QComboBox* c, const QString& v)
     c->setCurrentIndex(i >= 0 ? i : 0);
 }
 
+// 模板定位参数页：匹配方式、分数、角度、个数、模型文件，另可记录示教位姿和删除模型
 class TmplEditor : public ToolEditorBase {
 public:
     explicit TmplEditor(QWidget* parent)
@@ -80,6 +81,7 @@ protected:
         if (!m_tool) {
             return;
         }
+        // 模型文件为空时按匹配方式给默认名：形状 model.shm，NCC model.ncm
         setComboData(m_method, qs(m_tool->params.value("method").toString()));
         m_score->setValue(m_tool->params.value("minScore").toDouble(0.5));
         m_angle->setValue(m_tool->params.value("angleRange").toDouble(15));
@@ -111,6 +113,7 @@ protected:
     }
 
 private:
+    // 切换匹配方式；模型文件还是默认名时跟着换扩展名
     void onMethodChanged()
     {
         if (m_block) {
@@ -125,6 +128,7 @@ private:
         }
         onEdited();
     }
+    // 把上次运行结果的 x/y/角度写成示教参考位姿
     void onTeach()
     {
         if (!m_tool) {
@@ -135,6 +139,7 @@ private:
         teachSet(&m_tool->params, TeachKey::RefA, runtimeGet(m_tool->runtime, RuntimeKey::LastA).toDouble());
         onEdited();
     }
+    // 删除工具数据目录下的模型文件并勾选强制重建；方案未保存过时不处理
     void onDeleteModel()
     {
         if (!m_tool || !m_sol || m_sol->filePath.empty()) {
@@ -164,11 +169,13 @@ private:
     QCheckBox* m_rebuild;
 };
 
+// 找线参数页
 class FindLineEditor : public ToolEditorBase {
 public:
     explicit FindLineEditor(QWidget* parent)
         : ToolEditorBase(parent)
     {
+        // 极性与选择下拉的数据为存盘值，显示文本可翻译
         m_pol = mkParamCombo(this);
         m_pol->addItem(T("亮 -> 暗"), QLatin1String("positive"));
         m_pol->addItem(T("暗 -> 亮"), QLatin1String("negative"));
@@ -234,11 +241,13 @@ protected:
     QSpinBox* m_high;
 };
 
+// 找圆参数页
 class FindCircleEditor : public ToolEditorBase {
 public:
     explicit FindCircleEditor(QWidget* parent)
         : ToolEditorBase(parent)
     {
+        // 半径单位为像素，阈值为灰度
         m_th = mkParamSpin(this, 0, 255);
         m_minR = mkParamSpin(this, 1, 5000);
         m_maxR = mkParamSpin(this, 1, 5000);
@@ -296,11 +305,13 @@ protected:
     QSpinBox* m_high;
 };
 
+// 卡尺参数页
 class CaliperEditor : public ToolEditorBase {
 public:
     explicit CaliperEditor(QWidget* parent)
         : ToolEditorBase(parent)
     {
+        // 模式：width 测宽，edge 找边
         m_mode = mkParamCombo(this);
         m_mode->addItem(T("测宽"), QLatin1String("width"));
         m_mode->addItem(T("找边"), QLatin1String("edge"));
@@ -361,11 +372,13 @@ protected:
     QSpinBox* m_count;
 };
 
+// 斑点检测参数页：阈值、形态学、筛选与 OK 判定
 class BlobEditor : public ToolEditorBase {
 public:
     explicit BlobEditor(QWidget* parent)
         : ToolEditorBase(parent)
     {
+        // 阈值方式：absolute 绝对、relative 相对、dynamic 动态
         m_mode = mkParamCombo(this);
         m_mode->addItem(T("绝对阈值"), QLatin1String("absolute"));
         m_mode->addItem(T("相对阈值"), QLatin1String("relative"));
@@ -382,6 +395,7 @@ public:
         m_maxA = mkParamSpin(this, 0, 100000000);
         m_minC = mkParamDSpin(this, 0, 1, 2, 0.01);
         m_maxC = mkParamDSpin(this, 0, 1, 2, 0.01);
+        // 判定项填 0 表示不判或不限
         m_okMinCnt = mkParamSpin(this, 0, 100000);
         m_okMaxCnt = mkParamSpin(this, 0, 100000);
         m_okMinArea = mkParamDSpin(this, 0, 1e12, 1, 1.0);
@@ -482,11 +496,13 @@ protected:
     QDoubleSpinBox* m_okMaxArea;
 };
 
+// 纹理检测参数页
 class TextureEditor : public ToolEditorBase {
 public:
     explicit TextureEditor(QWidget* parent)
         : ToolEditorBase(parent)
     {
+        // 背景估计方式：mean 均值、median 中值、closing 灰度闭运算
         m_bg = mkParamCombo(this);
         m_bg->addItem(T("均值背景"), QLatin1String("mean"));
         m_bg->addItem(T("中值背景"), QLatin1String("median"));

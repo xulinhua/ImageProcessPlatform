@@ -38,9 +38,10 @@ public:
     Vision::ToolOut execute(const Vision::ToolIn& in);
     /** @brief 克隆本实例（本 DLL 内 new） */
     ToolBase* clone() const;
+    /** @brief 本工具参数对象，供参数版本适配与 load 使用 */
     const ToolParaBase* toolParam() const;
 private:
-    ToolParaAcquire m_param;
+    ToolParaAcquire m_param; ///< 参数快照，ToolBase::adaptParam 时从 ToolParam 载入
 };
 
 }

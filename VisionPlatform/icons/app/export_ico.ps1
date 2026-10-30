@@ -1,9 +1,9 @@
-# Export app.png + multi-size app.ico from source PNG
+Ôªø# Export app.png + multi-size app.ico from source PNG
 $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.Drawing
 
 $src = 'C:\Users\70714\.cursor\projects\d-SVN\assets\vision-app-icon-v2.png'
-$outDir = 'd:\SVN\Õ®”√π§æﬂ∆ΩÃ®ø™∑¢\VisionPlatformTest\VisionPlatform\icons\app'
+$outDir = 'd:\SVN\ÈÄöÁî®Â∑•ÂÖ∑Âπ≥Âè∞ÂºÄÂèë\VisionPlatformTest\VisionPlatform\icons\app'
 $pngPath = Join-Path $outDir 'app.png'
 $icoPath = Join-Path $outDir 'app.ico'
 

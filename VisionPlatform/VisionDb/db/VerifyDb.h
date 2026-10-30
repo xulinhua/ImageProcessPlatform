@@ -30,6 +30,7 @@ struct VISION_DB_API VerifyStudy {
     std::string specHigh;  ///< 规格上限
     std::string startedAt; ///< 开始时间
 
+    /** @brief 全部字段为空 */
     VerifyStudy() {}
 };
 
@@ -48,6 +49,7 @@ struct VISION_DB_API VerifyTrial {
     std::string imagePath; ///< 图像路径
     int ok;              ///< 1 合格
 
+    /** @brief 编号与序号清零，ok 为 0 */
     VerifyTrial()
         : studyId(0)
         , sampleNo(0)
@@ -82,6 +84,7 @@ public:
     bool finish(const std::string& kind, int64_t studyId, const std::string& summary, std::string* error);
 
 private:
+    /** @brief 单例私有构造 */
     VerifyDb() {}
 };
 

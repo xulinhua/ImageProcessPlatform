@@ -7,6 +7,8 @@
  */
 
 #include "SharedFrames.h"
+#include "SharedRegion.h"
+#include "NamedEvent.h"
 
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
@@ -65,58 +67,13 @@ struct HeadPod {
     StationPod remote[SharedFrames::kMaxRemote];
 };
 
-// 拷进定长字符数组，保证有结尾 0
-void copyText(char* dst, int cap, const std::string& src)
-{
-    if (!dst || cap <= 0) {
-        return;
-    }
-    const int n = static_cast<int>(src.size());
-    const int keep = n < cap - 1 ? n : cap - 1;
-    if (keep > 0) {
-        std::memcpy(dst, src.data(), static_cast<size_t>(keep));
-    }
-    dst[keep] = 0;
 }
 
-// 服务和登录用户都能开。Global 失败时退回 Local，只在同一会话里可见
-void* createMapping(uint32_t bytes, bool* global)
-{
-    SECURITY_DESCRIPTOR sd;
-    InitializeSecurityDescriptor(&sd, SECURITY_DESCRIPTOR_REVISION);
-    SetSecurityDescriptorDacl(&sd, TRUE, NULL, FALSE);
-    SECURITY_ATTRIBUTES sa;
-    sa.nLength = sizeof(sa);
-    sa.lpSecurityDescriptor = &sd;
-    sa.bInheritHandle = FALSE;
-    void* handle = CreateFileMappingW(INVALID_HANDLE_VALUE, &sa, PAGE_READWRITE, 0, bytes, L"Global\\Vision.Ipc");
-    if (handle) {
-        *global = true;
-        return handle;
-    }
-    handle = CreateFileMappingW(INVALID_HANDLE_VALUE, &sa, PAGE_READWRITE, 0, bytes, L"Local\\Vision.Ipc");
-    *global = false;
-    return handle;
-}
-
-void* createEvent(bool global, const wchar_t* globalName, const wchar_t* localName)
-{
-    SECURITY_DESCRIPTOR sd;
-    InitializeSecurityDescriptor(&sd, SECURITY_DESCRIPTOR_REVISION);
-    SetSecurityDescriptorDacl(&sd, TRUE, NULL, FALSE);
-    SECURITY_ATTRIBUTES sa;
-    sa.nLength = sizeof(sa);
-    sa.lpSecurityDescriptor = &sd;
-    sa.bInheritHandle = FALSE;
-    return CreateEventW(&sa, FALSE, FALSE, global ? globalName : localName);
-}
-
-uint64_t nowMs()
-{
-    return GetTickCount64();
-}
-
-}
+struct SharedFrames::Transport {
+    Ipc::SharedRegion region;
+    Ipc::NamedEvent command;
+    Ipc::NamedEvent frame;
+};
 
 struct SharedFrames::Head {
     HeadPod pod;
@@ -135,32 +92,51 @@ SharedFrames& SharedFrames::instance()
 SharedFrames::SharedFrames()
     : m_view(0)
     , m_head(0)
-    , m_mapping(0)
-    , m_command(0)
-    , m_frame(0)
+    , m_transport(0)
     , m_slotBytes(0)
 {
 }
 
 SharedFrames::~SharedFrames()
 {
-    if (m_view) {
-        UnmapViewOfFile(m_view);
-        m_view = 0;
-    }
-    if (m_mapping) {
-        CloseHandle(m_mapping);
-        m_mapping = 0;
-    }
-    if (m_command) {
-        CloseHandle(m_command);
-        m_command = 0;
-    }
-    if (m_frame) {
-        CloseHandle(m_frame);
-        m_frame = 0;
-    }
+    delete m_transport;
+    m_transport = 0;
+    m_view = 0;
     m_head = 0;
+}
+
+void SharedFrames::copyText(char* dst, int cap, const std::string& src) const
+{
+    if (!dst || cap <= 0) {
+        return;
+    }
+    const int n = static_cast<int>(src.size());
+    const int keep = n < cap - 1 ? n : cap - 1;
+    if (keep > 0) {
+        std::memcpy(dst, src.data(), static_cast<size_t>(keep));
+    }
+    dst[keep] = 0;
+}
+
+uint64_t SharedFrames::nowMs() const
+{
+    return GetTickCount64();
+}
+
+uint32_t SharedFrames::layoutBytes(uint32_t slotBytes) const
+{
+    const uint64_t slots = static_cast<uint64_t>(kMaxLocal * kLocalCopies + kMaxRemote * kRemoteCopies);
+    const uint64_t bytes = static_cast<uint64_t>(sizeof(HeadPod)) + slots * slotBytes;
+    return bytes > 0xFFFFFFFFull ? 0 : static_cast<uint32_t>(bytes);
+}
+
+bool SharedFrames::failMap(Transport* transport, std::string* err, const char* reason) const
+{
+    delete transport;
+    if (err && reason) {
+        *err = reason;
+    }
+    return false;
 }
 
 bool SharedFrames::map(uint32_t slotBytes, std::string* err)
@@ -171,36 +147,61 @@ bool SharedFrames::map(uint32_t slotBytes, std::string* err)
     if (slotBytes < kMinSlot) {
         slotBytes = kMinSlot;
     }
-    const uint32_t slots = static_cast<uint32_t>(kMaxLocal * kLocalCopies + kMaxRemote * kRemoteCopies);
-    const uint32_t bytes = static_cast<uint32_t>(sizeof(HeadPod)) + slots * slotBytes;
-    bool global = false;
-    m_mapping = createMapping(bytes, &global);
-    if (!m_mapping) {
-        if (err) {
-            *err = "创建共享内存失败";
-        }
-        return false;
+    const uint32_t want = layoutBytes(slotBytes);
+    if (want == 0) {
+        return failMap(0, err, "画面槽过大");
     }
-    m_view = MapViewOfFile(m_mapping, FILE_MAP_ALL_ACCESS, 0, 0, bytes);
-    if (!m_view) {
-        CloseHandle(m_mapping);
-        m_mapping = 0;
-        if (err) {
-            *err = "映射共享内存失败";
+    Transport* t = new Transport();
+    // 已有对象比本进程要的小时整块映射会失败；任何进程建的都不小于最小布局，按它再开一次读头部
+    std::string wantErr;
+    if (!t->region.open(L"Vision.Ipc", want, &wantErr)) {
+        if (!t->region.open(L"Vision.Ipc", layoutBytes(kMinSlot), err)) {
+            return failMap(t, err, 0);
         }
-        return false;
+        if (t->region.created()) {
+            return failMap(t, err, "共享内存在打开过程中被释放，请重试");
+        }
     }
-    m_head = reinterpret_cast<Head*>(m_view);
+    Head* head = reinterpret_cast<Head*>(t->region.data());
+    if (t->region.created() || head->pod.magic != kMagic || head->pod.version != kVersion) {
+        // 新建或头部无效：按本次映射能容下的槽大小写头部
+        if (layoutBytes(slotBytes) > t->region.size()) {
+            slotBytes = kMinSlot;
+        }
+        std::memset(t->region.data(), 0, t->region.size());
+        head->pod.magic = kMagic;
+        head->pod.version = kVersion;
+        head->pod.slotBytes = slotBytes;
+    } else {
+        // 布局以建立者写入头部的槽大小为准，本进程传入的值只在新建时生效
+        const uint32_t recorded = head->pod.slotBytes;
+        const uint32_t need = recorded < kMinSlot ? 0 : layoutBytes(recorded);
+        if (need == 0) {
+            return failMap(t, err, "共享内存头部记录的槽大小无效");
+        }
+        if (need > t->region.size()) {
+            t->region.close();
+            if (!t->region.open(L"Vision.Ipc", need, err)) {
+                return failMap(t, err, 0);
+            }
+            head = reinterpret_cast<Head*>(t->region.data());
+            if (t->region.created() || head->pod.magic != kMagic || head->pod.version != kVersion
+                || head->pod.slotBytes != recorded) {
+                return failMap(t, err, "共享内存在打开过程中被重建，请重试");
+            }
+        }
+        slotBytes = recorded;
+    }
+    if (!t->command.open(t->region.global(), L"Vision.Command")) {
+        return failMap(t, err, "打开命令事件失败");
+    }
+    if (!t->frame.open(t->region.global(), L"Vision.FrameReady")) {
+        return failMap(t, err, "打开新帧事件失败");
+    }
+    m_transport = t;
+    m_view = t->region.data();
+    m_head = head;
     m_slotBytes = slotBytes;
-    const bool created = GetLastError() != ERROR_ALREADY_EXISTS;
-    if (created || m_head->pod.magic != kMagic || m_head->pod.version != kVersion) {
-        std::memset(m_view, 0, bytes);
-        m_head->pod.magic = kMagic;
-        m_head->pod.version = kVersion;
-        m_head->pod.slotBytes = slotBytes;
-    }
-    m_command = createEvent(global, L"Global\\Vision.Command", L"Local\\Vision.Command");
-    m_frame = createEvent(global, L"Global\\Vision.FrameReady", L"Local\\Vision.FrameReady");
     return true;
 }
 
@@ -220,18 +221,12 @@ void SharedFrames::writeCommand(IpcCommand cmd, uint32_t arg)
     if (cmd == IpcCmdSetSubscribe) {
         m_head->pod.subscribe = arg ? 1u : 0u;
     }
-    if (m_command) {
-        SetEvent(m_command);
-    }
+    m_transport->command.signal();
 }
 
 IpcCommand SharedFrames::waitCommand(int timeoutMs, uint32_t* arg, uint32_t* seq)
 {
-    if (!m_command) {
-        return IpcCmdNone;
-    }
-    const DWORD w = WaitForSingleObject(m_command, timeoutMs < 0 ? INFINITE : static_cast<DWORD>(timeoutMs));
-    if (w != WAIT_OBJECT_0 || !m_head) {
+    if (!m_transport || !m_transport->command.wait(timeoutMs) || !m_head) {
         return IpcCmdNone;
     }
     if (arg) {
@@ -507,17 +502,14 @@ std::string SharedFrames::remoteStationId(int index) const
 
 void SharedFrames::signalFrame()
 {
-    if (m_frame) {
-        SetEvent(m_frame);
+    if (m_transport) {
+        m_transport->frame.signal();
     }
 }
 
 bool SharedFrames::waitFrame(int timeoutMs)
 {
-    if (!m_frame) {
-        return false;
-    }
-    return WaitForSingleObject(m_frame, timeoutMs < 0 ? INFINITE : static_cast<DWORD>(timeoutMs)) == WAIT_OBJECT_0;
+    return m_transport && m_transport->frame.wait(timeoutMs);
 }
 
 }

@@ -168,6 +168,7 @@ Vision::AlgToolOut Vision::CvCalibPlate::run(const Vision::AlgToolIn& in)
     const int minImages = in.run.value("minImages").toInt(3);
     const bool pointsOnly = in.run.value("pointsOnly").toInt(0) != 0;
     const std::string dir = in.run.value("imageDir").toString();
+    // 板规格和离线图片目录必须先在标定管理里填好
     if (rows < 2 || cols < 2 || spacing <= 0) {
         out.message = U(L"\u8bf7\u5148\u5728\u6807\u5b9a\u7ba1\u7406\u91cc\u586b\u597d\u884c\u5217\u548c\u95f4\u8ddd");
         return out;
@@ -177,6 +178,7 @@ Vision::AlgToolOut Vision::CvCalibPlate::run(const Vision::AlgToolIn& in)
         out.message = U(L"\u79bb\u7ebf\u76ee\u5f55\u91cc\u6ca1\u6709\u56fe\u7247");
         return out;
     }
+    // 逐张找板，找不到的图跳过；pointsOnly 时第一张找到就返回点对
     std::vector<std::vector<cv::Point3f> > objAll;
     std::vector<std::vector<cv::Point2f> > imgAll;
     cv::Size imageSize;
@@ -214,6 +216,7 @@ Vision::AlgToolOut Vision::CvCalibPlate::run(const Vision::AlgToolIn& in)
         out.values.insert("count", static_cast<int>(imgAll.size()));
         return out;
     }
+    // 标定内参，再把角点重投影求最大残差（像素）
     cv::Mat K, dist;
     std::vector<cv::Mat> rvecs, tvecs;
     const double rms = cv::calibrateCamera(objAll, imgAll, imageSize, K, dist, rvecs, tvecs);

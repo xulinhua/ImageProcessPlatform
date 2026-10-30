@@ -135,11 +135,13 @@ QTreeWidgetItem* PermDlg::addCheckRow(QTreeWidgetItem* parent, const QString& ti
     return row;
 }
 
+// 重建权限树；useDefaults 为 true 时按出厂默认勾选并按工具共享模式列出
 void PermDlg::loadTree(bool useDefaults)
 {
     m_guard = true;
     m_resetNodes = useDefaults;
     m_tree->clear();
+    // 功能权限：每页一个父节点，子节点为该页权限；列 1~3 对应三种角色
     for (int p = 0; p < permPageCount(); ++p) {
         const PermPageDesc page = permPageAt(p);
         QTreeWidgetItem* parent = new QTreeWidgetItem(m_tree);
@@ -165,6 +167,7 @@ void PermDlg::loadTree(bool useDefaults)
         parent->setExpanded(true);
     }
 
+    // 参数权限：共享模式按工具种类列字段；实例模式按工站/流程/工具实例列字段
     const bool instance = !useDefaults && m_session->settings().permScope == PermScopeInstance;
     QTreeWidgetItem* tools = new QTreeWidgetItem(m_tree);
     tools->setText(0, instance ? T("流程实例") : T("流程工具"));
@@ -240,6 +243,7 @@ void PermDlg::loadTree(bool useDefaults)
             }
         }
     }
+    // 有子节点时由子节点推出根勾选，否则直接读根节点授权
     if (tools->childCount() > 0) {
         for (int c = 1; c <= 3; ++c) {
             refreshColumnUp(tools->child(0), c);

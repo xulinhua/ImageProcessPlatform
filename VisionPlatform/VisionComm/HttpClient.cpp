@@ -134,6 +134,7 @@ bool HttpClient::exchange(const std::string& method, const std::string& path, co
         setCommErr(err, "通道未打开");
         return false;
     }
+    // 每次请求单独建连接；路径为空时用通道参数里的默认路径
     const std::string usePath = path.empty() ? m_path : path;
     const std::wstring whost = utf8ToWide(m_host);
     const std::wstring wpath = utf8ToWide(usePath.empty() ? std::string("/") : usePath);
@@ -170,6 +171,7 @@ bool HttpClient::exchange(const std::string& method, const std::string& path, co
         setCommErr(err, "HTTP 请求失败");
         return false;
     }
+    // 只要收到应答即返回 true，HTTP 状态码由调用方判断
     DWORD statusCode = 0;
     DWORD statusSize = sizeof(statusCode);
     WinHttpQueryHeaders(req, WINHTTP_QUERY_STATUS_CODE | WINHTTP_QUERY_FLAG_NUMBER,

@@ -15,79 +15,85 @@
 
 namespace Vision {
 
-/** @brief 参数键。步骤字段写在 step_序号_ 后面 */
+/**
+ * @class BlobKey
+ * @brief Blob 参数键与取值字面量。步骤字段写在 step_序号_ 后面，旧版字段不带前缀
+ */
 struct BlobKey {
-    static constexpr const char* threshMode = "threshMode";
-    static constexpr const char* absMin = "absMin";
-    static constexpr const char* absMax = "absMax";
-    static constexpr const char* relOffset = "relOffset";
-    static constexpr const char* dynOffset = "dynOffset";
-    static constexpr const char* dynKernel = "dynKernel";
-    static constexpr const char* dark = "dark";
-    static constexpr const char* openR = "openR";
-    static constexpr const char* closeR = "closeR";
-    static constexpr const char* minArea = "minArea";
-    static constexpr const char* maxArea = "maxArea";
-    static constexpr const char* minCirc = "minCirc";
-    static constexpr const char* maxCirc = "maxCirc";
-    static constexpr const char* okMinCount = "okMinCount";
-    static constexpr const char* okMaxCount = "okMaxCount";
-    static constexpr const char* okMinArea = "okMinArea";
-    static constexpr const char* okMaxArea = "okMaxArea";
-    static constexpr const char* absolute = "absolute";
-    static constexpr const char* relative = "relative";
-    static constexpr const char* dynamic = "dynamic";
+    static constexpr const char* threshMode = "threshMode";   ///< 阈值方式：absolute / relative / dynamic
+    static constexpr const char* absMin = "absMin";           ///< 绝对阈值下限 0~255；暗目标时作上限，取 [0, absMin]
+    static constexpr const char* absMax = "absMax";           ///< 绝对阈值上限 0~255；暗目标时不用
+    static constexpr const char* relOffset = "relOffset";     ///< 相对阈值：相对区域平均灰度的偏移量
+    static constexpr const char* dynOffset = "dynOffset";     ///< 动态阈值：相对均值背景的偏移量
+    static constexpr const char* dynKernel = "dynKernel";     ///< 动态阈值的均值核尺寸（像素），至少 3，偶数加 1
+    static constexpr const char* dark = "dark";               ///< 是否找比背景暗的目标
+    static constexpr const char* openR = "openR";             ///< 旧版：开运算半径（像素），大于 0.4 才生效
+    static constexpr const char* closeR = "closeR";           ///< 旧版：闭运算半径（像素），大于 0.4 才生效
+    static constexpr const char* minArea = "minArea";         ///< 旧版：面积筛选下限（像素）
+    static constexpr const char* maxArea = "maxArea";         ///< 旧版：面积筛选上限（像素），0 不限
+    static constexpr const char* minCirc = "minCirc";         ///< 旧版：圆度筛选下限 0~1
+    static constexpr const char* maxCirc = "maxCirc";         ///< 旧版：圆度筛选上限 0~1
+    static constexpr const char* okMinCount = "okMinCount";   ///< 判定：Blob 数少于它 NG，0 不判
+    static constexpr const char* okMaxCount = "okMaxCount";   ///< 判定：Blob 数多于它 NG，0 不判
+    static constexpr const char* okMinArea = "okMinArea";     ///< 判定：总面积（像素）小于它 NG，0 不判
+    static constexpr const char* okMaxArea = "okMaxArea";     ///< 判定：总面积（像素）大于它 NG，0 不判
+    static constexpr const char* absolute = "absolute";       ///< threshMode 取值：固定灰度区间
+    static constexpr const char* relative = "relative";       ///< threshMode 取值：区域平均灰度加减 relOffset
+    static constexpr const char* dynamic = "dynamic";         ///< threshMode 取值：与均值背景比较的动态阈值
 
-    static constexpr const char* stepCount = "stepCount";
-    static constexpr const char* type = "type";
-    static constexpr const char* morphOp = "morphOp";
-    static constexpr const char* radius = "radius";
-    static constexpr const char* feature = "feature";
-    static constexpr const char* selMin = "min";
-    static constexpr const char* selMax = "max";
-    static constexpr const char* roiIndex = "roiIndex";
+    static constexpr const char* stepCount = "stepCount";     ///< 步骤数 1~16；为 0 或缺失时按旧版字段拼步骤
+    static constexpr const char* type = "type";               ///< 步骤类型：threshold / morph / select
+    static constexpr const char* morphOp = "morphOp";         ///< 形态学算子：open / close / erode / dilate
+    static constexpr const char* radius = "radius";           ///< 形态学圆形结构元半径（像素），不大于 0.4 跳过
+    static constexpr const char* feature = "feature";         ///< 筛选特征：area / circularity
+    static constexpr const char* selMin = "min";              ///< 筛选下限（面积单位像素，圆度 0~1）
+    static constexpr const char* selMax = "max";              ///< 筛选上限，0 不限
+    static constexpr const char* roiIndex = "roiIndex";       ///< 步骤作用的 ROI 序号，-1 作用于全部 ROI
 
-    static constexpr const char* stepThresh = "threshold";
-    static constexpr const char* stepMorph  = "morph";
-    static constexpr const char* stepSelect = "select";
+    static constexpr const char* stepThresh = "threshold";    ///< type 取值：阈值分割，多个阈值步骤结果取并集
+    static constexpr const char* stepMorph  = "morph";        ///< type 取值：形态学
+    static constexpr const char* stepSelect = "select";       ///< type 取值：按特征筛选
 
-    static constexpr const char* morphOpen   = "open";
-    static constexpr const char* morphClose  = "close";
-    static constexpr const char* morphErode  = "erode";
-    static constexpr const char* morphDilate = "dilate";
+    static constexpr const char* morphOpen   = "open";        ///< morphOp 取值：开运算
+    static constexpr const char* morphClose  = "close";       ///< morphOp 取值：闭运算
+    static constexpr const char* morphErode  = "erode";       ///< morphOp 取值：腐蚀
+    static constexpr const char* morphDilate = "dilate";      ///< morphOp 取值：膨胀
 
-    static constexpr const char* featArea = "area";
-    static constexpr const char* featCirc = "circularity";
+    static constexpr const char* featArea = "area";           ///< feature 取值：面积
+    static constexpr const char* featCirc = "circularity";    ///< feature 取值：圆度
 
-    static constexpr const char* roi = "roi";
+    static constexpr const char* roi = "roi";                 ///< 检测 ROI 的槽名
 };
 
 /**
  * @class ToolParaBlob
- * @brief Blob 参数
+ * @brief Blob 参数：阈值、形态学、筛选步骤列表加 OK 判定条件
+ * @note 算法插件 HalBlob 也用它解析 ParamMap
  */
 class ToolParaBlob : public ToolParaBase {
 public:
+    /** @brief 示教参数，Blob 没有 */
     struct Teach {
     };
 
     /** @brief 一步。类型是阈值、形态学或筛选 */
     struct Step {
-        std::string type;
-        std::string threshMode;
-        int absMin;
-        int absMax;
-        double relOffset;
-        double dynOffset;
-        int dynKernel;
-        bool dark;
-        std::string morphOp;
-        double radius;
-        std::string feature;
-        double minVal;
-        double maxVal;
-        int roiIndex;
+        std::string type;           ///< 步骤类型，BlobKey::stepThresh / stepMorph / stepSelect
+        std::string threshMode;     ///< 阈值方式，BlobKey::absolute / relative / dynamic
+        int absMin;                 ///< 绝对阈值下限 0~255；暗目标时作上限
+        int absMax;                 ///< 绝对阈值上限 0~255
+        double relOffset;           ///< 相对阈值偏移（灰度）
+        double dynOffset;           ///< 动态阈值偏移（灰度）
+        int dynKernel;              ///< 动态阈值均值核尺寸（像素）
+        bool dark;                  ///< 是否找暗目标
+        std::string morphOp;        ///< 形态学算子，BlobKey::morphOpen 等
+        double radius;              ///< 形态学半径（像素），不大于 0.4 跳过
+        std::string feature;        ///< 筛选特征，BlobKey::featArea / featCirc
+        double minVal;              ///< 筛选下限
+        double maxVal;              ///< 筛选上限，0 不限
+        int roiIndex;               ///< 作用的 ROI 序号，-1 全部
 
+        /** @brief 缺省为绝对阈值 [80,255] */
         Step()
             : type(BlobKey::stepThresh)
             , threshMode(BlobKey::absolute)
@@ -106,14 +112,16 @@ public:
         {}
     };
 
+    /** @brief 运行参数 */
     struct Run {
-        int stepCount;
-        std::vector<Step> steps;
-        int okMinCount;
-        int okMaxCount;
-        double okMinArea;
-        double okMaxArea;
+        int stepCount;              ///< 步骤数，等于 steps.size()
+        std::vector<Step> steps;    ///< 步骤列表；阈值步骤先合并，再按顺序做形态学与筛选
+        int okMinCount;             ///< Blob 数少于它 NG，0 不判
+        int okMaxCount;             ///< Blob 数多于它 NG，0 不判
+        double okMinArea;           ///< 总面积（像素）小于它 NG，0 不判
+        double okMaxArea;           ///< 总面积（像素）大于它 NG，0 不判
 
+        /** @brief 缺省一个阈值步骤、不判定 */
         Run()
             : stepCount(1)
             , okMinCount(0)
@@ -125,9 +133,10 @@ public:
         }
     };
 
-    Teach teach;
-    Run run;
+    Teach teach; ///< 示教参数，为空
+    Run run;     ///< 运行参数
 
+    /************************************************** 读取 **************************************************/
     /** @brief 从 ToolParam 读步骤。没有步骤时按旧字段拼 */
     void load(const ToolParam& src)
     {
@@ -151,6 +160,8 @@ public:
         judge = src.judge;
     }
 
+    /************************************************** 归一化 **************************************************/
+    /** @brief 步骤类型规整，未知按阈值 */
     static std::string normalizeType(const std::string& raw)
     {
         if (raw == BlobKey::stepMorph)  return BlobKey::stepMorph;
@@ -158,6 +169,7 @@ public:
         return BlobKey::stepThresh;
     }
 
+    /** @brief 阈值方式规整，未知按绝对阈值 */
     static std::string normalizeThreshMode(const std::string& raw)
     {
         if (raw == BlobKey::relative) return BlobKey::relative;
@@ -165,6 +177,7 @@ public:
         return BlobKey::absolute;
     }
 
+    /** @brief 形态学算子规整，未知按开运算 */
     static std::string normalizeMorphOp(const std::string& raw)
     {
         if (raw == BlobKey::morphClose)  return BlobKey::morphClose;
@@ -173,6 +186,7 @@ public:
         return BlobKey::morphOpen;
     }
 
+    /** @brief 筛选特征规整，未知按面积 */
     static std::string normalizeFeature(const std::string& raw)
     {
         if (raw == BlobKey::featCirc) return BlobKey::featCirc;
@@ -180,11 +194,14 @@ public:
     }
 
 private:
+    /************************************************** 读步骤 **************************************************/
+    /** @brief 步骤字段键，形如 step_0_type */
     static std::string stepKey(int index, const char* suffix)
     {
         return std::string("step_") + std::to_string(static_cast<long long>(index)) + "_" + suffix;
     }
 
+    /** @brief 读第 index 步，缺的字段取 Step 缺省值 */
     static Step readStep(const ParamMap& m, int index)
     {
         Step st;
@@ -206,6 +223,7 @@ private:
         return st;
     }
 
+    /** @brief 旧版平铺字段转成步骤：阈值、开、闭、面积筛选、圆度筛选 */
     static void readLegacy(const ParamMap& m, std::vector<Step>* out)
     {
         Step th;

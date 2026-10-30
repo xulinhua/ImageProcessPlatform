@@ -47,9 +47,13 @@ struct PortSlot {
     PortDir dir;       ///< 入或出
     PortData data;     ///< 数据类型
     std::string name;  ///< 口名；空表示该类型的缺省口
+    /** @brief 缺省图像输出口 */
     PortSlot() : dir(PortDir::Out), data(PortData::Image) {}
+    /** @brief 指定方向和类型的缺省口 */
     PortSlot(PortDir d, PortData t) : dir(d), data(t) {}
+    /** @brief 方向、类型、口名都相同 */
     bool operator==(const PortSlot& o) const { return dir == o.dir && data == o.data && name == o.name; }
+    /** @brief 任一字段不同 */
     bool operator!=(const PortSlot& o) const { return !(*this == o); }
 };
 

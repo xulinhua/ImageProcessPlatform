@@ -25,10 +25,11 @@ public:
     };
     /** @brief 运行参数 */
     struct Run {
-        std::string sourceMode;     ///< sourceMode
-        std::string path;           ///< path
-        std::string deviceStatus;   ///< deviceStatus
-        std::string images;         ///< images
+        std::string sourceMode;     ///< 取图来源："file" 单文件，"folder" 文件夹；其余按绑定设备状态走
+        std::string path;           ///< 单文件路径或文件夹路径（file / folder 模式用）
+        std::string deviceStatus;   ///< 绑定设备状态，Job 执行前写入：missing / not_acquire / not_camera / no_sdk / image 等
+        std::string images;         ///< 图像模块记录的路径，换行分隔，Job 执行前写入；按帧轮流取
+        /** @brief 全部置空 */
         Run()
             : sourceMode("")
             , path("")

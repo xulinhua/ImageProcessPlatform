@@ -26,20 +26,24 @@ namespace Vision {
 
 namespace {
 
+// 第 index 步的参数键，形如 step_0_op
 std::string stepKey(int index, const char* suffix)
 {
     return std::string("step_") + std::to_string(static_cast<long long>(index)) + "_" + suffix;
 }
 
+// 一步的参数，按值类型分表，键不含 step_N_ 前缀
 struct StepRow {
-    std::map<std::string, std::string> text;
-    std::map<std::string, int> ints;
-    std::map<std::string, double> nums;
-    std::map<std::string, bool> flags;
+    std::map<std::string, std::string> text;    ///< 文本参数
+    std::map<std::string, int> ints;            ///< 整数参数
+    std::map<std::string, double> nums;         ///< 浮点参数
+    std::map<std::string, bool> flags;          ///< 开关参数
 };
 
+// 分步参数页：preprocess.filter 编辑滤波步骤，其余工具编辑斑点步骤并带 OK 判定
 class StepEditor : public ToolEditorBase {
 public:
+    // 按工具名决定建哪一套表单；两套共用步骤列表和绑定区域
     StepEditor(const std::string& toolName, QWidget* parent)
         : ToolEditorBase(parent)
         , m_filter(toolName == "preprocess.filter")
@@ -120,6 +124,7 @@ public:
             lay->addLayout(judge);
         }
 
+        // 切行先存表单到旧行再载新行；删除时至少保留一步
         connect(m_list, &QListWidget::currentRowChanged, this, [this](int row) {
             if (m_block || row < 0 || row == m_row) {
                 return;
@@ -150,6 +155,7 @@ public:
     }
 
 protected:
+    // 按 stepCount 读步骤，个数限制在 1~16
     void loadFromTool()
     {
         m_steps.clear();
@@ -170,6 +176,7 @@ protected:
         refillList(0);
     }
 
+    // 写全部步骤，并删掉下标超出当前步数的旧 step_ 键
     void saveToTool()
     {
         if (!m_tool) {
@@ -204,6 +211,7 @@ protected:
     }
 
 private:
+    // 各下拉的候选值，显示文本与存盘值相同；调用处传入的个数须与数组长度一致
     static const char** filterOps()
     {
         static const char* v[] = {
@@ -239,6 +247,7 @@ private:
         return v;
     }
 
+    // 建表单控件并接到 onEdited
     QComboBox* addCombo(QFormLayout* form, const char* title, const char** items, int count)
     {
         QComboBox* box = new QComboBox(this);
@@ -269,6 +278,7 @@ private:
         return box;
     }
 
+    // 新步骤的默认值；roiIndex 为 -1 表示不绑定区域
     StepRow defaultStep() const
     {
         StepRow st;
@@ -299,6 +309,7 @@ private:
         return st;
     }
 
+    // 读第 index 步，缺的键保留默认值
     StepRow readStep(int index) const
     {
         StepRow st = defaultStep();
@@ -354,6 +365,7 @@ private:
         }
     }
 
+    // 把一步的全部键写成 step_N_键
     void writeStep(int index, const StepRow& st)
     {
         const std::string p = stepKey(index, "");
@@ -371,6 +383,7 @@ private:
         }
     }
 
+    // 从 step_N_xxx 取出 N，格式不对返回 -1
     static int stepIndexOf(const std::string& key)
     {
         if (key.size() < 6 || key.compare(0, 5, "step_") != 0) {
@@ -383,6 +396,7 @@ private:
         return atoi(key.substr(5, cut - 5).c_str());
     }
 
+    // 重建列表并选中 select 行（越界时夹到首尾），表单跟着刷新
     void refillList(int select)
     {
         const bool prev = m_block;
@@ -403,6 +417,7 @@ private:
         m_block = prev;
     }
 
+    // 列表显示名：滤波用算子名，斑点用步骤类型
     std::string stepTitle(const StepRow& st) const
     {
         if (m_filter) {
@@ -411,6 +426,7 @@ private:
         return st.text.count("type") ? st.text.find("type")->second : std::string();
     }
 
+    // 表单写回当前行；本套表单没有的控件为空，跳过
     void pullForm()
     {
         if (m_row < 0 || m_row >= static_cast<int>(m_steps.size())) {
@@ -440,6 +456,7 @@ private:
         if (m_dark) st.flags["dark"] = m_dark->isChecked();
     }
 
+    // 当前行填进表单
     void pushForm()
     {
         if (m_row < 0 || m_row >= static_cast<int>(m_steps.size())) {
@@ -469,6 +486,7 @@ private:
         if (m_dark) m_dark->setChecked(st.flags.count("dark") ? st.flags.find("dark")->second : false);
     }
 
+    // 控件与 StepRow 互取，控件为空时不动
     static void takeCombo(QComboBox* box, StepRow* st, const char* key)
     {
         if (box) st->text[key] = ss(box->currentData().toString());
@@ -505,9 +523,9 @@ private:
         if (box) box->setValue(v);
     }
 
-    bool m_filter;
-    int m_row;
-    std::vector<StepRow> m_steps;
+    bool m_filter;                  ///< true 为滤波步骤，false 为斑点步骤
+    int m_row;                      ///< 表单当前对应的行，-1 为无
+    std::vector<StepRow> m_steps;   ///< 编辑中的步骤，保存时整体写回
     QListWidget* m_list;
     QComboBox* m_op;
     QComboBox* m_type;
@@ -538,6 +556,7 @@ private:
 
 }
 
+// 分步滤波或分步斑点参数页
 ToolEditorBase* createStepEditor(const std::string& toolName, QWidget* parent)
 {
     return new StepEditor(toolName, parent);

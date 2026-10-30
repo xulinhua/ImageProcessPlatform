@@ -103,6 +103,7 @@ Vision::ToolOut Vision::AcquireTool::execute(const Vision::ToolIn& in)
         const int64_t fid = static_cast<int64_t>(runtime.value("frameId").toDouble(1));
         const std::string mode = in.param.run.value("sourceMode").toString();
         std::string err;
+        // 单文件模式：每次读同一路径
         if (mode == "file") {
             const HsCommData::HsImage fb = Vision::FileGrabber::grab(in.param.run.value("path").toString(), "file", &runtime, fid, &err);
             out.runtime = runtime;
@@ -116,6 +117,7 @@ Vision::ToolOut Vision::AcquireTool::execute(const Vision::ToolIn& in)
             out.message = runtime.value("lastFile").toString();
             return out;
         }
+        // 其余按绑定设备状态分流，状态由 Job 执行前写入
         const std::string st = in.param.run.value("deviceStatus").toString();
         if (st == "missing" || st.empty()) {
             out.message = "未绑定采集模块";
@@ -129,6 +131,7 @@ Vision::ToolOut Vision::AcquireTool::execute(const Vision::ToolIn& in)
             out.message = "相机 SDK 未接入";
             return out;
         }
+        // 图像模块：按 runtime 里的 index 轮流取记录的图
         if (st == "image") {
             const std::vector<std::string> files = splitLines(in.param.run.value("images").toString());
             if (files.empty()) {
@@ -152,6 +155,7 @@ Vision::ToolOut Vision::AcquireTool::execute(const Vision::ToolIn& in)
             out.message = runtime.value("lastFile").toString();
             return out;
         }
+        // 其他情况按文件夹顺序取图
         const HsCommData::HsImage fb = Vision::FileGrabber::grab(in.param.run.value("path").toString(), "folder", &runtime, fid, &err);
         out.runtime = runtime;
         if (fb.isNull()) {

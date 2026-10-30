@@ -63,6 +63,7 @@ QIcon makeFallbackIcon(int key)
     QPen pen(c, 1.6, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
     p.setPen(pen);
     p.setBrush(Qt::NoBrush);
+    // 20×20 画布上按类型画简笔图形，未列出的类型画圆角方块
     switch (key) {
     case ToolTreeIconCamera:
         p.drawRoundedRect(QRectF(3, 6, 14, 10), 2, 2);
@@ -126,6 +127,7 @@ int toolTreeIconKeyForType(ToolType type)
     case ToolType::Measure3D: return ToolTreeIconDetect;
     case ToolType::Align3D: return ToolTreeIconLocate;
     case ToolType::Infer: return ToolTreeIconDetect;
+    case ToolType::Identify: return ToolTreeIconDetect;
     }
     return ToolTreeIconCamera;
 }

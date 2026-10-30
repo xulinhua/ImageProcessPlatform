@@ -10,6 +10,7 @@
 #define VISION_ICOMM_CHANNEL_H
 #include "VisionCommExport.h"
 
+#include "CommPeer.h"
 #include "ParamValue.h"
 #include <string>
 #include <vector>
@@ -26,20 +27,13 @@ enum CommTransport {
     TransportWebSocket = 5  ///< WebSocket 客户端
 };
 
-/** @class CommPeer @brief 通道上的一个对端。串口 / TCP 客户端 / UDP 只有一个，id 为空 */
-struct CommPeer {
-    std::string id;     ///< 端点 id；单连接通道为空
-    std::string remote; ///< 对端描述，如 192.168.0.2:502
-};
-
-typedef std::vector<unsigned char> CommBytes;
-
 /**
  * @class ICommChannel
  * @brief 传输基类：只负责字节进出，不解释 Modbus
  */
 class ICommChannel {
 public:
+    /** @brief 虚析构 */
     virtual ~ICommChannel() {}
 
     /** @brief 传输种类 */

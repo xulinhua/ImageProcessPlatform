@@ -1,3 +1,11 @@
+/**
+ * @file ToolDebugHost.cpp
+ * @brief 工具详细调试窗实现：四宫格布局、ROI 绘制与撤销、draft 试跑与提交
+ * @author Hoson
+ *
+ * @copyright Copyright (c) 2026 Hoson. All rights reserved.
+ */
+
 #include "ToolDebugHost.h"
 #include <image_widget/image_draw_pad.h>
 #include "DraftRegistry.h"
@@ -18,6 +26,9 @@
 #include <windows.h>
 #endif
 #include <HsCtrl/HsImageWindow.h>
+#include <HsCtrl/HsViewShell.h>
+#include "CloudViewBinder.h"
+#include "ToolIo.h"
 #include <QAbstractButton>
 #include <QApplication>
 #include <QButtonGroup>
@@ -153,6 +164,7 @@ static bool toolHasDebugInput(JobCfg* jobCfg, Job* job, const ObjectId& toolId)
 ToolDebugHost::ToolDebugHost(ToolCfg* tool, Session* session, Solution* sol, Job* job,
                              QWidget* parent)
     : QDialog(parent)
+    , m_shell(nullptr)
     , m_view(nullptr)
     , m_drawPad(nullptr)
     , m_editor(nullptr)
@@ -224,9 +236,10 @@ ToolDebugHost::ToolDebugHost(ToolCfg* tool, Session* session, Solution* sol, Job
     linkCard->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     m_linkCard = linkCard;
 
-    m_view = new HsCtrl::HsImageWindow(this);
+    m_shell = new HsCtrl::HsViewShell(this);
+    m_shell->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    m_view = m_shell->imageWindow();
     m_view->setWindowMode(HsCtrl::WindowDesign);
-    m_view->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     connect(m_view, SIGNAL(roiCommitted(HsCommData::Graphic)), this, SLOT(onRoi(HsCommData::Graphic)));
     connect(m_view, SIGNAL(roiSelected(HsCommData::Graphic)), this, SLOT(onDrawingSelected(HsCommData::Graphic)));
 
@@ -272,7 +285,7 @@ ToolDebugHost::ToolDebugHost(ToolCfg* tool, Session* session, Solution* sol, Job
     QVBoxLayout* imageLay = new QVBoxLayout(m_imageWrap);
     imageLay->setContentsMargins(6, 6, 6, 6);
     imageLay->setSpacing(0);
-    imageLay->addWidget(m_view, 1);
+    imageLay->addWidget(m_shell, 1);
     m_imageWrap->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     m_quadPanel = new QWidget(this);
@@ -546,6 +559,7 @@ void ToolDebugHost::updateDrawShapeTools()
         static_cast<int>(HsCommData::ObjContour),
         static_cast<int>(HsCommData::ObjRegion),
     };
+    // 浏览始终显示；形状按钮要求某个槽既接受对应条目种类（多边形为区域，其余为 ROI）又允许该形状
     const int n = static_cast<int>(sizeof(buttonIds) / sizeof(buttonIds[0]));
     std::vector<HsCtrl::DrawTool> padTools;
     for (int i = 0; i < n; ++i) {
@@ -793,6 +807,8 @@ void ToolDebugHost::onRun()
     pack->useToolOnly = false;
     pack->toolId = m_formalTool->id;
 
+    // 复检强制图：复制整条流程配方，取图工具改读该文件，本工具换成 draft；
+    // 否则取图工具或已有调试输入时只跑本工具，其余跑到本工具为止的链
     JobCfg* jobCfg = m_sol->findJobCfgOfTool(m_formalTool->id, 0);
     if (!m_forcedImagePath.empty() && jobCfg) {
         pack->recipe = *jobCfg;
@@ -808,10 +824,11 @@ void ToolDebugHost::onRun()
         }
         pack->useRecipe = true;
     } else {
-        const bool cam = (m_tool->type == ToolType::Acquire);
+        const bool cam = (m_tool->type == ToolType::Acquire || m_tool->type == ToolType::Acquire3D);
         pack->useToolOnly = cam || (jobCfg && toolHasDebugInput(jobCfg, m_job, m_formalTool->id));
     }
 
+    // 线程池里跑，结果用堆上 ToolOut 排队回 onAsyncRunDone
     m_runBusy = true;
     Job* job = m_job;
     Solution* sol = m_sol;
@@ -1053,7 +1070,10 @@ void ToolDebugHost::onInputLinkChanged(int portData, const QString& fromId, cons
 void ToolDebugHost::onEditorEdited()
 {
     markDraftDirty();
-    if (!m_tool || !m_job || !m_sol || !m_formalTool || m_tool->type != ToolType::Acquire) {
+    if (!m_tool || !m_job || !m_sol || !m_formalTool) {
+        return;
+    }
+    if (m_tool->type != ToolType::Acquire && m_tool->type != ToolType::Acquire3D) {
         return;
     }
     if (!m_tool->params.value("pathChanged").toInt()) {
@@ -1061,7 +1081,7 @@ void ToolDebugHost::onEditorEdited()
     }
     m_tool->params.insert("pathChanged", 0);
     const ToolOut out = m_job->runTool(m_sol, m_formalTool->id, &m_draftView);
-    if (!out.image.isNull()) {
+    if (!out.image.isNull() || !out.io.clouds.empty()) {
         refreshView(&out);
     } else if (!out.message.empty()) {
         refreshIo();
@@ -1455,6 +1475,15 @@ void ToolDebugHost::refreshView(const ToolOut* runOut)
     }
     const QVector<HsCommData::Graphic> drawings = qg(m_tool->drawings());
     showResult(base, ov, drawings, !base.isNull());
+    applyCloudResult(runOut);
+}
+
+void ToolDebugHost::applyCloudResult(const ToolOut* runOut)
+{
+    if (!m_shell || !runOut) {
+        return;
+    }
+    CloudViewBinder::apply(m_shell, runOut->io, true);
 }
 
 }

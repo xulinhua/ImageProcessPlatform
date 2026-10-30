@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="export">
@@ -6,6 +6,12 @@
     </Filter>
     <Filter Include="file">
       <UniqueIdentifier>{B4E91A10-7C22-4F18-9A01-000000000078}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="file\report">
+      <UniqueIdentifier>{B4E91A10-7C22-4F18-9A01-00000000007B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="file\serialize">
+      <UniqueIdentifier>{B4E91A10-7C22-4F18-9A01-00000000007C}</UniqueIdentifier>
     </Filter>
     <Filter Include="json">
       <UniqueIdentifier>{B4E91A10-7C22-4F18-9A01-000000000079}</UniqueIdentifier>
@@ -27,6 +33,21 @@
     <ClCompile Include="file\Xml.cpp">
       <Filter>xml</Filter>
     </ClCompile>
+    <ClCompile Include="file\ReportDocument.cpp">
+      <Filter>file\report</Filter>
+    </ClCompile>
+    <ClCompile Include="file\HtmlReportWriter.cpp">
+      <Filter>file\report</Filter>
+    </ClCompile>
+    <ClCompile Include="file\PdfReportWriter.cpp">
+      <Filter>file\report</Filter>
+    </ClCompile>
+    <ClCompile Include="file\TtfSubset.cpp">
+      <Filter>file\report</Filter>
+    </ClCompile>
+    <ClCompile Include="file\Serialize.cpp">
+      <Filter>file\serialize</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="VisionFileExport.h">
@@ -40,6 +61,21 @@
     </ClInclude>
     <ClInclude Include="file\Xml.h">
       <Filter>xml</Filter>
+    </ClInclude>
+    <ClInclude Include="file\ReportDocument.h">
+      <Filter>file\report</Filter>
+    </ClInclude>
+    <ClInclude Include="file\HtmlReportWriter.h">
+      <Filter>file\report</Filter>
+    </ClInclude>
+    <ClInclude Include="file\PdfReportWriter.h">
+      <Filter>file\report</Filter>
+    </ClInclude>
+    <ClInclude Include="file\TtfSubset.h">
+      <Filter>file\report</Filter>
+    </ClInclude>
+    <ClInclude Include="file\Serialize.h">
+      <Filter>file\serialize</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

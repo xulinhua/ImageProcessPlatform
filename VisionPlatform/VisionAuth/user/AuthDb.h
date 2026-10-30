@@ -37,6 +37,7 @@ public:
     bool saveRoleMask(UserRole role, uint32_t mask, std::string* error);
 
 private:
+    /** @brief 单例私有构造 */
     AuthDb() {}
     /** @brief 创建 users 和 perm，并把旧的整型掩码拆成权限行 */
     bool migrateSchema(std::string* error);

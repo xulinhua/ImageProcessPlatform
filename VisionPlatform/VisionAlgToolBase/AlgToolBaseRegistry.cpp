@@ -238,6 +238,7 @@ ToolOut runAlgToolBase(const std::string& toolName, const ToolIn& in, bool passI
     ToolOut out;
     AlgToolIn ain;
     ain.mode = in.mode;
+    // 图像：有端口图时第一张作缺省图、其余进 images；否则用工具壳的 input
     if (!in.inputIo.images.empty()) {
         ain.imagePtr = &in.inputIo.images[0].image;
         ain.imageNative = in.inputIo.images[0].native;
@@ -249,6 +250,7 @@ ToolOut runAlgToolBase(const std::string& toolName, const ToolIn& in, bool passI
         ain.imageNative = in.inputNative;
     }
     ain.teach = in.param.learn;
+    // 搜索区与区域：工具壳已解析的直接用，否则把 rois 逐块包成 PortRoi；上游区域按用途分到 regions/masks
     if (in.ownRoisResolved) {
         ain.rois = in.ownRois;
     } else {
@@ -285,6 +287,7 @@ ToolOut runAlgToolBase(const std::string& toolName, const ToolIn& in, bool passI
     ain.judge = in.param.judge;
     ain.solutionDir = in.solutionDir;
     ain.toolDataDir = in.toolDataDir;
+    // 工具壳未解析搜索区时，正常搜索区跟随最后一个上游位姿
     std::vector<HsCommData::HsObject> followed;
     std::vector<int> followAt;
     for (size_t i = 0; i < ain.rois.size(); ++i) {
@@ -301,6 +304,7 @@ ToolOut runAlgToolBase(const std::string& toolName, const ToolIn& in, bool passI
             ain.rois[static_cast<size_t>(followAt[i])].roi = followed[i];
         }
     }
+    // 直接用登记的原型执行，不克隆
     AlgToolBase* det = AlgToolBaseRegistry::instance().getPreferred(toolName, in.algLib);
     if (!det) {
         out.ok = false;
@@ -317,6 +321,7 @@ ToolOut runAlgToolBase(const std::string& toolName, const ToolIn& in, bool passI
         r.errCode = code;
         r.ok = false;
     }
+    // 算法输出抄回 ToolOut；passImage 为假或算法没出图时透传输入图
     out.ok = r.ok && r.errCode == HS_OK;
     out.errCode = r.errCode;
     out.error = r.errCode != HS_OK;
@@ -330,6 +335,12 @@ ToolOut runAlgToolBase(const std::string& toolName, const ToolIn& in, bool passI
     out.io.poses3 = r.poses3;
     out.io.shapes3 = r.shapes3;
     out.io.tuples = r.tuples;
+    for (size_t i = 0; i < r.poses.size(); ++i) {
+        PortPose n;
+        n.index = static_cast<int>(i);
+        n.pose = r.poses[i];
+        out.io.poses.push_back(n);
+    }
     if (passImage && !r.image.image.isNull()) {
         out.image = r.image.image;
         out.imageNative = r.image.native;

@@ -77,7 +77,8 @@
     <ClCompile Include="CommNet.cpp" />
     <ClCompile Include="Modbus.cpp" />
     <ClCompile Include="SerialChannel.cpp" />
-    <ClCompile Include="TcpChannel.cpp" />
+    <ClCompile Include="TcpClientChannel.cpp" />
+    <ClCompile Include="TcpServerChannel.cpp" />
     <ClCompile Include="UdpChannel.cpp" />
     <ClCompile Include="StageTimer.cpp" />
     <ClCompile Include="CommFrame.cpp" />
@@ -94,7 +95,8 @@
     <ClInclude Include="ICommChannel.h" />
     <ClInclude Include="Modbus.h" />
     <ClInclude Include="SerialChannel.h" />
-    <ClInclude Include="TcpChannel.h" />
+    <ClInclude Include="TcpClientChannel.h" />
+    <ClInclude Include="TcpServerChannel.h" />
     <ClInclude Include="UdpChannel.h" />
     <ClInclude Include="StageTimer.h" />
     <ClInclude Include="HttpClient.h" />

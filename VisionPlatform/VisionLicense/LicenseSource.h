@@ -1,6 +1,9 @@
 /**
  * @file LicenseSource.h
  * @brief 运行时只认这个基类
+ * @author Hoson
+ *
+ * @copyright Copyright (c) 2026 Hoson. All rights reserved.
  */
 
 #ifndef VISION_LICENSE_SOURCE_H
@@ -10,8 +13,13 @@
 
 namespace Vision {
 
+/**
+ * @class LicenseSource
+ * @brief 许可来源接口：软许可、硬件狗都从这里派生
+ */
 class VISION_LICENSE_API LicenseSource {
 public:
+    /** @brief 虚析构，允许经基类指针释放 */
     virtual ~LicenseSource();
     /** @brief 启动时建立许可。失败不倒计时 */
     virtual LicenseReason open() = 0;

@@ -28,7 +28,10 @@ enum class ParamFieldType {
     Max ///< 个数，不是合法值
 };
 
-/** @class ParamField @brief 工具壳上的一项参数说明，界面据此生成表单 */
+/**
+ * @class ParamField
+ * @brief 工具壳上的一项参数说明，界面据此生成表单
+ */
 struct ParamField {
     std::string key;                    ///< 写入 ParamMap 的键
     std::string title;                  ///< 界面文字，作翻译键
@@ -42,6 +45,7 @@ struct ParamField {
     std::string showKey;                ///< 显隐依赖的参数键。空则始终显示
     std::vector<std::string> showValues; ///< showKey 等于其中任一值时显示本项
     std::string liveAction;             ///< 值变化时触发的调试动作 id。空则不触发
+    /** @brief 控件种类未定义，不限上下限 */
     ParamField()
         : type(ParamFieldType::Undefined)
         , hasMin(false)

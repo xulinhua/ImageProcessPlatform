@@ -20,8 +20,11 @@ namespace Vision {
  */
 class HalSmooth : public AlgToolBase {
 public:
+    /** @brief 挂到 preprocess.smooth 工具壳 */
     std::string toolName() const { return "preprocess.smooth"; }
+    /** @brief 算法库：Halcon */
     AlgLibKind algLib() const { return AlgLibHal; }
+    /** @brief 算法版本号 */
     std::string version() const;
     /** @brief 版本变更，只追加 */
     std::vector<VerNote> versionNotes() const;
@@ -40,10 +43,13 @@ public:
         }
         return out->errCode;
     }
+    /** @brief 灰度图缩到搜索区定义域后按 pl_n、pl_i_* 步骤平滑（无步骤时一步缺省），再输出整幅图 */
     AlgToolOut run(const AlgToolIn& in);
+    /** @brief 克隆一份新实例 */
     AlgToolBase* clone() const { return new HalSmooth(); }
 
 private:
+    /** @brief 结果图恢复全定义域后转成输出图，ok 置 true 并写 okMsg */
     AlgToolOut writeFullImage(const AlgToolIn& in, const HalconCpp::HImage& work, const std::string& okMsg) const;
 };
 

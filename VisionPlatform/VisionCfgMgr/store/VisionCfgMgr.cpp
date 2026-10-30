@@ -134,6 +134,7 @@ static ParamMap paramsFromJson(const JsonValue& o)
 // 工具记录写成 JSON（format3：info/links/params）
 static JsonValue roiShapeToJson(const HsCommData::HsObject& roi);
 
+// 一个工具写成 {info, para}；工具版本为空时取注册原型的版本
 static JsonValue toolToJson(const ToolCfg& t)
 {
     JsonValue o;
@@ -202,6 +203,7 @@ static JsonValue toolToJson(const ToolCfg& t)
         }
         param.set("displayCfg", disp);
     }
+    // params 与 run 内容相同，给旧版读取用
     param.set("learn", paramsToJson(t.param.learn));
     param.set("run", paramsToJson(t.param.run));
     param.set("params", paramsToJson(t.param.run));
@@ -219,6 +221,7 @@ static JsonValue toolToJson(const ToolCfg& t)
     if (rois.size() > 0) {
         param.set("rois", rois);
     }
+    // 搜索区记录：引用项只存来源，绘制项才写几何
     JsonValue roiItems;
     roiItems.makeArray();
     for (size_t i = 0; i < t.param.roiItems.size(); ++i) {
@@ -245,7 +248,7 @@ static JsonValue toolToJson(const ToolCfg& t)
     return o;
 }
 
-// 一魁E何写成 JSON 对象
+// 一块几何写成 JSON 对象；只写圆、椭圆、两种矩形和直线的参数
 static JsonValue roiShapeToJson(const HsCommData::HsObject& roi)
 {
     JsonValue r;
@@ -330,6 +333,7 @@ static HsCommData::HsObject roiFromJson(const JsonValue& r)
         }
         return roi;
     }
+    // 旧结构：kind + x/y/a/b/phi，轮廓带折线点，区域带游程
     std::vector<double> polyX;
     std::vector<double> polyY;
     const JsonValue px = r.value("polyX");
@@ -658,6 +662,7 @@ static void routePointsFromJson(const JsonValue& o, bool* custom, std::vector<Ro
         pts->push_back(RoutePoint(x2, y2));
     }
 }
+// 流程布局写成 {nodes, routes}；布局表为空时从工具画布字段和自定义连线补出
 static JsonValue jobLayoutToJson(const JobCfg& j)
 {
     JsonValue o;
@@ -704,6 +709,7 @@ static JsonValue jobLayoutToJson(const JobCfg& j)
             routes.append(ro);
         }
     } else {
+        // 旧数据只有连线上的拐点，仅导出自定义走线
         for (size_t i = 0; i < j.links.size(); ++i) {
             const ToolLink& L = j.links[i];
             if (!L.routeCustom) {
@@ -802,7 +808,7 @@ static JsonValue jobToJson(const JobCfg& j)
         tools.append(toolToJson(j.tools[static_cast<size_t>(i)]));
     }
     o.set("tools", tools);
-    // 过渡锛歭inks 派生缓存锛堄畔却庸ぞ呋阕茱級
+    // 过渡：links 是由工具输入边派生的缓存（rebuildLinksCache 写入），照常写出
     const std::vector<ToolLink>& linkView = j.links;
     JsonValue links;
     links.makeArray();
@@ -1174,6 +1180,7 @@ static JsonValue solutionToJson(const Solution& s, bool saveMeta)
         root.set("platformVersion", VISION_VERSION_STRING);
     }
     root.set("runtimeStationLayout", static_cast<int>(s.runtimeStationLayout));
+    // 设备台账、通信通道、工站、项目组合工具依次写出
     JsonValue inv;
     inv.makeArray();
     for (int i = 0; i < static_cast<int>(s.inventory.size()); ++i) {
@@ -1401,6 +1408,7 @@ bool VisionCfgMgr::loadSolution(const std::string& path, Solution* s, std::strin
     s->lastSavedAt = root.value("lastSavedAt").toString();
     s->platformVersion = root.value("platformVersion").toString();
     s->runtimeStationLayout = runtimeStationLayoutFromInt(root.value("runtimeStationLayout").toInt(0));
+    // 设备台账：format 1 的旧种类整型需迁移；文件源相机统一归为文件夹设备
     s->inventory.clear();
     const JsonValue inv = root.value("inventory");
     for (int i = 0; i < inv.size(); ++i) {
@@ -1446,6 +1454,7 @@ bool VisionCfgMgr::loadSolution(const std::string& path, Solution* s, std::strin
         c.params = paramsFromJson(o.value("params"));
         s->commChannels.push_back(c);
     }
+    // 工站引用了不存在的通信通道时清掉引用
     s->stations.clear();
     const JsonValue sts = root.value("stations");
     for (int i = 0; i < sts.size(); ++i) {
@@ -1460,6 +1469,7 @@ bool VisionCfgMgr::loadSolution(const std::string& path, Solution* s, std::strin
     for (int i = 0; i < comps.size(); ++i) {
         s->composites.push_back(compositeFromJson(comps.at(i)));
     }
+    // 设备、通道等类型未定义则加载失败；此时 s 已被改写
     if (!persistEnumsOk(*s, error)) {
         return false;
     }

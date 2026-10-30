@@ -20,6 +20,7 @@ namespace Vision {
  */
 class IDatabase {
 public:
+    /** @brief 虚析构 */
     virtual ~IDatabase() {}
     /** @brief 打开或创建库文件 */
     virtual bool open(const std::string& path, std::string* error) = 0;

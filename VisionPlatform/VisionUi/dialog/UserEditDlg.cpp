@@ -48,6 +48,7 @@ UserEditDlg::UserEditDlg(Session* session, const QString& loginName, QWidget* pa
     m_enabled = new QCheckBox(T("启用此账户"), this);
     m_enabled->setChecked(true);
 
+    // 编辑时载入现有账户，登录名只读；角色下拉下标与 UserRole 取值一致
     if (!m_isNew) {
         const UserAccount* u = m_session->users().findByLogin(ss(m_editLogin));
         if (u) {
@@ -64,6 +65,7 @@ UserEditDlg::UserEditDlg(Session* session, const QString& loginName, QWidget* pa
         m_pwd2->setPlaceholderText(T("留空则无口令"));
     }
 
+    // 表单、提示与保存按钮
     QFormLayout* form = new QFormLayout();
     form->addRow(T("登录名"), m_login);
     form->addRow(T("显示名"), m_display);

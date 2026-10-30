@@ -26,7 +26,10 @@ namespace Vision {
 
 class AlgToolBase;
 
-/** @class ToolDesc @brief 工具箱条目。type 是大类，toolName 是具体工具 */
+/**
+ * @class ToolDesc
+ * @brief 工具箱条目。type 是大类，toolName 是具体工具
+ */
 struct ToolDesc {
     std::string toolName;               ///< 具体工具注册名
     ToolType type;                      ///< 所属 ToolType
@@ -35,6 +38,7 @@ struct ToolDesc {
     std::string version;                ///< 工具版本 major.minor.patch
     std::vector<PortDesc> ports;        ///< 端口表
     std::vector<std::string> paramKeys; ///< 参数名
+    /** @brief 大类未定义的空条目 */
     ToolDesc() : type(ToolType::Undefined) {}
 };
 
@@ -46,7 +50,9 @@ struct ToolDesc {
  */
 class VISION_TOOL_API ToolBase {
 public:
+    /** @brief 未挂算法 */
     ToolBase();
+    /** @brief 释放挂着的算法实例 */
     virtual ~ToolBase();
 
     /************************************************** 实例数据 **************************************************/
@@ -184,11 +190,15 @@ public:
     virtual bool initToolParam(ToolParam& src);
     /** @brief 按版本号连续适配。升或降由两个版本决定 */
     bool adaptParam(ToolParam& src, const std::string& oldVer, const std::string& newVer, std::string* detail);
+    /** @brief 最近一次参数适配/装载是否通过；未通过时工具不应运行 */
     bool paramOk() const;
+    /** @brief 参数被拦住的原因，如参数版本比工具新、需人工确认；通过时为空 */
     const std::string& paramBlock() const;
     /** @brief 当前工具的参数对象，没有则为 0 */
     virtual const ToolParaBase* toolParam() const;
 protected:
+    /** @brief 按参数说明拼缺省参数。设备项不进 ParamMap */
+    ParamMap defaultsFrom(const std::vector<ParamField>& fields) const;
     /** @brief 收口之后写结果日志。默认空 */
     virtual void log_result(ToolOut* out) const;
     /** @brief 图元生成后再补工具自己的图形 */

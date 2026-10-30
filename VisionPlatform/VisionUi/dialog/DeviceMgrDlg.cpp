@@ -39,6 +39,7 @@ DeviceMgrDlg::DeviceMgrDlg(Session* session, Solution* solution, QWidget* parent
     resize(1000, 600);
     enableDialogResize(this);
 
+    // 页签只用来选设备种类，页本身为空；下方三栏随页签刷新
     m_kindTabs = new QTabWidget(this);
     m_kindTabs->addTab(new QWidget(m_kindTabs), T("相机"));
     m_kindTabs->addTab(new QWidget(m_kindTabs), T("文件夹"));
@@ -56,6 +57,7 @@ DeviceMgrDlg::DeviceMgrDlg(Session* session, Solution* solution, QWidget* parent
     m_preview->setDrawTool(HsCtrl::ToolBrowse);
     m_preview->setMinimumSize(280, 200);
 
+    // 无编辑设备权限时只能查看和进入配置
     QPushButton* scanBtn = new QPushButton(T("重新遍历"), this);
     QPushButton* regBtn = new QPushButton(T("登记选中"), this);
     QPushButton* addBtn = new QPushButton(T("手动登记"), this);
@@ -78,6 +80,7 @@ DeviceMgrDlg::DeviceMgrDlg(Session* session, Solution* solution, QWidget* parent
     connect(m_managedList, SIGNAL(itemSelectionChanged()), this, SLOT(onManagedSel()));
     connect(m_managedList, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(onOpen()));
 
+    // 三栏：遍历到的候选 | 台账内设备 | 属性与预览
     QVBoxLayout* probeLay = new QVBoxLayout();
     QLabel* pTitle = new QLabel(T("遍历"), this);
     pTitle->setObjectName(QLatin1String("section"));

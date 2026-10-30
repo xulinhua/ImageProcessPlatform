@@ -6,7 +6,7 @@
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
  */
 
-#include "Modbus.h"
+#include "Modbus.h"
 #include "TextEncoding.h"
 #include "CommWin.h"
 #include <cstdio>
@@ -136,6 +136,7 @@ bool transact(ICommChannel* ch, const std::string& peerId, bool tcp, uint16_t ti
     if (!readUntil(ch, peerId, tcp, 1000, &frame, err)) {
         return false;
     }
+    // 剥掉 TCP 的 MBAP 头或 RTU 的从站号与 CRC，只留 PDU
     CommBytes body;
     if (tcp) {
         if (frame.size() < 8) {
@@ -170,6 +171,7 @@ bool transact(ICommChannel* ch, const std::string& peerId, bool tcp, uint16_t ti
         setCommErr(err, "应答为空");
         return false;
     }
+    // 功能码最高位置 1 为异常应答
     const unsigned char fc = pdu[0];
     if (body[0] == static_cast<unsigned char>(fc | 0x80)) {
         const int code = body.size() > 1 ? body[1] : 0;
@@ -194,7 +196,7 @@ bool parseBits(const CommBytes& pdu, int count, std::vector<unsigned char>* bits
         return false;
     }
     const int byteCount = pdu[1];
-    if (static_cast<int>(pdu.size()) < 2 + byteCount) {
+    if (byteCount < (count + 7) / 8 || static_cast<int>(pdu.size()) < 2 + byteCount) {
         setCommErr(err, "数据长度不足");
         return false;
     }
@@ -450,6 +452,7 @@ CommBytes ModbusSlave::reply(const CommBytes& unitAndPdu)
     if (unitAndPdu.size() < 2) {
         return CommBytes();
     }
+    // 站号 0 为广播：照常执行写入，但不回应答
     const int unit = unitAndPdu[0];
     const int fc = unitAndPdu[1];
     const bool broadcast = (unit == 0);
@@ -469,6 +472,7 @@ CommBytes ModbusSlave::reply(const CommBytes& unitAndPdu)
         return broadcast ? CommBytes() : resp;
     }
 
+    // 读线圈 / 离散输入：按位打包，低位在前
     if (fc == 0x01 || fc == 0x02) {
         if (n < 6) {
             resp.push_back(static_cast<unsigned char>(fc | 0x80));
@@ -478,7 +482,12 @@ CommBytes ModbusSlave::reply(const CommBytes& unitAndPdu)
         const int addr = read16(p + 2);
         const int count = read16(p + 4);
         const std::vector<unsigned char>& src = (fc == 0x01) ? m_coils : m_discrete;
-        if (count <= 0 || count > 2000 || addr < 0 || addr + count > kMapSize) {
+        if (count <= 0 || count > 2000) {
+            resp.push_back(static_cast<unsigned char>(fc | 0x80));
+            resp.push_back(0x03);
+            return broadcast ? CommBytes() : resp;
+        }
+        if (addr + count > kMapSize) {
             resp.push_back(static_cast<unsigned char>(fc | 0x80));
             resp.push_back(0x02);
             return broadcast ? CommBytes() : resp;
@@ -499,6 +508,7 @@ CommBytes ModbusSlave::reply(const CommBytes& unitAndPdu)
         return broadcast ? CommBytes() : resp;
     }
 
+    // 读保持 / 输入寄存器
     if (fc == 0x03 || fc == 0x04) {
         if (n < 6) {
             resp.push_back(static_cast<unsigned char>(fc | 0x80));
@@ -508,7 +518,12 @@ CommBytes ModbusSlave::reply(const CommBytes& unitAndPdu)
         const int addr = read16(p + 2);
         const int count = read16(p + 4);
         const std::vector<uint16_t>& src = (fc == 0x03) ? m_holding : m_input;
-        if (count <= 0 || count > 125 || addr < 0 || addr + count > kMapSize) {
+        if (count <= 0 || count > 125) {
+            resp.push_back(static_cast<unsigned char>(fc | 0x80));
+            resp.push_back(0x03);
+            return broadcast ? CommBytes() : resp;
+        }
+        if (addr + count > kMapSize) {
             resp.push_back(static_cast<unsigned char>(fc | 0x80));
             resp.push_back(0x02);
             return broadcast ? CommBytes() : resp;
@@ -521,6 +536,7 @@ CommBytes ModbusSlave::reply(const CommBytes& unitAndPdu)
         return broadcast ? CommBytes() : resp;
     }
 
+    // 写单线圈：值只认 0 或 0xFF00
     if (fc == 0x05) {
         if (n < 6) {
             resp.push_back(static_cast<unsigned char>(fc | 0x80));
@@ -544,6 +560,7 @@ CommBytes ModbusSlave::reply(const CommBytes& unitAndPdu)
         return resp;
     }
 
+    // 写单个保持寄存器
     if (fc == 0x06) {
         if (n < 6) {
             resp.push_back(static_cast<unsigned char>(fc | 0x80));
@@ -567,6 +584,7 @@ CommBytes ModbusSlave::reply(const CommBytes& unitAndPdu)
         return resp;
     }
 
+    // 写多线圈
     if (fc == 0x0F) {
         if (n < 7) {
             resp.push_back(static_cast<unsigned char>(fc | 0x80));
@@ -576,7 +594,13 @@ CommBytes ModbusSlave::reply(const CommBytes& unitAndPdu)
         const int addr = read16(p + 2);
         const int count = read16(p + 4);
         const int byteCount = p[6];
-        if (count <= 0 || count > 1968 || addr < 0 || addr + count > kMapSize || n < 7 + byteCount) {
+        // 下面按 count 读位，字节数必须与数量对得上且都在帧内
+        if (count <= 0 || count > 1968 || byteCount != (count + 7) / 8 || n < 7 + byteCount) {
+            resp.push_back(static_cast<unsigned char>(fc | 0x80));
+            resp.push_back(0x03);
+            return broadcast ? CommBytes() : resp;
+        }
+        if (addr + count > kMapSize) {
             resp.push_back(static_cast<unsigned char>(fc | 0x80));
             resp.push_back(0x02);
             return broadcast ? CommBytes() : resp;
@@ -594,6 +618,7 @@ CommBytes ModbusSlave::reply(const CommBytes& unitAndPdu)
         return resp;
     }
 
+    // 写多个保持寄存器
     if (fc == 0x10) {
         if (n < 7) {
             resp.push_back(static_cast<unsigned char>(fc | 0x80));
@@ -603,7 +628,12 @@ CommBytes ModbusSlave::reply(const CommBytes& unitAndPdu)
         const int addr = read16(p + 2);
         const int count = read16(p + 4);
         const int byteCount = p[6];
-        if (count <= 0 || count > 123 || addr < 0 || addr + count > kMapSize || byteCount < count * 2 || n < 7 + byteCount) {
+        if (count <= 0 || count > 123 || byteCount != count * 2 || n < 7 + byteCount) {
+            resp.push_back(static_cast<unsigned char>(fc | 0x80));
+            resp.push_back(0x03);
+            return broadcast ? CommBytes() : resp;
+        }
+        if (addr + count > kMapSize) {
             resp.push_back(static_cast<unsigned char>(fc | 0x80));
             resp.push_back(0x02);
             return broadcast ? CommBytes() : resp;
@@ -620,6 +650,7 @@ CommBytes ModbusSlave::reply(const CommBytes& unitAndPdu)
         return resp;
     }
 
+    // 不支持的功能码回异常码 01
     if (!isWrite && broadcast) {
         return CommBytes();
     }

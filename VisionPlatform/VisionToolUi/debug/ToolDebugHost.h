@@ -1,3 +1,11 @@
+/**
+ * @file ToolDebugHost.h
+ * @brief 工具详细调试窗：图像、输入、ROI、参数四宫格，在 draft 上编辑与试跑
+ * @author Hoson
+ *
+ * @copyright Copyright (c) 2026 Hoson. All rights reserved.
+ */
+
 #ifndef VISION_TOOLDEBUGHOST_H
 #define VISION_TOOLDEBUGHOST_H
 #include "VisionToolUiExport.h"
@@ -23,6 +31,7 @@ class QShowEvent;
 
 namespace HsCtrl {
 class HsImageWindow;
+class HsViewShell;
 }
 
 namespace image_widget {
@@ -46,6 +55,11 @@ struct ToolOut;
 class VISION_TOOLUI_API ToolDebugHost : public QDialog {
     Q_OBJECT
 public:
+    /**
+     * @brief 复制 tool 为 draft 并搭建界面
+     * @param tool 方案内正式工具，不拥有
+     * @param job 所属流程运行实例，试跑用，不拥有
+     */
     ToolDebugHost(ToolCfg* tool, Session* session, Solution* sol, Job* job,
                   QWidget* parent = 0);
     /** @brief 显示本工具运行图与叠加 */
@@ -56,6 +70,8 @@ public:
      * @param runOut 非空表示刚跑完；底图为输入图，叠加为本工具输出
      */
     void refreshView(const ToolOut* runOut = 0);
+    /** @brief 有点云/三维形状时灌入壳内点云窗并切到 3D */
+    void applyCloudResult(const ToolOut* runOut);
     /** @brief 按当前工具刷新输入摘要 */
     void refreshIo();
     /** @brief 仅按 draft 刷新图上 ROI，不改底图与叠加 */
@@ -96,6 +112,7 @@ protected:
     void showEvent(QShowEvent* event);
     /** @brief 拖动或缩放时把绘制小窗留在图像上方 */
     void moveEvent(QMoveEvent* event);
+    /** @brief 缩放后重摆绘制小窗 */
     void resizeEvent(QResizeEvent* event);
     /** @brief Ctrl+Z 撤销 ROI 修改 */
     void keyPressEvent(QKeyEvent* event);
@@ -192,7 +209,8 @@ private:
         std::vector<char> drawStyleOn; ///< 1 表示该条记住了画笔
     };
 
-    HsCtrl::HsImageWindow* m_view; ///< 调试图
+    HsCtrl::HsViewShell* m_shell; ///< 图像/点云壳
+    HsCtrl::HsImageWindow* m_view; ///< 调试图（壳内 imageWindow）
     image_widget::ImageDrawPad* m_drawPad; ///< 图像旁边的绘制条，自身是工具窗
     std::vector<HsCommData::Style> m_drawStyles; ///< 小窗打开期间各条 ROI 的画笔
     std::vector<char> m_drawStyleOn; ///< 1 表示该下标记住了画笔
@@ -206,8 +224,8 @@ private:
     QFrame* m_paramCard;            ///< 参数卡片
     QWidget* m_quadEmpty[2];        ///< 空缺宫格占位
     QPlainTextEdit* m_log;          ///< 底栏试跑与操作日志
-    ToolCfg* m_formalTool;
-    ObjectId m_boundId; ///< 打开时复制的工具 id，关窗不再读可能已失效的配置          ///< 方案内正式工具，不拥有
+    ToolCfg* m_formalTool;          ///< 方案内正式工具，不拥有
+    ObjectId m_boundId; ///< 打开时复制的工具 id，关窗不再读可能已失效的配置
     ToolCfg m_draftView;            ///< 本会话 draft
     ToolRecipe m_formalSnapshot;    ///< Open 时 formal 配方快照
     ToolCfg* m_tool;                ///< 指向 m_draftView，供编辑逻辑复用
@@ -221,7 +239,7 @@ private:
     QWidget* m_drawModeWrap;        ///< 绘制模式行（无 ROI 能力时隐藏）
     QCheckBox* m_chkDrawMode;       ///< 连续绘制：画完不切回浏览
     bool m_pendingNewRoi;           ///< 点新增/重画后待画新 ROI
-    bool m_syncingRoiSelection;     
+    bool m_syncingRoiSelection;     ///< 正在由表格同步图上选中，期间忽略图上选中回调
     QVector<RoiSnapshot> m_roiUndo; ///< ROI 撤销栈
     std::string m_forcedImagePath;  ///< 复检强制图路径；空=不强制
     bool m_runBusy;                 ///< 试跑已投递未完成

@@ -38,6 +38,7 @@ public:
     ToolEditorBase* create(const std::string& toolName, QWidget* parent);
 
 private:
+    /** @brief 单例私有构造 */
     ToolEditorRegistry() {}
     std::map<std::string, ToolEditorFactory> m_map; ///< toolName 到工厂
 };

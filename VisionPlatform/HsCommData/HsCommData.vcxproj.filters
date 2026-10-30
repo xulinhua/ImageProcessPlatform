@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="图像">
+      <UniqueIdentifier>{E7A1B2C3-4D5E-4F60-8A71-9B0C1D2E3F45}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="掩膜">
+      <UniqueIdentifier>{E7A1B2C3-4D5E-4F60-8A71-9B0C1D2E3F46}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2D图形">
+      <UniqueIdentifier>{e0780581-f668-42ec-aff3-9f75319ccd3c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2D图形\几何">
+      <UniqueIdentifier>{E7A1B2C3-4D5E-4F60-8A71-9B0C1D2E3F42}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2D图形\轮廓">
+      <UniqueIdentifier>{E7A1B2C3-4D5E-4F60-8A71-9B0C1D2E3F43}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2D图形\区域">
+      <UniqueIdentifier>{E7A1B2C3-4D5E-4F60-8A71-9B0C1D2E3F44}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="封装类">
+      <UniqueIdentifier>{7dbe8e96-3a51-4882-9faf-1ccd5e059445}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="封装类\HsTuple">
+      <UniqueIdentifier>{E7A1B2C3-4D5E-4F60-8A71-9B0C1D2E3F49}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="封装类\HsMat">
+      <UniqueIdentifier>{E7A1B2C3-4D5E-4F60-8A71-9B0C1D2E3F4C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="封装类\HsObject">
+      <UniqueIdentifier>{E7A1B2C3-4D5E-4F60-8A71-9B0C1D2E3F48}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="导出">
+      <UniqueIdentifier>{E7A1B2C3-4D5E-4F60-8A71-9B0C1D2E3F47}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="异常">
+      <UniqueIdentifier>{E7A1B2C3-4D5E-4F60-8A71-9B0C1D2E3F4A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3D图形">
+      <UniqueIdentifier>{E7A1B2C3-4D5E-4F60-8A71-9B0C1D2E3F4B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3D图形\几何">
+      <UniqueIdentifier>{E7A1B2C3-4D5E-4F60-8A71-9B0C1D2E3F4D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3D图形\轮廓">
+      <UniqueIdentifier>{E7A1B2C3-4D5E-4F60-8A71-9B0C1D2E3F4E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3D图形\点云">
+      <UniqueIdentifier>{E7A1B2C3-4D5E-4F60-8A71-9B0C1D2E3F4F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3D图形\网格">
+      <UniqueIdentifier>{E7A1B2C3-4D5E-4F60-8A71-9B0C1D2E3F50}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="绘制">
+      <UniqueIdentifier>{E7A1B2C3-4D5E-4F60-8A71-9B0C1D2E3F4C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="绘制\样式">
+      <UniqueIdentifier>{E7A1B2C3-4D5E-4F60-8A71-9B0C1D2E3F51}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="绘制\标记">
+      <UniqueIdentifier>{E7A1B2C3-4D5E-4F60-8A71-9B0C1D2E3F52}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="绘制\图元">
+      <UniqueIdentifier>{E7A1B2C3-4D5E-4F60-8A71-9B0C1D2E3F53}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="绘制\场景">
+      <UniqueIdentifier>{E7A1B2C3-4D5E-4F60-8A71-9B0C1D2E3F54}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="系统">
+      <UniqueIdentifier>{E7A1B2C3-4D5E-4F60-8A71-9B0C1D2E3F55}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2D图形\接口">
+      <UniqueIdentifier>{E7A1B2C3-4D5E-4F60-8A71-9B0C1D2E3F56}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3D图形\接口">
+      <UniqueIdentifier>{E7A1B2C3-4D5E-4F60-8A71-9B0C1D2E3F57}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="容器">
+      <UniqueIdentifier>{E7A1B2C3-4D5E-4F60-8A71-9B0C1D2E3F41}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\GeomOps.cpp">
+      <Filter>2D图形\几何</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Shape.cpp">
+      <Filter>2D图形\几何</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Color.cpp">
+      <Filter>绘制\样式</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MeasureCalib.cpp">
+      <Filter>2D图形\几何</Filter>
+    </ClCompile>
+    <ClCompile Include="src\HsContour.cpp">
+      <Filter>2D图形\轮廓</Filter>
+    </ClCompile>
+    <ClCompile Include="src\HsPoly.cpp">
+      <Filter>2D图形\轮廓</Filter>
+    </ClCompile>
+    <ClCompile Include="src\HsRegion.cpp">
+      <Filter>2D图形\区域</Filter>
+    </ClCompile>
+    <ClCompile Include="src\HsImage.cpp">
+      <Filter>图像</Filter>
+    </ClCompile>
+    <ClCompile Include="src\HsObject.cpp">
+      <Filter>封装类\HsObject</Filter>
+    </ClCompile>
+    <ClCompile Include="src\HsObjectIo.cpp">
+      <Filter>封装类\HsObject</Filter>
+    </ClCompile>
+    <ClCompile Include="src\HsTuple.cpp">
+      <Filter>封装类\HsTuple</Filter>
+    </ClCompile>
+    <ClCompile Include="src\HsMat.cpp">
+      <Filter>封装类\HsMat</Filter>
+    </ClCompile>
+    <ClCompile Include="src\HsTupleIo.cpp">
+      <Filter>封装类\HsTuple</Filter>
+    </ClCompile>
+    <ClCompile Include="src\HsException.cpp">
+      <Filter>异常</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Style.cpp">
+      <Filter>绘制\样式</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Markers.cpp">
+      <Filter>绘制\标记</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphic.cpp">
+      <Filter>绘制\图元</Filter>
+    </ClCompile>
+    <ClCompile Include="src\HsInterface2D.cpp">
+      <Filter>2D图形\接口</Filter>
+    </ClCompile>
+    <ClCompile Include="src\HsInterface3D.cpp">
+      <Filter>3D图形\接口</Filter>
+    </ClCompile>
+    <ClCompile Include="src\HsSystem.cpp">
+      <Filter>系统</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FrameOverlay.cpp">
+      <Filter>绘制\场景</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Mask.cpp">
+      <Filter>掩膜</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Geom3.cpp">
+      <Filter>3D图形\几何</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Shape3.cpp">
+      <Filter>3D图形\几何</Filter>
+    </ClCompile>
+    <ClCompile Include="src\HsCloud.cpp">
+      <Filter>3D图形\点云</Filter>
+    </ClCompile>
+    <ClCompile Include="src\HsMesh.cpp">
+      <Filter>3D图形\网格</Filter>
+    </ClCompile>
+    <ClCompile Include="src\HsContour3.cpp">
+      <Filter>3D图形\轮廓</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\HsCommData\HsCommData.h">
+      <Filter>导出</Filter>
+    </ClInclude>
+    <ClInclude Include="include\HsCommData\HsCommDataExport.h">
+      <Filter>导出</Filter>
+    </ClInclude>
+    <ClInclude Include="include\HsCommData\HsObject.h">
+      <Filter>封装类\HsObject</Filter>
+    </ClInclude>
+    <ClInclude Include="include\HsCommData\HsTuple.h">
+      <Filter>封装类\HsTuple</Filter>
+    </ClInclude>
+    <ClInclude Include="include\HsCommData\HsMat.h">
+      <Filter>封装类\HsMat</Filter>
+    </ClInclude>
+    <ClInclude Include="include\HsCommData\HsTupleOps.h">
+      <Filter>封装类\HsTuple</Filter>
+    </ClInclude>
+    <ClInclude Include="include\HsCommData\HsError.h">
+      <Filter>异常</Filter>
+    </ClInclude>
+    <ClInclude Include="include\HsCommData\HsException.h">
+      <Filter>异常</Filter>
+    </ClInclude>
+    <ClInclude Include="include\HsCommData\Color.h">
+      <Filter>绘制\样式</Filter>
+    </ClInclude>
+    <ClInclude Include="include\HsCommData\Style.h">
+      <Filter>绘制\样式</Filter>
+    </ClInclude>
+    <ClInclude Include="include\HsCommData\HsCross.h">
+      <Filter>绘制\标记</Filter>
+    </ClInclude>
+    <ClInclude Include="include\HsCommData\HsArrow.h">
+      <Filter>绘制\标记</Filter>
+    </ClInclude>
+    <ClInclude Include="include\HsCommData\HsText.h">
+      <Filter>绘制\标记</Filter>
+    </ClInclude>
+    <ClInclude Include="include\HsCommData\Graphic.h">
+      <Filter>绘制\图元</Filter>
+    </ClInclude>
+    <ClInclude Include="include\HsCommData\HsInterface2D.h">
+      <Filter>2D图形\接口</Filter>
+    </ClInclude>
+    <ClInclude Include="include\HsCommData\HsInterface3D.h">
+      <Filter>3D图形\接口</Filter>
+    </ClInclude>
+    <ClInclude Include="include\HsCommData\HsConst.h">
+      <Filter>系统</Filter>
+    </ClInclude>
+    <ClInclude Include="include\HsCommData\HsSystem.h">
+      <Filter>系统</Filter>
+    </ClInclude>
+    <ClInclude Include="include\HsCommData\FrameOverlay.h">
+      <Filter>绘制\场景</Filter>
+    </ClInclude>
+    <ClInclude Include="include\HsCommData\Geom.h">
+      <Filter>2D图形\几何</Filter>
+    </ClInclude>
+    <ClInclude Include="include\HsCommData\GeomOps.h">
+      <Filter>2D图形\几何</Filter>
+    </ClInclude>
+    <ClInclude Include="include\HsCommData\Shape.h">
+      <Filter>2D图形\几何</Filter>
+    </ClInclude>
+    <ClInclude Include="include\HsCommData\MeasureCalib.h">
+      <Filter>2D图形\几何</Filter>
+    </ClInclude>
+    <ClInclude Include="include\HsCommData\HsContour.h">
+      <Filter>2D图形\轮廓</Filter>
+    </ClInclude>
+    <ClInclude Include="include\HsCommData\HsPoly.h">
+      <Filter>2D图形\轮廓</Filter>
+    </ClInclude>
+    <ClInclude Include="include\HsCommData\HsRegion.h">
+      <Filter>2D图形\区域</Filter>
+    </ClInclude>
+    <ClInclude Include="include\HsCommData\HsImage.h">
+      <Filter>图像</Filter>
+    </ClInclude>
+    <ClInclude Include="include\HsCommData\Mask.h">
+      <Filter>掩膜</Filter>
+    </ClInclude>
+    <ClInclude Include="include\HsCommData\Geom3.h">
+      <Filter>3D图形\几何</Filter>
+    </ClInclude>
+    <ClInclude Include="include\HsCommData\Shape3.h">
+      <Filter>3D图形\几何</Filter>
+    </ClInclude>
+    <ClInclude Include="include\HsCommData\HsCloud.h">
+      <Filter>3D图形\点云</Filter>
+    </ClInclude>
+    <ClInclude Include="include\HsCommData\HsMesh.h">
+      <Filter>3D图形\网格</Filter>
+    </ClInclude>
+    <ClInclude Include="include\HsCommData\HsContour3.h">
+      <Filter>3D图形\轮廓</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

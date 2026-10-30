@@ -20,8 +20,11 @@ namespace Vision {
  */
 class HalBlob : public AlgToolBase {
 public:
+    /** @brief 挂到 detect.blob 工具壳 */
     std::string toolName() const { return "detect.blob"; }
+    /** @brief 算法库：Halcon */
     AlgLibKind algLib() const { return AlgLibHal; }
+    /** @brief 算法版本号 */
     std::string version() const;
     /** @brief 版本变更，只追加 */
     std::vector<VerNote> versionNotes() const;
@@ -40,7 +43,9 @@ public:
         }
         return out->errCode;
     }
+    /** @brief 在各步 ROI 的并集上按步骤分割，打包连通域并按 count/area 判定；无区域时 ok 为 false */
     AlgToolOut run(const AlgToolIn& in);
+    /** @brief 克隆一份新实例 */
     AlgToolBase* clone() const { return new HalBlob(); }
 
 private:

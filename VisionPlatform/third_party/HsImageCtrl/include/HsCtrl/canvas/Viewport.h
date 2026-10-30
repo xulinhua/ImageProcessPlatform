@@ -1,6 +1,6 @@
 /**
  * @file Viewport.h
- * @brief ViewportÍ·ÎÄ¼ş
+ * @brief Viewportå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -22,49 +22,49 @@ namespace HsCtrl {
 
 /**
  * @class Viewport
- * @brief ÊÓ¿Ú¡£part ÊÇÍ¼Ïñ×ø±êÏµÀïµÄ¿É¼û¾ØĞÎ£¬Ëõ·ÅºÍÆ½ÒÆÖ»¸ÄËü¡£
+ * @brief è§†å£ã€‚part æ˜¯å›¾åƒåæ ‡ç³»é‡Œçš„å¯è§çŸ©å½¢ï¼Œç¼©æ”¾å’Œå¹³ç§»åªæ”¹å®ƒã€‚
  */
 class HSCTRL_EXPORT Viewport {
 public:
-    QRectF part;      ///< ¿É¼ûÍ¼Ïñ¾ØĞÎ
-    QSize  imageSize; ///< µ×Í¼ÏñËØ³ß´ç
+    QRectF part;      ///< å¯è§å›¾åƒçŸ©å½¢
+    QSize  imageSize; ///< åº•å›¾åƒç´ å°ºå¯¸
 
-    Viewport(); ///< ¿ÕÊÓ¿Ú
+    Viewport(); ///< ç©ºè§†å£
 
-    /** @brief µ×Í¼³ß´çÓë part ¾ùÓĞĞ§ */
+    /** @brief åº•å›¾å°ºå¯¸ä¸ part å‡æœ‰æ•ˆ */
     bool isValid() const;
-    /** @brief Õû·ùÍ¼µÈ±È×°Èë´°¿Ú£¬¸üĞÂ part */
+    /** @brief æ•´å¹…å›¾ç­‰æ¯”è£…å…¥çª—å£ï¼Œæ›´æ–° part */
     void fit(const QSize& viewportSize);
-    /** @brief ±£³ÖÖĞĞÄ£¬Ê¹ part ¿í¸ß±ÈµÈÓÚ´°¿Ú */
+    /** @brief ä¿æŒä¸­å¿ƒï¼Œä½¿ part å®½é«˜æ¯”ç­‰äºçª—å£ */
     void syncAspect(const QSize& viewportSize);
     /**
-     * @brief ÒÔÍ¼ÏñµãÎªÃªËõ·Å part£¬²»ÖØ²ÉÑùÎ»Í¼
-     * @param imagePt ÃªµãµÄÍ¼Ïñ×ø±ê
-     * @param relInPart ÃªµãÔÚ part ÄÚµÄÏà¶ÔÎ»ÖÃ£¬0¨C1
-     * @param factor >1 ·Å´ó
+     * @brief ä»¥å›¾åƒç‚¹ä¸ºé”šç¼©æ”¾ partï¼Œä¸é‡é‡‡æ ·ä½å›¾
+     * @param imagePt é”šç‚¹çš„å›¾åƒåæ ‡
+     * @param relInPart é”šç‚¹åœ¨ part å†…çš„ç›¸å¯¹ä½ç½®ï¼Œ0â€“1
+     * @param factor >1 æ”¾å¤§
      */
     void zoomAt(const QPointF& imagePt, const QPointF& relInPart, qreal factor, const QSize& viewportSize);
-    /** @brief Æ½ÒÆ part£¬ÔöÁ¿ÎªÍ¼Ïñ×ø±ê */
+    /** @brief å¹³ç§» partï¼Œå¢é‡ä¸ºå›¾åƒåæ ‡ */
     void panImage(const QPointF& imageDelta);
-    /** @brief ³¡¾°µ½ÊÓ¿ÚµÄ QTransform */
+    /** @brief åœºæ™¯åˆ°è§†å£çš„ QTransform */
     QTransform viewTransform(const QSize& viewportSize) const;
-    /** @brief ÆÁÄ»ÏñËØ / Í¼ÏñÏñËØ */
+    /** @brief å±å¹•åƒç´  / å›¾åƒåƒç´  */
     qreal scale(const QSize& viewportSize) const;
 };
 
-/** @brief ³¡¾°×ø±êÂäµ½ÏñËØ¸ñ£¬ROI È¡ÑùÓÃ floor */
+/** @brief åœºæ™¯åæ ‡è½åˆ°åƒç´ æ ¼ï¼ŒROI å–æ ·ç”¨ floor */
 inline QPoint sceneToPixel(const QPointF& scenePt)
 {
     return QPoint(qFloor(scenePt.x()), qFloor(scenePt.y()));
 }
 
-/** @brief Éè±¸±ßÈ¡Õû¡£¼õÈ¥Ò»¸öºÜĞ¡µÄÁ¿ÔÙ ceil£¬±ÜÃâ¸¡µãÌù±ß¶à³öÒ»ÏñËØ */
+/** @brief è®¾å¤‡è¾¹å–æ•´ã€‚å‡å»ä¸€ä¸ªå¾ˆå°çš„é‡å† ceilï¼Œé¿å…æµ®ç‚¹è´´è¾¹å¤šå‡ºä¸€åƒç´  */
 inline int deviceEdge(qreal v)
 {
     return qCeil(v - qreal(1e-6));
 }
 
-/** @brief Í¼ÏñÏñËØ (x,y) ÔÚÉè±¸ÉÏµÄ¾ØĞÎ£¬¹© HUD Íø¸ñºÍÏñËØ¼ìÑé */
+/** @brief å›¾åƒåƒç´  (x,y) åœ¨è®¾å¤‡ä¸Šçš„çŸ©å½¢ï¼Œä¾› HUD ç½‘æ ¼å’Œåƒç´ æ£€éªŒ */
 inline QRect pixelDeviceRect(const QTransform& xf, int x, int y)
 {
     const int x0 = deviceEdge(xf.map(QPointF(x, y)).x());

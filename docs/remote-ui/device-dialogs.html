@@ -1,0 +1,65 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="ui.css">
+<style>
+body { display: flex; gap: 28px; align-items: flex-start; }
+.dlg { width: 540px; }
+.dlg.wide { width: 660px; }
+.body { padding: 18px 22px; background: #fff; display: flex; flex-direction: column; gap: 14px; }
+.row { display: flex; align-items: center; gap: 12px; }
+.row > .k { width: 84px; color: #595959; text-align: right; flex: none; }
+.row .input { flex: 1; }
+.row .v { flex: 1; display: flex; align-items: center; gap: 8px; }
+.mono { font-family: Consolas, "Microsoft YaHei UI", monospace; }
+.foot { padding: 12px 22px; background: #FAFAFA; border-top: 1px solid #F0F0F0; display: flex; justify-content: flex-end; gap: 8px; }
+.tabs { display: flex; gap: 22px; padding: 0 22px; background: #fff; border-bottom: 1px solid #F0F0F0; }
+.tabs span { padding: 12px 0 10px; color: #595959; }
+.tabs span.on { color: #1677FF; border-bottom: 2px solid #1677FF; }
+.hint { font-size: 12px; color: #8C8C8C; display: flex; gap: 6px; align-items: center; }
+.box { border: 1px solid #F0F0F0; border-radius: 6px; overflow: hidden; }
+.sect { font-weight: 600; margin-top: 4px; }
+.fp { background: #F6FFED; border: 1px solid #B7EB8F; border-radius: 4px; padding: 6px 10px; font-size: 12px; color: #389E0D; display: flex; gap: 6px; align-items: center; }
+</style></head>
+<body>
+<div class="win dlg">
+  <div class="title"><span class="logo"><i data-i="info"></i></span><span class="name">设备属性 — 检测二号</span><span class="wb x"><i data-i="x"></i></span></div>
+  <div class="tabs"><span class="on">常规</span><span>连接</span><span>画面</span><span>统计</span></div>
+  <div class="body">
+    <div class="row"><span class="k">名称</span><span class="input focus">检测二号</span></div>
+    <div class="row"><span class="k">设备 ID</span><span class="v mono" style="font-size:15px;letter-spacing:1px">318 204 775<span class="btn sm ico"><i data-i="copy"></i></span></span></div>
+    <div class="row"><span class="k">分组</span><span class="input sel">一号线<i data-i="down"></i></span></div>
+    <div class="row"><span class="k">备注</span><span class="input">3 号工位，右侧机柜，AOI 焊点检测</span></div>
+    <div class="row"><span class="k">标签</span><span class="v"><span class="tag blue">AOI</span><span class="tag">双相机</span><span class="tag ph" style="border:1px dashed #D9D9D9;background:#fff">+ 标签</span></span></div>
+    <div class="sect">连接与认证</div>
+    <div class="row"><span class="k">连接方式</span><span class="v"><span class="opt"><span class="rd on"></span>自动</span><span class="opt"><span class="rd"></span>仅局域网</span><span class="opt"><span class="rd"></span>仅中继</span></span></div>
+    <div class="row"><span class="k">认证</span><span class="v"><span class="opt"><span class="rd on"></span>无人值守密码</span><span class="input" style="width:150px">••••••••</span><span class="opt" style="margin-left:6px"><span class="ck on"><i data-i="check"></i></span>记住</span></span></div>
+    <div class="row"><span class="k">默认画质</span><span class="input sel">均衡<i data-i="down"></i></span></div>
+    <div class="row"><span class="k">MAC</span><span class="v mono">00-1B-21-3A-4F-90<span class="btn sm"><i data-i="zap"></i>远程唤醒</span></span></div>
+    <div class="row"><span class="k">证书指纹</span><span class="v"><span class="fp"><i data-i="shieldOk"></i><span class="mono">9F:3C:7A:…:52:A1</span>· 2026-10-01 首次信任</span></span></div>
+    <div class="row"><span class="k">系统</span><span class="v muted">Windows 10 企业版 LTSC 21H2 · 被控端 2.0.3 · 2 块显示器</span></div>
+  </div>
+  <div class="foot"><span class="btn">取消</span><span class="btn pri">确定</span></div>
+</div>
+
+<div class="win dlg wide">
+  <div class="title"><span class="logo"><i data-i="plus"></i></span><span class="name">添加设备</span><span class="wb x"><i data-i="x"></i></span></div>
+  <div class="tabs"><span class="on">局域网扫描</span><span>按 IP 地址</span><span>按设备 ID</span></div>
+  <div class="body">
+    <div class="row" style="gap:8px"><span class="input ph" style="flex:1"><i data-i="search"></i>筛选名称或 IP</span><span class="btn"><i data-i="refresh"></i>重新扫描</span></div>
+    <div class="hint"><i data-i="wifi"></i>通过 UDP 19101 广播发现 6 台被控端，2 台已在列表中</div>
+    <div class="box">
+      <table class="tbl">
+        <tr><th style="width:30px"><span class="ck on"><i data-i="check"></i></span></th><th>名称</th><th>IP 地址</th><th>设备 ID</th><th>版本</th><th>状态</th></tr>
+        <tr class="sel"><td><span class="ck on"><i data-i="check"></i></span></td><td>点胶八号</td><td class="mono">192.168.1.58</td><td class="mono">402 118 930</td><td>2.0.3</td><td><span class="tag green">可添加</span></td></tr>
+        <tr class="sel"><td><span class="ck on"><i data-i="check"></i></span></td><td>包装九号</td><td class="mono">192.168.1.61</td><td class="mono">517 662 041</td><td>2.0.3</td><td><span class="tag green">可添加</span></td></tr>
+        <tr><td><span class="ck"></span></td><td>测试机-研发</td><td class="mono">192.168.2.20</td><td class="mono">220 945 318</td><td>2.0.2</td><td><span class="tag orange">版本较旧</span></td></tr>
+        <tr><td><span class="ck"></span></td><td>LAPTOP-QA07</td><td class="mono">192.168.2.33</td><td class="mono">689 301 776</td><td>2.0.3</td><td><span class="tag green">可添加</span></td></tr>
+        <tr style="color:#BFBFBF"><td><span class="ck" style="background:#F5F5F5"></span></td><td>贴装一号</td><td class="mono">192.168.1.11</td><td class="mono">105 337 802</td><td>2.0.3</td><td><span class="tag">已添加</span></td></tr>
+        <tr style="color:#BFBFBF"><td><span class="ck" style="background:#F5F5F5"></span></td><td>检测二号</td><td class="mono">192.168.1.12</td><td class="mono">318 204 775</td><td>2.0.3</td><td><span class="tag">已添加</span></td></tr>
+      </table>
+    </div>
+    <div class="row" style="gap:8px"><span class="lbl">加入分组</span><span class="input sel" style="width:180px">二号线<i data-i="down"></i></span><span class="lbl" style="margin-left:12px">认证</span><span class="input sel" style="width:180px">首次连接时输入<i data-i="down"></i></span></div>
+  </div>
+  <div class="foot"><span class="hint" style="margin-right:auto">已选 2 台</span><span class="btn">取消</span><span class="btn pri">添加 2 台</span></div>
+</div>
+<script src="ui.js"></script>
+</body></html>

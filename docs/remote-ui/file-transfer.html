@@ -1,0 +1,71 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="ui.css">
+<style>
+.win { width: 1240px; height: 780px; }
+.main { flex: 1; display: flex; gap: 0; min-height: 0; padding: 12px; }
+.pane { flex: 1; display: flex; flex-direction: column; background: #fff; border: 1px solid #E8E8E8; border-radius: 6px; overflow: hidden; min-width: 0; }
+.ph { display: flex; align-items: center; gap: 8px; padding: 10px; border-bottom: 1px solid #F0F0F0; }
+.ph .who { font-weight: 600; display: flex; gap: 6px; align-items: center; }
+.ph .input { flex: 1; }
+.mid { width: 64px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; flex: none; }
+.mid .btn { width: 40px; height: 36px; padding: 0; }
+.queue { margin: 0 12px 12px; background: #fff; border: 1px solid #E8E8E8; border-radius: 6px; flex: none; }
+.qh { display: flex; align-items: center; padding: 8px 12px; border-bottom: 1px solid #F0F0F0; gap: 10px; }
+.qh b { font-weight: 600; }
+.qrow { display: grid; grid-template-columns: 24px 220px 80px 1fr 110px 100px 140px; align-items: center; gap: 10px; padding: 0 12px; height: 40px; border-bottom: 1px solid #F5F5F5; font-size: 12px; }
+.qrow:last-child { border-bottom: 0; }
+.qrow svg.i { width: 15px; height: 15px; }
+.qrow .acts { display: flex; gap: 6px; justify-content: flex-end; }
+.ok { color: #389E0D; display: flex; gap: 4px; align-items: center; }
+.err { color: #CF1322; }
+.foot { font-size: 12px; color: #8C8C8C; padding: 8px 10px; border-top: 1px solid #F0F0F0; display: flex; justify-content: space-between; }
+.drop { outline: 2px dashed #1890FF; outline-offset: -2px; background: #F0F8FF !important; }
+</style></head>
+<body>
+<div class="win">
+  <div class="title"><span class="logo"><i data-i="folder"></i></span><span class="name">文件传输 — 检测二号</span><span class="wb"><i data-i="minus"></i></span><span class="wb"><i data-i="square"></i></span><span class="wb x"><i data-i="x"></i></span></div>
+  <div class="main">
+    <div class="pane">
+      <div class="ph"><span class="who"><i data-i="monitor"></i>本机</span><span class="input sel">C:\Users\zhang\Desktop\交付<i data-i="down"></i></span><span class="btn ico"><i data-i="up"></i></span><span class="btn ico"><i data-i="refresh"></i></span></div>
+      <table class="tbl">
+        <tr><th>名称</th><th>大小</th><th>修改时间</th></tr>
+        <tr><td><span class="nm"><span style="color:#FAAD14;display:flex"><i data-i="folder"></i></span>旧版本</span></td><td>—</td><td>10-20 09:12</td></tr>
+        <tr class="sel"><td><span class="nm"><span style="color:#8C8C8C;display:flex"><i data-i="file"></i></span>A12.json</span></td><td>20 KB</td><td>10-29 13:50</td></tr>
+        <tr class="sel"><td><span class="nm"><span style="color:#8C8C8C;display:flex"><i data-i="file"></i></span>A12_model.shm</span></td><td>3.6 MB</td><td>10-29 13:48</td></tr>
+        <tr><td><span class="nm"><span style="color:#8C8C8C;display:flex"><i data-i="file"></i></span>相机标定_1029.cal</span></td><td>412 KB</td><td>10-29 11:20</td></tr>
+        <tr><td><span class="nm"><span style="color:#8C8C8C;display:flex"><i data-i="file"></i></span>Vision.Station_2.4.1.zip</span></td><td>86.2 MB</td><td>10-28 18:05</td></tr>
+        <tr><td><span class="nm"><span style="color:#13C2C2;display:flex"><i data-i="image"></i></span>NG样本_03.bmp</span></td><td>14.3 MB</td><td>10-28 16:41</td></tr>
+        <tr><td><span class="nm"><span style="color:#8C8C8C;display:flex"><i data-i="file"></i></span>说明.txt</span></td><td>2 KB</td><td>10-27 10:02</td></tr>
+      </table>
+      <div class="grow"></div>
+      <div class="foot"><span>已选 2 项，3.6 MB</span><span>7 项</span></div>
+    </div>
+    <div class="mid">
+      <span class="btn pri" title="上传"><i data-i="toRight"></i></span>
+      <span class="btn" title="下载"><i data-i="toLeft"></i></span>
+    </div>
+    <div class="pane">
+      <div class="ph"><span class="who"><i data-i="hdd"></i>远端 · 检测二号</span><span class="input sel">D:\recipe<i data-i="down"></i></span><span class="btn ico"><i data-i="up"></i></span><span class="btn ico"><i data-i="refresh"></i></span><span class="btn ico"><i data-i="plus"></i></span></div>
+      <table class="tbl">
+        <tr><th>名称</th><th>大小</th><th>修改时间</th></tr>
+        <tr><td><span class="nm"><span style="color:#FAAD14;display:flex"><i data-i="folder"></i></span>backup</span></td><td>—</td><td>10-29 14:07</td></tr>
+        <tr><td><span class="nm"><span style="color:#8C8C8C;display:flex"><i data-i="file"></i></span>A11.json</span></td><td>19 KB</td><td>10-28 17:32</td></tr>
+        <tr><td><span class="nm"><span style="color:#8C8C8C;display:flex"><i data-i="file"></i></span>A11_model.shm</span></td><td>3.5 MB</td><td>10-28 17:30</td></tr>
+        <tr><td><span class="nm"><span style="color:#8C8C8C;display:flex"><i data-i="file"></i></span>A12.json</span></td><td>20 KB</td><td>10-29 14:05</td></tr>
+        <tr><td><span class="nm"><span style="color:#8C8C8C;display:flex"><i data-i="file"></i></span>B03.json</span></td><td>17 KB</td><td>10-15 08:44</td></tr>
+        <tr><td><span class="nm"><span style="color:#8C8C8C;display:flex"><i data-i="file"></i></span>B03_model.shm</span></td><td>2.9 MB</td><td>10-15 08:43</td></tr>
+      </table>
+      <div class="grow"></div>
+      <div class="foot"><span><i data-i="shield"></i> 允许目录：D:\recipe、D:\log、D:\image</span><span>剩余 412 GB</span></div>
+    </div>
+  </div>
+  <div class="queue">
+    <div class="qh"><b>传输队列</b><span class="muted">2 进行中 · 1 完成 · 1 失败</span><span class="grow"></span><span class="btn sm">全部暂停</span><span class="btn sm">清除已完成</span></div>
+    <div class="qrow"><span style="color:#1677FF"><i data-i="upload"></i></span><span>A12_model.shm</span><span>3.6 MB</span><span class="bar"><i style="width:100%;background:#52C41A"></i></span><span class="ok"><i data-i="check"></i>校验通过</span><span class="muted">—</span><span class="acts"><span class="btn sm">打开目录</span></span></div>
+    <div class="qrow"><span style="color:#1677FF"><i data-i="upload"></i></span><span>Vision.Station_2.4.1.zip</span><span>86.2 MB</span><span class="bar"><i style="width:63%"></i></span><span>63% · 剩余 2 s</span><span>48.6 MB/s</span><span class="acts"><span class="btn sm">暂停</span><span class="btn sm">取消</span></span></div>
+    <div class="qrow"><span style="color:#13C2C2"><i data-i="download"></i></span><span>log_20261029.zip</span><span>18.4 MB</span><span class="bar"><i style="width:34%"></i></span><span>34% · 断点续传</span><span>31.2 MB/s</span><span class="acts"><span class="btn sm">暂停</span><span class="btn sm">取消</span></span></div>
+    <div class="qrow"><span style="color:#1677FF"><i data-i="upload"></i></span><span>NG样本_03.bmp</span><span>14.3 MB</span><span class="bar"><i style="width:100%;background:#FF4D4F"></i></span><span class="err">目标已存在</span><span class="muted">—</span><span class="acts"><span class="btn sm">覆盖</span><span class="btn sm">改名</span></span></div>
+  </div>
+</div>
+<script src="ui.js"></script>
+</body></html>

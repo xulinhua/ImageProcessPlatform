@@ -59,7 +59,7 @@ private:
     /** @brief 从旧 vision.db 拷出 app_log。文件不在则跳过 */
     bool importLegacy();
 
-    struct Impl;
+    struct Impl; ///< 私有实现
     Impl* m; ///< 连接与临界区
 };
 

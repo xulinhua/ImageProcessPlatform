@@ -120,7 +120,7 @@ typedef unsigned int HsError;
 
 /**********************************************/
 /* 10400 - 10499                                */
-/* 二维码 detect.qr                             */
+/* 二维码 identify.qr                           */
 /**********************************************/
 
 #define HS_ERR_QR_NONE        10401 /* 没有二维码 */
@@ -128,7 +128,7 @@ typedef unsigned int HsError;
 
 /**********************************************/
 /* 10500 - 10599                                */
-/* 一维码 detect.barcode                        */
+/* 一维码 identify.barcode                      */
 /**********************************************/
 
 #define HS_ERR_BAR_NONE       10501 /* 没有一维码 */
@@ -141,6 +141,23 @@ typedef unsigned int HsError;
 
 #define HS_ERR_ACQUIRE_NO_IMAGE 10601 /* 没有采集到图像 */
 #define HS_ERR_ACQUIRE_CONVERT  10602 /* HsImage 转 HObject 失败 */
+
+/**********************************************/
+/* 10700 - 10799                                */
+/* 找矩形 locate.find_rect                      */
+/**********************************************/
+
+#define HS_ERR_RECT_NONE      10701 /* 没有矩形 */
+#define HS_ERR_RECT_OPERATOR  10702 /* 找矩形算子失败 */
+
+/**********************************************/
+/* 10800 - 10899                                */
+/* 字符识别 identify.ocr                        */
+/**********************************************/
+
+#define HS_ERR_OCR_NONE       10801 /* 没有字符 */
+#define HS_ERR_OCR_OPERATOR   10802 /* 字符识别算子失败 */
+#define HS_ERR_OCR_NO_MODEL   10803 /* 字符分类器读不到 */
 
 /**********************************************/
 /* 20000 及以上                                 */

@@ -20,6 +20,7 @@ namespace Vision {
  */
 class VISION_COMMON_API ObjectId {
 public:
+    /** @brief 空标识 */
     ObjectId() {}
     /** @brief 用字符串构造，并去掉花括号 */
     explicit ObjectId(const std::string& s);
@@ -29,6 +30,7 @@ public:
     /** @brief 从字符串还原 */
     static ObjectId fromString(const std::string& s);
 
+    /** @brief 文本是否为空 */
     bool isNull() const;
     /** @brief 标识文本 */
     const std::string& toString() const;

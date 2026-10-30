@@ -47,6 +47,7 @@ public:
         Type type;                              ///< 类型
         std::string peerId;                     ///< 服务端上的客户端 id
         std::vector<unsigned char> payload;     ///< 负载
+        /** @brief 缺省为握手帧 */
         Frame() : type(TypeHello) {}
     };
 

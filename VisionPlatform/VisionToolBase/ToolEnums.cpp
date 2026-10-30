@@ -40,10 +40,12 @@ ToolType toolTypeDisplayAt(int i)
         ToolType::Preprocess,
         ToolType::Locate,
         ToolType::Detect,
+        ToolType::Identify,
         ToolType::RstProcess,
         ToolType::Calib,
         ToolType::Logic,
         ToolType::Comm,
+        ToolType::Acquire3D,
         ToolType::Measure3D,
         ToolType::Infer
     };
@@ -61,10 +63,12 @@ int toolTypeDisplayCount()
         ToolType::Preprocess,
         ToolType::Locate,
         ToolType::Detect,
+        ToolType::Identify,
         ToolType::RstProcess,
         ToolType::Calib,
         ToolType::Logic,
         ToolType::Comm,
+        ToolType::Acquire3D,
         ToolType::Measure3D,
         ToolType::Infer
     };
@@ -88,6 +92,7 @@ std::string toolTypeTitle(ToolType t)
     case ToolType::Measure3D:     return Translate::tr("测量");
     case ToolType::Align3D:       return Translate::tr("配准");
     case ToolType::Infer:         return Translate::tr("深度学习");
+    case ToolType::Identify:      return Translate::tr("识别");
     default:                      return Translate::tr("采集");
     }
 }

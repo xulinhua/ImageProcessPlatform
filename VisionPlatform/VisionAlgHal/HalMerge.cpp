@@ -103,6 +103,7 @@ AlgToolOut HalMerge::run(const AlgToolIn& in)
         if (!inputImage(in).isNull()) {
             out.image.image = inputImage(in);
         }
+        // 依次收集上游区域、轮廓和非空 ROI，原样作为输出几何
         std::vector<HsCommData::HsObject> merged;
         { const std::vector<HsCommData::HsObject> regs = plainRegions(in.regions); merged.insert(merged.end(), regs.begin(), regs.end()); }
         { const std::vector<HsCommData::HsObject> cons = plainContours(in.contours); merged.insert(merged.end(), cons.begin(), cons.end()); }
@@ -112,6 +113,7 @@ AlgToolOut HalMerge::run(const AlgToolIn& in)
             }
         }
 
+        // 区域部分取并集面积（重叠只算一次）；并集为空时才逐个累加区域面积
         double area = 0.0;
         HObject uni;
         const bool haveUni = unionRegionObjects(merged, &uni);
@@ -132,6 +134,7 @@ AlgToolOut HalMerge::run(const AlgToolIn& in)
                 }
                 continue;
             }
+            // 非区域几何按外接框面积近似
             const HsCommData::Graphic g = objectToGraphic(obj);
             const double w = g.boundsImage.w;
             const double h = g.boundsImage.h;
@@ -140,6 +143,7 @@ AlgToolOut HalMerge::run(const AlgToolIn& in)
             }
         }
 
+        // 面积不足 minArea 或数量超过 maxCount（大于 0 时生效）判 NG
         const int count = static_cast<int>(merged.size());
         const double minArea = in.run.value("minArea").toDouble();
         const int maxCount = in.run.value("maxCount").toInt();

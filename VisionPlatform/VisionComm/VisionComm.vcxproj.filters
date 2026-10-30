@@ -16,6 +16,12 @@
     <Filter Include="tcp">
       <UniqueIdentifier>{D4200001-0000-4000-8000-000000000005}</UniqueIdentifier>
     </Filter>
+    <Filter Include="tcp\client">
+      <UniqueIdentifier>{D4200001-0000-4000-8000-00000000000C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="tcp\server">
+      <UniqueIdentifier>{D4200001-0000-4000-8000-00000000000D}</UniqueIdentifier>
+    </Filter>
     <Filter Include="udp">
       <UniqueIdentifier>{D4200001-0000-4000-8000-000000000006}</UniqueIdentifier>
     </Filter>
@@ -51,8 +57,11 @@
     <ClCompile Include="SerialChannel.cpp">
       <Filter>serial</Filter>
     </ClCompile>
-    <ClCompile Include="TcpChannel.cpp">
-      <Filter>tcp</Filter>
+    <ClCompile Include="TcpClientChannel.cpp">
+      <Filter>tcp\client</Filter>
+    </ClCompile>
+    <ClCompile Include="TcpServerChannel.cpp">
+      <Filter>tcp\server</Filter>
     </ClCompile>
     <ClCompile Include="UdpChannel.cpp">
       <Filter>udp</Filter>
@@ -95,8 +104,11 @@
     <ClInclude Include="SerialChannel.h">
       <Filter>serial</Filter>
     </ClInclude>
-    <ClInclude Include="TcpChannel.h">
-      <Filter>tcp</Filter>
+    <ClInclude Include="TcpClientChannel.h">
+      <Filter>tcp\client</Filter>
+    </ClInclude>
+    <ClInclude Include="TcpServerChannel.h">
+      <Filter>tcp\server</Filter>
     </ClInclude>
     <ClInclude Include="UdpChannel.h">
       <Filter>udp</Filter>

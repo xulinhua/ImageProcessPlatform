@@ -20,6 +20,7 @@ namespace Vision {
 struct DeviceRef {
     ObjectId deviceId; ///< 设备 id
     bool enabled;      ///< 是否启用
+    /** @brief 默认启用 */
     DeviceRef() : enabled(true) {}
 };
 
@@ -30,6 +31,7 @@ struct HardwareDevice {
     DeviceKind kind;                ///< 顶层种类：相机/控制卡/PLC
     CameraBackend cameraBackend;    ///< 仅相机有效：文件源或 SDK
     ParamMap defaultParams;         ///< 缺省参数
+    /** @brief 种类与相机后端均未定 */
     HardwareDevice()
         : kind(DeviceKindUndefined)
         , cameraBackend(CameraBackendUndefined)

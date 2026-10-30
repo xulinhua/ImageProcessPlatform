@@ -1,6 +1,6 @@
 /**
  * @file ObjectPage.cpp
- * @brief ObjectPage实现
+ * @brief 结构与锁评测页实现：界面搭建、任务派发、Stack 刷新计时与结果展示
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -150,6 +150,7 @@ ObjectPage::ObjectPage(QWidget* parent)
     , m_btnRefresh(nullptr)
     , m_btnLock(nullptr)
 {
+    // 深色指标卡、日志框和任务按钮的样式
     setStyleSheet(QStringLiteral(
         "QFrame#metric { background:#1b2330; border-radius:6px; }"
         "QLabel#metricTitle { color:#8b98a8; font-size:11px; }"
@@ -161,6 +162,7 @@ ObjectPage::ObjectPage(QWidget* parent)
         "QPushButton#go { background:#2f6fed; color:white; border:none; border-radius:4px; padding:6px 10px; }"
         "QPushButton#go:disabled { background:#b7c3d6; color:#f7f8fa; }"));
 
+    // 左侧：四张指标卡、说明文字、图像控件
     QVBoxLayout* left = new QVBoxLayout();
     left->setContentsMargins(0, 0, 0, 0);
     left->setSpacing(8);
@@ -189,6 +191,7 @@ ObjectPage::ObjectPage(QWidget* parent)
     }
     left->addWidget(m_api->widget(), 1);
 
+    // 右侧面板：样本、深拷贝、Stack 刷新、多线程锁四组参数，以及日志
     QWidget* side = new QWidget(this);
     side->setMinimumWidth(320);
     side->setMaximumWidth(420);
@@ -304,6 +307,7 @@ ObjectPage::ObjectPage(QWidget* parent)
     QPushButton* clearBtn = new QPushButton(L8("清空日志"), side);
     sideLay->addWidget(clearBtn);
 
+    // 左右两栏放进分割器，只让左栏随窗口伸缩
     QSplitter* split = new QSplitter(Qt::Horizontal, this);
     QWidget* leftWrap = new QWidget(split);
     leftWrap->setLayout(left);
@@ -315,6 +319,7 @@ ObjectPage::ObjectPage(QWidget* parent)
     root->setContentsMargins(8, 8, 8, 8);
     root->addWidget(split);
 
+    // 工作对象移入独立线程，结果经排队信号回到界面线程
     m_thread = new QThread(this);
     m_worker = new ObjectWorker();
     m_worker->moveToThread(m_thread);
@@ -328,6 +333,7 @@ ObjectPage::ObjectPage(QWidget* parent)
     connect(m_worker, SIGNAL(taskFinished()), this, SLOT(onTaskFinished()));
     m_thread->start();
 
+    // 按钮与种类下拉框
     connect(m_btnBuild, SIGNAL(clicked()), this, SLOT(onBuild()));
     connect(m_btnCopy, SIGNAL(clicked()), this, SLOT(onCopy()));
     connect(m_btnRefresh, SIGNAL(clicked()), this, SLOT(onRefresh()));

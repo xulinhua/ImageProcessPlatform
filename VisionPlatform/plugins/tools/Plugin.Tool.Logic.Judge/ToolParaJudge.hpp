@@ -25,8 +25,9 @@ public:
     };
     /** @brief 运行参数 */
     struct Run {
-        bool useOkAnd;              ///< 汇总上游OK
-        int termCount;              ///< 数值条件数
+        bool useOkAnd;              ///< 是否把上游各有效逻辑口的 OK 做与运算并入结果
+        int termCount;              ///< 数值条件条数，0~16；每条读 term{i}_id / _key / _op / _val
+        /** @brief 缺省汇总上游 OK、无数值条件 */
         Run()
             : useOkAnd(true)
             , termCount(0)

@@ -178,6 +178,7 @@ static void syncRoiItemsFromRois(ToolCfg* t)
     if (!t) {
         return;
     }
+    // 绘制几何归入第一个允许绘制的分区
     std::string slotName = "roi";
     const ToolCaps caps = t->caps();
     for (size_t s = 0; s < caps.slotRules.size(); ++s) {
@@ -193,6 +194,7 @@ static void syncRoiItemsFromRois(ToolCfg* t)
             break;
         }
     }
+    // 拆出旧绘制项与引用项；引用项去重，丢弃无来源的
     std::vector<ToolRoiItem> oldDraw;
     std::vector<ToolRoiItem> refs;
     for (size_t i = 0; i < t->param.roiItems.size(); ++i) {
@@ -229,6 +231,7 @@ static void syncRoiItemsFromRois(ToolCfg* t)
         next.push_back(refs[i]);
     }
     refs.clear();
+    // 按下标复用旧绘制项属性；新增的若有位姿连线则默认跟随该位姿
     for (size_t i = 0; i < t->param.rois.size(); ++i) {
         ToolRoiItem item;
         if (i < oldDraw.size()) {
@@ -374,6 +377,9 @@ static ToolType typeFromToolName(const std::string& key)
     }
     if (key.compare(0, 6, "infer.") == 0) {
         return ToolType::Infer;
+    }
+    if (key.compare(0, 9, "identify.") == 0) {
+        return ToolType::Identify;
     }
     return ToolType::Acquire;
 }

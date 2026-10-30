@@ -1,15 +1,18 @@
-#ifndef IMAGE_WIDGET__IMAGE_WIDGET_HPP_
-#define IMAGE_WIDGET__IMAGE_WIDGET_HPP_
-
 /**
  * @file image_widget.hpp
- * @brief °üÈë¿Ú¡£¶ÔÍâÍ¼Ïñ¿Ø¼şÊÇ image_widget::ImageWidgetApi£¬
- *        »­²¼ÊÇ HsCtrl::HsImageWindow£¬ĞèÒªĞÅºÅÊ±ÓÃ imageWindow()¡£
+ * @brief åŒ…å…¥å£ã€‚å¯¹å¤–å›¾åƒæ§ä»¶æ˜¯ image_widget::ImageWidgetApiï¼Œ
+ *        ç”»å¸ƒæ˜¯ HsCtrl::HsImageWindowï¼Œéœ€è¦ä¿¡å·æ—¶ç”¨ imageWindow()ã€‚
  *
- *        HsImage ÊÇ HsCtrl µÄ¼æÈİ±ğÃû£ºÀÏ´úÂëÀïµÄ HsImage::HsImageWindow¡¢
- *        WindowMode¡¢DrawTool¡¢ÊÓ¿ÚºÍ¹¤¾ßÌõÃ¶¾ÙÈÔ¿ÉÓÃ¡£
- *        Í¼ÔªÀàĞÍÊÇ HsCommData::Graphic¡£
+ *        HsImage æ˜¯ HsCtrl çš„å…¼å®¹åˆ«åï¼šè€ä»£ç é‡Œçš„ HsImage::HsImageWindowã€
+ *        WindowModeã€DrawToolã€è§†å£å’Œå·¥å…·æ¡æšä¸¾ä»å¯ç”¨ã€‚
+ *        å›¾å…ƒç±»å‹æ˜¯ HsCommData::Graphicã€‚
+ * @author Hoson
+ *
+ * @copyright Copyright (c) 2026 Hoson. All rights reserved.
  */
+
+#ifndef IMAGE_WIDGET__IMAGE_WIDGET_HPP_
+#define IMAGE_WIDGET__IMAGE_WIDGET_HPP_
 
 #include <HsCtrl/HsImageCtrl.h>
 

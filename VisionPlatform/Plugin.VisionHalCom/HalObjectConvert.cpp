@@ -103,6 +103,7 @@ static HObject geomCellToRegion(const HsCommData::HsObject& obj, int index)
         return r;
     }
     const ObjectKind k = obj.kindAt(index);
+    // 轴对齐矩形的 w、h 是像素数，Halcon 要闭区间的右下角
     if (k == ObjRect1) {
         const Rect1P* rc = obj.rect1At(index);
         if (!rc) {
@@ -123,6 +124,7 @@ static HObject geomCellToRegion(const HsCommData::HsObject& obj, int index)
         GenRectangle2(&r, rc->c.y, rc->c.x, rc->phi, rc->l1, rc->l2);
         return r;
     }
+    // 椭圆当前用同中心、同角度、半边长取 ra/rb 的旋转矩形生成
     if (k == ObjEllipse) {
         const EllipseP* e = obj.ellipseAt(index);
         if (!e) {
@@ -139,6 +141,7 @@ static HObject geomCellToRegion(const HsCommData::HsObject& obj, int index)
         GenCircle(&r, c->c.y, c->c.x, c->r);
         return r;
     }
+    // 线和两点轮廓按半径 8 膨胀成条带；多点轮廓按闭合多边形填充
     if (k == ObjLine) {
         const LineP* ln = obj.lineAt(index);
         if (!ln) {

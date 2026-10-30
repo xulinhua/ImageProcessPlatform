@@ -88,7 +88,7 @@ public:
     bool operator!=(const HsMat& other) const;
 
 private:
-    struct Body;
+    struct Body; ///< 共享数据体，定义在 HsMat.cpp
     /** @brief 确保已分配缓冲 */
     void ensure(int rows, int cols);
     /** @brief 若被共享则拆开拷贝 */

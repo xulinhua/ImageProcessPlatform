@@ -104,6 +104,7 @@ AlgToolOut HalCaliper::run(const AlgToolIn& in)
         if (sel.empty()) {
             sel = "all";
         }
+        // 每块搜索区生成一个测量矩形，每块最多取 searchCount 个结果
         const std::vector<HsCommData::HsObject> rois = plainRois(in.rois);
         const int toolCount = in.run.value("searchCount").toInt(1);
         AlgToolOut out;
@@ -123,6 +124,7 @@ AlgToolOut HalCaliper::run(const AlgToolIn& in)
             }
             HalconCpp::HMeasure m;
             m.GenMeasureRectangle2(row, col, phi, l1, l2, w, h, "nearest_neighbor");
+            // edge 模式找单边画十字；其余按边对测宽画连线
             if (mode == "edge") {
                 HalconCpp::HTuple rowE;
                 HalconCpp::HTuple colE;
@@ -169,6 +171,7 @@ AlgToolOut HalCaliper::run(const AlgToolIn& in)
             out.message = "卡尺未测到边缘";
             return out;
         }
+        // 数值只报总数和最后一个结果的宽度、位置
         out.ok = true;
         out.values.insert("count", found);
         out.values.insert("width", lastWidth);

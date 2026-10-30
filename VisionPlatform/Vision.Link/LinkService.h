@@ -41,6 +41,7 @@ private:
         std::vector<std::string> stations;  ///< 对端认领的工站
         unsigned long long lastBeatMs;      ///< 上次心跳
         bool subscribed;                    ///< 对端要看别人的画面
+        /** @brief 未心跳、未订阅 */
         Peer() : lastBeatMs(0), subscribed(false) {}
     };
 

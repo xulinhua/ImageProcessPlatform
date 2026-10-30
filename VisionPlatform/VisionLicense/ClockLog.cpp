@@ -1,6 +1,9 @@
 /**
  * @file ClockLog.cpp
  * @brief 注册表、ProgramData、本地应用数据各一份
+ * @author Hoson
+ *
+ * @copyright Copyright (c) 2026 Hoson. All rights reserved.
  */
 
 #include "ClockLog.h"
@@ -190,6 +193,7 @@ bool ClockLog::latest(long long* stamp, int* found) const
     }
     long long best = 0;
     int n = 0;
+    // 注册表一份
     HKEY key = 0;
     if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\VisionPlatform\\License", 0, KEY_READ, &key) == ERROR_SUCCESS) {
         unsigned char buf[64];
@@ -203,6 +207,7 @@ bool ClockLog::latest(long long* stamp, int* found) const
         }
         RegCloseKey(key);
     }
+    // ProgramData 与本地应用数据下的 tick.dat，解不开的不计数
     const int places[2] = {CSIDL_COMMON_APPDATA, CSIDL_LOCAL_APPDATA};
     const char* labels[2] = {"prog", "local"};
     for (int i = 0; i < 2; ++i) {

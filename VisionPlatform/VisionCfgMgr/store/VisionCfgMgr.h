@@ -16,6 +16,7 @@
 
 namespace Vision {
 
+/** @brief 读本机设置文件的结果（loadSettings 返回） */
 enum FileLoadStatus {
     FileLoadOk = 0,      ///< 读到有效内容
     FileLoadMissing,     ///< 文件不存在

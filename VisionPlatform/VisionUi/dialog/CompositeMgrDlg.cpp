@@ -189,6 +189,7 @@ CompositeEditDlg::CompositeEditDlg(const QString& id, QWidget* parent)
     , m_ports(nullptr)
     , m_paras(nullptr)
 {
+    // 上：名称、说明；中：内部工具 | 公开接口 | 公开参数三列；下：保存、关闭
     setWindowTitle(T("修改组合工具"));
     resize(860, 520);
     m_name = new QLineEdit(this);
@@ -247,6 +248,7 @@ CompositeEditDlg::CompositeEditDlg(const QString& id, QWidget* parent)
     lay->addLayout(top);
     lay->addLayout(mid, 1);
     lay->addLayout(buttons);
+    // 载入定义；选中第一个内部工具会触发 onToolChanged 填公开项
     CompositeDef* d = CompositeMgr::instance().find(ObjectId::fromString(ss(m_id)));
     if (!d) {
         return;
@@ -366,6 +368,7 @@ void CompositeEditDlg::onMoveDown()
     syncToolOrder();
 }
 
+// 按当前内部工具填算法库下拉、公开接口和公开参数
 void CompositeEditDlg::loadPubs()
 {
     m_ports->clear();
@@ -390,6 +393,7 @@ void CompositeEditDlg::loadPubs()
         m_algLib->blockSignals(false);
         return;
     }
+    // 算法库：列出已登记的库；工具当前库不在其中时补一项保持原值
     const std::vector<AlgLibKind> libs = AlgToolBaseRegistry::instance().libs(tool->toolName);
     int pick = -1;
     for (size_t i = 0; i < libs.size(); ++i) {
@@ -413,6 +417,7 @@ void CompositeEditDlg::loadPubs()
     }
     m_filling = false;
     m_algLib->blockSignals(false);
+    // 接口取工具壳声明，没有工具壳时按类型取默认接口；已公开的打勾
     ToolBase* proto = ToolRegistry::instance().find(tool->toolName);
     std::vector<PortDesc> ports = proto ? proto->ports() : defaultPortsForType(tool->type);
     for (size_t i = 0; i < ports.size(); ++i) {
@@ -433,6 +438,7 @@ void CompositeEditDlg::loadPubs()
     if (!proto) {
         return;
     }
+    // 参数只在有工具壳时列出
     const std::vector<ParamField> fields = proto->paramFields();
     for (size_t i = 0; i < fields.size(); ++i) {
         QListWidgetItem* it = new QListWidgetItem(QString::fromUtf8(fields[i].title.c_str()), m_paras);
@@ -448,6 +454,7 @@ void CompositeEditDlg::loadPubs()
     }
 }
 
+// 保留其他工具的公开项，当前工具的按勾选重建
 void CompositeEditDlg::storePubs()
 {
     CompositeDef* d = CompositeMgr::instance().find(ObjectId::fromString(ss(m_id)));
@@ -496,6 +503,7 @@ void CompositeEditDlg::storePubs()
     d->paras.swap(paras);
 }
 
+// 添加内部工具
 void CompositeEditDlg::onAddTool()
 {
     storePubs();
@@ -503,6 +511,7 @@ void CompositeEditDlg::onAddTool()
     if (!d) {
         return;
     }
+    // 候选：全部注册工具，加上除自己以外的组合工具（composite:id）；独立组合工具不列项目组合工具
     const std::vector<ToolBase*> tools = ToolRegistry::instance().all();
     QStringList names;
     for (size_t i = 0; i < tools.size(); ++i) {
@@ -544,6 +553,7 @@ void CompositeEditDlg::onAddTool()
         m_tools->setCurrentItem(it);
         return;
     }
+    // 普通工具：make 失败时退回只带 id 和注册名的空壳
     ToolCfg tool = ToolCfg::make(ss(pick), ObjectId());
     if (tool.id.isNull() && tool.toolName.empty()) {
         tool.id = ObjectId::create();
@@ -560,6 +570,7 @@ void CompositeEditDlg::onAddTool()
     m_tools->setCurrentItem(it);
 }
 
+// 删除选中的内部工具
 void CompositeEditDlg::onDelTool()
 {
     CompositeDef* d = CompositeMgr::instance().find(ObjectId::fromString(ss(m_id)));
@@ -573,6 +584,7 @@ void CompositeEditDlg::onDelTool()
     loadPubs();
 }
 
+// 写回名称、说明；独立组合工具同时存盘
 void CompositeEditDlg::onSave()
 {
     applyAlgLib();

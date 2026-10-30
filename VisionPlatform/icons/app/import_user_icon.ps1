@@ -1,9 +1,9 @@
-# Tight-crop user icon (remove white margin) then export app.png / app.ico
+ï»¿# Tight-crop user icon (remove white margin) then export app.png / app.ico
 $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.Drawing
 
-$srcPath = 'D:\360¼«ËÙä¯ÀÀÆ÷XÏÂÔØ\1789181756.png'
-$outDir = 'd:\SVN\Í¨ÓÃ¹¤¾ßÆ½Ì¨¿ª·¢\VisionPlatformTest\VisionPlatform\icons\app'
+$srcPath = 'D:\360æé€Ÿæµè§ˆå™¨Xä¸‹è½½\1789181756.png'
+$outDir = 'd:\SVN\é€šç”¨å·¥å…·å¹³å°å¼€å‘\VisionPlatformTest\VisionPlatform\icons\app'
 $pngPath = Join-Path $outDir 'app.png'
 $icoPath = Join-Path $outDir 'app.ico'
 Copy-Item -Force $srcPath (Join-Path $outDir 'source-user.png')

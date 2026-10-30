@@ -118,4 +118,18 @@ bool hTupleToHsTuple(const HalconCpp::HTuple& src, HsCommData::HsTuple*& out, st
     }
 }
 
+// 元组里第 index 个字符串
+std::string hTupleText(const HalconCpp::HTuple& values, int index)
+{
+    if (index < 0 || index >= static_cast<int>(values.Length())) {
+        return std::string();
+    }
+    try {
+        const char* text = values[index].S().Text();
+        return text != nullptr ? std::string(text) : std::string();
+    } catch (const HalconCpp::HException&) {
+        return std::string();
+    }
+}
+
 }

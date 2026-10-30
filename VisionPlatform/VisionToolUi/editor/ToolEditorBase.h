@@ -26,6 +26,7 @@ class VISION_TOOLUI_API ToolEditorBase : public QWidget {
 public:
     /** @brief 参数页底座，稍后绑定工具 */
     explicit ToolEditorBase(QWidget* parent = 0);
+    /** @brief 虚析构 */
     virtual ~ToolEditorBase() {}
 
     /** @brief 绑定同一 ToolCfg（快捷面板与调试窗共用） */

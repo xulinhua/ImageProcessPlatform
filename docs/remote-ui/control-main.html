@@ -1,0 +1,138 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="ui.css">
+<style>
+.win { width: 1600px; height: 940px; }
+.main { flex: 1; display: flex; min-height: 0; }
+.side { width: 270px; background: #fff; border-right: 1px solid #E8E8E8; display: flex; flex-direction: column; flex: none; }
+.s-search { padding: 10px 10px 6px; }
+.s-search .input { width: 100%; }
+.s-tabs { display: flex; gap: 16px; padding: 4px 14px 0; border-bottom: 1px solid #F0F0F0; font-size: 12px; color: #595959; }
+.s-tabs span { padding: 6px 0 8px; }
+.s-tabs span.on { color: #1677FF; border-bottom: 2px solid #1677FF; }
+.tree { flex: 1; padding: 6px; }
+.grp { display: flex; align-items: center; height: 32px; padding: 0 6px; font-weight: 600; gap: 6px; }
+.grp svg.i { width: 14px; height: 14px; color: #8C8C8C; }
+.grp .cnt { color: #8C8C8C; font-weight: 400; font-size: 12px; }
+.grp.on { background: #F5F7FA; border-radius: 4px; }
+.dev { display: flex; align-items: center; height: 32px; padding: 0 8px 0 30px; gap: 8px; border-radius: 4px; }
+.dev .meta { margin-left: auto; font-size: 11px; color: #8C8C8C; display: flex; gap: 6px; align-items: center; }
+.dev.sel { background: #E6F4FF; color: #1677FF; }
+.dev.off { color: #8C8C8C; }
+.dev svg.i { width: 13px; height: 13px; color: #8C8C8C; }
+.s-foot { border-top: 1px solid #F0F0F0; padding: 10px; display: flex; gap: 8px; }
+.s-foot .btn { flex: 1; }
+.wall { flex: 1; padding: 12px; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); gap: 10px; min-height: 0; min-width: 0; }
+.cell { background: #fff; border: 1px solid #E1E5EB; border-radius: 6px; display: flex; flex-direction: column; overflow: hidden; position: relative; min-height: 0; }
+.cell .hd { height: 30px; display: flex; align-items: center; padding: 0 10px; gap: 8px; border-bottom: 1px solid #F0F0F0; flex: none; }
+.cell .hd .nm { font-weight: 600; }
+.cell .hd .fps { margin-left: auto; font-size: 11px; color: #8C8C8C; }
+.cell .bd { flex: 1; display: flex; align-items: center; justify-content: center; background: #0E1116; min-height: 0; position: relative; }
+.cell .rs { height: 100%; max-width: 100%; }
+.cell.ctl { border: 2px solid #1890FF; }
+.cell.off { border: 2px solid #FF4D4F; }
+.cell.off .rs { filter: grayscale(1) brightness(.55); }
+.cell .ov { position: absolute; inset: 0; background: rgba(0, 0, 0, .55); display: flex; flex-direction: column; align-items: center; justify-content: center; color: #fff; gap: 6px; font-size: 14px; }
+.cell .ov small { color: #D9D9D9; font-size: 12px; }
+.badge { position: absolute; left: 10px; bottom: 10px; background: rgba(24, 144, 255, .92); color: #fff; font-size: 12px; padding: 3px 10px; border-radius: 12px; display: flex; gap: 5px; align-items: center; }
+.badge svg.i { width: 12px; height: 12px; }
+.hover { position: absolute; right: 8px; top: 8px; display: flex; gap: 4px; }
+.hover span { width: 28px; height: 28px; border-radius: 4px; background: rgba(0, 0, 0, .62); color: #fff; display: flex; align-items: center; justify-content: center; }
+.hover svg.i { width: 14px; height: 14px; }
+.cell.hov { box-shadow: 0 0 0 2px #91CAFF; }
+.cell.empty { border: 1px dashed #BFC7D2; background: #FAFBFC; align-items: center; justify-content: center; color: #8C8C8C; gap: 8px; }
+.cell.empty svg.i { width: 26px; height: 26px; color: #BFBFBF; }
+.alarm { position: absolute; right: 10px; bottom: 10px; background: rgba(255, 77, 79, .92); color: #fff; font-size: 12px; padding: 3px 10px; border-radius: 12px; display: flex; gap: 5px; align-items: center; }
+.alarm svg.i { width: 12px; height: 12px; }
+</style></head>
+<body>
+<div class="win">
+  <div class="title"><span class="logo"><i data-i="monitor"></i></span><span class="name">远程控制</span><span class="wb"><i data-i="minus"></i></span><span class="wb"><i data-i="square"></i></span><span class="wb x"><i data-i="x"></i></span></div>
+  <div class="menu"><span>文件</span><span>设备</span><span>视图</span><span>工具</span><span>帮助</span></div>
+  <div class="tb">
+    <span class="btn pri"><i data-i="plus"></i>添加设备</span>
+    <span class="btn"><i data-i="refresh"></i>刷新</span>
+    <span class="sep"></span>
+    <span class="lbl">布局</span>
+    <span class="seg"><span class="btn">1×1</span><span class="btn">2×2</span><span class="btn on">3×3</span><span class="btn">4×4</span></span>
+    <span class="lbl" style="margin-left:6px">行</span><span class="input" style="width:46px">3</span>
+    <span class="lbl">列</span><span class="input" style="width:46px">3</span>
+    <span class="sep"></span>
+    <span class="btn"><i data-i="play"></i>轮巡</span>
+    <span class="input sel" style="width:72px">10 秒<i data-i="down"></i></span>
+    <span class="sep"></span>
+    <span class="lbl">显示</span>
+    <span class="input sel" style="width:120px">全部设备<i data-i="down"></i></span>
+    <span class="grow"></span>
+    <span class="btn ico"><i data-i="left"></i></span><span class="lbl" style="padding:0 6px">1 / 1</span><span class="btn ico"><i data-i="right"></i></span>
+    <span class="sep"></span>
+    <span class="btn"><i data-i="full"></i>全屏墙</span>
+  </div>
+  <div class="main">
+    <div class="side">
+      <div class="s-search"><span class="input ph"><i data-i="search"></i>搜索名称 / 设备 ID / IP</span></div>
+      <div class="s-tabs"><span class="on">分组</span><span>最近连接</span><span>局域网发现 3</span></div>
+      <div class="tree">
+        <div class="grp on"><i data-i="down"></i>一号线 <span class="cnt">3/4</span></div>
+        <div class="dev sel"><span class="dot"></span>贴装一号<span class="meta"><i data-i="monitor"></i>桌面</span></div>
+        <div class="dev"><span class="dot"></span>检测二号<span class="meta"><i data-i="lock"></i>张工</span></div>
+        <div class="dev"><span class="dot"></span>检测三号<span class="meta"><i data-i="app"></i>窗口</span></div>
+        <div class="dev off"><span class="dot off"></span>包装四号<span class="meta">离线 14:02</span></div>
+        <div class="grp"><i data-i="down"></i>二号线 <span class="cnt">3/3</span></div>
+        <div class="dev"><span class="dot"></span>点胶五号<span class="meta"><i data-i="monitor"></i>桌面</span></div>
+        <div class="dev"><span class="dot warn"></span>点胶六号<span class="meta" style="color:#D46B08">NG 告警</span></div>
+        <div class="dev"><span class="dot"></span>贴装七号<span class="meta"><i data-i="monitor"></i>桌面</span></div>
+        <div class="grp"><i data-i="down"></i>售后 · 客户现场 <span class="cnt">1/1</span></div>
+        <div class="dev"><span class="dot"></span>客户A-检测机<span class="meta"><span class="tag purple">中继</span></span></div>
+        <div class="grp"><i data-i="right"></i>未分组 <span class="cnt">0/2</span></div>
+      </div>
+      <div class="s-foot"><span class="btn sm"><i data-i="plus"></i>新建分组</span><span class="btn sm"><i data-i="zap"></i>远程唤醒</span></div>
+    </div>
+    <div class="wall">
+      <div class="cell hov">
+        <div class="hd"><span class="dot"></span><span class="nm">贴装一号</span><span class="tag">桌面</span><span class="fps">2 fps</span></div>
+        <div class="bd"><div class="rs" data-v="chip" data-task="1"></div>
+          <div class="hover"><span><i data-i="eye"></i></span><span><i data-i="mouse"></i></span><span><i data-i="folder"></i></span><span><i data-i="full"></i></span></div>
+        </div>
+      </div>
+      <div class="cell ctl">
+        <div class="hd"><span class="dot"></span><span class="nm">检测二号</span><span class="tag">窗口</span><span class="fps">2 fps</span></div>
+        <div class="bd"><div class="rs" data-v="pcb" data-okn="8,214" data-ngn="6"></div><span class="badge"><i data-i="lock"></i>张工 操作中</span></div>
+      </div>
+      <div class="cell">
+        <div class="hd"><span class="dot"></span><span class="nm">检测三号</span><span class="tag">窗口</span><span class="fps">2 fps</span></div>
+        <div class="bd"><div class="rs" data-v="pcb" data-okn="9,902" data-ngn="11"></div></div>
+      </div>
+      <div class="cell off">
+        <div class="hd"><span class="dot err"></span><span class="nm">包装四号</span><span class="tag red">离线</span><span class="fps">—</span></div>
+        <div class="bd"><div class="rs" data-v="pack" data-task="1"></div><div class="ov"><span>设备离线，正在重连…</span><small>最后一帧 14:02:31</small></div></div>
+      </div>
+      <div class="cell">
+        <div class="hd"><span class="dot"></span><span class="nm">点胶五号</span><span class="tag">桌面</span><span class="fps">2 fps</span></div>
+        <div class="bd"><div class="rs" data-v="glue" data-task="1" data-okn="5,377" data-ngn="3"></div></div>
+      </div>
+      <div class="cell">
+        <div class="hd"><span class="dot warn"></span><span class="nm">点胶六号</span><span class="tag">桌面</span><span class="fps">2 fps</span></div>
+        <div class="bd"><div class="rs" data-v="glue" data-ok="0" data-task="1" data-okn="5,102" data-ngn="47"></div><span class="alarm"><i data-i="alert"></i>连续 NG 5 次</span></div>
+      </div>
+      <div class="cell">
+        <div class="hd"><span class="dot"></span><span class="nm">贴装七号</span><span class="tag">桌面</span><span class="fps">2 fps</span></div>
+        <div class="bd"><div class="rs" data-v="chip" data-task="1" data-okn="11,045" data-ngn="9"></div></div>
+      </div>
+      <div class="cell">
+        <div class="hd"><span class="dot"></span><span class="nm">客户A-检测机</span><span class="tag purple">中继</span><span class="fps">1 fps</span></div>
+        <div class="bd"><div class="rs" data-v="pack" data-task="1" data-okn="3,580" data-ngn="2"></div></div>
+      </div>
+      <div class="cell empty"><i data-i="plus"></i><span>拖入设备，或双击添加</span></div>
+    </div>
+  </div>
+  <div class="status">
+    <span class="it"><span class="dot"></span>监听 <b>0.0.0.0:19100</b></span>
+    <span class="it">在线 <b>7 / 8</b></span>
+    <span class="it"><i data-i="server"></i>中继 <b>relay.company.local</b> 已连接</span>
+    <span class="it"><i data-i="download"></i>下行 <b>1.9 Mbps</b></span>
+    <span class="grow"></span>
+    <span class="it"><i data-i="user"></i><b>张工</b>（工程师）</span>
+  </div>
+</div>
+<script src="ui.js"></script>
+</body></html>

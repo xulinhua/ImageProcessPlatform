@@ -109,6 +109,7 @@ bool matToHsImage(const cv::Mat& img, int64_t frameId, HsCommData::HsImage*& out
         }
         return false;
     }
+    // 先统一到 8 位单通道或 8 位 BGR，四通道丢掉 alpha
     cv::Mat work;
     if (img.type() == CV_8UC1 || img.type() == CV_8UC3) {
         work = img;
@@ -130,6 +131,7 @@ bool matToHsImage(const cv::Mat& img, int64_t frameId, HsCommData::HsImage*& out
         }
         work = tmp;
     }
+    // BGR 逐像素换成 RGB 顺序；单通道按行整段拷贝
     if (work.type() == CV_8UC3) {
         HsCommData::HsImage fb = HsCommData::HsImage::make(work.cols, work.rows,
                                                             HsCommData::PixelByte, HsCommData::EncodeRgb, frameId);

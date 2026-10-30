@@ -28,6 +28,7 @@ class AlgToolBase; // 算法插件基类（定义在 VisionAlgToolBase）
  */
 class IPluginHost {
 public:
+    /** @brief 虚析构 */
     virtual ~IPluginHost() {}
 
     /**
@@ -120,16 +121,22 @@ public:
     /** @brief 已登记项，带上来源 DLL */
     std::vector<ToolLibReg> registrations() const;
 
+    /** @brief 记下来源 DLL 的登记项，再交 PluginHost 写入 ToolRegistry */
     void addTool(ToolBase* tool);
+    /** @brief 记下来源 DLL 的登记项，再交 PluginHost 写入 AlgToolBaseRegistry */
     void addAlg(AlgToolBase* algor);
+    /** @brief 转交 PluginHost 写系统日志 */
     void logSystem(const char* message);
 
 private:
+    /** @brief 单例私有构造 */
     ToolLibMgr();
+    /** @brief 禁止拷贝（只声明不实现） */
     ToolLibMgr(const ToolLibMgr&);
+    /** @brief 禁止赋值（只声明不实现） */
     ToolLibMgr& operator=(const ToolLibMgr&);
 
-    struct Impl;
+    struct Impl; ///< 私有实现
     Impl* m_impl; ///< 已加载文件表
 };
 

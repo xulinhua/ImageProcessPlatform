@@ -1,6 +1,6 @@
 /**
  * @file HsImageWindow.h
- * @brief HsImageWindowÍ·ÎÄ¼ş
+ * @brief HsImageWindowå¤´æ–‡ä»¶
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -35,497 +35,498 @@ class Mat;
 
 namespace HsCtrl {
 
-/** @brief °Ñ HsCommData::Graphic ×¢²á½ø Qt ÔªÀàĞÍ£¬¹©ĞÅºÅÅÅ¶Ó */
+/** @brief æŠŠ HsCommData::Graphic æ³¨å†Œè¿› Qt å…ƒç±»å‹ï¼Œä¾›ä¿¡å·æ’é˜Ÿ */
 void HSCTRL_EXPORT registerGraphicMetaTypes();
 
 /**
  * @class HsImageWindow
- * @brief Í¼ÏñÏÔÊ¾Óë½»»¥´°¿Ú¡£³¡¾°×ø±êÓëÍ¼ÏñÏñËØ 1:1£¬Ëõ·ÅÖ»¸ÄÊÓ¿Ú±ä»»¡£
- *        ¶ÔÍâÈë¿ÚÊÇ image_widget::ImageWidgetApi¡£±¾ÀàÊÇÄÚ²¿»­²¼¡£
- *        µ×Í¼¡¢½á¹ûµş¼ÓÓëÓÃ»§ ROI ·Ö²ãË¢ĞÂ£¬²»ÔÚÉÏÒ»Ö¡»­ÃæÉÏÔÙ²ÉÑù¡£
- *        ¶ÔÍâĞ­ÒéÊÇ HsCommData::Graphic / HsCommData::GeomStyle / HsCommData::FrameOverlay£¬²»±©Â¶ Qt Í¼Ôª¡£
+ * @brief å›¾åƒæ˜¾ç¤ºä¸äº¤äº’çª—å£ã€‚åœºæ™¯åæ ‡ä¸å›¾åƒåƒç´  1:1ï¼Œç¼©æ”¾åªæ”¹è§†å£å˜æ¢ã€‚
+ *        å¯¹å¤–å…¥å£æ˜¯ image_widget::ImageWidgetApiã€‚æœ¬ç±»æ˜¯å†…éƒ¨ç”»å¸ƒã€‚
+ *        åº•å›¾ã€ç»“æœå åŠ ä¸ç”¨æˆ· ROI åˆ†å±‚åˆ·æ–°ï¼Œä¸åœ¨ä¸Šä¸€å¸§ç”»é¢ä¸Šå†é‡‡æ ·ã€‚
+ *        å¯¹å¤–åè®®æ˜¯ HsCommData::Graphic / HsCommData::GeomStyle / HsCommData::FrameOverlayï¼Œä¸æš´éœ² Qt å›¾å…ƒã€‚
  */
 class HSCTRL_EXPORT HsImageWindow : public QGraphicsView {
     Q_OBJECT
 public:
-    /************************ ¹¹Ôì / Îö¹¹ ************************/
-    /** @brief ´´½¨¿Õ´°¿Ú */
+    /************************ æ„é€  / ææ„ ************************/
+    /** @brief åˆ›å»ºç©ºçª—å£ */
     explicit HsImageWindow(QWidget* parent = 0);
-    /** @brief ÊÍ·Å Pimpl */
+    /** @brief é‡Šæ”¾ Pimpl */
     virtual ~HsImageWindow();
 
-    /************************ Ä£Ê½Óë¹¤¾ß ************************/
-    /** @brief Éè¼ÆÌ¬¿É»­ ROI£¬ÔËĞĞÌ¬Ö»ä¯ÀÀ */
+    /************************ æ¨¡å¼ä¸å·¥å…· ************************/
+    /** @brief è®¾è®¡æ€å¯ç”» ROIï¼Œè¿è¡Œæ€åªæµè§ˆ */
     void setWindowMode(WindowMode mode);
-    /** @brief µ±Ç°´°¿ÚÄ£Ê½ */
+    /** @brief å½“å‰çª—å£æ¨¡å¼ */
     WindowMode windowMode() const;
-    /** @brief ÇĞ»»»æÖÆ¹¤¾ß¡£ä¯ÀÀ²»Âä±Ê£»ToolBrush Ö»ÔÚ»æÖÆ»á»°ÀïÊ¹ÓÃ */
+    /** @brief åˆ‡æ¢ç»˜åˆ¶å·¥å…·ã€‚æµè§ˆä¸è½ç¬”ï¼›ToolBrush åªåœ¨ç»˜åˆ¶ä¼šè¯é‡Œä½¿ç”¨ */
     void setDrawTool(DrawTool tool);
-    /** @brief µ±Ç°»æÖÆ¹¤¾ß */
+    /** @brief å½“å‰ç»˜åˆ¶å·¥å…· */
     DrawTool drawTool() const;
-    /** @brief ÉèÖÃÏñËØ±ÈÀı¡£Î´Ğ´ÈëµÄµ¥Î»°´1:1 */
+    /** @brief è®¾ç½®åƒç´ æ¯”ä¾‹ã€‚æœªå†™å…¥çš„å•ä½æŒ‰1:1 */
     void setImageCalib(const HsCommData::ImageCalib& calib);
-    /** @brief µ±Ç°ÏñËØ±ÈÀı */
+    /** @brief å½“å‰åƒç´ æ¯”ä¾‹ */
     HsCommData::ImageCalib imageCalib() const;
     /**
-     * @brief ¿ªÊ¼Ò»´Î¶ÀÕ¼»æÖÆ¡£ä¯ÀÀ¹¤¾ß»áÊ§°Ü£»³É¹¦ºóÖ±µ½Ìá½»»òÈ¡Ïû²Å½áÊø¡£
-     * @note Ô²¡¢Öá¶ÔÆë¾ØĞÎ¡¢Ğı×ª¾ØĞÎ¡¢ÍÖÔ²¡¢Ö±Ïß¡¢Ê®×Ö¡¢ÕÛÏß¡¢¶à±ßĞÎ¡¢»­±Ê¿É¿ª»á»°¡£
-     *       ÎÄ±¾µÈ¹¤¾ß·µ»Ø false£¬²»»á·¢³ö drawSessionFinished¡£
-     *       ÓïÒå½Ó½ü Halcon draw_*£ºÍÏ³öĞÎ×´ºóÓÒ¼ü»ò Enter ½áÊø¡£
-     *       Ö±½Ó setDrawTool Ö»»»¹¤¾ß£¬²»¿ª»á»°¡£
+     * @brief å¼€å§‹ä¸€æ¬¡ç‹¬å ç»˜åˆ¶ã€‚æµè§ˆå·¥å…·ä¼šå¤±è´¥ï¼›æˆåŠŸåç›´åˆ°æäº¤æˆ–å–æ¶ˆæ‰ç»“æŸã€‚
+     * @note åœ†ã€è½´å¯¹é½çŸ©å½¢ã€æ—‹è½¬çŸ©å½¢ã€æ¤­åœ†ã€ç›´çº¿ã€åå­—ã€æŠ˜çº¿ã€å¤šè¾¹å½¢ã€ç”»ç¬”å¯å¼€ä¼šè¯ã€‚
+     *       æ–‡æœ¬ç­‰å·¥å…·è¿”å› falseï¼Œä¸ä¼šå‘å‡º drawSessionFinishedã€‚
+     *       è¯­ä¹‰æ¥è¿‘ Halcon draw_*ï¼šæ‹–å‡ºå½¢çŠ¶åå³é”®æˆ– Enter ç»“æŸã€‚
+     *       ç›´æ¥ setDrawTool åªæ¢å·¥å…·ï¼Œä¸å¼€ä¼šè¯ã€‚
      */
     bool beginDrawSession(DrawTool tool);
-    /** @brief ÊÇ·ñÕıÔÚ»æÖÆ»á»°ÖĞ */
+    /** @brief æ˜¯å¦æ­£åœ¨ç»˜åˆ¶ä¼šè¯ä¸­ */
     bool drawSessionActive() const;
-    /** @brief Ìá½»µ±Ç°»á»°£¬²¢·¢³ö»æÖÆ½áÊøĞÅºÅ */
+    /** @brief æäº¤å½“å‰ä¼šè¯ï¼Œå¹¶å‘å‡ºç»˜åˆ¶ç»“æŸä¿¡å· */
     void commitDrawSession();
-    /** @brief È¡Ïûµ±Ç°»á»°£¬²»±£Áô²İ¸å */
+    /** @brief å–æ¶ˆå½“å‰ä¼šè¯ï¼Œä¸ä¿ç•™è‰ç¨¿ */
     void cancelDrawSession();
-    /** @brief È¡ÏûÎ´Ìá½»µÄÏğÆ¤½î */
+    /** @brief å–æ¶ˆæœªæäº¤çš„æ©¡çš®ç­‹ */
     void cancelActiveDraw();
-    /** @brief »­±Ê°ë¾¶£¨Í¼ÏñÏñËØ£©£¬Ò»Î»Ğ¡Êı£¬¼Ğµ½ 0.5..256 */
+    /** @brief ç”»ç¬”åŠå¾„ï¼ˆå›¾åƒåƒç´ ï¼‰ï¼Œä¸€ä½å°æ•°ï¼Œå¤¹åˆ° 0.5..256 */
     void setBrushRadius(double radiusPx);
-    /** @brief µ±Ç°»­±Ê°ë¾¶£¨Í¼ÏñÏñËØ£© */
+    /** @brief å½“å‰ç”»ç¬”åŠå¾„ï¼ˆå›¾åƒåƒç´ ï¼‰ */
     double brushRadius() const;
-    /** @brief ÎÄ±¾¹¤¾ßÒªĞ´ÏÂµÄ×Ö·û´® */
+    /** @brief æ–‡æœ¬å·¥å…·è¦å†™ä¸‹çš„å­—ç¬¦ä¸² */
     void setDrawText(const QString& text);
-    /** @brief ÎÄ±¾¹¤¾ßµ±Ç°×Ö·û´® */
+    /** @brief æ–‡æœ¬å·¥å…·å½“å‰å­—ç¬¦ä¸² */
     QString drawText() const;
-    /** @brief ÎÄ±¾ÃªµãÓÃÍ¼Ïñ×ø±ê»¹ÊÇ´°¿Ú×ø±ê */
+    /** @brief æ–‡æœ¬é”šç‚¹ç”¨å›¾åƒåæ ‡è¿˜æ˜¯çª—å£åæ ‡ */
     void setTextToolSpace(DrawInfoSpace space);
-    /** @brief ÎÄ±¾¹¤¾ßµ±Ç°×ø±êÏµ */
+    /** @brief æ–‡æœ¬å·¥å…·å½“å‰åæ ‡ç³» */
     DrawInfoSpace textToolSpace() const;
-    /** @brief ÎÄ±¾¹¤¾ß×ÖºÅ£¨ÆÁÄ»ÏñËØ£© */
+    /** @brief æ–‡æœ¬å·¥å…·å­—å·ï¼ˆå±å¹•åƒç´ ï¼‰ */
     void setTextFontPx(int px);
-    /** @brief ÎÄ±¾¹¤¾ßµ±Ç°×ÖºÅ */
+    /** @brief æ–‡æœ¬å·¥å…·å½“å‰å­—å· */
     int textFontPx() const;
     /**
-     * @brief Ê®×Ö°ë¿í
-     * @param size Í¼ÏñÏñËØ¡£Ğ¡ÓÚ 0 ±íÊ¾´©´°£¬³¤¿íËæ´°¿Ú
+     * @brief åå­—åŠå®½
+     * @param size å›¾åƒåƒç´ ã€‚å°äº 0 è¡¨ç¤ºç©¿çª—ï¼Œé•¿å®½éšçª—å£
      */
     void setCrossSize(double size);
-    /** @brief Ê®×Ö°ë¿í¡£Ğ¡ÓÚ 0 ±íÊ¾´©´° */
+    /** @brief åå­—åŠå®½ã€‚å°äº 0 è¡¨ç¤ºç©¿çª— */
     double crossSize() const;
-    /** @brief ÊµÊ±±ê¼Ç¡£Demo ÓÃÀ´Çø·ÖÊÇ·ñ¸úÖ¡Ë¢ĞÂ */
+    /** @brief å®æ—¶æ ‡è®°ã€‚Demo ç”¨æ¥åŒºåˆ†æ˜¯å¦è·Ÿå¸§åˆ·æ–° */
     void setLive(bool live);
-    /** @brief ÊÇ·ñ´¦ÓÚÊµÊ±±ê¼Ç */
+    /** @brief æ˜¯å¦å¤„äºå®æ—¶æ ‡è®° */
     bool isLive() const;
 
-    /************************ µ×Í¼ ************************/
+    /************************ åº•å›¾ ************************/
     /**
-     * @brief ÓÃÔ­Ê¼ÏñËØ»»µ×Í¼¡£ÄÚ²¿×ª³ÉÏÔÊ¾»º³åºóÔÙÌùµ½³¡¾°¡£
+     * @brief ç”¨åŸå§‹åƒç´ æ¢åº•å›¾ã€‚å†…éƒ¨è½¬æˆæ˜¾ç¤ºç¼“å†²åå†è´´åˆ°åœºæ™¯ã€‚
      * @param encoding rgb8 / bgr8 / rgba8 / bgra8 / mono8 / 8uc1
-     * @note ³ß´ç»ò±àÂë·Ç·¨Ê±ºöÂÔ±¾´Îµ÷ÓÃ¡£
-     *       ÊÇ·ñÁ¬´øÇåµôµş¼ÓÓÉ ImageRefreshPolicy ¾ö¶¨£¬Ä¬ÈÏ±£Áô Stack / Drawing / drawInfo¡£
+     * @note æŒ‡é’ˆä¸ºç©ºæˆ–å°ºå¯¸ã€è¡Œè·¨åº¦ä¸å¤§äº 0 æ—¶æ¸…ç©ºåº•å›¾ï¼›ç¼–ç ä¸æ”¯æŒæ—¶å¿½ç•¥æœ¬æ¬¡è°ƒç”¨ã€‚
+     *       æ˜¯å¦è¿å¸¦æ¸…æ‰å åŠ ç”± ImageRefreshPolicy å†³å®šï¼Œé»˜è®¤ä¿ç•™ Stack / Drawing / drawInfoã€‚
      */
     void setImage(const uint8_t* data, int width, int height, int strideBytes,
                   const QString& encoding);
-    /** @brief Ö±½Ó»»ÉÏÒÑ¾­±¸ºÃµÄÍ¼¡£²»ÔÚÕâÀïÔÙ¿½ÏñËØ¡¢²»×ö QPixmap */
+    /** @brief ç›´æ¥æ¢ä¸Šå·²ç»å¤‡å¥½çš„å›¾ã€‚ä¸åœ¨è¿™é‡Œå†æ‹·åƒç´ ã€ä¸åš QPixmap */
     void setPreparedImage(const QImage& image);
-    /** @brief Í¬ setImage£¬±£Áô¾Éµ÷ÓÃÃû */
+    /** @brief åŒ setImageï¼Œä¿ç•™æ—§è°ƒç”¨å */
     void setImageRaw(const uint8_t* data, int width, int height, int strideBytes,
                      const QString& encoding);
     /**
-     * @brief ÓÃ cv::Mat »»µ×Í¼¡£Ö»½ÓÊÜÁ¬Ğø»ò¿É°´ĞĞ¶ÁµÄ 8 Î»Í¼¡£
-     *        Ö§³Ö CV_8UC1(mono8)¡¢CV_8UC3(bgr8)¡¢CV_8UC4(bgra8)£¬±ØÒªÊ± clone¡£
+     * @brief ç”¨ cv::Mat æ¢åº•å›¾ã€‚åªæ¥å—è¿ç»­æˆ–å¯æŒ‰è¡Œè¯»çš„ 8 ä½å›¾ã€‚
+     *        æ”¯æŒ CV_8UC1(mono8)ã€CV_8UC3(bgr8)ã€CV_8UC4(bgra8)ï¼Œå¿…è¦æ—¶ cloneã€‚
      */
     void setImage(const cv::Mat& mat);
     /**
-     * @brief ½âÂë JPEG/PNG µÈÑ¹Ëõ×Ö½Ú»»µ×Í¼¡£
-     * @param formatHint Èç "jpeg"/"png"£¬¿ÕÔò½»¸ø Qt ²Â²â
+     * @brief è§£ç  JPEG/PNG ç­‰å‹ç¼©å­—èŠ‚æ¢åº•å›¾ã€‚
+     * @param formatHint å¦‚ "jpeg"/"png"ï¼Œç©ºåˆ™äº¤ç»™ Qt çŒœæµ‹
      */
     void setCompressedImage(const QByteArray& data, const QString& formatHint = QString());
-    /** @brief Çåµôµ×Í¼£¬±£Áô Stack / Drawing */
+    /** @brief æ¸…æ‰åº•å›¾ï¼Œä¿ç•™ Stack / Drawing */
     void clearImage();
 
     /**
-     * @brief Ctrl ÏñËØĞ¡´°ÓÃµÄ 16 Î»Éî¶ÈÌ½Õë£¨ºÁÃ×£©¡£
-     *        ÆÕÍ¨ setImage ²»×Ô¶¯Çå³ı£¬ÓÉ¿Ç²ãÏÔÊ½¹ÜÀí¡£
+     * @brief Ctrl åƒç´ å°çª—ç”¨çš„ 16 ä½æ·±åº¦æ¢é’ˆï¼ˆæ¯«ç±³ï¼‰ã€‚
+     *        æ™®é€š setImage ä¸è‡ªåŠ¨æ¸…é™¤ï¼Œç”±å£³å±‚æ˜¾å¼ç®¡ç†ã€‚
      */
     void setDepthProbeU16(const uint16_t* data, int width, int height, int strideBytes = 0);
-    /** @brief Ctrl ÏñËØĞ¡´°ÓÃµÄ 32 Î»¸¡µãÉî¶ÈÌ½Õë£¨Ã×£¬µ¯³öÊ±ÏÔÊ¾ºÁÃ×£© */
+    /** @brief Ctrl åƒç´ å°çª—ç”¨çš„ 32 ä½æµ®ç‚¹æ·±åº¦æ¢é’ˆï¼ˆç±³ï¼Œå¼¹å‡ºæ—¶æ˜¾ç¤ºæ¯«ç±³ï¼‰ */
     void setDepthProbeF32(const float* data, int width, int height, int strideBytes = 0);
-    /** @brief Ctrl ÏñËØĞ¡´°ÓÃµÄ 64 Î»¸¡µãÉî¶ÈÌ½Õë£¨Ã×£¬µ¯³öÊ±ÏÔÊ¾ºÁÃ×£© */
+    /** @brief Ctrl åƒç´ å°çª—ç”¨çš„ 64 ä½æµ®ç‚¹æ·±åº¦æ¢é’ˆï¼ˆç±³ï¼Œå¼¹å‡ºæ—¶æ˜¾ç¤ºæ¯«ç±³ï¼‰ */
     void setDepthProbeF64(const double* data, int width, int height, int strideBytes = 0);
-    /** @brief ¹éÒ»»¯»Ò¶È£¬¹©Éî¶ÈÌ½Õë¡¸»Ò¶ÈÏÔÊ¾¡¹Ò»ĞĞ */
+    /** @brief å½’ä¸€åŒ–ç°åº¦ï¼Œä¾›æ·±åº¦æ¢é’ˆã€Œç°åº¦æ˜¾ç¤ºã€ä¸€è¡Œ */
     void setDepthProbeGray(const QImage& gray);
-    /** @brief ÇåµôÉî¶ÈÌ½Õë£¬Ctrl Ğ¡´°»Øµ½»Ò¶È/RGB */
+    /** @brief æ¸…æ‰æ·±åº¦æ¢é’ˆï¼ŒCtrl å°çª—å›åˆ°ç°åº¦/RGB */
     void clearDepthProbe();
-    /** @brief ÊÇ·ñÒÑÓĞµ×Í¼ */
+    /** @brief æ˜¯å¦å·²æœ‰åº•å›¾ */
     bool hasImage() const;
-    /** @brief µ±Ç°µ×Í¼ÏñËØ³ß´ç£¬ÎŞÍ¼Ê± 0¡Á0 */
+    /** @brief å½“å‰åº•å›¾åƒç´ å°ºå¯¸ï¼Œæ— å›¾æ—¶ 0Ã—0 */
     QSize currentImageSize() const;
-    /** @brief Í¬ currentImageSize */
+    /** @brief åŒ currentImageSize */
     QSize imageSize() const;
-    /** @brief µ±Ç°µ×Í¼Ö¡ºÅ¡£Ã»ÓĞ HsCommData::FrameOverlay ¶ÔÆëÊ±Ò²¿ÉÎª 0 */
+    /** @brief å½“å‰åº•å›¾å¸§å·ã€‚æ²¡æœ‰ HsCommData::FrameOverlay å¯¹é½æ—¶ä¹Ÿå¯ä¸º 0 */
     qint64 currentFrameId() const;
     /**
-     * @brief »»µ×Í¼Ê±ÊÇ·ñÁ¬´øÇå²ã¡£¶ÔÖ®ºóµÄ setImage / setCompressedImage ÉúĞ§¡£
-     * @param policy refresh*=true Ê±Çå¶ÔÓ¦²ã£¬false ±£Áô
+     * @brief æ¢åº•å›¾æ—¶æ˜¯å¦è¿å¸¦æ¸…å±‚ã€‚å¯¹ä¹‹åçš„ setImage / setCompressedImage ç”Ÿæ•ˆã€‚
+     * @param policy refresh*=true æ—¶æ¸…å¯¹åº”å±‚ï¼Œfalse ä¿ç•™
      */
     void setImageRefreshPolicy(const ImageRefreshPolicy& policy);
-    /** @brief µ±Ç°»»µ×Í¼²ßÂÔ */
+    /** @brief å½“å‰æ¢åº•å›¾ç­–ç•¥ */
     ImageRefreshPolicy imageRefreshPolicy() const;
 
-    /************************ ½á¹ûµş¼Ó£¨Stack£© ************************/
+    /************************ ç»“æœå åŠ ï¼ˆStackï¼‰ ************************/
     /**
-     * @brief disp* ×·¼Óµ½ Stack Ê±Ê¹ÓÃµÄÑÕÉ«
+     * @brief disp* è¿½åŠ åˆ° Stack æ—¶ä½¿ç”¨çš„é¢œè‰²
      */
     void setOverlayColor(const QColor& color);
-    /** @brief disp* ×·¼Óµ½ Stack Ê±Ê¹ÓÃµÄÏß¿í */
+    /** @brief disp* è¿½åŠ åˆ° Stack æ—¶ä½¿ç”¨çš„çº¿å®½ */
     void setOverlayWidth(double widthPx);
 
-    /** @brief ×·¼ÓÔ²µ½ Stack£¬frameId È¡µ±Ç°µ×Í¼ */
+    /** @brief è¿½åŠ åœ†åˆ° Stackï¼ŒframeId å–å½“å‰åº•å›¾ */
     void dispCircle(double x, double y, double r);
-    /** @brief ×·¼ÓÔ²µ½ Stack */
+    /** @brief è¿½åŠ åœ†åˆ° Stack */
     void dispCircle(const HsCommData::CircleP& circle);
     /**
-     * @brief ×·¼ÓÍÖÔ²µ½ Stack
-     * @param phi Ğı×ª½Ç¡£µ¥Î»ºÍÕı·½Ïò¸úÏµÍ³ÉèÖÃ
+     * @brief è¿½åŠ æ¤­åœ†åˆ° Stack
+     * @param phi æ—‹è½¬è§’ã€‚å•ä½å’Œæ­£æ–¹å‘è·Ÿç³»ç»Ÿè®¾ç½®
      */
     void dispEllipse(double x, double y, double ra, double rb, double phi = 0.0);
-    /** @brief ×·¼ÓÍÖÔ²µ½ Stack */
+    /** @brief è¿½åŠ æ¤­åœ†åˆ° Stack */
     void dispEllipse(const HsCommData::EllipseP& ellipse);
-    /** @brief ×·¼ÓÖá¶ÔÆë¾ØĞÎµ½ Stack */
+    /** @brief è¿½åŠ è½´å¯¹é½çŸ©å½¢åˆ° Stack */
     void dispRect1(double left, double top, double width, double height);
-    /** @brief ×·¼ÓÖá¶ÔÆë¾ØĞÎµ½ Stack */
+    /** @brief è¿½åŠ è½´å¯¹é½çŸ©å½¢åˆ° Stack */
     void dispRect1(const HsCommData::Rect1P& rect);
-    /** @brief ×·¼ÓÖá¶ÔÆë¾ØĞÎµ½ Stack£¨HsCommData::Box2£© */
+    /** @brief è¿½åŠ è½´å¯¹é½çŸ©å½¢åˆ° Stackï¼ˆHsCommData::Box2ï¼‰ */
     void dispRect1(const HsCommData::Box2& box);
     /**
-     * @brief ×·¼ÓĞı×ª¾ØĞÎµ½ Stack
-     * @param phi Ğı×ª½Ç¡£µ¥Î»ºÍÕı·½Ïò¸úÏµÍ³ÉèÖÃ
+     * @brief è¿½åŠ æ—‹è½¬çŸ©å½¢åˆ° Stack
+     * @param phi æ—‹è½¬è§’ã€‚å•ä½å’Œæ­£æ–¹å‘è·Ÿç³»ç»Ÿè®¾ç½®
      */
     void dispRect2(double x, double y, double l1, double l2, double phi = 0.0);
-    /** @brief ×·¼ÓĞı×ª¾ØĞÎµ½ Stack */
+    /** @brief è¿½åŠ æ—‹è½¬çŸ©å½¢åˆ° Stack */
     void dispRect2(const HsCommData::Rect2P& rect);
-    /** @brief ×·¼ÓÖ±Ïßµ½ Stack */
+    /** @brief è¿½åŠ ç›´çº¿åˆ° Stack */
     void dispLine(double x1, double y1, double x2, double y2);
-    /** @brief ×·¼ÓÖ±Ïßµ½ Stack */
+    /** @brief è¿½åŠ ç›´çº¿åˆ° Stack */
     void dispLine(const HsCommData::LineP& line);
     /**
-     * @brief ×·¼ÓÊ®×Öµ½ Stack
-     * @param size °ë¿í£¬Í¼ÏñÏñËØ¡£Ğ¡ÓÚ 0 ±íÊ¾´©´°
-     * @param angle Ğı×ª½Ç¡£µ¥Î»ºÍÕı·½Ïò¸úÏµÍ³ÉèÖÃ¡£0 ÎªÖá¶ÔÆë
+     * @brief è¿½åŠ åå­—åˆ° Stack
+     * @param size åŠå®½ï¼Œå›¾åƒåƒç´ ã€‚å°äº 0 è¡¨ç¤ºç©¿çª—
+     * @param angle æ—‹è½¬è§’ã€‚å•ä½å’Œæ­£æ–¹å‘è·Ÿç³»ç»Ÿè®¾ç½®ã€‚0 ä¸ºè½´å¯¹é½
      */
     void dispCross(double x, double y, double size = -1.0, double angle = 0.0);
     /**
-     * @brief ×·¼ÓÊ®×Öµ½ Stack
-     * @param center ÖĞĞÄ¡£size Ğ¡ÓÚ 0 ±íÊ¾´©´°
-     * @param angle Ğı×ª½Ç¡£µ¥Î»ºÍÕı·½Ïò¸úÏµÍ³ÉèÖÃ¡£0 ÎªÖá¶ÔÆë
+     * @brief è¿½åŠ åå­—åˆ° Stack
+     * @param center ä¸­å¿ƒã€‚size å°äº 0 è¡¨ç¤ºç©¿çª—
+     * @param angle æ—‹è½¬è§’ã€‚å•ä½å’Œæ­£æ–¹å‘è·Ÿç³»ç»Ÿè®¾ç½®ã€‚0 ä¸ºè½´å¯¹é½
      */
     void dispCross(const HsCommData::Point2d& center, double size = -1.0, double angle = 0.0);
     /**
-     * @brief ×·¼Ó¼ıÍ·µ½ Stack
-     * @param x1,y1 Î²£»x2,y2 Í·
+     * @brief è¿½åŠ ç®­å¤´åˆ° Stack
+     * @param x1,y1 å°¾ï¼›x2,y2 å¤´
      */
     void dispArrow(double x1, double y1, double x2, double y2);
-    /** @brief ×·¼Ó¼ıÍ·µ½ Stack */
+    /** @brief è¿½åŠ ç®­å¤´åˆ° Stack */
     void dispArrow(const HsCommData::HsArrow& arrow);
-    /** @brief ×·¼ÓĞĞ³ÌÇøÓòµ½ Stack */
+    /** @brief è¿½åŠ è¡Œç¨‹åŒºåŸŸåˆ° Stack */
     void dispRegion(const HsCommData::HsRegion& region);
-    /** @brief ×·¼Ó XLD / ÕÛÏßµ½ Stack */
+    /** @brief è¿½åŠ  XLD / æŠ˜çº¿åˆ° Stack */
     void dispContour(const HsCommData::HsContour& contour);
 
     /**
-     * @brief ÕûÒ³Ìæ»» Stack¡£frameId ĞëÓëµ×Í¼Ò»ÖÂ²ÅÏÔÊ¾¡£
-     * @param overlay Ğ­Òé¿ìÕÕ£¬²»³ÖÓĞ Qt ¶ÔÏó
+     * @brief æ•´é¡µæ›¿æ¢ Stackã€‚frameId é¡»ä¸åº•å›¾ä¸€è‡´æ‰æ˜¾ç¤ºã€‚
+     * @param overlay åè®®å¿«ç…§ï¼Œä¸æŒæœ‰ Qt å¯¹è±¡
      */
     void setOverlay(const std::shared_ptr<const HsCommData::FrameOverlay>& overlay);
-    /** @brief ÓÉÍ¼ĞÎÁĞ±í¹¹Ôì HsCommData::FrameOverlay ºóÕûÒ³Ìæ»» */
+    /** @brief ç”±å›¾å½¢åˆ—è¡¨æ„é€  HsCommData::FrameOverlay åæ•´é¡µæ›¿æ¢ */
     void setOverlay(const std::vector<HsCommData::Graphic>& items, int64_t frameId);
-    /** @brief Ìæ»» Stack£¬frameId È¡µ±Ç°µ×Í¼ */
+    /** @brief æ›¿æ¢ Stackï¼ŒframeId å–å½“å‰åº•å›¾ */
     void setOverlays(const std::vector<HsCommData::Graphic>& items);
-    /** @brief µ±Ç° Stack ¿ìÕÕ */
+    /** @brief å½“å‰ Stack å¿«ç…§ */
     std::shared_ptr<const HsCommData::FrameOverlay> overlay() const;
-    /** @brief Çå¿Õ Stack */
+    /** @brief æ¸…ç©º Stack */
     void clearWindow();
-    /** @brief Í¬ clearWindow */
+    /** @brief åŒ clearWindow */
     void clearOverlays();
-    /** @brief Stack ²ãÏÔÒş£¬²»Ó°Ïì Drawing ROI */
+    /** @brief Stack å±‚æ˜¾éšï¼Œä¸å½±å“ Drawing ROI */
     void setOverlayVisible(bool visible);
-    /** @brief Stack ÊÇ·ñ¿É¼û¡£frameId ¶Ô²»ÉÏÊ±ÈÔ¿ÉÄÜ²»»­ */
+    /** @brief Stack æ˜¯å¦å¯è§ã€‚frameId å¯¹ä¸ä¸Šæ—¶ä»å¯èƒ½ä¸ç”» */
     bool isOverlayVisible() const;
-    /** @brief Stack ²ãÏÔÒş£¨Í¬ setOverlayVisible£© */
+    /** @brief Stack å±‚æ˜¾éšï¼ˆåŒ setOverlayVisibleï¼‰ */
     void setStackVisible(bool visible);
-    /** @brief Stack ²ãÊÇ·ñ´ò¿ª */
+    /** @brief Stack å±‚æ˜¯å¦æ‰“å¼€ */
     bool isStackVisible() const;
-    /** @brief Overlay Ë¢ĞÂÆµÂÊ£¨Hz£© */
+    /** @brief Overlay åˆ·æ–°é¢‘ç‡ï¼ˆHzï¼‰ */
     qreal fps() const;
 
-    /************************ Drawing ROI£¨ÓÃ»§»æÖÆ£¬¿É¸Ä£© ************************/
-    /** @brief Ìæ»» Drawing ²ã ROI */
+    /************************ Drawing ROIï¼ˆç”¨æˆ·ç»˜åˆ¶ï¼Œå¯æ”¹ï¼‰ ************************/
+    /** @brief æ›¿æ¢ Drawing å±‚ ROI */
     void setDrawings(const std::vector<HsCommData::Graphic>& rois);
-    /** @brief µ±Ç° Drawing ²ãÈ«²¿ ROI */
+    /** @brief å½“å‰ Drawing å±‚å…¨éƒ¨ ROI */
     std::vector<HsCommData::Graphic> drawings() const;
-    /** @brief °´ id ¸üĞÂ»ò²åÈëÒ»Ìõ Drawing¡£id ¿ÕÔò×·¼Ó */
+    /** @brief æŒ‰ id æ›´æ–°æˆ–æ’å…¥ä¸€æ¡ Drawingã€‚id ç©ºåˆ™è¿½åŠ  */
     void setDrawing(const HsCommData::Graphic& roi);
-    /** @brief Çå¿Õ Drawing */
+    /** @brief æ¸…ç©º Drawing */
     void clearDrawings();
-    /** @brief Çå¿Õ²âÁ¿²ã */
+    /** @brief æ¸…ç©ºæµ‹é‡å±‚ */
     void clearMeasures();
-    /** @brief É¾³ıÒ»Ìõ²âÁ¿¡£id ²»ÊÇ²âÁ¿Ôò²»¶¯ */
+    /** @brief åˆ é™¤ä¸€æ¡æµ‹é‡ã€‚id ä¸æ˜¯æµ‹é‡åˆ™ä¸åŠ¨ */
     void removeMeasure(const QString& id);
-    /** @brief Çåµôµş²ã¡¢»æÖÆ¡¢²âÁ¿ºÍÎÄ×Ö£¬µ×Í¼±£Áô¡£»æÖÆ»ò²âÁ¿ÖĞÔòÏÈ»Øµ½ä¯ÀÀ */
+    /** @brief æ¸…æ‰å å±‚ã€ç»˜åˆ¶ã€æµ‹é‡å’Œæ–‡å­—ï¼Œåº•å›¾ä¿ç•™ã€‚ç»˜åˆ¶æˆ–æµ‹é‡ä¸­åˆ™å…ˆå›åˆ°æµè§ˆ */
     void clearDisplay();
-    /** @brief µ±Ç°Ñ¡ÖĞ ROI¡£ÎŞÑ¡ÖĞÊ± id Îª¿Õ */
+    /** @brief å½“å‰é€‰ä¸­ ROIã€‚æ— é€‰ä¸­æ—¶ id ä¸ºç©º */
     HsCommData::Graphic selectedDrawing() const;
-    /** @brief Drawing ²ãÏÔÒş */
+    /** @brief Drawing å±‚æ˜¾éš */
     void setDrawingVisible(bool visible);
-    /** @brief Drawing ²ãÊÇ·ñ´ò¿ª */
+    /** @brief Drawing å±‚æ˜¯å¦æ‰“å¼€ */
     bool isDrawingVisible() const;
 
-    /************************ »­±Ê£¨ĞÂ»æ ROI ÓëÒÑÑ¡ÖĞÍ¬²½£© ************************/
-    /** @brief ĞÂ»æ ROI µÄ»­±Ê¡£ÒÑÑ¡ÖĞÔòÍ¬²½¸ÄÑùÊ½ */
+    /************************ ç”»ç¬”ï¼ˆæ–°ç»˜ ROI ä¸å·²é€‰ä¸­åŒæ­¥ï¼‰ ************************/
+    /** @brief æ–°ç»˜ ROI çš„ç”»ç¬”ã€‚å·²é€‰ä¸­åˆ™åŒæ­¥æ”¹æ ·å¼ */
     void setDrawingStyle(const HsCommData::GeomStyle& style);
-    /** @brief µ±Ç°»­±Ê */
+    /** @brief å½“å‰ç”»ç¬” */
     HsCommData::GeomStyle drawingStyle() const;
-    /** @brief ÉèÖÃ ROI »­±ÊÑÕÉ« */
+    /** @brief è®¾ç½® ROI ç”»ç¬”é¢œè‰² */
     void setPenColor(const QColor& color);
-    /** @brief ÉèÖÃ ROI »­±ÊÏß¿í£¨ÆÁÄ»ÏñËØ£¬cosmetic£© */
+    /** @brief è®¾ç½® ROI ç”»ç¬”çº¿å®½ï¼ˆå±å¹•åƒç´ ï¼Œcosmeticï¼‰ */
     void setPenWidth(double widthPx);
 
-    /************************ ¶ÁÑ¡ÖĞ ROI£¨°´ kind ²ğ¿ª£¬Ê§°Ü·µ»Ø false£© ************************/
+    /************************ è¯»é€‰ä¸­ ROIï¼ˆæŒ‰ kind æ‹†å¼€ï¼Œå¤±è´¥è¿”å› falseï¼‰ ************************/
     /**
-     * @brief ¶ÁÑ¡ÖĞÔ²¡£kind ²»·û·µ»Ø false
-     * @param x,y Ô²ĞÄ£¬r °ë¾¶
+     * @brief è¯»é€‰ä¸­åœ†ã€‚kind ä¸ç¬¦è¿”å› false
+     * @param x,y åœ†å¿ƒï¼Œr åŠå¾„
      */
     bool selectedAsCircle(double* x, double* y, double* r) const;
     /**
-     * @brief ¶ÁÑ¡ÖĞÍÖÔ²
-     * @param phi Ğı×ª½Ç¡£µ¥Î»ºÍÕı·½Ïò¸úÏµÍ³ÉèÖÃ
+     * @brief è¯»é€‰ä¸­æ¤­åœ†
+     * @param phi æ—‹è½¬è§’ã€‚å•ä½å’Œæ­£æ–¹å‘è·Ÿç³»ç»Ÿè®¾ç½®
      */
     bool selectedAsEllipse(double* x, double* y, double* ra, double* rb, double* phi) const;
-    /** @brief ¶ÁÑ¡ÖĞÖá¶ÔÆë¾ØĞÎ£¬Êä³ö×óÉÏ½ÇÓë¿í¸ß */
+    /** @brief è¯»é€‰ä¸­è½´å¯¹é½çŸ©å½¢ï¼Œè¾“å‡ºå·¦ä¸Šè§’ä¸å®½é«˜ */
     bool selectedAsRect1(double* left, double* top, double* width, double* height) const;
     /**
-     * @brief ¶ÁÑ¡ÖĞĞı×ª¾ØĞÎ
-     * @param phi Ğı×ª½Ç¡£µ¥Î»ºÍÕı·½Ïò¸úÏµÍ³ÉèÖÃ
+     * @brief è¯»é€‰ä¸­æ—‹è½¬çŸ©å½¢
+     * @param phi æ—‹è½¬è§’ã€‚å•ä½å’Œæ­£æ–¹å‘è·Ÿç³»ç»Ÿè®¾ç½®
      */
     bool selectedAsRect2(double* x, double* y, double* l1, double* l2, double* phi) const;
-    /** @brief ¶ÁÑ¡ÖĞÖ±ÏßÁ½¶Ë */
+    /** @brief è¯»é€‰ä¸­ç›´çº¿ä¸¤ç«¯ */
     bool selectedAsLine(double* x1, double* y1, double* x2, double* y2) const;
     /**
-     * @brief ¶ÁÑ¡ÖĞÊ®×Ö
-     * @param size °ë¿í¡£Ğ¡ÓÚ 0 ±íÊ¾´©´°
-     * @param angle Ğı×ª½Ç¡£µ¥Î»ºÍÕı·½Ïò¸úÏµÍ³ÉèÖÃ
+     * @brief è¯»é€‰ä¸­åå­—
+     * @param size åŠå®½ã€‚å°äº 0 è¡¨ç¤ºç©¿çª—
+     * @param angle æ—‹è½¬è§’ã€‚å•ä½å’Œæ­£æ–¹å‘è·Ÿç³»ç»Ÿè®¾ç½®
      */
     bool selectedAsCross(double* x, double* y, double* size, double* angle = 0) const;
     /**
-     * @brief ¶ÁÑ¡ÖĞ¼ıÍ·Á½¶Ë
-     * @param x1,y1 Î²£»x2,y2 Í·
+     * @brief è¯»é€‰ä¸­ç®­å¤´ä¸¤ç«¯
+     * @param x1,y1 å°¾ï¼›x2,y2 å¤´
      */
     bool selectedAsArrow(double* x1, double* y1, double* x2, double* y2) const;
 
-    /************************ ÊÓ¿Ú£¨Ö»¸Ä±ä»»£¬²»ÖØ²ÉÑùµ×Í¼£© ************************/
-    /** @brief µ±Ç°¿É¼ûÍ¼Ïñ¾ØĞÎ */
+    /************************ è§†å£ï¼ˆåªæ”¹å˜æ¢ï¼Œä¸é‡é‡‡æ ·åº•å›¾ï¼‰ ************************/
+    /** @brief å½“å‰å¯è§å›¾åƒçŸ©å½¢ */
     QRectF part() const;
-    /** @brief ÉèÖÃ¿É¼û¾ØĞÎ£¬²¢Í¬²½¿í¸ß±È */
+    /** @brief è®¾ç½®å¯è§çŸ©å½¢ï¼Œå¹¶åŒæ­¥å®½é«˜æ¯” */
     void setPart(const QRectF& part);
-    /** @brief Õû·ùÍ¼µÈ±È×°Èë´°¿Ú */
+    /** @brief æ•´å¹…å›¾ç­‰æ¯”è£…å…¥çª—å£ */
     void fitToWindow();
-    /** @brief 1:1¡£Í¼ÏñÖĞĞÄ¶ÔÆë´°¿ÚÖĞĞÄ */
+    /** @brief 1:1ã€‚å›¾åƒä¸­å¿ƒå¯¹é½çª—å£ä¸­å¿ƒ */
     void zoomActualSize();
-    /** @brief Í¬ zoomActualSize */
+    /** @brief åŒ zoomActualSize */
     void resetView();
-    /** @brief ÒÔ¹â±êÎªÃª·Å´ó */
+    /** @brief ä»¥å…‰æ ‡ä¸ºé”šæ”¾å¤§ */
     void zoomIn();
-    /** @brief ÒÔ¹â±êÎªÃªËõĞ¡ */
+    /** @brief ä»¥å…‰æ ‡ä¸ºé”šç¼©å° */
     void zoomOut();
-    /** @brief µ±Ç°Ëõ·Å£¨ÆÁÄ»ÏñËØ / Í¼ÏñÏñËØ£© */
+    /** @brief å½“å‰ç¼©æ”¾ï¼ˆå±å¹•åƒç´  / å›¾åƒåƒç´ ï¼‰ */
     qreal zoomScale() const;
 
-    /************************ ×ø±êÓëÈ¡Ñù ************************/
-    /** @brief ¿Ø¼ş×ø±ê ¡ú Í¼Ïñ×ø±ê */
+    /************************ åæ ‡ä¸å–æ · ************************/
+    /** @brief æ§ä»¶åæ ‡ â†’ å›¾åƒåæ ‡ */
     QPointF widgetToImage(const QPointF& widgetPos) const;
-    /** @brief Í¼Ïñ×ø±ê ¡ú ¿Ø¼ş×ø±ê */
+    /** @brief å›¾åƒåæ ‡ â†’ æ§ä»¶åæ ‡ */
     QPointF imageToWidget(const QPointF& imagePt) const;
     /**
-     * @brief ¿Ø¼ş×ø±ê»»³ÉÍ¼ÏñÕûÊıÏñËØ
-     * @param pixel Êä³ö¡£ÎŞÍ¼»òµãÔÚÍ¼Íâ·µ»Ø false
+     * @brief æ§ä»¶åæ ‡æ¢æˆå›¾åƒæ•´æ•°åƒç´ 
+     * @param pixel è¾“å‡ºã€‚æ— å›¾æˆ–ç‚¹åœ¨å›¾å¤–è¿”å› false
      */
     bool mapWidgetToImagePixel(const QPointF& widgetPos, QPoint* pixel) const;
     /**
-     * @brief Í¼Ïñ×ø±êÈ¡»Ò¶È¡£ÂäÔÚÏñËØ¸ñÉÏÓÃ floor
-     * @param gray Êä³ö¡£²ÊÉ«Í¼ÏÈ¾­ toLuma8
+     * @brief å›¾åƒåæ ‡å–ç°åº¦ã€‚è½åœ¨åƒç´ æ ¼ä¸Šç”¨ floor
+     * @param gray è¾“å‡ºã€‚å½©è‰²å›¾å…ˆç» toLuma8
      */
     bool sampleGray(const QPointF& imagePt, double* gray) const;
     /**
-     * @brief È¡ RGB¡£µ¥Í¨µÀÊ±ÈıÍ¨µÀÏàÍ¬
-     * @param r,g,b Êä³ö£¬·¶Î§ 0¨C255
+     * @brief å– RGBã€‚å•é€šé“æ—¶ä¸‰é€šé“ç›¸åŒ
+     * @param r,g,b è¾“å‡ºï¼ŒèŒƒå›´ 0â€“255
      */
     bool sampleRgb(const QPointF& imagePt, int* r, int* g, int* b) const;
 
-    /************************ µş¼ÓÎÄ×Ö£¨drawInfo£¬²»½ø³¡¾° Item£© ************************/
+    /************************ å åŠ æ–‡å­—ï¼ˆdrawInfoï¼Œä¸è¿›åœºæ™¯ Itemï¼‰ ************************/
     /**
-     * @brief °´×ø±êÏµ·ÅÒ»Ìõµş¼ÓÎÄ×Ö¡£Í¬Î»ÖÃÍ¬×ÖºÅ»áÌæ»»£¬message Îª¿ÕÔòÉ¾µô¡£
+     * @brief æŒ‰åæ ‡ç³»æ”¾ä¸€æ¡å åŠ æ–‡å­—ã€‚å…ˆæ¸…ç©ºè¯¥åæ ‡ç³»ä¸‹å…¨éƒ¨æ¡ç›®ï¼Œmessage ä¸ºç©ºåˆ™åªæ¸…ç©ºã€‚
      *
-     * DrawInfoImage£ºÃªµãÊÇÍ¼Ïñ×ø±ê£¬ËæËõ·ÅÆ½ÒÆ£»×ÖºÅ±£³ÖÆÁÄ»ÏñËØ¡£
-     * DrawInfoWindow£ºÃªµãÊÇ¿Ø¼ş×ø±ê£¬Î»ÖÃÓë×ÖºÅ¶¼¹Ì¶¨¡£
-     * ÎÄ×Ö»­ÔÚÇ°¾°£¬²»½ø³¡¾° Item£¬Ò²²»²ÎÓë ROI ÃüÖĞ¡£
+     * DrawInfoImageï¼šé”šç‚¹æ˜¯å›¾åƒåæ ‡ï¼Œéšç¼©æ”¾å¹³ç§»ï¼›å­—å·ä¿æŒå±å¹•åƒç´ ã€‚
+     * DrawInfoWindowï¼šé”šç‚¹æ˜¯æ§ä»¶åæ ‡ï¼Œä½ç½®ä¸å­—å·éƒ½å›ºå®šã€‚
+     * æ–‡å­—ç”»åœ¨å‰æ™¯ï¼Œä¸è¿›åœºæ™¯ Itemï¼Œä¹Ÿä¸å‚ä¸ ROI å‘½ä¸­ã€‚
      *
-     * @param fontSizePx ÆÁÄ»ÏñËØ×ÖºÅ
-     * @param color ÎÄ×ÖÑÕÉ«¡£Ä¬ÈÏ°×£¬±ãÓÚÉîÉ«µ×Í¼
+     * @param fontSizePx å±å¹•åƒç´ å­—å·
+     * @param color æ–‡å­—é¢œè‰²ã€‚é»˜è®¤ç™½ï¼Œä¾¿äºæ·±è‰²åº•å›¾
      */
     void drawInfo(DrawInfoSpace space, const QString& message, const QPointF& position,
                   int fontSizePx = 14, const QColor& color = QColor(255, 255, 255));
-    /** @brief ×·¼ÓÒ»Ìõµş¼ÓÎÄ×Ö¡£Í¬Î»ÖÃ²»Ìæ»»£¬message Îª¿ÕÔòºöÂÔ */
+    /** @brief è¿½åŠ ä¸€æ¡å åŠ æ–‡å­—ã€‚åŒä½ç½®ä¸æ›¿æ¢ï¼Œmessage ä¸ºç©ºåˆ™å¿½ç•¥ */
     void addDrawInfo(DrawInfoSpace space, const QString& message, const QPointF& position,
                      int fontSizePx = 14, const QColor& color = QColor(255, 255, 255));
-    /** @brief Çå³ıÒ»ÖÖ×ø±êÏµµÄµş¼ÓÎÄ×Ö */
+    /** @brief æ¸…é™¤ä¸€ç§åæ ‡ç³»çš„å åŠ æ–‡å­— */
     void clearDrawInfo(DrawInfoSpace space);
-    /** @brief Çå³ıÈ«²¿µş¼ÓÎÄ×Ö£¬Á½ÖÖ×ø±êÏµ¶¼Çå */
+    /** @brief æ¸…é™¤å…¨éƒ¨å åŠ æ–‡å­—ï¼Œä¸¤ç§åæ ‡ç³»éƒ½æ¸… */
     void clearDrawInfo();
 
-    /************************ HUD / ÏñËØ¼ìÑé / ĞÅÏ¢Ìõ ************************/
-    /** @brief HUD£¨×ø±ê/»Ò¶È£©ÏÔÒş */
+    /************************ HUD / åƒç´ æ£€éªŒ / ä¿¡æ¯æ¡ ************************/
+    /** @brief HUDï¼ˆåæ ‡/ç°åº¦ï¼‰æ˜¾éš */
     void setHudVisible(bool visible);
-    /** @brief HUD ÊÇ·ñ´ò¿ª */
+    /** @brief HUD æ˜¯å¦æ‰“å¼€ */
     bool isHudVisible() const;
-    /** @brief Í¼ÏñĞÅÏ¢ÌõÎÄ±¾£¬»­ÔÚ HUD ÏÂ·½»ò´°¿Úµ×²¿ */
+    /** @brief å›¾åƒä¿¡æ¯æ¡æ–‡æœ¬ï¼Œç”»åœ¨ HUD ä¸‹æ–¹æˆ–çª—å£åº•éƒ¨ */
     void setImageInfoText(const QString& text);
-    /** @brief µ±Ç°ĞÅÏ¢ÌõÎÄ±¾ */
+    /** @brief å½“å‰ä¿¡æ¯æ¡æ–‡æœ¬ */
     QString imageInfoText() const;
-    /** @brief ÏñËØ¼ìÑé¡£¸ß±¶»­¸ñ×ÓºÍ RGB/»Ò¶È£¬Óë HUD ¿ª¹Ø¶ÀÁ¢ */
+    /** @brief åƒç´ æ£€éªŒã€‚é«˜å€ç”»æ ¼å­å’Œ RGB/ç°åº¦ï¼Œä¸ HUD å¼€å…³ç‹¬ç«‹ */
     void setPixelInspect(bool on);
-    /** @brief ÏñËØ¼ìÑéÊÇ·ñ´ò¿ª */
+    /** @brief åƒç´ æ£€éªŒæ˜¯å¦æ‰“å¼€ */
     bool isPixelInspect() const;
 
-    /************************ µ×Í¼ÏÔÒş ************************/
-    /** @brief µ×Í¼²ãÏÔÒş */
+    /************************ åº•å›¾æ˜¾éš ************************/
+    /** @brief åº•å›¾å±‚æ˜¾éš */
     void setImageVisible(bool visible);
-    /** @brief µ×Í¼ÊÇ·ñ¿É¼û */
+    /** @brief åº•å›¾æ˜¯å¦å¯è§ */
     bool isImageVisible() const;
 
-    /************************ ÊÓ¿Ú±³¾° ************************/
+    /************************ è§†å£èƒŒæ™¯ ************************/
     /**
-     * @brief ÊÓ¿Ú±³¾°·ç¸ñ¡£ÆåÅÌ¸ñ°´ÆÁÄ»ÏñËØ»­¸ñ£»´¿É«Ä£Ê½ºöÂÔËõ·Å¡£
-     * @note ²»¶Á ThemeMgr / È«¾Ö QSS¡£ViewportCustom ¼û setBackgroundColor¡£
+     * @brief è§†å£èƒŒæ™¯é£æ ¼ã€‚æ£‹ç›˜æ ¼æŒ‰å±å¹•åƒç´ ç”»æ ¼ï¼›çº¯è‰²æ¨¡å¼å¿½ç•¥ç¼©æ”¾ã€‚
+     * @note ä¸è¯» ThemeMgr / å…¨å±€ QSSã€‚ViewportCustom è§ setBackgroundColorã€‚
      */
     void setViewportBackground(ViewportBackground mode);
-    /** @brief µ±Ç°ÊÓ¿Ú±³¾°·ç¸ñ */
+    /** @brief å½“å‰è§†å£èƒŒæ™¯é£æ ¼ */
     ViewportBackground viewportBackground() const;
     /**
-     * @brief ÎªÆåÅÌ¸ñ»ò Custom Ö¸¶¨ÑÕÉ«¡£ÎŞĞ§É«»Ö¸´¸Ã·ç¸ñµÄÄ¬ÈÏÅäÉ«¡£
+     * @brief ä¸ºæ£‹ç›˜æ ¼æˆ– Custom æŒ‡å®šé¢œè‰²ã€‚æ— æ•ˆè‰²æ¢å¤è¯¥é£æ ¼çš„é»˜è®¤é…è‰²ã€‚
      */
     void setViewportBackgroundCustomColor(const QColor& color);
-    /** @brief ·ç¸ñÖ¸¶¨É«¡£ÎŞĞ§±íÊ¾Î´Ö¸¶¨ */
+    /** @brief é£æ ¼æŒ‡å®šè‰²ã€‚æ— æ•ˆè¡¨ç¤ºæœªæŒ‡å®š */
     QColor viewportBackgroundCustomColor() const;
-    /** @brief ÇĞµ½ Custom ²¢ÓÃ¸ÃÑÕÉ«ÆÌÊÓ¿Ú */
+    /** @brief åˆ‡åˆ° Custom å¹¶ç”¨è¯¥é¢œè‰²é“ºè§†å£ */
     void setBackgroundColor(const QColor& color);
-    /** @brief µ±Ç°ÊÓ¿Úµ×É«£¨º¬·ç¸ñÄ¬ÈÏ£© */
+    /** @brief å½“å‰è§†å£åº•è‰²ï¼ˆå«é£æ ¼é»˜è®¤ï¼‰ */
     QColor backgroundColor() const;
 
-    /************************ ¸¡¶¯¹¤¾ßÌõ ************************/
-    /** @brief ¸¡¶¯¹¤¾ßÌõÏÔÒş£»Ä¬ÈÏÒş²Ø£¬ĞèÒªÊ± setOverlayToolbarVisible(true) */
+    /************************ æµ®åŠ¨å·¥å…·æ¡ ************************/
+    /** @brief æµ®åŠ¨å·¥å…·æ¡æ˜¾éšï¼›é»˜è®¤éšè—ï¼Œéœ€è¦æ—¶ setOverlayToolbarVisible(true) */
     void setOverlayToolbarVisible(bool visible);
-    /** @brief ¹¤¾ßÌõÊÇ·ñ¿É¼û */
+    /** @brief å·¥å…·æ¡æ˜¯å¦å¯è§ */
     bool isOverlayToolbarVisible() const;
-    /** @brief ²âÁ¿¹¤¾ßÌõÏÔÒş¡£Î´ÅäÖÃ°´Å¥Ê±ÈÔ²»ÏÔÊ¾ */
+    /** @brief æµ‹é‡å·¥å…·æ¡æ˜¾éšã€‚æœªé…ç½®æŒ‰é’®æ—¶ä»ä¸æ˜¾ç¤º */
     void setMeasureToolbarVisible(bool visible);
-    /** @brief ²âÁ¿¹¤¾ßÌõÊÇ·ñ¿É¼û */
+    /** @brief æµ‹é‡å·¥å…·æ¡æ˜¯å¦å¯è§ */
     bool isMeasureToolbarVisible() const;
-    /** @brief ¹¤¾ßÌõÍ£¿¿ËÄ½Ç */
+    /** @brief å·¥å…·æ¡åœé å››è§’ */
     void setOverlayToolbarCorner(Qt::Corner corner);
-    /** @brief µ±Ç°Í£¿¿½Ç */
+    /** @brief å½“å‰åœé è§’ */
     Qt::Corner overlayToolbarCorner() const;
-    /** @brief °´Å¥´¹Ö±»òË®Æ½ÅÅÁĞ */
+    /** @brief æŒ‰é’®å‚ç›´æˆ–æ°´å¹³æ’åˆ— */
     void setOverlayToolbarOrientation(Qt::Orientation orientation);
-    /** @brief µ±Ç°ÅÅÁĞ·½Ïò */
+    /** @brief å½“å‰æ’åˆ—æ–¹å‘ */
     Qt::Orientation overlayToolbarOrientation() const;
-    /** @brief ¹¤¾ßÌõÆ¤·ô */
+    /** @brief å·¥å…·æ¡çš®è‚¤ */
     void setOverlayToolbarSkin(OverlayToolbarSkin skin);
-    /** @brief µ±Ç°¹¤¾ßÌõÆ¤·ô */
+    /** @brief å½“å‰å·¥å…·æ¡çš®è‚¤ */
     OverlayToolbarSkin overlayToolbarSkin() const;
-    /** @brief ¹¤¾ßÌõ¿Ø¼ş£¬¿É¼ÌĞøÍùÀï¼Ó°´Å¥ */
+    /** @brief å·¥å…·æ¡æ§ä»¶ï¼Œå¯ç»§ç»­å¾€é‡ŒåŠ æŒ‰é’® */
     QWidget* overlayToolbar() const;
-    /** @brief ÔÚ¹¤¾ßÌõÄ©Î²¼ÓÒ»¸ö¿Ø¼ş */
+    /** @brief åœ¨å·¥å…·æ¡æœ«å°¾åŠ ä¸€ä¸ªæ§ä»¶ */
     void addOverlayToolbarWidget(QWidget* widget);
-    /** @brief ¸¡¶¯¹¤¾ßÌõÉÏÒªÏÔÊ¾µÄ²âÁ¿°´Å¥¡£Ö»±£Áô²âÁ¿¹¤¾ß£¬¿ÕÔò²»ÏÔÊ¾ */
+    /** @brief æµ®åŠ¨å·¥å…·æ¡ä¸Šè¦æ˜¾ç¤ºçš„æµ‹é‡æŒ‰é’®ã€‚åªä¿ç•™æµ‹é‡å·¥å…·ï¼Œç©ºåˆ™ä¸æ˜¾ç¤º */
     void setMeasureTools(const std::vector<DrawTool>& tools);
-    /** @brief µ±Ç°ÏÔÊ¾µÄ²âÁ¿°´Å¥ */
+    /** @brief å½“å‰æ˜¾ç¤ºçš„æµ‹é‡æŒ‰é’® */
     std::vector<DrawTool> measureTools() const;
-    /** @brief ÒÑÌá½»²âÁ¿µÄ¶ÁÊı¡£Ëæµ±Ç°±ê¶¨±ä»¯ */
+    /** @brief å·²æäº¤æµ‹é‡çš„è¯»æ•°ã€‚éšå½“å‰æ ‡å®šå˜åŒ– */
     QStringList measureResultLines() const;
 
-    /************************ ´æÍ¼ ************************/
+    /************************ å­˜å›¾ ************************/
     /**
-     * @brief ±£´æµ±Ç°µ×Í¼Ô­Í¼£¬²»º¬ Stack / Drawing / drawInfo¡£
-     * @param error Ê§°ÜÊ±Ğ´ÈëÔ­Òò£¬¿É¿Õ
+     * @brief ä¿å­˜å½“å‰åº•å›¾åŸå›¾ï¼Œä¸å« Stack / Drawing / drawInfoã€‚
+     * @param error å¤±è´¥æ—¶å†™å…¥åŸå› ï¼Œå¯ç©º
      */
     bool saveCurrentFrame(const QString& filePath, QString* error = 0) const;
     /**
-     * @brief ±£´æ´°¿Ú¿ìÕÕ£ºµ×Í¼ + µş¼Ó + drawInfo£¬²»º¬¸¡¶¯¹¤¾ßÌõ¡£
-     * @param error Ê§°ÜÊ±Ğ´ÈëÔ­Òò£¬¿É¿Õ
+     * @brief ä¿å­˜çª—å£å¿«ç…§ï¼šåº•å›¾ + å åŠ  + drawInfoï¼Œä¸å«æµ®åŠ¨å·¥å…·æ¡ã€‚
+     * @param error å¤±è´¥æ—¶å†™å…¥åŸå› ï¼Œå¯ç©º
      */
     bool saveSnapshot(const QString& filePath, QString* error = 0) const;
-    /** @brief µ¯³ö±£´æ¿ìÕÕ¶Ô»°¿ò */
+    /** @brief å¼¹å‡ºä¿å­˜å¿«ç…§å¯¹è¯æ¡† */
     void promptSaveSnapshot();
-    /** @brief µ¯³öµ¼³öÔ­Í¼¶Ô»°¿ò */
+    /** @brief å¼¹å‡ºå¯¼å‡ºåŸå›¾å¯¹è¯æ¡† */
     void promptSaveOriginal();
 
-    /************************ ³ß´çÌáÊ¾£¨Qt£© ************************/
+    /************************ å°ºå¯¸æç¤ºï¼ˆQtï¼‰ ************************/
     /**
-     * @brief ½¨Òé³ß´ç
-     * @note Ã»ÓĞµ×Í¼Ê±¸øÒ»¸öÄÜ·ÅÏÂ¹¤¾ßÌõµÄÈ±Ê¡Öµ£¬ÓĞÍ¼ºó°´ sceneRect Óë sizeHint ²»ÔÙ°Ñ´°¿Ú³Å±¬¡£
+     * @brief å»ºè®®å°ºå¯¸
+     * @note æ²¡æœ‰åº•å›¾æ—¶ç»™ä¸€ä¸ªèƒ½æ”¾ä¸‹å·¥å…·æ¡çš„ç¼ºçœå€¼ï¼Œæœ‰å›¾åæŒ‰ sceneRect ä¸ sizeHint ä¸å†æŠŠçª—å£æ’‘çˆ†ã€‚
      */
     QSize sizeHint() const override;
-    /** @brief ×îĞ¡½¨Òé³ß´ç¡£Î´Éèµ×Í¼Ê±Ò²±£ÁôÒ»¿é¿É½»»¥ÇøÓò */
+    /** @brief æœ€å°å»ºè®®å°ºå¯¸ã€‚æœªè®¾åº•å›¾æ—¶ä¹Ÿä¿ç•™ä¸€å—å¯äº¤äº’åŒºåŸŸ */
     QSize minimumSizeHint() const override;
 
+// å¯¹å¤–ä¿¡å·
 Q_SIGNALS:
-    /************************ ĞÅºÅ ************************/
-    /** @brief ROI ÒÑÌá½» */
+    /************************ ä¿¡å· ************************/
+    /** @brief ROI å·²æäº¤ */
     void roiCommitted(const HsCommData::Graphic& roi);
     /**
-     * @brief »æÖÆ»á»°½áÊø¡£roi ÔÚ½ÓÊÜÊ±Óë roiCommitted ÏàÍ¬£¬È¡ÏûÊ± id Îª¿Õ¡£
-     * @param accepted true Ìá½»£¬false È¡Ïû
+     * @brief ç»˜åˆ¶ä¼šè¯ç»“æŸã€‚roi åœ¨æ¥å—æ—¶ä¸ roiCommitted ç›¸åŒï¼Œå–æ¶ˆæ—¶ id ä¸ºç©ºã€‚
+     * @param accepted true æäº¤ï¼Œfalse å–æ¶ˆ
      */
     void drawSessionFinished(const HsCommData::Graphic& roi, bool accepted);
-    /** @brief µãÖĞÒ»Ìõ Drawing£¬id ¿ÉÄÜÎª¿Õ */
+    /** @brief ç‚¹ä¸­ä¸€æ¡ Drawingï¼Œid å¯èƒ½ä¸ºç©º */
     void roiSelected(const HsCommData::Graphic& roi);
-    /** @brief µãÖĞ Stack Í¼Ôª */
+    /** @brief ç‚¹ä¸­ Stack å›¾å…ƒ */
     void stackItemClicked(const QString& graphicId);
-    /** @brief ¿É¼ûÍ¼Ïñ¾ØĞÎ±ä»¯ */
+    /** @brief å¯è§å›¾åƒçŸ©å½¢å˜åŒ– */
     void viewportChanged(const QRectF& part);
-    /** @brief ¹â±êÔÚÍ¼ÏñÉÏÒÆ¶¯¡£valid Îª¼ÙÊ± gray ÎŞÒâÒå */
+    /** @brief å…‰æ ‡åœ¨å›¾åƒä¸Šç§»åŠ¨ã€‚valid ä¸ºå‡æ—¶ gray æ— æ„ä¹‰ */
     void cursorMoved(const QPointF& imagePt, double gray, bool valid);
-    /** @brief µ±Ç°»æÖÆ¹¤¾ß±ä»¯¡£²ÎÊıÎª DrawTool */
+    /** @brief å½“å‰ç»˜åˆ¶å·¥å…·å˜åŒ–ã€‚å‚æ•°ä¸º DrawTool */
     void drawToolChanged(int tool);
-    /** @brief ÎÄ±¾¹¤¾ßµãÏÂÃªµã¡£Í¬Ê±¸ø³öÍ¼Ïñ×ø±êºÍ¿Ø¼ş×ø±ê */
+    /** @brief æ–‡æœ¬å·¥å…·ç‚¹ä¸‹é”šç‚¹ã€‚åŒæ—¶ç»™å‡ºå›¾åƒåæ ‡å’Œæ§ä»¶åæ ‡ */
     void textAnchorPicked(const QPointF& imagePt, const QPointF& widgetPt);
 
 protected:
-    /************************ »æÖÆÓëÊäÈë£¨×ÓÀàÒ»°ã²»ÒªÈÆ¹ı£© ************************/
-    /** @brief ÊÓ¿Ú±³¾°¡£ÆåÅÌ¸ñ°´ÆÁÄ»ÏñËØ»­£¬²»ËæËõ·Å±ä¸ñ */
+    /************************ ç»˜åˆ¶ä¸è¾“å…¥ï¼ˆå­ç±»ä¸€èˆ¬ä¸è¦ç»•è¿‡ï¼‰ ************************/
+    /** @brief è§†å£èƒŒæ™¯ã€‚æ£‹ç›˜æ ¼æŒ‰å±å¹•åƒç´ ç”»ï¼Œä¸éšç¼©æ”¾å˜æ ¼ */
     void drawBackground(QPainter* painter, const QRectF& rect) override;
-    /** @brief »­ HUD¡¢drawInfo ÓëÏñËØ¼ìÑé£¬²»½ø³¡¾° Item */
+    /** @brief ç”» HUDã€drawInfo ä¸åƒç´ æ£€éªŒï¼Œä¸è¿›åœºæ™¯ Item */
     void drawForeground(QPainter* painter, const QRectF& rect) override;
-    /** @brief ´°¿Ú±äÁË¾ÍÖØÅÅ part */
+    /** @brief çª—å£å˜äº†å°±é‡æ’ part */
     void resizeEvent(QResizeEvent* e) override;
-    /** @brief ¹öÂÖÒÔ¹â±êÎªÃªËõ·Å */
+    /** @brief æ»šè½®ä»¥å…‰æ ‡ä¸ºé”šç¼©æ”¾ */
     void wheelEvent(QWheelEvent* e) override;
-    /** @brief °´ÏÂ£ºÆ½ÒÆ¡¢Âä±Ê»òÍÏÊÖ±ú */
+    /** @brief æŒ‰ä¸‹ï¼šå¹³ç§»ã€è½ç¬”æˆ–æ‹–æ‰‹æŸ„ */
     void mousePressEvent(QMouseEvent* e) override;
-    /** @brief ÒÆ¶¯£ºÆ½ÒÆ¡¢ÍÏÊÖ±ú¡¢ÏğÆ¤½î¡¢¹â±êÈ¡Ñù */
+    /** @brief ç§»åŠ¨ï¼šå¹³ç§»ã€æ‹–æ‰‹æŸ„ã€æ©¡çš®ç­‹ã€å…‰æ ‡å–æ · */
     void mouseMoveEvent(QMouseEvent* e) override;
-    /** @brief ËÉ¿ª£ºÌá½» ROI »ò½áÊøÆ½ÒÆ */
+    /** @brief æ¾å¼€ï¼šæäº¤ ROI æˆ–ç»“æŸå¹³ç§» */
     void mouseReleaseEvent(QMouseEvent* e) override;
-    /** @brief Ë«»÷£º½áÊøÕÛÏß£¬»òÔÚ·ÇÄ£Ì¬ÏÂÊÊÓ¦´°¿Ú */
+    /** @brief åŒå‡»ï¼šç»“æŸæŠ˜çº¿ï¼Œæˆ–åœ¨éæ¨¡æ€ä¸‹é€‚åº”çª—å£ */
     void mouseDoubleClickEvent(QMouseEvent* e) override;
-    /** @brief ÓÒ¼ü²Ëµ¥£º¿ìÕÕ¡¢Ô­Í¼¡¢Ëõ·Å¡¢¹¤¾ßÌõÍ£¿¿£»ÕÛÏß±ÕºÏÊ±²»µ¯³ö */
+    /** @brief å³é”®èœå•ï¼šå¿«ç…§ã€åŸå›¾ã€ç¼©æ”¾ã€å·¥å…·æ¡åœé ï¼›æŠ˜çº¿é—­åˆæ—¶ä¸å¼¹å‡º */
     void contextMenuEvent(QContextMenuEvent* e) override;
-    /** @brief Esc È¡Ïû»æÖÆ£¬Enter ½áÊøĞÎ×´£¬Ctrl ´ò¿ªÏñËØĞ¡´° */
+    /** @brief Esc å–æ¶ˆç»˜åˆ¶ï¼ŒEnter ç»“æŸå½¢çŠ¶ï¼ŒCtrl æ‰“å¼€åƒç´ å°çª— */
     void keyPressEvent(QKeyEvent* e) override;
-    /** @brief ËÉ¿ª Ctrl ¹ØµôÏñËØĞ¡´° */
+    /** @brief æ¾å¼€ Ctrl å…³æ‰åƒç´ å°çª— */
     void keyReleaseEvent(QKeyEvent* e) override;
-    /** @brief ¹â±êÀë¿ªÊ±Çå HUD È¡Ñù */
+    /** @brief å…‰æ ‡ç¦»å¼€æ—¶æ¸… HUD å–æ · */
     void leaveEvent(QEvent* e) override;
-    /** @brief µÚÒ»´ÎÏÔÊ¾Ê± fit */
+    /** @brief ç¬¬ä¸€æ¬¡æ˜¾ç¤ºæ—¶ fit */
     void showEvent(QShowEvent* e) override;
 
 private:
-    class Private;
+    class Private; ///< Pimpl å®ç°ï¼Œå®šä¹‰åœ¨ HsImageWindow.cpp
     Private* d; ///< Pimpl
 };
 

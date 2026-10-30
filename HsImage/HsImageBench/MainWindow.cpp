@@ -1,6 +1,6 @@
 /**
  * @file MainWindow.cpp
- * @brief MainWindow实现
+ * @brief 评测主窗口与转换工作线程实现：界面搭建、任务派发与结果汇总
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -49,6 +49,7 @@ void BenchWorker::genColor(int width, int height)
 
 void BenchWorker::runGray(QImage src, int loops, bool toHalconOnly)
 {
+    // 前置检查：须是灰度图且链接了 Halcon
     if (src.isNull() || src.format() != QImage::Format_Grayscale8) {
         emit logReady(L8("请先生成灰度图"));
         emit finished();
@@ -67,6 +68,7 @@ void BenchWorker::runGray(QImage src, int loops, bool toHalconOnly)
     int fromCount = 0;
     QImage lastOut;
     QString all;
+    // 逐轮计时并记录明细；任一轮失败即结束
     for (int i = 0; i < loops; ++i) {
         const ConvertBenchRst r = benchGrayRoundTrip(src, toHalconOnly);
         if (!r.ok) {
@@ -93,6 +95,7 @@ void BenchWorker::runGray(QImage src, int loops, bool toHalconOnly)
             all += r.stages;
         }
     }
+    // 汇总平均耗时；H->buf 只按实际测到的轮数平均
     all += L8("平均 buf->H: %1 ms (%2)\n").arg(sumTo / loops, 0, 'f', 3).arg(loops);
     if (fromCount > 0) {
         all += L8("平均 H->buf: %1 ms (%2)\n").arg(sumFrom / fromCount, 0, 'f', 3).arg(fromCount);
@@ -198,6 +201,7 @@ MainWindow::MainWindow(QWidget* parent)
 {
     qRegisterMetaType<QImage>("QImage");
 
+    // 图像转换页左侧：转换前/后两个图像控件并排
     setWindowTitle(L8("HsImageBench"));
     resize(1480, 920);
 
@@ -232,6 +236,7 @@ MainWindow::MainWindow(QWidget* parent)
     viewLay->addLayout(pair, 1);
     root->addWidget(viewers, 1);
 
+    // 右侧面板：库链接状态、生成测试图、转换计时参数、日志
     QWidget* side = new QWidget(central);
     side->setMinimumWidth(340);
     side->setMaximumWidth(420);
@@ -300,6 +305,7 @@ MainWindow::MainWindow(QWidget* parent)
     sideLay->addWidget(btnClear);
     root->addWidget(side);
 
+    // 工作对象移入独立线程，结果经排队信号回到界面线程
     m_thread = new QThread(this);
     m_worker = new BenchWorker();
     m_worker->moveToThread(m_thread);
@@ -316,6 +322,7 @@ MainWindow::MainWindow(QWidget* parent)
     connect(m_btnColorRun, SIGNAL(clicked()), this, SLOT(onRunColorRoundTrip()));
     connect(btnClear, SIGNAL(clicked()), this, SLOT(onClearLog()));
 
+    // 默认停在结构与锁页，同时预生成一张彩色图供转换页使用
     tabs->addTab(central, L8("图像转换"));
     tabs->addTab(new ObjectPage(tabs), L8("结构与锁"));
     tabs->setCurrentIndex(1);

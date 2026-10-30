@@ -99,6 +99,7 @@ bool hImageToFrame(const HalconCpp::HImage& img, int64_t frameId, HsCommData::Hs
         HalconCpp::HString type;
         Hlong w = 0;
         Hlong h = 0;
+        // 三通道及以上：取三平面指针，非 byte 先转 byte，再交错成 RGB
         if (nch >= 3) {
             void* pr = nullptr;
             void* pg = nullptr;
@@ -129,6 +130,7 @@ bool hImageToFrame(const HalconCpp::HImage& img, int64_t frameId, HsCommData::Hs
             *out = fb;
             return true;
         }
+        // 单通道：非 byte 先转 byte，再整块拷成 mono8
         void* ptr = work.GetImagePointer1(&type, &w, &h);
         if (!(type == HalconCpp::HString("byte"))) {
             work = work.ConvertImageType("byte");

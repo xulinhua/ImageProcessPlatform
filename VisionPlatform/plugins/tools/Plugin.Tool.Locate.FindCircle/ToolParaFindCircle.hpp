@@ -25,13 +25,14 @@ public:
     };
     /** @brief 运行参数 */
     struct Run {
-        int threshold;              ///< 阈值
-        int minR;                   ///< 最小半径
-        int maxR;                   ///< 最大半径
-        bool dark;                  ///< 暗目标
-        double sigma;               ///< 平滑
-        int low;                    ///< 低阈值
-        int high;                   ///< 高阈值
+        int threshold;              ///< 灰度阈值 0~255；当前 Hal/Cv 算法都不读
+        int minR;                   ///< 最小半径（像素），小于它的圆丢弃
+        int maxR;                   ///< 最大半径（像素），大于它的圆丢弃
+        bool dark;                  ///< 目标是否比背景暗；当前 Hal/Cv 算法都不读
+        double sigma;               ///< Canny 边缘平滑 sigma，0.4~20
+        int low;                    ///< Canny 低阈值，0~255
+        int high;                   ///< Canny 高阈值，0~255
+        /** @brief 缺省值与 FindCircleTool 参数说明一致 */
         Run()
             : threshold(80)
             , minR(8)

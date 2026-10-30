@@ -1,6 +1,6 @@
 /**
  * @file ConvertBench.h
- * @brief ConvertBench头文件
+ * @brief 图像转换评测：生成测试图，统计 buffer 与 Halcon 互转耗时
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -39,6 +39,7 @@ struct ConvertBenchRst {
     QString detail;   ///< 补充说明（尺寸、方式）
     QString stages;   ///< 分阶段耗时（方式2等）；空表示无
     QImage outImage;  ///< H->buffer 结果图；仅->H 时为空
+    /** @brief 默认失败，两段耗时为 -1（未测） */
     ConvertBenchRst()
         : ok(false)
         , msToH(-1.0)

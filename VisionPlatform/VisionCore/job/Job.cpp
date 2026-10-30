@@ -89,6 +89,7 @@ void Job::setConfig(JobCfg* config)
 // 同 id 同类型的实例留下，缺的创建，多的销毁
 void Job::rebuildTools()
 {
+    // 旧实例按 id 收拢；空 id 和重复 id 直接销毁
     std::map<std::string, ToolBase*> kept;
     for (size_t i = 0; i < m_tools.size(); ++i) {
         ToolBase* inst = m_tools[i];
@@ -110,6 +111,7 @@ void Job::rebuildTools()
         m_paramStamp.clear();
         return;
     }
+    // 按配置顺序复用同名实例，类型变了就销毁重建；新建实例的参数指纹作废
     for (size_t i = 0; i < m_config->tools.size(); ++i) {
         const ToolCfg& config = m_config->tools[i];
         const std::string id = config.id.toString();
@@ -140,6 +142,7 @@ void Job::rebuildTools()
         applyToolConfig(inst, config);
         m_tools.push_back(inst);
     }
+    // 配置里已没有的实例
     for (std::map<std::string, ToolBase*>::iterator it = kept.begin(); it != kept.end(); ++it) {
         m_paramStamp.erase(it->first);
         it->second->destroy();
@@ -802,7 +805,7 @@ void fillMergeOverlays(ToolIn* in, const JobCfg& job, const ObjectId& self, cons
         }
         const ToolCfg* t = job.findTool(order[static_cast<size_t>(i)]);
         if (!t || (t->type != ToolType::Locate && t->type != ToolType::Detect
-                   && t->type != ToolType::RstProcess)) {
+                   && t->type != ToolType::RstProcess && t->type != ToolType::Identify)) {
             continue;
         }
         std::map<ObjectId, std::shared_ptr<std::vector<HsCommData::HsObject> > >::const_iterator it = rt.overlays.find(t->id);
@@ -885,6 +888,7 @@ static bool resolveRoiItems(const std::vector<ToolRoiItem>& items, const JobRunt
                             std::vector<ResolvedRoi>* out, std::string* err)
 {
     out->clear();
+    // 引用项排前面，绘制项排后面
     std::vector<ToolRoiItem> ordered;
     for (size_t i = 0; i < items.size(); ++i) {
         const ToolRoiItem& item = items[i];
@@ -913,6 +917,7 @@ static bool resolveRoiItems(const std::vector<ToolRoiItem>& items, const JobRunt
                 found = true;
             }
         } else {
+            // 引用上游输出：先按声明的类型取，取不到再试另一种（ROI/区域互通）
             std::map<ObjectId, std::shared_ptr<ToolIo> >::const_iterator it = rt.io.find(item.refToolId);
             if (it != rt.io.end() && it->second) {
                 const PortData data = (item.kind == RoiItemKind::RefRoi) ? PortData::Roi : PortData::Region;
@@ -1033,6 +1038,7 @@ static void overlayComposite(JobCfg* inner, const CompositeDef& def, const ToolP
     }
 }
 
+// 组合工具节点：复制内部流程，覆盖公开参数后作为子流程跑一遍
 static ToolOut runCompositeNode(Solution* sol, const ToolCfg& node, const ToolIn& in)
 {
     ToolOut out;
@@ -1045,6 +1051,7 @@ static ToolOut runCompositeNode(Solution* sol, const ToolCfg& node, const ToolIn
     }
     JobCfg inner = def->inner;
     overlayComposite(&inner, *def, node.param);
+    // 用一个虚拟外部工具 id 把外壳输入针接到内部工具
     const ObjectId ext = ObjectId::create();
     for (size_t i = 0; i < def->ports.size(); ++i) {
         const CompositePort& port = def->ports[i];
@@ -1064,6 +1071,7 @@ static ToolOut runCompositeNode(Solution* sol, const ToolCfg& node, const ToolIn
         inner.links.push_back(edge);
     }
     inner.ensureTree();
+    // 外部输入作为虚拟工具的缓存输出灌给子流程
     Job child(&inner);
     ToolIo seed = in.inputIo;
     if (seed.images.empty() && !in.input.isNull()) {
@@ -1077,6 +1085,7 @@ static ToolOut runCompositeNode(Solution* sol, const ToolCfg& node, const ToolIn
     child.runtime().io[ext] = std::make_shared<ToolIo>(seed);
     const ToolOut ran = child.run(sol, 0);
     out = ran;
+    // 图像输出针取内部工具的缓存图，多个时以最后一个为准
     for (size_t i = 0; i < def->ports.size(); ++i) {
         const CompositePort& port = def->ports[i];
         if (port.dir != PortDir::Out || port.data != PortData::Image) {
@@ -1285,6 +1294,7 @@ ToolOut Job::runToolChain(Solution* sol, const ObjectId& toolId, const ToolCfg* 
         m_recipeJob = savedRecipeJob;
         return last;
     }
+    // 没单独给工具草稿时，从流程草稿里合出目标工具的试跑配置
     const ToolCfg* chainRecipe = recipeTool;
     ToolCfg chainHolder;
     if (!chainRecipe && recipeJob) {
@@ -1298,6 +1308,7 @@ ToolOut Job::runToolChain(Solution* sol, const ObjectId& toolId, const ToolCfg* 
             chainRecipe = &chainHolder;
         }
     }
+    // 按执行序逐个跑到目标为止；上游 NG 且策略不是继续时提前返回
     const std::vector<ObjectId> order = job->execOrder();
     const ToolCfg* savedRecipeTool = m_recipeTool;
     m_recipeTool = chainRecipe;
@@ -1506,6 +1517,7 @@ ToolOut Job::run(Solution* sol, const JobCfg* recipeJob, int depth)
     last = runGroup(sol, job, job->root, true, depth);
     m_recipeJob = savedRecipeJob;
     last.source = copyImage(m_runtime.source);
+    // 配了结果规则时以指定行的判定为流程结果，画面取该行绑定工具的缓存
     if (!job->resultFromRuleId.isNull() && !job->resultRules.empty()) {
         std::map<ObjectId, bool> toolOk;
         std::map<ObjectId, bool> toolRan;

@@ -147,6 +147,7 @@ void ToolIo::appendFromGraphics(const std::vector<HsCommData::Graphic>& gfx)
 // 按连线从 src 收一项或整口，并改写到目标口名
 void ToolIo::appendByType(const ToolIo& src, const PortSlot& fromPort, const PortSlot& toPort, int index, RegionUse use)
 {
+    // 各类数据同一规则：口名匹配后按序号挑；index < 0 收整口，否则命中一项即返回
     if (fromPort.data == PortData::Image) {
         int seen = 0;
         for (int i = 0; i < static_cast<int>(src.images.size()); ++i) {
@@ -233,6 +234,7 @@ void ToolIo::appendByType(const ToolIo& src, const PortSlot& fromPort, const Por
         }
         return;
     }
+    // 逻辑结果没有口名，只按序号挑
     if (fromPort.data == PortData::Logic) {
         int seen = 0;
         for (int i = 0; i < static_cast<int>(src.logics.size()); ++i) {

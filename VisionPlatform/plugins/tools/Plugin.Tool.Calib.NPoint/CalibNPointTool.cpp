@@ -189,7 +189,7 @@ Vision::CamModel modelFrom(const Vision::ParamMap& v)
 
 }
 
-// 九点标定工具名
+// 工具版本
 std::string Vision::CalibNPointTool::version() const
 {
     return std::string(kToolVersion);
@@ -201,6 +201,7 @@ std::vector<Vision::VerNote> Vision::CalibNPointTool::versionNotes() const
     return Vision::verNotesFrom(kVerNotes, static_cast<int>(sizeof(kVerNotes) / sizeof(kVerNotes[0])));
 }
 
+// 注册名
 std::string Vision::CalibNPointTool::toolName() const { return "calib.npoint"; }
 // 类型为标定
 Vision::ToolType Vision::CalibNPointTool::type() const { return Vision::ToolType::Calib; }
@@ -243,6 +244,7 @@ Vision::ToolOut Vision::CalibNPointTool::execute(const Vision::ToolIn& in)
         return out;
     }
     const std::string path = in.param.run.value("tablePath").toString();
+    // 没给点表：调算法从标定板图提点，写成 board.csv 再导入
     if (path.empty()) {
         Vision::AlgToolIn ain;
         ain.mode = in.mode;
@@ -272,7 +274,10 @@ Vision::ToolOut Vision::CalibNPointTool::execute(const Vision::ToolIn& in)
             Vision::CalibMgr::instance().setImageSize(cameraOf(in), iw, ih, &aerr);
         }
         if (!Vision::CalibMgr::instance().importPointTable(cameraOf(in), csv, &aerr)) {
-            Vision::CalibMgr::instance().save(&aerr);
+            std::string saveErr;
+            if (!Vision::CalibMgr::instance().save(&saveErr)) {
+                aerr += U(L"\uff1b") + saveErr;
+            }
             out.ok = false;
             out.message = aerr;
             return out;
@@ -287,6 +292,7 @@ Vision::ToolOut Vision::CalibNPointTool::execute(const Vision::ToolIn& in)
         out.syncIo();
         return out;
     }
+    // 给了点表：直接导入并保存
     std::string err;
     if (!Vision::CalibMgr::instance().importPointTable(cameraOf(in), path, &err)
         || !Vision::CalibMgr::instance().save(&err)) {

@@ -1,6 +1,9 @@
 /**
  * @file LicenseSource.cpp
  * @brief 基类只提供原因文案
+ * @author Hoson
+ *
+ * @copyright Copyright (c) 2026 Hoson. All rights reserved.
  */
 
 #include "LicenseSource.h"

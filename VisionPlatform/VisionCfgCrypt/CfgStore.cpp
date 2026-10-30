@@ -1,12 +1,16 @@
 /**
  * @file CfgStore.cpp
  * @brief 配置 AES-GCM。密钥只在本文件
+ * @author Hoson
+ *
+ * @copyright Copyright (c) 2026 Hoson. All rights reserved.
  */
 
 #include "CfgStore.h"
 #include "TextEncoding.h"
 
 #include <cstring>
+#include <io.h>
 #include <vector>
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -21,19 +25,25 @@ const unsigned char kCfgKey[32] = {
     0x60, 0x30, 0x3a, 0x94, 0x5d, 0xaf, 0x98, 0xfa, 0x82, 0x8d, 0x6c, 0xf9, 0xa1, 0x97, 0x8b, 0x3d
 };
 
+/** @brief 内置 256 位配置密钥 */
 class CfgKey {
 public:
+    /** @brief 密钥字节 */
     const unsigned char* bytes() const { return kCfgKey; }
+    /** @brief 密钥长度，32 字节 */
     int size() const { return 32; }
 };
 
+/** @brief VPC1 密文格式：魔数 4 + 版本 2 + 随机数 12 + 标签 16 + 密文 */
 class AesGcm {
 public:
+    /** @brief 用随机数加密明文并拼成 VPC1 文件内容 */
     bool seal(const std::string& plain, std::string* out) const
     {
         if (!out) {
             return false;
         }
+        // 每次写都换随机数，同一内容密文也不同
         unsigned char nonce[12];
         if (BCryptGenRandom(0, nonce, sizeof(nonce), BCRYPT_USE_SYSTEM_PREFERRED_RNG) != 0) {
             return false;
@@ -56,6 +66,7 @@ public:
         return true;
     }
 
+    /** @brief 校验魔数、版本和标签后解密；任一项不对返回 false */
     bool open(const std::string& file, std::string* json) const
     {
         if (!json || file.size() < 4 + 2 + 12 + 16) {
@@ -84,6 +95,7 @@ public:
     }
 
 private:
+    /** @brief BCrypt AES-GCM 加密或解密；加密时输出标签，解密时校验标签 */
     bool crypt(bool enc, const unsigned char* nonce, const unsigned char* in, ULONG n,
                unsigned char* out, unsigned char* tag) const
     {
@@ -123,6 +135,7 @@ private:
     }
 };
 
+// 跳过 UTF-8 BOM 和空白后以 { 或 [ 开头即视为旧明文 JSON
 bool isPlainJson(const std::string& file)
 {
     size_t i = 0;
@@ -135,10 +148,16 @@ bool isPlainJson(const std::string& file)
     return i < file.size() && (file[i] == '{' || file[i] == '[');
 }
 
-bool readAll(const std::string& path, std::string* out)
+bool readAll(const std::string& path, std::string* out, bool* missing)
 {
-    FILE* f = _wfopen(utf8ToWide(path).c_str(), L"rb");
+    *missing = false;
+    const std::wstring wpath = utf8ToWide(path);
+    FILE* f = _wfopen(wpath.c_str(), L"rb");
     if (!f) {
+        // 只有确实不存在才算缺失；被占用、无权限等要报错，不能当成空配置
+        const DWORD attr = GetFileAttributesW(wpath.c_str());
+        const DWORD code = GetLastError();
+        *missing = attr == INVALID_FILE_ATTRIBUTES && (code == ERROR_FILE_NOT_FOUND || code == ERROR_PATH_NOT_FOUND);
         return false;
     }
     if (fseek(f, 0, SEEK_END) != 0) {
@@ -154,7 +173,11 @@ bool readAll(const std::string& path, std::string* out)
     out->assign(static_cast<size_t>(sz), '\0');
     if (sz > 0) {
         const size_t n = fread(&(*out)[0], 1, static_cast<size_t>(sz), f);
-        out->resize(n);
+        if (n != static_cast<size_t>(sz)) {
+            fclose(f);
+            out->clear();
+            return false;
+        }
     }
     fclose(f);
     return true;
@@ -162,28 +185,32 @@ bool readAll(const std::string& path, std::string* out)
 
 bool writeAtomic(const std::string& path, const std::string& data)
 {
-    const std::string tmp = path + ".tmp";
-    FILE* f = _wfopen(utf8ToWide(tmp).c_str(), L"wb");
+    const std::wstring wpath = utf8ToWide(path);
+    const std::wstring wtmp = utf8ToWide(path + ".tmp");
+    FILE* f = _wfopen(wtmp.c_str(), L"wb");
     if (!f) {
         return false;
     }
     const size_t n = data.empty() ? 0 : fwrite(data.data(), 1, data.size(), f);
-    const int bad = fflush(f) != 0 || ferror(f);
+    // 临时文件先落盘再替换，断电后目标要么是旧文件、要么是完整的新文件
+    const int bad = fflush(f) != 0 || ferror(f) || _commit(_fileno(f)) != 0;
     fclose(f);
     if (bad || n != data.size()) {
-        _wremove(utf8ToWide(tmp).c_str());
+        _wremove(wtmp.c_str());
         return false;
     }
-    const std::wstring wpath = utf8ToWide(path);
-    const std::wstring wtmp = utf8ToWide(tmp);
-    if (!MoveFileExW(wtmp.c_str(), wpath.c_str(), MOVEFILE_REPLACE_EXISTING | MOVEFILE_COPY_ALLOWED)) {
-        DeleteFileW(wpath.c_str());
-        if (!MoveFileExW(wtmp.c_str(), wpath.c_str(), MOVEFILE_REPLACE_EXISTING | MOVEFILE_COPY_ALLOWED)) {
-            _wremove(wtmp.c_str());
-            return false;
+    // 同目录改名一步替换，任何时候都不先删原文件；目标被短暂占用时稍等再试，最终失败只删临时文件
+    for (int i = 0;; ++i) {
+        if (MoveFileExW(wtmp.c_str(), wpath.c_str(), MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH)) {
+            return true;
         }
+        if (i >= 4) {
+            break;
+        }
+        Sleep(50);
     }
-    return true;
+    _wremove(wtmp.c_str());
+    return false;
 }
 
 }
@@ -192,8 +219,9 @@ CfgBytes CfgStore::read(const std::string& path) const
 {
     CfgBytes got;
     std::string file;
-    if (!readAll(path, &file)) {
-        got.kind = CfgFileMissing;
+    bool missing = false;
+    if (!readAll(path, &file, &missing)) {
+        got.kind = missing ? CfgFileMissing : CfgFileUnreadable;
         return got;
     }
     if (isPlainJson(file)) {

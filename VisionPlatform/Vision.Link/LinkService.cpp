@@ -99,6 +99,7 @@ bool LinkService::acceptHello(const std::vector<unsigned char>& payload, Peer* p
         }
         return false;
     }
+    // 只有服务端接受 Hello；同一 nodeId 不能重复在线
     if (m_node.role != NodeRoleServer) {
         if (reason) {
             *reason = "对端不是服务端";
@@ -113,6 +114,7 @@ bool LinkService::acceptHello(const std::vector<unsigned char>& payload, Peer* p
             return false;
         }
     }
+    // 余下是认领的工站列表，任一工站已被别的在线节点认领即拒绝
     while (p < end) {
         std::string stationId;
         if (!takeStr(p, end, &stationId)) {
@@ -137,6 +139,7 @@ bool LinkService::acceptHello(const std::vector<unsigned char>& payload, Peer* p
 void LinkService::onFrame(const CommFrame::Frame& frame)
 {
     SharedFrames& frames = SharedFrames::instance();
+    // 服务端收到 Hello：校验后回 ok 或 reject:原因
     if (frame.type == CommFrame::TypeHello) {
         Peer peer;
         std::string reason;
@@ -153,6 +156,7 @@ void LinkService::onFrame(const CommFrame::Frame& frame)
         frames.setFault(IpcFaultNone, std::string());
         return;
     }
+    // 服务端只处理已报到客户端的后续帧
     std::map<std::string, Peer>::iterator it = m_peers.find(frame.peerId);
     if (it == m_peers.end() && m_server) {
         return;
@@ -187,6 +191,7 @@ void LinkService::onFrame(const CommFrame::Frame& frame)
         it->second.subscribed = !frame.payload.empty() && frame.payload[0] != 0;
         return;
     }
+    // 远端画面：工站、节点、序号、OK、节拍与计数、摘要、JPEG，按本机订阅才写入共享内存
     if (frame.type == CommFrame::TypeSnapshot && frames.subscribe()) {
         const unsigned char* p = frame.payload.data();
         const unsigned char* end = p + frame.payload.size();
@@ -240,6 +245,7 @@ void LinkService::publishLatest()
         if (!frames.readLocal(i, &preview) || preview.jpeg.empty()) {
             continue;
         }
+        // 负载格式与 onFrame 解析 TypeSnapshot 的顺序一致
         std::vector<unsigned char> payload;
         appendStr(&payload, preview.stationId);
         appendStr(&payload, preview.nodeId);
@@ -264,6 +270,7 @@ void LinkService::publishLatest()
         payload.insert(payload.end(), reinterpret_cast<const unsigned char*>(&jpegLen),
                        reinterpret_cast<const unsigned char*>(&jpegLen) + 4);
         payload.insert(payload.end(), preview.jpeg.begin(), preview.jpeg.end());
+        // 服务端发给订阅了的客户端，但不回发该客户端自己认领的工站
         if (m_server) {
             for (std::map<std::string, Peer>::iterator it = m_peers.begin(); it != m_peers.end(); ++it) {
                 if (!it->second.subscribed) {
@@ -331,6 +338,7 @@ void LinkService::dropStale()
 
 int LinkService::run()
 {
+    // 以本进程所在目录作为程序目录；未启用联机或单机角色直接退出
     wchar_t path[MAX_PATH];
     const DWORD n = GetModuleFileNameW(NULL, path, MAX_PATH);
     if (n > 0 && n < MAX_PATH) {
@@ -354,6 +362,7 @@ int LinkService::run()
         return 1;
     }
     frames.setRole(m_node.role);
+    // 服务端开 TCP 监听（最多 32 个客户端），客户端开自动重连的 TCP 连接
     CommChannel channel;
     channel.id = m_channel;
     channel.name = "node-link";
@@ -376,6 +385,7 @@ int LinkService::run()
     if (!m_server) {
         m_helloSent = false;
     }
+    // 主循环：心跳、收帧、本机有新帧就转发、超时踢掉对端；每轮最多等 50ms
     unsigned long long nextBeat = nowMs();
     while (true) {
         frames.beatLink();

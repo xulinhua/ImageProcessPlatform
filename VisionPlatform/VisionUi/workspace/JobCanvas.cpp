@@ -158,6 +158,8 @@ static QColor headerColor(ToolType ty)
         return QColor(0x18, 0x90, 0xFF);
     case ToolType::Infer:
         return QColor(0xEB, 0x2F, 0x96);
+    case ToolType::Identify:
+        return QColor(0x2F, 0x9E, 0x8F);
     default:
         return QColor(0x8C, 0x8C, 0x8C);
     }
@@ -871,6 +873,7 @@ static PinStubSplit splitPinStubForDrag(QVector<QPointF>* mids, int segIndex,
     if (segIndex < 0 || segIndex >= last) {
         return r;
     }
+    // 拖的是贴着终点的竖段：在终点前补出一段水平引出线
     bool changed = false;
     if (segIndex + 1 == last && qAbs(full[segIndex].x() - full[last].x()) <= 0.5
         && qAbs(full[segIndex].y() - full[last].y()) > 0.5) {
@@ -880,6 +883,7 @@ static PinStubSplit splitPinStubForDrag(QVector<QPointF>* mids, int segIndex,
         full.insert(at, QPointF(px, b.y()));
         changed = true;
     } else if (segIndex == 0 && qAbs(full[0].y() - full[1].y()) <= 0.5) {
+        // 拖的是起点水平段：够长就在起点后留一段固定引出线，只拖其余部分；否则复制拐点拆段
         const qreal span = qAbs(full[1].x() - full[0].x());
         if (span > kWireStub + 8.0) {
             const QPointF stub(a.x() + kWireStub, a.y());
@@ -899,6 +903,7 @@ static PinStubSplit splitPinStubForDrag(QVector<QPointF>* mids, int segIndex,
             changed = true;
         }
     }
+    // 拖的段是进终点的水平段且够长：在终点前也留一段固定引出线
     last = full.size() - 1;
     if (r.segIndex + 1 == last && qAbs(full[r.segIndex].y() - full[last].y()) <= 0.5
         && qAbs(full[r.segIndex].x() - full[last].x()) > 0.5) {
@@ -1357,6 +1362,7 @@ static QGraphicsRectItem* addToolConfig(QGraphicsScene* scene, qreal x, qreal y,
                         const ToolCfg* t, int index, const QString& id,
                         bool sel, PinLayout* pins, QGraphicsItem* parent)
 {
+    // 用户摆过位置的工具用存盘坐标，否则用布局给的 x/y
     qreal nx = x;
     qreal ny = y;
     if (t && t->canvasPlaced) {
@@ -1388,6 +1394,7 @@ static QGraphicsRectItem* addToolConfig(QGraphicsScene* scene, qreal x, qreal y,
         box->setOpacity(0.55);
     }
 
+    // 标题条：序号与工具类型，按类型着色；禁用时置灰
     const ToolType ty = t ? t->type : ToolType::Acquire;
     QGraphicsRectItem* head = new QGraphicsRectItem(nx, ny, sz.w, kHeadH, box);
     head->setBrush(QBrush(disabled ? QColor(0xB0, 0xB0, 0xB0) : headerColor(ty)));
@@ -1413,6 +1420,7 @@ static QGraphicsRectItem* addToolConfig(QGraphicsScene* scene, qreal x, qreal y,
     nameLab->setParentItem(box);
     nameLab->setCursor(Qt::OpenHandCursor);
 
+    // 端口逐行排：输入针脚在左边线，输出针脚在右边线
     QFont portFont;
     portFont.setPixelSize(10);
     const int rows = (ins.size() > outs.size()) ? ins.size() : outs.size();
@@ -1446,6 +1454,7 @@ static void paintGroup(QGraphicsScene* scene, const JobCfg* job, const ToolGroup
                        QGraphicsItem* parent, QHash<QString, QGraphicsItem*>* nodes,
                        QVector<CanvasOrderRef>* orderLines)
 {
+    // 叶子直接画工具节点
     if (canvasLeaf(g)) {
         const ToolCfg* t = job->findTool(g.toolId);
         const int index = job->indexOf(g.toolId) + 1;
@@ -1460,6 +1469,7 @@ static void paintGroup(QGraphicsScene* scene, const JobCfg* job, const ToolGroup
     const bool split = canvasSplit(g);
         const bool isIf = (g.kind == GroupIf);
         const bool sel = (selectedId == qs(g.id));
+    // 并行 / 条件组可单独摆放，存盘坐标为场景坐标，有父框时换成父框坐标
     qreal gx = x;
     qreal gy = y;
     if (split && g.canvasPlaced) {
@@ -1472,6 +1482,7 @@ static void paintGroup(QGraphicsScene* scene, const JobCfg* job, const ToolGroup
             gy = g.canvasY;
         }
     }
+    // 组框：条件组橙色、并行组蓝色、其余灰色，均为虚线
     QPen pen;
     QBrush brush;
     if (split) {
@@ -1530,6 +1541,7 @@ static void paintGroup(QGraphicsScene* scene, const JobCfg* job, const ToolGroup
     title->setDefaultTextColor(titleColor);
     title->setPos(gx + 8, gy + 2);
         title->setParentItem(frame);
+    // 子节点：并行 / 条件组横排；其余竖排居中，并画顺序箭头
     if (split) {
         qreal cx = gx + kPad;
         const qreal cy = gy + kTitleH + kPad;
@@ -1571,6 +1583,7 @@ static void paintWires(QGraphicsScene* scene, const JobCfg& job, const PinLayout
         if (!fromPin || !toPin) {
             continue;
         }
+        // 用户改过路由的按存盘拐点画，否则自动走直角线并绕开其他节点和组框
         const QPointF a = pinSceneCenter(fromPin);
         const QPointF b = pinSceneCenter(toPin);
         QPainterPath path;
@@ -1590,6 +1603,7 @@ static void paintWires(QGraphicsScene* scene, const JobCfg& job, const PinLayout
             const QVector<QRectF> obs = collectWireObstacles(toolBoxes, groupFrames, fromId, toId);
             path = makeOrthoPath(routeOrthoAvoidObstacles(a, b, obs, srcBox, dstBox));
         }
+        // 颜色按数据类型，选中的加粗变蓝并置顶
         QGraphicsPathItem* item = scene->addPath(path);
         const bool sel = (i == selectedLinkIndex);
         QPen pen(wireColor(L.fromPort.data), sel ? 4.8 : 2.2);
@@ -1674,6 +1688,7 @@ void JobCanvas::resetZoom()
 // 按流程重画画布
 void JobCanvas::showJob(const JobCfg* job, const QString& selectedId, int selectedLinkIndex)
 {
+    // 清掉全部交互状态和旧图元
     m_tempWire = 0;
     m_wiring = false;
     m_movingNode = false;
@@ -1718,6 +1733,7 @@ void JobCanvas::showJob(const JobCfg* job, const QString& selectedId, int select
     title->setDefaultTextColor(job->enabled ? QColor(0x88, 0x88, 0x88) : QColor(0xA0, 0xA0, 0xA0));
     title->setPos(12, 4);
 
+    // 三种根：无执行树时按工具列表竖排；根为并行 / 条件组时整体画；否则子节点竖排居中
     const ToolGroup& root = job->root;
     qreal y = 32;
     qreal maxW = 240;
@@ -1765,6 +1781,7 @@ void JobCanvas::showJob(const JobCfg* job, const QString& selectedId, int select
         }
         linkSequentialNodes(m_scene, nodes, root.children, &m_orderLines);
     }
+    // 记下工具框和可单独摆放的组框，供连线避障与拖动
     QHash<QString, QGraphicsItem*>::const_iterator git = nodes.constBegin();
     for (; git != nodes.constEnd(); ++git) {
         QGraphicsRectItem* frame = qgraphicsitem_cast<QGraphicsRectItem*>(git.value());
@@ -1791,6 +1808,7 @@ void JobCanvas::showJob(const JobCfg* job, const QString& selectedId, int select
             m_selectedGroupId = selectedId;
         }
     }
+    // 最后画连线、操作提示，并按内容外扩设场景范围
     paintWires(m_scene, *job, pins, m_selectedLinkIndex, &m_wires, m_toolBoxes, m_groupFrames);
     m_pinItems = pins.item;
     updateWireHandles();
@@ -1819,6 +1837,7 @@ bool JobCanvas::hitAt(const QPoint& viewPos, QString* id, int* kind, QString* po
     if (dir) {
         *dir = 0;
     }
+    // 先沿父链找针脚或连线；针脚按工具命中返回，并带端口与方向
     QGraphicsItem* it = itemAt(viewPos);
     while (it) {
         const int k = it->data(RoleKind).toInt();
@@ -1848,6 +1867,7 @@ bool JobCanvas::hitAt(const QPoint& viewPos, QString* id, int* kind, QString* po
         }
         it = it->parentItem();
     }
+    // 再沿父链找第一个带 id 的图元，区分组与工具
     it = itemAt(viewPos);
     while (it && it->data(RoleId).toString().isEmpty()) {
         it = it->parentItem();
@@ -2097,6 +2117,7 @@ static void followPinRun(QVector<QPointF>* mids, const QVector<QPointF>& base,
     if (qAbs(crossDelta) <= 0.5 && qAbs(alongDelta) <= 0.5) {
         return;
     }
+    // 从移动端数出与端点共线的连续拐点数 count，从另一端数出 other；两者重叠说明整段共线
     const int n = base.size();
     int count = 0;
     const int stepStart = fromStart ? 0 : (n - 1);
@@ -2120,6 +2141,7 @@ static void followPinRun(QVector<QPointF>* mids, const QVector<QPointF>& base,
         }
         ++other;
     }
+    // 横向平移这些拐点；整段共线时只移一个点，并补一个拐点保持直角
     const bool overlap = count + other > n;
     const int use = overlap ? 1 : count;
     const int begin = fromStart ? 0 : (n - use);
@@ -2142,6 +2164,7 @@ static void followPinRun(QVector<QPointF>* mids, const QVector<QPointF>& base,
     if (overlap || qAbs(alongDelta) <= 0.5) {
         return;
     }
+    // 纵向：最远那个拐点及其后同位置的拐点一起顺移，不越过另一端的共线段
     const int far = fromStart ? (use - 1) : begin;
     const int stop = fromStart ? (n - other) : other;
     const qreal alongKey = horiz ? base[far].x() : base[far].y();
@@ -2244,6 +2267,7 @@ void JobCanvas::applyNodeWireSnaps()
         if (!fp || !tp) {
             continue;
         }
+        // 两端位移相同（整体拖动）时全部拐点平移，否则只让各端的引出段跟随；结果记为自定义路由
         const QPointF curA = pinSceneCenter(fp);
         const QPointF curB = pinSceneCenter(tp);
         const QPointF dA = curA - snap.pinA;
@@ -2317,6 +2341,7 @@ void JobCanvas::collectWireHitsAt(const QPoint& viewPos, QVector<int>* outIndice
         return;
     }
     outIndices->clear();
+    // 命中宽度按缩放换算，至少 8 个场景单位
     const QPointF sp = mapToScene(viewPos);
     const qreal tol = qMax(8.0, 10.0 / qMax(m_zoom, 0.25));
     QPainterPathStroker stroker;
@@ -2337,6 +2362,7 @@ void JobCanvas::collectWireHitsAt(const QPoint& viewPos, QVector<int>* outIndice
         if (!stroke.contains(sp)) {
             continue;
         }
+        // 沿路径取 25 个采样点估算距离，结果按距离由近到远排序
         const QPainterPath path = w.item->path();
         qreal best = 1e9;
         const int steps = 24;
@@ -2961,6 +2987,7 @@ void JobCanvas::mouseReleaseEvent(QMouseEvent* e)
         e->accept();
         return;
     }
+    // 拖完拐点或线段：合并过短的折弯后把拐点交给外部写回连线
     if (e->button() == Qt::LeftButton && m_draggingWireHandle) {
         m_draggingWireHandle = false;
         if (m_dragLinkIndex >= 0) {
@@ -2995,6 +3022,7 @@ void JobCanvas::mouseReleaseEvent(QMouseEvent* e)
         e->accept();
         return;
     }
+    // 拉线结束：落在同类型输入针脚上才发连线请求，类型不符时提示
     if (e->button() == Qt::LeftButton && m_wiring) {
         QString toId;
         QString toPort;
@@ -3017,6 +3045,7 @@ void JobCanvas::mouseReleaseEvent(QMouseEvent* e)
         e->accept();
         return;
     }
+    // 结束节点拖动；工具节点按单击处理
     if (e->button() == Qt::LeftButton && (m_moveArmed || m_movingNode)) {
         const QString id = m_moveId;
         const bool wasGroup = m_movingGroup;

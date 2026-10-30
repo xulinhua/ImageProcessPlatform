@@ -283,6 +283,7 @@ bool fitPlaneMap(CalibPlaneFit fit, const std::vector<PlaneSample>& samples, Pla
         }
         return false;
     }
+    // 只用勾选的点；最少点数：比例尺 2、仿射 3、透视 4
     std::vector<PlaneSample> used;
     const int n = usedSamples(samples, &used);
     const int need = (fit == CalibFitScale) ? 2 : (fit == CalibFitAffine ? 3 : 4);
@@ -299,6 +300,8 @@ bool fitPlaneMap(CalibPlaneFit fit, const std::vector<PlaneSample>& samples, Pla
     identity3(map.imageToWorld);
     identity3(map.worldToImage);
 
+    // 比例尺：相似变换 [a -b tx; b a ty]，每点两行方程，未知数 a、b、tx、ty
+    // 仿射：X、Y 各自对 (x, y, 1) 做一次三元最小二乘
     if (fit == CalibFitScale || fit == CalibFitAffine) {
         const int cols = (fit == CalibFitScale) ? 4 : 3;
         std::vector<double> A;
@@ -366,6 +369,7 @@ bool fitPlaneMap(CalibPlaneFit fit, const std::vector<PlaneSample>& samples, Pla
             map.mmPerPixel = std::sqrt(u[0] * u[0] + u[1] * u[1]);
         }
     } else {
+        // 透视：两侧点先归一化，固定 h33 = 1 解 8 元最小二乘，再反归一化并缩放使 m[8] = 1
         std::vector<double> ix(n);
         std::vector<double> iy(n);
         std::vector<double> wx(n);
@@ -446,6 +450,7 @@ bool fitPlaneMap(CalibPlaneFit fit, const std::vector<PlaneSample>& samples, Pla
         }
         map.mmPerPixel = 0.0;
     }
+    // 求逆矩阵，再按勾选点算毫米残差
     if (!invert3(map.imageToWorld, map.worldToImage)) {
         if (err) {
             *err = U(L"\u6620\u5C04\u4E0D\u53EF\u9006");
@@ -473,13 +478,37 @@ bool fitRotateCenter(const std::vector<RotateSample>& samples, RotateCenter* out
         }
         return false;
     }
+    // 样本可以是像素也可以是毫米：先平移到质心、按均方根离散度缩放，退化判断只看相对量
+    double mx = 0.0;
+    double my = 0.0;
+    for (int i = 0; i < n; ++i) {
+        mx += samples[i].imageX;
+        my += samples[i].imageY;
+    }
+    mx /= n;
+    my /= n;
+    double spread = 0.0;
+    for (int i = 0; i < n; ++i) {
+        const double dx = samples[i].imageX - mx;
+        const double dy = samples[i].imageY - my;
+        spread += dx * dx + dy * dy;
+    }
+    spread = std::sqrt(spread / n);
+    const double magnitude = std::fabs(mx) > std::fabs(my) ? std::fabs(mx) : std::fabs(my);
+    if (!(spread > 1e-9 * magnitude)) {
+        if (err) {
+            *err = U(L"\u6837\u672C\u70B9\u91CD\u5408\uFF0C\u65E0\u6CD5\u62DF\u5408\u65CB\u8F6C\u4E2D\u5FC3");
+        }
+        return false;
+    }
+    // 归一化坐标下 x² + y² + D·x + E·y + F = 0 对 D、E、F 做最小二乘，不使用角度值
     std::vector<double> A;
     std::vector<double> rhs;
     A.reserve(n * 3);
     rhs.reserve(n);
     for (int i = 0; i < n; ++i) {
-        const double x = samples[i].imageX;
-        const double y = samples[i].imageY;
+        const double x = (samples[i].imageX - mx) / spread;
+        const double y = (samples[i].imageY - my) / spread;
         A.push_back(x);
         A.push_back(y);
         A.push_back(1.0);
@@ -492,16 +521,26 @@ bool fitRotateCenter(const std::vector<RotateSample>& samples, RotateCenter* out
         }
         return false;
     }
-    const double cx = -0.5 * u[0];
-    const double cy = -0.5 * u[1];
-    const double r2 = cx * cx + cy * cy - u[2];
-    if (r2 <= 1.0) {
+    // 圆心 (-D/2, -E/2)。点在圆上时归一化半径不小于 1；远大于 1 说明样本只占极短一段弧，近似共线
+    const double ncx = -0.5 * u[0];
+    const double ncy = -0.5 * u[1];
+    const double nr2 = ncx * ncx + ncy * ncy - u[2];
+    if (!(nr2 > 0.0)) {
         if (err) {
-            *err = U(L"\u65CB\u8F6C\u534A\u5F84\u8FC7\u5C0F");
+            *err = U(L"\u65CB\u8F6C\u4E2D\u5FC3\u62DF\u5408\u5931\u8D25");
         }
         return false;
     }
-    const double radius = std::sqrt(r2);
+    if (nr2 > 1e8) {
+        if (err) {
+            *err = U(L"\u6837\u672C\u8FD1\u4F3C\u5171\u7EBF\uFF0C\u65E0\u6CD5\u62DF\u5408\u65CB\u8F6C\u4E2D\u5FC3");
+        }
+        return false;
+    }
+    const double cx = mx + ncx * spread;
+    const double cy = my + ncy * spread;
+    // 残差：各点到圆心距离与半径之差，回到样本原单位
+    const double radius = std::sqrt(nr2) * spread;
     double sum = 0.0;
     double maxE = 0.0;
     for (int i = 0; i < n; ++i) {

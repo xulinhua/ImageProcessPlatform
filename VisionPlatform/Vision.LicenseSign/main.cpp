@@ -1,6 +1,9 @@
 /**
  * @file main.cpp
  * @brief 厂家电脑上的注册机。私钥只读程序旁边的 sign.key，不写客户电脑上的文件
+ * @author Hoson
+ *
+ * @copyright Copyright (c) 2026 Hoson. All rights reserved.
  */
 
 #include "LicenseCodec.h"
@@ -30,6 +33,7 @@
 
 namespace {
 
+/** @brief 当前 exe 所在目录，不带结尾斜杠 */
 std::wstring exeDir()
 {
     wchar_t path[MAX_PATH];
@@ -42,6 +46,7 @@ std::wstring exeDir()
     return ws.substr(0, slash);
 }
 
+/** @brief 十六进制字符的值，非法字符返回 -1 */
 int hexValue(char c)
 {
     if (c >= '0' && c <= '9') {
@@ -56,6 +61,7 @@ int hexValue(char c)
     return -1;
 }
 
+/** @brief 读 exe 旁的 sign.key（十六进制文本，可含空白），得到 BCRYPT_ECCPRIVATE_BLOB */
 bool loadKey(std::vector<unsigned char>* key)
 {
     if (!key) {
@@ -89,6 +95,7 @@ bool loadKey(std::vector<unsigned char>* key)
     return high < 0 && !key->empty();
 }
 
+/** @brief 正文的 SHA-256 */
 bool sha256(const std::string& body, unsigned char hash[32])
 {
     BCRYPT_ALG_HANDLE alg = 0;
@@ -115,6 +122,7 @@ bool sha256(const std::string& body, unsigned char hash[32])
     return st == 0 && done == 0;
 }
 
+/** @brief 用私钥对正文的 SHA-256 做 ECDSA P-256 签名，输出 r||s 共 64 字节 */
 bool sign(const std::vector<unsigned char>& key, const std::string& body, unsigned char sig[64])
 {
     unsigned char hash[32];
@@ -138,12 +146,14 @@ bool sign(const std::vector<unsigned char>& key, const std::string& body, unsign
     return st == 0 && n == 64;
 }
 
+/** @brief 严格的 yyyy-MM-dd 日期（补零、日期真实存在） */
 bool validDate(const QString& text)
 {
     const QDate date = QDate::fromString(text, QStringLiteral("yyyy-MM-dd"));
     return date.isValid() && date.toString(QStringLiteral("yyyy-MM-dd")) == text;
 }
 
+/** @brief 启动口令框。口令对返回 true；输错时提示后返回 false，直接关闭也返回 false */
 bool confirmPassword()
 {
     QDialog dlg;
@@ -203,6 +213,7 @@ int main(int argc, char* argv[])
         return 0;
     }
 
+    // 私钥在启动时读一次；读不到时只能查看申请码，签发按钮禁用
     std::vector<unsigned char> key;
     const bool keyOk = loadKey(&key);
 
@@ -218,6 +229,7 @@ int main(int argc, char* argv[])
         : QString::fromUtf8("未找到 sign.key"));
     keyPill->setObjectName(keyOk ? QStringLiteral("pillOk") : QStringLiteral("pillBad"));
 
+    // 控件：申请码区、申请信息、签发参数、注册码结果
     QLabel* requestTitle = new QLabel(QString::fromUtf8("1  客户申请码"));
     requestTitle->setObjectName(QStringLiteral("section"));
     QPushButton* importBtn = new QPushButton(QString::fromUtf8("导入"));
@@ -275,6 +287,7 @@ int main(int argc, char* argv[])
     polishWidget(issue);
     polishWidget(keyPill);
 
+    // 到期日：选限期才可编辑，日历弹出在按钮下方
     QObject::connect(until, &QRadioButton::toggled, &window, [untilDate, calBtn](bool on) {
         untilDate->setEnabled(on);
         calBtn->setEnabled(on);
@@ -294,6 +307,7 @@ int main(int argc, char* argv[])
         untilDate->setText(date.toString(QStringLiteral("yyyy-MM-dd")));
         calendar->hide();
     });
+    // 查看：解开申请码，显示摘要和客户当前序号，并把签发序号预填为当前序号加 1
     QObject::connect(look, &QPushButton::clicked, &window, [request, productValue, digestValue, seenValue, serial, status]() {
         std::string digest;
         int seen = 0;
@@ -314,6 +328,7 @@ int main(int argc, char* argv[])
         serial->setValue(seen + 1);
         status->setText(QString::fromUtf8("客户机器当前序号是 %1，已填入 %2。").arg(seen).arg(seen + 1));
     });
+    // 签发：重新解申请码并校验序号、编号、到期日，再签名编码成注册码
     QObject::connect(issue, &QPushButton::clicked, &window, [&key, request, licenseId, serial, perpetual, untilDate, result, status]() {
         std::string digest;
         int seen = 0;
@@ -351,6 +366,7 @@ int main(int argc, char* argv[])
         result->setPlainText(QString::fromUtf8(code.c_str()));
         status->setText(QString::fromUtf8("已签发。把注册码发给客户。"));
     });
+    // 申请码导入，注册码导出、二维码、复制
     QObject::connect(importBtn, &QPushButton::clicked, &window, [&window, request, status]() {
         importLicenseCode(&window, request, status, QString::fromUtf8("申请码"));
     });
@@ -369,6 +385,7 @@ int main(int argc, char* argv[])
         status->setText(QString::fromUtf8("已复制注册码。"));
     });
 
+    // 布局
     QHBoxLayout* head = new QHBoxLayout();
     head->addWidget(productHead);
     head->addStretch(1);

@@ -1,6 +1,9 @@
 /**
  * @file SoftLicense.cpp
  * @brief 验注册码、写 license.dat、查三处时间记录
+ * @author Hoson
+ *
+ * @copyright Copyright (c) 2026 Hoson. All rights reserved.
  */
 
 #include "SoftLicense.h"
@@ -133,6 +136,7 @@ LicenseReason SoftLicense::checkFile(bool writeRecords)
     if (m_digest.empty()) {
         return LicenseMachine;
     }
+    // 解开本机文件：解不开说明换了硬件，头不对说明文件坏了
     LicenseFile file;
     if (!file.exists()) {
         return LicenseMissing;
@@ -143,6 +147,7 @@ LicenseReason SoftLicense::checkFile(bool writeRecords)
     if (!file.read(m_digest, &body, sig, &damaged)) {
         return damaged ? LicenseDamaged : LicenseMachine;
     }
+    // 验签并核对内容
     if (!LicenseSign::verify(body, sig, 64)) {
         return LicenseDamaged;
     }
@@ -164,6 +169,7 @@ LicenseReason SoftLicense::checkFile(bool writeRecords)
     if (kind == "until" && pastDue(until)) {
         return LicenseExpired;
     }
+    // 防回拨：三处记录全被清掉或现在早于记录都拒绝
     long long stamp = 0;
     int found = 0;
     ClockLog clock;

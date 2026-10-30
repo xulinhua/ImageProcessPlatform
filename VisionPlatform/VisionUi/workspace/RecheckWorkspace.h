@@ -120,6 +120,7 @@ private:
         bool ok;           ///< OK/NG
         QString summary;   ///< 简要说明
         int elapsedMs;     ///< 工具耗时 ms；未跑为 -1
+        /** @brief 未跑、NG、耗时 -1 */
         ToolRow()
             : ran(false)
             , ok(false)
@@ -142,6 +143,7 @@ private:
         HsCommData::HsImage image;            ///< 结果图
         QVector<HsCommData::Graphic> graphics;    ///< 叠加
         QVector<ToolRow> tools;                ///< 各工具结果
+        /** @brief 未处理，判定默认为 VerdictFail */
         Item()
             : verdict(VerdictFail)
             , ran(false)

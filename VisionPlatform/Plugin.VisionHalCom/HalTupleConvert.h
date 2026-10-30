@@ -27,6 +27,9 @@ VISION_HALCOM_API bool hsTupleToHTuple(const HsCommData::HsTuple& src, HalconCpp
  */
 VISION_HALCOM_API bool hTupleToHsTuple(const HalconCpp::HTuple& src, HsCommData::HsTuple*& out, std::string* err);
 
+/** @brief 元组里第 index 个字符串。越界或不是字符串则为空 */
+VISION_HALCOM_API std::string hTupleText(const HalconCpp::HTuple& values, int index);
+
 }
 
 #endif

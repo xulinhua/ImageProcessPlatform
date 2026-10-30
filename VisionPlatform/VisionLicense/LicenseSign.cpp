@@ -1,6 +1,9 @@
 /**
  * @file LicenseSign.cpp
  * @brief ECDSA P-256 验签
+ * @author Hoson
+ *
+ * @copyright Copyright (c) 2026 Hoson. All rights reserved.
  */
 
 #include "LicenseSign.h"

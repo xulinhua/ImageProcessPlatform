@@ -25,13 +25,14 @@ public:
     };
     /** @brief 运行参数 */
     struct Run {
-        std::string bgMethod;       ///< 背景
-        int kernelW;                ///< 核宽
-        int kernelH;                ///< 核高
-        double residThresh;         ///< 残差阈值
-        double openR;               ///< 开运算
-        int minArea;                ///< 最小面积
-        int maxArea;                ///< 最大面积
+        std::string bgMethod;       ///< 背景估计：mean 均值 / median 中值，其他值按均值
+        int kernelW;                ///< 背景核宽（像素），3~255
+        int kernelH;                ///< 背景核高（像素），3~255
+        double residThresh;         ///< 与背景差的灰度阈值，大于等于它算缺陷
+        double openR;               ///< 缺陷区开运算半径（像素），0 不做
+        int minArea;                ///< 缺陷最小面积（像素）
+        int maxArea;                ///< 缺陷最大面积（像素），0 不限
+        /** @brief 缺省 31x31 均值背景 */
         Run()
             : bgMethod("mean")
             , kernelW(31)

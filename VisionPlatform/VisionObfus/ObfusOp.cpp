@@ -1,6 +1,9 @@
 /**
  * @file ObfusOp.cpp
  * @brief 一条指令的四个字段
+ * @author Hoson
+ *
+ * @copyright Copyright (c) 2026 Hoson. All rights reserved.
  */
 
 #include "ObfusOp.h"

@@ -1,6 +1,9 @@
 /**
  * @file LicenseUiTheme.h
  * @brief 注册窗口和注册机共用浅色工业配色，和主程序同一套色
+ * @author Hoson
+ *
+ * @copyright Copyright (c) 2026 Hoson. All rights reserved.
  */
 
 #ifndef VISION_LICENSE_UI_THEME_H
@@ -18,6 +21,7 @@
 #endif
 #include <windows.h>
 
+/** @brief 给整个应用设置许可界面样式表；按 objectName（licenseWindow、pillOk 等）和 primary 属性区分控件 */
 inline void applyLicenseUiTheme(QApplication* app)
 {
     if (!app) {
@@ -57,6 +61,7 @@ inline void applyLicenseUiTheme(QApplication* app)
     ));
 }
 
+/** @brief 用当前 exe 资源 ID 1 的图标设置窗口大、小图标；资源缺失时不改 */
 inline void applyLicenseWindowIcon(QWidget* widget)
 {
     if (!widget) {
@@ -78,6 +83,7 @@ inline void applyLicenseWindowIcon(QWidget* widget)
     }
 }
 
+/** @brief 改 objectName 或动态属性后重新套用样式 */
 inline void polishWidget(QWidget* widget)
 {
     if (!widget) {

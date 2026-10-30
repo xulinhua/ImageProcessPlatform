@@ -64,12 +64,12 @@
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)main;$(ProjectDir)workspace;$(ProjectDir)dialog;$(ProjectDir)runtime;$(QtInc)\QtSvg;$(SolutionDir)third_party\HsImageCtrl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)main;$(ProjectDir)workspace;$(ProjectDir)dialog;$(ProjectDir)runtime;$(QtInc)\QtSvg;$(SolutionDir)HsImageCtrl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>VISION_UI_EXPORTS;QT_SVG_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <AdditionalDependencies>VisionWidgets.lib;VisionToolUi.lib;VisionCore.lib;VisionToolBase.lib;VisionAlgToolBase.lib;VisionComm.lib;VisionCalib.lib;VisionAuth.lib;VisionLog.lib;VisionDb.lib;VisionCfgMgr.lib;VisionLang.lib;VisionCommon.lib;VisionGrabFile.lib;VisionPluginAPI.lib;VisionIpc.lib;VisionRun.lib;HsImageCtrl.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(OutDir);$(SolutionDir)third_party\HsImageCtrl\lib\$(Platform)\$(Configuration);$(SolutionDir)..\HsImage\bin\$(Platform)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PreBuildEvent>
       <Command>call "$(SolutionDir)tools\moc_ui.bat" "$(IntDir)" "$(QTDIR)\bin\moc.exe"</Command>
@@ -203,6 +203,9 @@
     </ProjectReference>
     <ProjectReference Include="..\VisionGrabFile\VisionGrabFile.vcxproj">
       <Project>{B4E91A10-7C22-4F18-9A01-A0B1C2D3E40A}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\HsImageCtrl\HsImageCtrl.vcxproj">
+      <Project>{A7C4E91B-2D3F-4A18-9B6C-8E0F1A2B3C4D}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
