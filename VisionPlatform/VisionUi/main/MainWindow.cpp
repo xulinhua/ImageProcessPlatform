@@ -1533,8 +1533,13 @@ void MainWindow::stationCycleThunk(void* user, const StationRunRst& result)
         }
         const long long nowMs = static_cast<long long>(QDateTime::currentMSecsSinceEpoch());
         heap->addHist = (!heap->result.ok || nowMs - slot->lastHistMs >= 500);
-        if (heap->addHist && !heap->result.image.isNull()) {
-            heap->histThumb = toQImage(heap->result.image);
+        if (heap->addHist) {
+            if (!heap->result.image.isNull()) {
+                heap->histThumb = toQImage(heap->result.image);
+            }
+            if (heap->histThumb.isNull() && !heap->result.source.isNull()) {
+                heap->histThumb = toQImage(heap->result.source);
+            }
         }
         heap->overlay = qg(heap->result.objects);
         QMetaObject::invokeMethod(w, "onStationCycleFinished", Qt::QueuedConnection,
@@ -1695,6 +1700,10 @@ void MainWindow::onStationCycleFinished(void* resultPtr)
 
     StationRuntimePanel* panel = m_runtime ? m_runtime->panelFor(slot->stationId) : nullptr;
     if (panel) {
+        // 先刷图再写历史，便于历史缩略图回退用本拍结果
+        panel->setRunImages(payload->result.source, payload->result.image, payload->overlay);
+        panel->setCounts(slot->total, slot->pass, slot->fail, payload->result.cycleMs);
+        panel->setLastOk(payload->result.ok);
         if (payload->addHist) {
             panel->addResult(payload->result.ok,
                              QDateTime::currentDateTime().toString(QLatin1String("hh:mm:ss"))
@@ -1702,9 +1711,6 @@ void MainWindow::onStationCycleFinished(void* resultPtr)
                              payload->histThumb);
             slot->lastHistMs = static_cast<long long>(QDateTime::currentMSecsSinceEpoch());
         }
-        panel->setCounts(slot->total, slot->pass, slot->fail, payload->result.cycleMs);
-        panel->setLastOk(payload->result.ok);
-        panel->setRunImages(payload->result.source, payload->result.image, payload->overlay);
     }
     storeProdFromSlot(slot);
     {
@@ -1762,8 +1768,13 @@ void MainWindow::onStationCycleFinished(void* resultPtr)
             }
             const long long nowMs = static_cast<long long>(QDateTime::currentMSecsSinceEpoch());
             heap->addHist = (!heap->result.ok || nowMs - sl->lastHistMs >= 500);
-            if (heap->addHist && !heap->result.image.isNull()) {
-                heap->histThumb = toQImage(heap->result.image);
+            if (heap->addHist) {
+                if (!heap->result.image.isNull()) {
+                    heap->histThumb = toQImage(heap->result.image);
+                }
+                if (heap->histThumb.isNull() && !heap->result.source.isNull()) {
+                    heap->histThumb = toQImage(heap->result.source);
+                }
             }
             heap->overlay = qg(heap->result.objects);
             onStationCycleFinished(heap);

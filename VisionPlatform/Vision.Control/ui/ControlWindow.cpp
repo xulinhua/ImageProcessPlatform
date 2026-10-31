@@ -871,12 +871,17 @@ void ControlWindow::refreshWall(const std::vector<ControlSession::Tile>& tiles)
             cell.lastSeen = device->lastSeen.date() == QDate::currentDate()
                 ? device->lastSeen.toString("HH:mm:ss") : device->lastSeen.toString("yyyy-MM-dd HH:mm");
         }
-        // 优先主码流（与会话同帧率）；没有主画面时才用缩略图
+        // 优先收包线程已解出的 BGRA（H.264 逐帧）；否则主码流 JPEG/原图；再不行用缩略图
         Picture& picture = m_pictures[key];
+        const bool havePixels = tile && tile->pixels && !tile->pixels->empty()
+            && tile->pixelsW > 0 && tile->pixelsH > 0;
         const CommBytes* wallJpeg = 0;
         uint64_t wallSeq = 0;
         uint8_t wallCodec = 1;
-        if (tile && !tile->jpeg.empty()) {
+        if (havePixels) {
+            wallSeq = tile->pixelsSeq;
+            wallCodec = 3;
+        } else if (tile && !tile->jpeg.empty() && tile->codec != 2) {
             wallJpeg = &tile->jpeg;
             wallSeq = tile->pictureSeq;
             wallCodec = tile->codec == 0 ? 1 : tile->codec;
@@ -885,31 +890,33 @@ void ControlWindow::refreshWall(const std::vector<ControlSession::Tile>& tiles)
             wallSeq = tile->thumbSeq;
             wallCodec = 1;
         }
-        if (tile && wallJpeg && !wallJpeg->empty() && (wallSeq != picture.seq || picture.gray == cell.online)) {
-            if (wallSeq != picture.seq || picture.image.isNull() || (picture.gray && cell.online)) {
-                if (wallCodec == 2) {
-                    std::vector<unsigned char> bgra;
-                    int w = 0;
-                    int h = 0;
-                    H264Codec& dec = m_wallH264[key];
-                    if (dec.decode(wallJpeg->data(), static_cast<int>(wallJpeg->size()), &bgra, &w, &h)
-                        && w > 0 && h > 0) {
-                        picture.image = QImage(bgra.data(), w, h, w * 4, QImage::Format_ARGB32).copy();
-                    } else {
-                        dec.closeDecoder();
-                    }
+        if (tile && (havePixels || (wallJpeg && !wallJpeg->empty()))
+            && (wallSeq != picture.seq || picture.gray == cell.online || picture.codec != wallCodec)) {
+            if (picture.codec != 0 && picture.codec != wallCodec) {
+                m_wallH264[key].closeDecoder();
+                picture.image = QImage();
+            }
+            if (wallSeq != picture.seq || picture.image.isNull() || (picture.gray && cell.online)
+                || picture.codec != wallCodec) {
+                bool decoded = false;
+                if (havePixels) {
+                    picture.image = RemoteTheme::imageFromBgra(tile->pixels->data(),
+                        static_cast<int>(tile->pixels->size()),
+                        static_cast<int>(tile->pixelsW), static_cast<int>(tile->pixelsH));
+                    decoded = !picture.image.isNull();
                 } else if (wallCodec == 3) {
-                    const int w = static_cast<int>(tile->imageW);
-                    const int h = static_cast<int>(tile->imageH);
-                    const size_t need = static_cast<size_t>(w) * static_cast<size_t>(h) * 4u;
-                    if (w > 0 && h > 0 && wallJpeg->size() >= need) {
-                        picture.image = QImage(wallJpeg->data(), w, h, w * 4, QImage::Format_ARGB32).copy();
-                    }
+                    picture.image = RemoteTheme::imageFromBgra(wallJpeg->data(), static_cast<int>(wallJpeg->size()),
+                        static_cast<int>(tile->imageW), static_cast<int>(tile->imageH));
+                    decoded = !picture.image.isNull();
                 } else {
                     picture.image = RemoteTheme::imageFromJpeg(wallJpeg->data(), static_cast<int>(wallJpeg->size()));
+                    decoded = !picture.image.isNull();
+                }
+                if (decoded) {
+                    picture.codec = wallCodec;
                 }
             }
-            if (!cell.online) {
+            if (!cell.online && !picture.image.isNull()) {
                 picture.image = picture.image.convertToFormat(QImage::Format_Grayscale8);
             }
             picture.seq = wallSeq;

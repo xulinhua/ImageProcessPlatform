@@ -1230,8 +1230,33 @@ bool AgentSession::encodePicture(const CommBytes& bgra, int width, int height, i
     int outW = 0;
     int outH = 0;
     uint8_t key = 0;
-    const int bitrate = (quality < 1 ? 60 : quality) * 40000;
-    if (!m_h264.encode(bgra, width, height, longEdge, fps, bitrate, &annex, &outW, &outH, &key)) {
+    // 码控帧率与抓屏上限脱钩：桌面远程按 10～30 分摊；UI 上限 150 时不要按 150 摊比特
+    const int encFps = fps < 10 ? 10 : (fps > 30 ? 30 : fps);
+    const int q = quality < 1 ? 60 : (quality > 100 ? 100 : quality);
+    int ew = width;
+    int eh = height;
+    if (longEdge > 0 && (width > longEdge || height > longEdge)) {
+        if (width >= height) {
+            ew = longEdge;
+            eh = height * longEdge / width;
+        } else {
+            eh = longEdge;
+            ew = width * longEdge / height;
+        }
+    }
+    ew = ew < 2 ? 2 : (ew & ~1);
+    eh = eh < 2 ? 2 : (eh & ~1);
+    // 桌面文字要明显更高 bpp；清晰档约 0.45（1600x992@30 ≈ 21Mbps，封顶 24）
+    const double bpp = 0.12 + static_cast<double>(q) / 100.0 * 0.40;
+    int bitrate = static_cast<int>(static_cast<double>(ew) * static_cast<double>(eh)
+        * static_cast<double>(encFps) * bpp);
+    if (bitrate < 4000000) {
+        bitrate = 4000000;
+    }
+    if (bitrate > 24000000) {
+        bitrate = 24000000;
+    }
+    if (!m_h264.encode(bgra, width, height, longEdge, encFps, bitrate, &annex, &outW, &outH, &key)) {
         if (m_h264.isBroken()) {
             static bool s_brokenLog = false;
             if (!s_brokenLog) {
@@ -1282,6 +1307,10 @@ bool AgentSession::encodeRaw(const CommBytes& bgra, int width, int height, int l
     shot->imageH = static_cast<uint32_t>(outH);
     shot->codec = 3;
     shot->key = 1;
+    // 抓屏 alpha 经常是 0；填成不透明，旧客户端用 ARGB32 也不会画成全透明
+    for (size_t i = 3; i < scaled.size(); i += 4) {
+        scaled[i] = 255;
+    }
     shot->jpeg.assign(scaled.begin(), scaled.end());
     return true;
 }
@@ -1307,7 +1336,8 @@ bool AgentSession::encodeByPrefer(const CommBytes& bgra, int width, int height, 
         keepPreview(m_capture.fromBgra(const_cast<CommBytes&>(bgra), width, height, width, height, true, 50, 480));
         return true;
     }
-    if (prefer == 1) {
+    // 0=自动走 JPEG（桌面文字更清晰，也是改 H.264 之前的观感）；2=强制 H.264；1=强制 JPEG
+    if (prefer != 2) {
         *shot = m_capture.fromBgra(const_cast<CommBytes&>(bgra), width, height, width, height, true, quality, longEdge);
         shot->codec = 1;
         keepPreview(*shot);
@@ -1316,15 +1346,14 @@ bool AgentSession::encodeByPrefer(const CommBytes& bgra, int width, int height, 
         }
         return !shot->jpeg.empty();
     }
-    // 2=强制 H.264，0=自动优先 H.264
     if (encodePicture(bgra, width, height, quality, longEdge, fps, shot)) {
         if (pathName) {
             *pathName = "H264";
         }
         return true;
     }
-    if (prefer == 2 && !m_h264.isBroken()) {
-        // 预热中：本帧跳过，避免夹 JPEG 把中控台解码器打乱
+    if (!m_h264.isBroken()) {
+        // 预热中：本帧跳过，避免夹 JPEG 把中控台解码器打乱；中控台侧已清静帧等关键帧
         if (pathName) {
             *pathName = "H264预热";
         }
@@ -1334,7 +1363,7 @@ bool AgentSession::encodeByPrefer(const CommBytes& bgra, int width, int height, 
     shot->codec = 1;
     keepPreview(*shot);
     if (pathName) {
-        *pathName = prefer == 2 ? "JPEG(H264失败)" : "JPEG";
+        *pathName = "JPEG(H264失败)";
     }
     return !shot->jpeg.empty();
 }

@@ -562,4 +562,14 @@ ToolEditorBase* createStepEditor(const std::string& toolName, QWidget* parent)
     return new StepEditor(toolName, parent);
 }
 
+ToolEditorBase* createFilterStepEditor(QWidget* parent)
+{
+    return createStepEditor("preprocess.filter", parent);
+}
+
+ToolEditorBase* createBlobStepEditor(QWidget* parent)
+{
+    return createStepEditor("detect.blob", parent);
+}
+
 }

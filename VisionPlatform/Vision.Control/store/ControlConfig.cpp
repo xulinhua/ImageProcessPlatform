@@ -41,7 +41,7 @@ ControlConfig::ControlConfig()
     , cols(3)
     , defaultFps(RemoteConst::kMaxFpsDefault)
     , defaultQuality(1)
-    , streamCodec(0)
+    , streamCodec(1)
     , adaptive(true)
     , m_path(RemoteFiles::exeFile("control.json"))
 {

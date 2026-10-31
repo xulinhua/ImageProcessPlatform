@@ -99,6 +99,7 @@
     <ClCompile Include="ui\AgentWindow.cpp" />
     <ClCompile Include="ui\ProcessCombo.cpp" />
     <ClCompile Include="dialog\AgentFileTransferDialog.cpp" />
+    <ClCompile Include="dialog\AgentSettingsDialog.cpp" />
     <ClCompile Include="security\ConfirmDialog.cpp" />
     <ClCompile Include="security\ControlBar.cpp" />
     <ClCompile Include="watch\WindowWatch.cpp" />
@@ -123,6 +124,7 @@
   <ItemGroup>
     <ClInclude Include="ui\AgentWindow.h" />
     <ClInclude Include="ui\ProcessCombo.h" />
+    <ClInclude Include="dialog\AgentSettingsDialog.h" />
     <ClInclude Include="security\ConfirmDialog.h" />
     <ClInclude Include="security\ControlBar.h" />
     <ClInclude Include="security\PrivacyGuard.h" />

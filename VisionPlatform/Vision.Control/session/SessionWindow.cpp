@@ -861,11 +861,18 @@ void SessionWindow::refresh(const ControlSession::Tile* tile, const QString& nam
         const uint64_t seen = m_seen;
         m_tile = *tile;
         m_tile.jpeg.clear();
-        // 有新帧才解码显示
-        if (m_online && tile->pictureSeq != seen) {
-            m_view->setImage(tile->jpeg, tile->imageW, tile->imageH, tile->codec);
+        // 有新解出帧才刷新；H.264 已在收包线程解成 BGRA（pixels），这里不能再抽最新 Annex-B 包单独解
+        if (m_online && tile->pixels && !tile->pixels->empty()
+            && tile->pixelsW > 0 && tile->pixelsH > 0 && tile->pixelsSeq != seen) {
+            m_view->setImage(*tile->pixels, tile->pixelsW, tile->pixelsH, 3);
+            m_seen = tile->pixelsSeq;
+        } else if (m_online && tile->codec == 1 && tile->pictureSeq != seen && !tile->jpeg.empty()) {
+            m_view->setImage(tile->jpeg, tile->imageW, tile->imageH, 1);
             m_seen = tile->pictureSeq;
             appendRecord(tile->jpeg, tile->imageW, tile->imageH);
+        } else if (m_online && tile->codec == 3 && tile->pictureSeq != seen && !tile->jpeg.empty()) {
+            m_view->setImage(tile->jpeg, tile->imageW, tile->imageH, 3);
+            m_seen = tile->pictureSeq;
         }
         // 主码流没打开或还没解出时，先用监控墙那张 JPEG，避免一直停在「等待画面」
         if (m_online && m_view->image().isNull() && !tile->thumb.empty() && tile->thumbSeq != m_thumbSeen) {

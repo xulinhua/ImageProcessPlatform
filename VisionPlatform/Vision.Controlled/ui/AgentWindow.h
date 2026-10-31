@@ -1,6 +1,6 @@
 /**
  * @file AgentWindow.h
- * @brief 被控端窗口：本机 ID、当前会话、共享范围与预览、连接、安全，托盘常驻
+ * @brief 被控端窗口：本机 ID、当前会话、共享范围与预览；连接/安全等进设置对话框，托盘常驻
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -46,7 +46,7 @@ class TagLabel;
 
 /**
  * @class AgentWindow
- * @brief 被控端主窗口：展示本机 ID 与会话，编辑共享范围、反连地址和来访确认策略，驱动 AgentSession
+ * @brief 被控端主窗口：展示本机 ID、会话与共享范围；连接、安全、编码等在「设置」里改
  * @note 配置存 exe 旁的 controlled.json。每 200 ms 轮询会话刷新界面，并负责弹出确认框和被控提示条。
  *       关窗口缩到托盘，只有“退出”才真正结束
  */
@@ -63,16 +63,26 @@ protected:
 
 private:
     /************************************************** 搭界面 **************************************************/
-    /** @brief 菜单栏：文件、共享、安全、帮助，菜单项与面板上的控件双向同步 */
+    /** @brief 菜单栏：文件、共享、安全、设置、查看、帮助 */
     QMenuBar* buildMenus();
     /** @brief 左上蓝色卡片：设备 ID（可复制）与一次性验证码占位 */
     QFrame* buildIdCard();
     /** @brief 当前会话卡片：服务状态、反连地址、会话行与断开、重新连接按钮 */
     QFrame* buildSessions();
-    /** @brief 共享范围卡片：桌面/进程画面、显示器、进程与标题、预览，以及连接设置 */
+    /** @brief 共享范围卡片：桌面/进程画面、显示器、进程与标题、预览 */
     QFrame* buildShare();
-    /** @brief 安全卡片：来访确认、允许远端的各项权限、断开后锁屏、强制录屏 */
-    QFrame* buildSecurity();
+    /** @brief 设置面板：连接 / 安全 / 画面 / 服务四页，平时隐藏，设置对话框里显示 */
+    QWidget* buildSettingsBody();
+    /** @brief 设置 · 连接：反连、直连、局域网查看、中继 */
+    QWidget* buildConnectionPage(QWidget* parent);
+    /** @brief 设置 · 安全：来访确认、权限、白名单、录屏等 */
+    QWidget* buildSecurityPage(QWidget* parent);
+    /** @brief 设置 · 画面：抓/编并行、发送编码 */
+    QWidget* buildPicturePage(QWidget* parent);
+    /** @brief 设置 · 服务：安装 / 卸载 Windows 服务 */
+    QWidget* buildServicePage(QWidget* parent);
+    /** @brief 打开设置对话框 */
+    void openSettings(int page = 0);
     /**
      * @brief 建一张白色卡片
      * @param title 标题，空时不画标题行
@@ -193,6 +203,7 @@ private:
     QLabel* m_codeLabel;                ///< 一次性验证码大号显示
     TagLabel* m_passwordTag;            ///< 无人值守密码状态
     QLabel* m_fpLabel;                  ///< 本机证书指纹（短显）
+    QWidget* m_settingsBody;            ///< 设置面板（四页），对话框打开时临时挂过去
 
     QAction* m_actDesktop;              ///< 菜单“共享 > 整个桌面”
     QAction* m_actWindow;               ///< 菜单“共享 > 进程画面”

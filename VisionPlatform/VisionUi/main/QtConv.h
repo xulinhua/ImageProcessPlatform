@@ -94,7 +94,7 @@ inline QVector<HsCommData::Graphic> qg(const std::vector<HsCommData::HsObject>& 
 }
 
 
-/** @brief 把 HsImage 推到 HsImageWindow 底图。窗口自己管帧号 */
+/** @brief 把 HsImage 推到 HsImageWindow 底图，保留源图 frameId 供叠加对齐 */
     inline void applyFrame(HsCtrl::HsImageWindow* w, const HsCommData::HsImage& fb) {
     if (!w) {
         return;
@@ -107,7 +107,7 @@ inline QVector<HsCommData::Graphic> qg(const std::vector<HsCommData::HsObject>& 
     if (enc.isEmpty()) {
         return;
     }
-    w->setImage(fb.pixels.data(), fb.width, fb.height, fb.stride, enc);
+    w->setImage(fb.pixels.data(), fb.width, fb.height, fb.stride, enc, fb.frameId);
 }
 
 

@@ -318,31 +318,11 @@ protected:
     QSpinBox* m_port;
 };
 
-/** @brief 未登记专用页时的占位编辑器 */
-class GenericEditor : public ToolEditorBase {
-public:
-    explicit GenericEditor(QWidget* parent)
-        : ToolEditorBase(parent)
-    {
-        QLabel* tip = new QLabel(T("该工具暂无专用参数页。"), this);
-        tip->setWordWrap(true);
-        QVBoxLayout* lay = new QVBoxLayout(this);
-        lay->addWidget(tip);
-        lay->addStretch(1);
-    }
-
-protected:
-    void loadFromTool() {}
-    void saveToTool() {}
-};
-
 // 结果合并参数页
 ToolEditorBase* createMergeEditor(QWidget* parent) { return new MergeEditor(parent); }
 // 逻辑判断参数页
 ToolEditorBase* createJudgeEditor(QWidget* parent) { return new JudgeEditor(parent); }
 // PLC 通信参数页
 ToolEditorBase* createPlcEditor(QWidget* parent) { return new PlcEditor(parent); }
-// 无专用页时的占位参数页
-ToolEditorBase* createGenericEditor(QWidget* parent) { return new GenericEditor(parent); }
 
 }

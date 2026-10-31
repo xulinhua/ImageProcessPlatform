@@ -193,6 +193,20 @@ void RemoteTheme::markLater(QWidget* widget, const QString& phase)
     widget->setToolTip(QString::fromUtf8("%1提供").arg(phase));
 }
 
+QImage RemoteTheme::imageFromBgra(const unsigned char* data, int size, int width, int height)
+{
+    if (!data || width < 1 || height < 1) {
+        return QImage();
+    }
+    const size_t need = static_cast<size_t>(width) * static_cast<size_t>(height) * 4u;
+    if (size < 0 || static_cast<size_t>(size) < need) {
+        return QImage();
+    }
+    // RGB32 在小端内存布局与 BGRA 一致，且绘制时按不透明处理（忽略 alpha=0）
+    const QImage view(data, width, height, width * 4, QImage::Format_RGB32);
+    return view.copy();
+}
+
 QImage RemoteTheme::imageFromJpeg(const unsigned char* data, int size)
 {
     if (!data || size <= 0) {

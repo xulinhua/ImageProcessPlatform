@@ -366,7 +366,8 @@ bool H264Codec::openOpen(int width, int height, int fps, int bitrate)
         return false;
     }
     OpenParam param;
-    param.usage = 0;
+    // 1 = SCREEN_CONTENT_REAL_TIME，桌面文字边缘比摄像头模式清晰
+    param.usage = 1;
     param.width = width;
     param.height = height;
     param.bitrate = bitrate < 100000 ? 100000 : bitrate;
@@ -588,15 +589,17 @@ bool H264Codec::encode(const std::vector<unsigned char>& bgra, int width, int he
         closeEncoder();
         m_fps = fps;
         m_bitrate = bitrate;
-        // OpenH264 更稳；没有 dll 再走 MF 软编
-        if (!openOpen(fw, fh, fps, bitrate) && !openMf(fw, fh, fps, bitrate)) {
+        // 优先系统 MF（桌面文字通常比 OpenH264 清楚）；打不开再走 openh264.dll
+        if (!openMf(fw, fh, fps, bitrate) && !openOpen(fw, fh, fps, bitrate)) {
             m_broken = true;
             return false;
         }
         m_encW = fw;
         m_encH = fh;
+        sprintf_s(m_err, "%s %dx%d %dfps %dkbps", m_useOpen ? "OpenH264" : "MF", fw, fh, fps, bitrate / 1000);
     }
-    const bool force = m_frames == 0 || m_primeFails > 0 || (m_frames % (fps * 2) == 0);
+    // 约每秒一帧关键帧，避免长时间糊在旧参考上
+    const bool force = m_frames == 0 || m_primeFails > 0 || (fps > 0 && (m_frames % fps) == 0);
     if (!encodeFrame(fitted.data(), fw, fh, force, annexb)) {
         m_primeFails += 1;
         // MF 预热期允许连续空输出；之后换另一后端再试一轮
@@ -653,6 +656,7 @@ bool H264Codec::decode(const unsigned char* data, int size, std::vector<unsigned
         IMFTransform* transform = 0;
         if (CoCreateInstance(CLSID_CMSH264DecoderMFT, 0, CLSCTX_INPROC_SERVER, __uuidof(IMFTransform), reinterpret_cast<void**>(&transform)) != S_OK
             || !transform) {
+            sprintf_s(m_err, "H264解码器创建失败");
             return false;
         }
         IMFMediaType* inType = 0;
@@ -663,19 +667,35 @@ bool H264Codec::decode(const unsigned char* data, int size, std::vector<unsigned
         if (transform->SetInputType(0, inType, 0) != S_OK) {
             inType->Release();
             transform->Release();
+            sprintf_s(m_err, "H264 SetInputType失败");
             return false;
         }
         inType->Release();
-        IMFMediaType* outType = 0;
-        MFCreateMediaType(&outType);
-        outType->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Video);
-        outType->SetGUID(MF_MT_SUBTYPE, MFVideoFormat_NV12);
-        if (transform->SetOutputType(0, outType, 0) != S_OK) {
+        // 输出类型等收到 SPS 后的 STREAM_CHANGE 再定；先尽量选 NV12
+        bool haveOut = false;
+        for (DWORD i = 0;; ++i) {
+            IMFMediaType* outType = 0;
+            if (transform->GetOutputAvailableType(0, i, &outType) != S_OK || !outType) {
+                break;
+            }
+            GUID sub = GUID_NULL;
+            outType->GetGUID(MF_MT_SUBTYPE, &sub);
+            if (sub == MFVideoFormat_NV12 && transform->SetOutputType(0, outType, 0) == S_OK) {
+                haveOut = true;
+            }
             outType->Release();
-            transform->Release();
-            return false;
+            if (haveOut) {
+                break;
+            }
         }
-        outType->Release();
+        if (!haveOut) {
+            IMFMediaType* outType = 0;
+            MFCreateMediaType(&outType);
+            outType->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Video);
+            outType->SetGUID(MF_MT_SUBTYPE, MFVideoFormat_NV12);
+            transform->SetOutputType(0, outType, 0);
+            outType->Release();
+        }
         transform->ProcessMessage(MFT_MESSAGE_NOTIFY_BEGIN_STREAMING, 0);
         transform->ProcessMessage(MFT_MESSAGE_NOTIFY_START_OF_STREAM, 0);
         m_dec = transform;
@@ -701,63 +721,132 @@ bool H264Codec::decode(const unsigned char* data, int size, std::vector<unsigned
     const HRESULT pushed = transform->ProcessInput(0, sample, 0);
     sample->Release();
     if (pushed != S_OK && pushed != MF_E_NOTACCEPTING) {
+        sprintf_s(m_err, "H264 ProcessInput 0x%08lx", static_cast<unsigned long>(pushed));
         return false;
     }
     MFT_OUTPUT_STREAM_INFO streamInfo;
     std::memset(&streamInfo, 0, sizeof(streamInfo));
     transform->GetOutputStreamInfo(0, &streamInfo);
-    MFT_OUTPUT_DATA_BUFFER out;
-    std::memset(&out, 0, sizeof(out));
-    IMFSample* outSample = 0;
-    if ((streamInfo.dwFlags & MFT_OUTPUT_STREAM_PROVIDES_SAMPLES) == 0) {
-        MFCreateSample(&outSample);
+    for (int tryOut = 0; tryOut < 8; ++tryOut) {
+        MFT_OUTPUT_DATA_BUFFER out;
+        std::memset(&out, 0, sizeof(out));
+        IMFSample* outSample = 0;
+        if ((streamInfo.dwFlags & MFT_OUTPUT_STREAM_PROVIDES_SAMPLES) == 0) {
+            MFCreateSample(&outSample);
+            IMFMediaBuffer* outBuf = 0;
+            MFCreateMemoryBuffer(streamInfo.cbSize > 0 ? streamInfo.cbSize : 8 * 1024 * 1024, &outBuf);
+            outSample->AddBuffer(outBuf);
+            outBuf->Release();
+            out.pSample = outSample;
+        }
+        DWORD status = 0;
+        const HRESULT hr = transform->ProcessOutput(0, 1, &out, &status);
+        if (hr == MF_E_TRANSFORM_STREAM_CHANGE) {
+            if (outSample) {
+                outSample->Release();
+            }
+            IMFMediaType* type = 0;
+            IMFMediaType* pick = 0;
+            for (DWORD i = 0; transform->GetOutputAvailableType(0, i, &type) == S_OK; ++i) {
+                GUID sub = GUID_NULL;
+                type->GetGUID(MF_MT_SUBTYPE, &sub);
+                if (sub == MFVideoFormat_NV12) {
+                    if (pick) {
+                        pick->Release();
+                    }
+                    pick = type;
+                    break;
+                }
+                if (!pick) {
+                    pick = type;
+                } else {
+                    type->Release();
+                }
+            }
+            if (pick) {
+                transform->SetOutputType(0, pick, 0);
+                pick->Release();
+            }
+            transform->GetOutputStreamInfo(0, &streamInfo);
+            continue;
+        }
+        if (hr == MF_E_TRANSFORM_NEED_MORE_INPUT) {
+            if (outSample) {
+                outSample->Release();
+            }
+            return false;
+        }
+        if (hr != S_OK || !out.pSample) {
+            if (outSample) {
+                outSample->Release();
+            }
+            sprintf_s(m_err, "H264 ProcessOutput 0x%08lx", static_cast<unsigned long>(hr));
+            return false;
+        }
+        IMFMediaType* current = 0;
+        int w = m_decW;
+        int h = m_decH;
+        INT32 stride = 0;
+        if (transform->GetOutputCurrentType(0, &current) == S_OK && current) {
+            UINT32 uw = 0;
+            UINT32 uh = 0;
+            if (MFGetAttributeSize(current, MF_MT_FRAME_SIZE, &uw, &uh) == S_OK) {
+                w = static_cast<int>(uw);
+                h = static_cast<int>(uh);
+            }
+            UINT32 us = 0;
+            if (current->GetUINT32(MF_MT_DEFAULT_STRIDE, &us) == S_OK) {
+                stride = static_cast<INT32>(us);
+            }
+            current->Release();
+        }
         IMFMediaBuffer* outBuf = 0;
-        MFCreateMemoryBuffer(streamInfo.cbSize > 0 ? streamInfo.cbSize : 8 * 1024 * 1024, &outBuf);
-        outSample->AddBuffer(outBuf);
-        outBuf->Release();
-        out.pSample = outSample;
-    }
-    DWORD status = 0;
-    if (transform->ProcessOutput(0, 1, &out, &status) != S_OK || !out.pSample) {
-        if (outSample) {
-            outSample->Release();
-        }
-        return false;
-    }
-    IMFMediaType* current = 0;
-    int w = m_decW;
-    int h = m_decH;
-    if (transform->GetOutputCurrentType(0, &current) == S_OK && current) {
-        UINT32 uw = 0;
-        UINT32 uh = 0;
-        if (MFGetAttributeSize(current, MF_MT_FRAME_SIZE, &uw, &uh) == S_OK) {
-            w = static_cast<int>(uw);
-            h = static_cast<int>(uh);
-        }
-        current->Release();
-    }
-    IMFMediaBuffer* outBuf = 0;
-    bool ok = false;
-    if (w >= 2 && h >= 2 && out.pSample->ConvertToContiguousBuffer(&outBuf) == S_OK && outBuf) {
-        BYTE* nv = 0;
-        DWORD length = 0;
-        if (outBuf->Lock(&nv, 0, &length) == S_OK && nv && length >= static_cast<DWORD>(w * h * 3 / 2)) {
-            fromNv12(nv, w, h, bgra);
-            outBuf->Unlock();
-            ok = true;
-            m_decW = w;
-            m_decH = h;
-            if (width) {
-                *width = w;
+        bool ok = false;
+        if (w >= 2 && h >= 2 && out.pSample->ConvertToContiguousBuffer(&outBuf) == S_OK && outBuf) {
+            BYTE* nv = 0;
+            DWORD length = 0;
+            const int row = stride > 0 ? stride : w;
+            const DWORD need = static_cast<DWORD>(row) * static_cast<DWORD>(h)
+                + static_cast<DWORD>(row) * static_cast<DWORD>(h) / 2;
+            if (outBuf->Lock(&nv, 0, &length) == S_OK && nv && length >= need) {
+                if (row == w) {
+                    fromNv12(nv, w, h, bgra);
+                } else {
+                    // 有行填充时先收成紧密 NV12 再转
+                    std::vector<unsigned char> tight(static_cast<size_t>(w) * static_cast<size_t>(h) * 3u / 2u);
+                    for (int y = 0; y < h; ++y) {
+                        std::memcpy(tight.data() + static_cast<size_t>(y) * static_cast<size_t>(w),
+                            nv + static_cast<size_t>(y) * static_cast<size_t>(row), static_cast<size_t>(w));
+                    }
+                    const unsigned char* uvSrc = nv + static_cast<size_t>(row) * static_cast<size_t>(h);
+                    unsigned char* uvDst = tight.data() + static_cast<size_t>(w) * static_cast<size_t>(h);
+                    for (int y = 0; y < h / 2; ++y) {
+                        std::memcpy(uvDst + static_cast<size_t>(y) * static_cast<size_t>(w),
+                            uvSrc + static_cast<size_t>(y) * static_cast<size_t>(row), static_cast<size_t>(w));
+                    }
+                    fromNv12(tight.data(), w, h, bgra);
+                }
+                outBuf->Unlock();
+                ok = true;
+                m_decW = w;
+                m_decH = h;
+                if (width) {
+                    *width = w;
+                }
+                if (height) {
+                    *height = h;
+                }
             }
-            if (height) {
-                *height = h;
-            }
+            outBuf->Release();
         }
-        outBuf->Release();
+        out.pSample->Release();
+        if (!ok) {
+            sprintf_s(m_err, "H264 NV12转BGRA失败 %dx%d", w, h);
+        }
+        return ok;
     }
-    out.pSample->Release();
-    return ok;
+    sprintf_s(m_err, "H264无解码输出");
+    return false;
 }
 
 }

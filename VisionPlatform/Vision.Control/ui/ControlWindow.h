@@ -92,9 +92,10 @@ private:
     struct Picture {
         uint64_t seq;   ///< 已解码的画面帧序号
         bool gray;      ///< image 已转灰度（离线）
+        uint8_t codec;  ///< 上次成功解码的编码，切换时丢掉静帧
         QImage image;   ///< 解码结果
         /** @brief 空缓存 */
-        Picture() : seq(0), gray(false) {}
+        Picture() : seq(0), gray(false), codec(0) {}
     };
 
     /************************************************** 搭建 **************************************************/

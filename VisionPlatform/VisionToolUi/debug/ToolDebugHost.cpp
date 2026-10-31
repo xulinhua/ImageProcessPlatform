@@ -1,6 +1,6 @@
 /**
  * @file ToolDebugHost.cpp
- * @brief 工具详细调试窗实现：四宫格布局、ROI 绘制与撤销、draft 试跑与提交
+ * @brief 工具详细调试窗：左参数右图像、ROI 绘制/引用、draft 试跑与提交
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -52,6 +52,7 @@
 #include <QResizeEvent>
 #include <QPlainTextEdit>
 #include <QPushButton>
+#include <QScrollArea>
 #include <QPalette>
 #include <QColor>
 #include <QTextCursor>
@@ -216,6 +217,8 @@ ToolDebugHost::ToolDebugHost(ToolCfg* tool, Session* session, Solution* sol, Job
     connect(m_io, SIGNAL(removeLastRoiRequested()), this, SLOT(onDelLastRoi()));
     connect(m_io, SIGNAL(removeRoiRequested(int)), this, SLOT(onRemoveRoi(int)));
     connect(m_io, SIGNAL(roiSelectionChanged(int)), this, SLOT(onRoiSelectionChanged(int)));
+    connect(m_io, SIGNAL(drawRoiRequested(int)), this, SLOT(onDrawRoiRow(int)));
+    connect(m_io, SIGNAL(roiItemsEdited()), this, SLOT(onRoiItemsEdited()));
     connect(m_io, SIGNAL(inputLinkChanged(int,QString,QString)),
             this, SLOT(onInputLinkChanged(int,QString,QString)));
 
@@ -293,13 +296,14 @@ ToolDebugHost::ToolDebugHost(ToolCfg* tool, Session* session, Solution* sol, Job
     m_quadGrid = new QGridLayout(m_quadPanel);
     m_quadGrid->setContentsMargins(0, 0, 0, 0);
     m_quadGrid->setSpacing(10);
+    // BV 风格：左参数列 / 右图像；主题卡片样式不变
     m_quadGrid->setRowStretch(0, 1);
-    m_quadGrid->setRowStretch(1, 1);
-    m_quadGrid->setColumnStretch(0, 1);
-    m_quadGrid->setColumnStretch(1, 1);
+    m_quadGrid->setColumnStretch(0, 2);
+    m_quadGrid->setColumnStretch(1, 3);
     for (int i = 0; i < 2; ++i) {
         m_quadEmpty[i] = new QWidget(m_quadPanel);
         m_quadEmpty[i]->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+        m_quadEmpty[i]->hide();
     }
 
     m_log = new QPlainTextEdit(this);
@@ -458,7 +462,7 @@ void ToolDebugHost::appendDebugLog(const QString& line)
     m_log->setTextCursor(cur);
 }
 
-// 按工具能力重排四宫格
+// 按工具能力重排：左栏输入/ROI/参数，右栏图像（对齐 BV 调试窗）
 void ToolDebugHost::rebuildQuadLayout()
 {
     if (!m_quadGrid) {
@@ -478,51 +482,65 @@ void ToolDebugHost::rebuildQuadLayout()
         m_chkDrawMode->setChecked(false);
     }
 
-    QWidget* order[4];
-    int count = 0;
-    order[count++] = m_imageWrap;
-    order[count++] = m_linkCard;
-    if (roiOn) {
-        order[count++] = m_roiCard;
+    if (m_roiCard) {
+        m_roiCard->setVisible(roiOn);
     }
-    if (paramOn) {
-        order[count++] = m_paramCard;
+    if (m_paramCard) {
+        m_paramCard->setVisible(paramOn);
     }
-    // 没进四宫格的卡片必须隐藏，否则会成为脱离布局的游离控件
-    if (m_roiCard && !roiOn) {
-        m_roiCard->hide();
+    if (m_linkCard) {
+        m_linkCard->show();
     }
-    if (m_paramCard && !paramOn) {
-        m_paramCard->hide();
+    if (m_imageWrap) {
+        m_imageWrap->show();
     }
-
-    int emptyIdx = 0;
-    int badge = 1;
-    for (int i = 0; i < 4; ++i) {
-        QWidget* cell = nullptr;
-        if (i < count) {
-            cell = order[i];
-            cell->show();
-            if (cell == m_linkCard) {
-                setCardBadge(m_linkCard, QString::number(badge++));
-            } else if (cell == m_roiCard) {
-                setCardBadge(m_roiCard, QString::number(badge++));
-            } else if (cell == m_paramCard) {
-                setCardBadge(m_paramCard, QString::number(badge++));
-            }
-        } else if (emptyIdx < 2) {
-            cell = m_quadEmpty[emptyIdx++];
-            cell->show();
-        }
-        if (cell) {
-            m_quadGrid->addWidget(cell, i / 2, i % 2);
-        }
-    }
-    for (int i = emptyIdx; i < 2; ++i) {
+    for (int i = 0; i < 2; ++i) {
         if (m_quadEmpty[i]) {
             m_quadEmpty[i]->hide();
         }
     }
+
+    // 左栏可滚动，避免参数多时挤掉图像
+    QWidget* leftHost = m_quadPanel->findChild<QWidget*>(QLatin1String("toolDebugLeftHost"));
+    QScrollArea* leftScroll = m_quadPanel->findChild<QScrollArea*>(QLatin1String("toolDebugLeftScroll"));
+    if (!leftScroll) {
+        leftScroll = new QScrollArea(m_quadPanel);
+        leftScroll->setObjectName(QLatin1String("toolDebugLeftScroll"));
+        leftScroll->setWidgetResizable(true);
+        leftScroll->setFrameShape(QFrame::NoFrame);
+        leftScroll->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        leftHost = new QWidget(leftScroll);
+        leftHost->setObjectName(QLatin1String("toolDebugLeftHost"));
+        QVBoxLayout* leftLay = new QVBoxLayout(leftHost);
+        leftLay->setContentsMargins(0, 0, 0, 0);
+        leftLay->setSpacing(10);
+        leftScroll->setWidget(leftHost);
+    }
+    QVBoxLayout* leftLay = qobject_cast<QVBoxLayout*>(leftHost->layout());
+    if (leftLay) {
+        while (QLayoutItem* child = leftLay->takeAt(0)) {
+            if (child->widget()) {
+                child->widget()->setParent(m_quadPanel);
+            }
+            delete child;
+        }
+        int badge = 1;
+        if (m_linkCard) {
+            setCardBadge(m_linkCard, QString::number(badge++));
+            leftLay->addWidget(m_linkCard, 0);
+        }
+        if (roiOn && m_roiCard) {
+            setCardBadge(m_roiCard, QString::number(badge++));
+            leftLay->addWidget(m_roiCard, 0);
+        }
+        if (paramOn && m_paramCard) {
+            setCardBadge(m_paramCard, QString::number(badge++));
+            leftLay->addWidget(m_paramCard, 1);
+        }
+        leftLay->addStretch(1);
+    }
+    m_quadGrid->addWidget(leftScroll, 0, 0);
+    m_quadGrid->addWidget(m_imageWrap, 0, 1);
     updateDrawBarVisibility();
 }
 
@@ -633,6 +651,7 @@ void ToolDebugHost::pushRoiUndo()
     }
     RoiSnapshot snap;
     snap.rois = m_tool->rois;
+    snap.roiItems = m_tool->param.roiItems;
     snap.drawStyles = m_drawStyles;
     snap.drawStyleOn = m_drawStyleOn;
     m_roiUndo.append(snap);
@@ -649,13 +668,15 @@ void ToolDebugHost::undoRoi()
     }
     const RoiSnapshot snap = m_roiUndo.takeLast();
     m_tool->rois = snap.rois;
-    m_tool->syncRois();
+    m_tool->param.roiItems = snap.roiItems;
+    m_tool->rebuildRoisFromItems();
     m_drawStyles = snap.drawStyles;
     m_drawStyleOn = snap.drawStyleOn;
     m_pendingNewRoi = false;
-    if (m_view) {
-    }
     markDraftDirty();
+    if (m_io) {
+        m_io->refresh(m_sol, m_tool, m_job, m_session && m_session->has(PermEditSolution));
+    }
     applyDrawings();
     emit roiChanged();
 }
@@ -1200,7 +1221,7 @@ int ToolDebugHost::defaultDrawToolId() const
     return preferredDrawToolId();
 }
 
-// 点「新建 ROI」或「重画」
+// 点「新建 ROI」或「重画」：追加一条绘制项并进入绘制（对齐 BV「添加」）
 void ToolDebugHost::onAddRoi()
 {
     if (!m_tool || !m_session || !m_session->has(PermEditSolution)) {
@@ -1209,16 +1230,27 @@ void ToolDebugHost::onAddRoi()
     if (!m_tool->usesRoi()) {
         return;
     }
+    pushRoiUndo();
+    ToolRoiItem item;
+    item.slot = m_tool->nextRoiSlotKey();
+    item.kind = RoiItemKind::DrawRoi;
+    // 单分区且上限为 1：替换；多分区/多 ROI：追加到未满槽
+    if (!m_tool->keepsExistingRoisOnAdd()) {
+        m_tool->param.roiItems.clear();
+        m_tool->rois.clear();
+    }
+    m_tool->appendRoiItem(item);
+    markDraftDirty();
     if (m_chkDrawMode && !m_chkDrawMode->isChecked()) {
         m_chkDrawMode->setChecked(true);
     } else {
         updateDrawBarVisibility();
     }
-    m_pendingNewRoi = true;
+    m_pendingNewRoi = false;
+    const int row = static_cast<int>(m_tool->param.roiItems.size()) - 1;
     if (m_io) {
-        m_io->clearRoiSelection();
-    }
-    if (m_view) {
+        m_io->refresh(m_sol, m_tool, m_job, true);
+        m_io->selectRoiRow(row);
     }
     const int id = defaultDrawToolId();
     if (m_drawPad) {
@@ -1229,48 +1261,102 @@ void ToolDebugHost::onAddRoi()
     applyDrawings(false);
 }
 
+void ToolDebugHost::onDrawRoiRow(int index)
+{
+    if (!m_tool || index < 0 || index >= static_cast<int>(m_tool->param.roiItems.size())) {
+        return;
+    }
+    const ToolRoiItem& item = m_tool->param.roiItems[static_cast<size_t>(index)];
+    if (item.kind == RoiItemKind::RefRoi || item.kind == RoiItemKind::RefRegion) {
+        return;
+    }
+    if (m_chkDrawMode && !m_chkDrawMode->isChecked()) {
+        m_chkDrawMode->setChecked(true);
+    } else {
+        updateDrawBarVisibility();
+    }
+    m_pendingNewRoi = false;
+    if (m_io) {
+        m_io->selectRoiRow(index);
+    }
+    const int id = defaultDrawToolId();
+    if (m_drawPad) {
+        m_drawPad->startTool(static_cast<HsCtrl::DrawTool>(id));
+    } else {
+        onDrawTool(id);
+    }
+    applyDrawings(false);
+}
+
+void ToolDebugHost::onRoiItemsEdited()
+{
+    markDraftDirty();
+    if (m_io) {
+        m_io->refresh(m_sol, m_tool, m_job, m_session && m_session->has(PermEditSolution));
+    }
+    applyDrawings();
+    emit roiChanged();
+}
+
 // 是否处于连续绘制模式
 bool ToolDebugHost::isDrawMode() const
 {
     return m_chkDrawMode && m_chkDrawMode->isChecked();
 }
 
-// 画完 ROI 写回 draft
+// 画完 ROI 写回 draft（按 roiItems 选中行；无选中则追加）
 void ToolDebugHost::onRoi(const HsCommData::Graphic& g)
 {
     if (!m_tool || !m_session || !m_session->has(PermEditSolution)) {
         return;
     }
     pushRoiUndo();
-    const int idx = roiIndexFromDrawingId(g.id);
-    const int before = static_cast<int>(m_tool->effectiveRois().size());
-    const bool kindOk = g.geom.isInitialized() && m_tool->roiKindMatches(static_cast<int>(g.geom.kind()));
-    if (idx >= 0 && idx < before) {
-        m_tool->applyDrawnRoiAt(g, idx);
-        if (kindOk) {
-            rememberDrawStyle(idx, g.geomStyle);
+    HsCommData::HsObject drawn = drawingToRoi(g);
+    const bool kindOk = drawn.isInitialized() && !drawn.isEmpty()
+        && m_tool->roiKindMatches(static_cast<int>(drawn.kind()));
+    if (!kindOk) {
+        return;
+    }
+    int itemIdx = m_io ? m_io->selectedRoiRow() : -1;
+    if (itemIdx < 0) {
+        itemIdx = roiIndexFromDrawingId(g.id);
+    }
+    if (itemIdx >= 0 && itemIdx < static_cast<int>(m_tool->param.roiItems.size())) {
+        ToolRoiItem item = m_tool->param.roiItems[static_cast<size_t>(itemIdx)];
+        if (item.kind == RoiItemKind::RefRoi || item.kind == RoiItemKind::RefRegion) {
+            item.kind = RoiItemKind::DrawRoi;
+            item.refToolId = ObjectId();
+            item.refIndex = -1;
         }
+        if (drawn.kind() == HsCommData::ObjRegion || drawn.kind() == HsCommData::ObjPoly
+            || drawn.kind() == HsCommData::ObjContour) {
+            item.kind = RoiItemKind::DrawRegion;
+        } else {
+            item.kind = RoiItemKind::DrawRoi;
+        }
+        item.shape = drawn;
+        m_tool->setRoiItemAt(itemIdx, item);
+        rememberDrawStyle(itemIdx, g.geomStyle);
     } else {
         m_tool->applyDrawnRoi(g);
-        const int after = static_cast<int>(m_tool->effectiveRois().size());
-        if (kindOk && after > 0) {
-            if (!m_tool->usesMultiRoi()) {
-                m_drawStyles.clear();
-                m_drawStyleOn.clear();
-                rememberDrawStyle(0, g.geomStyle);
-            } else if (after > before) {
-                rememberDrawStyle(after - 1, g.geomStyle);
-            }
+        const int after = static_cast<int>(m_tool->param.roiItems.size());
+        if (after > 0) {
+            rememberDrawStyle(after - 1, g.geomStyle);
         }
+        itemIdx = after - 1;
     }
     markDraftDirty();
-    applyDrawings();
-    const bool multi = m_tool->usesMultiRoi();
-    if (multi) {
-        // 多 ROI：保持待画状态，便于连续添加
-        m_pendingNewRoi = true;
-        if (m_view) {
+    if (m_io) {
+        m_io->refresh(m_sol, m_tool, m_job, true);
+        if (itemIdx >= 0) {
+            m_io->selectRoiRow(itemIdx);
         }
+    }
+    applyDrawings();
+    const bool multi = m_tool->keepsExistingRoisOnAdd();
+    if (multi) {
+        // 多分区/多 ROI：保持待画状态，便于连续添加
+        m_pendingNewRoi = true;
         if (m_io) {
             m_io->clearRoiSelection();
         }
@@ -1373,12 +1459,30 @@ void ToolDebugHost::rememberDrawStyle(int index, const HsCommData::Style& style)
     m_drawStyles[static_cast<size_t>(index)] = style;
     m_drawStyleOn[static_cast<size_t>(index)] = 1;
 }
-// 把当前工具的 ROI 刷到图像上
+// 把当前工具的 ROI 刷到图像上（含引用几何预览）
 void ToolDebugHost::applyDrawings(bool refreshTable)
 {
     const int selIdx = m_io ? m_io->selectedRoiRow() : -1;
     if (m_tool) {
-        std::vector<HsCommData::Graphic> shown = m_tool->drawingsForDisplay(selIdx);
+        const std::vector<HsCommData::HsObject> rs = m_tool->displayRois(m_job);
+        std::vector<HsCommData::Graphic> shown;
+        shown.reserve(rs.size());
+        for (int i = 0; i < static_cast<int>(rs.size()); ++i) {
+            if (!rs[static_cast<size_t>(i)].isInitialized() || rs[static_cast<size_t>(i)].isEmpty()) {
+                continue;
+            }
+            HsCommData::Graphic g = roiToDrawing(rs[static_cast<size_t>(i)]);
+            char buf[32];
+            sprintf_s(buf, "roi.%d", i);
+            g.id = buf;
+            g.geomStyle = HsCommData::Style::drawingStyle();
+            if (selIdx >= 0) {
+                g.geomStyle.opacity = (i == selIdx) ? 1.0 : 0.35;
+            } else {
+                g.geomStyle.opacity = 0.55;
+            }
+            shown.push_back(g);
+        }
         if (m_drawPad && m_drawPad->isVisible()) {
             const int n = static_cast<int>(shown.size());
             for (int i = 0; i < n && i < static_cast<int>(m_drawStyles.size()); ++i) {
@@ -1406,9 +1510,15 @@ void ToolDebugHost::syncDrawingInteractionView()
     if (!m_view || !m_tool) {
         return;
     }
-    const std::vector<HsCommData::HsObject> rs = m_tool->effectiveRois();
+    const std::vector<HsCommData::HsObject> rs = m_tool->displayRois(m_job);
     const int idx = m_io ? m_io->selectedRoiRow() : -1;
-    const bool has = !rs.empty();
+    bool has = false;
+    for (size_t i = 0; i < rs.size(); ++i) {
+        if (rs[i].isInitialized() && !rs[i].isEmpty()) {
+            has = true;
+            break;
+        }
+    }
     m_syncingRoiSelection = true;
     syncDrawingInteraction(m_view, isDrawMode(), idx, has);
     m_syncingRoiSelection = false;

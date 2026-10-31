@@ -9,6 +9,7 @@
 #include "AgentWindow.h"
 #include "AgentFileTransferDialog.h"
 #include "AgentService.h"
+#include "AgentSettingsDialog.h"
 #include "ConfirmDialog.h"
 #include "ControlBar.h"
 #include "ProcessCombo.h"
@@ -47,6 +48,7 @@
 #include <QRegExp>
 #include <QSaveFile>
 #include <QSpinBox>
+#include <QStackedWidget>
 #include <QStandardItemModel>
 #include <QSystemTrayIcon>
 #include <QTime>
@@ -97,11 +99,12 @@ AgentWindow::AgentWindow(QWidget* parent)
     , m_relayKey(0)
     , m_production(0)
     , m_fpLabel(0)
+    , m_settingsBody(0)
     , m_logWin(0)
 {
     // 图标优先用 exe 资源，取不到时用内置线条图标
     setWindowTitle(QString::fromUtf8("被控端 — %1").arg(RemoteFiles::computerName()));
-    resize(1080, 820);
+    resize(960, 680);
     loadIcon();
     if (m_icon.isNull()) {
         m_icon = RemoteTheme::icon("monitor", QColor(RemoteTheme::kSuccess), 32);
@@ -109,36 +112,30 @@ AgentWindow::AgentWindow(QWidget* parent)
     setWindowIcon(m_icon);
     QApplication::setWindowIcon(m_icon);
 
-    // 布局：上排 ID 卡片 + 会话，中排共享范围 + 安全，底部按钮
+    // 主界面只留 ID / 会话 / 共享预览；连接与安全进设置
     QMenuBar* menu = buildMenus();
     QHBoxLayout* top = new QHBoxLayout();
     top->setSpacing(12);
     top->addWidget(buildIdCard());
     top->addWidget(buildSessions(), 1);
-    QHBoxLayout* cols = new QHBoxLayout();
-    cols->setSpacing(12);
-    cols->addWidget(buildShare(), 1);
-    cols->addWidget(buildSecurity());
+    m_settingsBody = buildSettingsBody();
+    m_settingsBody->hide();
 
     QHBoxLayout* foot = new QHBoxLayout();
     foot->setSpacing(8);
-    QPushButton* svc = RemoteTheme::button(QString::fromUtf8("安装服务"), 0, 0, this);
-    svc->setToolTip(QString::fromUtf8("安装 Windows 服务，开机守护会话代理并支持 Ctrl+Alt+Del"));
     QPushButton* logBtn = RemoteTheme::button(QString::fromUtf8("运行日志"), "list", 0, this);
     logBtn->setToolTip(QString::fromUtf8("查看抓屏、编码、发送等分步耗时"));
     QPushButton* save = RemoteTheme::button(QString::fromUtf8("保存并重连"), 0, "primary", this);
     foot->addStretch(1);
-    foot->addWidget(svc);
     foot->addWidget(logBtn);
     foot->addWidget(save);
-    QObject::connect(svc, &QPushButton::clicked, [this]() { installService(true); });
     QObject::connect(logBtn, &QPushButton::clicked, [this]() { openRunLog(); });
 
     QVBoxLayout* main = new QVBoxLayout();
     main->setContentsMargins(14, 14, 14, 14);
     main->setSpacing(12);
     main->addLayout(top);
-    main->addLayout(cols, 1);
+    main->addWidget(buildShare(), 1);
     main->addLayout(foot);
 
     QVBoxLayout* root = new QVBoxLayout(this);
@@ -277,6 +274,17 @@ QMenuBar* AgentWindow::buildMenus()
     QAction* uninstall = safe->addAction(QString::fromUtf8("卸载 Windows 服务"));
     QObject::connect(install, &QAction::triggered, [this]() { installService(true); });
     QObject::connect(uninstall, &QAction::triggered, [this]() { installService(false); });
+
+    QMenu* settings = bar->addMenu(QString::fromUtf8("设置"));
+    QAction* openCfg = settings->addAction(RemoteTheme::icon("sliders"), QString::fromUtf8("全部设置…"));
+    settings->addSeparator();
+    QAction* openLink = settings->addAction(RemoteTheme::icon("link"), QString::fromUtf8("连接…"));
+    QAction* openSafe = settings->addAction(RemoteTheme::icon("shield"), QString::fromUtf8("安全…"));
+    QAction* openPic = settings->addAction(RemoteTheme::icon("monitor"), QString::fromUtf8("画面…"));
+    QObject::connect(openCfg, &QAction::triggered, [this]() { openSettings(0); });
+    QObject::connect(openLink, &QAction::triggered, [this]() { openSettings(0); });
+    QObject::connect(openSafe, &QAction::triggered, [this]() { openSettings(1); });
+    QObject::connect(openPic, &QAction::triggered, [this]() { openSettings(2); });
 
     QMenu* view = bar->addMenu(QString::fromUtf8("查看"));
     QAction* runLog = view->addAction(RemoteTheme::icon("list"), QString::fromUtf8("运行日志…"));
@@ -592,123 +600,117 @@ QFrame* AgentWindow::buildShare()
     shareRow->addLayout(grid, 1);
     shareRow->addLayout(prev);
     col->addLayout(shareRow);
-
-    // 连接小节：反连地址可编辑；直连、中继为后续分期的占位
-    QHBoxLayout* linkHead = new QHBoxLayout();
-    linkHead->setSpacing(8);
-    QLabel* linkIcon = new QLabel(frame);
-    linkIcon->setPixmap(RemoteTheme::pixmap("link", QColor(RemoteTheme::kText), 15, devicePixelRatioF()));
-    QLabel* linkTitle = new QLabel(QString::fromUtf8("连接"), frame);
-    linkTitle->setProperty("role", "section");
-    linkHead->addWidget(linkIcon);
-    linkHead->addWidget(linkTitle);
-    linkHead->addStretch(1);
-    col->addSpacing(6);
-    col->addLayout(linkHead);
-
-    QCheckBox* reverse = new QCheckBox(QString::fromUtf8("反连中控台"), frame);
-    reverse->setChecked(true);
-    reverse->setEnabled(false);
-    reverse->setToolTip(QString::fromUtf8("当前唯一的连接方式"));
-    reverse->setFixedWidth(120);
-    m_host = new QLineEdit(frame);
-    m_host->setFixedWidth(180);
-    m_host->setPlaceholderText("192.168.1.10");
-    m_port = new QSpinBox(frame);
-    m_port->setRange(1, 65535);
-    m_port->setFixedWidth(80);
-    QPushButton* more = RemoteTheme::button(QString::fromUtf8("再加一台"), "plus", 0, frame);
-    more->setProperty("size", "sm");
-    RemoteTheme::markLater(more, QString::fromUtf8("同时反连多台中控台在第五期"));
-    col->addWidget(line(reverse, m_host, m_port, more));
-
-    m_directOn = new QCheckBox(QString::fromUtf8("允许直连"), frame);
-    m_directOn->setFixedWidth(120);
-    m_directOn->setToolTip(QString::fromUtf8("中控台连不上反连时，可以按这个端口连进来。默认关闭"));
-    QLabel* directPortLabel = new QLabel(QString::fromUtf8("端口"), frame);
-    m_directPort = new QSpinBox(frame);
-    m_directPort->setRange(1, 65535);
-    m_directPort->setValue(19102);
-    m_directPort->setFixedWidth(80);
-    col->addWidget(line(m_directOn, directPortLabel, m_directPort));
-
-    m_httpOn = new QCheckBox(QString::fromUtf8("局域网查看"), frame);
-    m_httpOn->setFixedWidth(120);
-    m_httpOn->setToolTip(QString::fromUtf8("打开后，同一局域网里用浏览器输入下面的地址就能看画面。只看，不能操作。默认关闭"));
-    QLabel* httpPortLabel = new QLabel(QString::fromUtf8("端口"), frame);
-    m_httpPort = new QSpinBox(frame);
-    m_httpPort->setRange(1, 65535);
-    m_httpPort->setValue(19180);
-    m_httpPort->setFixedWidth(80);
-    col->addWidget(line(m_httpOn, httpPortLabel, m_httpPort));
-    m_httpUrl = new QLabel(QString::fromUtf8("关闭"), frame);
-    m_httpUrl->setProperty("role", "small");
-    m_httpUrl->setWordWrap(true);
-    m_httpUrl->setTextInteractionFlags(Qt::TextSelectableByMouse);
-    col->addWidget(m_httpUrl);
-
-    QLabel* pipeLabel = new QLabel(QString::fromUtf8("抓/编并行"), frame);
-    pipeLabel->setProperty("role", "key");
-    m_pipelineWorkers = new QSpinBox(frame);
-    m_pipelineWorkers->setRange(0, 1);
-    m_pipelineWorkers->setValue(1);
-    m_pipelineWorkers->setFixedWidth(80);
-    m_pipelineWorkers->setToolTip(QString::fromUtf8("0=抓屏线程内联编码（最省 CPU）；1=独立编码线程，抓/编/发重叠。JPEG 编码不可重入，不要开多条。改完后保存并重连生效"));
-    col->addWidget(line(pipeLabel, m_pipelineWorkers));
-
-    QLabel* codecLabel = new QLabel(QString::fromUtf8("发送编码"), frame);
-    codecLabel->setProperty("role", "key");
-    m_preferCodec = new QComboBox(frame);
-    m_preferCodec->addItem(QString::fromUtf8("自动(优先 H.264)"), 0);
-    m_preferCodec->addItem(QString::fromUtf8("JPEG"), 1);
-    m_preferCodec->addItem(QString::fromUtf8("H.264"), 2);
-    m_preferCodec->addItem(QString::fromUtf8("原图 BGRA"), 3);
-    m_preferCodec->setFixedWidth(160);
-    m_preferCodec->setToolTip(QString::fromUtf8("本机默认发送方式。中控台会话里指定编码时会覆盖。改完保存即生效，可与 JPEG/H.264/原图对比"));
-    col->addWidget(line(codecLabel, m_preferCodec));
-    QObject::connect(m_preferCodec, QOverload<int>::of(&QComboBox::currentIndexChanged), [this](int) {
-        if (!m_preferCodec) {
-            return;
-        }
-        m_session.setPreferCodec(m_preferCodec->currentData().toInt());
-        saveConfig();
-    });
-
-    m_relayOn = new QCheckBox(QString::fromUtf8("中继"), frame);
-    m_relayOn->setFixedWidth(120);
-    m_relayHost = new QLineEdit(frame);
-    m_relayHost->setFixedWidth(180);
-    m_relayHost->setPlaceholderText("relay.company.local");
-    m_relayPort = new QSpinBox(frame);
-    m_relayPort->setRange(1, 65535);
-    m_relayPort->setValue(19200);
-    m_relayPort->setFixedWidth(80);
-    col->addWidget(line(m_relayOn, m_relayHost, m_relayPort));
-    m_relayKey = new QLineEdit(frame);
-    m_relayKey->setEchoMode(QLineEdit::Password);
-    m_relayKey->setPlaceholderText(QString::fromUtf8("中继口令"));
-    m_relayKey->setFixedWidth(180);
-    col->addWidget(line(new QLabel(QString::fromUtf8("口令"), frame), m_relayKey));
     col->addStretch(1);
 
     QObject::connect(m_desktop, &QRadioButton::toggled, [this](bool) { syncShare(); });
     return frame;
 }
 
-QFrame* AgentWindow::buildSecurity()
+QWidget* AgentWindow::buildSettingsBody()
 {
-    QVBoxLayout* col = 0;
-    QFrame* frame = card(QString::fromUtf8("安全"), "shield", &col);
-    frame->setFixedWidth(360);
+    QWidget* body = new QWidget(this);
+    QVBoxLayout* wrap = new QVBoxLayout(body);
+    wrap->setContentsMargins(0, 0, 0, 0);
+    wrap->setSpacing(0);
+    QStackedWidget* pages = new QStackedWidget(body);
+    pages->setObjectName("settingsPages");
+    pages->addWidget(buildConnectionPage(pages));
+    pages->addWidget(buildSecurityPage(pages));
+    pages->addWidget(buildPicturePage(pages));
+    pages->addWidget(buildServicePage(pages));
+    wrap->addWidget(pages, 1);
+    return body;
+}
 
-    // 来访确认三选一，radios 下标与 AgentSession::Confirm 取值一致，界面上倒序排列
-    QLabel* confirmKey = new QLabel(QString::fromUtf8("来访确认"), frame);
+QWidget* AgentWindow::buildConnectionPage(QWidget* parent)
+{
+    QWidget* page = new QWidget(parent);
+    QVBoxLayout* col = new QVBoxLayout(page);
+    col->setContentsMargins(24, 20, 24, 20);
+    col->setSpacing(12);
+
+    QLabel* title = new QLabel(QString::fromUtf8("连接"), page);
+    title->setProperty("role", "section");
+    col->addWidget(title);
+
+    QCheckBox* reverse = new QCheckBox(QString::fromUtf8("反连中控台"), page);
+    reverse->setChecked(true);
+    reverse->setEnabled(false);
+    reverse->setToolTip(QString::fromUtf8("当前唯一的连接方式"));
+    reverse->setFixedWidth(120);
+    m_host = new QLineEdit(page);
+    m_host->setFixedWidth(200);
+    m_host->setPlaceholderText("192.168.1.10");
+    m_port = new QSpinBox(page);
+    m_port->setRange(1, 65535);
+    m_port->setFixedWidth(90);
+    QPushButton* more = RemoteTheme::button(QString::fromUtf8("再加一台"), "plus", 0, page);
+    more->setProperty("size", "sm");
+    RemoteTheme::markLater(more, QString::fromUtf8("同时反连多台中控台在第五期"));
+    col->addWidget(line(reverse, m_host, m_port, more));
+
+    m_directOn = new QCheckBox(QString::fromUtf8("允许直连"), page);
+    m_directOn->setFixedWidth(120);
+    m_directOn->setToolTip(QString::fromUtf8("中控台连不上反连时，可以按这个端口连进来。默认关闭"));
+    QLabel* directPortLabel = new QLabel(QString::fromUtf8("端口"), page);
+    m_directPort = new QSpinBox(page);
+    m_directPort->setRange(1, 65535);
+    m_directPort->setValue(19102);
+    m_directPort->setFixedWidth(90);
+    col->addWidget(line(m_directOn, directPortLabel, m_directPort));
+
+    m_httpOn = new QCheckBox(QString::fromUtf8("局域网查看"), page);
+    m_httpOn->setFixedWidth(120);
+    m_httpOn->setToolTip(QString::fromUtf8("打开后，同一局域网里用浏览器输入下面的地址就能看画面。只看，不能操作。默认关闭"));
+    QLabel* httpPortLabel = new QLabel(QString::fromUtf8("端口"), page);
+    m_httpPort = new QSpinBox(page);
+    m_httpPort->setRange(1, 65535);
+    m_httpPort->setValue(19180);
+    m_httpPort->setFixedWidth(90);
+    col->addWidget(line(m_httpOn, httpPortLabel, m_httpPort));
+    m_httpUrl = new QLabel(QString::fromUtf8("关闭"), page);
+    m_httpUrl->setProperty("role", "small");
+    m_httpUrl->setWordWrap(true);
+    m_httpUrl->setTextInteractionFlags(Qt::TextSelectableByMouse);
+    col->addWidget(m_httpUrl);
+
+    m_relayOn = new QCheckBox(QString::fromUtf8("中继"), page);
+    m_relayOn->setFixedWidth(120);
+    m_relayHost = new QLineEdit(page);
+    m_relayHost->setFixedWidth(200);
+    m_relayHost->setPlaceholderText("relay.company.local");
+    m_relayPort = new QSpinBox(page);
+    m_relayPort->setRange(1, 65535);
+    m_relayPort->setValue(19200);
+    m_relayPort->setFixedWidth(90);
+    col->addWidget(line(m_relayOn, m_relayHost, m_relayPort));
+    m_relayKey = new QLineEdit(page);
+    m_relayKey->setEchoMode(QLineEdit::Password);
+    m_relayKey->setPlaceholderText(QString::fromUtf8("中继口令"));
+    m_relayKey->setFixedWidth(200);
+    col->addWidget(line(new QLabel(QString::fromUtf8("口令"), page), m_relayKey));
+    col->addStretch(1);
+    return page;
+}
+
+QWidget* AgentWindow::buildSecurityPage(QWidget* parent)
+{
+    QWidget* page = new QWidget(parent);
+    QVBoxLayout* col = new QVBoxLayout(page);
+    col->setContentsMargins(24, 20, 24, 20);
+    col->setSpacing(12);
+
+    QLabel* title = new QLabel(QString::fromUtf8("安全"), page);
+    title->setProperty("role", "section");
+    col->addWidget(title);
+
+    QLabel* confirmKey = new QLabel(QString::fromUtf8("来访确认"), page);
     confirmKey->setProperty("role", "key");
     col->addWidget(confirmKey);
-    m_confirmAlways = new QRadioButton(QString::fromUtf8("每次都要现场确认"), frame);
-    m_confirmTrusted = new QRadioButton(QString::fromUtf8("信任的中控台免确认，其他要现场确认"), frame);
-    m_confirmNever = new QRadioButton(QString::fromUtf8("从不确认"), frame);
-    QButtonGroup* confirms = new QButtonGroup(frame);
+    m_confirmAlways = new QRadioButton(QString::fromUtf8("每次都要现场确认"), page);
+    m_confirmTrusted = new QRadioButton(QString::fromUtf8("信任的中控台免确认，其他要现场确认"), page);
+    m_confirmNever = new QRadioButton(QString::fromUtf8("从不确认"), page);
+    QButtonGroup* confirms = new QButtonGroup(page);
     QRadioButton* radios[] = { m_confirmNever, m_confirmTrusted, m_confirmAlways };
     QVBoxLayout* radioCol = new QVBoxLayout();
     radioCol->setContentsMargins(4, 0, 0, 0);
@@ -720,28 +722,28 @@ QFrame* AgentWindow::buildSecurity()
     }
     col->addLayout(radioCol);
 
-    auto keyLabel = [frame](const char* text) {
-        QLabel* label = new QLabel(QString::fromUtf8(text), frame);
+    auto keyLabel = [page](const char* text) {
+        QLabel* label = new QLabel(QString::fromUtf8(text), page);
         label->setProperty("role", "key");
         label->setFixedWidth(96);
         return label;
     };
-    m_passwordTag = new TagLabel(QString::fromUtf8("未设置"), "gray", frame);
-    QPushButton* change = RemoteTheme::button(QString::fromUtf8("修改"), 0, 0, frame);
+    m_passwordTag = new TagLabel(QString::fromUtf8("未设置"), "gray", page);
+    QPushButton* change = RemoteTheme::button(QString::fromUtf8("修改"), 0, 0, page);
     change->setProperty("size", "sm");
     QObject::connect(change, &QPushButton::clicked, [this]() { changePassword(); });
     col->addWidget(line(keyLabel("无人值守密码"), m_passwordTag, change));
 
-    m_trustedCount = new QLabel(frame);
-    QPushButton* manage = RemoteTheme::button(QString::fromUtf8("管理"), 0, 0, frame);
+    m_trustedCount = new QLabel(page);
+    QPushButton* manage = RemoteTheme::button(QString::fromUtf8("管理"), 0, 0, page);
     manage->setProperty("size", "sm");
     col->addWidget(line(keyLabel("信任的中控台"), m_trustedCount, manage));
 
-    m_whitelist = new QLineEdit(frame);
+    m_whitelist = new QLineEdit(page);
     m_whitelist->setPlaceholderText(QString::fromUtf8("空=不限制；逗号分隔，如 192.168.1.10,control-pc"));
     m_whitelist->setProperty("size", "sm");
     m_whitelist->setToolTip(QString::fromUtf8("反连时校验中控台 host；支持 * 放行全部"));
-    QWidget* whiteRow = new QWidget(frame);
+    QWidget* whiteRow = new QWidget(page);
     QHBoxLayout* whiteLine = new QHBoxLayout(whiteRow);
     whiteLine->setContentsMargins(0, 0, 0, 0);
     whiteLine->setSpacing(10);
@@ -750,7 +752,6 @@ QFrame* AgentWindow::buildSecurity()
     col->addWidget(whiteRow);
     QObject::connect(m_whitelist, &QLineEdit::editingFinished, [this]() { applyWhitelist(); });
 
-    // 允许远端：每项可单独关。操作关掉后对方只能看
     col->addWidget(keyLabel("允许远端"));
     QGridLayout* allow = new QGridLayout();
     allow->setContentsMargins(4, 0, 0, 0);
@@ -766,25 +767,25 @@ QFrame* AgentWindow::buildSecurity()
     };
     QCheckBox** boxes[] = { &m_allowOp, &m_allowClip, &m_allowFile, &m_allowPower, &m_allowPrivacy };
     for (int i = 0; i < 5; ++i) {
-        QCheckBox* check = new QCheckBox(QString::fromUtf8(names[i]), frame);
+        QCheckBox* check = new QCheckBox(QString::fromUtf8(names[i]), page);
         check->setChecked(true);
         check->setToolTip(QString::fromUtf8(tips[i]));
         *boxes[i] = check;
         allow->addWidget(check, i / 2, i % 2);
         QObject::connect(check, &QCheckBox::clicked, [this]() { applyPolicy(); });
     }
-    m_lockOnEnd = new QCheckBox(QString::fromUtf8("断开后锁屏"), frame);
+    m_lockOnEnd = new QCheckBox(QString::fromUtf8("断开后锁屏"), page);
     m_lockOnEnd->setToolTip(QString::fromUtf8("远程操作过的会话断开时锁定本机"));
     allow->addWidget(m_lockOnEnd, 2, 1);
-    m_production = new QCheckBox(QString::fromUtf8("生产保护"), frame);
+    m_production = new QCheckBox(QString::fromUtf8("生产保护"), page);
     m_production->setToolTip(QString::fromUtf8("打开后，远程操作必须现场点允许。旁边放 station.json 且 running 为 true 时也会打开"));
     col->addWidget(m_production);
-    m_forceRecord = new QCheckBox(QString::fromUtf8("取得操作时强制录屏"), frame);
+    m_forceRecord = new QCheckBox(QString::fromUtf8("取得操作时强制录屏"), page);
     m_forceRecord->setToolTip(QString::fromUtf8("中控台拿到操作权后自动开始录屏"));
     allow->addWidget(m_forceRecord, 3, 1);
-    m_fileRoots = new QLineEdit(frame);
+    m_fileRoots = new QLineEdit(page);
     m_fileRoots->setPlaceholderText(QString::fromUtf8("文件根目录，分号分隔，默认 D:\\"));
-    allow->addWidget(m_fileRoots, 4, 1);
+    allow->addWidget(m_fileRoots, 4, 0, 1, 2);
     col->addLayout(allow);
     col->addStretch(1);
 
@@ -792,7 +793,86 @@ QFrame* AgentWindow::buildSecurity()
     QObject::connect(m_lockOnEnd, &QCheckBox::clicked, [this]() { applyPolicy(); });
     QObject::connect(m_forceRecord, &QCheckBox::clicked, [this]() { applyPolicy(); });
     QObject::connect(m_fileRoots, &QLineEdit::editingFinished, [this]() { applyPolicy(); });
-    return frame;
+    return page;
+}
+
+QWidget* AgentWindow::buildPicturePage(QWidget* parent)
+{
+    QWidget* page = new QWidget(parent);
+    QVBoxLayout* col = new QVBoxLayout(page);
+    col->setContentsMargins(24, 20, 24, 20);
+    col->setSpacing(12);
+
+    QLabel* title = new QLabel(QString::fromUtf8("画面"), page);
+    title->setProperty("role", "section");
+    col->addWidget(title);
+
+    QLabel* pipeLabel = new QLabel(QString::fromUtf8("抓/编并行"), page);
+    pipeLabel->setProperty("role", "key");
+    m_pipelineWorkers = new QSpinBox(page);
+    m_pipelineWorkers->setRange(0, 1);
+    m_pipelineWorkers->setValue(1);
+    m_pipelineWorkers->setFixedWidth(90);
+    m_pipelineWorkers->setToolTip(QString::fromUtf8("0=抓屏线程内联编码（最省 CPU）；1=独立编码线程，抓/编/发重叠。JPEG 编码不可重入，不要开多条。改完后保存并重连生效"));
+    col->addWidget(line(pipeLabel, m_pipelineWorkers,
+        new QLabel(QString::fromUtf8("改完后需保存并重连"), page)));
+
+    QLabel* codecLabel = new QLabel(QString::fromUtf8("发送编码"), page);
+    codecLabel->setProperty("role", "key");
+    m_preferCodec = new QComboBox(page);
+    m_preferCodec->addItem(QString::fromUtf8("自动(优先 JPEG)"), 0);
+    m_preferCodec->addItem(QString::fromUtf8("JPEG"), 1);
+    m_preferCodec->addItem(QString::fromUtf8("H.264"), 2);
+    m_preferCodec->addItem(QString::fromUtf8("原图 BGRA"), 3);
+    m_preferCodec->setFixedWidth(180);
+    m_preferCodec->setToolTip(QString::fromUtf8("本机默认发送方式。中控台会话里指定编码时会覆盖"));
+    col->addWidget(line(codecLabel, m_preferCodec));
+    QObject::connect(m_preferCodec, QOverload<int>::of(&QComboBox::currentIndexChanged), [this](int) {
+        if (!m_preferCodec) {
+            return;
+        }
+        m_session.setPreferCodec(m_preferCodec->currentData().toInt());
+        saveConfig();
+    });
+    col->addStretch(1);
+    return page;
+}
+
+QWidget* AgentWindow::buildServicePage(QWidget* parent)
+{
+    QWidget* page = new QWidget(parent);
+    QVBoxLayout* col = new QVBoxLayout(page);
+    col->setContentsMargins(24, 20, 24, 20);
+    col->setSpacing(12);
+
+    QLabel* title = new QLabel(QString::fromUtf8("服务"), page);
+    title->setProperty("role", "section");
+    col->addWidget(title);
+    QLabel* tip = new QLabel(QString::fromUtf8(
+        "安装 Windows 服务后，开机可守护会话代理，并支持登录界面与 Ctrl+Alt+Del。"), page);
+    tip->setWordWrap(true);
+    tip->setProperty("role", "small");
+    col->addWidget(tip);
+
+    QPushButton* install = RemoteTheme::button(QString::fromUtf8("安装服务"), 0, "primary", page);
+    QPushButton* uninstall = RemoteTheme::button(QString::fromUtf8("卸载服务"), 0, 0, page);
+    col->addWidget(line(install, uninstall));
+    QObject::connect(install, &QPushButton::clicked, [this]() { installService(true); });
+    QObject::connect(uninstall, &QPushButton::clicked, [this]() { installService(false); });
+    col->addStretch(1);
+    return page;
+}
+
+void AgentWindow::openSettings(int page)
+{
+    if (!m_settingsBody) {
+        return;
+    }
+    AgentSettingsDialog dialog(m_settingsBody, [this]() {
+        RemoteCrash::run("AgentWindow.settings_apply", [this]() { apply(); });
+    }, this);
+    dialog.setPage(page);
+    dialog.exec();
 }
 
 void AgentWindow::syncShare()

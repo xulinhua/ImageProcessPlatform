@@ -9,9 +9,11 @@
 #ifndef VISION_CONTROL_SESSION_H
 #define VISION_CONTROL_SESSION_H
 
+#include "H264Codec.h"
 #include "Messages.h"
 #include "RemoteIdentity.h"
 #include "RemoteTcp.h"
+#include <memory>
 #include <mutex>
 #include <string>
 #include <thread>
@@ -45,12 +47,17 @@ public:
         bool operating;         ///< 本端持有操作权
         bool operable;          ///< 最新画面是否可操作（被控端报告）
         std::string hint;       ///< 给用户看的提示（申请中、被拒原因等），UTF-8，可空
-        CommBytes jpeg;         ///< 主码流 JPEG
+        CommBytes jpeg;         ///< 主码流编码包（JPEG / Annex-B / 原图 BGRA）
         CommBytes thumb;        ///< 子码流 JPEG，监控墙优先用它
+        /** @brief 收包线程已解出的 BGRA；H.264 必须逐帧解，界面只能拿最新一帧，用 shared_ptr 避免 tiles() 大拷贝 */
+        std::shared_ptr<CommBytes> pixels;
         uint32_t imageW;        ///< 画面宽（像素）
         uint32_t imageH;        ///< 画面高（像素）
+        uint32_t pixelsW;       ///< pixels 宽
+        uint32_t pixelsH;       ///< pixels 高
         uint64_t pictureSeq;    ///< 主码流帧计数
         uint64_t thumbSeq;      ///< 子码流帧计数
+        uint64_t pixelsSeq;     ///< 成功解出 BGRA 的计数；界面按它刷新
         uint16_t cursorX;       ///< 远程光标图像坐标
         uint16_t cursorY;
         uint8_t cursorOn;       ///< 1 光标在画面内
@@ -92,8 +99,11 @@ public:
             , operable(false)
             , imageW(0)
             , imageH(0)
+            , pixelsW(0)
+            , pixelsH(0)
             , pictureSeq(0)
             , thumbSeq(0)
+            , pixelsSeq(0)
             , cursorX(0)
             , cursorY(0)
             , cursorOn(0)
@@ -202,6 +212,9 @@ private:
         std::string upSha;          ///< 上传文件的 SHA-256
         bool upReady;               ///< 对方已接受 FileOpen
         bool upFinished;            ///< 已发完并收到完成
+        /** @brief 主码流 H.264 解码器；vector 重分配时用 unique_ptr 避免浅拷贝 */
+        std::unique_ptr<H264Codec> videoDec;
+        uint8_t videoDecCodec;      ///< 解码器当前对应的 codec，切换时重建
         /** @brief 无待发数据 */
         Machine()
             : lastRx(0)
@@ -218,7 +231,12 @@ private:
             , upSize(0)
             , upReady(false)
             , upFinished(false)
+            , videoDecCodec(0)
         {}
+        Machine(Machine&&) = default;
+        Machine& operator=(Machine&&) = default;
+        Machine(const Machine&) = delete;
+        Machine& operator=(const Machine&) = delete;
     };
 
     /************************************************** 线程 **************************************************/

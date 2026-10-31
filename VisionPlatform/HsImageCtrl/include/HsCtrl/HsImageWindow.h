@@ -122,6 +122,12 @@ public:
      */
     void setImage(const uint8_t* data, int width, int height, int strideBytes,
                   const QString& encoding);
+    /**
+     * @brief 换底图并指定帧号（>0 用该号；<=0 时沿用窗口当前帧号，没有则 1）
+     *        运行页叠加工具图时须与 HsImage::frameId 一致，否则 Stack 会被隐藏
+     */
+    void setImage(const uint8_t* data, int width, int height, int strideBytes,
+                  const QString& encoding, int64_t frameId);
     /** @brief 直接换上已经备好的图。不在这里再拷像素、不做 QPixmap */
     void setPreparedImage(const QImage& image);
     /** @brief 同 setImage，保留旧调用名 */

@@ -8,6 +8,7 @@
 
 #include "ToolBase.h"
 #include "Solution.h"
+#include "Job.h"
 #include "ParamKeys.h"
 #include "Translate.h"
 #include "VpUtil.h"
@@ -200,14 +201,15 @@ static void syncRoiItemsFromRois(ToolCfg* t)
     for (size_t i = 0; i < t->param.roiItems.size(); ++i) {
         const ToolRoiItem& item = t->param.roiItems[i];
         if (item.kind == RoiItemKind::RefRoi || item.kind == RoiItemKind::RefRegion) {
-            if (item.refToolId.isNull()) {
-                continue;
-            }
+            // 保留未选来源的引用行，便于调试窗编辑
             bool dup = false;
-            for (size_t d = 0; d < refs.size(); ++d) {
-                if (refs[d].slot == item.slot && refs[d].refToolId == item.refToolId && refs[d].refIndex == item.refIndex) {
-                    dup = true;
-                    break;
+            if (!item.refToolId.isNull()) {
+                for (size_t d = 0; d < refs.size(); ++d) {
+                    if (refs[d].slot == item.slot && refs[d].refToolId == item.refToolId
+                        && refs[d].refIndex == item.refIndex) {
+                        dup = true;
+                        break;
+                    }
                 }
             }
             if (!dup) {
@@ -279,6 +281,113 @@ void ToolCfg::syncRois()
 std::vector<HsCommData::HsObject> ToolCfg::effectiveRois() const
 {
     return rois;
+}
+
+void ToolCfg::rebuildRoisFromItems()
+{
+    rois.clear();
+    for (size_t i = 0; i < param.roiItems.size(); ++i) {
+        const ToolRoiItem& item = param.roiItems[i];
+        if (item.kind == RoiItemKind::RefRoi || item.kind == RoiItemKind::RefRegion) {
+            continue;
+        }
+        if (item.shape.isInitialized() && !item.shape.isEmpty()) {
+            rois.push_back(item.shape);
+        }
+    }
+}
+
+int ToolCfg::drawIndexOfItem(int itemIndex) const
+{
+    if (itemIndex < 0 || itemIndex >= static_cast<int>(param.roiItems.size())) {
+        return -1;
+    }
+    int draw = 0;
+    for (int i = 0; i < itemIndex; ++i) {
+        const RoiItemKind k = param.roiItems[static_cast<size_t>(i)].kind;
+        if (k != RoiItemKind::RefRoi && k != RoiItemKind::RefRegion) {
+            ++draw;
+        }
+    }
+    const RoiItemKind cur = param.roiItems[static_cast<size_t>(itemIndex)].kind;
+    if (cur == RoiItemKind::RefRoi || cur == RoiItemKind::RefRegion) {
+        return -1;
+    }
+    return draw;
+}
+
+void ToolCfg::appendRoiItem(const ToolRoiItem& item)
+{
+    param.roiItems.push_back(item);
+    rebuildRoisFromItems();
+}
+
+void ToolCfg::removeRoiItemAt(int index)
+{
+    if (index < 0 || index >= static_cast<int>(param.roiItems.size())) {
+        return;
+    }
+    param.roiItems.erase(param.roiItems.begin() + index);
+    rebuildRoisFromItems();
+}
+
+void ToolCfg::setRoiItemAt(int index, const ToolRoiItem& item)
+{
+    if (index < 0 || index >= static_cast<int>(param.roiItems.size())) {
+        return;
+    }
+    param.roiItems[static_cast<size_t>(index)] = item;
+    rebuildRoisFromItems();
+}
+
+std::vector<HsCommData::HsObject> ToolCfg::displayRois(const Job* job) const
+{
+    std::vector<HsCommData::HsObject> out;
+    out.reserve(param.roiItems.size());
+    for (size_t i = 0; i < param.roiItems.size(); ++i) {
+        const ToolRoiItem& item = param.roiItems[i];
+        if (item.kind == RoiItemKind::RefRoi || item.kind == RoiItemKind::RefRegion) {
+            HsCommData::HsObject shape;
+            if (job && !item.refToolId.isNull()) {
+                const ToolIo io = job->cachedIo(item.refToolId);
+                std::vector<HsCommData::HsObject> tmp;
+                if (item.kind == RoiItemKind::RefRoi) {
+                    for (size_t k = 0; k < io.rois.size(); ++k) {
+                        if (io.rois[k].use == RegionUse::Invalid) {
+                            continue;
+                        }
+                        if (io.rois[k].roi.isInitialized() && !io.rois[k].roi.isEmpty()) {
+                            tmp.push_back(io.rois[k].roi);
+                        }
+                    }
+                }
+                if (tmp.empty()) {
+                    for (size_t k = 0; k < io.regions.size(); ++k) {
+                        if (io.regions[k].use == RegionUse::Invalid) {
+                            continue;
+                        }
+                        if (io.regions[k].object.isInitialized() && !io.regions[k].object.isEmpty()) {
+                            tmp.push_back(io.regions[k].object);
+                        }
+                    }
+                }
+                if (item.refIndex < 0) {
+                    if (!tmp.empty()) {
+                        shape = tmp.front();
+                    }
+                } else if (item.refIndex < static_cast<int>(tmp.size())) {
+                    shape = tmp[static_cast<size_t>(item.refIndex)];
+                }
+            }
+            out.push_back(shape);
+        } else {
+            out.push_back(item.shape.isInitialized() ? item.shape : HsCommData::HsObject());
+        }
+    }
+    if (out.empty()) {
+        return rois;
+    }
+    return out;
 }
 
 // 查注册表取工具能力
@@ -458,6 +567,38 @@ bool ToolCfg::usesRoi() const
 bool ToolCfg::usesMultiRoi() const
 {
     return caps().usesMultiRoi();
+}
+
+// 多分区或分区上限>1 时，添加 ROI 不清空已有项
+bool ToolCfg::keepsExistingRoisOnAdd() const
+{
+    const ToolCaps c = caps();
+    if (c.slotRules.size() > 1) {
+        return true;
+    }
+    return c.usesMultiRoi();
+}
+
+// 未满的分区优先；都满则回落到首个分区键
+std::string ToolCfg::nextRoiSlotKey() const
+{
+    const ToolCaps c = caps();
+    if (c.slotRules.empty()) {
+        return "roi";
+    }
+    for (size_t s = 0; s < c.slotRules.size(); ++s) {
+        const RoiSlotRule& rule = c.slotRules[s];
+        int n = 0;
+        for (size_t i = 0; i < param.roiItems.size(); ++i) {
+            if (param.roiItems[i].slot == rule.slot) {
+                ++n;
+            }
+        }
+        if (rule.maxCount <= 0 || n < rule.maxCount) {
+            return rule.slot.empty() ? std::string("roi") : rule.slot;
+        }
+    }
+    return c.slotRules[0].slot.empty() ? std::string("roi") : c.slotRules[0].slot;
 }
 
 // 推荐几何种类

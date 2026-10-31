@@ -31,6 +31,7 @@ FrameView::FrameView(QWidget* parent)
     , m_cursorOn(false)
     , m_cursorHotX(0)
     , m_cursorHotY(0)
+    , m_lastCodec(0)
     , m_input(false)
     , m_fit(true)
     , m_operating(false)
@@ -70,37 +71,36 @@ void FrameView::setImage(const CommBytes& jpeg, uint32_t imageW, uint32_t imageH
     m_imageH = imageH;
     const char* pathName = "空";
     bool ok = false;
+    const uint8_t useCodec = codec == 0 ? 1 : codec;
+    // 编码切换时丢掉上一模式的静帧与解码器状态，避免原图→H.264 一直卡旧图
+    if (m_lastCodec != 0 && m_lastCodec != useCodec) {
+        m_h264.closeDecoder();
+        m_image = QImage();
+    }
+    m_lastCodec = useCodec;
     if (jpeg.empty()) {
         m_image = QImage();
         pathName = "空包";
-    } else if (codec == 2) {
+    } else if (useCodec == 2) {
         std::vector<unsigned char> bgra;
         int w = 0;
         int h = 0;
         if (m_h264.decode(jpeg.data(), static_cast<int>(jpeg.size()), &bgra, &w, &h) && w > 0 && h > 0) {
-            m_image = QImage(bgra.data(), w, h, w * 4, QImage::Format_ARGB32).copy();
+            m_image = RemoteTheme::imageFromBgra(bgra.data(), static_cast<int>(bgra.size()), w, h);
             m_imageW = static_cast<uint32_t>(w);
             m_imageH = static_cast<uint32_t>(h);
             pathName = "H264";
-            ok = true;
-        } else {
-            // 共享源切换后先到的是非关键帧。丢掉坏状态，下一帧关键帧才能解出来
-            m_h264.closeDecoder();
-            pathName = "H264失败";
-        }
-    } else if (codec == 3) {
-        m_h264.closeDecoder();
-        const int w = static_cast<int>(imageW);
-        const int h = static_cast<int>(imageH);
-        const size_t need = static_cast<size_t>(w) * static_cast<size_t>(h) * 4u;
-        if (w > 0 && h > 0 && jpeg.size() >= need) {
-            m_image = QImage(jpeg.data(), w, h, w * 4, QImage::Format_ARGB32).copy();
-            pathName = "原图";
             ok = !m_image.isNull();
         } else {
-            m_image = QImage();
-            pathName = "原图失败";
+            // 非关键帧 / 还需更多 NAL 时保留解码器状态；只有编码切换才 closeDecoder
+            pathName = "H264等待";
         }
+    } else if (useCodec == 3) {
+        m_h264.closeDecoder();
+        m_image = RemoteTheme::imageFromBgra(jpeg.data(), static_cast<int>(jpeg.size()),
+            static_cast<int>(imageW), static_cast<int>(imageH));
+        pathName = m_image.isNull() ? "原图失败" : "原图";
+        ok = !m_image.isNull();
     } else {
         m_h264.closeDecoder();
         m_image = RemoteTheme::imageFromJpeg(jpeg.data(), static_cast<int>(jpeg.size()));

@@ -120,8 +120,20 @@ struct VISIONCORE_API ToolCfg {
 
     /** @brief 把点轮廓收成直线，并同步分区 */
     void syncRois();
-    /** @brief 实际使用的 ROI 列表 */
+    /** @brief 从 roiItems 回写绘制几何到 rois（引用项保留） */
+    void rebuildRoisFromItems();
+    /** @brief 实际使用的 ROI 列表（仅绘制几何；运行时引用由 Job 解析） */
     std::vector<HsCommData::HsObject> effectiveRois() const;
+    /** @brief 调试预览：绘制用 shape，引用从 Job 缓存解析 */
+    std::vector<HsCommData::HsObject> displayRois(const class Job* job) const;
+    /** @brief 追加一条 ROI 记录（绘制或引用） */
+    void appendRoiItem(const ToolRoiItem& item);
+    /** @brief 按 roiItems 下标删除；同步 rois */
+    void removeRoiItemAt(int index);
+    /** @brief 更新指定 roiItems；同步 rois */
+    void setRoiItemAt(int index, const ToolRoiItem& item);
+    /** @brief roiItems 下标对应的绘制几何下标；非绘制返回 -1 */
+    int drawIndexOfItem(int itemIndex) const;
     /** @brief 查注册表取工具能力 */
     ToolCaps caps() const;
     /** @brief 按名查工具能力 */
@@ -130,6 +142,12 @@ struct VISIONCORE_API ToolCfg {
     bool usesRoi() const;
     /** @brief 是否允许多 ROI */
     bool usesMultiRoi() const;
+    /**
+     * @brief 新增 ROI 时是否保留已有项（多分区或分区上限>1）
+     */
+    bool keepsExistingRoisOnAdd() const;
+    /** @brief 新增 ROI 优先写入的分区键（未满槽优先） */
+    std::string nextRoiSlotKey() const;
     /** @brief 推荐几何种类；-1 表示不限 */
     int preferredRoiKind() const;
     /** @brief 几何种类是否与推荐一致 */

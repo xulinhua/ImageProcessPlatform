@@ -127,6 +127,7 @@ private:
     int m_cursorHotX;                               ///< 光标热点，相对图标左上角
     int m_cursorHotY;                               ///< 光标热点
     H264Codec m_h264;                               ///< 主码流解码，跨帧保留参考帧
+    uint8_t m_lastCodec;                            ///< 上一帧编码，切换时清解码器与静帧
     bool m_input;                                   ///< 是否转发键鼠
     bool m_fit;                                     ///< 等比缩放（true）或 1:1（false）
     bool m_operating;                               ///< 持有操作权，画蓝框

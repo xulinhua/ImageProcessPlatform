@@ -73,6 +73,11 @@ public:
      * @param data JPEG 字节；size <= 0 或失败返回空图
      */
     static QImage imageFromJpeg(const unsigned char* data, int size);
+    /**
+     * @brief 把抓屏 BGRA 建成可显示的 QImage
+     * @note 抓屏 alpha 常为 0；用 Format_RGB32 按不透明画，避免会话窗一片空、像没数据
+     */
+    static QImage imageFromBgra(const unsigned char* data, int size, int width, int height);
 
 private:
     /** @brief 全局样式表；arrow 为下拉箭头图片路径，替换样式表里的 ARROW */

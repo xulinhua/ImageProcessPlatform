@@ -9,6 +9,7 @@
 #include "ToolRstPanel.h"
 #include "Job.h"
 #include "Solution.h"
+#include "ToolRegistry.h"
 #include "ParamKeys.h"
 #include "QtConv.h"
 #include "UiText.h"
@@ -23,6 +24,7 @@
 #include <QTableWidget>
 #include <QTableWidgetItem>
 #include <QVBoxLayout>
+#include <map>
 
 namespace Vision {
 
@@ -167,19 +169,39 @@ ToolRstPanel::ToolRstPanel(QWidget* parent)
     lay->addWidget(split, 1);
 }
 
-// 填输出键值表
-void ToolRstPanel::fillOutputTable(const ParamMap& values)
+// 填输出键值表；有 cfg_output 时用 title 作项名
+void ToolRstPanel::fillOutputTable(const ParamMap& values, const ToolCfg* tool)
 {
     if (!m_outTable) {
         return;
     }
     m_outTable->setRowCount(0);
+    OutputSpec spec;
+    if (tool) {
+        ToolBase* shell = ToolRegistry::instance().find(tool->toolName);
+        if (shell) {
+            spec = shell->cfg_output();
+        }
+    }
+    std::map<std::string, std::string> titleByKey;
+    for (size_t i = 0; i < spec.fields.size(); ++i) {
+        const OutputField& f = spec.fields[i];
+        titleByKey[f.key] = f.title.empty() ? f.key : f.title;
+        if (!f.unit.empty()) {
+            titleByKey[f.key] += std::string(" (") + f.unit + ")";
+        }
+    }
     const std::vector<std::string> keys = values.keys();
     m_outTable->setRowCount(static_cast<int>(keys.size()));
     for (int i = 0; i < static_cast<int>(keys.size()); ++i) {
         const std::string& k = keys[static_cast<size_t>(i)];
         const ParamValue v = values.value(k);
-        m_outTable->setItem(i, 0, roCell(qs(k), false));
+        std::string label = k;
+        std::map<std::string, std::string>::const_iterator it = titleByKey.find(k);
+        if (it != titleByKey.end()) {
+            label = it->second;
+        }
+        m_outTable->setItem(i, 0, roCell(qs(label), false));
         m_outTable->setItem(i, 1, roCell(paramText(v), true));
     }
     m_outTable->resizeRowsToContents();
@@ -194,7 +216,7 @@ void ToolRstPanel::refresh(Solution* sol, ToolCfg* tool, Job* job, const ToolOut
         m_statusLab->setText(T("状态：") + T("未选中"));
         applyRunStatusLabel(m_statusLab, RunStatusNone);
         m_msgLab->clear();
-        fillOutputTable(ParamMap());
+        fillOutputTable(ParamMap(), 0);
         return;
     }
 
@@ -255,16 +277,17 @@ void ToolRstPanel::refresh(Solution* sol, ToolCfg* tool, Job* job, const ToolOut
         applyRunStatusLabel(m_statusLab, ok ? RunStatusOk : RunStatusNg);
         m_msgLab->setText(msg.isEmpty() ? T("（无说明）") : msg);
     }
-    fillOutputTable(values);
-    // 单工具视图：若输出含 ok/pass，着色对应行
+    fillOutputTable(values, tool);
+    // 单工具视图：若输出含 ok/pass，着色对应行（按原始键匹配）
     if (m_outTable && hasStatus) {
+        const std::vector<std::string> keys = values.keys();
         for (int r = 0; r < m_outTable->rowCount(); ++r) {
             QTableWidgetItem* keyIt = m_outTable->item(r, 0);
             QTableWidgetItem* valIt = m_outTable->item(r, 1);
             if (!keyIt || !valIt) {
                 continue;
             }
-            const QString key = keyIt->text();
+            const QString key = (r < static_cast<int>(keys.size())) ? qs(keys[static_cast<size_t>(r)]) : keyIt->text();
             ValueKey vk;
             if (valueKeyFromName(ss(key), &vk)
                 && (vk == ValueKey::Ok || vk == ValueKey::Pass)) {
@@ -285,7 +308,7 @@ void ToolRstPanel::refreshJob(Solution* sol, const JobCfg* jobConfig, Job* job,
         m_statusLab->setText(T("状态：") + T("未选中"));
         applyRunStatusLabel(m_statusLab, RunStatusNone);
         m_msgLab->clear();
-        fillOutputTable(ParamMap());
+        fillOutputTable(ParamMap(), 0);
         return;
     }
 

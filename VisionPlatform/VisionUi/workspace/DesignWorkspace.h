@@ -21,7 +21,12 @@ class QTreeWidgetItem;
 class QTableWidget;
 class QLabel;
 class QPushButton;
+class QCheckBox;
 class QPoint;
+
+namespace image_widget {
+class ImageDrawPad;
+}
 
 namespace Vision {
 
@@ -157,10 +162,16 @@ private slots:
     void onDebugTestRun(const ToolOut& out);
     /** @brief 刷新上移/下移/删除按钮 */
     void updateToolButtons();
+    /** @brief 设计区「绘制 ROI」勾选变化 */
+    void onDesignDrawModeChanged();
 
 private:
     /** @brief 选中工具并刷新结果区 */
     void selectTool(const QString& toolId);
+    /** @brief 按当前工具显隐绘制条并同步 Drawing 层 */
+    void updateDesignDrawUi();
+    /** @brief 把绘制小窗摆到图像旁 */
+    void placeDesignDrawPad();
     /** @brief 设计态：展示整 JobCfg 运行结果（汇总各工具输出） */
     void showJobResult(const JobCfg* job, const ToolOut& jobOut);
     /** @brief 选中流程节点时刷新结果区（无单工具上下文） */
@@ -189,6 +200,8 @@ private:
     JobFlowCanvasPanel* m_flowCanvas;   ///< 当前 JobCfg 画布（含连线写回）
     HsCtrl::HsViewShell* m_shell;      ///< 图像/点云壳
     HsCtrl::HsImageWindow* m_view;     ///< 图像窗（壳内）
+    image_widget::ImageDrawPad* m_drawPad; ///< 设计区 ROI 绘制条
+    QCheckBox* m_chkDrawRoi;            ///< 设计区绘制模式
     QLabel* m_status;                   ///< 状态/坐标
     QTableWidget* m_log;                ///< 日志表
     ToolRstPanel* m_result;          ///< 调试与结果显示

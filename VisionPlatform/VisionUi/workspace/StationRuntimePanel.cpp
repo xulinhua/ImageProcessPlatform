@@ -15,6 +15,7 @@
 #include "CloudViewBinder.h"
 #include "ToolIo.h"
 #include <QButtonGroup>
+#include <QColor>
 #include <QDateTime>
 #include <QFrame>
 #include <QGridLayout>
@@ -135,7 +136,8 @@ StationRuntimePanel::StationRuntimePanel(QWidget* parent)
         HsCtrl::HsViewShell* shell = new HsCtrl::HsViewShell(pane);
         HsCtrl::HsImageWindow* w = shell->imageWindow();
         w->setWindowMode(HsCtrl::WindowRuntime);
-        w->setOverlayToolbarVisible(true);
+        // 运行态不显示叠加层工具条，避免窗右侧一列空白方块
+        w->setOverlayToolbarVisible(false);
         w->setDrawTool(HsCtrl::ToolBrowse);
         v->addWidget(title);
         v->addWidget(shell, 1);
@@ -309,6 +311,14 @@ void StationRuntimePanel::addResult(bool ok, const QString& line, const QImage& 
     it.tip = line;
     it.time = QDateTime::currentDateTime().toString(QLatin1String("hh:mm:ss"));
     it.thumb = thumb;
+    // 异步缩略图为空时用本拍结果/源图补，避免历史只剩纯色 OK/NG 块
+    if (it.thumb.isNull()) {
+        if (!m_lastRst.isNull()) {
+            it.thumb = toQImage(m_lastRst);
+        } else if (!m_lastSrc.isNull()) {
+            it.thumb = toQImage(m_lastSrc);
+        }
+    }
     m_hist.prepend(it);
     while (m_hist.size() > 40) {
         m_hist.removeLast();
@@ -380,7 +390,7 @@ QString StationRuntimePanel::toolCaption(const ObjectId& id) const
     return t ? qs(t->name) : T("工站结果");
 }
 
-// 每格：指定底图只用来源缓存，禁止回退到工站汇总图
+// 每格：指定底图只用来源缓存；叠加必须与底图同源，避免窗2增强图上错位工站圆
 void StationRuntimePanel::applyImages()
 {
     m_viewConfig.normalize();
@@ -409,14 +419,34 @@ void StationRuntimePanel::applyImages()
         }
 
         if (pane.showOverlay) {
-            for (int k = 0; k < static_cast<int>(pane.overlayToolIds.size()); ++k) {
-                const ObjectId ovId = pane.overlayToolIds[static_cast<size_t>(k)];
-                if (ovId.isNull()) {
+            auto appendToolOverlay = [&](const ObjectId& toolId) {
+                if (!m_station || toolId.isNull()) {
+                    return;
+                }
+                Job* job = m_station->findJobOfTool(toolId);
+                if (job) {
+                    gfx += qg(job->cachedOverlay(toolId));
+                }
+            };
+            if (pane.overlayToolIds.empty()) {
+                // 未配置：底图是工站结果用本拍叠加，否则用该工具自身叠加
+                if (pane.imageToolId.isNull()) {
                     gfx += m_lastGfx;
-                } else if (m_station) {
-                    Job* job = m_station->findJobOfTool(ovId);
-                    if (job) {
-                        gfx += qg(job->cachedOverlay(ovId));
+                } else {
+                    appendToolOverlay(pane.imageToolId);
+                }
+            } else {
+                for (int k = 0; k < static_cast<int>(pane.overlayToolIds.size()); ++k) {
+                    const ObjectId ovId = pane.overlayToolIds[static_cast<size_t>(k)];
+                    if (ovId.isNull()) {
+                        // 「工站本拍」叠加只画在工站结果底图上；画在其它工具图上会错位
+                        if (pane.imageToolId.isNull()) {
+                            gfx += m_lastGfx;
+                        } else {
+                            appendToolOverlay(pane.imageToolId);
+                        }
+                    } else {
+                        appendToolOverlay(ovId);
                     }
                 }
             }
@@ -461,7 +491,9 @@ void StationRuntimePanel::applyImages()
         }
         m_cells[i]->setImageCalib(imageCalibForCamera(cam));
         applyFrame(m_cells[i], img);
-        m_cells[i]->setOverlay(toStd(gfx), m_cells[i]->currentFrameId());
+        // 叠加帧号与底图一致（applyFrame 已写入 HsImage::frameId）
+        const int64_t fid = (img.frameId != 0) ? img.frameId : m_cells[i]->currentFrameId();
+        m_cells[i]->setOverlay(toStd(gfx), fid);
         if (m_needFit) {
             m_cells[i]->fitToWindow();
         }
@@ -527,10 +559,11 @@ void StationRuntimePanel::rebuildHist()
         if (!rec.thumb.isNull()) {
             pic->setPixmap(QPixmap::fromImage(rec.thumb).scaled(110, 52, Qt::KeepAspectRatio, Qt::SmoothTransformation));
         } else {
-            pic->setText(rec.ok ? QLatin1String("OK") : QLatin1String("NG"));
-            pic->setStyleSheet(rec.ok
-                ? QLatin1String("background:#F6FFED; color:#52C41A;")
-                : QLatin1String("background:#FFF1F0; color:#FF4D4F;"));
+            // 仍无图时画小色块，避免大块纯色 OK 字占满历史条
+            QPixmap ph(110, 52);
+            ph.fill(rec.ok ? QColor(0xF6, 0xFF, 0xED) : QColor(0xFF, 0xF1, 0xF0));
+            pic->setPixmap(ph);
+            pic->setToolTip(rec.ok ? QLatin1String("OK") : QLatin1String("NG"));
         }
         QLabel* badge = new QLabel(rec.ok ? QLatin1String("OK") : QLatin1String("NG"), cell);
         badge->setAlignment(Qt::AlignCenter);

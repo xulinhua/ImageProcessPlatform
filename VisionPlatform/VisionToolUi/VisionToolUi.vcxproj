@@ -84,6 +84,9 @@
     <ClCompile Include="editor\GenericEditor.cpp" />
     <ClCompile Include="editor\Acquire3DEditor.cpp" />
     <ClCompile Include="editor\StepEditors.cpp" />
+    <ClCompile Include="editor\CamPipelineEditors.cpp" />
+    <ClCompile Include="editor\LocateDetectEditors.cpp" />
+    <ClCompile Include="editor\MiscEditors.cpp" />
     <ClCompile Include="editor\CloudViewBinder.cpp" />
     <ClCompile Include="debug\ToolDebugHost.cpp" />
     <ClCompile Include="register\ToolEditorRegistry.cpp" />

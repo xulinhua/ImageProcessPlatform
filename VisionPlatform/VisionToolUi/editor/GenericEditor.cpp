@@ -1,6 +1,6 @@
 /**
  * @file GenericEditor.cpp
- * @brief GenericEditor实现
+ * @brief 按工具壳 cfg_param / cfg_teach / cfg_output 生成参数页（示教/运行/输出标签）
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -8,6 +8,7 @@
 
 #include "ToolEditorBase.h"
 #include "ToolBase.h"
+#include "ToolRegistry.h"
 #include "ToolParamUi.h"
 #include "QtConv.h"
 #include "Session.h"
@@ -21,65 +22,124 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QSpinBox>
+#include <QTabWidget>
 #include <QVBoxLayout>
 #include <vector>
 
 namespace Vision {
 
-namespace {
-
-// 一行参数：字段说明与对应控件
-struct FieldRow {
-    ParamField field;   ///< 工具壳给出的字段说明
-    QWidget* editor;    ///< 取值控件；路径行为其中的 QLineEdit，不拥有
-    FieldRow() : editor(nullptr) {}
-};
-
-} // namespace
-
 /**
  * @class GenericEditor
- * @brief 按工具壳 paramFields 生成参数表单
+ * @brief 按工具壳 param 说明生成表单；有示教字段时分「示教 / 参数」页，并附输出标签页
  */
 class GenericEditor : public ToolEditorBase {
 public:
     explicit GenericEditor(QWidget* parent)
         : ToolEditorBase(parent)
-        , m_lay(nullptr)
+        , m_tabs(nullptr)
+        , m_runHost(nullptr)
+        , m_teachHost(nullptr)
+        , m_outHost(nullptr)
+        , m_runLay(nullptr)
+        , m_teachLay(nullptr)
+        , m_outLay(nullptr)
     {
-        m_lay = new QVBoxLayout(this);
-        m_lay->setContentsMargins(0, 0, 0, 0);
+        QVBoxLayout* root = new QVBoxLayout(this);
+        root->setContentsMargins(0, 0, 0, 0);
+        root->setSpacing(0);
+        m_tabs = new QTabWidget(this);
+        m_tabs->setObjectName(QLatin1String("toolDebugParamTabs"));
+        root->addWidget(m_tabs);
+
+        m_runHost = new QWidget(m_tabs);
+        m_runLay = new QVBoxLayout(m_runHost);
+        m_runLay->setContentsMargins(0, 8, 0, 0);
+        m_runLay->setSpacing(8);
+
+        m_teachHost = new QWidget(m_tabs);
+        m_teachLay = new QVBoxLayout(m_teachHost);
+        m_teachLay->setContentsMargins(0, 8, 0, 0);
+        m_teachLay->setSpacing(8);
+
+        m_outHost = new QWidget(m_tabs);
+        m_outLay = new QVBoxLayout(m_outHost);
+        m_outLay->setContentsMargins(0, 8, 0, 0);
+        m_outLay->setSpacing(6);
     }
 
 protected:
-    // 按工具壳 paramFields 重建表单；没有字段时只放一行提示
+    // 按 cfg_param / cfg_teach / cfg_output 重建；示教空则不建示教页
     void loadFromTool()
     {
-        clearRows();
-        if (!m_tool || !m_lay) {
+        clearPage(m_runLay, &m_runRows, &m_runHolders);
+        clearPage(m_teachLay, &m_teachRows, &m_teachHolders);
+        clearOutPage();
+        while (m_tabs->count() > 0) {
+            m_tabs->removeTab(0);
+        }
+        if (!m_tool) {
             return;
         }
         ToolBase* shell = ToolRegistry::instance().find(m_tool->toolName);
-        std::vector<ParamField> fields;
+        std::vector<ParamField> runFields;
+        std::vector<ParamField> teachFields;
+        OutputSpec outSpec;
         if (shell) {
-            fields = shell->paramFields();
+            runFields = shell->cfg_param();
+            teachFields = shell->cfg_teach();
+            outSpec = shell->cfg_output();
+            if (runFields.empty() && teachFields.empty()) {
+                runFields = shell->paramFields();
+            }
         }
-        if (fields.empty()) {
-            QLabel* tip = new QLabel(T("该工具没有参数。"), this);
+
+        const bool hasTeach = !teachFields.empty();
+        if (hasTeach) {
+            m_tabs->addTab(m_teachHost, T("示教"));
+            for (size_t i = 0; i < teachFields.size(); ++i) {
+                addRow(teachFields[i], true, m_teachLay, &m_teachRows, &m_teachHolders);
+            }
+            m_teachLay->addStretch(1);
+        }
+        m_tabs->addTab(m_runHost, hasTeach ? T("参数") : T("参数"));
+        if (runFields.empty()) {
+            QLabel* tip = new QLabel(T("该工具没有参数。"), m_runHost);
             tip->setWordWrap(true);
-            m_lay->addWidget(tip);
-            m_holders.push_back(tip);
-            m_lay->addStretch(1);
-            return;
+            m_runLay->addWidget(tip);
+            m_runHolders.push_back(tip);
+        } else {
+            for (size_t i = 0; i < runFields.size(); ++i) {
+                addRow(runFields[i], false, m_runLay, &m_runRows, &m_runHolders);
+            }
         }
-        for (size_t i = 0; i < fields.size(); ++i) {
-            addRow(fields[i]);
+        m_runLay->addStretch(1);
+
+        if (!outSpec.fields.empty()) {
+            m_tabs->addTab(m_outHost, T("输出"));
+            QLabel* tip = new QLabel(T("本工具输出项（只读标签）："), m_outHost);
+            tip->setObjectName(QLatin1String("hint"));
+            tip->setWordWrap(true);
+            m_outLay->addWidget(tip);
+            m_outHolders.push_back(tip);
+            for (size_t i = 0; i < outSpec.fields.size(); ++i) {
+                const OutputField& f = outSpec.fields[i];
+                QString line = qs(f.title.empty() ? f.key : f.title);
+                if (!f.unit.empty()) {
+                    line += QLatin1String(" (") + qs(f.unit) + QLatin1Char(')');
+                }
+                line += QLatin1String("  [") + qs(f.key) + QLatin1Char(']');
+                QLabel* lab = new QLabel(line, m_outHost);
+                lab->setWordWrap(true);
+                m_outLay->addWidget(lab);
+                m_outHolders.push_back(lab);
+            }
+            m_outLay->addStretch(1);
         }
-        m_lay->addStretch(1);
+
         applyParamControlStyle(this);
     }
 
-    // 当前用户能否改该字段（按工具名、所属流程、工具 id 查权限）
+    // 当前用户能否改该字段
     bool allowField(const std::string& key) const
     {
         if (!m_session || !m_tool) {
@@ -95,15 +155,31 @@ protected:
         return m_session->allowToolField(m_tool->toolName, flowId, m_tool->id.toString(), key);
     }
 
-    // 控件值写回参数；设备字段写 deviceId，下拉写当前显示文本
+    // 示教写 param.learn，运行写 param.run
     void saveToTool()
     {
         if (!m_tool) {
             return;
         }
-        for (size_t i = 0; i < m_rows.size(); ++i) {
-            const ParamField& f = m_rows[i].field;
-            QWidget* w = m_rows[i].editor;
+        saveRows(m_runRows, &m_tool->params);
+        saveRows(m_teachRows, &m_tool->param.learn);
+    }
+
+private:
+    struct FieldRow {
+        ParamField field;
+        QWidget* editor;
+        FieldRow() : editor(nullptr) {}
+    };
+
+    void saveRows(const std::vector<FieldRow>& rows, ParamMap* target)
+    {
+        if (!target) {
+            return;
+        }
+        for (size_t i = 0; i < rows.size(); ++i) {
+            const ParamField& f = rows[i].field;
+            QWidget* w = rows[i].editor;
             if (f.type == ParamFieldType::Device) {
                 QComboBox* box = qobject_cast<QComboBox*>(w);
                 if (box) {
@@ -114,88 +190,110 @@ protected:
             if (f.type == ParamFieldType::Bool) {
                 QCheckBox* box = qobject_cast<QCheckBox*>(w);
                 if (box) {
-                    m_tool->params.insert(f.key, box->isChecked());
+                    target->insert(f.key, box->isChecked());
                 }
             } else if (f.type == ParamFieldType::Int) {
                 QSpinBox* box = qobject_cast<QSpinBox*>(w);
                 if (box) {
-                    m_tool->params.insert(f.key, box->value());
+                    target->insert(f.key, box->value());
                 }
             } else if (f.type == ParamFieldType::Double) {
                 QDoubleSpinBox* box = qobject_cast<QDoubleSpinBox*>(w);
                 if (box) {
-                    m_tool->params.insert(f.key, box->value());
+                    target->insert(f.key, box->value());
                 }
             } else {
                 QLineEdit* line = qobject_cast<QLineEdit*>(w);
                 QComboBox* box = qobject_cast<QComboBox*>(w);
                 if (line) {
-                    m_tool->params.insert(f.key, ss(line->text()));
+                    target->insert(f.key, ss(line->text()));
                 } else if (box) {
-                    m_tool->params.insert(f.key, ss(box->currentText()));
+                    target->insert(f.key, ss(box->currentText()));
                 }
             }
         }
     }
 
-private:
-    // 删除全部行控件和布局项
-    void clearRows()
+    void clearPage(QVBoxLayout* lay, std::vector<FieldRow>* rows, std::vector<QWidget*>* holders)
     {
-        m_rows.clear();
-        for (int i = 0; i < static_cast<int>(m_holders.size()); ++i) {
-            m_lay->removeWidget(m_holders[static_cast<size_t>(i)]);
-            if (m_holders[static_cast<size_t>(i)]) {
-                delete m_holders[static_cast<size_t>(i)];
-                m_holders[static_cast<size_t>(i)] = nullptr;
-            }
+        if (rows) {
+            rows->clear();
         }
-        m_holders.clear();
-        while (m_lay->count() > 0) {
-            QLayoutItem* item = m_lay->takeAt(0);
+        if (holders) {
+            for (size_t i = 0; i < holders->size(); ++i) {
+                if (lay) {
+                    lay->removeWidget((*holders)[i]);
+                }
+                delete (*holders)[i];
+                (*holders)[i] = nullptr;
+            }
+            holders->clear();
+        }
+        if (!lay) {
+            return;
+        }
+        while (lay->count() > 0) {
+            QLayoutItem* item = lay->takeAt(0);
             if (item) {
                 delete item;
-                item = nullptr;
             } else {
                 break;
             }
         }
     }
 
-    // 按字段类型建控件：布尔、整数、浮点、设备、候选下拉，其余为文本框（路径另带浏览按钮）
-    void addRow(const ParamField& f)
+    void clearOutPage()
+    {
+        clearPage(m_outLay, 0, &m_outHolders);
+    }
+
+    ParamValue fieldValue(const ParamField& f, bool teach) const
+    {
+        const ParamMap& src = teach ? m_tool->param.learn : m_tool->params;
+        if (src.contains(f.key)) {
+            return src.value(f.key);
+        }
+        // 旧方案可能把示教键写在 run 里
+        if (teach && m_tool->params.contains(f.key)) {
+            return m_tool->params.value(f.key);
+        }
+        return f.def;
+    }
+
+    void addRow(const ParamField& f, bool teach, QVBoxLayout* lay,
+                std::vector<FieldRow>* rows, std::vector<QWidget*>* holders)
     {
         FieldRow row;
         row.field = f;
         QWidget* editor = nullptr;
+        const ParamValue cur = fieldValue(f, teach);
         if (f.type == ParamFieldType::Bool) {
             QCheckBox* box = mkParamCheck(this, QString());
-            box->setChecked(m_tool->params.value(f.key).toBool(f.def.toBool()));
+            box->setChecked(cur.toBool(f.def.toBool()));
             connect(box, SIGNAL(stateChanged(int)), this, SLOT(onEdited()));
             editor = box;
         } else if (f.type == ParamFieldType::Int) {
             const int lo = f.hasMin ? static_cast<int>(f.minValue) : -1000000000;
             const int hi = f.hasMax ? static_cast<int>(f.maxValue) : 1000000000;
             QSpinBox* box = mkParamSpin(this, lo, hi);
-            box->setValue(m_tool->params.value(f.key).toInt(f.def.toInt()));
+            box->setValue(cur.toInt(f.def.toInt()));
             connect(box, SIGNAL(valueChanged(int)), this, SLOT(onEdited()));
             editor = box;
         } else if (f.type == ParamFieldType::Double) {
             const double lo = f.hasMin ? f.minValue : -1e12;
             const double hi = f.hasMax ? f.maxValue : 1e12;
             QDoubleSpinBox* box = mkParamDSpin(this, lo, hi, 4, 0.1);
-            box->setValue(m_tool->params.value(f.key).toDouble(f.def.toDouble()));
+            box->setValue(cur.toDouble(f.def.toDouble()));
             connect(box, SIGNAL(valueChanged(double)), this, SLOT(onEdited()));
             editor = box;
         } else if (f.type == ParamFieldType::Device) {
-            // 取图、标定工具只列相机、文件夹、图像三类设备
             QComboBox* box = mkParamCombo(this);
             box->addItem(T("（无）"), QString());
             if (m_sol) {
                 for (int i = 0; i < static_cast<int>(m_sol->inventory.size()); ++i) {
                     const HardwareDevice& d = m_sol->inventory[static_cast<size_t>(i)];
-            if ((m_tool->type == ToolType::Acquire || m_tool->type == ToolType::Calib)
-                && d.kind != DeviceCamera && d.kind != DeviceFolder && d.kind != DeviceImage) {
+                    if ((m_tool->type == ToolType::Acquire || m_tool->type == ToolType::Calib)
+                        && d.kind != DeviceCamera && d.kind != DeviceFolder && d.kind != DeviceImage) {
                         continue;
                     }
                     QString label = qs(d.name);
@@ -205,19 +303,19 @@ private:
                     box->addItem(label, qs(d.id));
                 }
             }
-            const QString cur = qs(m_tool->deviceId);
-            const int idx = box->findData(cur);
+            const QString curDev = qs(m_tool->deviceId);
+            const int idx = box->findData(curDev);
             box->setCurrentIndex(idx >= 0 ? idx : 0);
             connect(box, SIGNAL(currentIndexChanged(int)), this, SLOT(onEdited()));
             editor = box;
         } else if (!f.choices.empty()) {
             QComboBox* box = mkParamCombo(this);
-            const std::string cur = m_tool->params.value(f.key).toString();
+            const std::string curS = cur.toString();
             const std::string def = f.def.toString();
             int pick = 0;
             for (size_t i = 0; i < f.choices.size(); ++i) {
                 box->addItem(T(f.choices[i].c_str()));
-                if (f.choices[i] == cur || (cur.empty() && f.choices[i] == def)) {
+                if (f.choices[i] == curS || (curS.empty() && f.choices[i] == def)) {
                     pick = static_cast<int>(i);
                 }
             }
@@ -226,8 +324,8 @@ private:
             editor = box;
         } else {
             QLineEdit* line = new QLineEdit(this);
-            const std::string cur = m_tool->params.value(f.key).toString();
-            line->setText(qs(cur.empty() ? f.def.toString() : cur));
+            const std::string curS = cur.toString();
+            line->setText(qs(curS.empty() ? f.def.toString() : curS));
             connect(line, SIGNAL(editingFinished()), this, SLOT(onEdited()));
             if (f.type == ParamFieldType::Path) {
                 QWidget* wrap = new QWidget(this);
@@ -247,9 +345,10 @@ private:
                 editor = wrap;
                 row.editor = line;
                 wrap->setEnabled(allowField(f.key));
-                m_rows.push_back(row);
-                m_lay->addWidget(mkParamCell(this, T(f.title.c_str()), wrap));
-                m_holders.push_back(wrap);
+                rows->push_back(row);
+                QWidget* cell = mkParamCell(this, T(f.title.c_str()), wrap);
+                lay->addWidget(cell);
+                holders->push_back(cell);
                 return;
             }
             editor = line;
@@ -258,15 +357,24 @@ private:
         if (editor) {
             editor->setEnabled(allowField(f.key));
         }
-        m_rows.push_back(row);
+        rows->push_back(row);
         QWidget* cell = mkParamCell(this, T(f.title.c_str()), editor);
-        m_lay->addWidget(cell);
-        m_holders.push_back(cell);
+        lay->addWidget(cell);
+        holders->push_back(cell);
     }
 
-    QVBoxLayout* m_lay;                 ///< 表单纵向布局
-    std::vector<FieldRow> m_rows;       ///< 各字段行，顺序同 paramFields
-    std::vector<QWidget*> m_holders;    ///< 本页建的行容器，clearRows 时删除
+    QTabWidget* m_tabs;
+    QWidget* m_runHost;
+    QWidget* m_teachHost;
+    QWidget* m_outHost;
+    QVBoxLayout* m_runLay;
+    QVBoxLayout* m_teachLay;
+    QVBoxLayout* m_outLay;
+    std::vector<FieldRow> m_runRows;
+    std::vector<FieldRow> m_teachRows;
+    std::vector<QWidget*> m_runHolders;
+    std::vector<QWidget*> m_teachHolders;
+    std::vector<QWidget*> m_outHolders;
 };
 
 // 按注册工具的参数说明生成参数页

@@ -46,8 +46,11 @@ public:
     void refreshJob(Solution* sol, const JobCfg* jobConfig, Job* job, const ToolOut* jobOut);
 
 private:
-    /** @brief 填输出数值表 */
-    void fillOutputTable(const ParamMap& values);
+    /**
+     * @brief 填输出数值表
+     * @param tool 非空时用 cfg_output 标题作「项」列标签
+     */
+    void fillOutputTable(const ParamMap& values, const ToolCfg* tool = 0);
 
     QLabel* m_toolLab;         ///< 当前工具名
     QLabel* m_statusLab;       ///< OK/NG/未运行

@@ -20,7 +20,7 @@ class QComboBox;
 class QEvent;
 class QLabel;
 class QPushButton;
-class QTableWidget;
+class QVBoxLayout;
 
 namespace HsCtrl {
 class HsImageWindow;
@@ -40,7 +40,7 @@ enum class ToolIoPage {
 
 /**
  * @class ToolIoPanel
- * @brief 工具输入：连接页与 ROI 页，供调试窗分栏展示
+ * @brief 工具输入：连接页与 ROI 页（绘制/引用，对齐 BV），供调试窗分栏展示
  */
 class VISION_TOOLUI_API ToolIoPanel : public QWidget {
     Q_OBJECT
@@ -54,7 +54,7 @@ public:
      */
     void refresh(Solution* sol, ToolCfg* tool, Job* job, bool canEdit);
 
-    /** @brief ROI 表当前选中行；无选中时 -1 */
+    /** @brief ROI 表当前选中行（roiItems 下标）；无选中时 -1 */
     int selectedRoiRow() const;
 
     /** @brief 取消表格选中（不触发 roiSelectionChanged） */
@@ -72,48 +72,59 @@ public:
 signals:
     /** @brief 清空本工具 ROI */
     void clearRoiRequested();
-    /** @brief 新增 ROI（进入绘制） */
+    /** @brief 新增 ROI（进入绘制或追加空项） */
     void addRoiRequested();
     /** @brief 删除最后一个 ROI */
     void removeLastRoiRequested();
     /**
-     * @brief 删除指定行 ROI
-     * @param index 表中从 0 起的行号
+     * @brief 删除指定行 ROI（roiItems 下标）
      */
     void removeRoiRequested(int index);
     /**
      * @brief 表中选中行变化
-     * @param index 从 0 起的行号；无选中时为 -1
      */
     void roiSelectionChanged(int index);
     /**
+     * @brief 对指定行发起绘制（roiItems 下标）
+     */
+    void drawRoiRequested(int index);
+    /** @brief ROI 项内容已就地改写（种类/引用/使能），需刷新图与脏标记 */
+    void roiItemsEdited();
+    /**
      * @brief 输入端口连线变更
-     * @param portData PortData 整型值
-     * @param fromId 上游工具 id；空表示断开
-     * @param fromPort 上游端口键，如 out.image
      */
     void inputLinkChanged(int portData, const QString& fromId, const QString& fromPort);
 
 private slots:
     /** @brief 删除选中行；无选中则删末个 */
     void onDeleteClicked();
-    /** @brief 表内行删除按钮 */
+    /** @brief 行内删除 */
     void onDeleteRowClicked();
-    /** @brief 表选中行变化时通知外部刷新图上 ROI */
-    void onRoiSelectionChanged();
     /** @brief 输入下拉选中变化 */
     void onLinkComboChanged(int index);
+    /** @brief 选中某一 ROI 行 */
+    void onSelectRoiRow();
+    /** @brief 种类下拉：绘制 / 引用 */
+    void onRoiKindChanged(int index);
+    /** @brief 引用源下拉 */
+    void onRoiRefChanged(int index);
+    /** @brief 引用序号 */
+    void onRoiRefIndexChanged(int value);
+    /** @brief 使能勾选 */
+    void onRoiEnableToggled(bool on);
+    /** @brief 行内绘制按钮 */
+    void onDrawRowClicked();
 
 protected:
-    /** @brief 表格 viewport：再点已选行则取消选中 */
+    /** @brief 预留；列表点击由行控件处理 */
     bool eventFilter(QObject* watched, QEvent* event);
 
 private:
-    /**
-     * @brief 按 ROI 种类填表
-     * @param rs 当前工具有效 ROI
-     */
-    void fillRoiTable(const std::vector<HsCommData::HsObject>& rs);
+    /** @brief 按 roiItems 重建列表（绘制/引用行） */
+    void fillRoiList();
+    /** @brief 追加一行 ROI 控件（fillRoiList 用） */
+    void appendRoiRow(int index, const ToolRoiItem& item, bool allowRef, bool allowDraw,
+                      const JobCfg* jobConfig, const std::vector<HsCommData::HsObject>& preview);
     /** @brief 刷新单个输入端口下拉与状态行 */
     void refreshLinkRow(QComboBox* combo, QLabel* hint, QLabel* camText,
                         const JobCfg* jobConfig, const ToolCfg* tool, Job* job,
@@ -122,6 +133,12 @@ private:
     void fillLinkCombo(QComboBox* combo, const JobCfg& job, const ObjectId& toId, PortData data);
     /** @brief 选中当前已连线的项 */
     void selectCurrentLink(QComboBox* combo, const JobCfg& job, const ObjectId& toId, const PortSlot& toPort);
+    /** @brief 槽位是否允许引用 */
+    static bool slotAllowsRef(const ToolCaps& caps);
+    /** @brief 槽位是否允许绘制 */
+    static bool slotAllowsDraw(const ToolCaps& caps);
+    /** @brief 默认分区键 */
+    static std::string defaultRoiSlot(const ToolCaps& caps);
 
     QWidget* m_linkPage;     ///< 连接页根
     QWidget* m_roiPage;      ///< ROI 页根
@@ -135,14 +152,19 @@ private:
     QLabel* m_regionRowLabel; ///< 区域源行标题
     QComboBox* m_regionCombo; ///< 区域输入来源
     QLabel* m_regionHint;    ///< 区域连线状态
-    QTableWidget* m_roiTable;  ///< ROI 表
+    QWidget* m_roiListHost;    ///< ROI 行列表宿主
+    QVBoxLayout* m_roiListLay; ///< ROI 行布局
     QPushButton* m_btnAdd;     ///< 新增 ROI
     QPushButton* m_btnRedraw;  ///< 单 ROI 工具重画
     QPushButton* m_btnClear;   ///< 清空 ROI
     QPushButton* m_btnDel;     ///< 删除选中 ROI
-    bool m_fillingRoiTable;    ///< 正在填表，避免 selectRow 递归触发
+    bool m_fillingRoiList;     ///< 正在填表，避免递归
     bool m_fillingLinks;       ///< 正在填下拉，避免 currentIndexChanged 递归
-    int m_pressSelectedRow;    ///< 按下时已选中的行，用于 toggle 取消
+    int m_selectedRoiRow;      ///< 当前选中 roiItems 下标
+    ToolCfg* m_tool;           ///< 最近一次 refresh 的工具
+    Solution* m_sol;           ///< 最近一次 refresh 的方案
+    Job* m_job;                ///< 最近一次 refresh 的流程
+    bool m_canEdit;            ///< 是否可编辑
 };
 
 /**

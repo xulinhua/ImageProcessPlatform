@@ -339,7 +339,7 @@ void ControlSession::readMain()
                     machine.tile.online = true;
                     machine.tile.onlineSince = nowMs();
                     machine.lastRx = nowMs();
-                    m_machines.push_back(machine);
+                    m_machines.push_back(std::move(machine));
                 }
             }
             for (size_t i = m_machines.size(); i > 0; --i) {
@@ -457,6 +457,16 @@ void ControlSession::readMain()
                     if (packet.channel == Frame::ChVideo) {
                         machine.tile.imageW = picture.imageW;
                         machine.tile.imageH = picture.imageH;
+                        if (machine.tile.codec != picCodec) {
+                            // 编码切换：丢掉上一模式的解码器与静帧，等新码流关键帧
+                            if (machine.videoDec) {
+                                machine.videoDec->closeDecoder();
+                            }
+                            machine.videoDecCodec = 0;
+                            machine.tile.pixels.reset();
+                            machine.tile.pixelsW = 0;
+                            machine.tile.pixelsH = 0;
+                        }
                         machine.tile.codec = picCodec;
                     } else if (machine.tile.jpeg.empty()) {
                         machine.tile.imageW = picture.imageW;
@@ -474,16 +484,60 @@ void ControlSession::readMain()
                         machine.tile.thumbSeq += 1;
                     } else {
                         machine.tile.pictureSeq += 1;
+                        // H.264 / 原图在收包线程解成 BGRA。UI 100ms 才抽一次，中间帧不能丢，否则参考帧断了墙面一直黑
+                        if (picCodec == 2 && !slot->empty()) {
+                            if (!machine.videoDec) {
+                                machine.videoDec.reset(new H264Codec());
+                            }
+                            machine.videoDecCodec = 2;
+                            std::vector<unsigned char> bgra;
+                            int w = 0;
+                            int h = 0;
+                            if (machine.videoDec->decode(slot->data(), static_cast<int>(slot->size()), &bgra, &w, &h)
+                                && w > 0 && h > 0 && !bgra.empty()) {
+                                std::shared_ptr<CommBytes> hold(new CommBytes());
+                                hold->swap(bgra);
+                                machine.tile.pixels = hold;
+                                machine.tile.pixelsW = static_cast<uint32_t>(w);
+                                machine.tile.pixelsH = static_cast<uint32_t>(h);
+                                machine.tile.pixelsSeq += 1;
+                            } else if (machine.tile.pixelsSeq == 0 && machine.tile.pictureSeq <= 3) {
+                                RemoteLog::writef(RemoteLog::Warn, "解码", "H264未出画 · %s · %zuB",
+                                    machine.videoDec->lastError(), slot->size());
+                            }
+                            // 解不出时保留解码器等下一包（SPS/IDR）；不要 closeDecoder
+                        } else if (picCodec == 3 && !slot->empty()
+                            && picture.imageW > 0 && picture.imageH > 0
+                            && slot->size() >= static_cast<size_t>(picture.imageW) * static_cast<size_t>(picture.imageH) * 4u) {
+                            if (machine.videoDec) {
+                                machine.videoDec->closeDecoder();
+                            }
+                            machine.videoDecCodec = 3;
+                            std::shared_ptr<CommBytes> hold(new CommBytes(*slot));
+                            machine.tile.pixels = hold;
+                            machine.tile.pixelsW = picture.imageW;
+                            machine.tile.pixelsH = picture.imageH;
+                            machine.tile.pixelsSeq += 1;
+                        } else if (picCodec == 1) {
+                            if (machine.videoDec) {
+                                machine.videoDec->closeDecoder();
+                            }
+                            machine.videoDecCodec = 1;
+                            machine.tile.pixels.reset();
+                            machine.tile.pixelsW = 0;
+                            machine.tile.pixelsH = 0;
+                        }
                         const uint64_t unpackMs = RemoteLog::tickMs() - t0;
                         RemoteLog::writef(RemoteLog::Info, "接收",
-                            "主画面 peer=%s seq=%llu 解包%llums %zuB codec=%u %ux%u",
+                            "主画面 peer=%s seq=%llu 解包%llums %zuB codec=%u %ux%u pixels=%llu",
                             machine.tile.peerId.c_str(),
                             static_cast<unsigned long long>(machine.tile.pictureSeq),
                             static_cast<unsigned long long>(unpackMs),
                             slot->size(),
                             static_cast<unsigned>(machine.tile.codec),
                             machine.tile.imageW,
-                            machine.tile.imageH);
+                            machine.tile.imageH,
+                            static_cast<unsigned long long>(machine.tile.pixelsSeq));
                     }
                 } else if (packet.channel != Frame::ChControl) {
                     continue;

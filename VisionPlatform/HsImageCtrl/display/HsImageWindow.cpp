@@ -2748,11 +2748,20 @@ HsImageWindow::~HsImageWindow()
 void HsImageWindow::setImage(const uint8_t* data, int width, int height, int strideBytes,
                              const QString& encoding)
 {
+    setImage(data, width, height, strideBytes, encoding, 0);
+}
+
+void HsImageWindow::setImage(const uint8_t* data, int width, int height, int strideBytes,
+                             const QString& encoding, int64_t frameId)
+{
     if (!data || width <= 0 || height <= 0 || strideBytes <= 0) {
         clearImage();
         return;
     }
-    const qint64 id = (d->frame.frameId != 0) ? d->frame.frameId : 1;
+    qint64 id = frameId;
+    if (id <= 0) {
+        id = (d->frame.frameId != 0) ? d->frame.frameId : 1;
+    }
     const HsCommData::HsImage fb = HsCommData::HsImage::fromRaw(data, width, height, strideBytes,
                                                 encoding.toLatin1().constData(), id);
     if (fb.isNull()) {

@@ -27,8 +27,10 @@
 #include "CloudViewBinder.h"
 #include "Station.h"
 #include "Job.h"
+#include <image_widget/image_draw_pad.h>
 #include <QAbstractItemView>
 #include <QAction>
+#include <QCheckBox>
 #include <QCursor>
 #include <QDateTime>
 #include <QFrame>
@@ -186,6 +188,8 @@ DesignWorkspace::DesignWorkspace(Session* session, Solution* solution, Station* 
     , m_canvasTitle(nullptr)
     , m_debug(nullptr)
     , m_result(nullptr)
+    , m_drawPad(nullptr)
+    , m_chkDrawRoi(nullptr)
     , m_hasLastRun(false)
 {
     m_tree = new QTreeWidget(this);
@@ -209,11 +213,20 @@ DesignWorkspace::DesignWorkspace(Session* session, Solution* solution, Station* 
     m_shell = new HsCtrl::HsViewShell(this);
     m_view = m_shell->imageWindow();
     m_view->setWindowMode(HsCtrl::WindowDesign);
-    // 隐藏叠加工具条
+    // 隐藏测量叠加工具条；ROI 绘制走 ImageDrawPad
     m_view->setOverlayToolbarVisible(false);
     m_view->setDrawTool(HsCtrl::ToolBrowse);
     connect(m_view, SIGNAL(cursorMoved(QPointF,double,bool)), this, SLOT(onCursor(QPointF,double,bool)));
     connect(m_view, SIGNAL(roiCommitted(HsCommData::Graphic)), this, SLOT(onRoi(HsCommData::Graphic)));
+
+    m_drawPad = new image_widget::ImageDrawPad(this);
+    m_drawPad->setImageWindow(m_view);
+    m_drawPad->hide();
+
+    m_chkDrawRoi = new QCheckBox(T("绘制 ROI"), this);
+    m_chkDrawRoi->setToolTip(T("开启后可在设计区图像上直接绘制当前工具的 ROI"));
+    m_chkDrawRoi->setVisible(false);
+    connect(m_chkDrawRoi, SIGNAL(toggled(bool)), this, SLOT(onDesignDrawModeChanged()));
 
     m_status = new QLabel(T("图像 / ROI"), this);
     bindTrKey(m_status, "图像 / ROI");
@@ -299,7 +312,11 @@ DesignWorkspace::DesignWorkspace(Session* session, Solution* solution, Station* 
     QLabel* iTitle = new QLabel(T("图像"), imgCard);
     bindTrKey(iTitle, "图像");
     iTitle->setObjectName(QLatin1String("section"));
-    imgLay->addWidget(iTitle);
+    QHBoxLayout* imgTitleLay = new QHBoxLayout();
+    imgTitleLay->setContentsMargins(0, 0, 0, 0);
+    imgTitleLay->addWidget(iTitle, 1);
+    imgTitleLay->addWidget(m_chkDrawRoi);
+    imgLay->addLayout(imgTitleLay);
     imgLay->addWidget(m_shell, 1);
     imgLay->addWidget(m_status);
 
@@ -693,6 +710,7 @@ void DesignWorkspace::selectTool(const QString& toolId)
     } else {
         refreshResult();
     }
+    updateDesignDrawUi();
     refreshCanvas();
     updateToolButtons();
 }
@@ -781,8 +799,57 @@ void DesignWorkspace::syncDrawingInteractionView()
 {
     ToolCfg* t = m_sol->findTool(oid(m_toolId));
     const bool has = t && !t->effectiveRois().empty();
-    const bool editable = m_view && m_view->drawTool() != HsCtrl::ToolBrowse;
+    const bool drawOn = m_chkDrawRoi && m_chkDrawRoi->isChecked();
+    const bool editable = drawOn || (m_view && m_view->drawTool() != HsCtrl::ToolBrowse);
     syncDrawingInteraction(m_view, editable, -1, has);
+}
+
+// 按当前工具显隐「绘制 ROI」与绘制条
+void DesignWorkspace::updateDesignDrawUi()
+{
+    ToolCfg* t = m_sol->findTool(oid(m_toolId));
+    const bool canRoi = t && t->usesRoi() && m_session && m_session->has(PermEditSolution);
+    if (m_chkDrawRoi) {
+        m_chkDrawRoi->setVisible(canRoi);
+        if (!canRoi && m_chkDrawRoi->isChecked()) {
+            m_chkDrawRoi->blockSignals(true);
+            m_chkDrawRoi->setChecked(false);
+            m_chkDrawRoi->blockSignals(false);
+        }
+    }
+    onDesignDrawModeChanged();
+}
+
+// 设计区绘制模式开/关
+void DesignWorkspace::onDesignDrawModeChanged()
+{
+    const bool on = m_chkDrawRoi && m_chkDrawRoi->isVisible() && m_chkDrawRoi->isChecked();
+    if (m_drawPad) {
+        if (on) {
+            m_drawPad->setImageWindow(m_view);
+            placeDesignDrawPad();
+            m_drawPad->show();
+            m_drawPad->raise();
+            m_drawPad->startTool(HsCtrl::ToolRect1);
+        } else {
+            m_drawPad->hide();
+            if (m_view) {
+                m_view->setDrawTool(HsCtrl::ToolBrowse);
+            }
+        }
+    }
+    applyDrawingsToView();
+    syncDrawingInteractionView();
+}
+
+// 绘制小窗摆到图像区左上外侧
+void DesignWorkspace::placeDesignDrawPad()
+{
+    if (!m_drawPad || !m_shell) {
+        return;
+    }
+    const QPoint g = m_shell->mapToGlobal(QPoint(8, 8));
+    m_drawPad->move(g);
 }
 
 // 刷新结果面板

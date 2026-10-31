@@ -101,10 +101,10 @@ std::vector<HsCommData::Graphic> ToolCfg::drawingsForDisplay(int selectedIndex) 
     return out;
 }
 
-// 把一笔绘制写回；多 ROI 追加，其余替换
+// 把一笔绘制写回；多分区/多 ROI 追加到未满槽，其余替换
 void ToolCfg::applyDrawnRoi(const HsCommData::Graphic& g)
 {
-        HsCommData::HsObject drawn = drawingToRoi(g);
+    HsCommData::HsObject drawn = drawingToRoi(g);
     coerceLineRoiIfNeeded(toolName, &drawn);
     if (!drawn.isInitialized() || drawn.isEmpty()) {
         return;
@@ -112,17 +112,43 @@ void ToolCfg::applyDrawnRoi(const HsCommData::Graphic& g)
     if (!roiKindMatches(static_cast<int>(drawn.kind()))) {
         return;
     }
-    if (usesMultiRoi()) {
-        const int cap = drawSlotLimit(toolName);
-        if (cap > 0 && static_cast<int>(rois.size()) >= cap) {
+    RoiItemKind kind = RoiItemKind::DrawRoi;
+    if (drawn.kind() == HsCommData::ObjRegion || drawn.kind() == HsCommData::ObjPoly
+        || drawn.kind() == HsCommData::ObjContour) {
+        kind = RoiItemKind::DrawRegion;
+    }
+    const std::string slot = nextRoiSlotKey();
+    // 优先填同槽空绘制项
+    for (size_t i = 0; i < param.roiItems.size(); ++i) {
+        ToolRoiItem& it = param.roiItems[i];
+        if (it.slot != slot) {
+            continue;
+        }
+        if (it.kind == RoiItemKind::RefRoi || it.kind == RoiItemKind::RefRegion) {
+            continue;
+        }
+        if (!it.shape.isInitialized() || it.shape.isEmpty()) {
+            it.kind = kind;
+            it.shape = drawn;
+            rebuildRoisFromItems();
             return;
         }
-        rois.push_back(drawn);
-    } else {
-        rois.clear();
-        rois.push_back(drawn);
     }
-    syncRois();
+    if (keepsExistingRoisOnAdd()) {
+        ToolRoiItem item;
+        item.slot = slot;
+        item.kind = kind;
+        item.shape = drawn;
+        appendRoiItem(item);
+        return;
+    }
+    param.roiItems.clear();
+    rois.clear();
+    ToolRoiItem item;
+    item.slot = slot;
+    item.kind = kind;
+    item.shape = drawn;
+    appendRoiItem(item);
 }
 
 // 按行号更新已有 ROI
@@ -162,32 +188,27 @@ int roiIndexFromDrawingId(const std::string& id)
     return static_cast<int>(v);
 }
 
-// 清空检测框
+// 清空检测框（含引用项）
 void ToolCfg::clearRois()
 {
     rois.clear();
-    syncRois();
+    param.roiItems.clear();
 }
 
-// 删最后一个检测框
+// 删最后一个检测框（按 roiItems）
 void ToolCfg::removeLastRoi()
 {
-    if (rois.empty()) {
+    if (param.roiItems.empty()) {
         return;
     }
-    rois.pop_back();
-    syncRois();
+    param.roiItems.pop_back();
+    rebuildRoisFromItems();
 }
 
-// 按行号删一只检测框
+// 按 roiItems 行号删除
 void ToolCfg::removeRoiAt(int index)
 {
-        syncRois();
-    if (index < 0 || index >= static_cast<int>(rois.size())) {
-        return;
-    }
-    rois.erase(rois.begin() + index);
-    syncRois();
+    removeRoiItemAt(index);
 }
 
 // 几何种类中文名

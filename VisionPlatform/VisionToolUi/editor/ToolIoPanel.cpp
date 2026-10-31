@@ -28,12 +28,12 @@
 #include <QPointF>
 #include <QPushButton>
 #include <QTimer>
+#include <QCheckBox>
 #include <QComboBox>
 #include <QFrame>
 #include <QSizePolicy>
+#include <QSpinBox>
 #include <QToolButton>
-#include <QTableWidget>
-#include <QTableWidgetItem>
 #include <QVBoxLayout>
 #include <QEvent>
 #include <QMouseEvent>
@@ -124,137 +124,6 @@ void addLinkField(QVBoxLayout* lay, QLabel* label, QWidget* field)
 
 }
 
-// 只读单元格；数值右对齐
-static QTableWidgetItem* roiCell(const QString& text, bool numeric)
-{
-    QTableWidgetItem* it = new QTableWidgetItem(text);
-    it->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-    if (numeric) {
-        it->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
-    }
-    return it;
-}
-
-// 一位小数；空单元格传 ok=false
-static QTableWidgetItem* roiNum(double v, bool ok)
-{
-    if (!ok) {
-        return roiCell(QString(), true);
-    }
-    return roiCell(QString::number(v, 'f', 1), true);
-}
-
-// 几何种类，未初始化或为空时 -1
-int roiKindOf(const HsCommData::HsObject& r)
-{
-    return r.isInitialized() && !r.isEmpty() ? static_cast<int>(r.kind()) : -1;
-}
-
-// 从几何取出表格用的中心和尺寸
-static void roiNumbers(const HsCommData::HsObject& r, double* x, double* y, double* a, double* b, double* phi, int* npts)
-{
-    double xx = 0, yy = 0, aa = 0, bb = 0, pp = 0;
-    int nn = 0;
-    // 圆：a 为半径；椭圆、旋转矩形：a/b 为半轴，带角度；矩形：左上角与宽高；
-    // 直线：起点与 dx/dy；轮廓：首点与点数
-    if (r.isInitialized() && !r.isEmpty()) {
-        using namespace HsCommData;
-        const ObjectKind k = r.kind();
-        if (k == ObjCircle) {
-            const CircleP* c = r.circleAt(0);
-            xx = c->c.x;
-            yy = c->c.y;
-            aa = c->r;
-        } else if (k == ObjEllipse) {
-            const EllipseP* e = r.ellipseAt(0);
-            xx = e->c.x;
-            yy = e->c.y;
-            aa = e->ra;
-            bb = e->rb;
-            pp = e->phi;
-        } else if (k == ObjRect1) {
-            const Rect1P* rc = r.rect1At(0);
-            xx = rc->r.x;
-            yy = rc->r.y;
-            aa = rc->r.w;
-            bb = rc->r.h;
-        } else if (k == ObjRect2) {
-            const Rect2P* rc = r.rect2At(0);
-            xx = rc->c.x;
-            yy = rc->c.y;
-            aa = rc->l1;
-            bb = rc->l2;
-            pp = rc->phi;
-        } else if (k == ObjLine) {
-            const LineP* ln = r.lineAt(0);
-            xx = ln->a.x;
-            yy = ln->a.y;
-            aa = ln->b.x - ln->a.x;
-            bb = ln->b.y - ln->a.y;
-        } else if (k == ObjContour) {
-            const HsContour* c = r.contourAt(0);
-            nn = c ? static_cast<int>(c->ptCount()) : 0;
-            if (c && !c->ptsEmpty()) {
-                xx = c->ptAt(0).x;
-                yy = c->ptAt(0).y;
-            }
-        }
-    }
-    if (x) *x = xx;
-    if (y) *y = yy;
-    if (a) *a = aa;
-    if (b) *b = bb;
-    if (phi) *phi = pp;
-    if (npts) *npts = nn;
-}
-
-static QString formatRoiPosition(const HsCommData::HsObject& r)
-{
-    double x = 0, y = 0;
-    roiNumbers(r, &x, &y, 0, 0, 0, 0);
-    return QString::fromUtf8("%1, %2").arg(x, 0, 'f', 1).arg(y, 0, 'f', 1);
-}
-
-// 尺寸列文本：圆为半径，旋转矩形和椭圆为全长全宽，直线为长度，轮廓为顶点数
-QString formatRoiSize(const HsCommData::HsObject& r, int kind)
-{
-    double x = 0, y = 0, a = 0, b = 0;
-    int n = 0;
-    roiNumbers(r, &x, &y, &a, &b, 0, &n);
-    if (kind == static_cast<int>(HsCommData::ObjCircle)) {
-        return QString::fromUtf8("R=%1").arg(a, 0, 'f', 1);
-    }
-    if (kind == static_cast<int>(HsCommData::ObjRect1)) {
-        return QString::fromUtf8("%1 × %2").arg(a, 0, 'f', 1).arg(b, 0, 'f', 1);
-    }
-    if (kind == static_cast<int>(HsCommData::ObjRect2) || kind == static_cast<int>(HsCommData::ObjEllipse)) {
-        return QString::fromUtf8("%1 × %2").arg(a * 2.0, 0, 'f', 1).arg(b * 2.0, 0, 'f', 1);
-    }
-    if (kind == static_cast<int>(HsCommData::ObjLine)) {
-        const double len = std::sqrt(a * a + b * b);
-        return QString::fromUtf8("L=%1").arg(len, 0, 'f', 1);
-    }
-    if (kind == static_cast<int>(HsCommData::ObjContour)) {
-        return QString::fromUtf8("顶点=%1").arg(n);
-    }
-    return QString::fromUtf8("%1 × %2").arg(a, 0, 'f', 1).arg(b, 0, 'f', 1);
-}
-
-// 全部同类则用专列表头，否则用通用 A/B
-static int roiTableKind(const std::vector<HsCommData::HsObject>& rs)
-{
-    if (rs.empty()) {
-        return -1;
-    }
-    const int k = roiKindOf(rs[0]);
-    for (int i = 1; i < static_cast<int>(rs.size()); ++i) {
-        if (roiKindOf(rs[static_cast<size_t>(i)]) != k) {
-            return -1;
-        }
-    }
-    return k;
-}
-
 // 连接页与 ROI 页
 ToolIoPanel::ToolIoPanel(QWidget* parent)
     : QWidget(parent)
@@ -270,14 +139,19 @@ ToolIoPanel::ToolIoPanel(QWidget* parent)
     , m_regionRowLabel(nullptr)
     , m_regionCombo(nullptr)
     , m_regionHint(nullptr)
-    , m_roiTable(nullptr)
+    , m_roiListHost(nullptr)
+    , m_roiListLay(nullptr)
     , m_btnAdd(nullptr)
     , m_btnRedraw(nullptr)
     , m_btnClear(nullptr)
     , m_btnDel(nullptr)
-    , m_fillingRoiTable(false)
+    , m_fillingRoiList(false)
     , m_fillingLinks(false)
-    , m_pressSelectedRow(-1)
+    , m_selectedRoiRow(-1)
+    , m_tool(nullptr)
+    , m_sol(nullptr)
+    , m_job(nullptr)
+    , m_canEdit(false)
 {
     m_linkPage = new QFrame(this);
     m_roiPage = new QFrame(this);
@@ -333,26 +207,16 @@ ToolIoPanel::ToolIoPanel(QWidget* parent)
     roiLay->setContentsMargins(12, 10, 12, 12);
     roiLay->setSpacing(6);
 
-    m_roiTable = new QTableWidget(m_roiPage);
-    m_roiTable->setObjectName(QLatin1String("toolDebugRoiTable"));
-    m_roiTable->setColumnCount(5);
-    QStringList hh;
-    hh << T("ROI ID") << T("类型") << T("位置") << T("尺寸") << QString();
-    m_roiTable->setHorizontalHeaderLabels(hh);
-    m_roiTable->verticalHeader()->setVisible(false);
-    m_roiTable->verticalHeader()->setFixedWidth(0);
-    m_roiTable->setSelectionBehavior(QAbstractItemView::SelectRows);
-    m_roiTable->setSelectionMode(QAbstractItemView::SingleSelection);
-    m_roiTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    m_roiTable->setAlternatingRowColors(true);
-    m_roiTable->horizontalHeader()->setStretchLastSection(true);
-    m_roiTable->verticalHeader()->setDefaultSectionSize(28);
-    m_roiTable->setMinimumHeight(72);
-    m_roiTable->viewport()->installEventFilter(this);
+    m_roiListHost = new QWidget(m_roiPage);
+    m_roiListHost->setObjectName(QLatin1String("toolDebugRoiList"));
+    m_roiListLay = new QVBoxLayout(m_roiListHost);
+    m_roiListLay->setContentsMargins(0, 0, 0, 0);
+    m_roiListLay->setSpacing(4);
+    m_roiListLay->addStretch(1);
 
-    m_btnAdd = new QPushButton(T("+ 添加 ROI"), m_roiPage);
+    m_btnAdd = new QPushButton(T("+ 添加"), m_roiPage);
     m_btnAdd->setObjectName(QLatin1String("toolDebugAddRoi"));
-    m_btnRedraw = new QPushButton(T("重画 ROI"), m_roiPage);
+    m_btnRedraw = new QPushButton(T("重画"), m_roiPage);
     m_btnRedraw->setObjectName(QLatin1String("toolDebugAddRoi"));
     m_btnClear = new QPushButton(T("清除全部"), m_roiPage);
     m_btnClear->setObjectName(QLatin1String("toolDebugClearRoi"));
@@ -361,19 +225,18 @@ ToolIoPanel::ToolIoPanel(QWidget* parent)
     QHBoxLayout* btnLay = new QHBoxLayout();
     btnLay->setContentsMargins(0, 0, 0, 0);
     btnLay->setSpacing(8);
+    btnLay->addStretch(1);
     btnLay->addWidget(m_btnAdd);
     btnLay->addWidget(m_btnRedraw);
     btnLay->addWidget(m_btnClear);
-    btnLay->addStretch();
 
-    roiLay->addWidget(m_roiTable, 1);
+    roiLay->addWidget(m_roiListHost, 1);
     roiLay->addLayout(btnLay);
 
     connect(m_btnAdd, SIGNAL(clicked()), this, SIGNAL(addRoiRequested()));
     connect(m_btnRedraw, SIGNAL(clicked()), this, SIGNAL(addRoiRequested()));
     connect(m_btnClear, SIGNAL(clicked()), this, SIGNAL(clearRoiRequested()));
     connect(m_btnDel, SIGNAL(clicked()), this, SLOT(onDeleteClicked()));
-    connect(m_roiTable, SIGNAL(itemSelectionChanged()), this, SLOT(onRoiSelectionChanged()));
 }
 
 // 指定子页根控件
@@ -385,38 +248,53 @@ QWidget* ToolIoPanel::pageWidget(ToolIoPage page) const
     return m_linkPage;
 }
 
-// 按下时已选中的行，释放时仍在同一格则取消选中
 bool ToolIoPanel::eventFilter(QObject* watched, QEvent* event)
 {
-    if (!m_roiTable || watched != m_roiTable->viewport()) {
-        return QWidget::eventFilter(watched, event);
-    }
-    if (event->type() == QEvent::MouseButtonPress) {
-        QMouseEvent* me = static_cast<QMouseEvent*>(event);
-        if (me->button() == Qt::LeftButton) {
-            const QModelIndex idx = m_roiTable->indexAt(me->pos());
-            if (idx.isValid() && m_roiTable->selectionModel()
-                && m_roiTable->selectionModel()->isSelected(idx)) {
-                m_pressSelectedRow = idx.row();
-            } else {
-                m_pressSelectedRow = -1;
-            }
-        }
-    } else if (event->type() == QEvent::MouseButtonRelease) {
-        QMouseEvent* me = static_cast<QMouseEvent*>(event);
-        if (me->button() == Qt::LeftButton && m_pressSelectedRow >= 0 && !m_fillingRoiTable) {
-            const QModelIndex idx = m_roiTable->indexAt(me->pos());
-            if (idx.isValid() && idx.row() == m_pressSelectedRow
-                && m_roiTable->currentRow() == m_pressSelectedRow) {
-                clearRoiSelection();
-                emit roiSelectionChanged(-1);
-                m_pressSelectedRow = -1;
+    Q_UNUSED(watched);
+    Q_UNUSED(event);
+    return QWidget::eventFilter(watched, event);
+}
+
+bool ToolIoPanel::slotAllowsRef(const ToolCaps& caps)
+{
+    for (size_t s = 0; s < caps.slotRules.size(); ++s) {
+        const RoiSlotRule& slot = caps.slotRules[s];
+        for (size_t k = 0; k < slot.itemKinds.size(); ++k) {
+            if (slot.itemKinds[k] == RoiItemKind::RefRoi || slot.itemKinds[k] == RoiItemKind::RefRegion) {
                 return true;
             }
         }
-        m_pressSelectedRow = -1;
     }
-    return QWidget::eventFilter(watched, event);
+    return false;
+}
+
+bool ToolIoPanel::slotAllowsDraw(const ToolCaps& caps)
+{
+    if (caps.slotRules.empty()) {
+        return caps.usesRoi;
+    }
+    for (size_t s = 0; s < caps.slotRules.size(); ++s) {
+        const RoiSlotRule& slot = caps.slotRules[s];
+        if (slot.itemKinds.empty()) {
+            return true;
+        }
+        for (size_t k = 0; k < slot.itemKinds.size(); ++k) {
+            if (slot.itemKinds[k] == RoiItemKind::DrawRoi || slot.itemKinds[k] == RoiItemKind::DrawRegion) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+std::string ToolIoPanel::defaultRoiSlot(const ToolCaps& caps)
+{
+    for (size_t s = 0; s < caps.slotRules.size(); ++s) {
+        if (!caps.slotRules[s].slot.empty()) {
+            return caps.slotRules[s].slot;
+        }
+    }
+    return "roi";
 }
 
 // 填充输入端口候选来源
@@ -605,16 +483,18 @@ void ToolIoPanel::onLinkComboChanged(int index)
 // 刷新输入连线、位姿缓存与 ROI 摘要
 void ToolIoPanel::refresh(Solution* sol, ToolCfg* tool, Job* job, bool canEdit)
 {
+    m_sol = sol;
+    m_tool = tool;
+    m_job = job;
+    m_canEdit = canEdit;
     if (!tool) {
         refreshLinkRow(m_imgCombo, m_imgHint, m_imgCamText, 0, 0, job, PortData::Image, false, true);
         refreshLinkRow(m_poseCombo, m_poseHint, 0, 0, 0, job, PortData::Pose, false, false);
         refreshLinkRow(m_regionCombo, m_regionHint, 0, 0, 0, job, PortData::Region, false, false);
-        fillRoiTable(std::vector<HsCommData::HsObject>());
-        m_roiTable->setEnabled(false);
+        fillRoiList();
         m_btnAdd->setEnabled(false);
         m_btnRedraw->setEnabled(false);
         m_btnClear->setEnabled(false);
-        m_btnDel->setEnabled(false);
         syncLinkPageHeight(m_linkPage);
         return;
     }
@@ -650,117 +530,91 @@ void ToolIoPanel::refresh(Solution* sol, ToolCfg* tool, Job* job, bool canEdit)
     refreshLinkRow(m_regionCombo, m_regionHint, 0, jobConfig, tool, job,
                    PortData::Region, canEdit, showRegion);
 
-    // ROI 区：不用 ROI 的工具整块隐藏；重画只对单 ROI 工具且已有 ROI 时可用
     const bool usesMulti = tool->usesMultiRoi();
     if (!usesRoi) {
-        fillRoiTable(std::vector<HsCommData::HsObject>());
-        m_roiTable->setVisible(false);
+        if (m_roiListHost) {
+            m_roiListHost->setVisible(false);
+        }
         m_btnAdd->setVisible(false);
         m_btnRedraw->setVisible(false);
         m_btnClear->setVisible(false);
-        m_btnDel->setVisible(false);
+        fillRoiList();
     } else {
-        const std::vector<HsCommData::HsObject> rs = tool->effectiveRois();
-        m_roiTable->setVisible(true);
+        if (m_roiListHost) {
+            m_roiListHost->setVisible(true);
+        }
         m_btnAdd->setVisible(true);
         m_btnClear->setVisible(true);
-        m_btnDel->setVisible(false);
-        fillRoiTable(rs);
-        m_roiTable->setEnabled(true);
+        fillRoiList();
     }
 
     const bool roiOn = usesRoi && canEdit && tool;
-    const bool hasRoi = usesRoi && !tool->effectiveRois().empty();
+    const bool hasRoi = usesRoi && !tool->param.roiItems.empty();
     if (m_btnAdd) {
-        m_btnAdd->setText(T("+ 添加 ROI"));
-        m_btnAdd->setToolTip(T("进入绘制模式，在空白处添加 ROI"));
+        m_btnAdd->setText(T("+ 添加"));
+        m_btnAdd->setToolTip(T("添加一条 ROI；可在行内切换绘制或引用"));
     }
     if (m_btnRedraw) {
         m_btnRedraw->setVisible(usesRoi && hasRoi && !usesMulti);
-        m_btnRedraw->setToolTip(T("进入绘制模式，在空白处重画并替换现有 ROI"));
+        m_btnRedraw->setToolTip(T("进入绘制模式，重画并替换现有 ROI"));
     }
     m_btnAdd->setEnabled(roiOn);
     if (m_btnRedraw) {
-        m_btnRedraw->setVisible(usesRoi && hasRoi && !usesMulti);
         m_btnRedraw->setEnabled(roiOn && hasRoi && !usesMulti);
     }
     m_btnClear->setEnabled(roiOn && hasRoi);
     syncLinkPageHeight(m_linkPage);
 }
-// 表格当前行，无表格时 -1
+
 int ToolIoPanel::selectedRoiRow() const
 {
-    return m_roiTable ? m_roiTable->currentRow() : -1;
+    return m_selectedRoiRow;
 }
 
-// 取消表格选中
 void ToolIoPanel::clearRoiSelection()
 {
-    if (!m_roiTable) {
-        return;
-    }
-    m_fillingRoiTable = true;
-    m_roiTable->blockSignals(true);
-    if (m_roiTable->selectionModel()) {
-        m_roiTable->selectionModel()->blockSignals(true);
-    }
-    m_roiTable->clearSelection();
-    m_pressSelectedRow = -1;
-    if (m_roiTable->selectionModel()) {
-        m_roiTable->selectionModel()->blockSignals(false);
-    }
-    m_roiTable->blockSignals(false);
-    m_fillingRoiTable = false;
+    m_selectedRoiRow = -1;
 }
 
-// 选中指定行，越界则取消选中；不发选中变化信号
 void ToolIoPanel::selectRoiRow(int row)
 {
-    if (!m_roiTable) {
-        return;
-    }
-    m_fillingRoiTable = true;
-    m_roiTable->blockSignals(true);
-    if (m_roiTable->selectionModel()) {
-        m_roiTable->selectionModel()->blockSignals(true);
-    }
-    if (row >= 0 && row < m_roiTable->rowCount()) {
-        m_roiTable->selectRow(row);
+    if (!m_tool || row < 0 || row >= static_cast<int>(m_tool->param.roiItems.size())) {
+        m_selectedRoiRow = -1;
     } else {
-        m_roiTable->clearSelection();
+        m_selectedRoiRow = row;
     }
-    m_pressSelectedRow = -1;
-    if (m_roiTable->selectionModel()) {
-        m_roiTable->selectionModel()->blockSignals(false);
-    }
-    m_roiTable->blockSignals(false);
-    m_fillingRoiTable = false;
 }
 
-// 用户改了表格选中，转发行号；程序填表时不转发
-void ToolIoPanel::onRoiSelectionChanged()
+void ToolIoPanel::onSelectRoiRow()
 {
-    if (m_fillingRoiTable) {
+    if (m_fillingRoiList) {
         return;
     }
-    emit roiSelectionChanged(selectedRoiRow());
+    QWidget* w = qobject_cast<QWidget*>(sender());
+    if (!w) {
+        return;
+    }
+    const int row = w->property("roiRow").toInt();
+    if (m_selectedRoiRow == row) {
+        m_selectedRoiRow = -1;
+    } else {
+        m_selectedRoiRow = row;
+    }
+    emit roiSelectionChanged(m_selectedRoiRow);
 }
 
-// 删除选中行；无选中则删末个
 void ToolIoPanel::onDeleteClicked()
 {
-    const int row = m_roiTable ? m_roiTable->currentRow() : -1;
-    if (row >= 0) {
-        emit removeRoiRequested(row);
+    if (m_selectedRoiRow >= 0) {
+        emit removeRoiRequested(m_selectedRoiRow);
     } else {
         emit removeLastRoiRequested();
     }
 }
 
-// 行内删除按钮：下一轮事件循环再发删除请求（按钮所在表格会被重建）
 void ToolIoPanel::onDeleteRowClicked()
 {
-    QToolButton* btn = qobject_cast<QToolButton*>(sender());
+    QWidget* btn = qobject_cast<QWidget*>(sender());
     if (!btn) {
         return;
     }
@@ -770,98 +624,275 @@ void ToolIoPanel::onDeleteRowClicked()
     }
 }
 
-// 按种类设列并填行
-void ToolIoPanel::fillRoiTable(const std::vector<HsCommData::HsObject>& rs)
+void ToolIoPanel::onDrawRowClicked()
 {
-    if (!m_roiTable) {
+    QWidget* btn = qobject_cast<QWidget*>(sender());
+    if (!btn) {
         return;
     }
-    // 同一种类或为空时用紧凑表（ID、类型、位置、尺寸、删除），混合种类时用数值表
-    const int keep = m_roiTable->currentRow();
-    int kind = roiTableKind(rs);
-    const bool compact = (kind >= 0 || rs.empty());
-    m_fillingRoiTable = true;
-    m_roiTable->blockSignals(true);
-    if (m_roiTable->selectionModel()) {
-        m_roiTable->selectionModel()->blockSignals(true);
+    const int row = btn->property("roiRow").toInt();
+    if (row >= 0) {
+        m_selectedRoiRow = row;
+        emit drawRoiRequested(row);
     }
-    m_roiTable->clearContents();
-    m_roiTable->setRowCount(static_cast<int>(rs.size()));
+}
 
-    if (compact) {
-        if (kind < 0 && rs.empty()) {
-            kind = static_cast<int>(HsCommData::ObjRect1);
-        }
-        QStringList hh;
-        hh << T("ROI ID") << T("类型") << T("位置") << T("尺寸");
-        hh << QString();
-        const int cols = hh.size();
-        const int delCol = cols - 1;
-        m_roiTable->setColumnCount(cols);
-        m_roiTable->setHorizontalHeaderLabels(hh);
-        for (int i = 0; i < static_cast<int>(rs.size()); ++i) {
-            const HsCommData::HsObject& r = rs[static_cast<size_t>(i)];
-            const int rk = (kind >= 0) ? kind : roiKindOf(r);
-            m_roiTable->setItem(i, 0, roiCell(QString::fromUtf8("ROI_%1").arg(i + 1), false));
-            m_roiTable->setItem(i, 1, roiCell(QString::fromUtf8(roiKindTitle(roiKindOf(r)).c_str()), false));
-            m_roiTable->setItem(i, 2, roiCell(formatRoiPosition(r), false));
-            m_roiTable->setItem(i, 3, roiCell(formatRoiSize(r, rk), false));
-            QWidget* cell = new QWidget(m_roiTable);
-            QHBoxLayout* cellLay = new QHBoxLayout(cell);
-            cellLay->setContentsMargins(0, 0, 0, 0);
-            cellLay->setAlignment(Qt::AlignCenter);
-            QToolButton* del = new QToolButton(cell);
-            del->setObjectName(QLatin1String("toolDebugRoiDel"));
-            del->setText(QString::fromUtf8("×"));
-            del->setToolTip(T("删除该 ROI"));
-            del->setProperty("roiRow", i);
-            del->setAutoRaise(true);
-            connect(del, SIGNAL(clicked()), this, SLOT(onDeleteRowClicked()));
-            cellLay->addWidget(del);
-            m_roiTable->setCellWidget(i, delCol, cell);
-        }
-        m_roiTable->resizeColumnsToContents();
-        if (cols > 0) {
-            m_roiTable->horizontalHeader()->setStretchLastSection(false);
-        }
+void ToolIoPanel::onRoiEnableToggled(bool on)
+{
+    if (m_fillingRoiList || !m_tool || !m_canEdit) {
+        return;
+    }
+    QCheckBox* box = qobject_cast<QCheckBox*>(sender());
+    if (!box) {
+        return;
+    }
+    const int row = box->property("roiRow").toInt();
+    if (row < 0 || row >= static_cast<int>(m_tool->param.roiItems.size())) {
+        return;
+    }
+    ToolRoiItem item = m_tool->param.roiItems[static_cast<size_t>(row)];
+    item.enabled = on;
+    m_tool->setRoiItemAt(row, item);
+    emit roiItemsEdited();
+}
+
+void ToolIoPanel::onRoiKindChanged(int index)
+{
+    Q_UNUSED(index);
+    if (m_fillingRoiList || !m_tool || !m_canEdit) {
+        return;
+    }
+    QComboBox* box = qobject_cast<QComboBox*>(sender());
+    if (!box) {
+        return;
+    }
+    const int row = box->property("roiRow").toInt();
+    if (row < 0 || row >= static_cast<int>(m_tool->param.roiItems.size())) {
+        return;
+    }
+    ToolRoiItem item = m_tool->param.roiItems[static_cast<size_t>(row)];
+    const int choice = box->currentData().toInt();
+    const bool wantRef = (choice == static_cast<int>(RoiItemKind::RefRoi)
+                          || choice == static_cast<int>(RoiItemKind::RefRegion));
+    if (wantRef) {
+        item.kind = (choice == static_cast<int>(RoiItemKind::RefRegion))
+                        ? RoiItemKind::RefRegion : RoiItemKind::RefRoi;
+        item.shape = HsCommData::HsObject();
     } else {
-        QStringList hh;
-        hh << T("序号") << T("类型") << T("X") << T("Y") << T("A") << T("B") << T("角度");
-        const int cols = hh.size();
-        m_roiTable->setColumnCount(cols);
-        m_roiTable->setHorizontalHeaderLabels(hh);
-        for (int i = 0; i < static_cast<int>(rs.size()); ++i) {
-            const HsCommData::HsObject& r = rs[static_cast<size_t>(i)];
-            double x = 0, y = 0, a = 0, b = 0, phi = 0;
-            roiNumbers(r, &x, &y, &a, &b, &phi, 0);
-            m_roiTable->setItem(i, 0, roiCell(QString::number(i + 1), true));
-            m_roiTable->setItem(i, 1, roiCell(QString::fromUtf8(roiKindTitle(roiKindOf(r)).c_str()), false));
-            m_roiTable->setItem(i, 2, roiNum(x, true));
-            m_roiTable->setItem(i, 3, roiNum(y, true));
-            m_roiTable->setItem(i, 4, roiNum(a, true));
-            m_roiTable->setItem(i, 5, roiNum(b, b != 0.0));
-            const bool hasPhi = (roiKindOf(r) == static_cast<int>(HsCommData::ObjRect2)
-                || roiKindOf(r) == static_cast<int>(HsCommData::ObjEllipse));
-            m_roiTable->setItem(i, 6, roiNum(HsCommData::toDegree(phi), hasPhi));
+        item.kind = RoiItemKind::DrawRoi;
+        item.refToolId = ObjectId();
+        item.refIndex = -1;
+    }
+    m_tool->setRoiItemAt(row, item);
+    emit roiItemsEdited();
+    QTimer::singleShot(0, this, [this]() { fillRoiList(); });
+}
+
+void ToolIoPanel::onRoiRefChanged(int index)
+{
+    Q_UNUSED(index);
+    if (m_fillingRoiList || !m_tool || !m_canEdit) {
+        return;
+    }
+    QComboBox* box = qobject_cast<QComboBox*>(sender());
+    if (!box) {
+        return;
+    }
+    const int row = box->property("roiRow").toInt();
+    if (row < 0 || row >= static_cast<int>(m_tool->param.roiItems.size())) {
+        return;
+    }
+    ToolRoiItem item = m_tool->param.roiItems[static_cast<size_t>(row)];
+    const QString fromId = box->currentData().toString();
+    item.refToolId = fromId.isEmpty() ? ObjectId() : ObjectId::fromString(fromId.toStdString());
+    if (item.kind != RoiItemKind::RefRoi && item.kind != RoiItemKind::RefRegion) {
+        item.kind = RoiItemKind::RefRoi;
+    }
+    m_tool->setRoiItemAt(row, item);
+    emit roiItemsEdited();
+}
+
+void ToolIoPanel::onRoiRefIndexChanged(int value)
+{
+    if (m_fillingRoiList || !m_tool || !m_canEdit) {
+        return;
+    }
+    QSpinBox* box = qobject_cast<QSpinBox*>(sender());
+    if (!box) {
+        return;
+    }
+    const int row = box->property("roiRow").toInt();
+    if (row < 0 || row >= static_cast<int>(m_tool->param.roiItems.size())) {
+        return;
+    }
+    ToolRoiItem item = m_tool->param.roiItems[static_cast<size_t>(row)];
+    item.refIndex = value;
+    m_tool->setRoiItemAt(row, item);
+    emit roiItemsEdited();
+}
+
+void ToolIoPanel::fillRoiList()
+{
+    if (!m_roiListLay) {
+        return;
+    }
+    m_fillingRoiList = true;
+    while (QLayoutItem* child = m_roiListLay->takeAt(0)) {
+        if (child->widget()) {
+            delete child->widget();
         }
-        m_roiTable->resizeColumnsToContents();
-        if (cols > 0) {
-            m_roiTable->horizontalHeader()->setStretchLastSection(true);
-        }
+        delete child;
+    }
+    if (!m_tool || !m_tool->usesRoi()) {
+        m_roiListLay->addStretch(1);
+        m_fillingRoiList = false;
+        return;
     }
 
-    // 尽量保留原选中行
-    if (keep >= 0 && keep < m_roiTable->rowCount()) {
-        m_roiTable->selectRow(keep);
-    } else {
-        m_roiTable->clearSelection();
+    m_tool->syncRois();
+    const ToolCaps caps = m_tool->caps();
+    const bool allowRef = slotAllowsRef(caps);
+    const bool allowDraw = slotAllowsDraw(caps);
+    const bool multiSlot = caps.slotRules.size() > 1;
+    const JobCfg* jobConfig = m_sol ? m_sol->findJobCfgOfTool(m_tool->id, 0) : nullptr;
+    const std::vector<HsCommData::HsObject> preview = m_tool->displayRois(m_job);
+
+    // 多分区：先按槽位输出标题（含空槽），再列本槽条目
+    if (multiSlot) {
+        for (size_t s = 0; s < caps.slotRules.size(); ++s) {
+            const RoiSlotRule& rule = caps.slotRules[s];
+            QString title = qs(rule.title.empty() ? rule.slot : rule.title);
+            QLabel* head = new QLabel(title, m_roiListHost);
+            head->setObjectName(QLatin1String("toolDebugFieldLabel"));
+            m_roiListLay->addWidget(head);
+
+            int slotCount = 0;
+            for (int i = 0; i < static_cast<int>(m_tool->param.roiItems.size()); ++i) {
+                const ToolRoiItem& item = m_tool->param.roiItems[static_cast<size_t>(i)];
+                if (item.slot != rule.slot) {
+                    continue;
+                }
+                ++slotCount;
+                appendRoiRow(i, item, allowRef, allowDraw, jobConfig, preview);
+            }
+            if (slotCount == 0) {
+                QLabel* empty = new QLabel(T("（空，点下方「添加」写入本分区）"), m_roiListHost);
+                empty->setObjectName(QLatin1String("hint"));
+                m_roiListLay->addWidget(empty);
+            }
+        }
+        m_roiListLay->addStretch(1);
+        m_fillingRoiList = false;
+        return;
     }
-    m_pressSelectedRow = -1;
-    if (m_roiTable->selectionModel()) {
-        m_roiTable->selectionModel()->blockSignals(false);
+
+    for (int i = 0; i < static_cast<int>(m_tool->param.roiItems.size()); ++i) {
+        const ToolRoiItem& item = m_tool->param.roiItems[static_cast<size_t>(i)];
+        appendRoiRow(i, item, allowRef, allowDraw, jobConfig, preview);
     }
-    m_roiTable->blockSignals(false);
-    m_fillingRoiTable = false;
+    m_roiListLay->addStretch(1);
+    m_fillingRoiList = false;
+}
+
+void ToolIoPanel::appendRoiRow(int i, const ToolRoiItem& item, bool allowRef, bool allowDraw,
+                               const JobCfg* jobConfig,
+                               const std::vector<HsCommData::HsObject>& preview)
+{
+        const bool isRef = item.kind == RoiItemKind::RefRoi || item.kind == RoiItemKind::RefRegion;
+        QWidget* line = new QWidget(m_roiListHost);
+        line->setObjectName(QLatin1String("toolDebugRoiRow"));
+        line->setProperty("roiRow", i);
+        QHBoxLayout* lay = new QHBoxLayout(line);
+        lay->setContentsMargins(0, 0, 0, 0);
+        lay->setSpacing(4);
+
+        QCheckBox* enable = new QCheckBox(T("使能"), line);
+        enable->setProperty("roiRow", i);
+        enable->setChecked(item.enabled);
+        enable->setEnabled(m_canEdit);
+        connect(enable, SIGNAL(toggled(bool)), this, SLOT(onRoiEnableToggled(bool)));
+        lay->addWidget(enable);
+
+        if (allowDraw && allowRef) {
+            QComboBox* kindBox = new QComboBox(line);
+            kindBox->setProperty("roiRow", i);
+            kindBox->setObjectName(QLatin1String("toolDebugCombo"));
+            kindBox->addItem(T("绘制区域"), static_cast<int>(RoiItemKind::DrawRoi));
+            kindBox->addItem(T("引用区域"), static_cast<int>(RoiItemKind::RefRoi));
+            kindBox->setCurrentIndex(isRef ? 1 : 0);
+            kindBox->setEnabled(m_canEdit);
+            connect(kindBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onRoiKindChanged(int)));
+            lay->addWidget(kindBox);
+        }
+
+        if (isRef) {
+            QComboBox* src = new QComboBox(line);
+            src->setObjectName(QLatin1String("toolDebugCombo"));
+            src->setProperty("roiRow", i);
+            src->addItem(T("未选择"), QString());
+            int pick = 0;
+            if (jobConfig) {
+                for (size_t t = 0; t < jobConfig->tools.size(); ++t) {
+                    const ToolCfg& up = jobConfig->tools[t];
+                    if (up.id == m_tool->id) {
+                        continue;
+                    }
+                    const bool hasRoiOut = toolHasPort(up.type, PortDir::Out, PortData::Roi)
+                        || toolHasPort(up.type, PortDir::Out, PortData::Region);
+                    if (!hasRoiOut) {
+                        continue;
+                    }
+                    src->addItem(qs(up.name), qs(up.id.toString()));
+                    if (up.id == item.refToolId) {
+                        pick = src->count() - 1;
+                    }
+                }
+            }
+            src->setCurrentIndex(pick);
+            src->setEnabled(m_canEdit);
+            connect(src, SIGNAL(currentIndexChanged(int)), this, SLOT(onRoiRefChanged(int)));
+            QSpinBox* which = new QSpinBox(line);
+            which->setProperty("roiRow", i);
+            which->setRange(-1, 64);
+            which->setSpecialValueText(T("全部"));
+            which->setValue(item.refIndex);
+            which->setEnabled(m_canEdit);
+            connect(which, SIGNAL(valueChanged(int)), this, SLOT(onRoiRefIndexChanged(int)));
+            lay->addWidget(src, 1);
+            lay->addWidget(which);
+        } else {
+            HsCommData::HsObject shape = item.shape;
+            if (i < static_cast<int>(preview.size()) && preview[static_cast<size_t>(i)].isInitialized()) {
+                shape = preview[static_cast<size_t>(i)];
+            }
+            QString summary = QString::fromUtf8("ROI_%1  ").arg(i + 1);
+            if (shape.isInitialized() && !shape.isEmpty()) {
+                summary += qs(formatRoiDetail(shape));
+            } else {
+                summary += T("未绘制");
+            }
+            QPushButton* pick = new QPushButton(summary, line);
+            pick->setFlat(true);
+            pick->setProperty("roiRow", i);
+            pick->setCursor(Qt::PointingHandCursor);
+            connect(pick, SIGNAL(clicked()), this, SLOT(onSelectRoiRow()));
+            QPushButton* draw = new QPushButton(T("绘制"), line);
+            draw->setProperty("roiRow", i);
+            draw->setEnabled(m_canEdit);
+            connect(draw, SIGNAL(clicked()), this, SLOT(onDrawRowClicked()));
+            lay->addWidget(pick, 1);
+            lay->addWidget(draw);
+        }
+
+        QToolButton* del = new QToolButton(line);
+        del->setObjectName(QLatin1String("toolDebugRoiDel"));
+        del->setText(QString::fromUtf8("×"));
+        del->setProperty("roiRow", i);
+        del->setAutoRaise(true);
+        del->setEnabled(m_canEdit);
+        connect(del, SIGNAL(clicked()), this, SLOT(onDeleteRowClicked()));
+        lay->addWidget(del);
+        m_roiListLay->addWidget(line);
 }
 
 // 在 ROI 旁标注序号和几何；onlyIndex >= 0 时只标这一条
@@ -875,12 +906,15 @@ void overlayRoiDetails(HsCtrl::HsImageWindow* view, const ToolCfg* tool, int onl
     if (!showLabels || !tool || !tool->usesRoi()) {
         return;
     }
-    const std::vector<HsCommData::HsObject> rs = tool->effectiveRois();
+    const std::vector<HsCommData::HsObject> rs = tool->displayRois(nullptr);
     for (int i = 0; i < static_cast<int>(rs.size()); ++i) {
         if (onlyIndex >= 0 && i != onlyIndex) {
             continue;
         }
         const HsCommData::HsObject& r = rs[static_cast<size_t>(i)];
+        if (!r.isInitialized() || r.isEmpty()) {
+            continue;
+        }
         double ax = 0;
         double ay = 0;
         roiLabelAnchor(r, &ax, &ay);

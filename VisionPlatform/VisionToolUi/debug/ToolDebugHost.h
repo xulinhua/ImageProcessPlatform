@@ -1,6 +1,6 @@
 /**
  * @file ToolDebugHost.h
- * @brief 工具详细调试窗：图像、输入、ROI、参数四宫格，在 draft 上编辑与试跑
+ * @brief 工具详细调试窗：左参数（输入/ROI/参数）右图像，在 draft 上编辑与试跑
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -50,7 +50,7 @@ struct ToolOut;
 
 /**
  * @class ToolDebugHost
- * @brief 详细调试：四宫格（图像/输入/ROI/参数）+ 底栏，draft 编辑
+ * @brief 详细调试：左输入/ROI/参数、右图像 + 底栏，draft 编辑
  */
 class VISION_TOOLUI_API ToolDebugHost : public QDialog {
     Q_OBJECT
@@ -146,6 +146,10 @@ private slots:
     void onInputLinkChanged(int portData, const QString& fromId, const QString& fromPort);
     /** @brief 点「新增 ROI」进入绘制 */
     void onAddRoi();
+    /** @brief 行内「绘制」：选中该 roiItems 并进入绘制 */
+    void onDrawRoiRow(int index);
+    /** @brief ROI 引用/种类就地修改后刷新图 */
+    void onRoiItemsEdited();
     /** @brief 图上选中 ROI 变化，同步表格 */
     void onDrawingSelected(const HsCommData::Graphic& g);
 
@@ -204,7 +208,8 @@ private:
      * @brief 一笔 ROI 撤销记录
      */
     struct RoiSnapshot {
-        std::vector<HsCommData::HsObject> rois; ///< ROI 列表快照
+        std::vector<HsCommData::HsObject> rois; ///< 绘制几何快照
+        std::vector<ToolRoiItem> roiItems; ///< 完整 ROI 项（含引用）
         std::vector<HsCommData::Style> drawStyles; ///< 小窗打开时该条的画笔
         std::vector<char> drawStyleOn; ///< 1 表示该条记住了画笔
     };
