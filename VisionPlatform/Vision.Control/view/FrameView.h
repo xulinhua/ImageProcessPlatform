@@ -55,6 +55,8 @@ public:
 
     /** @brief tone 为 blue 或 orange，text 为空时不显示 */
     void setNotice(const QString& text, const char* tone);
+    /** @brief 在画面上叠加水印文字 */
+    void setWatermark(bool on, const QString& text);
 
     /** @brief 只看时双击回调 */
     void setToggle(const std::function<void()>& toggle);
@@ -139,6 +141,8 @@ private:
     uint16_t m_lastY;                               ///< 最后一次发出的鼠标纵坐标（画面像素）
     std::function<void(const InputMsg&)> m_sender;  ///< 输入发送回调，可空
     std::function<void()> m_toggle;                 ///< 只看时双击回调（切全屏），可空
+    bool m_watermarkOn;                             ///< 是否绘制水印
+    QString m_watermarkText;                        ///< 水印文字
 };
 
 }

@@ -14,8 +14,10 @@
 #include <windows.h>
 
 #include "LinkDial.h"
+#include "RemoteBeacon.h"
 #include "RemoteTcp.h"
 
+#include <algorithm>
 #include <cstring>
 
 #pragma comment(lib, "ws2_32.lib")
@@ -116,22 +118,22 @@ bool LinkDial::exchange(uintptr_t sock, const std::string& line, std::string* re
     return got.find("GO") != std::string::npos;
 }
 
-bool LinkDial::reach(RemoteTcpServer* server, const std::string& address, int directPort,
-    const std::string& relayHost, int relayPort, const std::string& token,
-    const std::string& deviceId, std::string* err) const
+bool LinkDial::tryDirect(RemoteTcpServer* server, const std::string& address, int directPort, std::string* err) const
 {
-    if (!server) {
+    if (!server || address.empty() || directPort <= 0) {
         return false;
     }
-    if (!address.empty() && directPort > 0) {
-        const uintptr_t sock = openTcp(address, directPort, 2000, err);
-        if (sock != 0) {
-            if (server->adopt(sock, address, err)) {
-                return true;
-            }
-        }
+    const uintptr_t sock = openTcp(address, directPort, 2000, err);
+    if (sock == 0) {
+        return false;
     }
-    if (relayHost.empty() || deviceId.empty()) {
+    return server->adopt(sock, address, err);
+}
+
+bool LinkDial::tryRelay(RemoteTcpServer* server, const std::string& relayHost, int relayPort, const std::string& token,
+    const std::string& deviceId, std::string* err) const
+{
+    if (!server || relayHost.empty() || deviceId.empty()) {
         return false;
     }
     const uintptr_t sock = openTcp(relayHost, relayPort > 0 ? relayPort : 19200, 3000, err);
@@ -153,6 +155,95 @@ bool LinkDial::reach(RemoteTcpServer* server, const std::string& address, int di
         return false;
     }
     return server->adopt(sock, relayHost, err);
+}
+
+bool LinkDial::reach(RemoteTcpServer* server, const std::string& address, int directPort,
+    const std::string& relayHost, int relayPort, const std::string& token,
+    const std::string& deviceId, std::string* err) const
+{
+    const std::vector<std::string> order;
+    return reachOrdered(server, address, directPort, relayHost, relayPort, token, deviceId, order,
+        !relayHost.empty(), err);
+}
+
+bool LinkDial::reachOrdered(RemoteTcpServer* server, const std::string& address, int directPort,
+    const std::string& relayHost, int relayPort, const std::string& token,
+    const std::string& deviceId, const std::vector<std::string>& order, bool relayOn,
+    std::string* err) const
+{
+    if (!server) {
+        return false;
+    }
+    std::vector<std::string> steps = order;
+    if (steps.empty()) {
+        steps.push_back("direct");
+        steps.push_back("relay");
+    }
+    for (size_t i = 0; i < steps.size(); ++i) {
+        if (steps[i] == "reverse") {
+            continue;
+        }
+        if (steps[i] == "direct") {
+            if (tryDirect(server, address, directPort, err)) {
+                return true;
+            }
+        } else if (steps[i] == "udp") {
+            if (tryUdpPunch(server, deviceId, directPort, err)) {
+                return true;
+            }
+        } else if (steps[i] == "relay" && relayOn) {
+            if (tryRelay(server, relayHost, relayPort, token, deviceId, err)) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+bool LinkDial::tryUdpPunch(RemoteTcpServer* server, const std::string& deviceId, int directPort, std::string* err) const
+{
+    if (deviceId.empty()) {
+        if (err) {
+            *err = "UDP 发现需要设备 ID";
+        }
+        return false;
+    }
+    std::string want = deviceId;
+    want.erase(std::remove(want.begin(), want.end(), ' '), want.end());
+    const int port = directPort > 0 ? directPort : 19102;
+    // 多扫一轮：先短超时再稍长，合并应答里同 ID 的地址（环回优先换成局域网）
+    std::vector<std::string> addrs;
+    for (int pass = 0; pass < 2; ++pass) {
+        const std::vector<HelloMsg> found = RemoteBeacon::scan(pass == 0 ? 500 : 900);
+        for (size_t i = 0; i < found.size(); ++i) {
+            std::string id = found[i].deviceId;
+            id.erase(std::remove(id.begin(), id.end(), ' '), id.end());
+            if (id != want || found[i].address.empty()) {
+                continue;
+            }
+            if (std::find(addrs.begin(), addrs.end(), found[i].address) == addrs.end()) {
+                addrs.push_back(found[i].address);
+            }
+        }
+    }
+    // 非环回优先
+    for (size_t i = 0; i < addrs.size(); ++i) {
+        if (addrs[i] == "127.0.0.1" || addrs[i] == "::1") {
+            continue;
+        }
+        if (tryDirect(server, addrs[i], port, err)) {
+            return true;
+        }
+    }
+    for (size_t i = 0; i < addrs.size(); ++i) {
+        if (tryDirect(server, addrs[i], port, err)) {
+            return true;
+        }
+    }
+    if (err) {
+        *err = "UDP 未发现该设备或直连失败";
+    }
+    return false;
 }
 
 }

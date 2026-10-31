@@ -15,6 +15,7 @@
 #define WIN32_LEAN_AND_MEAN
 #endif
 #include <windows.h>
+#include <tlhelp32.h>
 
 #include <cstring>
 
@@ -88,9 +89,12 @@ bool AgentSession::pathAllowed(const std::wstring& path) const
         return false;
     }
     std::lock_guard<std::mutex> lock(m_mu);
-    const std::vector<std::wstring> roots = m_roots.empty() ? std::vector<std::wstring>(1, L"D:\\") : m_roots;
-    for (size_t i = 0; i < roots.size(); ++i) {
-        std::wstring root = roots[i];
+    // 未配置根目录：任意本机盘符路径都允许
+    if (m_roots.empty()) {
+        return full[2] == L'\\' || full.size() == 2;
+    }
+    for (size_t i = 0; i < m_roots.size(); ++i) {
+        std::wstring root = m_roots[i];
         if (!root.empty() && root.back() != L'\\') {
             root += L'\\';
         }
@@ -142,7 +146,19 @@ std::string AgentSession::listDirectory(const std::wstring& path) const
             roots = m_roots;
         }
         if (roots.empty()) {
-            roots.push_back(L"D:\\");
+            // 空=全部盘符（固定/移动/网络等，跳过光驱无介质也可列根）
+            const DWORD mask = GetLogicalDrives();
+            for (int i = 0; i < 26; ++i) {
+                if ((mask & (1u << i)) == 0) {
+                    continue;
+                }
+                wchar_t drive[4] = { static_cast<wchar_t>(L'A' + i), L':', L'\\', L'\0' };
+                const UINT type = GetDriveTypeW(drive);
+                if (type == DRIVE_NO_ROOT_DIR || type == DRIVE_UNKNOWN) {
+                    continue;
+                }
+                roots.push_back(drive);
+            }
         }
         for (size_t i = 0; i < roots.size(); ++i) {
             out += "D\t0\t";
@@ -213,10 +229,47 @@ std::string AgentSession::systemText() const
         + std::to_string(mem.ullTotalPhys / (1024 * 1024)) + " MB";
     text += " · C: " + std::to_string(freeBytes.QuadPart / (1024 * 1024)) + "/"
         + std::to_string(totalBytes.QuadPart / (1024 * 1024)) + " MB";
-    std::lock_guard<std::mutex> lock(m_mu);
-    if (!m_stationText.empty()) {
-        text += " · " + m_stationText;
+    {
+        std::lock_guard<std::mutex> lock(m_mu);
+        if (!m_stationText.empty()) {
+            text += " · " + m_stationText;
+        }
     }
+    text += "\n进程:";
+    const std::string list = processListText();
+    if (list.size() > 10) {
+        text += list.substr(10);
+    }
+    return text;
+}
+
+std::string AgentSession::processListText() const
+{
+    std::string text = "PROCESSES\n";
+    HANDLE snap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+    if (snap == INVALID_HANDLE_VALUE) {
+        return text;
+    }
+    PROCESSENTRY32W pe;
+    pe.dwSize = sizeof(pe);
+    int n = 0;
+    if (Process32FirstW(snap, &pe)) {
+        do {
+            if (pe.th32ProcessID == 0) {
+                continue;
+            }
+            char name[260];
+            WideCharToMultiByte(CP_UTF8, 0, pe.szExeFile, -1, name, static_cast<int>(sizeof(name)), 0, 0);
+            text += name;
+            text += " (";
+            text += std::to_string(pe.th32ProcessID);
+            text += ")\n";
+            if (++n >= 80) {
+                break;
+            }
+        } while (Process32NextW(snap, &pe));
+    }
+    CloseHandle(snap);
     return text;
 }
 

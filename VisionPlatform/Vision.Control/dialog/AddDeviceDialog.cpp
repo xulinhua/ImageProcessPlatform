@@ -7,6 +7,7 @@
  */
 
 #include "AddDeviceDialog.h"
+#include "ControlConfig.h"
 #include "DeviceStore.h"
 #include "RemoteTheme.h"
 #include "RemoteWidgets.h"
@@ -28,24 +29,25 @@
 
 namespace Vision {
 
-AddDeviceDialog::AddDeviceDialog(const DeviceStore* store, const std::function<std::vector<HelloMsg>()>& scanner,
-    const QString& group, QWidget* parent)
+AddDeviceDialog::AddDeviceDialog(const DeviceStore* store, const ControlConfig* config,
+    const std::function<std::vector<HelloMsg>()>& scanner, const QString& group, QWidget* parent)
     : QDialog(parent)
     , m_store(store)
+    , m_config(config)
     , m_scanner(scanner)
+    , m_deviceId(0)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     setWindowTitle(QString::fromUtf8("添加设备"));
     setWindowIcon(RemoteTheme::icon("plus", QColor(RemoteTheme::kPrimary), 16));
     resize(700, 520);
 
-    // 页签与三页；按设备 ID 需要中继，先禁用
+    // 页签：局域网扫描 / 按 IP / 按设备 ID（中继 OPEN）
     m_tabs = new QTabBar(this);
     m_tabs->addTab(QString::fromUtf8("局域网扫描"));
     m_tabs->addTab(QString::fromUtf8("按 IP 地址"));
     m_tabs->addTab(QString::fromUtf8("按设备 ID"));
-    m_tabs->setTabEnabled(2, false);
-    m_tabs->setTabToolTip(2, QString::fromUtf8("按设备 ID 经中继添加在第五期提供"));
+    m_tabs->setTabToolTip(2, QString::fromUtf8("通过中继 OPEN 命令连接，需在设置里启用中继"));
     m_tabs->setExpanding(false);
     m_tabs->setDrawBase(false);
     QWidget* tabLine = new QWidget(this);
@@ -62,7 +64,7 @@ AddDeviceDialog::AddDeviceDialog(const DeviceStore* store, const std::function<s
     pages->addWidget(buildAddress());
     pages->addWidget(buildId());
 
-    // 分组与认证行；认证方式未实现，只占位
+    // 分组与认证行
     QWidget* groupBar = new QWidget(this);
     groupBar->setObjectName("white");
     groupBar->setAttribute(Qt::WA_StyledBackground);
@@ -236,6 +238,27 @@ QWidget* AddDeviceDialog::buildId()
     QWidget* body = new QWidget(this);
     body->setObjectName("white");
     body->setAttribute(Qt::WA_StyledBackground);
+    QGridLayout* grid = new QGridLayout(body);
+    grid->setContentsMargins(22, 18, 22, 18);
+    grid->setHorizontalSpacing(12);
+    grid->setVerticalSpacing(14);
+    m_deviceId = new QLineEdit(body);
+    m_deviceId->setPlaceholderText(QString::fromUtf8("例如 123 456 789"));
+    QLabel* idLabel = new QLabel(QString::fromUtf8("设备 ID"), body);
+    idLabel->setProperty("role", "key");
+    const QString relay = m_config && m_config->relayOn && !m_config->relayHost.isEmpty()
+        ? QString::fromUtf8("中继 %1:%2").arg(m_config->relayHost).arg(m_config->relayPort)
+        : QString::fromUtf8("请先在设置 → 网络里启用中继");
+    QLabel* note = new QLabel(QString::fromUtf8("登记后打开会话时会按连接顺序尝试直连与中继 OPEN。") + QString::fromUtf8("\n") + relay, body);
+    note->setProperty("role", "small");
+    note->setWordWrap(true);
+    grid->addWidget(idLabel, 0, 0, Qt::AlignRight | Qt::AlignVCenter);
+    grid->addWidget(m_deviceId, 0, 1);
+    grid->addWidget(note, 1, 1);
+    grid->setColumnMinimumWidth(0, 84);
+    grid->setColumnStretch(1, 1);
+    grid->setRowStretch(2, 1);
+    QObject::connect(m_deviceId, &QLineEdit::textChanged, [this](const QString&) { syncFoot(); });
     return body;
 }
 
@@ -309,6 +332,20 @@ void AddDeviceDialog::fill()
 std::vector<AddDeviceDialog::Pick> AddDeviceDialog::picks() const
 {
     std::vector<Pick> out;
+    if (m_tabs->currentIndex() == 2) {
+        const QString id = m_deviceId ? m_deviceId->text().trimmed() : QString();
+        if (id.isEmpty()) {
+            return out;
+        }
+        Pick pick;
+        pick.deviceId = id;
+        pick.key = id;
+        pick.address = m_config && m_config->relayOn ? m_config->relayHost : QString();
+        if (!m_store->find(pick.key)) {
+            out.push_back(pick);
+        }
+        return out;
+    }
     if (m_tabs->currentIndex() == 1) {
         const QString ip = m_ip->text().trimmed();
         if (QRegExp("^(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})$").exactMatch(ip)) {
@@ -352,6 +389,9 @@ void AddDeviceDialog::syncFoot()
     const size_t n = picks().size();
     if (m_tabs->currentIndex() == 1) {
         m_count->setText(n == 0 ? QString::fromUtf8("填写有效且未添加过的 IPv4 地址") : QString());
+        m_ok->setText(QString::fromUtf8("添加"));
+    } else if (m_tabs->currentIndex() == 2) {
+        m_count->setText(n == 0 ? QString::fromUtf8("填写未添加过的设备 ID") : QString());
         m_ok->setText(QString::fromUtf8("添加"));
     } else {
         m_count->setText(QString::fromUtf8("已选 %1 台").arg(n));

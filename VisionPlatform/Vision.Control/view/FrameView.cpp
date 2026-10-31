@@ -38,6 +38,7 @@ FrameView::FrameView(QWidget* parent)
     , m_buttons(0)
     , m_lastX(0)
     , m_lastY(0)
+    , m_watermarkOn(false)
 {
     setFocusPolicy(Qt::StrongFocus);
     setMouseTracking(true);
@@ -151,6 +152,16 @@ void FrameView::setOperating(bool operating)
     }
 }
 
+void FrameView::setWatermark(bool on, const QString& text)
+{
+    if (m_watermarkOn == on && m_watermarkText == text) {
+        return;
+    }
+    m_watermarkOn = on;
+    m_watermarkText = text;
+    update();
+}
+
 void FrameView::setNotice(const QString& text, const char* tone)
 {
     const QColor color = std::strcmp(tone, "orange") == 0 ? QColor(250, 140, 22, 242) : QColor(24, 144, 255, 242);
@@ -225,6 +236,19 @@ void FrameView::paintEvent(QPaintEvent* event)
             painter.setPen(QPen(QColor(RemoteTheme::kPrimary), 2));
             painter.setBrush(Qt::NoBrush);
             painter.drawRect(QRectF(target).adjusted(-1, -1, 1, 1));
+        }
+        if (m_watermarkOn && !m_watermarkText.isEmpty()) {
+            painter.save();
+            painter.setPen(QColor(255, 255, 255, 70));
+            QFont wm = painter.font();
+            wm.setPixelSize(22);
+            wm.setBold(true);
+            painter.setFont(wm);
+            painter.translate(target.center());
+            painter.rotate(-24);
+            painter.drawText(QRect(-target.width(), -target.height() / 2, target.width() * 2, target.height()),
+                Qt::AlignCenter, m_watermarkText);
+            painter.restore();
         }
     } else {
         painter.setPen(QColor("#8C8C8C"));

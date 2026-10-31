@@ -7,6 +7,7 @@
  */
 
 #include "RemoteFiles.h"
+#include "RemotePaths.h"
 
 #include <QCoreApplication>
 #include <QDir>
@@ -15,9 +16,61 @@
 
 namespace Vision {
 
+void RemoteFiles::ensureLayout()
+{
+    RemotePaths::ensureLayout();
+}
+
+QString RemoteFiles::exeDir()
+{
+    return QString::fromStdWString(RemotePaths::exeDirW());
+}
+
+QString RemoteFiles::dataRoot()
+{
+    RemotePaths::ensureLayout();
+    return QString::fromStdWString(RemotePaths::dataRootW());
+}
+
+QString RemoteFiles::configDir()
+{
+    RemotePaths::ensureLayout();
+    return QString::fromStdWString(RemotePaths::configDirW());
+}
+
+QString RemoteFiles::logDir()
+{
+    RemotePaths::ensureLayout();
+    return QString::fromStdWString(RemotePaths::logDirW());
+}
+
+QString RemoteFiles::imageDir()
+{
+    RemotePaths::ensureLayout();
+    return QString::fromStdWString(RemotePaths::imageDirW());
+}
+
+QString RemoteFiles::videoDir()
+{
+    RemotePaths::ensureLayout();
+    return QString::fromStdWString(RemotePaths::videoDirW());
+}
+
+QString RemoteFiles::configFile(const QString& name)
+{
+    RemotePaths::ensureLayout();
+    return QDir(configDir()).filePath(name);
+}
+
 QString RemoteFiles::exeFile(const QString& name)
 {
-    return QDir(QCoreApplication::applicationDirPath()).filePath(name);
+    return configFile(name);
+}
+
+QString RemoteFiles::logFile(const QString& name)
+{
+    RemotePaths::ensureLayout();
+    return QDir(logDir()).filePath(name);
 }
 
 QString RemoteFiles::appDataDir(const QString& app)

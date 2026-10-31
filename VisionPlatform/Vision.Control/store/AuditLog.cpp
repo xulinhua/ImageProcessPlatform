@@ -18,7 +18,7 @@
 namespace Vision {
 
 AuditLog::AuditLog()
-    : m_dir(QDir(RemoteFiles::appDataDir("RemoteMaster")).filePath("audit"))
+    : m_dir(QDir(RemoteFiles::logDir()).filePath("audit"))
     , m_op(RemoteFiles::userName())
 {
     QDir().mkpath(m_dir);

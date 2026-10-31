@@ -24,7 +24,7 @@ namespace Vision {
  */
 class WallView : public QWidget {
 public:
-    /** @brief 悬停按钮：只看、操作（打开会话并申请）、文件传输（未实现，灰图标）、全屏 */
+    /** @brief 悬停按钮：只看、操作（打开会话并申请）、文件传输、全屏 */
     enum Action { ActView = 0, ActOperate = 1, ActFile = 2, ActFull = 3 };
 
     /** @brief 一个格子的显示内容，key 为空表示空格 */

@@ -471,6 +471,7 @@ CommBytes Messages::packConfig(const ConfigMsg& msg, std::string* err)
     Frame::appendU8(&body, msg.jpegQuality);
     Frame::appendU16(&body, msg.longEdge);
     Frame::appendU8(&body, msg.codec);
+    Frame::appendU16(&body, msg.bitrateKbps);
     return finish(Frame::TypeConfig, Frame::ChControl, body, err);
 }
 
@@ -487,6 +488,7 @@ bool Messages::unpackConfig(const CommBytes& payload, ConfigMsg* msg)
     msg->jpegQuality = 0;
     msg->longEdge = 0;
     msg->codec = 0;
+    msg->bitrateKbps = 0;
     if (off + 1 < payload.size()) {
         if (!Frame::readU16(payload, &off, &msg->maxFps)) {
             return false;
@@ -504,6 +506,11 @@ bool Messages::unpackConfig(const CommBytes& payload, ConfigMsg* msg)
     }
     if (off < payload.size()) {
         if (!Frame::readU8(payload, &off, &msg->codec)) {
+            return false;
+        }
+    }
+    if (off + 1 < payload.size()) {
+        if (!Frame::readU16(payload, &off, &msg->bitrateKbps)) {
             return false;
         }
     }

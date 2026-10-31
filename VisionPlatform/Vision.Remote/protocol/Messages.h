@@ -47,14 +47,16 @@ enum RemotePerm {
     PermFile = 1 << 3,          ///< 文件
     PermPower = 1 << 4,         ///< 电源
     PermPrivacy = 1 << 5,       ///< 隐私屏
-    PermDefaultRequest = PermView | PermOperate
+    PermDefaultRequest = PermView | PermOperate,
+    PermAll = PermView | PermOperate | PermClipboard | PermFile | PermPower | PermPrivacy
 };
 
 /** @brief 认证方式 */
 enum AuthMethod {
     AuthMethodCode = 1,         ///< 一次性验证码
     AuthMethodPassword = 2,     ///< 无人值守密码（挑战应答）
-    AuthMethodTrusted = 3       ///< 信任设备指纹
+    AuthMethodTrusted = 3,      ///< 信任设备指纹
+    AuthMethodHighest = 4       ///< 最高权限：跳过确认与口令，申请满权限
 };
 
 struct HelloMsg {
@@ -83,7 +85,8 @@ struct ConfigMsg {
     uint8_t jpegQuality;    ///< JPEG 质量 1–100；0 表示沿用
     uint16_t longEdge;      ///< 画面长边像素上限；0 表示沿用
     uint8_t codec;          ///< 0 沿用；1 JPEG；2 H.264；3 原图 BGRA
-    ConfigMsg() : share(1), monitor(0), maxFps(0), jpegQuality(0), longEdge(0), codec(0) {}
+    uint16_t bitrateKbps;   ///< H.264 目标码率 kbps；0 表示按画质推算
+    ConfigMsg() : share(1), monitor(0), maxFps(0), jpegQuality(0), longEdge(0), codec(0), bitrateKbps(0) {}
 };
 
 struct HelloAckMsg {
@@ -217,7 +220,8 @@ struct SpecialMsg {
         KindCad = 1,            ///< Ctrl+Alt+Del
         KindWin = 2,
         KindAltTab = 3,
-        KindPrintScreen = 4
+        KindPrintScreen = 4,
+        KindProcessList = 5     ///< 请求被控端进程列表（回 SysInfo，前缀 PROCESSES\n）
     };
     uint8_t kind;
     SpecialMsg() : kind(KindCad) {}

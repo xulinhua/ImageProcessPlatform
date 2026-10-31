@@ -65,19 +65,29 @@ bool launchAgentInSession(DWORD sessionId)
         CloseHandle(g_agentProcess);
         g_agentProcess = nullptr;
     }
-    HANDLE userToken = nullptr;
-    if (!WTSQueryUserToken(sessionId, &userToken)) {
-        return false;
-    }
     HANDLE primary = nullptr;
-    if (!DuplicateTokenEx(userToken, MAXIMUM_ALLOWED, nullptr, SecurityIdentification, TokenPrimary, &primary)) {
+    HANDLE userToken = nullptr;
+    if (WTSQueryUserToken(sessionId, &userToken)) {
+        DuplicateTokenEx(userToken, MAXIMUM_ALLOWED, nullptr, SecurityIdentification, TokenPrimary, &primary);
         CloseHandle(userToken);
-        return false;
     }
-    CloseHandle(userToken);
+    // 登录界面 / 未登录：没有用户令牌时，把当前进程（LocalSystem）令牌绑到活动会话再拉起代理
+    if (!primary) {
+        HANDLE self = nullptr;
+        if (!OpenProcessToken(GetCurrentProcess(), TOKEN_DUPLICATE | TOKEN_QUERY | TOKEN_ADJUST_DEFAULT | TOKEN_ASSIGN_PRIMARY, &self)) {
+            return false;
+        }
+        if (!DuplicateTokenEx(self, MAXIMUM_ALLOWED, nullptr, SecurityIdentification, TokenPrimary, &primary)) {
+            CloseHandle(self);
+            return false;
+        }
+        CloseHandle(self);
+        if (!SetTokenInformation(primary, TokenSessionId, &sessionId, sizeof(sessionId))) {
+            CloseHandle(primary);
+            return false;
+        }
+    }
 
-    // 提升为 SYSTEM 关联用户会话的令牌较复杂；此处用用户令牌启动代理（可抓本会话桌面）
-    // CAD 仍由服务进程经管道代发
     wchar_t cmd[1024];
     swprintf_s(cmd, L"\"%s\" --agent", exePath().c_str());
     STARTUPINFOW si = {};
@@ -153,7 +163,8 @@ DWORD WINAPI serviceCtrl(DWORD ctrl, DWORD eventType, LPVOID, LPVOID)
         return NO_ERROR;
     }
     if (ctrl == SERVICE_CONTROL_SESSIONCHANGE) {
-        if (eventType == WTS_CONSOLE_CONNECT || eventType == WTS_SESSION_LOGON) {
+        if (eventType == WTS_CONSOLE_CONNECT || eventType == WTS_SESSION_LOGON
+            || eventType == WTS_SESSION_UNLOCK) {
             launchAgentInSession(activeSession());
         } else if (eventType == WTS_CONSOLE_DISCONNECT || eventType == WTS_SESSION_LOGOFF) {
             stopAgent();

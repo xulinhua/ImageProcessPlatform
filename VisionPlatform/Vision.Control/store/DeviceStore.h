@@ -1,6 +1,6 @@
 /**
  * @file DeviceStore.h
- * @brief 中控台的设备列表：分组、备注、标签、最近连接。存 %APPDATA%\RemoteMaster\devices.json
+ * @brief 中控台的设备列表：分组、备注、标签、最近连接。存 exe旁\\exe名\\config\\devices.json
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -36,6 +36,12 @@ public:
         QString system;         ///< 被控端上报的系统描述
         QDateTime lastSeen;     ///< 最近上线时间，touch() 时刷新
         QDateTime lastOpened;   ///< 最近打开会话窗口的时间，可无效
+        int linkMode;           ///< 0 自动（跟全局顺序），1 仅直连，2 仅中继，3 反连优先
+        int quality;            ///< 打开会话默认画质：-1 跟全局，0–3 流畅/均衡/清晰/自定义
+        int highestPrivilege;   ///< 最高权限：-1 跟全局/账户，0 关，1 开
+        QString password;       ///< 无人值守密码（本机保存，可空）
+        bool rememberPassword;  ///< 是否持久化 password
+        Device() : linkMode(0), quality(-1), highestPrivilege(-1), rememberPassword(false) {}
     };
 
     /** @brief 定位 devices.json，不读盘 */

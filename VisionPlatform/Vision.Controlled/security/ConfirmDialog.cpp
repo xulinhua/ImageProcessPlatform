@@ -7,6 +7,7 @@
  */
 
 #include "ConfirmDialog.h"
+#include "Messages.h"
 #include "RemoteTheme.h"
 
 #include <QApplication>
@@ -32,6 +33,9 @@ ConfirmDialog::ConfirmDialog(QWidget* parent)
     , m_deadline(0)
     , m_total(30)
 {
+    for (int i = 0; i < 6; ++i) {
+        m_perms[i] = 0;
+    }
     // 透明外层留 16 像素边距给阴影，内容画在白色圆角卡片 box 里
     setAttribute(Qt::WA_TranslucentBackground);
     setFixedWidth(420 + 32);
@@ -67,7 +71,6 @@ ConfirmDialog::ConfirmDialog(QWidget* parent)
     head->addWidget(icon, 0, Qt::AlignTop);
     head->addLayout(headText, 1);
 
-    // 权限清单只作展示：这一期固定为观看 + 操作，其余为后续分期，全部不可改
     QLabel* allow = new QLabel(QString::fromUtf8("允许对方："), box);
     allow->setProperty("role", "small");
     QFrame* perm = new QFrame(box);
@@ -77,12 +80,16 @@ ConfirmDialog::ConfirmDialog(QWidget* parent)
     permGrid->setHorizontalSpacing(8);
     permGrid->setVerticalSpacing(8);
     const char* const names[] = { "观看", "操作", "剪贴板", "文件", "电源", "隐私屏" };
+    const uint32_t bits[] = { PermView, PermOperate, PermClipboard, PermFile, PermPower, PermPrivacy };
     for (int i = 0; i < 6; ++i) {
-        QCheckBox* check = new QCheckBox(QString::fromUtf8(names[i]), perm);
-        check->setChecked(i < 2);
-        check->setEnabled(false);
-        check->setToolTip(i < 2 ? QString::fromUtf8("本次申请的权限") : QString::fromUtf8("后续分期提供"));
-        permGrid->addWidget(check, i / 3, i % 3);
+        m_perms[i] = new QCheckBox(QString::fromUtf8(names[i]), perm);
+        m_perms[i]->setProperty("permBit", static_cast<int>(bits[i]));
+        m_perms[i]->setChecked(i < 2);
+        if (i == 0) {
+            m_perms[i]->setEnabled(false);
+            m_perms[i]->setToolTip(QString::fromUtf8("远程观看始终包含"));
+        }
+        permGrid->addWidget(m_perms[i], i / 3, i % 3);
     }
     m_trust = new QCheckBox(QString::fromUtf8("以后信任这个中控台，不再询问"), box);
     m_trust->setToolTip(QString::fromUtf8("按中控台证书指纹识别；指纹未就绪时退回显示名"));
@@ -137,17 +144,37 @@ uint64_t ConfirmDialog::seq() const
     return m_seq;
 }
 
-void ConfirmDialog::setOnAnswer(const std::function<void(uint64_t, bool, bool)>& answer)
+void ConfirmDialog::setOnAnswer(const std::function<void(uint64_t, bool, bool, uint32_t)>& answer)
 {
     m_answer = answer;
 }
 
-void ConfirmDialog::showRequest(uint64_t seq, const QString& controller, const QString& host, int secondsLeft, int totalSeconds)
+uint32_t ConfirmDialog::grantedPerms() const
+{
+    uint32_t mask = PermView;
+    for (int i = 1; i < 6; ++i) {
+        if (m_perms[i] && m_perms[i]->isChecked()) {
+            mask |= static_cast<uint32_t>(m_perms[i]->property("permBit").toInt());
+        }
+    }
+    return mask;
+}
+
+void ConfirmDialog::showRequest(uint64_t seq, const QString& controller, const QString& host, int secondsLeft, int totalSeconds,
+    uint32_t requestPerms)
 {
     m_seq = seq;
     m_total = totalSeconds > 0 ? totalSeconds : 30;
     m_deadline = QDateTime::currentMSecsSinceEpoch() + static_cast<qint64>(secondsLeft) * 1000;
     m_trust->setChecked(false);
+    const uint32_t want = requestPerms ? requestPerms : PermDefaultRequest;
+    for (int i = 0; i < 6; ++i) {
+        if (!m_perms[i]) {
+            continue;
+        }
+        const uint32_t bit = static_cast<uint32_t>(m_perms[i]->property("permBit").toInt());
+        m_perms[i]->setChecked((want & bit) != 0 || bit == PermView);
+    }
     const QString who = controller.isEmpty() ? QString::fromUtf8("未具名中控台") : controller;
     m_who->setText(QString::fromUtf8("<b style='color:#262626'>%1</b>（<span style='font-family:Consolas'>%2</span>）请求操作本机<br>"
                                      "认证已启用 · 反连 · TLS")
@@ -178,7 +205,7 @@ void ConfirmDialog::answer(bool allow)
     m_timer->stop();
     hide();
     if (m_answer) {
-        m_answer(m_seq, allow, allow && m_trust->isChecked());
+        m_answer(m_seq, allow, allow && m_trust->isChecked(), allow ? grantedPerms() : PermView);
     }
 }
 

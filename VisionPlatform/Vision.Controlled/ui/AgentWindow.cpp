@@ -15,6 +15,7 @@
 #include "ProcessCombo.h"
 #include "RemoteCrash.h"
 #include "RemoteFiles.h"
+#include "RemoteLog.h"
 #include "RemoteLogWindow.h"
 #include "RemoteTheme.h"
 #include "RemoteWidgets.h"
@@ -28,10 +29,13 @@
 #include <QCloseEvent>
 #include <QComboBox>
 #include <QDialog>
+#include <QDir>
 #include <QFile>
+#include <QFileDialog>
 #include <QFrame>
 #include <QGridLayout>
 #include <QHBoxLayout>
+#include <QInputDialog>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -98,9 +102,17 @@ AgentWindow::AgentWindow(QWidget* parent)
     , m_relayPort(0)
     , m_relayKey(0)
     , m_production(0)
+    , m_allowHighest(0)
+    , m_logDisk(0)
+    , m_logPictureDisk(0)
+    , m_logRotate(0)
+    , m_logKeepDays(0)
     , m_fpLabel(0)
     , m_settingsBody(0)
     , m_logWin(0)
+    , m_injectPost(0)
+    , m_injectFront(0)
+    , m_extraHosts(0)
 {
     // 图标优先用 exe 资源，取不到时用内置线条图标
     setWindowTitle(QString::fromUtf8("被控端 — %1").arg(RemoteFiles::computerName()));
@@ -177,7 +189,7 @@ AgentWindow::AgentWindow(QWidget* parent)
     }
 
     // 确认框勾了“以后信任”时，优先存中控台证书指纹，没有指纹再退回显示名
-    m_confirmDialog->setOnAnswer([this](uint64_t seq, bool allow, bool trust) {
+    m_confirmDialog->setOnAnswer([this](uint64_t seq, bool allow, bool trust, uint32_t perms) {
         if (trust) {
             QString key = QString::fromUtf8(m_session.peerFingerprint().c_str());
             if (key.isEmpty()) {
@@ -188,10 +200,18 @@ AgentWindow::AgentWindow(QWidget* parent)
                 applyPolicy();
             }
         }
-        m_session.answerAuth(seq, allow);
+        m_session.answerAuth(seq, allow, perms);
     });
     m_bar->setOnPause([this]() { m_session.pauseOperate(); });
     m_bar->setOnDisconnect([this]() { m_session.disconnect(); });
+    m_bar->setOnChat([this]() {
+        bool ok = false;
+        const QString text = QInputDialog::getText(this, QString::fromUtf8("聊天"),
+            QString::fromUtf8("发给中控台："), QLineEdit::Normal, QString(), &ok);
+        if (ok && !text.trimmed().isEmpty()) {
+            m_session.sendChat(text.trimmed().toUtf8().constData());
+        }
+    });
     QObject::connect(save, &QPushButton::clicked, [this]() {
         RemoteCrash::run("AgentWindow.apply", [this]() { apply(); });
     });
@@ -294,7 +314,7 @@ QMenuBar* AgentWindow::buildMenus()
     QAction* about = help->addAction(RemoteTheme::icon("info"), QString::fromUtf8("关于"));
     QObject::connect(about, &QAction::triggered, [this]() {
         QMessageBox::about(this, QString::fromUtf8("关于"), QString::fromUtf8(
-            "RemoteClient · 被控端\n本机主动连到中控台（反连），画面 JPEG，TLS（Schannel）。\n"
+            "RemoteClient · 被控端\n反连 / 直连 / 中继，TLS（Schannel），JPEG·H.264·原图，文件与聊天。\n"
             "现场动鼠标键盘时远程输入自动暂停。可安装服务以支持登录界面与 Ctrl+Alt+Del。"));
     });
     return bar;
@@ -463,7 +483,7 @@ QFrame* AgentWindow::buildSessions()
     relayIcon->setPixmap(RemoteTheme::pixmap("server", QColor("#595959"), 12, devicePixelRatioF()));
     QLabel* relay = new QLabel(QString::fromUtf8("中继 未启用"), frame);
     relay->setStyleSheet("font-size:12px;color:#595959;");
-    relay->setToolTip(QString::fromUtf8("中继在第五期"));
+    relay->setToolTip(QString::fromUtf8("在设置里启用中继后，反连失败时会尝试经中继注册"));
     QHBoxLayout* svc = new QHBoxLayout();
     svc->setSpacing(6);
     svc->addWidget(m_svcDot);
@@ -531,7 +551,7 @@ QFrame* AgentWindow::buildShare()
     QVBoxLayout* col = 0;
     QFrame* frame = card(QString::fromUtf8("共享范围"), "monitor", &col);
 
-    // 共享方式与显示器：每块显示器一项，末尾“全部显示器”禁用（后续分期）
+    // 共享方式与显示器：每块一项，末尾「全部显示器」= monitor 255（虚拟桌面拼接）
     m_desktop = new QRadioButton(QString::fromUtf8("整个桌面"), frame);
     m_window = new QRadioButton(QString::fromUtf8("进程画面"), frame);
     QButtonGroup* kinds = new QButtonGroup(frame);
@@ -547,21 +567,20 @@ QFrame* AgentWindow::buildShare()
     QStandardItemModel* model = qobject_cast<QStandardItemModel*>(m_monitor->model());
     if (model) {
         QStandardItem* all = model->item(m_monitor->count() - 1);
-        all->setEnabled(false);
-        all->setToolTip(QString::fromUtf8("多屏合并在第三期"));
+        all->setToolTip(QString::fromUtf8("虚拟桌面合并抓屏（monitor=255）"));
     }
-    // 进程画面的条件与注入方式；“前台注入”尚未提供，固定为窗口消息
+    // 进程画面的条件与注入方式（窗口消息 / 前台 SendInput）
     m_process = new ProcessCombo(frame);
     m_title = new QLineEdit(frame);
     m_title->setPlaceholderText(QString::fromUtf8("留空则匹配该进程的主窗口"));
-    QRadioButton* post = new QRadioButton(QString::fromUtf8("窗口消息"), frame);
-    QRadioButton* front = new QRadioButton(QString::fromUtf8("前台注入"), frame);
+    m_injectPost = new QRadioButton(QString::fromUtf8("窗口消息"), frame);
+    m_injectFront = new QRadioButton(QString::fromUtf8("前台注入"), frame);
     QButtonGroup* inject = new QButtonGroup(frame);
-    inject->addButton(post);
-    inject->addButton(front);
-    post->setChecked(true);
-    post->setToolTip(QString::fromUtf8("进程画面用 PostMessage 投递，不抢前台；整个桌面用 SendInput"));
-    RemoteTheme::markLater(front, QString::fromUtf8("前台注入在第三期"));
+    inject->addButton(m_injectPost);
+    inject->addButton(m_injectFront);
+    m_injectPost->setChecked(true);
+    m_injectPost->setToolTip(QString::fromUtf8("进程画面用 PostMessage 投递，不抢前台；整个桌面用 SendInput"));
+    m_injectFront->setToolTip(QString::fromUtf8("SetForegroundWindow 后用 SendInput，坐标仍按画面映射"));
 
     QGridLayout* grid = new QGridLayout();
     grid->setHorizontalSpacing(10);
@@ -569,7 +588,7 @@ QFrame* AgentWindow::buildShare()
     grid->addWidget(line(m_desktop, m_monitor), 0, 0, 1, 2);
     grid->addWidget(m_window, 1, 0, 1, 2);
     const char* const keys[] = { "进程", "标题", "注入" };
-    QWidget* values[] = { m_process, m_title, line(post, front) };
+    QWidget* values[] = { m_process, m_title, line(m_injectPost, m_injectFront) };
     for (int i = 0; i < 3; ++i) {
         QLabel* key = new QLabel(QString::fromUtf8(keys[i]), frame);
         key->setProperty("role", "key");
@@ -644,10 +663,15 @@ QWidget* AgentWindow::buildConnectionPage(QWidget* parent)
     m_port = new QSpinBox(page);
     m_port->setRange(1, 65535);
     m_port->setFixedWidth(90);
-    QPushButton* more = RemoteTheme::button(QString::fromUtf8("再加一台"), "plus", 0, page);
-    more->setProperty("size", "sm");
-    RemoteTheme::markLater(more, QString::fromUtf8("同时反连多台中控台在第五期"));
-    col->addWidget(line(reverse, m_host, m_port, more));
+    col->addWidget(line(reverse, m_host, m_port));
+    QLabel* extraLabel = new QLabel(QString::fromUtf8("额外中控台（每行 host:port；并行推流，最多 3 路）"), page);
+    extraLabel->setProperty("role", "small");
+    col->addWidget(extraLabel);
+    m_extraHosts = new QPlainTextEdit(page);
+    m_extraHosts->setPlaceholderText(QString::fromUtf8("192.168.1.11:19100\n10.0.0.5:19100"));
+    m_extraHosts->setMaximumHeight(72);
+    m_extraHosts->setToolTip(QString::fromUtf8("主地址做完整会话；额外地址并行反连观看（邀请观看同款），最多 3 台"));
+    col->addWidget(m_extraHosts);
 
     m_directOn = new QCheckBox(QString::fromUtf8("允许直连"), page);
     m_directOn->setFixedWidth(120);
@@ -780,19 +804,113 @@ QWidget* AgentWindow::buildSecurityPage(QWidget* parent)
     m_production = new QCheckBox(QString::fromUtf8("生产保护"), page);
     m_production->setToolTip(QString::fromUtf8("打开后，远程操作必须现场点允许。旁边放 station.json 且 running 为 true 时也会打开"));
     col->addWidget(m_production);
+    m_allowHighest = new QCheckBox(QString::fromUtf8("允许最高权限"), page);
+    m_allowHighest->setToolTip(QString::fromUtf8(
+        "打开后向中控台开放全部权限，跳过现场确认与工站拦截；中控台也可单边发最高权限申请"));
+    col->addWidget(m_allowHighest);
+
+    QLabel* logTitle = new QLabel(QString::fromUtf8("运行日志"), page);
+    logTitle->setProperty("role", "section");
+    col->addWidget(logTitle);
+    m_logDisk = new QCheckBox(QString::fromUtf8("写盘（默认关）"), page);
+    m_logDisk->setToolTip(QString::fromUtf8("关闭时只进内存，运行日志窗仍可用；打开后写入 exe名\\log"));
+    m_logPictureDisk = new QCheckBox(QString::fromUtf8("画面链路写盘"), page);
+    m_logPictureDisk->setToolTip(QString::fromUtf8("画面/发送/接收/解码 Info 落盘，量大"));
+    m_logRotate = new QComboBox(page);
+    m_logRotate->addItem(QString::fromUtf8("15 分钟"), 15);
+    m_logRotate->addItem(QString::fromUtf8("30 分钟"), 30);
+    m_logRotate->addItem(QString::fromUtf8("1 小时"), 60);
+    m_logRotate->addItem(QString::fromUtf8("2 小时"), 120);
+    m_logRotate->setCurrentIndex(2);
+    m_logRotate->setFixedWidth(120);
+    m_logKeepDays = new QSpinBox(page);
+    m_logKeepDays->setRange(1, 365);
+    m_logKeepDays->setValue(7);
+    m_logKeepDays->setSuffix(QString::fromUtf8(" 天"));
+    m_logKeepDays->setFixedWidth(100);
+    col->addWidget(m_logDisk);
+    col->addWidget(m_logPictureDisk);
+    col->addWidget(line(keyLabel("滚动间隔"), m_logRotate));
+    col->addWidget(line(keyLabel("保留"), m_logKeepDays));
+    auto syncLogUi = [this]() {
+        const bool on = m_logDisk && m_logDisk->isChecked();
+        if (m_logPictureDisk) {
+            m_logPictureDisk->setEnabled(on);
+        }
+        if (m_logRotate) {
+            m_logRotate->setEnabled(on);
+        }
+        if (m_logKeepDays) {
+            m_logKeepDays->setEnabled(on);
+        }
+    };
+    QObject::connect(m_logDisk, &QCheckBox::clicked, [this, syncLogUi]() {
+        syncLogUi();
+        applyRunLog();
+        saveConfig();
+    });
+    QObject::connect(m_logPictureDisk, &QCheckBox::clicked, [this]() {
+        applyRunLog();
+        saveConfig();
+    });
+    QObject::connect(m_logRotate, QOverload<int>::of(&QComboBox::currentIndexChanged), [this](int) {
+        applyRunLog();
+        saveConfig();
+    });
+    QObject::connect(m_logKeepDays, QOverload<int>::of(&QSpinBox::valueChanged), [this](int) {
+        applyRunLog();
+        saveConfig();
+    });
+    syncLogUi();
+
     m_forceRecord = new QCheckBox(QString::fromUtf8("取得操作时强制录屏"), page);
     m_forceRecord->setToolTip(QString::fromUtf8("中控台拿到操作权后自动开始录屏"));
     allow->addWidget(m_forceRecord, 3, 1);
     m_fileRoots = new QLineEdit(page);
-    m_fileRoots->setPlaceholderText(QString::fromUtf8("文件根目录，分号分隔，默认 D:\\"));
-    allow->addWidget(m_fileRoots, 4, 0, 1, 2);
+    m_fileRoots->setPlaceholderText(QString::fromUtf8("空=全部盘；也可指定盘/目录，分号分隔，如 D:\\;E:\\data"));
+    m_fileRoots->setToolTip(QString::fromUtf8(
+        "远程文件访问范围。留空可浏览本机全部盘符；填写或点浏览追加盘/目录（分号分隔）"));
+    QPushButton* browseRoots = RemoteTheme::button(QString::fromUtf8("浏览…"), "folder", 0, page);
+    browseRoots->setProperty("size", "sm");
+    browseRoots->setToolTip(QString::fromUtf8("选择目录并追加到列表"));
+    QWidget* rootsRow = line(m_fileRoots, browseRoots);
+    allow->addWidget(rootsRow, 4, 0, 1, 2);
     col->addLayout(allow);
     col->addStretch(1);
 
     QObject::connect(manage, &QPushButton::clicked, [this]() { manageTrusted(); });
     QObject::connect(m_lockOnEnd, &QCheckBox::clicked, [this]() { applyPolicy(); });
     QObject::connect(m_forceRecord, &QCheckBox::clicked, [this]() { applyPolicy(); });
+    QObject::connect(m_allowHighest, &QCheckBox::clicked, [this]() { applyPolicy(); });
     QObject::connect(m_fileRoots, &QLineEdit::editingFinished, [this]() { applyPolicy(); });
+    QObject::connect(browseRoots, &QPushButton::clicked, [this]() {
+        QString start = m_fileRoots ? m_fileRoots->text().trimmed() : QString();
+        if (!start.isEmpty()) {
+            const QStringList parts = start.split(QRegExp("[;\\n]+"), Qt::SkipEmptyParts);
+            if (!parts.isEmpty()) {
+                start = parts.last().trimmed();
+            }
+        }
+        const QString dir = QFileDialog::getExistingDirectory(this, QString::fromUtf8("选择文件根目录"), start);
+        if (dir.isEmpty() || !m_fileRoots) {
+            return;
+        }
+        const QString picked = QDir::toNativeSeparators(dir);
+        QString cur = m_fileRoots->text().trimmed();
+        if (cur.isEmpty()) {
+            m_fileRoots->setText(picked);
+        } else {
+            const QStringList parts = cur.split(QRegExp("[;\\n]+"), Qt::SkipEmptyParts);
+            for (int i = 0; i < parts.size(); ++i) {
+                if (QDir::cleanPath(parts.at(i).trimmed()).compare(QDir::cleanPath(picked), Qt::CaseInsensitive) == 0) {
+                    applyPolicy();
+                    return;
+                }
+            }
+            m_fileRoots->setText(cur + QString(";") + picked);
+        }
+        applyPolicy();
+    });
     return page;
 }
 
@@ -925,6 +1043,7 @@ void AgentWindow::applyPolicy()
         allowMask |= PermPrivacy;
     }
     m_session.setAllow(allowMask);
+    m_session.setAllowHighest(m_allowHighest && m_allowHighest->isChecked());
     if (m_forceRecord) {
         m_session.setForceRecord(m_forceRecord->isChecked());
     }
@@ -1048,7 +1167,24 @@ void AgentWindow::loadConfig()
     m_title->setText(obj.value("title").toString());
     m_process->setProcess(obj.value("process").toString());
     const int monitor = obj.value("monitor").toInt(0);
-    m_monitor->setCurrentIndex(monitor >= 0 && monitor < m_monitor->count() - 1 ? monitor : 0);
+    if (monitor == 255) {
+        m_monitor->setCurrentIndex(m_monitor->count() - 1);
+    } else {
+        m_monitor->setCurrentIndex(monitor >= 0 && monitor < m_monitor->count() - 1 ? monitor : 0);
+    }
+    if (m_injectFront && m_injectPost) {
+        (obj.value("injectMode").toInt(0) != 0 ? m_injectFront : m_injectPost)->setChecked(true);
+        m_session.setInjectMode(obj.value("injectMode").toInt(0));
+    }
+    if (m_extraHosts) {
+        QStringList hostLines;
+        const QJsonArray hosts = obj.value("hosts").toArray();
+        for (int i = 0; i < hosts.size(); ++i) {
+            hostLines.append(hosts.at(i).toString());
+        }
+        m_extraHosts->setPlainText(hostLines.join(QString::fromUtf8("\n")));
+        m_session.setExtraHosts(parseExtraHosts());
+    }
     (obj.value("share").toString("desktop") == "window" ? m_window : m_desktop)->setChecked(true);
     const QString confirm = obj.value("confirm").toString("never");
     m_confirm = confirm == "always" ? AgentSession::ConfirmAlways
@@ -1111,6 +1247,33 @@ void AgentWindow::loadConfig()
     if (m_production) {
         m_production->setChecked(obj.value("production").toBool(false));
     }
+    if (m_allowHighest) {
+        m_allowHighest->setChecked(obj.value("allowHighest").toBool(false));
+    }
+    if (m_logDisk) {
+        m_logDisk->setChecked(obj.value("logDisk").toBool(false));
+    }
+    if (m_logPictureDisk) {
+        m_logPictureDisk->setChecked(obj.value("logPictureDisk").toBool(false));
+    }
+    if (m_logRotate) {
+        const int mins = obj.value("logRotateMinutes").toInt(60);
+        const int at = m_logRotate->findData(mins);
+        m_logRotate->setCurrentIndex(at >= 0 ? at : 2);
+    }
+    if (m_logKeepDays) {
+        m_logKeepDays->setValue(obj.value("logKeepDays").toInt(7));
+    }
+    if (m_logPictureDisk) {
+        m_logPictureDisk->setEnabled(m_logDisk && m_logDisk->isChecked());
+    }
+    if (m_logRotate) {
+        m_logRotate->setEnabled(m_logDisk && m_logDisk->isChecked());
+    }
+    if (m_logKeepDays) {
+        m_logKeepDays->setEnabled(m_logDisk && m_logDisk->isChecked());
+    }
+    applyRunLog();
     m_passwordHash = obj.value("passwordHash").toString();
     m_session.loadPasswordHash(m_passwordHash.toUtf8().constData());
     if (m_passwordTag) {
@@ -1149,7 +1312,19 @@ void AgentWindow::saveConfig() const
     obj.insert("title", m_title->text().trimmed());
     obj.insert("process", m_process->process());
     obj.insert("share", m_desktop->isChecked() ? "desktop" : "window");
-    obj.insert("monitor", m_monitor->currentIndex() < 0 ? 0 : m_monitor->currentIndex());
+    obj.insert("monitor", monitorValue());
+    obj.insert("injectMode", m_injectFront && m_injectFront->isChecked() ? 1 : 0);
+    if (m_extraHosts) {
+        QJsonArray hosts;
+        const QStringList lines = m_extraHosts->toPlainText().split(QRegExp("[\\r\\n]+"), Qt::SkipEmptyParts);
+        for (int i = 0; i < lines.size(); ++i) {
+            const QString line = lines.at(i).trimmed();
+            if (!line.isEmpty()) {
+                hosts.append(line);
+            }
+        }
+        obj.insert("hosts", hosts);
+    }
     const char* const confirms[] = { "never", "trusted", "always" };
     obj.insert("confirm", confirms[m_confirm < 0 || m_confirm > 2 ? 0 : m_confirm]);
     obj.insert("trusted", QJsonArray::fromStringList(m_trusted));
@@ -1169,6 +1344,11 @@ void AgentWindow::saveConfig() const
     obj.insert("relayPort", m_relayPort ? m_relayPort->value() : 19200);
     obj.insert("relayKey", m_relayKey ? m_relayKey->text() : QString());
     obj.insert("production", m_production && m_production->isChecked());
+    obj.insert("allowHighest", m_allowHighest && m_allowHighest->isChecked());
+    obj.insert("logDisk", m_logDisk && m_logDisk->isChecked());
+    obj.insert("logPictureDisk", m_logPictureDisk && m_logPictureDisk->isChecked());
+    obj.insert("logRotateMinutes", m_logRotate ? m_logRotate->currentData().toInt() : 60);
+    obj.insert("logKeepDays", m_logKeepDays ? m_logKeepDays->value() : 7);
     obj.insert("httpPort", m_httpPort ? m_httpPort->value() : 19180);
     obj.insert("passwordHash", m_passwordHash);
     obj.insert("whitelist", m_whitelist ? m_whitelist->text().trimmed() : QString());
@@ -1248,6 +1428,7 @@ void AgentWindow::apply()
         allowMask |= PermPrivacy;
     }
     m_session.setAllow(allowMask);
+    m_session.setAllowHighest(m_allowHighest && m_allowHighest->isChecked());
     if (m_forceRecord) {
         m_session.setForceRecord(m_forceRecord->isChecked());
     }
@@ -1268,10 +1449,13 @@ void AgentWindow::apply()
     if (m_preferCodec) {
         m_session.setPreferCodec(m_preferCodec->currentData().toInt());
     }
+    if (m_injectFront && m_injectPost) {
+        m_session.setInjectMode(m_injectFront->isChecked() ? 1 : 0);
+    }
+    m_session.setExtraHosts(parseExtraHosts());
     std::string err;
     if (!m_session.start(host.toUtf8().constData(), port, m_title->text().trimmed().toStdWString(),
-            m_process->process().toStdWString(), m_desktop->isChecked(),
-            m_monitor->currentIndex() < 0 ? 0 : m_monitor->currentIndex(), &err)) {
+            m_process->process().toStdWString(), m_desktop->isChecked(), monitorValue(), &err)) {
         QMessageBox::warning(this, windowTitle(),
             QString::fromUtf8("启动会话失败：%1").arg(QString::fromUtf8(err.empty() ? "未知错误" : err.c_str())));
     }
@@ -1279,11 +1463,21 @@ void AgentWindow::apply()
     applyLink();
 }
 
+void AgentWindow::applyRunLog()
+{
+    const bool disk = m_logDisk && m_logDisk->isChecked();
+    const bool picture = m_logPictureDisk && m_logPictureDisk->isChecked();
+    const int rotate = m_logRotate ? m_logRotate->currentData().toInt() : 60;
+    const int keep = m_logKeepDays ? m_logKeepDays->value() : 7;
+    RemoteLog::applyDisk(disk, picture, rotate, keep);
+}
+
 void AgentWindow::applyLink()
 {
     if (m_production) {
         m_session.setProduction(m_production->isChecked());
     }
+    m_session.setAllowHighest(m_allowHighest && m_allowHighest->isChecked());
     if (m_relayOn && m_relayHost && m_relayPort && m_relayKey) {
         m_session.setRelay(m_relayOn->isChecked(), m_relayHost->text().trimmed().toStdString(),
             m_relayPort->value(), m_relayKey->text().toStdString());
@@ -1348,6 +1542,46 @@ QString AgentWindow::clock(uint64_t ms)
     return QString("%1:%2:%3").arg(s / 3600, 2, 10, QChar('0')).arg((s / 60) % 60, 2, 10, QChar('0')).arg(s % 60, 2, 10, QChar('0'));
 }
 
+int AgentWindow::monitorValue() const
+{
+    if (!m_monitor || m_monitor->currentIndex() < 0) {
+        return 0;
+    }
+    if (m_monitor->currentIndex() == m_monitor->count() - 1) {
+        return 255;
+    }
+    return m_monitor->currentIndex();
+}
+
+std::vector<std::pair<std::string, int> > AgentWindow::parseExtraHosts() const
+{
+    std::vector<std::pair<std::string, int> > out;
+    if (!m_extraHosts) {
+        return out;
+    }
+    const QStringList lines = m_extraHosts->toPlainText().split(QRegExp("[\\r\\n]+"), Qt::SkipEmptyParts);
+    for (int i = 0; i < lines.size(); ++i) {
+        QString line = lines.at(i).trimmed();
+        if (line.isEmpty()) {
+            continue;
+        }
+        int port = RemoteConst::kPort;
+        const int colon = line.lastIndexOf(':');
+        if (colon > 0) {
+            bool ok = false;
+            const int p = line.mid(colon + 1).toInt(&ok);
+            if (ok && p > 0 && p <= 65535) {
+                port = p;
+                line = line.left(colon);
+            }
+        }
+        if (!line.isEmpty()) {
+            out.push_back(std::make_pair(line.toUtf8().constData(), port));
+        }
+    }
+    return out;
+}
+
 void AgentWindow::showNotice(const QString& name, const QString& text)
 {
     QDialog* box = new QDialog(0, Qt::Dialog | Qt::WindowStaysOnTopHint | Qt::WindowCloseButtonHint);
@@ -1379,7 +1613,9 @@ void AgentWindow::refresh()
     // 中控台改了共享范围：同步到界面并存盘（会话已自行切换，不需要重启）
     if (m_session.takePushed(&desktop, &monitor, &title, &process)) {
         (desktop ? m_desktop : m_window)->setChecked(true);
-        if (monitor >= 0 && monitor < m_monitor->count() - 1) {
+        if (monitor == 255) {
+            m_monitor->setCurrentIndex(m_monitor->count() - 1);
+        } else if (monitor >= 0 && monitor < m_monitor->count() - 1) {
             m_monitor->setCurrentIndex(monitor);
         }
         m_title->setText(QString::fromStdWString(title));
@@ -1454,7 +1690,8 @@ void AgentWindow::refresh()
     if (pending.active && pending.seq != m_shownSeq) {
         m_shownSeq = pending.seq;
         m_confirmDialog->showRequest(pending.seq, QString::fromUtf8(pending.controller.c_str()),
-            QString::fromUtf8(pending.host.c_str()), pending.secondsLeft, AgentSession::kConfirmMs / 1000);
+            QString::fromUtf8(pending.host.c_str()), pending.secondsLeft, AgentSession::kConfirmMs / 1000,
+            pending.requestPerms);
     } else if (!pending.active && m_confirmDialog->isVisible()) {
         m_confirmDialog->hide();
     }

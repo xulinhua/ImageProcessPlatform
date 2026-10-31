@@ -190,40 +190,75 @@ QWidget* DeviceDialog::buildGeneral()
     m_tagRow->setSpacing(6);
     rebuildTags();
 
-    // 连接与认证：连接方式、认证、画质、MAC、证书均为后续期次，只占位
     QLabel* section = new QLabel(QString::fromUtf8("连接与认证"), body);
     section->setProperty("role", "section");
 
-    QRadioButton* autoLink = new QRadioButton(QString::fromUtf8("自动"), body);
-    QRadioButton* lanLink = new QRadioButton(QString::fromUtf8("仅局域网"), body);
-    QRadioButton* relayLink = new QRadioButton(QString::fromUtf8("仅中继"), body);
-    autoLink->setChecked(true);
+    m_linkAuto = new QRadioButton(QString::fromUtf8("自动"), body);
+    m_linkLan = new QRadioButton(QString::fromUtf8("仅局域网"), body);
+    m_linkRelay = new QRadioButton(QString::fromUtf8("仅中继"), body);
+    m_linkReverse = new QRadioButton(QString::fromUtf8("反连优先"), body);
     QButtonGroup* linkGroup = new QButtonGroup(body);
-    linkGroup->addButton(autoLink);
-    linkGroup->addButton(lanLink);
-    linkGroup->addButton(relayLink);
-    QWidget* linkRow = line(body, autoLink, lanLink, relayLink);
-    linkRow->setEnabled(false);
-    linkRow->setToolTip(QString::fromUtf8("打开会话时自动选择：已有反连，否则直连 2 秒，再中继"));
+    linkGroup->addButton(m_linkAuto, 0);
+    linkGroup->addButton(m_linkLan, 1);
+    linkGroup->addButton(m_linkRelay, 2);
+    linkGroup->addButton(m_linkReverse, 3);
+    const int linkMode = device ? device->linkMode : 0;
+    if (linkMode == 1) {
+        m_linkLan->setChecked(true);
+    } else if (linkMode == 2) {
+        m_linkRelay->setChecked(true);
+    } else if (linkMode == 3) {
+        m_linkReverse->setChecked(true);
+    } else {
+        m_linkAuto->setChecked(true);
+    }
+    QWidget* linkRow = line(body, m_linkAuto, m_linkLan, m_linkRelay);
+    QHBoxLayout* linkExtra = new QHBoxLayout();
+    linkExtra->setContentsMargins(0, 0, 0, 0);
+    linkExtra->addWidget(m_linkReverse);
+    linkExtra->addStretch(1);
+    QWidget* linkWrap = new QWidget(body);
+    QVBoxLayout* linkCol = new QVBoxLayout(linkWrap);
+    linkCol->setContentsMargins(0, 0, 0, 0);
+    linkCol->setSpacing(4);
+    linkCol->addWidget(linkRow);
+    linkCol->addLayout(linkExtra);
+    linkWrap->setToolTip(QString::fromUtf8("自动：跟全局连接顺序；仅局域网/仅中继会改拨号步骤"));
 
-    QRadioButton* unattended = new QRadioButton(QString::fromUtf8("无人值守密码"), body);
-    unattended->setChecked(true);
-    unattended->setToolTip(QString::fromUtf8("申请操作时在会话窗口输入验证码、密码或使用信任设备"));
-    QLineEdit* password = new QLineEdit(body);
-    password->setEchoMode(QLineEdit::Password);
-    password->setFixedWidth(150);
-    password->setPlaceholderText(QString::fromUtf8("在会话窗口输入"));
-    password->setEnabled(false);
-    QCheckBox* remember = new QCheckBox(QString::fromUtf8("记住"), body);
-    remember->setEnabled(false);
-    QWidget* authRow = line(body, unattended, password, remember);
+    QLabel* authHint = new QLabel(QString::fromUtf8("无人值守密码"), body);
+    authHint->setProperty("role", "key");
+    m_password = new QLineEdit(body);
+    m_password->setEchoMode(QLineEdit::Password);
+    m_password->setFixedWidth(150);
+    m_password->setPlaceholderText(QString::fromUtf8("申请操作时可自动填入"));
+    m_password->setText(device ? device->password : QString());
+    m_rememberPassword = new QCheckBox(QString::fromUtf8("记住"), body);
+    m_rememberPassword->setChecked(device && device->rememberPassword);
+    QWidget* authRow = line(body, authHint, m_password, m_rememberPassword);
 
-    QComboBox* quality = new QComboBox(body);
-    quality->addItem(QString::fromUtf8("在会话窗口调节"));
-    quality->setFixedWidth(160);
-    quality->setEnabled(false);
-    QWidget* qualityRow = line(body, quality);
-    qualityRow->setToolTip(QString::fromUtf8("打开会话后可调画质档与帧率上限"));
+    m_quality = new QComboBox(body);
+    m_quality->addItem(QString::fromUtf8("跟全局设置"), -1);
+    m_quality->addItem(QString::fromUtf8("流畅"), 0);
+    m_quality->addItem(QString::fromUtf8("均衡"), 1);
+    m_quality->addItem(QString::fromUtf8("清晰"), 2);
+    m_quality->addItem(QString::fromUtf8("自定义"), 3);
+    m_quality->setFixedWidth(160);
+    const int q = device ? device->quality : -1;
+    const int qAt = m_quality->findData(q);
+    m_quality->setCurrentIndex(qAt < 0 ? 0 : qAt);
+    QWidget* qualityRow = line(body, m_quality);
+    qualityRow->setToolTip(QString::fromUtf8("打开会话时的默认画质档"));
+
+    m_highestPrivilege = new QComboBox(body);
+    m_highestPrivilege->addItem(QString::fromUtf8("跟全局/账户"), -1);
+    m_highestPrivilege->addItem(QString::fromUtf8("开启"), 1);
+    m_highestPrivilege->addItem(QString::fromUtf8("关闭"), 0);
+    m_highestPrivilege->setFixedWidth(160);
+    const int hp = device ? device->highestPrivilege : -1;
+    const int hpAt = m_highestPrivilege->findData(hp);
+    m_highestPrivilege->setCurrentIndex(hpAt < 0 ? 0 : hpAt);
+    m_highestPrivilege->setToolTip(QString::fromUtf8(
+        "全局开时一律生效；全局关后本项优先，再跟账户。开则连上自动满权限操作，可手动释放"));
 
     m_mac = new QLineEdit(body);
     m_mac->setPlaceholderText("00:11:22:33:44:55");
@@ -269,9 +304,10 @@ QWidget* DeviceDialog::buildGeneral()
     addRow(grid, row++, QString::fromUtf8("备注"), m_remark);
     addRow(grid, row++, QString::fromUtf8("标签"), m_tagBox);
     grid->addWidget(section, row++, 0, 1, 2);
-    addRow(grid, row++, QString::fromUtf8("连接方式"), linkRow);
+    addRow(grid, row++, QString::fromUtf8("连接方式"), linkWrap);
     addRow(grid, row++, QString::fromUtf8("认证"), authRow);
     addRow(grid, row++, QString::fromUtf8("默认画质"), qualityRow);
+    addRow(grid, row++, QString::fromUtf8("最高权限"), line(body, m_highestPrivilege));
     addRow(grid, row++, "MAC", line(body, m_mac, wake));
     addRow(grid, row++, QString::fromUtf8("证书指纹"), line(body, fingerprint));
     addRow(grid, row++, QString::fromUtf8("系统"), system);
@@ -502,6 +538,19 @@ void DeviceDialog::accept()
         if (m_mac) {
             device->mac = m_mac->text().trimmed();
         }
+        if (m_linkLan && m_linkLan->isChecked()) {
+            device->linkMode = 1;
+        } else if (m_linkRelay && m_linkRelay->isChecked()) {
+            device->linkMode = 2;
+        } else if (m_linkReverse && m_linkReverse->isChecked()) {
+            device->linkMode = 3;
+        } else {
+            device->linkMode = 0;
+        }
+        device->quality = m_quality ? m_quality->currentData().toInt() : -1;
+        device->highestPrivilege = m_highestPrivilege ? m_highestPrivilege->currentData().toInt() : -1;
+        device->rememberPassword = m_rememberPassword && m_rememberPassword->isChecked();
+        device->password = device->rememberPassword && m_password ? m_password->text() : QString();
         device->tags = m_tags;
         m_store->save();
     }

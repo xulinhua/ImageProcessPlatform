@@ -19,7 +19,7 @@
 namespace Vision {
 
 DeviceStore::DeviceStore()
-    : m_path(QDir(RemoteFiles::appDataDir("RemoteMaster")).filePath("devices.json"))
+    : m_path(RemoteFiles::configFile("devices.json"))
 {
 }
 
@@ -60,6 +60,20 @@ void DeviceStore::load()
         device.system = obj.value("system").toString();
         device.lastSeen = QDateTime::fromString(obj.value("lastSeen").toString(), Qt::ISODate);
         device.lastOpened = QDateTime::fromString(obj.value("lastOpened").toString(), Qt::ISODate);
+        device.linkMode = obj.value("linkMode").toInt(0);
+        device.quality = obj.value("quality").toInt(-1);
+        device.highestPrivilege = obj.value("highestPrivilege").toInt(-1);
+        device.rememberPassword = obj.value("rememberPassword").toBool(false);
+        device.password = device.rememberPassword ? obj.value("password").toString() : QString();
+        if (device.linkMode < 0 || device.linkMode > 3) {
+            device.linkMode = 0;
+        }
+        if (device.quality < -1 || device.quality > 3) {
+            device.quality = -1;
+        }
+        if (device.highestPrivilege < -1 || device.highestPrivilege > 1) {
+            device.highestPrivilege = -1;
+        }
         if (!device.group.isEmpty() && !m_groups.contains(device.group)) {
             m_groups.append(device.group);
         }
@@ -88,6 +102,13 @@ void DeviceStore::save() const
         obj.insert("system", device.system);
         obj.insert("lastSeen", device.lastSeen.toString(Qt::ISODate));
         obj.insert("lastOpened", device.lastOpened.toString(Qt::ISODate));
+        obj.insert("linkMode", device.linkMode);
+        obj.insert("quality", device.quality);
+        obj.insert("highestPrivilege", device.highestPrivilege);
+        obj.insert("rememberPassword", device.rememberPassword);
+        if (device.rememberPassword) {
+            obj.insert("password", device.password);
+        }
         devices.append(obj);
     }
     QJsonObject root;

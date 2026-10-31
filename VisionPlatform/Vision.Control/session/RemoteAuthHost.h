@@ -37,6 +37,8 @@ public:
     const std::string& role() const;
     /** @brief 权限位。未登录为只看 */
     uint32_t perms() const;
+    /** @brief 当前账户是否开最高权限。无登录要求时默认 true */
+    bool highestPrivilege() const;
 
 private:
     /** @brief 用 exe 旁的 accounts.json 校验。密码是明文对照 */
@@ -49,6 +51,7 @@ private:
     std::string m_user;                 ///< 当前账号
     std::string m_role;                 ///< 当前角色
     uint32_t m_perms;                   ///< 当前权限位
+    bool m_highestPrivilege;            ///< 当前账户最高权限，默认 true
 };
 
 }

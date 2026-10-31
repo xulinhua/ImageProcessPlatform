@@ -71,6 +71,7 @@ ControlWindow::ControlWindow(QWidget* parent)
     resize(1600, 940);
     // 读配置与设备库，清理过期审计，设图标
     m_config.load();
+    m_config.applyRunLog();
     m_auth.load();
     if (m_auth.loginRequired()) {
         for (;;) {
@@ -323,7 +324,7 @@ QMenuBar* ControlWindow::buildMenus()
     });
     QObject::connect(about, &QAction::triggered, [this]() {
         QMessageBox::about(this, QString::fromUtf8("关于"), QString::fromUtf8(
-            "RemoteMaster · 中控台\n反连 + JPEG 子码流，TLS（Schannel）。\nH.264、文件传输、中继按方案分期提供。"));
+            "RemoteMaster · 中控台\n反连 / 直连 / 中继，TLS（Schannel），JPEG·H.264·原图，文件与聊天。"));
     });
     return bar;
 }
@@ -676,6 +677,14 @@ void ControlWindow::syncStreams(const std::vector<ControlSession::Tile>& tiles)
 
 void ControlWindow::refresh()
 {
+    m_session.setIdleMinutes(m_config.idleMinutes);
+    m_session.setBandwidthKbps(m_config.bandwidthKbps);
+    std::vector<std::string> order;
+    for (int i = 0; i < m_config.connectOrder.size(); ++i) {
+        order.push_back(m_config.connectOrder.at(i).toUtf8().constData());
+    }
+    m_session.setConnectOrder(order);
+    m_session.disconnectIfIdle();
     const std::vector<ControlSession::Tile> tiles = m_session.tiles();
     m_tick += 1;
     trackTiles(tiles);
@@ -759,9 +768,11 @@ void ControlWindow::trackTiles(const std::vector<ControlSession::Tile>& tiles)
         const QString address = QString::fromUtf8(tile.address.c_str());
         if (online && !seen.online) {
             seen.since = now;
+            seen.highestTried = false;
             m_audit.add("session.start", name, id, address, QString::fromUtf8("反连 · ") + SessionWindow::shareText(tile));
         } else if (!online && seen.online) {
             m_audit.add("session.end", name, id, address, QString::fromUtf8("连接断开"), (now - seen.since) / 1000);
+            seen.highestTried = false;
         }
         const bool operating = online && tile.operating;
         if (operating && !seen.operating) {
@@ -770,6 +781,12 @@ void ControlWindow::trackTiles(const std::vector<ControlSession::Tile>& tiles)
         } else if (!operating && seen.operating) {
             m_audit.add("operate.end", name, id, address,
                 tile.hint.empty() ? QString::fromUtf8("主动释放") : QString::fromUtf8(tile.hint.c_str()), (now - seen.operateSince) / 1000);
+        }
+        // 最高权限：刚连上且未操作时自动申请满权限；本轮在线只试一次，手动释放后不重申
+        if (online && !operating && !seen.highestTried && !tile.peerId.empty() && highestForDevice(it->first)) {
+            m_session.requestOperate(tile.peerId, AuthMethodHighest, std::string());
+            seen.highestTried = true;
+            m_audit.add("operate.highest", name, id, address, QString::fromUtf8("连上自动最高权限"));
         }
         // 被拒按提示文字识别，文字须与 ControlSession 处理 AuthAck 时一致
         if (tile.hint != seen.hint) {
@@ -783,6 +800,13 @@ void ControlWindow::trackTiles(const std::vector<ControlSession::Tile>& tiles)
         seen.operating = operating;
         seen.hint = tile.hint;
     }
+}
+
+bool ControlWindow::highestForDevice(const QString& key) const
+{
+    const DeviceStore::Device* device = m_store.find(key);
+    const int deviceTri = device ? device->highestPrivilege : -1;
+    return m_config.effectiveHighestPrivilege(deviceTri, m_auth.highestPrivilege());
 }
 
 void ControlWindow::updateRates(const std::vector<ControlSession::Tile>& tiles)
@@ -1242,13 +1266,40 @@ SessionWindow* ControlWindow::openSession(const QString& key)
         if (device && (!tile || !tile->online || tile->peerId.empty())) {
             std::string err;
             QString id = key.startsWith("d:") ? QString() : key;
+            std::vector<std::string> order;
+            bool relayOn = m_config.relayOn;
+            if (device->linkMode == 1) {
+                order.push_back("direct");
+                if (m_config.udpPunch) {
+                    order.insert(order.begin(), "udp");
+                }
+                relayOn = false;
+            } else if (device->linkMode == 2) {
+                order.push_back("relay");
+                relayOn = true;
+            } else if (device->linkMode == 3) {
+                order.push_back("reverse");
+                order.push_back("direct");
+                if (m_config.udpPunch) {
+                    order.push_back("udp");
+                }
+                order.push_back("relay");
+            } else {
+                for (int i = 0; i < m_config.connectOrder.size(); ++i) {
+                    order.push_back(m_config.connectOrder.at(i).toUtf8().constData());
+                }
+            }
             m_session.dialDevice(device->address.toStdString(), id.toStdString(),
-                m_config.relayOn ? m_config.relayHost.toStdString() : std::string(),
-                m_config.relayPort, m_config.relayKey.toStdString(), &err);
+                relayOn ? m_config.relayHost.toStdString() : std::string(),
+                m_config.relayPort, m_config.relayKey.toStdString(), relayOn, order, &err);
         }
     }
     std::map<QString, SessionWindow*>::iterator it = m_sessions.find(key);
     if (it != m_sessions.end()) {
+        DeviceStore::Device* existing = m_store.find(key);
+        it->second->setDevicePrefs(existing ? existing->quality : -1,
+            existing && existing->rememberPassword ? existing->password : QString(),
+            highestForDevice(key));
         it->second->showNormal();
         it->second->raise();
         it->second->activateWindow();
@@ -1265,8 +1316,12 @@ SessionWindow* ControlWindow::openSession(const QString& key)
     window->show();
     DeviceStore::Device* device = m_store.find(key);
     if (device) {
+        window->setDevicePrefs(device->quality, device->rememberPassword ? device->password : QString(),
+            highestForDevice(key));
         device->lastOpened = QDateTime::currentDateTime();
         m_store.save();
+    } else {
+        window->setDevicePrefs(-1, QString(), highestForDevice(key));
     }
     refreshTree(tiles);
     return window;
@@ -1274,7 +1329,7 @@ SessionWindow* ControlWindow::openSession(const QString& key)
 
 void ControlWindow::openAddDevice()
 {
-    AddDeviceDialog dialog(&m_store, [this]() { return foundNow(); }, QString(), this);
+    AddDeviceDialog dialog(&m_store, &m_config, [this]() { return foundNow(); }, QString(), this);
     if (dialog.exec() != QDialog::Accepted) {
         return;
     }
@@ -1291,9 +1346,12 @@ void ControlWindow::openAddDevice()
             device->alias = pick.alias;
         }
         device->group = dialog.group();
+        if (!pick.deviceId.isEmpty()) {
+            device->key = pick.deviceId;
+        }
         device->lastSeen = QDateTime();
         m_audit.add("device.add", m_store.displayName(*device), pick.key.contains(':') ? QString() : pick.key, pick.address,
-            QString::fromUtf8("手动添加"));
+            pick.deviceId.isEmpty() ? QString::fromUtf8("手动添加") : QString::fromUtf8("按设备 ID 添加"));
     }
     m_store.save();
     refreshTree(m_session.tiles());

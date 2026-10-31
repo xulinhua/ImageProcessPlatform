@@ -13,6 +13,7 @@
 #include <QDialog>
 #include <QStringList>
 
+class QCheckBox;
 class QComboBox;
 class QGridLayout;
 class QHBoxLayout;
@@ -42,7 +43,7 @@ public:
 
 private:
     /************************************************** 搭建 **************************************************/
-    /** @brief 常规页：名称、设备 ID、分组、备注、标签；连接认证等未实现项置灰 */
+    /** @brief 常规页：名称、设备 ID、分组、备注、标签 */
     QWidget* buildGeneral();
     /** @brief 连接页：地址、状态、共享、延迟、最后在线等只读信息 */
     QWidget* buildConnection();
@@ -77,6 +78,14 @@ private:
     QLineEdit* m_mac;               ///< 网卡 MAC
     QHBoxLayout* m_tagRow;          ///< 标签按钮所在布局
     QWidget* m_tagBox;              ///< 标签区容器
+    QRadioButton* m_linkAuto;       ///< 连接：跟全局顺序
+    QRadioButton* m_linkLan;        ///< 连接：仅直连
+    QRadioButton* m_linkRelay;      ///< 连接：仅中继
+    QRadioButton* m_linkReverse;    ///< 连接：反连优先
+    QLineEdit* m_password;          ///< 无人值守密码
+    QCheckBox* m_rememberPassword;  ///< 记住密码
+    QComboBox* m_quality;           ///< 打开会话默认画质
+    QComboBox* m_highestPrivilege;  ///< 最高权限：跟上级 / 开 / 关
 
     QRadioButton* m_desktop;        ///< 共享整个桌面
     QRadioButton* m_window;         ///< 共享指定窗口

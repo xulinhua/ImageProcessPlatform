@@ -164,7 +164,7 @@ private:
     QTabBar* m_tabs;                    ///< 页签：分组、最近连接、局域网发现
     DeviceTreeWidget* m_tree;           ///< 树
     QPushButton* m_newGroup;            ///< 新建分组按钮
-    QPushButton* m_wake;                ///< 远程唤醒按钮（未实现，置灰）
+    QPushButton* m_wake;                ///< 远程唤醒（Wake-on-LAN）
     QStringList m_groups;               ///< 分组表，来自设备库
     std::vector<Row> m_rows;            ///< 全部设备行
     std::vector<Found> m_found;         ///< 局域网发现项，下标即发现行的 RoleKey

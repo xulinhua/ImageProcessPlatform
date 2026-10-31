@@ -1,6 +1,6 @@
 /**
  * @file AuditLog.h
- * @brief 中控台审计日志。JSON Lines，按天一个文件，存 %APPDATA%\RemoteMaster\audit
+ * @brief 中控台审计日志。JSON Lines，按天一个文件，存 exe旁\\exe名\\log\\audit
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -71,7 +71,7 @@ private:
     /** @brief 某天对应的日志文件路径 yyyy-MM-dd.jsonl */
     QString fileOf(const QDate& day) const;
 
-    QString m_dir;  ///< 审计目录 %APPDATA%\RemoteMaster\audit
+    QString m_dir;  ///< 审计目录 exe旁\\exe名\\log\\audit
     QString m_op;   ///< 操作员名，写入每条记录的 op
 };
 

@@ -126,6 +126,8 @@ private:
     void applyHttp();
     /** @brief 直连、中继、生产保护 */
     void applyLink();
+    /** @brief 按界面把运行日志落盘策略交给 RemoteLog */
+    void applyRunLog();
     /** @brief 弹出运行日志窗口（抓屏/编码/发送耗时） */
     void openRunLog();
     /** @brief 弹出与中控台互传的双栏文件窗 */
@@ -144,6 +146,10 @@ private:
     void addIconSize(struct HICON__* icon, int side);
     /** @brief 毫秒格式化为“时:分:秒”，各两位 */
     static QString clock(uint64_t ms);
+    /** @brief 显示器下拉：最后一项为全部（255） */
+    int monitorValue() const;
+    /** @brief 解析额外反连 host:port 行 */
+    std::vector<std::pair<std::string, int> > parseExtraHosts() const;
 
     AgentSession m_session;             ///< 被控端会话，窗口在它就在
     ConfirmDialog* m_confirmDialog;     ///< 来访确认框，无父对象，析构时删除
@@ -166,13 +172,16 @@ private:
 
     QRadioButton* m_desktop;            ///< 共享整个桌面
     QRadioButton* m_window;             ///< 共享进程画面
-    QComboBox* m_monitor;               ///< 显示器选择；最后一项“全部显示器”禁用
+    QComboBox* m_monitor;               ///< 显示器选择；最后一项“全部显示器”=255
+    QRadioButton* m_injectPost;         ///< 进程画面：窗口消息注入
+    QRadioButton* m_injectFront;        ///< 进程画面：前台 SendInput
     ProcessCombo* m_process;            ///< 进程画面的进程 exe 名，可下拉选或手输
     QLineEdit* m_title;                 ///< 进程画面的窗口标题子串
     QLabel* m_previewInfo;              ///< 预览标题，带图像尺寸
     QLabel* m_preview;                  ///< 送出画面预览（300×169），无画面时显示状态文字
     QLineEdit* m_host;                  ///< 反连的控制端地址
     QSpinBox* m_port;                   ///< 反连的控制端端口
+    QPlainTextEdit* m_extraHosts;       ///< 额外反连中控台，每行 host:port
 
     QRadioButton* m_confirmAlways;      ///< 策略：每次都要现场确认
     QRadioButton* m_confirmTrusted;     ///< 策略：信任的控制端免确认
@@ -186,7 +195,7 @@ private:
     QCheckBox* m_allowPrivacy;         ///< 允许远端隐私屏
     QCheckBox* m_lockOnEnd;             ///< 断开后锁屏
     QCheckBox* m_forceRecord;           ///< 对方取得操作后必须录屏
-    QLineEdit* m_fileRoots;             ///< 文件根目录，分号分隔。空则默认 D 盘
+    QLineEdit* m_fileRoots;             ///< 文件根目录，分号分隔。空=全部盘，可指定盘/目录
     QCheckBox* m_httpOn;                ///< 局域网 HTTP 查看
     QCheckBox* m_directOn;              ///< 允许直连
     QSpinBox* m_directPort;             ///< 直连端口
@@ -195,6 +204,11 @@ private:
     QSpinBox* m_relayPort;              ///< 中继端口
     QLineEdit* m_relayKey;              ///< 中继口令
     QCheckBox* m_production;            ///< 生产保护，操作必须现场确认
+    QCheckBox* m_allowHighest;          ///< 允许中控台最高权限（满权限开放）
+    QCheckBox* m_logDisk;               ///< 运行日志写盘，默认关
+    QCheckBox* m_logPictureDisk;        ///< 画面链路 Info 写盘
+    QComboBox* m_logRotate;             ///< 滚动间隔分钟
+    QSpinBox* m_logKeepDays;            ///< 运行日志保留天数
     QSpinBox* m_httpPort;               ///< HTTP 端口
     QSpinBox* m_pipelineWorkers;        ///< 抓/编并行：0 内联，1–2 独立编码线程
     QComboBox* m_preferCodec;           ///< 发送编码：自动 / JPEG / H.264 / 原图

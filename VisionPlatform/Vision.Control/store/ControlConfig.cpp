@@ -9,12 +9,14 @@
 #include "ControlConfig.h"
 #include "Messages.h"
 #include "RemoteFiles.h"
+#include "RemoteLog.h"
 
 #include <QCoreApplication>
 #include <QDateTime>
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
+#include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QSaveFile>
@@ -30,7 +32,8 @@ ControlConfig::ControlConfig()
     , autoStart(false)
     , discovery(true)
     , fitDefault(true)
-    , shotDir(QDir(RemoteFiles::appDataDir("RemoteMaster")).filePath("screenshots"))
+    , shotDir(RemoteFiles::imageDir())
+    , recordDir(RemoteFiles::videoDir())
     , autoRecord(false)
     , recordDays(90)
     , auditDays(180)
@@ -43,8 +46,21 @@ ControlConfig::ControlConfig()
     , defaultQuality(1)
     , streamCodec(1)
     , adaptive(true)
-    , m_path(RemoteFiles::exeFile("control.json"))
+    , idleMinutes(30)
+    , bandwidthKbps(0)
+    , watermarkOn(false)
+    , customLongEdge(1280)
+    , customFps(30)
+    , customBitrateKbps(2000)
+    , udpPunch(false)
+    , highestPrivilege(true)
+    , logDisk(false)
+    , logPictureDisk(false)
+    , logRotateMinutes(60)
+    , logKeepDays(7)
+    , m_path(RemoteFiles::configFile("control.json"))
 {
+    connectOrder << "reverse" << "direct" << "relay";
 }
 
 void ControlConfig::load()
@@ -77,17 +93,65 @@ void ControlConfig::load()
     defaultQuality = obj.value("defaultQuality").toInt(defaultQuality);
     streamCodec = obj.value("streamCodec").toInt(streamCodec);
     adaptive = obj.value("adaptive").toBool(adaptive);
+    idleMinutes = obj.value("idleMinutes").toInt(idleMinutes);
+    bandwidthKbps = obj.value("bandwidthKbps").toInt(bandwidthKbps);
+    watermarkOn = obj.value("watermarkOn").toBool(watermarkOn);
+    watermarkText = obj.value("watermarkText").toString(watermarkText);
+    customLongEdge = obj.value("customLongEdge").toInt(customLongEdge);
+    customFps = obj.value("customFps").toInt(customFps);
+    customBitrateKbps = obj.value("customBitrateKbps").toInt(customBitrateKbps);
+    udpPunch = obj.value("udpPunch").toBool(udpPunch);
+    highestPrivilege = obj.value("highestPrivilege").toBool(true);
+    logDisk = obj.value("logDisk").toBool(false);
+    logPictureDisk = obj.value("logPictureDisk").toBool(false);
+    logRotateMinutes = obj.value("logRotateMinutes").toInt(60);
+    logKeepDays = obj.value("logKeepDays").toInt(7);
+    if (logRotateMinutes < 15) {
+        logRotateMinutes = 15;
+    }
+    if (logKeepDays < 1) {
+        logKeepDays = 1;
+    }
+    if (shotDir.trimmed().isEmpty()) {
+        shotDir = RemoteFiles::imageDir();
+    }
+    if (recordDir.trimmed().isEmpty()) {
+        recordDir = RemoteFiles::videoDir();
+    }
+    const QJsonArray order = obj.value("connectOrder").toArray();
+    if (!order.isEmpty()) {
+        connectOrder.clear();
+        for (int i = 0; i < order.size(); ++i) {
+            const QString step = order.at(i).toString();
+            if (step == "reverse" || step == "direct" || step == "udp" || step == "relay") {
+                connectOrder.append(step);
+            }
+        }
+    }
+    if (connectOrder.isEmpty()) {
+        connectOrder << "reverse" << "direct" << "relay";
+    }
+    if (udpPunch && !connectOrder.contains("udp")) {
+        const int at = connectOrder.indexOf("direct");
+        connectOrder.insert(at >= 0 ? at : connectOrder.size(), "udp");
+    }
     if (defaultFps < RemoteConst::kMaxFpsMin) {
         defaultFps = RemoteConst::kMaxFpsMin;
     }
     if (defaultFps > RemoteConst::kMaxFpsMax) {
         defaultFps = RemoteConst::kMaxFpsMax;
     }
-    if (defaultQuality < 0 || defaultQuality > 2) {
+    if (defaultQuality < 0 || defaultQuality > 3) {
         defaultQuality = 1;
     }
     if (streamCodec < 0 || streamCodec > 3) {
         streamCodec = 0;
+    }
+    if (customLongEdge < 320) {
+        customLongEdge = 320;
+    }
+    if (customFps < RemoteConst::kMaxFpsMin) {
+        customFps = RemoteConst::kMaxFpsMin;
     }
 }
 
@@ -117,6 +181,24 @@ void ControlConfig::save() const
     obj.insert("defaultQuality", defaultQuality);
     obj.insert("streamCodec", streamCodec);
     obj.insert("adaptive", adaptive);
+    obj.insert("idleMinutes", idleMinutes);
+    obj.insert("bandwidthKbps", bandwidthKbps);
+    obj.insert("watermarkOn", watermarkOn);
+    obj.insert("watermarkText", watermarkText);
+    obj.insert("customLongEdge", customLongEdge);
+    obj.insert("customFps", customFps);
+    obj.insert("customBitrateKbps", customBitrateKbps);
+    obj.insert("udpPunch", udpPunch);
+    obj.insert("highestPrivilege", highestPrivilege);
+    obj.insert("logDisk", logDisk);
+    obj.insert("logPictureDisk", logPictureDisk);
+    obj.insert("logRotateMinutes", logRotateMinutes);
+    obj.insert("logKeepDays", logKeepDays);
+    QJsonArray order;
+    for (int i = 0; i < connectOrder.size(); ++i) {
+        order.append(connectOrder.at(i));
+    }
+    obj.insert("connectOrder", order);
     QSaveFile file(m_path);
     if (file.open(QIODevice::WriteOnly)) {
         file.write(QJsonDocument(obj).toJson());
@@ -139,6 +221,25 @@ void ControlConfig::purgeRecords() const
             QFile::remove(info.absoluteFilePath());
         }
     }
+}
+
+bool ControlConfig::effectiveHighestPrivilege(int deviceTriState, bool accountOn) const
+{
+    if (highestPrivilege) {
+        return true;
+    }
+    if (deviceTriState == 1) {
+        return true;
+    }
+    if (deviceTriState == 0) {
+        return false;
+    }
+    return accountOn;
+}
+
+void ControlConfig::applyRunLog() const
+{
+    RemoteLog::applyDisk(logDisk, logPictureDisk, logRotateMinutes, logKeepDays);
 }
 
 void ControlConfig::applyAutoStart() const

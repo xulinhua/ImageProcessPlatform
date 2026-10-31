@@ -7,6 +7,7 @@
  */
 
 #include "RemoteAuthHost.h"
+#include "RemotePaths.h"
 
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
@@ -24,6 +25,7 @@ RemoteAuthHost::RemoteAuthHost()
     , m_destroy(0)
     , m_file(false)
     , m_perms(1)
+    , m_highestPrivilege(true)
 {
 }
 
@@ -60,7 +62,8 @@ void RemoteAuthHost::load()
             FreeLibrary(mod);
         }
     }
-    const std::wstring file = dir + L"accounts.json";
+    RemotePaths::ensureLayout();
+    const std::wstring file = RemotePaths::configFileW(L"accounts.json");
     m_file = GetFileAttributesW(file.c_str()) != INVALID_FILE_ATTRIBUTES;
 }
 
@@ -79,6 +82,10 @@ bool RemoteAuthHost::login(const std::string& user, const std::string& password)
         m_user = result.user[0] ? result.user : user;
         m_role = result.role;
         m_perms = result.perms == 0 ? 1 : result.perms;
+        m_highestPrivilege = result.highestPrivilege != 0;
+        if (m_role == "viewer") {
+            m_highestPrivilege = false;
+        }
         return true;
     }
     return loginFile(user, password);
@@ -86,16 +93,8 @@ bool RemoteAuthHost::login(const std::string& user, const std::string& password)
 
 bool RemoteAuthHost::loginFile(const std::string& user, const std::string& password)
 {
-    wchar_t path[MAX_PATH];
-    if (GetModuleFileNameW(0, path, MAX_PATH) == 0) {
-        return false;
-    }
-    std::wstring file = path;
-    const size_t slash = file.find_last_of(L"\\/");
-    if (slash != std::wstring::npos) {
-        file.resize(slash + 1);
-    }
-    file += L"accounts.json";
+    RemotePaths::ensureLayout();
+    const std::wstring file = RemotePaths::configFileW(L"accounts.json");
     std::ifstream in(file);
     if (!in) {
         return false;
@@ -124,8 +123,17 @@ bool RemoteAuthHost::loginFile(const std::string& user, const std::string& passw
         }
     }
     m_perms = 1 | 2 | 4 | 8 | 16 | 32;
+    m_highestPrivilege = true;
+    const size_t high = text.find("\"highestPrivilege\":", at);
+    if (high != std::string::npos && high < at + 320) {
+        const size_t value = high + 19;
+        if (text.compare(value, 5, "false") == 0 || text.compare(value, 1, "0") == 0) {
+            m_highestPrivilege = false;
+        }
+    }
     if (m_role == "viewer") {
         m_perms = 1;
+        m_highestPrivilege = false;
     }
     return true;
 }
@@ -143,6 +151,11 @@ const std::string& RemoteAuthHost::role() const
 uint32_t RemoteAuthHost::perms() const
 {
     return m_perms;
+}
+
+bool RemoteAuthHost::highestPrivilege() const
+{
+    return m_highestPrivilege;
 }
 
 }

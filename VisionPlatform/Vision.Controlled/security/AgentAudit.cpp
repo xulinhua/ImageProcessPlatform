@@ -7,12 +7,12 @@
  */
 
 #include "AgentAudit.h"
+#include "RemotePaths.h"
 
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif
 #include <windows.h>
-#include <shlobj.h>
 
 #include <stdio.h>
 
@@ -23,13 +23,8 @@ void AgentAudit::add(const char* event, const std::string& detail)
     if (!event || !event[0]) {
         return;
     }
-    wchar_t roaming[MAX_PATH];
-    if (FAILED(SHGetFolderPathW(0, CSIDL_APPDATA, 0, 0, roaming))) {
-        return;
-    }
-    std::wstring dir = roaming;
-    dir += L"\\RemoteClient\\audit";
-    CreateDirectoryW((std::wstring(roaming) + L"\\RemoteClient").c_str(), 0);
+    RemotePaths::ensureLayout();
+    std::wstring dir = RemotePaths::logDirW() + L"\\audit";
     CreateDirectoryW(dir.c_str(), 0);
     SYSTEMTIME now;
     GetLocalTime(&now);
@@ -49,18 +44,14 @@ void AgentAudit::add(const char* event, const std::string& detail)
             line += ch;
         }
     }
-    char stamp[40];
-    sprintf_s(stamp, "%04u-%02u-%02u %02u:%02u:%02u", now.wYear, now.wMonth, now.wDay, now.wHour, now.wMinute, now.wSecond);
-    line += "\",\"time\":\"";
-    line += stamp;
-    line += "\"}\n";
-    std::lock_guard<std::mutex> lock(m_mu);
-    FILE* file = 0;
-    if (_wfopen_s(&file, path.c_str(), L"ab") != 0 || !file) {
+    line += "\"}\r\n";
+    HANDLE file = CreateFileW(path.c_str(), FILE_APPEND_DATA, FILE_SHARE_READ, 0, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
+    if (file == INVALID_HANDLE_VALUE) {
         return;
     }
-    fwrite(line.data(), 1, line.size(), file);
-    fclose(file);
+    DWORD written = 0;
+    WriteFile(file, line.data(), static_cast<DWORD>(line.size()), &written, 0);
+    CloseHandle(file);
 }
 
 }

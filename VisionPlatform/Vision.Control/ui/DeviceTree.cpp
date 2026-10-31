@@ -202,7 +202,7 @@ DeviceTree::DeviceTree(QWidget* parent)
     , m_newGroup(RemoteTheme::button(QString::fromUtf8("新建分组"), "plus", 0, this))
     , m_wake(RemoteTheme::button(QString::fromUtf8("远程唤醒"), "zap", 0, this))
 {
-    // 控件初始化；远程唤醒未实现，置灰
+    // 远程唤醒：向设备 MAC 发魔术包（需设备库填写 MAC）
     setObjectName("side");
     setAttribute(Qt::WA_StyledBackground);
     setFixedWidth(270);

@@ -82,6 +82,7 @@
     <ClCompile Include="security\FirewallRule.cpp" />
     <ClCompile Include="security\RemoteAuth.cpp" />
     <ClCompile Include="security\RemoteIdentity.cpp" />
+    <ClCompile Include="security\RemotePaths.cpp" />
     <ClCompile Include="security\TlsPipe.cpp" />
     <ClCompile Include="codec\H264Codec.cpp" />
   </ItemGroup>
@@ -94,6 +95,7 @@
     <ClInclude Include="security\IRemoteAuth.h" />
     <ClInclude Include="security\RemoteAuth.h" />
     <ClInclude Include="security\RemoteIdentity.h" />
+    <ClInclude Include="security\RemotePaths.h" />
     <ClInclude Include="security\TlsPipe.h" />
     <ClInclude Include="codec\H264Codec.h" />
   </ItemGroup>

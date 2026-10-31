@@ -138,6 +138,16 @@ public:
     void setSelfName(const std::string& name);
     /** @brief 是否在延迟很高时通知被控端降画质。关掉后帧率保持在会话上限 */
     void setAdaptive(bool on);
+    /** @brief 无本地操作超过分钟数时断开全部会话，0 关闭 */
+    void setIdleMinutes(int minutes);
+    /** @brief 下行带宽上限 kbps，0 不限（会话下发时参考） */
+    void setBandwidthKbps(int kbps);
+    /** @brief 拨号顺序：reverse / direct / relay */
+    void setConnectOrder(const std::vector<std::string>& order);
+    /** @brief 记录中控台本地活动（键鼠、申请操作等） */
+    void touchLocalActivity();
+    /** @brief 空闲超时时关闭全部在线连接 */
+    void disconnectIfIdle();
     /**
      * @brief 先 stop() 再开始监听，清空已知设备并启动读写线程
      * @param err 失败原因
@@ -153,7 +163,8 @@ public:
      * @param deviceId 被控端设备 ID
      */
     bool dialDevice(const std::string& address, const std::string& deviceId,
-        const std::string& relayHost, int relayPort, const std::string& token, std::string* err);
+        const std::string& relayHost, int relayPort, const std::string& token, bool relayOn,
+        const std::vector<std::string>& order, std::string* err);
     /** @brief 所有设备状态的拷贝，含最新 JPEG */
     std::vector<Tile> tiles() const;
 
@@ -282,6 +293,10 @@ private:
     bool m_run;                         ///< 线程运行标志，stop() 置 false
     bool m_listening;                   ///< 监听中
     bool m_adaptive;                    ///< 延迟很高时才向被控端报拥塞
+    int m_idleMinutes;                  ///< 无本地操作断开分钟，0 关
+    int m_bandwidthKbps;                ///< 带宽上限
+    std::vector<std::string> m_connectOrder;
+    uint64_t m_lastLocalActivity;       ///< 中控台本地活动时间
     std::string m_selfName;             ///< 回给被控端的控制端显示名，UTF-8
     std::vector<Machine> m_machines;    ///< 已知被控端，含已绑定但离线的条目
 };

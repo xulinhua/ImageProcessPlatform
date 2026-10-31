@@ -33,6 +33,8 @@ public:
     void setOnPause(const std::function<void()>& pause);
     /** @brief 点“断开”时回调 */
     void setOnDisconnect(const std::function<void()>& disconnect);
+    /** @brief 点“聊天”时回调；空则按钮禁用 */
+    void setOnChat(const std::function<void()>& chat);
     /** @brief 未显示时显示；首次显示放到主屏顶部正中 */
     void showAtTop();
 
@@ -48,11 +50,13 @@ private:
     QLabel* m_text;                         ///< 状态文字：“xx 正在远程操作此电脑”或“已暂停”
     QLabel* m_live;                         ///< 录制圆点：操作中红色，现场暂停时黄色
     QPushButton* m_pause;                   ///< “暂停操作”按钮
+    QPushButton* m_chat;                    ///< “聊天”按钮
     bool m_drag;                            ///< 是否正在拖动
     int m_dragX;                            ///< 按下时光标全局横坐标与窗口左边的差
     bool m_placed;                          ///< 是否已放过初始位置
     std::function<void()> m_pauseFn;        ///< 暂停操作回调，可空
     std::function<void()> m_disconnectFn;   ///< 断开回调，可空
+    std::function<void()> m_chatFn;         ///< 聊天回调，可空
 };
 
 }

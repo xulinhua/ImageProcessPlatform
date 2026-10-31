@@ -13,9 +13,20 @@ namespace Vision {
 WindowInput::WindowInput()
     : m_haveLast(false)
     , m_pauseUntil(0)
+    , m_mode(0)
 {
     m_last.x = 0;
     m_last.y = 0;
+}
+
+void WindowInput::setMode(int mode)
+{
+    m_mode = mode != 0 ? 1 : 0;
+}
+
+int WindowInput::mode() const
+{
+    return m_mode;
 }
 
 int WindowInput::integrityRid(HANDLE token) const
@@ -244,6 +255,94 @@ int WindowInput::edgeOf(const InputMsg& msg)
 void WindowInput::post(HWND hwnd, const InputMsg& msg, uint32_t clientW, uint32_t clientH, uint32_t imageW, uint32_t imageH)
 {
     if (!hwnd || imageW == 0 || imageH == 0 || clientW == 0 || clientH == 0) {
+        return;
+    }
+    if (m_mode == 1) {
+        SetForegroundWindow(hwnd);
+        int x = static_cast<int>(static_cast<uint64_t>(msg.x) * clientW / imageW);
+        int y = static_cast<int>(static_cast<uint64_t>(msg.y) * clientH / imageH);
+        if (x < 0) {
+            x = 0;
+        }
+        if (y < 0) {
+            y = 0;
+        }
+        if (x >= static_cast<int>(clientW)) {
+            x = static_cast<int>(clientW) - 1;
+        }
+        if (y >= static_cast<int>(clientH)) {
+            y = static_cast<int>(clientH) - 1;
+        }
+        POINT origin;
+        origin.x = 0;
+        origin.y = 0;
+        ClientToScreen(hwnd, &origin);
+        RECT screen;
+        screen.left = origin.x;
+        screen.top = origin.y;
+        screen.right = origin.x + static_cast<LONG>(clientW);
+        screen.bottom = origin.y + static_cast<LONG>(clientH);
+        InputMsg screenMsg = msg;
+        screenMsg.x = static_cast<uint16_t>(x);
+        screenMsg.y = static_cast<uint16_t>(y);
+        const int sx = origin.x + x;
+        const int sy = origin.y + y;
+        const int vx = GetSystemMetrics(SM_XVIRTUALSCREEN);
+        const int vy = GetSystemMetrics(SM_YVIRTUALSCREEN);
+        const int vw = GetSystemMetrics(SM_CXVIRTUALSCREEN);
+        const int vh = GetSystemMetrics(SM_CYVIRTUALSCREEN);
+        if (vw <= 1 || vh <= 1) {
+            return;
+        }
+        INPUT in;
+        ZeroMemory(&in, sizeof(in));
+        if (screenMsg.vk != 0) {
+            in.type = INPUT_KEYBOARD;
+            in.ki.wVk = static_cast<WORD>(screenMsg.vk);
+            in.ki.dwFlags = screenMsg.down ? 0 : KEYEVENTF_KEYUP;
+            SendInput(1, &in, sizeof(in));
+            markHeld(0, screenMsg.vk, 0, 0, screenMsg.down != 0);
+            return;
+        }
+        int cx = sx;
+        int cy = sy;
+        if (cx < screen.left) {
+            cx = screen.left;
+        }
+        if (cy < screen.top) {
+            cy = screen.top;
+        }
+        if (cx >= screen.right) {
+            cx = screen.right - 1;
+        }
+        if (cy >= screen.bottom) {
+            cy = screen.bottom - 1;
+        }
+        in.type = INPUT_MOUSE;
+        in.mi.dx = static_cast<LONG>((cx - vx) * 65535 / (vw - 1));
+        in.mi.dy = static_cast<LONG>((cy - vy) * 65535 / (vh - 1));
+        in.mi.dwFlags = MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_VIRTUALDESK | MOUSEEVENTF_MOVE;
+        const int edge = edgeOf(screenMsg);
+        if (screenMsg.wheel != 0) {
+            in.mi.dwFlags = MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_VIRTUALDESK | MOUSEEVENTF_WHEEL;
+            in.mi.mouseData = static_cast<DWORD>(screenMsg.wheel * WHEEL_DELTA);
+        } else if (edge > 0 && (screenMsg.buttons & 1)) {
+            in.mi.dwFlags |= MOUSEEVENTF_LEFTDOWN;
+        } else if (edge < 0 && (screenMsg.buttons & 1)) {
+            in.mi.dwFlags |= MOUSEEVENTF_LEFTUP;
+        } else if (edge > 0 && (screenMsg.buttons & 2)) {
+            in.mi.dwFlags |= MOUSEEVENTF_RIGHTDOWN;
+        } else if (edge < 0 && (screenMsg.buttons & 2)) {
+            in.mi.dwFlags |= MOUSEEVENTF_RIGHTUP;
+        } else if (edge > 0 && (screenMsg.buttons & 4)) {
+            in.mi.dwFlags |= MOUSEEVENTF_MIDDLEDOWN;
+        } else if (edge < 0 && (screenMsg.buttons & 4)) {
+            in.mi.dwFlags |= MOUSEEVENTF_MIDDLEUP;
+        }
+        SendInput(1, &in, sizeof(in));
+        if (screenMsg.wheel == 0 && edge != 0) {
+            markHeld(0, 0, lowestButton(screenMsg.buttons), 0, edge > 0);
+        }
         return;
     }
     // 图像坐标按比例换成客户区坐标，并夹在客户区内

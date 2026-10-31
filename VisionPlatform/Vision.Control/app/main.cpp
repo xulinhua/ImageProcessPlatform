@@ -9,6 +9,7 @@
 #include "ControlWindow.h"
 #include "RemoteCrash.h"
 #include "RemoteLog.h"
+#include "RemotePaths.h"
 #include "RemoteTheme.h"
 #include <QApplication>
 #include <QMessageBox>
@@ -66,11 +67,12 @@ HANDLE takeControlMutex(bool* already)
 
 int main(int argc, char* argv[])
 {
+    fixWorkingDirectory();
+    Vision::RemotePaths::ensureLayout();
     Vision::RemoteCrash::install("master");
     Vision::RemoteLog::install("master");
     Vision::RemoteCrash::checkpoint("main.enter");
     Vision::RemoteLog::writef(Vision::RemoteLog::Info, "启动", "中控台启动");
-    fixWorkingDirectory();
     Vision::RemoteCrash::checkpoint("main.cwd");
     HMODULE user = GetModuleHandleW(L"user32.dll");
     typedef BOOL (WINAPI *SetDpiContext)(HANDLE);

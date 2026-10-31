@@ -89,8 +89,9 @@ public:
         std::string controller;     ///< 申请方显示名，可空
         std::string host;           ///< 申请方地址（即反连的控制端地址）
         int secondsLeft;            ///< 剩余秒数，向上取整；无申请为 0
+        uint32_t requestPerms;      ///< 申请中的权限位
         /** @brief 无申请 */
-        Pending() : active(false), seq(0), secondsLeft(0) {}
+        Pending() : active(false), seq(0), secondsLeft(0), requestPerms(PermView) {}
     };
 
     static const int kConfirmMs = 30000;    ///< 现场确认的等待时长 ms，超时回 AuthAck code 4
@@ -151,11 +152,15 @@ public:
     void setPolicy(int confirm, const std::vector<std::string>& trusted, bool lockOnEnd);
     /** @brief 允许远端的权限，Perm* 按位或。观看始终保留。关掉操作会立刻收回键鼠 */
     void setAllow(uint32_t mask);
+    /**
+     * @brief 允许最高权限：对中控台开放全部权限，跳过现场确认/工站拦截；中控台 AuthMethodHighest 始终放行
+     */
+    void setAllowHighest(bool on);
     /** @brief 当前是否允许这一项。bit 取 PermOperate 等 */
     bool allows(uint32_t bit) const;
     /** @brief 允许远端的权限掩码，含观看 */
     uint32_t allowMask() const;
-    /** @brief 文件传输允许的根目录。空则用 D:\，D:\ 不存在时退回系统盘 */
+    /** @brief 文件传输允许的根目录。空=全部盘符；非空=仅这些盘或目录 */
     void setFileRoots(const std::vector<std::wstring>& roots);
     /**
      * @brief 抓屏 / 编码流水线。0=抓屏线程内联编码，1=独立编码线程（抓/编/发重叠）
@@ -223,8 +228,14 @@ public:
     bool tlsReady() const;
     /** @brief 当前等确认的申请快照 */
     Pending pending() const;
-    /** @brief 现场的答复。seq 不是当前申请时忽略 */
-    void answerAuth(uint64_t seq, bool allow);
+    /** @brief 进程画面键鼠：0 PostMessage，1 前台 SendInput */
+    void setInjectMode(int mode);
+    /** @brief 主控制台之外还要尝试反连的 host:port 列表 */
+    void setExtraHosts(const std::vector<std::pair<std::string, int> >& hosts);
+    /** @brief 向当前中控台发一条聊天；name 空则用本机名 */
+    void sendChat(const std::string& text, const std::string& name = std::string());
+    /** @brief 现场的答复。seq 不是当前申请时忽略；allow 时 perms 为授予的权限位 */
+    void answerAuth(uint64_t seq, bool allow, uint32_t perms = PermView);
     /** @brief 现场收回操作，控制端回到只看 */
     void pauseOperate();
     /** @brief 断开当前控制端，直到 resume 才重连 */
@@ -322,6 +333,8 @@ private:
     bool makeDirectory(const std::wstring& path) const;
     /** @brief CPU、内存、磁盘，以及工站一句 */
     std::string systemText() const;
+    /** @brief 进程列表，前缀 PROCESSES\\n，供会话独立进程页 */
+    std::string processListText() const;
     /** @brief 文件 SHA-256 小写十六进制。打不开返回空 */
     std::string sha256File(const std::wstring& path) const;
     /** @brief 再反连一台中控台，只看；操作权要等交接 */
@@ -397,6 +410,8 @@ private:
     int m_preferCodec;              ///< 0 自动，1 JPEG，2 H.264，3 原图
     std::string m_host;             ///< 控制端地址
     int m_port;                     ///< 控制端端口
+    std::vector<std::pair<std::string, int> > m_extraHosts; ///< 额外反连目标
+    size_t m_connectTry;            ///< 收包线程重连时轮询的目标下标
     std::string m_status;           ///< 状态文字，界面显示用；“本地暂停”同时作为 localPause 的判断依据
     bool m_desktop;                 ///< true 共享整个桌面，false 共享进程画面
     std::string m_source;           ///< 共享源显示文字，进 Hello 与扫描应答
@@ -408,6 +423,9 @@ private:
     int m_captureMs;                ///< 抓屏间隔 ms，由 maxFps 换算；抓屏线程每帧末尾 Sleep
     int m_jpegQuality;              ///< JPEG 质量 1–100，主码流
     int m_longEdge;                 ///< 主码流长边上限
+    int m_targetBitrateBps;         ///< 目标码率（比特/秒），0 不限；兼作发送侧带宽封顶
+    uint64_t m_sendWindowStart;     ///< 发送窗口起点（ms）
+    size_t m_sendWindowBytes;       ///< 本窗口已发送字节
     bool m_subMain;                 ///< 已订阅主码流；未收到 Subscribe 前保持开，兼容旧控制端
     bool m_subThumb;                ///< 已订阅子码流（监控墙）
     uint32_t m_shareGen;            ///< 共享源变化计数。抓屏线程看到增加就补一帧关键帧
@@ -445,6 +463,7 @@ private:
     int m_relayPort;                ///< 中继端口
     std::string m_relayToken;       ///< 中继口令
     bool m_production;              ///< 生产保护：操作必须现场确认
+    bool m_allowHighest;            ///< 允许中控台最高权限（满权限、免确认）
     bool m_stationBlock;            ///< 工站文件要求禁止操作
     std::string m_stationText;      ///< 工站状态，拼进系统信息
     PictureMsg m_thumb;             ///< 子码流 JPEG

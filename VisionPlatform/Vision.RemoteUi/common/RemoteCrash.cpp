@@ -7,13 +7,13 @@
  */
 
 #include "RemoteCrash.h"
+#include "RemotePaths.h"
 
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif
 #include <windows.h>
 #include <dbghelp.h>
-#include <shlobj.h>
 
 #include <csignal>
 #include <cstdio>
@@ -28,7 +28,6 @@
 #endif
 
 #pragma comment(lib, "dbghelp.lib")
-#pragma comment(lib, "shell32.lib")
 
 namespace Vision {
 
@@ -188,16 +187,12 @@ void ensureLogPath()
     if (!g_logPath.empty()) {
         return;
     }
-    wchar_t dir[MAX_PATH] = {};
-    if (FAILED(SHGetFolderPathW(0, CSIDL_LOCAL_APPDATA, 0, 0, dir))) {
-        GetTempPathW(MAX_PATH, dir);
-    }
-    std::wstring folder = dir;
-    folder += L"\\Vision.Remote\\";
-    CreateDirectoryW(folder.c_str(), 0);
+    RemotePaths::ensureLayout();
+    std::wstring folder = RemotePaths::logDirW();
+    folder += L"\\";
     folder += widen(g_role.c_str());
     folder += L"-crash.log";
-    g_logPath = narrow(folder.c_str());
+    g_logPath = RemotePaths::narrow(folder);
 }
 
 void writeReport(const char* kind, const std::string& detail, CONTEXT* ctx, bool fatal)
@@ -289,13 +284,9 @@ void emergencyLog(const char* text)
     if (!text) {
         return;
     }
-    wchar_t dir[MAX_PATH] = {};
-    if (FAILED(SHGetFolderPathW(0, CSIDL_LOCAL_APPDATA, 0, 0, dir))) {
-        return;
-    }
-    std::wstring path = dir;
-    path += L"\\Vision.Remote\\";
-    CreateDirectoryW(path.c_str(), 0);
+    RemotePaths::ensureLayout();
+    std::wstring path = RemotePaths::logDirW();
+    path += L"\\";
     path += widen(g_role.c_str());
     path += L"-crash.log";
     HANDLE file = CreateFileW(path.c_str(), FILE_APPEND_DATA, FILE_SHARE_READ | FILE_SHARE_WRITE, 0,

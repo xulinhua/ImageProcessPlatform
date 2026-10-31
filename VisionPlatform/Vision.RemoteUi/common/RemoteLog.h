@@ -1,6 +1,6 @@
 /**
  * @file RemoteLog.h
- * @brief 中控台 / 被控端共用运行日志：内存环、落盘、高精度毫秒计时
+ * @brief 中控台 / 被控端共用运行日志：内存环、可选落盘、按小时切分
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -20,8 +20,8 @@ namespace Vision {
 
 /**
  * @class RemoteLog
- * @brief 线程安全诊断日志。RemoteLogWindow 用 pull 取增量；writef 同时追加到角色日志文件
- * @note 在 main 里 RemoteCrash::install 之后调 install(role)。未安装时只写内存
+ * @brief 线程安全诊断日志。默认只写内存；写盘默认关，设置里打开后按滚动间隔切文件
+ * @note main 里 RemoteCrash::install 之后调 install(role)。落盘策略用 applyDisk / set*
  */
 class RemoteLog {
 public:
@@ -42,10 +42,19 @@ public:
     };
 
     /**
-     * @brief 设角色并打开落盘文件（%LOCALAPPDATA%\\Vision.Remote\\{role}-run.log）
+     * @brief 设角色；不打开文件（写盘默认关）
      * @param role master / client 等
      */
     static void install(const char* role);
+
+    /**
+     * @brief 应用落盘策略（设置加载或应用后调用）
+     * @param diskEnabled 是否写盘，默认关
+     * @param pictureDisk 画面/发送/接收/解码 的 Info 是否落盘
+     * @param rotateMinutes 滚动间隔分钟，建议 15/30/60/120，最小 15
+     * @param keepDays 保留天数，<=0 不清理
+     */
+    static void applyDisk(bool diskEnabled, bool pictureDisk, int rotateMinutes, int keepDays);
 
     /** @brief 单调毫秒时间戳，用于算步骤差 */
     static uint64_t tickMs();
@@ -70,8 +79,11 @@ public:
     /** @brief 清空内存环（文件保留） */
     static void clear();
 
-    /** @brief 当前日志文件路径 UTF-8；未安装时为空串 */
+    /** @brief 当前日志文件路径 UTF-8；未开写盘时为日志目录 */
     static const char* filePath();
+
+    /** @brief 是否正在写盘 */
+    static bool diskEnabled();
 
 private:
     RemoteLog();
@@ -81,16 +93,28 @@ private:
     void stamp(char* buf, size_t cap) const;
     void pushLocked(Level level, const char* tag, const char* text);
     bool throttleInfoLocked(const char* tag);
+    bool isPictureTag(const char* tag) const;
+    void closeFileLocked();
+    void openBucketLocked();
+    void purgeOldLocked();
+    std::wstring bucketNameLocked() const;
 
     std::mutex m_mu;
     std::deque<Line> m_lines;
     uint64_t m_nextSeq;
+    std::string m_role;
     std::string m_path;
+    std::string m_dirUtf8;
     FILE* m_file;
+    std::wstring m_openName;
     mutable long long m_freq;
     uint64_t m_bucketMs;
     int m_bucketCount;
-    uint64_t m_lastFlushMs; ///< 上次 fflush；热路径不每行刷盘，避免拖慢收发包
+    uint64_t m_lastFlushMs;
+    bool m_disk;
+    bool m_pictureDisk;
+    int m_rotateMinutes;
+    int m_keepDays;
 };
 
 }

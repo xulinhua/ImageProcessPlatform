@@ -28,7 +28,7 @@ class SwitchButton;
 /**
  * @class SettingsDialog
  * @brief 控制端设置对话框：左侧导航六页，编辑 ControlConfig 的字段
- * @note 只在「应用」「确定」时写回并保存配置；未实现的设置项只占位置灰
+ * @note 只在「应用」「确定」时写回并保存配置
  */
 class SettingsDialog : public QDialog {
 public:
@@ -97,6 +97,20 @@ private:
     QLineEdit* m_recordDir;         ///< 录屏目录
     QSpinBox* m_recordDays;         ///< 录屏保留天数
     QSpinBox* m_auditDays;          ///< 审计保留 7~3650 天
+    QSpinBox* m_idle;               ///< 空闲断开分钟
+    QSpinBox* m_bandwidth;          ///< 带宽上限 kbps
+    SwitchButton* m_watermarkOn;    ///< 叠加水印
+    QLineEdit* m_watermarkText;     ///< 水印文字
+    QListWidget* m_orderList;       ///< 连接顺序
+    QSpinBox* m_customEdge;         ///< 自定义长边
+    QSpinBox* m_customFps;          ///< 自定义帧率
+    QSpinBox* m_customBitrate;      ///< 自定义码率
+    SwitchButton* m_udpPunch;       ///< UDP 局域网发现后再直连
+    SwitchButton* m_highestPrivilege; ///< 最高权限（全局默认开）
+    SwitchButton* m_logDisk;        ///< 运行日志写盘
+    SwitchButton* m_logPictureDisk; ///< 画面链路写盘
+    QComboBox* m_logRotate;         ///< 滚动间隔分钟
+    QSpinBox* m_logKeepDays;        ///< 运行日志保留天数
 };
 
 }

@@ -42,6 +42,9 @@ AgentSession::AgentSession()
     , m_captureMs(RemoteConst::kCaptureMs)
     , m_jpegQuality(RemoteConst::kJpegQuality)
     , m_longEdge(RemoteConst::kLongEdge)
+    , m_targetBitrateBps(0)
+    , m_sendWindowStart(0)
+    , m_sendWindowBytes(0)
     , m_subMain(true)
     , m_subThumb(false)
     , m_shareGen(0)
@@ -70,6 +73,7 @@ AgentSession::AgentSession()
     , m_relayOn(false)
     , m_relayPort(19200)
     , m_production(false)
+    , m_allowHighest(false)
     , m_stationBlock(false)
     , m_thumbSeq(0)
     , m_thumbSent(0)
@@ -110,6 +114,7 @@ AgentSession::AgentSession()
     , m_deviceId(readDeviceId())
     , m_system(readSystemName())
     , m_pendingPerms(PermView)
+    , m_connectTry(0)
 {
     RemoteCrash::checkpoint("AgentSession.ctor");
     m_auth.refreshCode();
@@ -574,6 +579,12 @@ void AgentSession::setAllow(uint32_t mask)
     }
 }
 
+void AgentSession::setAllowHighest(bool on)
+{
+    std::lock_guard<std::mutex> lock(m_mu);
+    m_allowHighest = on;
+}
+
 bool AgentSession::allows(uint32_t bit) const
 {
     std::lock_guard<std::mutex> lock(m_mu);
@@ -643,6 +654,9 @@ bool AgentSession::tlsReady() const
 
 bool AgentSession::needConfirm() const
 {
+    if (m_allowHighest) {
+        return false;
+    }
     if (m_production) {
         return true;
     }
@@ -669,10 +683,46 @@ AgentSession::Pending AgentSession::pending() const
     out.host = m_host;
     const uint64_t now = nowMs();
     out.secondsLeft = m_pendingActive && m_pendingDeadline > now ? static_cast<int>((m_pendingDeadline - now + 999) / 1000) : 0;
+    out.requestPerms = m_pendingActive ? m_pendingPerms : PermView;
     return out;
 }
 
-void AgentSession::answerAuth(uint64_t seq, bool allow)
+void AgentSession::setInjectMode(int mode)
+{
+    m_input.setMode(mode);
+}
+
+void AgentSession::setExtraHosts(const std::vector<std::pair<std::string, int> >& hosts)
+{
+    {
+        std::lock_guard<std::mutex> lock(m_mu);
+        m_extraHosts = hosts;
+        m_connectTry = 0;
+    }
+    // 额外中控台并行反连：主会话之外用 WatchLink 推流（最多 3 路）
+    for (size_t i = 0; i < hosts.size() && i < 3; ++i) {
+        inviteViewer(hosts[i].first, hosts[i].second);
+    }
+}
+
+void AgentSession::sendChat(const std::string& text, const std::string& name)
+{
+    if (text.empty()) {
+        return;
+    }
+    std::string who = name;
+    if (who.empty()) {
+        char host[256];
+        host[0] = 0;
+        DWORD n = static_cast<DWORD>(sizeof(host));
+        GetComputerNameA(host, &n);
+        who = host[0] ? host : "被控端";
+    }
+    std::string err;
+    enqueue(Messages::packChat(who, text, &err, 0));
+}
+
+void AgentSession::answerAuth(uint64_t seq, bool allow, uint32_t perms)
 {
     AuthResultMsg ack;
     {
@@ -683,7 +733,7 @@ void AgentSession::answerAuth(uint64_t seq, bool allow)
         m_pendingActive = false;
         if (allow && !m_operating) {
             ack.code = 0;
-            ack.perms = m_pendingPerms | PermView;
+            ack.perms = (perms | PermView) & m_allow;
             m_operating = (ack.perms & PermOperate) != 0;
             if (m_operating) {
                 m_operated = true;
@@ -808,6 +858,9 @@ void AgentSession::applyControl(const ConfigMsg& cfg)
         }
         if (cfg.longEdge > 0) {
             m_longEdge = cfg.longEdge < 320 ? 320 : cfg.longEdge;
+        }
+        if (cfg.bitrateKbps > 0) {
+            m_targetBitrateBps = static_cast<int>(cfg.bitrateKbps) * 1000;
         }
         bool codecChanged = false;
         if (cfg.codec >= 1 && cfg.codec <= 3 && m_preferCodec != static_cast<int>(cfg.codec)) {
@@ -973,18 +1026,26 @@ void AgentSession::stepAdapt(bool bad, uint64_t now)
 
 void AgentSession::setFileRoots(const std::vector<std::wstring>& roots)
 {
-    std::vector<std::wstring> next = roots;
-    if (next.empty()) {
-        if (GetDriveTypeW(L"D:\\") != DRIVE_NO_ROOT_DIR && GetDriveTypeW(L"D:\\") != DRIVE_UNKNOWN) {
-            next.push_back(L"D:\\");
-        } else {
-            wchar_t windir[MAX_PATH];
-            if (GetWindowsDirectoryW(windir, MAX_PATH) > 0 && windir[1] == L':') {
-                next.push_back(std::wstring(1, windir[0]) + L":\\");
-            } else {
-                next.push_back(L"C:\\");
+    // 空 = 不限制，列目录时动态枚举全部盘符；非空 = 仅这些盘/目录
+    std::vector<std::wstring> next;
+    for (size_t i = 0; i < roots.size(); ++i) {
+        std::wstring root = roots[i];
+        while (!root.empty() && (root.back() == L' ' || root.back() == L'\t')) {
+            root.pop_back();
+        }
+        if (root.empty()) {
+            continue;
+        }
+        if (root.size() == 2 && root[1] == L':') {
+            root += L'\\';
+        } else if (root.back() != L'\\' && root.back() != L'/') {
+            // 目录根统一带尾斜杠，便于前缀匹配
+            const DWORD attr = GetFileAttributesW(root.c_str());
+            if (attr != INVALID_FILE_ATTRIBUTES && (attr & FILE_ATTRIBUTE_DIRECTORY)) {
+                root += L'\\';
             }
         }
+        next.push_back(root);
     }
     std::lock_guard<std::mutex> lock(m_mu);
     m_roots.swap(next);
@@ -1246,15 +1307,29 @@ bool AgentSession::encodePicture(const CommBytes& bgra, int width, int height, i
     }
     ew = ew < 2 ? 2 : (ew & ~1);
     eh = eh < 2 ? 2 : (eh & ~1);
-    // 桌面文字要明显更高 bpp；清晰档约 0.45（1600x992@30 ≈ 21Mbps，封顶 24）
-    const double bpp = 0.12 + static_cast<double>(q) / 100.0 * 0.40;
-    int bitrate = static_cast<int>(static_cast<double>(ew) * static_cast<double>(eh)
-        * static_cast<double>(encFps) * bpp);
-    if (bitrate < 4000000) {
-        bitrate = 4000000;
+    int bitrate = 0;
+    {
+        std::lock_guard<std::mutex> lock(m_mu);
+        bitrate = m_targetBitrateBps;
     }
-    if (bitrate > 24000000) {
-        bitrate = 24000000;
+    if (bitrate <= 0) {
+        // 桌面文字要更高 bpp；清晰档约 0.55，封顶 40Mbps
+        const double bpp = 0.18 + static_cast<double>(q) / 100.0 * 0.45;
+        bitrate = static_cast<int>(static_cast<double>(ew) * static_cast<double>(eh)
+            * static_cast<double>(encFps) * bpp);
+        if (bitrate < 6000000) {
+            bitrate = 6000000;
+        }
+        if (bitrate > 40000000) {
+            bitrate = 40000000;
+        }
+    } else {
+        if (bitrate < 100000) {
+            bitrate = 100000;
+        }
+        if (bitrate > 50000000) {
+            bitrate = 50000000;
+        }
     }
     if (!m_h264.encode(bgra, width, height, longEdge, encFps, bitrate, &annex, &outW, &outH, &key)) {
         if (m_h264.isBroken()) {
@@ -1955,9 +2030,32 @@ void AgentSession::readMain()
             }
             if (takeInbound()) {
                 err.clear();
-            } else if (!m_tcp.open(m_host, m_port, 2000, &err) && !openViaRelay(&err)) {
-                Sleep(1000);
-                continue;
+            } else {
+                // 主地址 + 额外中控台：本轮依次尝试，直到连上或全部失败再中继
+                std::vector<std::pair<std::string, int> > targets;
+                {
+                    std::lock_guard<std::mutex> lock(m_mu);
+                    if (!m_host.empty() && m_port > 0) {
+                        targets.push_back(std::make_pair(m_host, m_port));
+                    }
+                    for (size_t i = 0; i < m_extraHosts.size(); ++i) {
+                        targets.push_back(m_extraHosts[i]);
+                    }
+                }
+                bool opened = false;
+                for (size_t i = 0; i < targets.size(); ++i) {
+                    const size_t pick = (m_connectTry + i) % targets.size();
+                    if (m_tcp.open(targets[pick].first, targets[pick].second, 1500, &err)) {
+                        opened = true;
+                        m_connectTry = (pick + 1) % targets.size();
+                        break;
+                    }
+                }
+                if (!opened && !openViaRelay(&err)) {
+                    m_connectTry += 1;
+                    Sleep(1000);
+                    continue;
+                }
             }
             RemoteCrash::checkpoint("AgentSession.tcp_open");
             std::string peerFp;
@@ -2034,8 +2132,16 @@ void AgentSession::readMain()
             const Frame::Packet& packet = packets[i];
             if (packet.channel == Frame::ChInput && packet.type == Frame::TypeSpecial) {
                 SpecialMsg special;
-                if (Messages::unpackSpecial(packet.payload, &special) && special.kind == SpecialMsg::KindCad) {
-                    AgentService::requestCad();
+                if (Messages::unpackSpecial(packet.payload, &special)) {
+                    if (special.kind == SpecialMsg::KindCad) {
+                        AgentService::requestCad();
+                    } else if (special.kind == SpecialMsg::KindPrintScreen) {
+                        keybd_event(VK_SNAPSHOT, 0, 0, 0);
+                        keybd_event(VK_SNAPSHOT, 0, KEYEVENTF_KEYUP, 0);
+                    } else if (special.kind == SpecialMsg::KindProcessList) {
+                        std::string err;
+                        enqueue(Messages::packSysInfo(processListText(), &err));
+                    }
                 }
                 continue;
             }
@@ -2134,7 +2240,12 @@ void AgentSession::readMain()
                         ack.code = 2;
                     } else {
                         bool authed = false;
-                        if (auth.method == AuthMethodCode) {
+                        const bool highestMethod = auth.method == AuthMethodHighest;
+                        const bool useHighest = highestMethod || m_allowHighest;
+                        if (highestMethod) {
+                            // 中控台单边最高权限：跳过口令/信任校验
+                            authed = true;
+                        } else if (auth.method == AuthMethodCode) {
                             authed = m_auth.checkCode(auth.token);
                         } else if (auth.method == AuthMethodPassword) {
                             authed = m_auth.checkPassword(auth.token);
@@ -2159,12 +2270,12 @@ void AgentSession::readMain()
                                 ack.code = 5;
                                 ack.triesLeft = m_auth.triesLeft();
                             }
-                        } else if (m_stationBlock && (auth.perms & PermOperate) != 0) {
+                        } else if (!useHighest && m_stationBlock && (auth.perms & PermOperate) != 0) {
                             ack.code = 2;
                             ack.perms = PermView;
                         } else {
-                            m_pendingPerms = (auth.perms | PermView) & m_allow;
-                            if (needConfirm()) {
+                            m_pendingPerms = useHighest ? PermAll : ((auth.perms | PermView) & m_allow);
+                            if (!useHighest && needConfirm()) {
                                 m_pendingActive = true;
                                 m_pendingSeq += 1;
                                 m_pendingDeadline = nowMs() + kConfirmMs;
@@ -2345,12 +2456,36 @@ void AgentSession::writeMain()
         }
         bool sentPicture = false;
         if (seq != sent) {
+            int budgetBps = 0;
+            {
+                std::lock_guard<std::mutex> lock(m_mu);
+                budgetBps = m_targetBitrateBps;
+            }
+            bool allow = true;
+            if (budgetBps > 0) {
+                if (m_sendWindowStart == 0 || now - m_sendWindowStart >= 1000) {
+                    m_sendWindowStart = now;
+                    m_sendWindowBytes = 0;
+                }
+                const size_t cap = static_cast<size_t>(budgetBps / 8);
+                if (m_sendWindowBytes >= cap) {
+                    allow = false;
+                    std::lock_guard<std::mutex> lock(m_mu);
+                    m_sentSeq = seq;
+                }
+            }
+            if (!allow) {
+                continue;
+            }
             const uint64_t t0 = RemoteLog::tickMs();
             const CommBytes packet = Messages::packPicture(picture, Frame::ChVideo, &err);
             const uint64_t packMs = RemoteLog::tickMs() - t0;
             const uint64_t t1 = RemoteLog::tickMs();
             const bool ok = m_tcp.write("", packet, 1000, &err);
             const uint64_t writeMs = RemoteLog::tickMs() - t1;
+            if (ok) {
+                m_sendWindowBytes += packet.size();
+            }
             int backlog = 0;
             {
                 std::lock_guard<std::mutex> lock(m_mu);

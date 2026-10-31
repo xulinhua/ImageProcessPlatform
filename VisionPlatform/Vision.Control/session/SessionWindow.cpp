@@ -28,6 +28,7 @@
 #include <QGridLayout>
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QListWidget>
 #include <QLineEdit>
 #include <QPushButton>
 #include <QRadioButton>
@@ -86,6 +87,9 @@ SessionWindow::SessionWindow(ControlSession* session, const ControlConfig* confi
     , m_aviW(0)
     , m_aviH(0)
     , m_aviLast(0)
+    , m_processList(0)
+    , m_processRefresh(0)
+    , m_highestPrivilege(false)
 {
     setAttribute(Qt::WA_DeleteOnClose);
     resize(1440, 860);
@@ -109,6 +113,10 @@ SessionWindow::SessionWindow(ControlSession* session, const ControlConfig* confi
 
     m_view->setFit(m_config->fitDefault);
     m_fitSeg->setCurrent(m_config->fitDefault ? 0 : 1);
+    if (m_config) {
+        m_view->setWatermark(m_config->watermarkOn,
+            m_config->watermarkText.isEmpty() ? RemoteFiles::selfName() : m_config->watermarkText);
+    }
     m_view->setSender([this](const InputMsg& msg) {
         if (!m_tile.peerId.empty()) {
             m_session->sendInput(m_tile.peerId, msg);
@@ -159,7 +167,7 @@ QWidget* SessionWindow::buildToolbar()
     row->setContentsMargins(10, 8, 10, 8);
     row->setSpacing(5);
 
-    // 建按钮；markLater 的是后续期次才实现的功能，只占位
+    // 建工具条按钮
     QPushButton* back = RemoteTheme::button(QString::fromUtf8("监控墙"), "left", 0, bar);
     m_operate = RemoteTheme::button(QString::fromUtf8("申请操作"), "mouse", "primary", bar);
     m_monitors = new SegmentBar(bar);
@@ -167,10 +175,11 @@ QWidget* SessionWindow::buildToolbar()
     m_quality->addItem(QString::fromUtf8("流畅"));
     m_quality->addItem(QString::fromUtf8("均衡"));
     m_quality->addItem(QString::fromUtf8("清晰"));
-    m_quality->setCurrentIndex(m_config && m_config->defaultQuality >= 0 && m_config->defaultQuality <= 2
+    m_quality->addItem(QString::fromUtf8("自定义"));
+    m_quality->setCurrentIndex(m_config && m_config->defaultQuality >= 0 && m_config->defaultQuality <= 3
         ? m_config->defaultQuality : 1);
     m_quality->setFixedWidth(96);
-    m_quality->setToolTip(QString::fromUtf8("流畅：低画质高帧率；清晰：高画质低带宽压力"));
+    m_quality->setToolTip(QString::fromUtf8("流畅/均衡/清晰为预设；自定义用设置里的长边、帧率、码率"));
     m_codec = new QComboBox(bar);
     m_codec->addItem(QString::fromUtf8("沿用"), 0);
     m_codec->addItem(QString::fromUtf8("JPEG"), 1);
@@ -215,6 +224,8 @@ QWidget* SessionWindow::buildToolbar()
     m_chat->setToolTip(QString::fromUtf8("显示或隐藏右侧面板"));
     m_shot = RemoteTheme::button(QString(), "camera", "icon", bar);
     m_shot->setToolTip(QString::fromUtf8("截图"));
+    QPushButton* printScr = RemoteTheme::button(QString(), "keyboard", "icon", bar);
+    printScr->setToolTip(QString::fromUtf8("PrintScreen（被控端全屏截图）"));
     m_record = RemoteTheme::button(QString::fromUtf8("录屏"), "record", 0, bar);
     m_record->setToolTip(QString::fromUtf8("把主码流录成 MJPEG AVI，保存在截图目录"));
     m_privacy = RemoteTheme::button(QString(), "shield", "icon", bar);
@@ -263,6 +274,7 @@ QWidget* SessionWindow::buildToolbar()
     row->addWidget(file);
     row->addWidget(m_chat);
     row->addWidget(m_shot);
+    row->addWidget(printScr);
     row->addWidget(m_record);
     row->addWidget(m_privacy);
     row->addStretch(1);
@@ -280,8 +292,8 @@ QWidget* SessionWindow::buildToolbar()
     m_monitors->setOnChanged([this](int index) { pickMonitor(index); });
     QObject::connect(m_quality, QOverload<int>::of(&QComboBox::currentIndexChanged), [this](int index) {
         // 切档时顺带把帧率上限调到该档推荐值，用户仍可再改
-        const int presets[] = { 60, 30, 20 };
-        if (index >= 0 && index < 3) {
+        const int presets[] = { 60, 30, 20, m_config ? m_config->customFps : 30 };
+        if (index >= 0 && index < 4) {
             m_maxFps->blockSignals(true);
             m_maxFps->setValue(presets[index]);
             m_maxFps->blockSignals(false);
@@ -308,6 +320,14 @@ QWidget* SessionWindow::buildToolbar()
     QObject::connect(clip, &QPushButton::clicked, [this]() { pushClipboard(); });
     QObject::connect(file, &QPushButton::clicked, [this]() { openFiles(); });
     QObject::connect(m_shot, &QPushButton::clicked, [this]() { takeShot(); });
+    QObject::connect(printScr, &QPushButton::clicked, [this]() {
+        if (m_online && m_tile.operating) {
+            m_session->sendSpecial(m_tile.peerId, SpecialMsg::KindPrintScreen);
+            addEvent(QString::fromUtf8("已发送 PrintScreen"));
+        } else {
+            flash(QString::fromUtf8("需要在线并持有操作权"));
+        }
+    });
     QObject::connect(m_record, &QPushButton::clicked, [this]() { toggleRecord(); });
     QObject::connect(m_privacy, &QPushButton::clicked, [this]() { togglePrivacy(); });
     QObject::connect(power, &QPushButton::clicked, [this, power]() {
@@ -345,7 +365,7 @@ QWidget* SessionWindow::buildPanel()
 
     m_pages = new QStackedWidget(panel);
 
-    // 聊天页：上面是会话事件列表，文字聊天未实现
+    // 聊天页：上面是会话事件列表，下面发文字/弹窗
     QWidget* chat = new QWidget(m_pages);
     QVBoxLayout* chatRoot = new QVBoxLayout(chat);
     chatRoot->setContentsMargins(0, 0, 0, 0);
@@ -448,11 +468,34 @@ QWidget* SessionWindow::buildPanel()
     m_infoRtt = addInfo(grid, 8, QString::fromUtf8("延迟"));
     m_infoBytes = addInfo(grid, 9, QString::fromUtf8("已接收"));
     m_infoUptime = addInfo(grid, 10, QString::fromUtf8("在线时长"));
-    QLabel* link = addInfo(grid, 11, QString::fromUtf8("连接"));
+    m_infoProcess = addInfo(grid, 11, QString::fromUtf8("系统"));
+    m_infoProcess->setWordWrap(true);
+    QLabel* procKey = new QLabel(QString::fromUtf8("进程"), info);
+    procKey->setProperty("role", "key");
+    grid->addWidget(procKey, 12, 0, Qt::AlignRight | Qt::AlignTop);
+    m_processList = new QListWidget(info);
+    m_processList->setMinimumHeight(140);
+    m_processList->setAlternatingRowColors(true);
+    m_processRefresh = RemoteTheme::button(QString::fromUtf8("刷新进程"), "refresh", 0, info);
+    m_processRefresh->setProperty("size", "sm");
+    QVBoxLayout* procCol = new QVBoxLayout();
+    procCol->setContentsMargins(0, 0, 0, 0);
+    procCol->setSpacing(6);
+    procCol->addWidget(m_processList, 1);
+    procCol->addWidget(m_processRefresh, 0, Qt::AlignLeft);
+    grid->addLayout(procCol, 12, 1, 1, 2);
+    QObject::connect(m_processRefresh, &QPushButton::clicked, [this]() {
+        if (!m_online || !m_session) {
+            return;
+        }
+        m_session->sendSpecial(m_tile.peerId, SpecialMsg::KindProcessList);
+        addEvent(QString::fromUtf8("已请求进程列表"));
+    });
+    QLabel* link = addInfo(grid, 13, QString::fromUtf8("连接"));
     link->setText(QString::fromUtf8("反连 · TCP %1").arg(m_config->port));
     QLabel* cryptoKey = new QLabel(QString::fromUtf8("加密"), info);
     cryptoKey->setProperty("role", "key");
-    grid->addWidget(cryptoKey, 12, 0);
+    grid->addWidget(cryptoKey, 14, 0);
     QHBoxLayout* cryptoRow = new QHBoxLayout();
     m_infoCrypto = new TagLabel(QString::fromUtf8("TLS"), "green", info);
     cryptoRow->addWidget(m_infoCrypto);
@@ -460,9 +503,9 @@ QWidget* SessionWindow::buildPanel()
     m_infoFingerprint->setProperty("role", "mono");
     m_infoFingerprint->setTextInteractionFlags(Qt::TextSelectableByMouse);
     cryptoRow->addWidget(m_infoFingerprint, 1);
-    grid->addLayout(cryptoRow, 12, 1);
+    grid->addLayout(cryptoRow, 14, 1);
     grid->setColumnStretch(1, 1);
-    grid->setRowStretch(13, 1);
+    grid->setRowStretch(15, 1);
     m_pages->addWidget(info);
 
     // 快捷键页：静态说明
@@ -614,19 +657,39 @@ void SessionWindow::fillQuality(ConfigMsg* cfg) const
     if (!cfg) {
         return;
     }
-    // 0 流畅 / 1 均衡 / 2 清晰
+    // 0 流畅 / 1 均衡 / 2 清晰 / 3 自定义（设置里的长边、帧率、码率）
     const int index = m_quality ? m_quality->currentIndex() : 1;
+    cfg->bitrateKbps = 0;
     if (index <= 0) {
         cfg->jpegQuality = 40;
         cfg->longEdge = 960;
+        cfg->bitrateKbps = 1500;
+    } else if (index == 3 && m_config) {
+        cfg->jpegQuality = 70;
+        cfg->longEdge = static_cast<uint16_t>(m_config->customLongEdge < 320 ? 320 : m_config->customLongEdge);
+        cfg->bitrateKbps = static_cast<uint16_t>(m_config->customBitrateKbps < 100 ? 100 : m_config->customBitrateKbps);
     } else if (index >= 2) {
         cfg->jpegQuality = 80;
         cfg->longEdge = 1600;
+        cfg->bitrateKbps = 8000;
     } else {
         cfg->jpegQuality = static_cast<uint8_t>(RemoteConst::kJpegQuality);
         cfg->longEdge = static_cast<uint16_t>(RemoteConst::kLongEdge);
+        cfg->bitrateKbps = 4000;
     }
     cfg->maxFps = static_cast<uint16_t>(m_maxFps ? m_maxFps->value() : RemoteConst::kMaxFpsDefault);
+    if (m_config && m_config->bandwidthKbps > 0) {
+        const int cap = m_config->bandwidthKbps / 80;
+        if (cap > 0 && cfg->maxFps > static_cast<uint16_t>(cap)) {
+            cfg->maxFps = static_cast<uint16_t>(cap);
+        }
+        if (cfg->longEdge > 960 && m_config->bandwidthKbps < 1500) {
+            cfg->longEdge = 960;
+        }
+        if (cfg->bitrateKbps == 0 || cfg->bitrateKbps > static_cast<uint16_t>(m_config->bandwidthKbps)) {
+            cfg->bitrateKbps = static_cast<uint16_t>(m_config->bandwidthKbps);
+        }
+    }
     if (m_codec) {
         cfg->codec = static_cast<uint8_t>(m_codec->currentData().toInt());
     }
@@ -643,6 +706,24 @@ ConfigMsg SessionWindow::makeConfig() const
     return cfg;
 }
 
+void SessionWindow::setDevicePrefs(int quality, const QString& savedPassword, bool highestPrivilege)
+{
+    m_savedPassword = savedPassword;
+    m_highestPrivilege = highestPrivilege;
+    if (quality >= 0 && quality <= 3 && m_quality) {
+        m_quality->blockSignals(true);
+        m_quality->setCurrentIndex(quality);
+        m_quality->blockSignals(false);
+        if (m_maxFps && m_config) {
+            const int presets[] = { 60, 30, 20, m_config->customFps };
+            m_maxFps->blockSignals(true);
+            m_maxFps->setValue(presets[quality]);
+            m_maxFps->blockSignals(false);
+        }
+        pushPictureConfig(QString::fromUtf8("设备默认画质"));
+    }
+}
+
 void SessionWindow::usePictureDefaults()
 {
     if (m_quality) {
@@ -655,7 +736,7 @@ void SessionWindow::usePictureDefaults()
         m_maxFps->blockSignals(true);
     }
     if (m_config) {
-        if (m_quality && m_config->defaultQuality >= 0 && m_config->defaultQuality <= 2) {
+        if (m_quality && m_config->defaultQuality >= 0 && m_config->defaultQuality <= 3) {
             m_quality->setCurrentIndex(m_config->defaultQuality);
         }
         if (m_codec) {
@@ -714,6 +795,15 @@ void SessionWindow::requestOperate()
     if (!m_online || m_tile.operating) {
         return;
     }
+    if (m_highestPrivilege) {
+        m_session->requestOperate(m_tile.peerId, AuthMethodHighest, std::string());
+        if (m_audit) {
+            m_audit->add("operate.highest", m_name, QString::fromUtf8(m_tile.deviceId.c_str()),
+                QString::fromUtf8(m_tile.address.c_str()), QString::fromUtf8("最高权限申请操作"));
+        }
+        addEvent(QString::fromUtf8("最高权限申请操作"));
+        return;
+    }
     QDialog dialog(this);
     dialog.setWindowFlags(dialog.windowFlags() & ~Qt::WindowContextHelpButtonHint);
     dialog.setWindowTitle(QString::fromUtf8("申请操作"));
@@ -724,6 +814,10 @@ void SessionWindow::requestOperate()
     byCode->setChecked(true);
     QLineEdit* token = new QLineEdit(&dialog);
     token->setPlaceholderText(QString::fromUtf8("输入验证码或密码"));
+    if (!m_savedPassword.isEmpty()) {
+        byPass->setChecked(true);
+        token->setText(m_savedPassword);
+    }
     QPushButton* ok = RemoteTheme::button(QString::fromUtf8("申请"), 0, "primary", &dialog);
     QPushButton* cancel = RemoteTheme::button(QString::fromUtf8("取消"), 0, 0, &dialog);
     QVBoxLayout* root = new QVBoxLayout(&dialog);
@@ -922,10 +1016,33 @@ void SessionWindow::refresh(const ControlSession::Tile* tile, const QString& nam
                 m_chatSeen = tile->chatSeq;
                 addEvent(QString::fromUtf8(tile->chatLine.c_str()));
             }
-            if (!tile->sysInfo.empty() && m_infoSystem) {
-                m_infoSystem->setText(QString::fromUtf8(tile->system.c_str()) + QString::fromUtf8(" · ")
-                    + QString::fromUtf8(tile->sysInfo.c_str()));
+            if (m_infoSystem) {
+                m_infoSystem->setText(QString::fromUtf8(tile->system.c_str())
+                    + (tile->sysInfo.empty() ? QString() : QString::fromUtf8(" · ") + QString::fromUtf8(tile->sysInfo.c_str())));
                 m_infoSystem->setWordWrap(true);
+            }
+            if (m_infoProcess || m_processList) {
+                QString sys = QString::fromUtf8(tile->sysInfo.c_str());
+                if (sys.startsWith(QString::fromUtf8("PROCESSES\n"))) {
+                    if (m_processList) {
+                        m_processList->clear();
+                        const QStringList rows = sys.mid(10).split(QChar('\n'), Qt::SkipEmptyParts);
+                        m_processList->addItems(rows);
+                    }
+                } else if (m_infoProcess) {
+                    const int cut = sys.indexOf(QString::fromUtf8("\n进程:"));
+                    m_infoProcess->setText(sys.isEmpty() ? QString::fromUtf8("等待被控端推送…")
+                        : (cut > 0 ? sys.left(cut) : sys));
+                    if (m_processList && cut > 0) {
+                        m_processList->clear();
+                        const QStringList rows = sys.mid(cut + 4).split(QChar('\n'), Qt::SkipEmptyParts);
+                        m_processList->addItems(rows);
+                    }
+                }
+            }
+            if (m_config) {
+                m_view->setWatermark(m_config->watermarkOn,
+                    m_config->watermarkText.isEmpty() ? RemoteFiles::selfName() : m_config->watermarkText);
             }
             if (tile->viewerSeq != m_viewerSeen && m_extraViewers) {
                 m_viewerSeen = tile->viewerSeq;

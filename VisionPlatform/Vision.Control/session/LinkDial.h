@@ -10,6 +10,7 @@
 #define VISION_CONTROL_LINK_DIAL_H
 
 #include <string>
+#include <vector>
 
 namespace Vision {
 
@@ -29,8 +30,20 @@ public:
     bool reach(RemoteTcpServer* server, const std::string& address, int directPort,
         const std::string& relayHost, int relayPort, const std::string& token,
         const std::string& deviceId, std::string* err) const;
+    /**
+     * @brief 按 order 尝试：direct / relay / udp（UDP 发现后再直连）；reverse 跳过（等被控反连）
+     */
+    bool reachOrdered(RemoteTcpServer* server, const std::string& address, int directPort,
+        const std::string& relayHost, int relayPort, const std::string& token,
+        const std::string& deviceId, const std::vector<std::string>& order, bool relayOn,
+        std::string* err) const;
 
 private:
+    bool tryDirect(RemoteTcpServer* server, const std::string& address, int directPort, std::string* err) const;
+    bool tryRelay(RemoteTcpServer* server, const std::string& relayHost, int relayPort, const std::string& token,
+        const std::string& deviceId, std::string* err) const;
+    /** @brief UDP 局域网发现：按 deviceId 匹配 Announce，再直连其地址 */
+    bool tryUdpPunch(RemoteTcpServer* server, const std::string& deviceId, int directPort, std::string* err) const;
     /** @brief 带超时的 TCP 连接，成功返回套接字，失败返回 0 */
     uintptr_t openTcp(const std::string& host, int port, int timeoutMs, std::string* err) const;
     /** @brief 写一行并读回一行。读到换行就停，避免吃掉后面的 TLS */

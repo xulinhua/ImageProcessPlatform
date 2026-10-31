@@ -1,6 +1,6 @@
 /**
  * @file AddDeviceDialog.h
- * @brief 添加设备：局域网扫描、按 IP 地址、按设备 ID（第五期）
+ * @brief 添加设备：局域网扫描、按 IP 地址、按设备 ID（中继）
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -24,6 +24,7 @@ class QTableWidget;
 namespace Vision {
 
 class DeviceStore;
+class ControlConfig;
 
 /**
  * @class AddDeviceDialog
@@ -39,6 +40,7 @@ public:
         QString alias;      ///< 手填 IP 时用户填的名称，可空；扫描添加时为空
         QString address;    ///< IP 地址
         QString system;     ///< 系统版本，手填 IP 时为空
+        QString deviceId;   ///< 按设备 ID 添加时的 ID
     };
 
     /**
@@ -47,8 +49,8 @@ public:
      * @param scanner 执行一次局域网扫描并返回结果
      * @param group 默认选中的分组，不存在时选未分组
      */
-    AddDeviceDialog(const DeviceStore* store, const std::function<std::vector<HelloMsg>()>& scanner,
-        const QString& group, QWidget* parent = 0);
+    AddDeviceDialog(const DeviceStore* store, const ControlConfig* config,
+        const std::function<std::vector<HelloMsg>()>& scanner, const QString& group, QWidget* parent = 0);
 
     /** @brief 当前页签下选中的设备：扫描页为勾选项，IP 页为合法且未登记的那一个 */
     std::vector<Pick> picks() const;
@@ -83,6 +85,8 @@ private:
     QTableWidget* m_table;                              ///< 扫描结果表，第 0 列勾选框的 UserRole 存 m_found 下标
     QLineEdit* m_ipName;                                ///< IP 页：名称
     QLineEdit* m_ip;                                    ///< IP 页：IPv4 地址
+    QLineEdit* m_deviceId;                              ///< 设备 ID 页
+    const ControlConfig* m_config;                      ///< 中继设置，不拥有
     QComboBox* m_group;                                 ///< 加入分组，data 为分组名
     QLabel* m_count;                                    ///< 底部计数或提示
     QPushButton* m_ok;                                  ///< 添加按钮，无可添加项时禁用

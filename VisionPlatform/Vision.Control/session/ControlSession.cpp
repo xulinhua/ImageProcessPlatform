@@ -19,6 +19,9 @@ ControlSession::ControlSession()
     : m_run(false)
     , m_listening(false)
     , m_adaptive(true)
+    , m_idleMinutes(0)
+    , m_bandwidthKbps(0)
+    , m_lastLocalActivity(0)
 {
     RemoteCrash::checkpoint("ControlSession.ctor");
     std::string err;
@@ -60,6 +63,46 @@ void ControlSession::setAdaptive(bool on)
     m_adaptive = on;
 }
 
+void ControlSession::setIdleMinutes(int minutes)
+{
+    std::lock_guard<std::mutex> lock(m_mu);
+    m_idleMinutes = minutes < 0 ? 0 : minutes;
+}
+
+void ControlSession::setBandwidthKbps(int kbps)
+{
+    std::lock_guard<std::mutex> lock(m_mu);
+    m_bandwidthKbps = kbps < 0 ? 0 : kbps;
+}
+
+void ControlSession::setConnectOrder(const std::vector<std::string>& order)
+{
+    std::lock_guard<std::mutex> lock(m_mu);
+    m_connectOrder = order;
+}
+
+void ControlSession::touchLocalActivity()
+{
+    std::lock_guard<std::mutex> lock(m_mu);
+    m_lastLocalActivity = nowMs();
+}
+
+void ControlSession::disconnectIfIdle()
+{
+    std::lock_guard<std::mutex> lock(m_mu);
+    if (m_idleMinutes <= 0 || m_lastLocalActivity == 0) {
+        return;
+    }
+    if (nowMs() - m_lastLocalActivity < static_cast<uint64_t>(m_idleMinutes) * 60000ULL) {
+        return;
+    }
+    const std::vector<CommPeer> peers = m_tcp.peers();
+    for (size_t i = 0; i < peers.size(); ++i) {
+        m_tcp.closePeer(peers[i].id);
+    }
+    m_lastLocalActivity = nowMs();
+}
+
 bool ControlSession::start(const std::string& host, int port, std::string* err)
 {
     RemoteCrash::checkpoint("ControlSession.start");
@@ -95,6 +138,7 @@ bool ControlSession::start(const std::string& host, int port, std::string* err)
             m_run = true;
             m_listening = true;
             m_machines.clear();
+            m_lastLocalActivity = nowMs();
         }
         m_read = std::thread(&ControlSession::readMain, this);
         m_write = std::thread(&ControlSession::writeMain, this);
@@ -234,6 +278,7 @@ void ControlSession::adoptHello(const std::string& peerId, const HelloMsg& hello
 void ControlSession::requestOperate(const std::string& peerId, uint8_t method, const std::string& token)
 {
     std::lock_guard<std::mutex> lock(m_mu);
+    m_lastLocalActivity = nowMs();
     const int index = indexOfPeer(peerId);
     if (index < 0 || !m_machines[static_cast<size_t>(index)].tile.online) {
         return;
@@ -241,9 +286,9 @@ void ControlSession::requestOperate(const std::string& peerId, uint8_t method, c
     Machine& machine = m_machines[static_cast<size_t>(index)];
     machine.auth.method = method;
     machine.auth.token = token;
-    machine.auth.perms = PermDefaultRequest;
+    machine.auth.perms = method == AuthMethodHighest ? PermAll : PermDefaultRequest;
     machine.wantAuth = true;
-    machine.tile.hint = "正在申请操作…";
+    machine.tile.hint = method == AuthMethodHighest ? "最高权限申请操作…" : "正在申请操作…";
 }
 
 void ControlSession::pushConfig(const std::string& peerId, const ConfigMsg& cfg)
@@ -286,6 +331,7 @@ void ControlSession::sendInput(const std::string& peerId, const InputMsg& msg)
 {
     std::string err;
     std::lock_guard<std::mutex> lock(m_mu);
+    m_lastLocalActivity = nowMs();
     const int index = indexOfPeer(peerId);
     if (index < 0 || !m_machines[static_cast<size_t>(index)].tile.operating) {
         return;
@@ -484,6 +530,8 @@ void ControlSession::readMain()
                         machine.tile.thumbSeq += 1;
                     } else {
                         machine.tile.pictureSeq += 1;
+                        // 有主画面到达也算会话活跃，避免只盯墙看时误判空闲断开
+                        m_lastLocalActivity = nowMs();
                         // H.264 / 原图在收包线程解成 BGRA。UI 100ms 才抽一次，中间帧不能丢，否则参考帧断了墙面一直黑
                         if (picCodec == 2 && !slot->empty()) {
                             if (!machine.videoDec) {
@@ -703,10 +751,16 @@ void ControlSession::writeMain()
 }
 
 bool ControlSession::dialDevice(const std::string& address, const std::string& deviceId,
-    const std::string& relayHost, int relayPort, const std::string& token, std::string* err)
+    const std::string& relayHost, int relayPort, const std::string& token, bool relayOn,
+    const std::vector<std::string>& order, std::string* err)
 {
     LinkDial dial;
-    return dial.reach(&m_tcp, address, 19102, relayHost, relayPort, token, deviceId, err);
+    std::vector<std::string> steps = order;
+    if (steps.empty()) {
+        steps.push_back("direct");
+        steps.push_back("relay");
+    }
+    return dial.reachOrdered(&m_tcp, address, 19102, relayHost, relayPort, token, deviceId, steps, relayOn, err);
 }
 
 }

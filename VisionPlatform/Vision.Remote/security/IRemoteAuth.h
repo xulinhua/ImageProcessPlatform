@@ -18,7 +18,8 @@ struct RemoteAuthResult {
     char user[64];              ///< 登录成功后的账号，空则调用方用输入的账号
     char role[32];              ///< 角色名。viewer 只看
     uint32_t perms;             ///< Perm* 位，0 时调用方按只看处理
-    RemoteAuthResult() : user(), role(), perms(1) {}
+    uint8_t highestPrivilege;   ///< 1 开 0 关；未填时默认 1
+    RemoteAuthResult() : user(), role(), perms(1), highestPrivilege(1) {}
 };
 
 /**

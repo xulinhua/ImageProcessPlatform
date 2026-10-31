@@ -10,6 +10,7 @@
 #define VISION_CONTROLLED_CONFIRM_DIALOG_H
 
 #include <QWidget>
+#include <cstdint>
 #include <functional>
 
 class QCheckBox;
@@ -37,12 +38,13 @@ public:
      * @param secondsLeft 剩余秒数，决定截止时刻
      * @param totalSeconds 总秒数，用于进度条比例，<=0 按 30
      */
-    void showRequest(uint64_t seq, const QString& controller, const QString& host, int secondsLeft, int totalSeconds);
+    void showRequest(uint64_t seq, const QString& controller, const QString& host, int secondsLeft, int totalSeconds,
+        uint32_t requestPerms = 0);
     /** @brief 当前显示的申请序号 */
     uint64_t seq() const;
 
-    /** @brief allow 为允许，trust 为以后信任这个控制端 */
-    void setOnAnswer(const std::function<void(uint64_t, bool, bool)>& answer);
+    /** @brief allow 为允许，trust 为以后信任；perms 为勾选的权限位（含观看） */
+    void setOnAnswer(const std::function<void(uint64_t, bool, bool, uint32_t)>& answer);
 
 private:
     /** @brief 每 100 ms 刷新进度条与剩余秒数，到时隐藏 */
@@ -54,11 +56,14 @@ private:
     QLabel* m_left;             ///< “N 秒后自动拒绝”
     QProgressBar* m_progress;   ///< 剩余时间进度条，范围 0 ~ 1000
     QCheckBox* m_trust;         ///< “以后信任这个控制端”，每次显示时清掉
+    QCheckBox* m_perms[6];      ///< 观看/操作/剪贴板/文件/电源/隐私屏
     QTimer* m_timer;            ///< 倒计时刷新定时器，100 ms
     uint64_t m_seq;             ///< 当前申请序号
     qint64 m_deadline;          ///< 截止时刻，墙钟 ms（QDateTime::currentMSecsSinceEpoch）
     int m_total;                ///< 申请总时长（秒），用于进度条比例
-    std::function<void(uint64_t, bool, bool)> m_answer; ///< 答复回调（序号、允许、信任），可空
+    std::function<void(uint64_t, bool, bool, uint32_t)> m_answer; ///< 答复回调，可空
+    /** @brief 勾选框对应的权限位 */
+    uint32_t grantedPerms() const;
 };
 
 }

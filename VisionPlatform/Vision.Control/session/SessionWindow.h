@@ -22,6 +22,7 @@ class QGridLayout;
 class QHBoxLayout;
 class QLabel;
 class QLineEdit;
+class QListWidget;
 class QPushButton;
 class QSpinBox;
 class QStackedWidget;
@@ -74,6 +75,11 @@ public:
     void setOnClosed(const std::function<void(const QString&)>& closed);
     /** @brief 用中控台设置里的默认画质和帧率，并下发 */
     void usePictureDefaults();
+    /**
+     * @brief 设备属性覆盖：quality -1 不改；savedPassword 用于申请操作预填
+     * @param highestPrivilege 开则申请操作走最高权限（免对话框、满权限）
+     */
+    void setDevicePrefs(int quality, const QString& savedPassword, bool highestPrivilege = false);
 
     /************************************************** 格式化 **************************************************/
     /** @brief 码率文字：>= 1000 kbps 显示 Mbps，保留一位小数 */
@@ -89,7 +95,7 @@ protected:
 
 private:
     /************************************************** 搭建 **************************************************/
-    /** @brief 顶部工具条；未实现的功能按钮置灰并提示所在期次 */
+    /** @brief 顶部工具条：操作、画质、编码、组合键、截图录屏、电源等 */
     QWidget* buildToolbar();
     /** @brief 右侧面板：聊天（暂记录会话事件）、会话信息、快捷键三页 */
     QWidget* buildPanel();
@@ -229,6 +235,11 @@ private:
     QLabel* m_infoRtt;              ///< 信息页：延迟
     QLabel* m_infoBytes;            ///< 信息页：已接收 MB
     QLabel* m_infoUptime;           ///< 信息页：在线时长
+    QLabel* m_infoProcess;          ///< 信息页：系统信息摘要
+    QListWidget* m_processList;     ///< 信息页：独立进程列表
+    QPushButton* m_processRefresh;  ///< 刷新进程列表
+    QString m_savedPassword;        ///< 设备属性里记住的无人值守密码
+    bool m_highestPrivilege;        ///< 最高权限：申请操作免认证对话框
     TagLabel* m_infoCrypto;         ///< 信息页：加密状态
     QLabel* m_infoFingerprint;      ///< 信息页：对端证书指纹
 

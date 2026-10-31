@@ -13,6 +13,7 @@
 #include <QCheckBox>
 #include <QCloseEvent>
 #include <QDesktopServices>
+#include <QFileInfo>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QPlainTextEdit>
@@ -172,12 +173,16 @@ void RemoteLogWindow::drain()
 
 void RemoteLogWindow::openFolder()
 {
-    const QString path = QString::fromUtf8(RemoteLog::filePath());
-    const int slash = path.lastIndexOf(QLatin1Char('\\'));
-    const QString dir = slash > 0 ? path.left(slash) : path;
-    if (!dir.isEmpty()) {
-        QDesktopServices::openUrl(QUrl::fromLocalFile(dir));
+    QString path = QString::fromUtf8(RemoteLog::filePath());
+    if (path.isEmpty()) {
+        return;
     }
+    // 未开写盘时 filePath 是日志目录；开写盘时是具体文件
+    const QFileInfo info(path);
+    if (info.isFile()) {
+        path = info.absolutePath();
+    }
+    QDesktopServices::openUrl(QUrl::fromLocalFile(path));
 }
 
 }

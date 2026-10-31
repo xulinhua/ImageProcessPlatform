@@ -21,6 +21,7 @@ namespace Vision {
 
 ControlBar::ControlBar(QWidget* parent)
     : QWidget(parent, Qt::Tool | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::WindowDoesNotAcceptFocus)
+    , m_chat(0)
     , m_drag(false)
     , m_dragX(0)
     , m_placed(false)
@@ -41,16 +42,17 @@ ControlBar::ControlBar(QWidget* parent)
         "QFrame#controlBar QPushButton[kind=\"dangerFill\"]{background:#FF4D4F;}"
         "QFrame#controlBar QPushButton[kind=\"dangerFill\"]:hover{background:#FF7875;}");
 
-    // 把手、状态点、文字，以及聊天（未提供）、暂停操作、断开三个按钮
+    // 把手、状态点、文字，以及聊天、暂停操作、断开
     QLabel* grip = new QLabel(QString::fromUtf8("⋮⋮"), box);
     grip->setStyleSheet("color:#8C8C8C;");
     grip->setCursor(Qt::SizeHorCursor);
     m_live = new QLabel(box);
     m_live->setFixedSize(14, 14);
     m_text = new QLabel(box);
-    QPushButton* chat = RemoteTheme::button(QString::fromUtf8("聊天"), 0, 0, box);
-    chat->setIcon(RemoteTheme::icon("chat", QColor("#FFFFFF"), 13));
-    RemoteTheme::markLater(chat, QString::fromUtf8("文字聊天在第四期"));
+    m_chat = RemoteTheme::button(QString::fromUtf8("聊天"), 0, 0, box);
+    m_chat->setIcon(RemoteTheme::icon("chat", QColor("#FFFFFF"), 13));
+    m_chat->setEnabled(false);
+    m_chat->setToolTip(QString::fromUtf8("向中控台发一条文字"));
     m_pause = RemoteTheme::button(QString::fromUtf8("暂停操作"), 0, 0, box);
     m_pause->setIcon(RemoteTheme::icon("pause", QColor("#FFFFFF"), 13));
     m_pause->setToolTip(QString::fromUtf8("收回操作权，对方回到只看"));
@@ -64,7 +66,7 @@ ControlBar::ControlBar(QWidget* parent)
     row->addWidget(grip);
     row->addWidget(m_live);
     row->addWidget(m_text);
-    row->addWidget(chat);
+    row->addWidget(m_chat);
     row->addWidget(m_pause);
     row->addWidget(close);
 
@@ -73,6 +75,11 @@ ControlBar::ControlBar(QWidget* parent)
     root->addWidget(box);
 
     // 按钮只转发给外部回调，会话逻辑在 AgentSession
+    QObject::connect(m_chat, &QPushButton::clicked, [this]() {
+        if (m_chatFn) {
+            m_chatFn();
+        }
+    });
     QObject::connect(m_pause, &QPushButton::clicked, [this]() {
         if (m_pauseFn) {
             m_pauseFn();
@@ -106,6 +113,14 @@ void ControlBar::setOnPause(const std::function<void()>& pause)
 void ControlBar::setOnDisconnect(const std::function<void()>& disconnect)
 {
     m_disconnectFn = disconnect;
+}
+
+void ControlBar::setOnChat(const std::function<void()>& chat)
+{
+    m_chatFn = chat;
+    if (m_chat) {
+        m_chat->setEnabled(static_cast<bool>(chat));
+    }
 }
 
 void ControlBar::showAtTop()

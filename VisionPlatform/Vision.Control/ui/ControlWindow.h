@@ -81,12 +81,16 @@ private:
     struct Seen {
         bool online;            ///< 上轮在线
         bool operating;         ///< 上轮持有操作权
+        bool highestTried;      ///< 本次在线已发过最高权限自动申请（释放后不重申，直到重连）
         std::string hint;       ///< 上轮的提示文字，UTF-8
         qint64 since;           ///< 本次上线时刻（epoch 毫秒），算会话时长
         qint64 operateSince;    ///< 本次取得操作权时刻（epoch 毫秒），算操作时长
         /** @brief 离线、未操作 */
-        Seen() : online(false), operating(false), since(0), operateSince(0) {}
+        Seen() : online(false), operating(false), highestTried(false), since(0), operateSince(0) {}
     };
+
+    /** @brief 按全局 > 单台 > 账户算出该设备是否走最高权限 */
+    bool highestForDevice(const QString& key) const;
 
     /** @brief 监控墙格子的解码缓存 */
     struct Picture {

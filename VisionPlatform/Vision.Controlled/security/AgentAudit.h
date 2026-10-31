@@ -1,6 +1,6 @@
 /**
  * @file AgentAudit.h
- * @brief 被控端本地审计，JSON Lines 按天落在 %APPDATA%\RemoteClient\audit
+ * @brief 被控端本地审计，JSON Lines 按天落在 exe旁\\exe名\\log\\audit
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.

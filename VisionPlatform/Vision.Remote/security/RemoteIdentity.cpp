@@ -7,6 +7,7 @@
  */
 
 #include "RemoteIdentity.h"
+#include "RemotePaths.h"
 
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
@@ -15,7 +16,6 @@
 #include <wincrypt.h>
 #include <ncrypt.h>
 #include <bcrypt.h>
-#include <shlobj.h>
 
 #include <vector>
 
@@ -123,13 +123,9 @@ PCCERT_CONTEXT RemoteIdentity::certificate() const
 
 std::wstring RemoteIdentity::storePath(const std::string& role)
 {
-    wchar_t dir[MAX_PATH] = {};
-    if (FAILED(SHGetFolderPathW(0, CSIDL_LOCAL_APPDATA, 0, 0, dir))) {
-        GetTempPathW(MAX_PATH, dir);
-    }
-    std::wstring path = dir;
-    path += L"\\Vision.Remote\\";
-    CreateDirectoryW(path.c_str(), 0);
+    RemotePaths::ensureLayout();
+    std::wstring path = RemotePaths::configDirW();
+    path += L"\\";
     path += widen(role.empty() ? "device" : role);
     path += L".pfx.dpapi";
     return path;

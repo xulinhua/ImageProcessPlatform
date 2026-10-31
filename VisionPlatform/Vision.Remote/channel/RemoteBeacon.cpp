@@ -213,18 +213,35 @@ std::vector<HelloMsg> RemoteBeacon::scan(int timeoutMs)
             if (!Messages::unpackAnnounce(packets[i].payload, &msg)) {
                 continue;
             }
-            // 地址取自应答来源；同一来源可能应答多次，按地址+名称+进程+标题去重
+            // 地址取自应答来源。本机同时收 127.0.0.1 与广播应答时，按设备 ID（或指纹）合并成一条，优先留局域网地址
             char ip[64];
             inet_ntop(AF_INET, &from.sin_addr, ip, sizeof(ip));
             msg.address = ip;
-            bool same = false;
+            const bool loopback = msg.address == "127.0.0.1" || msg.address == "::1";
+            size_t hit = found.size();
             for (size_t k = 0; k < found.size(); ++k) {
-                if (found[k].address == msg.address && found[k].name == msg.name && found[k].process == msg.process && found[k].title == msg.title) {
-                    same = true;
+                const bool sameId = !msg.deviceId.empty() && found[k].deviceId == msg.deviceId;
+                const bool sameFp = !msg.fingerprint.empty() && found[k].fingerprint == msg.fingerprint;
+                const bool sameAddr = found[k].address == msg.address && found[k].name == msg.name
+                    && found[k].process == msg.process && found[k].title == msg.title;
+                if (sameId || sameFp || sameAddr) {
+                    hit = k;
                     break;
                 }
             }
-            if (!same) {
+            if (hit < found.size()) {
+                HelloMsg& old = found[hit];
+                const bool oldLoop = old.address == "127.0.0.1" || old.address == "::1";
+                if (oldLoop && !loopback) {
+                    old.address = msg.address;
+                }
+                if (old.deviceId.empty() && !msg.deviceId.empty()) {
+                    old.deviceId = msg.deviceId;
+                }
+                if (old.fingerprint.empty() && !msg.fingerprint.empty()) {
+                    old.fingerprint = msg.fingerprint;
+                }
+            } else {
                 found.push_back(msg);
             }
         }

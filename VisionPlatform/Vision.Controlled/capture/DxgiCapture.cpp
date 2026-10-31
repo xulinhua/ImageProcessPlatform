@@ -15,6 +15,7 @@
 #include <d3d11.h>
 #include <dxgi1_2.h>
 
+#include <algorithm>
 #include <cstring>
 #include <vector>
 
@@ -68,7 +69,40 @@ struct DxgiCapture::Impl {
         }
     }
 
-    /** @brief 整帧拷贝。脏矩形不能当底图，首帧是黑的时没再脏到的地方会一直黑 */
+    /** @brief 把脏矩形区域从 src 合并进 held；held 尺寸须一致 */
+    bool mergeDirty(const unsigned char* src, int pitch, int w, int h, const RECT* rects, UINT count, bool* changed,
+        CommBytes* bgra)
+    {
+        if (!rects || count == 0 || heldW != w || heldH != h || held.size() != static_cast<size_t>(w) * 4 * static_cast<size_t>(h)) {
+            return false;
+        }
+        const size_t rowBytes = static_cast<size_t>(w) * 4;
+        bool touched = false;
+        for (UINT i = 0; i < count; ++i) {
+            const RECT r = rects[i];
+            const int y0 = (std::max)(0, static_cast<int>(r.top));
+            const int y1 = (std::min)(h, static_cast<int>(r.bottom));
+            const int x0 = (std::max)(0, static_cast<int>(r.left));
+            const int x1 = (std::min)(w, static_cast<int>(r.right));
+            if (y1 <= y0 || x1 <= x0) {
+                continue;
+            }
+            for (int y = y0; y < y1; ++y) {
+                std::memcpy(held.data() + static_cast<size_t>(y) * rowBytes + static_cast<size_t>(x0) * 4,
+                    src + static_cast<size_t>(y) * static_cast<size_t>(pitch) + static_cast<size_t>(x0) * 4,
+                    static_cast<size_t>(x1 - x0) * 4);
+            }
+            touched = true;
+        }
+        if (!touched) {
+            return false;
+        }
+        *changed = true;
+        copyHeldTo(bgra);
+        return true;
+    }
+
+    /** @brief 整帧拷贝。首帧无 held 时必须全量 */
     bool takeFrame(const unsigned char* src, int pitch, int w, int h, bool* changed, CommBytes* bgra)
     {
         const size_t rowBytes = static_cast<size_t>(w) * 4;
@@ -294,7 +328,22 @@ bool DxgiCapture::grab(int monitor, CommBytes* bgra, int* width, int* height, in
     const int w = static_cast<int>(td.Width);
     const int h = static_cast<int>(td.Height);
     bool frameChanged = true;
-    m_impl->takeFrame(static_cast<const unsigned char*>(map.pData), static_cast<int>(map.RowPitch), w, h, &frameChanged, bgra);
+    const unsigned char* src = static_cast<const unsigned char*>(map.pData);
+    const int pitch = static_cast<int>(map.RowPitch);
+    bool merged = false;
+    if (info.TotalMetadataBufferSize > 0 && m_impl->heldW == w && m_impl->heldH == h && !m_impl->held.empty()) {
+        const UINT rectCap = info.TotalMetadataBufferSize / static_cast<UINT>(sizeof(RECT)) + 1;
+        std::vector<RECT> rects(rectCap);
+        UINT dirtyBytes = static_cast<UINT>(rects.size() * sizeof(RECT));
+        if (m_impl->dup->GetFrameDirtyRects(dirtyBytes, rects.data(), &dirtyBytes) == S_OK
+            && dirtyBytes >= sizeof(RECT)) {
+            const UINT count = dirtyBytes / static_cast<UINT>(sizeof(RECT));
+            merged = m_impl->mergeDirty(src, pitch, w, h, rects.data(), count, &frameChanged, bgra);
+        }
+    }
+    if (!merged) {
+        m_impl->takeFrame(src, pitch, w, h, &frameChanged, bgra);
+    }
     m_impl->context->Unmap(m_impl->stage, 0);
     m_impl->dup->ReleaseFrame();
     m_impl->width = w;

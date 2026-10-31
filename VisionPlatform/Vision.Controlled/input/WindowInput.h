@@ -26,6 +26,11 @@ public:
     /** @brief 尚未记录本地光标位置，不暂停 */
     WindowInput();
 
+    /** @brief 0=PostMessage 到客户区，1=SetForegroundWindow 后用 SendInput（仍映射图像坐标） */
+    void setMode(int mode);
+    /** @brief 当前注入方式，见 setMode */
+    int mode() const;
+
     /** @brief 目标完整性更高，或打不开进程时，返回 false */
     bool operable(HWND hwnd) const;
     /** @brief 前台是目标窗口且本地鼠标在动时，约 1 秒内返回 false */
@@ -74,6 +79,7 @@ private:
     POINT m_last;                       ///< 上一次查到的本地光标屏幕坐标，用来判断是否移动
     bool m_haveLast;                    ///< m_last 是否已有值
     unsigned long long m_pauseUntil;    ///< 远程输入暂停到此时刻（GetTickCount64 ms）
+    int m_mode;                         ///< 0 PostMessage，1 前台 SendInput
     std::vector<Held> m_held;           ///< 已注入按下、尚未注入抬起的键和鼠标按钮，releaseAll 后清空
 };
 

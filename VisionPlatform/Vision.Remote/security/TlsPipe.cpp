@@ -7,6 +7,7 @@
  */
 
 #include "TlsPipe.h"
+#include "RemotePaths.h"
 
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
@@ -44,14 +45,8 @@ namespace {
 
 void logTls(const char* msg)
 {
-    wchar_t dir[MAX_PATH] = {};
-    if (FAILED(SHGetFolderPathW(0, CSIDL_LOCAL_APPDATA, 0, 0, dir))) {
-        return;
-    }
-    std::wstring path = dir;
-    path += L"\\Vision.Remote\\";
-    CreateDirectoryW(path.c_str(), 0);
-    path += L"tls.log";
+    RemotePaths::ensureLayout();
+    const std::wstring path = RemotePaths::logFileW(L"tls.log");
     HANDLE file = CreateFileW(path.c_str(), FILE_APPEND_DATA, FILE_SHARE_READ, 0, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
     if (file == INVALID_HANDLE_VALUE) {
         return;
