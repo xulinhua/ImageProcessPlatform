@@ -9,6 +9,7 @@
 #include "ToolBase.h"
 #include "AlgLibKind.h"
 #include "AlgToolBase.h"
+#include "ToolGeom.h"
 #include <HsCommData/HsError.h>
 
 namespace {
@@ -292,6 +293,11 @@ std::vector<PortDesc> ToolBase::ports() const
     return defaultPortsForType(type());
 }
 
+std::vector<PortDesc> ToolBase::cfg_port() const
+{
+    return ports();
+}
+
 // 默认能力：采集、逻辑、通信和标定不画搜索区
 ToolCaps ToolBase::capabilities() const
 {
@@ -497,6 +503,7 @@ std::string ToolBase::display_name() const { return displayName(); }
 std::vector<VerNote> ToolBase::version_notes() const { return versionNotes(); }
 ParamMap ToolBase::default_params() const { return defaultParams(); }
 std::vector<ParamField> ToolBase::cfg_param() const { return paramFields(); }
+std::vector<ParamField> ToolBase::cfg_param(const ToolParam&) const { return cfg_param(); }
 std::vector<ParamField> ToolBase::cfg_teach() const { return std::vector<ParamField>(); }
 const ToolParaBase* ToolBase::tool_param() const { return toolParam(); }
 int ToolBase::check_param(std::string*) const { return HS_OK; }
@@ -529,6 +536,139 @@ int ToolBase::save() { return saveAlg(); }
 void ToolBase::clear(const std::string& toolDataDir) { clearAlg(toolDataDir); }
 void ToolBase::log_result(ToolOut*) const {}
 void ToolBase::disp_extra(const ToolIn&, ToolOut*) const {}
+
+void ToolBase::build_alg_in(const ToolIn& in, AlgToolIn* ain, const std::string& defaultRoiPort) const
+{
+    if (ain == nullptr) {
+        return;
+    }
+    ain->mode = in.mode;
+    if (!in.inputIo.images.empty()) {
+        ain->imagePtr = &in.inputIo.images[0].image;
+        ain->imageNative = in.inputIo.images[0].native;
+        for (size_t i = 1; i < in.inputIo.images.size(); ++i) {
+            ain->images.push_back(in.inputIo.images[i]);
+        }
+    } else {
+        ain->imagePtr = &in.input;
+        ain->imageNative = in.inputNative;
+    }
+    ain->teach = in.param.learn;
+    if (in.ownRoisResolved) {
+        ain->rois = in.ownRois;
+    } else {
+        for (size_t i = 0; i < in.rois.size(); ++i) {
+            PortRoi one;
+            one.roi = in.rois[i];
+            one.index = static_cast<int>(i);
+            if (!defaultRoiPort.empty()) {
+                one.port = defaultRoiPort;
+            }
+            ain->rois.push_back(one);
+        }
+    }
+    ain->poses = plainPoses(in.inputIo.poses);
+    for (size_t i = 0; i < in.inputIo.regions.size(); ++i) {
+        const PortRegion& n = in.inputIo.regions[i];
+        if (n.use == RegionUse::Invalid) {
+            continue;
+        }
+        if (n.use == RegionUse::Mask) {
+            ain->masks.push_back(n);
+        } else {
+            ain->regions.push_back(n);
+        }
+    }
+    if (in.ownRoisResolved) {
+        for (size_t i = 0; i < in.ownRegions.size(); ++i) {
+            ain->regions.push_back(in.ownRegions[i]);
+        }
+    }
+    ain->contours = in.inputIo.contours;
+    ain->clouds = in.inputIo.clouds;
+    ain->poses3 = in.inputIo.poses3;
+    ain->shapes3 = in.inputIo.shapes3;
+    ain->run = in.param.run;
+    ain->judge = in.param.judge;
+    ain->solutionDir = in.solutionDir;
+    ain->toolDataDir = in.toolDataDir;
+    std::vector<HsCommData::HsObject> followed;
+    std::vector<int> followAt;
+    for (size_t i = 0; i < ain->rois.size(); ++i) {
+        if (ain->rois[i].use != RegionUse::Normal) {
+            continue;
+        }
+        followed.push_back(ain->rois[i].roi);
+        followAt.push_back(static_cast<int>(i));
+    }
+    HsCommData::Pose2 pose;
+    if (!in.ownRoisResolved && primaryAlgPose(ain->poses, &pose) && !followed.empty()) {
+        applyPoseToRois(&followed, ain->run, pose);
+        for (size_t i = 0; i < followAt.size(); ++i) {
+            ain->rois[static_cast<size_t>(followAt[i])].roi = followed[i];
+        }
+    }
+}
+
+int ToolBase::run_attached_shot(const ToolIn& in, const std::string& actionId, AlgToolIn* ain, bool passImage, ToolOut* out)
+{
+    if (out == nullptr || ain == nullptr) {
+        return HS_ERR_NULL;
+    }
+    AlgToolBase* alg = attachedAlg();
+    if (alg == nullptr) {
+        out->ok = false;
+        out->errCode = HS_ERR_NO_ALG;
+        out->message = "未登记图像算法";
+        return out->errCode;
+    }
+    AlgToolOut algOut;
+    alg->shot_init(*ain, &algOut);
+    const int code = actionId.empty()
+        ? alg->run(ExecMode::Auto, *ain, &algOut)
+        : alg->action(actionId, *ain, &algOut);
+    if (code != HS_OK && algOut.errCode == HS_OK) {
+        algOut.errCode = code;
+        algOut.ok = false;
+    }
+    apply_alg_out(in, algOut, passImage, out);
+    return out->errCode;
+}
+
+void ToolBase::apply_alg_out(const ToolIn& in, const AlgToolOut& r, bool passImage, ToolOut* out) const
+{
+    if (out == nullptr) {
+        return;
+    }
+    out->ok = r.ok && r.errCode == HS_OK;
+    out->errCode = r.errCode;
+    out->error = r.errCode != HS_OK;
+    out->message = r.message;
+    out->values = r.values;
+    out->objects = r.objects;
+    out->traces = r.traces;
+    out->infos = r.infos;
+    out->labels = r.labels;
+    out->io.clouds = r.clouds;
+    out->io.poses3 = r.poses3;
+    out->io.shapes3 = r.shapes3;
+    out->io.tuples = r.tuples;
+    out->io.poses.clear();
+    for (size_t i = 0; i < r.poses.size(); ++i) {
+        PortPose one;
+        one.index = static_cast<int>(i);
+        one.pose = r.poses[i];
+        out->io.poses.push_back(one);
+    }
+    if (passImage && !r.image.image.isNull()) {
+        out->image = r.image.image;
+        out->imageNative = r.image.native;
+    } else {
+        out->image = in.input;
+        out->imageNative = in.inputNative;
+    }
+    out->syncIo();
+}
 
 void ToolBase::clearAlg(const std::string& toolDataDir)
 {

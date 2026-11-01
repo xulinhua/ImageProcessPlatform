@@ -20,19 +20,23 @@ namespace Vision {
  */
 class ToolParaFindLine : public ToolParaBase {
 public:
+    /** @brief 参数类型名，toolParaAs 按它识别 */
+    static const char* typeId() { return "ToolParaFindLine"; }
+    /** @brief 返回 typeId() */
+    const char* typeName() const override { return typeId(); }
     /** @brief 学习参数，没有则为空 */
     struct Learn {
     };
     /** @brief 运行参数 */
     struct Run {
-        std::string polarity;       ///< 边缘极性：all / positive / negative；当前 Hal 算法不读
-        std::string select;         ///< 每框取舍（按长度降序）：best 取前 searchCount 条 / first 只留最长 / last 只留最短
-        double minLength;           ///< 线段最短长度（像素），更短的丢弃
-        double sigma;               ///< Canny 边缘平滑 sigma，0.4~20
-        int low;                    ///< Canny 低阈值，0~255
-        int high;                   ///< Canny 高阈值，0~255
-        int searchCount;            ///< 每个 ROI 最多输出条数，1~50
-        /** @brief 缺省值与 FindLineTool 参数说明一致 */
+        std::string polarity;       ///< 极性；找直线算法当前不读
+        std::string select;         ///< 选择：first 只留最长，last 只留最短，其他值按长度从长到短取
+        double minLength;           ///< 最短长度，像素；更短的线段不拟合
+        double sigma;               ///< 边缘平滑 sigma，小于 0.4 按 0.4
+        int low;                    ///< Canny 低阈值
+        int high;                   ///< Canny 高阈值
+        int searchCount;            ///< 每块搜索区最多取的直线数；小于 1 按 1
+        /** @brief 缺省：取最佳 1 条，最短 20，sigma 1，阈值 20/40 */
         Run()
             : polarity("all")
             , select("best")

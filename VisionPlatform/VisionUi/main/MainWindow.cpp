@@ -36,6 +36,8 @@
 #include "PermDlg.h"
 #include "RecheckWorkspace.h"
 #include "RuntimeViewDlg.h"
+#include "GlobalVarDlg.h"
+#include "UiDesignerDlg.h"
 #include "RuntimeWorkspace.h"
 #include "SharedFrames.h"
 #include "StationRuntimePanel.h"
@@ -207,6 +209,10 @@ MainWindow::MainWindow(Session* session, QWidget* parent)
     connect(m_runtime, SIGNAL(resetRequested()), this, SLOT(resetCount()));
     connect(m_runtime, SIGNAL(switchSolutionRequested()), this, SLOT(openSolution()));
     connect(m_runtime, SIGNAL(configureViewRequested()), this, SLOT(openRuntimeView()));
+    connect(m_runtime, SIGNAL(customRunOnceRequested()), this, SLOT(pulseSoftTrigger()));
+    connect(m_runtime, SIGNAL(customLoopRequested()), this, SLOT(startStation()));
+    connect(m_runtime, SIGNAL(customStopRequested()), this, SLOT(stopStation()));
+    connect(m_runtime, SIGNAL(customResetRequested()), this, SLOT(resetCount()));
     connect(m_recheck, SIGNAL(prepareStation(QString)), this, SLOT(onRecheckPrepareStation(QString)));
     connect(m_recheck, SIGNAL(openDesignDebug(QString,QString,QString)),
             this, SLOT(onRecheckOpenDebug(QString,QString,QString)));
@@ -228,6 +234,9 @@ MainWindow::MainWindow(Session* session, QWidget* parent)
     m_tbStart = m_mainTb->addAction(uiIcon(UiIconStart), T("开始"), this, SLOT(startStation()));
     m_tbStop = m_mainTb->addAction(uiIcon(UiIconStop), T("停止"), this, SLOT(stopStation()));
     m_tbReset = m_mainTb->addAction(uiIcon(UiIconReset), T("清零"), this, SLOT(resetCount()));
+    m_mainTb->addSeparator();
+    m_mainTb->addAction(uiIcon(UiIconComm), T("全局变量"), this, SLOT(openGlobalVars()));
+    m_mainTb->addAction(uiIcon(UiIconRuntime), T("UI设计器"), this, SLOT(openUiDesigner()));
 
     m_solLabel = new QLabel(this);
     m_stLabel = new QLabel(this);
@@ -261,6 +270,8 @@ MainWindow::MainWindow(Session* session, QWidget* parent)
     m_binder.bindAction(m_actNew, PermEditSolution);
     m_binder.bindAction(m_actSave, PermEditSolution);
     m_binder.bindAction(m_actRuntimeView, PermEditSolution);
+    m_binder.bindAction(m_actGlobalVars, PermEditSolution);
+    m_binder.bindAction(m_actUiDesigner, PermEditSolution);
     onUserChanged();
     m_design->appendLog(T("就绪。默认文件源指向程序目录 samples；也可在设备里改文件夹。"));
     rebuildStation();
@@ -365,6 +376,8 @@ void MainWindow::buildMenus()
 
     QMenu* mView = menuBar()->addMenu(T("视图"));
     m_actRuntimeView = mView->addAction(T("画面配置…"), this, SLOT(openRuntimeView()));
+    m_actGlobalVars = mView->addAction(T("全局变量…"), this, SLOT(openGlobalVars()));
+    m_actUiDesigner = mView->addAction(T("UI 设计器…"), this, SLOT(openUiDesigner()));
 
     QMenu* mRun = menuBar()->addMenu(T("运行"));
     mRun->addAction(T("设计"), this, SLOT(switchDesign()));
@@ -414,6 +427,8 @@ void MainWindow::retranslateUi()
     if (m_tbReset) { m_tbReset->setText(T("清零")); }
     buildMenus();
     m_binder.bindAction(m_actRuntimeView, PermEditSolution);
+    m_binder.bindAction(m_actGlobalVars, PermEditSolution);
+    m_binder.bindAction(m_actUiDesigner, PermEditSolution);
     updateTitle();
     updateActions();
     if (m_design) { m_design->retranslateUi(); }
@@ -1245,6 +1260,46 @@ void MainWindow::openRuntimeView()
     }
 }
 
+// 全局变量表
+void MainWindow::openGlobalVars()
+{
+    if (!ensurePerm(PermEditSolution, T("当前用户不能编辑全局变量。"))) {
+        return;
+    }
+    GlobalVarDlg dlg(&m_sol, this);
+    if (dlg.exec() != QDialog::Accepted) {
+        return;
+    }
+    syncDirty();
+    if (m_runtime) {
+        m_runtime->refreshCustomUi();
+    }
+}
+
+// 自定义 UI 设计器
+void MainWindow::openUiDesigner()
+{
+    if (!ensurePerm(PermEditSolution, T("当前用户不能编辑运行界面。"))) {
+        return;
+    }
+    UiDesignerDlg dlg(&m_sol, this);
+    if (dlg.exec() != QDialog::Accepted) {
+        return;
+    }
+    syncDirty();
+    StationCfg* st = m_sol.primaryStation();
+    if (m_station && !m_boundStationId.isEmpty()) {
+        StationCfg* cur = m_sol.findStationConfig(oid(m_boundStationId));
+        if (cur) {
+            st = cur;
+        }
+    }
+    if (m_runtime) {
+        m_runtime->bindContext(&m_sol, st, m_station);
+        rebindLivePanels();
+    }
+}
+
 // 日志管控：查看需 ViewLogs，删除在对话框内再判 ManageLogs
 void MainWindow::openLogs()
 {
@@ -1716,6 +1771,9 @@ void MainWindow::onStationCycleFinished(void* resultPtr)
     {
         StationProdAccum& a = m_prodAccum[qs(slot->stationId)];
         a.cycleMs = payload->result.cycleMs;
+    }
+    if (m_runtime) {
+        m_runtime->refreshCustomUi();
     }
 
     if (payload) {

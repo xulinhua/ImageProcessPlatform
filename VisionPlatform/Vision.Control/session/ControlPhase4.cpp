@@ -1,6 +1,6 @@
 /**
  * @file ControlPhase4.cpp
- * @brief 中控台第四期：剪贴板、文件、聊天、系统信息的收发
+ * @brief 中控台：剪贴板、文件、聊天、系统信息的收发
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.

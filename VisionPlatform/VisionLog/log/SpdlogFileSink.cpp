@@ -94,6 +94,14 @@ void SpdlogFileSink::start()
         LeaveCriticalSection(&m->cs);
         return;
     }
+    LeaveCriticalSection(&m->cs);
+    // 在调用线程先打开并清理 log.db，再起写线程；避免首开库与其它初始化并发抢堆
+    LogDb::instance().prune();
+    EnterCriticalSection(&m->cs);
+    if (m->started) {
+        LeaveCriticalSection(&m->cs);
+        return;
+    }
     m->stop = false;
     m->started = true;
     m->thread = CreateThread(0, 0, sinkThread, this, 0, 0);
@@ -234,10 +242,9 @@ void SpdlogFileSink::flush()
     }
 }
 
-// 后台循环：出队写库，并按天清理
+// 后台循环：出队写库（建库与首次 prune 已在 start 的调用线程做完）
 void SpdlogFileSink::runLoop()
 {
-        LogDb::instance().prune();
     for (;;) {
         WaitForSingleObject(m->wake, 500);
         for (;;) {

@@ -20,18 +20,22 @@ namespace Vision {
  */
 class ToolParaCaliper : public ToolParaBase {
 public:
+    /** @brief 参数类型名，toolParaAs 按它识别 */
+    static const char* typeId() { return "ToolParaCaliper"; }
+    /** @brief 返回 typeId() */
+    const char* typeName() const override { return typeId(); }
     /** @brief 学习参数，没有则为空 */
     struct Learn {
     };
     /** @brief 运行参数 */
     struct Run {
-        std::string mode;           ///< 模式：width 按边对测宽 / edge 找单边
-        double sigma;               ///< 测量平滑 sigma，0.4~20
-        double threshold;           ///< 最小边缘幅值（灰度差）
-        std::string transition;     ///< 边缘极性：all / positive / negative
-        std::string select;         ///< 边缘取舍：all / first / last（Halcon 测量语义）
-        int searchCount;            ///< 每个卡尺 ROI 最多取的结果数，1~50
-        /** @brief 缺省测宽、取全部边 */
+        std::string mode;           ///< 模式：edge 找单边，其他值（缺省 width）按边对测宽
+        double sigma;               ///< 测量剖面的平滑 sigma
+        double threshold;           ///< 最小边缘幅值，灰度
+        std::string transition;     ///< 边缘极性：all、positive、negative；空按 all
+        std::string select;         ///< 边缘选择：all、first、last；空按 all
+        int searchCount;            ///< 每块搜索区最多取的结果数；小于 1 按 1
+        /** @brief 缺省：测宽，sigma 1，幅值 20，各取 1 个 */
         Run()
             : mode("width")
             , sigma(1.0)

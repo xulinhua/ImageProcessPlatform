@@ -19,6 +19,8 @@
 #include "CompositeDef.h"
 #include "CommTypes.h"
 #include "AppMode.h"
+#include "VarStore.h"
+#include "UiPage.h"
 #include <string>
 #include <vector>
 
@@ -36,6 +38,8 @@ struct VISIONCORE_API Solution {
     std::vector<CommChannel> commChannels; ///< 通信通道台账
     std::vector<StationCfg> stations;   ///< 工站列表
     std::vector<CompositeDef> composites; ///< 项目组合工具
+    VarStore globalVars;                   ///< 方案级全局变量
+    std::vector<UiPage> uiPages;           ///< 自定义运行界面页
     RuntimeStationLayout runtimeStationLayout; ///< 多工站运行画面：分页签或拼贴
     bool dirty;                            ///< 是否有未保存修改
     bool haltAll;                          ///< 停全部。不进方案文件

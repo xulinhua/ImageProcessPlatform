@@ -33,7 +33,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)VisionPluginAPI;$(SolutionDir)VisionAlgHal;$(SolutionDir)Plugin.VisionHalCom;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>halcon.lib;halconcpp.lib;VisionAlgToolBase.lib;Plugin.VisionHalCom.lib;VisionCommon.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>halcon.lib;halconcpp.lib;VisionAlgToolBase.lib;VisionToolBase.lib;Plugin.VisionHalCom.lib;VisionCommon.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)bin\$(Platform)\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>

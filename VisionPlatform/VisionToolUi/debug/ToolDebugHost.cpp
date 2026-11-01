@@ -219,6 +219,7 @@ ToolDebugHost::ToolDebugHost(ToolCfg* tool, Session* session, Solution* sol, Job
     connect(m_io, SIGNAL(roiSelectionChanged(int)), this, SLOT(onRoiSelectionChanged(int)));
     connect(m_io, SIGNAL(drawRoiRequested(int)), this, SLOT(onDrawRoiRow(int)));
     connect(m_io, SIGNAL(roiItemsEdited()), this, SLOT(onRoiItemsEdited()));
+    connect(m_io, SIGNAL(paramBindsEdited()), this, SLOT(onRoiItemsEdited()));
     connect(m_io, SIGNAL(inputLinkChanged(int,QString,QString)),
             this, SLOT(onInputLinkChanged(int,QString,QString)));
 

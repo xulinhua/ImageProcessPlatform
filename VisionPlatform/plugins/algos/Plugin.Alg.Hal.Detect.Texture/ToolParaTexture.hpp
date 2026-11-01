@@ -15,11 +15,34 @@
 namespace Vision {
 
 /**
+ * @class TextureKey
+ * @brief 纹理工具落盘键。字符串只写在这里
+ */
+struct TextureKey {
+    static constexpr const char* bgMethod = "bgMethod"; ///< 背景估计方法
+    static constexpr const char* kernelW = "kernelW"; ///< 核宽
+    static constexpr const char* kernelH = "kernelH"; ///< 核高
+    static constexpr const char* residThresh = "residThresh"; ///< 残差阈值
+    static constexpr const char* openR = "openR"; ///< 开运算半径
+    static constexpr const char* minArea = "minArea"; ///< 最小面积
+    static constexpr const char* maxArea = "maxArea"; ///< 最大面积
+    static constexpr const char* mean = "mean"; ///< bgMethod 取值：均值
+    static constexpr const char* roi = "roi"; ///< ROI 槽名
+    static constexpr const char* count = "count"; ///< 输出个数
+    static constexpr const char* resultRoi = "resultRoi"; ///< 结果区域端口
+    static constexpr const char* verdict = "verdict"; ///< 判定文字
+};
+
+/**
  * @class ToolParaTexture
  * @brief TextureTool 运行参数
  */
 class ToolParaTexture : public ToolParaBase {
 public:
+    /** @brief 参数类型名，toolParaAs 按它识别 */
+    static const char* typeId() { return "ToolParaTexture"; }
+    /** @brief 返回 typeId() */
+    const char* typeName() const override { return typeId(); }
     /** @brief 学习参数，没有则为空 */
     struct Learn {
     };

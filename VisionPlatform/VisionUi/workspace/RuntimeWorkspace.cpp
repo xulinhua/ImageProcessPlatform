@@ -8,6 +8,7 @@
 
 #include "RuntimeWorkspace.h"
 #include "StationRuntimePanel.h"
+#include "UiPageHost.h"
 #include "Station.h"
 #include "QtConv.h"
 #include "Theme.h"
@@ -35,6 +36,7 @@ RuntimeWorkspace::RuntimeWorkspace(QWidget* parent)
     , m_tabs(nullptr)
     , m_tileHost(nullptr)
     , m_tileLay(nullptr)
+    , m_uiHost(nullptr)
     , m_solBanner(nullptr)
 {
     m_btnStart = new QPushButton(T("开始"), this);
@@ -117,27 +119,81 @@ void RuntimeWorkspace::bindContext(Solution* sol, StationCfg* previewSt, Station
 // 运行实例挂到对应面板（已有面板只换指针，避免停止后再开刷掉画面）
 void RuntimeWorkspace::setStationInstance(const ObjectId& stationId, Station* station)
 {
+    if (!stationId.isNull()) {
+        if (station) {
+            m_liveStations.insert(qs(stationId), station);
+        } else {
+            m_liveStations.remove(qs(stationId));
+        }
+    }
     StationRuntimePanel* p = panelFor(stationId);
     if (!p || !m_sol) {
+        if (m_uiHost) {
+            m_uiHost->bindPage(firstCustomPage(), m_sol, stationMap());
+        }
         return;
     }
     StationCfg* config = m_sol->findStationConfig(stationId);
     if (p->stationId() == stationId && config) {
         p->setRuntimeStation(station);
-        return;
+    } else {
+        p->bindContext(m_sol, config, station);
     }
-    p->bindContext(m_sol, config, station);
+    if (m_uiHost) {
+        m_uiHost->bindPage(firstCustomPage(), m_sol, stationMap());
+    }
 }
 
 // 停止后卸下实例指针，保留各面板画面与计数
 void RuntimeWorkspace::detachAllStations()
 {
+    m_liveStations.clear();
     const QList<StationRuntimePanel*> all = m_panels.values();
     for (int i = 0; i < all.size(); ++i) {
         if (all[i]) {
             all[i]->setRuntimeStation(0);
         }
     }
+    if (m_uiHost) {
+        m_uiHost->bindPage(firstCustomPage(), m_sol, stationMap());
+    }
+}
+
+UiPageHost* RuntimeWorkspace::uiPageHost() const
+{
+    return m_uiHost;
+}
+
+void RuntimeWorkspace::refreshCustomUi()
+{
+    if (m_uiHost) {
+        m_uiHost->refreshBindings();
+    }
+}
+
+UiPage RuntimeWorkspace::firstCustomPage() const
+{
+    UiPage empty;
+    empty.enabled = false;
+    if (!m_sol) {
+        return empty;
+    }
+    for (size_t i = 0; i < m_sol->uiPages.size(); ++i) {
+        const UiPage& p = m_sol->uiPages[i];
+        if (p.enabled && !p.widgets.empty()) {
+            return p;
+        }
+    }
+    return empty;
+}
+
+QMap<QString, Station*> RuntimeWorkspace::stationMap() const
+{
+    QMap<QString, Station*> map = m_liveStations;
+    if (m_previewSt && m_previewStation) {
+        map.insert(qs(m_previewSt->id), m_previewStation);
+    }
+    return map;
 }
 
 // 首次进运行或方案变空后再建；已有面板则不重建
@@ -283,10 +339,11 @@ void RuntimeWorkspace::setLoopRunning(bool running)
     m_btnStart->update();
 }
 
-// 按 Tabs/Tiles 重建各工站面板
+// 按 Tabs/Tiles 重建各工站面板；有自定义页时插到页签最前
 void RuntimeWorkspace::rebuildHost()
 {
     m_panels.clear();
+    m_uiHost = nullptr;
     while (QLayoutItem* it = m_hostLay->takeAt(0)) {
         if (it->widget()) {
             it->widget()->deleteLater();
@@ -299,10 +356,23 @@ void RuntimeWorkspace::rebuildHost()
     m_tileHost = nullptr;
     m_tileLay = nullptr;
 
+    const UiPage custom = firstCustomPage();
+    const bool hasCustom = custom.enabled && !custom.widgets.empty();
+
     if (!m_sol || m_sol->stations.empty()) {
-        QLabel* empty = new QLabel(T("方案里没有工站"), m_host);
-        empty->setAlignment(Qt::AlignCenter);
-        m_hostLay->addWidget(empty, 1);
+        if (hasCustom) {
+            m_uiHost = new UiPageHost(m_host);
+            m_uiHost->bindPage(custom, m_sol, stationMap());
+            connect(m_uiHost, SIGNAL(runOnceRequested()), this, SIGNAL(customRunOnceRequested()));
+            connect(m_uiHost, SIGNAL(loopRequested()), this, SIGNAL(customLoopRequested()));
+            connect(m_uiHost, SIGNAL(stopRequested()), this, SIGNAL(customStopRequested()));
+            connect(m_uiHost, SIGNAL(resetRequested()), this, SIGNAL(customResetRequested()));
+            m_hostLay->addWidget(m_uiHost, 1);
+        } else {
+            QLabel* empty = new QLabel(T("方案里没有工站"), m_host);
+            empty->setAlignment(Qt::AlignCenter);
+            m_hostLay->addWidget(empty, 1);
+        }
         m_side->setVisible(true);
         return;
     }
@@ -310,7 +380,7 @@ void RuntimeWorkspace::rebuildHost()
     const bool tiles = (m_sol->runtimeStationLayout == RuntimeStationsTiles);
     const int n = static_cast<int>(m_sol->stations.size());
 
-    if (tiles) {
+    if (tiles && !hasCustom) {
         m_tileHost = new QWidget(m_host);
         m_tileLay = new QGridLayout(m_tileHost);
         m_tileLay->setContentsMargins(0, 0, 0, 0);
@@ -323,6 +393,10 @@ void RuntimeWorkspace::rebuildHost()
             if (m_previewSt && m_previewStation && config->id == m_previewSt->id) {
                 stInst = m_previewStation;
             }
+            Station* live = m_liveStations.value(qs(config->id), 0);
+            if (live) {
+                stInst = live;
+            }
             panel->bindContext(m_sol, config, stInst);
             m_panels.insert(qs(config->id), panel);
             m_tileLay->addWidget(panel, i / cols, i % cols);
@@ -330,12 +404,28 @@ void RuntimeWorkspace::rebuildHost()
         m_hostLay->addWidget(m_tileHost, 1);
     } else {
         m_tabs = new QTabWidget(m_host);
+        int tabBase = 0;
+        if (hasCustom) {
+            m_uiHost = new UiPageHost(m_tabs);
+            m_uiHost->bindPage(custom, m_sol, stationMap());
+            connect(m_uiHost, SIGNAL(runOnceRequested()), this, SIGNAL(customRunOnceRequested()));
+            connect(m_uiHost, SIGNAL(loopRequested()), this, SIGNAL(customLoopRequested()));
+            connect(m_uiHost, SIGNAL(stopRequested()), this, SIGNAL(customStopRequested()));
+            connect(m_uiHost, SIGNAL(resetRequested()), this, SIGNAL(customResetRequested()));
+            const QString tabTitle = qs(custom.name).isEmpty() ? T("操作界面") : qs(custom.name);
+            m_tabs->addTab(m_uiHost, tabTitle);
+            tabBase = 1;
+        }
         for (int i = 0; i < n; ++i) {
             StationCfg* config = &m_sol->stations[static_cast<size_t>(i)];
             StationRuntimePanel* panel = new StationRuntimePanel(m_tabs);
             Station* stInst = nullptr;
             if (m_previewSt && m_previewStation && config->id == m_previewSt->id) {
                 stInst = m_previewStation;
+            }
+            Station* live = m_liveStations.value(qs(config->id), 0);
+            if (live) {
+                stInst = live;
             }
             panel->bindContext(m_sol, config, stInst);
             m_panels.insert(qs(config->id), panel);
@@ -345,7 +435,7 @@ void RuntimeWorkspace::rebuildHost()
             }
             m_tabs->addTab(panel, tabName);
             if (m_previewSt && config->id == m_previewSt->id) {
-                m_tabs->setCurrentIndex(i);
+                m_tabs->setCurrentIndex(tabBase + i);
             }
         }
         m_hostLay->addWidget(m_tabs, 1);

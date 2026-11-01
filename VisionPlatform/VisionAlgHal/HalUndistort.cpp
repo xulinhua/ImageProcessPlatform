@@ -1,6 +1,6 @@
-/**
+﻿/**
  * @file HalUndistort.cpp
- * @brief HalUndistort实现
+ * @brief 按 Halcon 相机参数做径向畸变校正
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -8,37 +8,77 @@
 
 #include "HalUndistort.h"
 #include "HalImageConvert.h"
-#include "HalconCpp.h"
+#include "HalOps.h"
+#include "ToolParaUndistort.hpp"
+#include <HsCommData/HsError.h>
+#include <HsCommData/HsException.h>
 #include <cstdlib>
 #include <sstream>
-#include <string>
-#include <vector>
+
+namespace Vision {
 
 namespace {
-
-std::string U(const wchar_t* w)
-{
-    std::string o;
-    if (!w) {
-        return o;
-    }
-    for (; *w; ++w) {
-        unsigned int c = static_cast<unsigned int>(*w);
-        if (c < 0x80u) {
-            o.push_back(static_cast<char>(c));
-        } else if (c < 0x800u) {
-            o.push_back(static_cast<char>(0xC0u | (c >> 6)));
-            o.push_back(static_cast<char>(0x80u | (c & 0x3Fu)));
-        } else {
-            o.push_back(static_cast<char>(0xE0u | (c >> 12)));
-            o.push_back(static_cast<char>(0x80u | ((c >> 6) & 0x3Fu)));
-            o.push_back(static_cast<char>(0x80u | (c & 0x3Fu)));
-        }
-    }
-    return o;
+const char kVer[] = "1.0.0.0";
+const char kName[] = "preprocess.undistort";
+const VerNoteRaw kNotes[] = {
+    { "1.0.0.0", "首版" },
+};
 }
 
-HalconCpp::HTuple parseCam(const std::string& text)
+HalUndistort::HalUndistort()
+    : frame_id_(0)
+    , shot_err_(0)
+{
+    HalconCpp::GenEmptyObj(&image_);
+    HalconCpp::GenEmptyObj(&fixed_);
+}
+
+AlgToolBase* HalUndistort::clone() const
+{
+    return new HalUndistort();
+}
+
+std::string HalUndistort::tool_name() const
+{
+    return kName;
+}
+
+AlgLibKind HalUndistort::alg_lib() const
+{
+    return AlgLibHal;
+}
+
+std::string HalUndistort::version() const
+{
+    return kVer;
+}
+
+std::vector<VerNote> HalUndistort::version_notes() const
+{
+    return verNotesFrom(kNotes, static_cast<int>(sizeof(kNotes) / sizeof(kNotes[0])));
+}
+
+void HalUndistort::init(const std::string&)
+{
+}
+
+void HalUndistort::save(const std::string&)
+{
+}
+
+int HalUndistort::tool_reset()
+{
+    HalconCpp::GenEmptyObj(&image_);
+    HalconCpp::GenEmptyObj(&fixed_);
+    frame_id_ = 0;
+    cam_text_.clear();
+    tol_.reset();
+    shot_err_ = 0;
+    shot_msg_.clear();
+    return HS_OK;
+}
+
+HalconCpp::HTuple HalUndistort::parse_cam_par(const std::string& text) const
 {
     HalconCpp::HTuple t;
     std::istringstream in(text);
@@ -55,61 +95,127 @@ HalconCpp::HTuple parseCam(const std::string& text)
     return t;
 }
 
-}
-
-// 用 Halcon 相机参数做径向畸变校正
-namespace {
-const char kVer_HalUndistort[] = "1.0.0.0";
-const Vision::VerNoteRaw kNotes_HalUndistort[] = {
-    { "1.0.0.0", "首版" },
-};
-}
-
-std::string Vision::HalUndistort::version() const
+int HalUndistort::proc_input(const AlgToolIn& in)
 {
-    return kVer_HalUndistort;
-}
-
-// 版本变更，只追加
-std::vector<Vision::VerNote> Vision::HalUndistort::versionNotes() const
-{
-    return Vision::verNotesFrom(kNotes_HalUndistort, static_cast<int>(sizeof(kNotes_HalUndistort) / sizeof(kNotes_HalUndistort[0])));
-}
-Vision::AlgToolOut Vision::HalUndistort::run(const Vision::AlgToolIn& in)
-{
-    AlgToolOut out;
     if (inputImage(in).isNull()) {
-        out.message = U(L"\u6ca1\u6709\u8f93\u5165\u56fe");
-        return out;
+        shot_err_ = HS_ERR_IMAGE_EMPTY;
+        shot_msg_ = HsCommData::HsException(HS_ERR_IMAGE_EMPTY).errorMessage();
+        return shot_err_;
     }
-    const std::string camText = in.run.value("halconCam").toString();
-    if (camText.empty()) {
-        out.message = U(L"\u6ca1\u6709 Halcon \u76f8\u673a\u53c2\u6570");
-        return out;
+    ToolParaUndistort local;
+    const ToolParaUndistort* para = paraOf(in, &local);
+    if (in.param != nullptr && toolParaAs<ToolParaUndistort>(in.param) == nullptr) {
+        shot_err_ = HS_ERR_TYPE;
+        shot_msg_ = HsCommData::HsException(HS_ERR_TYPE).errorMessage();
+        return shot_err_;
+    }
+    cam_text_ = para->run.halconCam;
+    if (cam_text_.empty()) {
+        shot_err_ = HS_ERR_PARAM;
+        shot_msg_ = "缺少 Halcon 相机参数";
+        return shot_err_;
+    }
+    std::string err;
+    HalconCpp::HObject gray;
+    HalconCpp::HObject* pGray = &gray;
+    int w = 0;
+    int h = 0;
+    if (!inputToGray(in.imageNative.ptr, static_cast<int>(in.imageNative.algLib), inputImage(in), pGray, &w, &h, &err)
+        || w < 1 || h < 1) {
+        shot_err_ = HS_ERR_IMAGE_EMPTY;
+        shot_msg_ = err.empty() ? HsCommData::HsException(HS_ERR_IMAGE_EMPTY).errorMessage() : err;
+        return shot_err_;
+    }
+    image_ = gray;
+    frame_id_ = inputImage(in).frameId;
+    return HS_OK;
+}
+
+int HalUndistort::alg_run(const AlgToolIn& in)
+{
+    (void)in;
+    try {
+        HalconCpp::HTuple camIn = parse_cam_par(cam_text_);
+        HalconCpp::HTuple camOut;
+        HalconCpp::ChangeRadialDistortionCamPar(camIn, "adaptive", 0.0, &camOut);
+        HalconCpp::HObject domain;
+        HalconCpp::GetDomain(image_, &domain);
+        HalconCpp::ChangeRadialDistortionImage(image_, domain, &fixed_, camIn, camOut);
+        shot_err_ = HS_OK;
+        shot_msg_ = "已校正";
+        return HS_OK;
+    } catch (const HalconCpp::HException& e) {
+        shot_err_ = HS_ERR_OPERATOR;
+        shot_msg_ = hExceptionText(e);
+        return shot_err_;
+    }
+}
+
+int HalUndistort::judge_tol(const AlgToolIn& in)
+{
+    // 图像预处理工具无专用公差域；仍按 judge 表比较已写入测值
+    ToolParaUndistort local;
+    const ToolParaUndistort* para = paraOf(in, &local);
+    tol_.reset();
+    tol_.judge(para->judge, nullptr);
+    return HS_OK;
+}
+
+int HalUndistort::alg_rst_proc(const AlgToolIn& in, AlgToolOut* out)
+{
+    (void)in;
+    if (out == nullptr) {
+        return HS_ERR_NULL;
+    }
+    AlgToolOut result;
+    result.errCode = shot_err_;
+    result.runOk = shot_err_ == HS_OK;
+    result.ok = shot_err_ == HS_OK && tol_.ok;
+    result.message = shot_msg_;
+    if (shot_err_ == HS_OK) {
+        std::string err;
+        HsCommData::HsImage* image = &result.image.image;
+        if (!hObjectToHsImage(fixed_, frame_id_, image, &err)) {
+            result.ok = false;
+            result.runOk = false;
+            result.errCode = HS_ERR_OPERATOR;
+            result.message = err;
+            *out = result;
+            return HS_ERR_OPERATOR;
+        }
+        tol_.apply(&result);
+        result.ok = shot_err_ == HS_OK && tol_.ok;
+    }
+    *out = result;
+    return shot_err_;
+}
+
+int HalUndistort::execute(const AlgToolIn& in, AlgToolOut* out)
+{
+    if (out == nullptr) {
+        return HS_ERR_NULL;
     }
     try {
-        HalconCpp::HObject raw;
-        HalconCpp::HObject* rawPtr = &raw;
-        std::string err;
-        if (!hsImageToHObject(inputImage(in), rawPtr, &err)) {
-            out.message = err;
-            return out;
+        run_timer_.start();
+        tool_reset();
+        run_timer_.mark("tool_reset");
+        int step = proc_input(in);
+        run_timer_.mark("proc_input");
+        if (step == HS_OK) {
+            step = alg_run(in);
+            run_timer_.mark("alg_run");
         }
-        HalconCpp::HImage img(raw);
-        HalconCpp::HCamPar camIn(parseCam(camText));
-        HalconCpp::HCamPar camOut = camIn.ChangeRadialDistortionCamPar("adaptive", 0.0);
-        HalconCpp::HImage fixed = img.ChangeRadialDistortionImage(img.GetDomain(), camIn, camOut);
-        HsCommData::HsImage image;
-        HsCommData::HsImage* imagePtr = &image;
-        if (!hObjectToHsImage(fixed, inputImage(in).frameId, imagePtr, &err)) {
-            out.message = err;
-            return out;
+        if (step == HS_OK) {
+            step = judge_tol(in);
+            run_timer_.mark("judge_tol");
         }
-        out.image.image = image;
-        out.ok = true;
-        out.message = U(L"\u5df2\u6821\u6b63");
+        alg_rst_proc(in, out);
+        run_timer_.stop("alg_rst_proc");
+        write_alg_steps(out, run_timer_.sections(), run_timer_.totalMs());
+        return step != HS_OK ? step : shot_err_;
     } catch (const HalconCpp::HException& e) {
-        out.message = e.ErrorMessage().Text();
+        return fail(HS_ERR_OPERATOR, hExceptionText(e), out);
     }
-    return out;
+}
+
 }

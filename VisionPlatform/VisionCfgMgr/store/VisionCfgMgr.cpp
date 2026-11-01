@@ -244,6 +244,20 @@ static JsonValue toolToJson(const ToolCfg& t)
     if (roiItems.size() > 0) {
         param.set("roiItems", roiItems);
     }
+    if (!t.param.paramBinds.empty()) {
+        JsonValue binds;
+        binds.makeArray();
+        for (size_t i = 0; i < t.param.paramBinds.size(); ++i) {
+            const ParamBind& b = t.param.paramBinds[i];
+            JsonValue one;
+            one.makeObject();
+            one.set("paramKey", b.paramKey);
+            one.set("path", b.path);
+            one.set("direction", b.direction);
+            binds.append(one);
+        }
+        param.set("paramBinds", binds);
+    }
     o.set("para", param);
     return o;
 }
@@ -431,6 +445,18 @@ static ToolCfg toolFromJson(const JsonValue& o)
     if (paraSrc.contains("run")) { t.param.run = paramsFromJson(paraSrc.value("run")); } else { t.param.run = paramsFromJson(paraSrc.value("params")); }
     if (paraSrc.contains("learn")) { t.param.learn = paramsFromJson(paraSrc.value("learn")); }
     judgeFromJson(paraSrc.value("judge"), &t.param.judge);
+    const JsonValue binds = paraSrc.value("paramBinds");
+    if (binds.isArray()) {
+        t.param.paramBinds.clear();
+        for (int i = 0; i < binds.size(); ++i) {
+            const JsonValue one = binds.at(i);
+            ParamBind b;
+            b.paramKey = one.value("paramKey").toString();
+            b.path = one.value("path").toString();
+            b.direction = one.value("direction").toInt(0);
+            t.param.paramBinds.push_back(b);
+        }
+    }
     // 旧文件的 pipeline 数组折成 pl_* 参数
     const JsonValue pipeline = paraSrc.value("pipeline");
     if (pipeline.isArray() && !t.param.run.contains("pl_n")
@@ -1221,6 +1247,53 @@ static JsonValue solutionToJson(const Solution& s, bool saveMeta)
         comps.append(compositeToJson(s.composites[static_cast<size_t>(i)]));
     }
     root.set("composites", comps);
+    // 全局变量与自定义 UI 页（缺省为空，向后兼容）
+    JsonValue gvars;
+    gvars.makeArray();
+    const std::vector<GlobalVar> vars = s.globalVars.items();
+    for (size_t i = 0; i < vars.size(); ++i) {
+        const GlobalVar& g = vars[i];
+        JsonValue o;
+        o.makeObject();
+        o.set("name", g.name);
+        o.set("type", static_cast<int>(g.type));
+        o.set("value", g.value.toString());
+        o.set("comment", g.comment);
+        gvars.append(o);
+    }
+    root.set("globalVars", gvars);
+    JsonValue pages;
+    pages.makeArray();
+    for (size_t i = 0; i < s.uiPages.size(); ++i) {
+        const UiPage& page = s.uiPages[i];
+        JsonValue o;
+        o.makeObject();
+        o.set("id", page.id);
+        o.set("name", page.name);
+        o.set("width", page.width);
+        o.set("height", page.height);
+        o.set("enabled", page.enabled);
+        JsonValue ws;
+        ws.makeArray();
+        for (size_t k = 0; k < page.widgets.size(); ++k) {
+            const UiWidget& w = page.widgets[k];
+            JsonValue one;
+            one.makeObject();
+            one.set("id", w.id);
+            one.set("kind", static_cast<int>(w.kind));
+            one.set("x", w.x);
+            one.set("y", w.y);
+            one.set("w", w.w);
+            one.set("h", w.h);
+            one.set("text", w.text);
+            one.set("dataPath", w.dataPath);
+            one.set("action", w.action);
+            ws.append(one);
+        }
+        o.set("widgets", ws);
+        pages.append(o);
+    }
+    root.set("uiPages", pages);
     return root;
 }
 
@@ -1468,6 +1541,61 @@ bool VisionCfgMgr::loadSolution(const std::string& path, Solution* s, std::strin
     const JsonValue comps = root.value("composites");
     for (int i = 0; i < comps.size(); ++i) {
         s->composites.push_back(compositeFromJson(comps.at(i)));
+    }
+    // 全局变量（缺键=空表）
+    s->globalVars.clear();
+    const JsonValue gvars = root.value("globalVars");
+    if (gvars.isArray()) {
+        std::vector<GlobalVar> loaded;
+        for (int i = 0; i < gvars.size(); ++i) {
+            const JsonValue o = gvars.at(i);
+            GlobalVar g;
+            g.name = o.value("name").toString();
+            const int ty = o.value("type").toInt(0);
+            if (ty < 0 || ty > 3) {
+                g.type = GlobalVarInt;
+            } else {
+                g.type = static_cast<GlobalVarType>(ty);
+            }
+            g.comment = o.value("comment").toString();
+            g.value = VarStore::valueFromText(g.type, o.value("value").toString());
+            if (!g.name.empty()) {
+                loaded.push_back(g);
+            }
+        }
+        s->globalVars.setItems(loaded);
+    }
+    // 自定义 UI 页
+    s->uiPages.clear();
+    const JsonValue pages = root.value("uiPages");
+    if (pages.isArray()) {
+        for (int i = 0; i < pages.size(); ++i) {
+            const JsonValue o = pages.at(i);
+            UiPage page;
+            page.id = o.value("id").toString();
+            page.name = o.value("name").toString();
+            page.width = o.value("width").toInt(800);
+            page.height = o.value("height").toInt(600);
+            page.enabled = o.value("enabled").toBool(true);
+            const JsonValue ws = o.value("widgets");
+            if (ws.isArray()) {
+                for (int k = 0; k < ws.size(); ++k) {
+                    const JsonValue one = ws.at(k);
+                    UiWidget w;
+                    w.id = one.value("id").toString();
+                    w.kind = static_cast<UiWidgetKind>(one.value("kind").toInt(0));
+                    w.x = one.value("x").toInt(0);
+                    w.y = one.value("y").toInt(0);
+                    w.w = one.value("w").toInt(120);
+                    w.h = one.value("h").toInt(32);
+                    w.text = one.value("text").toString();
+                    w.dataPath = one.value("dataPath").toString();
+                    w.action = one.value("action").toString();
+                    page.widgets.push_back(w);
+                }
+            }
+            s->uiPages.push_back(page);
+        }
     }
     // 设备、通道等类型未定义则加载失败；此时 s 已被改写
     if (!persistEnumsOk(*s, error)) {

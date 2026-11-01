@@ -1,6 +1,6 @@
 /**
  * @file AgentPhase4.cpp
- * @brief 被控端第四期：剪贴板、文件、聊天、电源、隐私屏、系统信息
+ * @brief 被控端：剪贴板、文件、聊天、电源、隐私屏、系统信息
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.

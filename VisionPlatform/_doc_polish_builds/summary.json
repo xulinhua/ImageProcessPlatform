@@ -1,0 +1,27 @@
+﻿[
+    {
+        "Project":  "Plugin.Alg.Hal.Detect.Blob",
+        "ExitCode":  0,
+        "Log":  "C:\\Git\\other\\ImageProcessPlatform\\VisionPlatform\\_doc_polish_builds\\Plugin.Alg.Hal.Detect.Blob.log"
+    },
+    {
+        "Project":  "Plugin.Alg.Cv.Detect.Blob",
+        "ExitCode":  0,
+        "Log":  "C:\\Git\\other\\ImageProcessPlatform\\VisionPlatform\\_doc_polish_builds\\Plugin.Alg.Cv.Detect.Blob.log"
+    },
+    {
+        "Project":  "Plugin.Alg.Pcl.Prepare3D.Crop",
+        "ExitCode":  0,
+        "Log":  "C:\\Git\\other\\ImageProcessPlatform\\VisionPlatform\\_doc_polish_builds\\Plugin.Alg.Pcl.Prepare3D.Crop.log"
+    },
+    {
+        "Project":  "Plugin.Alg.Open3d.Prepare3D.Crop",
+        "ExitCode":  0,
+        "Log":  "C:\\Git\\other\\ImageProcessPlatform\\VisionPlatform\\_doc_polish_builds\\Plugin.Alg.Open3d.Prepare3D.Crop.log"
+    },
+    {
+        "Project":  "Plugin.Tool.Detect.Blob",
+        "ExitCode":  0,
+        "Log":  "C:\\Git\\other\\ImageProcessPlatform\\VisionPlatform\\_doc_polish_builds\\Plugin.Tool.Detect.Blob.log"
+    }
+]

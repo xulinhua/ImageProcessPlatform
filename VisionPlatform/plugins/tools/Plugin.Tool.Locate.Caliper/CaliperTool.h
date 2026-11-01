@@ -1,6 +1,6 @@
 /**
  * @file CaliperTool.h
- * @brief CaliperTool头文件
+ * @brief 卡尺工具
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -10,6 +10,7 @@
 #define VISION_CALIPERTOOL_H
 
 #include "ToolBase.h"
+#include "AlgToolBase.h"
 #include "ToolParaCaliper.hpp"
 
 namespace Vision {
@@ -19,33 +20,78 @@ namespace Vision {
  * @brief 卡尺：登记参数，执行交给算法插件
  */
 class CaliperTool : public ToolBase {
-public:
-    /** @brief 注册名 */
-    std::string toolName() const;
-    /** @brief 工具大类 */
-    ToolType type() const;
-    /** @brief 界面显示名 */
-    std::string displayName() const;
-    /** @brief 工具版本 */
-    std::string version() const;
-    /** @brief 版本变更，只追加 */
-    std::vector<VerNote> versionNotes() const;
-    /** @brief 工具说明 */
-    std::string description() const;
-    /** @brief 缺省参数 */
-    ParamMap defaultParams() const;
-    /** @brief 参数说明 */
-    std::vector<ParamField> paramFields() const;
-    /** @brief 画布 ROI 等能力 */
-    ToolCaps capabilities() const;
-    /** @brief 调算法插件执行 */
-    ToolOut execute(const ToolIn& in);
+public: // 骨架
+    /** @brief 构造 */
+    CaliperTool();
+    /** @brief 析构 */
+    ~CaliperTool() override;
     /** @brief 克隆本实例（本 DLL 内 new） */
-    ToolBase* clone() const;
-    /** @brief 本工具参数对象，供参数版本适配与 load 使用 */
-    const ToolParaBase* toolParam() const;
-private:
-    ToolParaCaliper m_param; ///< 参数快照，ToolBase::adaptParam 时从 ToolParam 载入
+    ToolBase* clone() const override;
+
+public: // 描述、版本
+    /** @brief 注册名 */
+    std::string tool_name() const override;
+    /** @brief 工具大类 */
+    ToolType type() const override;
+    /** @brief 界面显示名 */
+    std::string display_name() const override;
+    /** @brief 工具说明 */
+    std::string description() const override;
+    /** @brief 工具版本 */
+    std::string version() const override;
+    /** @brief 版本变更，只追加 */
+    std::vector<VerNote> version_notes() const override;
+
+public: // 参数
+    /** @brief 缺省参数 */
+    ParamMap default_params() const override;
+    /** @brief 运行参数说明 */
+    std::vector<ParamField> cfg_param() const override;
+    /** @brief 本工具参数对象 */
+    const ToolParaBase* tool_param() const override;
+    /** @brief load 之后核对参数 */
+    int check_param(std::string* detail) const override;
+
+public: // 输出、显示
+    /** @brief 输出项 */
+    OutputSpec cfg_output() const override;
+    /** @brief 统计规格 */
+    TolSpec cfg_tol() const override;
+    /** @brief 显示规格 */
+    DisplaySpec cfg_display() const override;
+    /** @brief 画布 ROI 等能力 */
+    ToolCaps cfg_roi() const override;
+
+public: // 执行
+    /** @brief 调算法插件执行 */
+    int execute(const ToolIn& in, ToolOut* out) override;
+
+private: // 执行
+    /** @brief 挂上算法、装参数、跑一拍 */
+    int shot(const ToolIn& in, const std::string& actionId, ToolOut* out);
+    /** @brief 把本拍图像和分区收成算法输入 */
+    void fill_alg_in(const ToolIn& in, AlgToolIn* ain) const;
+
+private: // 参数
+    ToolParaCaliper param_; ///< 本工具参数对象
+
+private: // 基类仍用这套名字，都转到上面的接口
+    /** @brief 转到 tool_name */
+    std::string toolName() const override { return tool_name(); }
+    /** @brief 转到 display_name */
+    std::string displayName() const override { return display_name(); }
+    /** @brief 转到 version_notes */
+    std::vector<VerNote> versionNotes() const override { return version_notes(); }
+    /** @brief 转到 default_params */
+    ParamMap defaultParams() const override { return default_params(); }
+    /** @brief 转到 cfg_param */
+    std::vector<ParamField> paramFields() const override;
+    /** @brief 转到 cfg_roi */
+    ToolCaps capabilities() const override { return cfg_roi(); }
+    /** @brief 转到 tool_param */
+    const ToolParaBase* toolParam() const override { return tool_param(); }
+    /** @brief 调算法插件执行，返回 ToolOut */
+    ToolOut execute(const ToolIn& in) override;
 };
 
 }

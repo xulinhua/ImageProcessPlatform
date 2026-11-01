@@ -8,6 +8,8 @@
 
 #include "CalibPlateTool.h"
 #include "AlgToolBase.h"
+#include <HsCommData/HsError.h>
+#include <HsCommData/HsException.h>
 #include "CalibMath.h"
 #include "CalibMgr.h"
 #include "CvImageConvert.h"
@@ -196,26 +198,25 @@ std::string Vision::CalibPlateTool::version() const
 }
 
 // 版本变更，只追加
-std::vector<Vision::VerNote> Vision::CalibPlateTool::versionNotes() const
+std::vector<Vision::VerNote> Vision::CalibPlateTool::version_notes() const
 {
     return Vision::verNotesFrom(kVerNotes, static_cast<int>(sizeof(kVerNotes) / sizeof(kVerNotes[0])));
 }
 
 // 注册名
-std::string Vision::CalibPlateTool::toolName() const { return "calib.plate"; }
+std::string Vision::CalibPlateTool::tool_name() const { return "calib.plate"; }
 // 类型为标定
 Vision::ToolType Vision::CalibPlateTool::type() const { return Vision::ToolType::Calib; }
 // 界面显示名
-std::string Vision::CalibPlateTool::displayName() const { return U(L"\u6807\u5b9a\u677f"); }
+std::string Vision::CalibPlateTool::display_name() const { return U(L"\u6807\u5b9a\u677f"); }
 // 工具说明
 std::string Vision::CalibPlateTool::description() const
 {
     return U(L"\u5b66\u4e60\u65f6\u5bfc\u5165\u5df2\u7b97\u597d\u7684\u76f8\u673a\u6a21\u578b json");
 }
 // 默认参数
-Vision::ParamMap Vision::CalibPlateTool::defaultParams() const { return defaultsFrom(paramFields()); }
-// 参数说明
-std::vector<Vision::ParamField> Vision::CalibPlateTool::paramFields() const
+Vision::ParamMap Vision::CalibPlateTool::default_params() const { return defaultsFrom(cfg_param()); }
+std::vector<Vision::ParamField> Vision::CalibPlateTool::cfg_param() const
 {
     std::vector<Vision::ParamField> f;
     f.push_back(Vision::paramDevice("deviceId", "相机"));
@@ -224,58 +225,80 @@ std::vector<Vision::ParamField> Vision::CalibPlateTool::paramFields() const
     return f;
 }
 // 不使用搜索区
-Vision::ToolCaps Vision::CalibPlateTool::capabilities() const { return noRoi(); }
+Vision::ToolCaps Vision::CalibPlateTool::cfg_roi() const { return noRoi(); }
 // 学习工具无端口
-std::vector<Vision::PortDesc> Vision::CalibPlateTool::ports() const
+std::vector<Vision::PortDesc> Vision::CalibPlateTool::cfg_port() const
 {
     return std::vector<Vision::PortDesc>();
 }
 // 学习时导入相机模型
-Vision::ToolOut Vision::CalibPlateTool::execute(const Vision::ToolIn& in)
+int Vision::CalibPlateTool::execute(const Vision::ToolIn& in, Vision::ToolOut* out)
 {
-    Vision::ToolOut out = needCamera(in);
-    if (!out.ok) {
-        return out;
+    if (out == nullptr) {
+        return HS_ERR_NULL;
+    }
+    *out = needCamera(in);
+    if (!out->ok) {
+        return out->errCode;
     }
     if (in.mode != Vision::RunMode::Learn) {
-        out.ok = true;
-        out.message = U(L"\u81ea\u52a8\u8fd0\u884c\u4e0d\u6539\u6807\u5b9a");
-        out.syncIo();
-        return out;
+        out->ok = true;
+        out->message = U(L"\u81ea\u52a8\u8fd0\u884c\u4e0d\u6539\u6807\u5b9a");
+        out->syncIo();
+        return out->errCode;
     }
     const std::string path = in.param.run.value("resultPath").toString();
     std::string err;
-    // 给了结果文件：直接导入相机模型
+    // 给了结果文件：直接导入相机模型（不经算法 shot）
     if (!path.empty()) {
         if (!Vision::CalibMgr::instance().importResult(cameraOf(in), path, &err)
             || !Vision::CalibMgr::instance().save(&err)) {
-            out.ok = false;
-            out.message = err;
-            return out;
+            out->ok = false;
+            out->message = err;
+            return out->errCode;
         }
-        out.ok = true;
-        out.message = U(L"\u76f8\u673a\u6a21\u578b\u5df2\u5bfc\u5165");
-        out.syncIo();
-        return out;
+        out->ok = true;
+        out->message = U(L"\u76f8\u673a\u6a21\u578b\u5df2\u5bfc\u5165");
+        out->syncIo();
+        return out->errCode;
     }
-    // 没给结果文件：用标定板图现算，Halcon 标定板强制走 Halcon 算法库
+    return shot_learn(in, out);
+}
+
+void Vision::CalibPlateTool::fill_alg_in(const Vision::ToolIn& in, Vision::AlgToolIn* ain) const
+{
+    ain->mode = in.mode;
+    ain->run = in.param.run;
+    ain->solutionDir = in.solutionDir;
+    ain->param = &param_;
+    fillBoardRun(cameraOf(in), &ain->run);
+}
+
+int Vision::CalibPlateTool::shot_learn(const Vision::ToolIn& in, Vision::ToolOut* out)
+{
+    attachAlg(in.toolDataDir);
+    param_.load(in.param);
+    if (param_.loadCode() != HS_OK) {
+        out->ok = false;
+        out->errCode = param_.loadCode();
+        out->message = HsCommData::HsException(param_.loadCode()).errorMessage();
+        return out->errCode;
+    }
+    // Halcon 标定板需指定 Halcon 库；attachAlg 无 prefer，此处仍走 runNamed
     Vision::AlgToolIn ain;
-    ain.mode = in.mode;
-    ain.run = in.param.run;
-    ain.solutionDir = in.solutionDir;
-    fillBoardRun(cameraOf(in), &ain.run);
+    fill_alg_in(in, &ain);
     const Vision::CalibParam board = Vision::CalibMgr::instance().param(cameraOf(in));
     Vision::AlgLibKind prefer = in.algLib;
     if (board.plateKind == Vision::CalibPlateHalconCaltab) {
         prefer = Vision::AlgLibHal;
     }
+    std::string err;
     const Vision::AlgToolOut aout = runNamed("calib.plate", prefer, ain, &err);
     if (!aout.ok) {
-        out.ok = false;
-        out.message = aout.message.empty() ? err : aout.message;
-        return out;
+        out->ok = false;
+        out->message = aout.message.empty() ? err : aout.message;
+        return out->errCode;
     }
-    // 算法结果补上标定板规格，提交到 CalibMgr 并落盘
     Vision::CamModel model = modelFrom(aout.values);
     model.plateKind = board.plateKind;
     model.rows = board.rows;
@@ -295,19 +318,29 @@ Vision::ToolOut Vision::CalibPlateTool::execute(const Vision::ToolIn& in)
         if (!Vision::CalibMgr::instance().save(&saveErr)) {
             err += U(L"\uff1b") + saveErr;
         }
-        out.ok = false;
-        out.message = err;
-        return out;
+        out->ok = false;
+        out->message = err;
+        return out->errCode;
     }
     if (!Vision::CalibMgr::instance().save(&err)) {
-        out.ok = false;
-        out.message = err;
-        return out;
+        out->ok = false;
+        out->message = err;
+        return out->errCode;
     }
-    out.ok = true;
-    out.message = aout.message;
-    out.syncIo();
-    return out;
+    out->ok = true;
+    out->message = aout.message;
+    out->syncIo();
+    return out->errCode;
+}
+
+int Vision::CalibPlateTool::save()
+{
+    return ToolBase::save();
+}
+
+void Vision::CalibPlateTool::clear(const std::string& toolDataDir)
+{
+    ToolBase::clear(toolDataDir);
 }
 // 克隆实例
 Vision::ToolBase* Vision::CalibPlateTool::clone() const
@@ -320,7 +353,28 @@ Vision::ToolBase* Vision::CalibPlateTool::clone() const
 
 
 // 返回本工具参数对象
-const Vision::ToolParaBase* Vision::CalibPlateTool::toolParam() const
+const Vision::ToolParaBase* Vision::CalibPlateTool::tool_param() const
 {
-    return &m_param;
+    return &param_;
 }
+
+int Vision::CalibPlateTool::check_param(std::string* detail) const
+{
+    if (param_.loadCode() != HS_OK) {
+        if (detail != nullptr) {
+            *detail = HsCommData::HsException(param_.loadCode()).errorMessage();
+        }
+        return param_.loadCode();
+    }
+    return HS_OK;
+}
+
+Vision::ToolOut Vision::CalibPlateTool::execute(const Vision::ToolIn& in)
+{
+    Vision::ToolOut out;
+    execute(in, &out);
+    return out;
+}
+
+Vision::CalibPlateTool::CalibPlateTool() {}
+Vision::CalibPlateTool::~CalibPlateTool() {}

@@ -1,35 +1,29 @@
 /**
  * @file EnhanceTool.cpp
- * @brief EnhanceTool实现
+ * @brief 图像增强：登记参数，执行交给算法插件
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
  */
 
 #include "EnhanceTool.h"
-#include "AlgToolBase.h"
-#include "TextEncoding.h"
 #include "VisionVersion.h"
+#include <HsCommData/HsError.h>
+#include <HsCommData/HsException.h>
 #include <HsCommData/Graphic.h>
 #include <vector>
 
 namespace {
-// 当前版本。必须等于变更表最后一行
 const char kToolVersion[] = "1.0.0.0";
-// 变更表。只追加，不删旧行
 const Vision::VerNoteRaw kVerNotes[] = {
     { "1.0.0.0", "首版" },
 };
-
-// 注册名
 const char kToolName[] = "preprocess.enhance";
-// 界面显示名
 const char kDisplayName[] = "图像增强";
-// 工具说明
 const char kDescription[] = "可叠加直方图均衡、强调、照度、缩放、反色";
+}
 
-// 参数说明
-std::vector<Vision::ParamField> fields()
+std::vector<Vision::ParamField> Vision::EnhanceTool::param_fields()
 {
     std::vector<Vision::ParamField> f;
     f.push_back(Vision::paramInt("pl_n", "步骤数", 1, true, 0, true, 8));
@@ -41,7 +35,8 @@ std::vector<Vision::ParamField> fields()
     f.push_back(Vision::paramInt("pl_0_f", "缩放到最大", 0, true, 0, true, 1));
     return f;
 }
-Vision::ToolCaps caps()
+
+Vision::ToolCaps Vision::EnhanceTool::roi_caps()
 {
     Vision::ToolCaps c;
     Vision::RoiSlotRule slot;
@@ -54,98 +49,64 @@ Vision::ToolCaps caps()
     return c;
 }
 
-// 由参数说明生成缺省 ParamMap
-Vision::ParamMap defaultsFrom(const std::vector<Vision::ParamField>& fields)
-{
-    Vision::ParamMap m;
-    for (size_t i = 0; i < fields.size(); ++i) {
-        if (fields[i].type == Vision::ParamFieldType::Device) {
-            continue;
-        }
-        m.insert(fields[i].key, fields[i].def);
-    }
-    return m;
-}
+Vision::EnhanceTool::EnhanceTool() {}
+Vision::EnhanceTool::~EnhanceTool() {}
 
-}
-
-// 注册名
-std::string Vision::EnhanceTool::toolName() const
-{
-    return kToolName;
-}
-
-// 工具大类
-Vision::ToolType Vision::EnhanceTool::type() const
-{
-    return Vision::ToolType::Preprocess;
-}
-
-// 界面显示名
-std::string Vision::EnhanceTool::displayName() const
-{
-    return kDisplayName;
-}
-
-// 工具版本
-std::string Vision::EnhanceTool::version() const
-{
-    return std::string(kToolVersion);
-}
-
-// 版本变更，只追加
-std::vector<Vision::VerNote> Vision::EnhanceTool::versionNotes() const
+std::string Vision::EnhanceTool::tool_name() const { return kToolName; }
+Vision::ToolType Vision::EnhanceTool::type() const { return Vision::ToolType::Preprocess; }
+std::string Vision::EnhanceTool::display_name() const { return kDisplayName; }
+std::string Vision::EnhanceTool::description() const { return kDescription; }
+std::string Vision::EnhanceTool::version() const { return kToolVersion; }
+std::vector<Vision::VerNote> Vision::EnhanceTool::version_notes() const
 {
     return Vision::verNotesFrom(kVerNotes, static_cast<int>(sizeof(kVerNotes) / sizeof(kVerNotes[0])));
 }
 
+Vision::ParamMap Vision::EnhanceTool::default_params() const { return defaultsFrom(param_fields()); }
+std::vector<Vision::ParamField> Vision::EnhanceTool::cfg_param() const { return param_fields(); }
+Vision::ToolCaps Vision::EnhanceTool::cfg_roi() const { return roi_caps(); }
 
-// 工具说明
-std::string Vision::EnhanceTool::description() const
+int Vision::EnhanceTool::execute(const Vision::ToolIn& in, Vision::ToolOut* out)
 {
-    return kDescription;
+    return shot(in, std::string(), out);
 }
 
-// 缺省参数
-Vision::ParamMap Vision::EnhanceTool::defaultParams() const
-{
-    return defaultsFrom(fields());
-}
-
-// 参数说明
-std::vector<Vision::ParamField> Vision::EnhanceTool::paramFields() const
-{
-    return fields();
-}
-
-// 画布能力
-Vision::ToolCaps Vision::EnhanceTool::capabilities() const
-{
-    return caps();
-}
-
-// 调算法插件执行
-Vision::ToolOut Vision::EnhanceTool::execute(const Vision::ToolIn& in)
-{
-    Vision::ToolOut out = Vision::runAlgToolBase(toolName(), in, true);
-    if (!Vision::toolTypeIsImageSource(type())) {
-        out.io.images.clear();
-    }
-    if (in.input.isNull() && out.image.isNull()) {
-        out.ok = false;
-    }
-    return out;
-}
-
-// 克隆本实例
 Vision::ToolBase* Vision::EnhanceTool::clone() const
 {
     EnhanceTool* p = new EnhanceTool();
     p->copyInstanceDataFrom(*this);
     return p;
-}// 返回本工具参数对象
+}
 
-const Vision::ToolParaBase* Vision::EnhanceTool::toolParam() const
+const Vision::ToolParaBase* Vision::EnhanceTool::tool_param() const { return &param_; }
+
+int Vision::EnhanceTool::check_param(std::string*) const
 {
-    return &m_param;
+    return HS_OK;
+}
+
+void Vision::EnhanceTool::fill_alg_in(const Vision::ToolIn& in, Vision::AlgToolIn* ain) const
+{
+    build_alg_in(in, ain, "roi");
+    ain->param = &param_;
+}
+
+int Vision::EnhanceTool::shot(const Vision::ToolIn& in, const std::string& actionId, Vision::ToolOut* out)
+{
+    if (out == nullptr) {
+        return HS_ERR_NULL;
+    }
+    *out = Vision::ToolOut();
+    attachAlg(in.toolDataDir);
+    param_.load(in.param);
+    Vision::AlgToolIn ain;
+    fill_alg_in(in, &ain);
+    return run_attached_shot(in, actionId, &ain, true, out);
+}
+
+Vision::ToolOut Vision::EnhanceTool::execute(const Vision::ToolIn& in)
+{
+    Vision::ToolOut out;
+    execute(in, &out);
+    return out;
 }

@@ -97,7 +97,7 @@ private:
     /************************************************** 搭建 **************************************************/
     /** @brief 顶部工具条：操作、画质、编码、组合键、截图录屏、电源等 */
     QWidget* buildToolbar();
-    /** @brief 右侧面板：聊天（暂记录会话事件）、会话信息、快捷键三页 */
+    /** @brief 右侧面板：聊天/弹窗、会话信息（含进程列表）、快捷键三页 */
     QWidget* buildPanel();
     /** @brief 底部状态栏 */
     QWidget* buildStatus();
@@ -123,8 +123,7 @@ private:
     ConfigMsg makeConfig() const;
     /** @brief 画质档或帧率上限变化时下发配置 */
     void pushPictureConfig(const QString& reason);
-    /** @brief 用中控台设置里的默认画质和帧率，并下发 */
-    /** @brief 画质档位 → JPEG 质量、长边；帧率上限取自 m_maxFps */
+    /** @brief 画质档位 → JPEG 质量、长边、码率；帧率上限取自 m_maxFps */
     void fillQuality(ConfigMsg* cfg) const;
     /** @brief 在线时切换操作权：持有则释放，否则申请 */
     void toggleOperate();
@@ -184,7 +183,7 @@ private:
     FrameView* m_view;              ///< 画面区，负责显示与键鼠采集
     QPushButton* m_operate;         ///< 工具条上的申请/释放操作按钮
     QPushButton* m_floatOperate;    ///< 浮条上的申请/释放操作按钮
-    SegmentBar* m_monitors;         ///< 显示器选择，末项「全部」暂不可用
+    SegmentBar* m_monitors;         ///< 显示器选择；桌面共享时末项「全部」(monitor=255)，窗口共享时禁用
     SegmentBar* m_fitSeg;           ///< 缩放方式：0 适应，1 原始 1:1
     QComboBox* m_quality;           ///< 画质档位：流畅 / 均衡 / 清晰
     QComboBox* m_codec;             ///< 发送编码：沿用 / JPEG / H.264 / 原图

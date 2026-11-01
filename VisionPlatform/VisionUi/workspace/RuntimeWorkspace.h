@@ -30,6 +30,7 @@ namespace Vision {
 
 class Station;
 class StationRuntimePanel;
+class UiPageHost;
 
 /**
  * @class RuntimeWorkspace
@@ -55,6 +56,10 @@ public:
     StationRuntimePanel* panelFor(const ObjectId& stationId) const;
     /** @brief 全部面板 */
     QList<StationRuntimePanel*> panels() const;
+    /** @brief 自定义 UI 宿主；无则 0 */
+    UiPageHost* uiPageHost() const;
+    /** @brief 刷新自定义页绑定（全局变量 / OKNG / 图像） */
+    void refreshCustomUi();
     /** @brief 工站名（保留兼容；多站时各面板自带名） */
     void setStationName(const QString& name);
     /** @brief 方案名 */
@@ -98,12 +103,24 @@ signals:
     void switchSolutionRequested();
     /** @brief 打开画面配置 */
     void configureViewRequested();
+    /** @brief 自定义页：单次 */
+    void customRunOnceRequested();
+    /** @brief 自定义页：循环 */
+    void customLoopRequested();
+    /** @brief 自定义页：停止 */
+    void customStopRequested();
+    /** @brief 自定义页：清零 */
+    void customResetRequested();
 
 private:
     /** @brief 按 Tabs/Tiles 重建各工站面板宿主 */
     void rebuildHost();
     /** @brief 当前焦点面板（页签当前页或第一块） */
     StationRuntimePanel* activePanel() const;
+    /** @brief 取首个启用且有控件的自定义页；无则返回空页 enabled=false */
+    UiPage firstCustomPage() const;
+    /** @brief 当前已知工站实例表（供自定义页） */
+    QMap<QString, Station*> stationMap() const;
 
     Solution* m_sol;                              ///< 方案（不拥有）
     StationCfg* m_previewSt;                   ///< 设计预览工站配置
@@ -114,6 +131,7 @@ private:
     QTabWidget* m_tabs;                           ///< 分页签模式
     QWidget* m_tileHost;                          ///< 拼贴模式容器
     QGridLayout* m_tileLay;                       ///< 拼贴网格
+    UiPageHost* m_uiHost;                         ///< 自定义运行页（可选）
     QPushButton* m_btnStart;                      ///< 开始
     QPushButton* m_btnTrigger;                    ///< 手动测试
     QPushButton* m_btnStop;                       ///< 停止
@@ -122,6 +140,7 @@ private:
     QPushButton* m_btnLayout;                     ///< 画面配置
     QLabel* m_solBanner;                          ///< 方案名
     QMap<QString, StationRuntimePanel*> m_panels; ///< stationId → 面板
+    QMap<QString, Station*> m_liveStations;       ///< 运行态工站实例缓存
 };
 
 }

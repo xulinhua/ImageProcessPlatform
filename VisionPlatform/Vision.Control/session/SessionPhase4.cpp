@@ -1,6 +1,6 @@
 /**
  * @file SessionPhase4.cpp
- * @brief 会话窗口第四期：剪贴板、文件、聊天、电源、隐私屏、录屏
+ * @brief 会话窗口：剪贴板、文件、聊天、电源、隐私屏、录屏
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.

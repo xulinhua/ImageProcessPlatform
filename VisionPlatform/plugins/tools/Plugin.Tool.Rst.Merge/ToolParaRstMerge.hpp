@@ -14,6 +14,11 @@
 
 namespace Vision {
 
+struct RstMergeKey {
+    static constexpr const char* minArea = "minArea";
+    static constexpr const char* maxCount = "maxCount";
+};
+
 /**
  * @class ToolParaRstMerge
  * @brief RstMergeTool 运行参数

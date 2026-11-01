@@ -45,6 +45,8 @@ public:
     virtual ~ToolParaBase() {}
     /** @brief 从落盘的 ToolParam 填写本对象 */
     virtual void load(const ToolParam& src) = 0;
+    /** @brief 上次 load 的错误码。缺省 HS_OK；有校验的子类覆盖 */
+    virtual int loadCode() const { return 0; }
     /** @brief 参数类型名。跨模块识别，空串表示未登记 */
     virtual const char* typeName() const { return ""; }
     /** @brief 本参数布局的版本号，缺省 1.0.0.0；adaptParam 的 newVer 为空时以它为目标 */

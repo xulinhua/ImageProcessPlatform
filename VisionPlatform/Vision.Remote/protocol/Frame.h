@@ -41,10 +41,20 @@ public:
         ChChat = 7          ///< 聊天
     };
 
-    /** @brief flags 位 */
+    /**
+     * @brief 帧头 flags 位（应用层，不是 TCP 段头里的 ACK）
+     *
+     * 本协议跑在 TCP（或等价可靠流）之上，字节是否送达由传输层保证，
+     * 不依赖本标志做重传。当前编解码实际只用 FlagFin / FlagCont 做分片。
+     *
+     * FlagAck（0x02）曾预留「需要业务层回执」语义，与报文类型名里的 *Ack 无关：
+     * - TypeHelloAck / TypeHeartbeatAck / TypeFileAck 是独立 type，走正常 request→response；
+     * - 它们的帧 flags 里也不会置 FlagAck。
+     * 现网从不置位本标志，收端分片装配亦忽略它；保留枚举以免改协议位宽。
+     */
     enum Flag {
         FlagFin = 0x01,     ///< 本逻辑报文的最后一帧（单帧也置位）
-        FlagAck = 0x02,     ///< 需要确认（第二期暂不发确认帧）
+        FlagAck = 0x02,     ///< 预留位；未使用（勿与 TCP ACK、*Ack 报文类型混淆）
         FlagCont = 0x04     ///< 分片续帧（非首片）
     };
 
@@ -55,26 +65,26 @@ public:
     enum Type {
         // —— 控制通道 ChControl ——
         TypeHello = 1,
-        TypeHelloAck = 2,
+        TypeHelloAck = 2,       ///< Hello 业务应答（独立 type，非 FlagAck / TCP ACK）
         TypeAuthRequest = 3,    ///< 认证 / 申请操作（含方式、挑战、权限）
         TypeAuthResult = 4,     ///< 认证结果
         TypeHeartbeat = 5,
-        TypeHeartbeatAck = 6,
-        TypeSubscribe = 7,      ///< 第三期码流订阅；第二期暂不用
-        TypeStreamInfo = 8,     ///< 第三期
-        TypeNetStats = 9,       ///< 第三期
+        TypeHeartbeatAck = 6,   ///< 心跳业务应答，供 RTT（独立 type，非 FlagAck / TCP ACK）
+        TypeSubscribe = 7,      ///< 码流订阅：主/子码流开关与编码偏好
+        TypeStreamInfo = 8,     ///< 码流能力/参数通告（预留扩展）
+        TypeNetStats = 9,       ///< 网络统计，供自适应画质
         TypeOperate = 10,       ///< 申请 / 释放 / 交接
         TypeOperateState = 11,
-        TypeConfig = 12,
-        TypePower = 13,         ///< 第四期
-        TypePrivacy = 14,       ///< 第四期
+        TypeConfig = 12,        ///< 共享范围、画质、码率等
+        TypePower = 13,         ///< 锁屏 / 注销 / 重启 / 关机
+        TypePrivacy = 14,       ///< 隐私屏开关
         TypeError = 15,
         TypeBye = 16,
-        TypeSysInfo = 17,       ///< 第四期：被控端系统信息文本
-        TypeViewers = 18,       ///< 第四期：正在看这台机器的中控台
-        TypeInvite = 19,        ///< 第四期：请被控端再连一台中控台
-        TypeProbe = 21,
-        TypeAnnounce = 22
+        TypeSysInfo = 17,       ///< 被控端系统信息文本
+        TypeViewers = 18,       ///< 正在看这台机器的中控台列表
+        TypeInvite = 19,        ///< 请被控端再连一台中控台（WatchLink）
+        TypeProbe = 21,         ///< 直连探测
+        TypeAnnounce = 22       ///< 局域网发现通告
     };
 
     /** @brief 输入通道类型（与控制通道编号独立，收包须先看 channel） */
@@ -92,13 +102,13 @@ public:
         TypeClipFiles = 3
     };
 
-    /** @brief 文件通道类型 */
+    /** @brief 文件通道类型（块确认用 TypeFileAck，与帧头 FlagAck 无关） */
     enum TypeFile {
         TypeListDir = 1,
         TypeDirEntries = 2,
         TypeFileOpen = 3,
         TypeFileChunk = 4,
-        TypeFileAck = 5,
+        TypeFileAck = 5,        ///< 文件块业务确认/流控（独立 type，非 FlagAck / TCP ACK）
         TypeFileDone = 6,
         TypeMkDir = 7           ///< 在被控端建目录，含上级
     };
@@ -127,7 +137,7 @@ public:
     enum OperateAction {
         OperateRequest = 1,     ///< 申请操作
         OperateRelease = 2,     ///< 释放操作
-        OperateHandoff = 3      ///< 交接（第四期）
+        OperateHandoff = 3      ///< 操作权交接
     };
 
     /** @brief 已经拆开并拼完分片的一帧逻辑报文 */

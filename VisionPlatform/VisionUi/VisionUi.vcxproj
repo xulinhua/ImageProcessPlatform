@@ -115,6 +115,9 @@
     <ClCompile Include="dialog\LogDlg.cpp" />
     <ClCompile Include="dialog\SettingsDlg.cpp" />
     <ClCompile Include="dialog\RuntimeViewDlg.cpp" />
+    <ClCompile Include="dialog\GlobalVarDlg.cpp" />
+    <ClCompile Include="dialog\UiDesignerDlg.cpp" />
+    <ClCompile Include="workspace\UiPageHost.cpp" />
     <ClCompile Include="dialog\AboutDlg.cpp" />
     <ClCompile Include="dialog\VersionDlg.cpp" />
     <ClCompile Include="dialog\CalibMgrDlg.cpp" />
@@ -155,6 +158,9 @@
     <ClInclude Include="dialog\LogDlg.h" />
     <ClInclude Include="dialog\SettingsDlg.h" />
     <ClInclude Include="dialog\RuntimeViewDlg.h" />
+    <ClInclude Include="dialog\GlobalVarDlg.h" />
+    <ClInclude Include="dialog\UiDesignerDlg.h" />
+    <ClInclude Include="workspace\UiPageHost.h" />
     <ClInclude Include="dialog\AboutDlg.h" />
     <ClInclude Include="dialog\VersionDlg.h" />
     <ClInclude Include="dialog\CalibMgrDlg.h" />

@@ -497,7 +497,7 @@ QFrame* AgentWindow::buildSessions()
     svc->addStretch(1);
     col->addLayout(svc);
 
-    // 会话行（这一期最多一条）与无会话提示，二者由 refresh 切换显示
+    // 会话行（当前最多一条）与无会话提示，二者由 refresh 切换显示
     m_sessionRow = new QFrame(frame);
     m_sessionRow->setObjectName("sessionRow");
     m_sessionRow->setStyleSheet("QFrame#sessionRow{border:1px solid #F0F0F0;border-radius:6px;}");

@@ -20,18 +20,22 @@ namespace Vision {
  */
 class ToolParaSmooth : public ToolParaBase {
 public:
+    /** @brief 参数类型名，toolParaAs 按它识别 */
+    static const char* typeId() { return "ToolParaSmooth"; }
+    /** @brief 返回 typeId() */
+    const char* typeName() const override { return typeId(); }
     /** @brief 学习参数，没有则为空 */
     struct Learn {
     };
     /** @brief 运行参数 */
     struct Run {
-        int pl_n;                   ///< 叠加步骤数，0~8；本结构只存第 0 步
-        int pl_0_op;                ///< 第 0 步算子：0 均值 / 1 中值 / 2 高斯 / 3 双边
-        int pl_0_w;                 ///< 掩膜宽（像素）；中值当半径用，高斯当核尺寸（至少 3，偶数加 1）
-        int pl_0_h;                 ///< 掩膜高（像素），仅均值用
-        double pl_0_c0;             ///< 双边滤波灰度域 sigma
-        double pl_0_c1;             ///< 双边滤波空间域 sigma
-        /** @brief 缺省一步 3 像素中值 */
+        int pl_n;                   ///< 步骤数；步骤字段写在 pl_序号_ 后面，这里只映射第 0 步
+        int pl_0_op;                ///< 算子：0 均值，1 中值，2 高斯，3 双边；其他按中值
+        int pl_0_w;                 ///< 掩膜宽，像素：均值用宽高，中值作半径，高斯取奇数尺寸且不小于 3
+        int pl_0_h;                 ///< 掩膜高，像素；均值用
+        double pl_0_c0;             ///< 灰度域：双边滤波的灰度 sigma
+        double pl_0_c1;             ///< 空间域：双边滤波的空间 sigma
+        /** @brief 缺省一步中值滤波，半径 3 */
         Run()
             : pl_n(1)
             , pl_0_op(1)

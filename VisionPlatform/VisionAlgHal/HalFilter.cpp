@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file HalFilter.cpp
  * @brief 图像滤波流水。增强、平滑和灰度形态学按步骤做（Halcon）
  * @author Hoson
@@ -7,62 +7,79 @@
  */
 
 #include "HalFilter.h"
-#include "ToolParaFilter.hpp"
-#include "TextEncoding.h"
 #include "HalImageConvert.h"
 #include "HalObjectConvert.h"
 #include "HalOps.h"
+#include <HsCommData/HsError.h>
+#include <HsCommData/HsException.h>
 
 namespace Vision {
 
 namespace {
-const char kVer_HalFilter[] = "1.0.0.0";
-const Vision::VerNoteRaw kNotes_HalFilter[] = {
+const char kVer[] = "1.0.0.0";
+const char kName[] = "preprocess.filter";
+const char kPreviewFilter[] = "preview.filter";
+const VerNoteRaw kNotes[] = {
     { "1.0.0.0", "首版：多步骤滤波，支持形态学和步骤绑定区域" },
 };
+}
 
-enum class FilterOp {
-    EquHisto = 0,
-    Emphasize,
-    Illuminate,
-    Scale,
-    Invert,
-    Mean,
-    Median,
-    Gauss,
-    Bilateral,
-    GrayOpen,
-    GrayClose,
-    GrayErode,
-    GrayDilate,
-    TopHat,
-    BottomHat
-};
-
-struct FilterStep {
-    FilterOp op;
-    int maskW;
-    int maskH;
-    double coeff;
-    double coeff2;
-    bool scaleMax;
-    std::string shape;
-    int roiIndex;
-    FilterStep()
-        : op(FilterOp::EquHisto)
-        , maskW(7)
-        , maskH(7)
-        , coeff(1.0)
-        , coeff2(3.0)
-        , scaleMax(false)
-        , shape(FilterKey::shapeRect)
-        , roiIndex(-1)
-    {}
-};
-
-bool filterOpFromString(const std::string& v, FilterOp* out)
+HalFilter::FilterStep::FilterStep()
+    : op(FilterOp::EquHisto)
+    , maskW(7)
+    , maskH(7)
+    , coeff(1.0)
+    , coeff2(3.0)
+    , scaleMax(false)
+    , shape(FilterKey::shapeRect)
+    , roiIndex(-1)
 {
-    if (!out) {
+}
+
+std::string HalFilter::tool_name() const { return kName; }
+AlgLibKind HalFilter::alg_lib() const { return AlgLibHal; }
+AlgToolBase* HalFilter::clone() const { return new HalFilter(); }
+std::string HalFilter::version() const { return kVer; }
+std::vector<VerNote> HalFilter::version_notes() const
+{
+    return verNotesFrom(kNotes, static_cast<int>(sizeof(kNotes) / sizeof(kNotes[0])));
+}
+
+HalFilter::HalFilter()
+    : img_w_(0)
+    , img_h_(0)
+    , shot_err_(0)
+{
+    HalconCpp::GenEmptyObj(&image_);
+    HalconCpp::GenEmptyObj(&result_image_);
+}
+
+HalFilter::~HalFilter()
+{
+}
+
+void HalFilter::init(const std::string&)
+{
+}
+
+void HalFilter::save(const std::string&)
+{
+}
+
+int HalFilter::tool_reset()
+{
+    steps_.clear();
+    step_rois_.clear();
+    tol_.reset();
+    shot_err_ = HS_OK;
+    shot_msg_.clear();
+    HalconCpp::GenEmptyObj(&result_image_);
+    return HS_OK;
+}
+
+bool HalFilter::filter_op_from_string(const std::string& v, FilterOp* out) const
+{
+    if (out == nullptr) {
         return false;
     }
     if (v == FilterKey::opEquHisto)   { *out = FilterOp::EquHisto;   return true; }
@@ -83,7 +100,7 @@ bool filterOpFromString(const std::string& v, FilterOp* out)
     return false;
 }
 
-void morphMask(const FilterStep& st, int* maskH, int* maskW, const char** shape)
+void HalFilter::morph_mask(const FilterStep& st, int* maskH, int* maskW, const char** shape) const
 {
     int side = st.maskW > st.maskH ? st.maskW : st.maskH;
     if (side < 1) {
@@ -103,10 +120,9 @@ void morphMask(const FilterStep& st, int* maskH, int* maskW, const char** shape)
     }
 }
 
-bool applyFilterOp(HalconCpp::HObject* img, const FilterStep& st, std::string* err)
+bool HalFilter::apply_filter_op(HalconCpp::HObject* img, const FilterStep& st, std::string* err) const
 {
     switch (st.op) {
-    // 增强类：直方图均衡、锐化、光照均衡、灰度缩放、取反
     case FilterOp::EquHisto: {
         HalconCpp::HObject out;
         HalconCpp::EquHistoImage(*img, &out);
@@ -146,7 +162,6 @@ bool applyFilterOp(HalconCpp::HObject* img, const FilterStep& st, std::string* e
         *img = out;
         return true;
     }
-    // 平滑类：均值用 maskW×maskH，中值把 maskW 当圆形半径
     case FilterOp::Mean: {
         const int w = st.maskW < 1 ? 1 : st.maskW;
         const int h = st.maskH < 1 ? 1 : st.maskH;
@@ -162,7 +177,6 @@ bool applyFilterOp(HalconCpp::HObject* img, const FilterStep& st, std::string* e
         *img = out;
         return true;
     }
-    // Halcon 高斯只接受 3~11 的奇数尺寸，取不大于 maskW 的最大一档
     case FilterOp::Gauss: {
         static const int kGaussSizes[] = { 3, 5, 7, 9, 11 };
         int best = st.maskW < 3 ? 3 : st.maskW;
@@ -180,7 +194,6 @@ bool applyFilterOp(HalconCpp::HObject* img, const FilterStep& st, std::string* e
         *img = out;
         return true;
     }
-    // 双边：coeff2 为空间标准差，coeff 为灰度标准差，以自身为引导图
     case FilterOp::Bilateral: {
         HalconCpp::HTuple empty;
         HalconCpp::HObject out;
@@ -188,12 +201,11 @@ bool applyFilterOp(HalconCpp::HObject* img, const FilterStep& st, std::string* e
         *img = out;
         return true;
     }
-    // 灰度形态学：结构元取 maskW、maskH 较大者的奇数方形窗
     case FilterOp::GrayOpen: {
         int mh = 0;
         int mw = 0;
-        const char* shape = 0;
-        morphMask(st, &mh, &mw, &shape);
+        const char* shape = nullptr;
+        morph_mask(st, &mh, &mw, &shape);
         HalconCpp::HObject out;
         HalconCpp::GrayOpeningShape(*img, &out, mh, mw, shape);
         *img = out;
@@ -202,8 +214,8 @@ bool applyFilterOp(HalconCpp::HObject* img, const FilterStep& st, std::string* e
     case FilterOp::GrayClose: {
         int mh = 0;
         int mw = 0;
-        const char* shape = 0;
-        morphMask(st, &mh, &mw, &shape);
+        const char* shape = nullptr;
+        morph_mask(st, &mh, &mw, &shape);
         HalconCpp::HObject out;
         HalconCpp::GrayClosingShape(*img, &out, mh, mw, shape);
         *img = out;
@@ -212,8 +224,8 @@ bool applyFilterOp(HalconCpp::HObject* img, const FilterStep& st, std::string* e
     case FilterOp::GrayErode: {
         int mh = 0;
         int mw = 0;
-        const char* shape = 0;
-        morphMask(st, &mh, &mw, &shape);
+        const char* shape = nullptr;
+        morph_mask(st, &mh, &mw, &shape);
         HalconCpp::HObject out;
         HalconCpp::GrayErosionShape(*img, &out, mh, mw, shape);
         *img = out;
@@ -222,19 +234,18 @@ bool applyFilterOp(HalconCpp::HObject* img, const FilterStep& st, std::string* e
     case FilterOp::GrayDilate: {
         int mh = 0;
         int mw = 0;
-        const char* shape = 0;
-        morphMask(st, &mh, &mw, &shape);
+        const char* shape = nullptr;
+        morph_mask(st, &mh, &mw, &shape);
         HalconCpp::HObject out;
         HalconCpp::GrayDilationShape(*img, &out, mh, mw, shape);
         *img = out;
         return true;
     }
-    // 顶帽 = 原图 − 开运算；底帽 = 闭运算 − 原图
     case FilterOp::TopHat: {
         int mh = 0;
         int mw = 0;
-        const char* shape = 0;
-        morphMask(st, &mh, &mw, &shape);
+        const char* shape = nullptr;
+        morph_mask(st, &mh, &mw, &shape);
         HalconCpp::HObject opened;
         HalconCpp::GrayOpeningShape(*img, &opened, mh, mw, shape);
         HalconCpp::HObject out;
@@ -245,8 +256,8 @@ bool applyFilterOp(HalconCpp::HObject* img, const FilterStep& st, std::string* e
     case FilterOp::BottomHat: {
         int mh = 0;
         int mw = 0;
-        const char* shape = 0;
-        morphMask(st, &mh, &mw, &shape);
+        const char* shape = nullptr;
+        morph_mask(st, &mh, &mw, &shape);
         HalconCpp::HObject closed;
         HalconCpp::GrayClosingShape(*img, &closed, mh, mw, shape);
         HalconCpp::HObject out;
@@ -262,38 +273,69 @@ bool applyFilterOp(HalconCpp::HObject* img, const FilterStep& st, std::string* e
     }
 }
 
-struct IndexedRegion {
-    int index;
-    HalconCpp::HObject region;
-};
-
-void pushRegion(std::vector<IndexedRegion>* out, int index, const HsCommData::HsObject& shape, int imgW, int imgH)
+int HalFilter::build_steps(const ToolParaFilter::Run& rp, std::vector<FilterStep>* steps, std::string* err)
 {
-    if (!shape.isInitialized() || shape.isEmpty()) {
-        return;
+    if (steps == nullptr) {
+        return HS_ERR_TYPE;
     }
-    try {
-        const HalconCpp::HObject piece = hsObjectToHObject(shape, imgW, imgH);
-        if (hoIsEmpty(piece)) {
-            return;
+    steps->clear();
+    for (size_t i = 0; i < rp.steps.size(); ++i) {
+        const ToolParaFilter::Step& src = rp.steps[i];
+        FilterStep st;
+        if (!filter_op_from_string(src.op, &st.op)) {
+            if (err) {
+                *err = "未知滤波算子";
+            }
+            return HS_ERR_PARAM;
         }
-        IndexedRegion row;
-        row.index = index;
-        row.region = piece;
-        out->push_back(row);
-    } catch (const HalconCpp::HException&) {
+        if (st.op == FilterOp::Bilateral && (src.coeff <= 0.0 || src.coeff2 <= 0.0)) {
+            if (err) {
+                *err = "双边滤波的标准差必须大于 0";
+            }
+            return HS_ERR_PARAM;
+        }
+        st.maskW = src.maskW;
+        st.maskH = src.maskH;
+        st.coeff = src.coeff;
+        st.coeff2 = src.coeff2;
+        st.scaleMax = src.scaleMax;
+        st.shape = src.shape;
+        st.roiIndex = src.roiIndex;
+        steps->push_back(st);
     }
+    return HS_OK;
 }
 
-std::vector<HalconCpp::HObject> collectStepRois(const AlgToolIn& in, int imgW, int imgH)
+void HalFilter::collect_step_rois(const AlgToolIn& in)
 {
+    step_rois_.clear();
+    struct IndexedRegion {
+        int index;
+        HalconCpp::HObject region;
+    };
     std::vector<IndexedRegion> rows;
+    auto pushOne = [&](int index, const HsCommData::HsObject& shape) {
+        if (!shape.isInitialized() || shape.isEmpty()) {
+            return;
+        }
+        try {
+            const HalconCpp::HObject piece = hsObjectToHObject(shape, img_w_, img_h_);
+            if (hoIsEmpty(piece)) {
+                return;
+            }
+            IndexedRegion row;
+            row.index = index;
+            row.region = piece;
+            rows.push_back(row);
+        } catch (const HalconCpp::HException&) {
+        }
+    };
     for (size_t i = 0; i < in.regions.size(); ++i) {
         const PortRegion& one = in.regions[i];
         if (one.use != RegionUse::Normal || one.port != FilterKey::roi) {
             continue;
         }
-        pushRegion(&rows, one.index, one.object, imgW, imgH);
+        pushOne(one.index, one.object);
     }
     for (size_t i = 0; i < in.rois.size(); ++i) {
         const PortRoi& one = in.rois[i];
@@ -303,7 +345,7 @@ std::vector<HalconCpp::HObject> collectStepRois(const AlgToolIn& in, int imgW, i
         if (!one.port.empty() && one.port != FilterKey::roi) {
             continue;
         }
-        pushRegion(&rows, one.index, one.roi, imgW, imgH);
+        pushOne(one.index, one.roi);
     }
     for (size_t i = 1; i < rows.size(); ++i) {
         const IndexedRegion cur = rows[i];
@@ -314,123 +356,180 @@ std::vector<HalconCpp::HObject> collectStepRois(const AlgToolIn& in, int imgW, i
         }
         rows[j] = cur;
     }
-    std::vector<HalconCpp::HObject> ordered;
-    ordered.reserve(rows.size());
     for (size_t i = 0; i < rows.size(); ++i) {
-        ordered.push_back(rows[i].region);
+        step_rois_.push_back(rows[i].region);
     }
-    return ordered;
-}
 }
 
-std::string HalFilter::version() const
+int HalFilter::proc_input(const AlgToolIn& in)
 {
-    return kVer_HalFilter;
-}
-
-std::vector<VerNote> HalFilter::versionNotes() const
-{
-    return verNotesFrom(kNotes_HalFilter, static_cast<int>(sizeof(kNotes_HalFilter) / sizeof(kNotes_HalFilter[0])));
-}
-
-AlgToolOut HalFilter::writeFullImage(const AlgToolIn& in, const HalconCpp::HImage& work, const std::string& okMsg) const
-{
-    AlgToolOut out;
-    const HalconCpp::HImage full = work.FullDomain();
+    HalconCpp::HObject gray;
+    int w = 0;
+    int h = 0;
     std::string err;
-    HsCommData::HsImage* pImage = &out.image.image;
-    if (!hObjectToHsImage(full, inputImage(in).frameId, pImage, &err)) {
-        return AlgToolOut::fail(err);
+    HalconCpp::HObject* pGray = &gray;
+    if (!inputToGray(in.imageNative.ptr, static_cast<int>(in.imageNative.algLib), inputImage(in), pGray, &w, &h, &err)) {
+        shot_err_ = HS_ERR_IMAGE_EMPTY;
+        shot_msg_ = err;
+        return shot_err_;
     }
-    out.ok = true;
-    out.message = okMsg;
-    return out;
+    if (w < 1 || h < 1) {
+        shot_err_ = HS_ERR_IMAGE_EMPTY;
+        shot_msg_ = HsCommData::HsException(HS_ERR_IMAGE_EMPTY).errorMessage();
+        return shot_err_;
+    }
+    image_ = gray;
+    img_w_ = w;
+    img_h_ = h;
+    if (in.param != nullptr && toolParaAs<ToolParaFilter>(in.param) == nullptr) {
+        shot_err_ = HS_ERR_TYPE;
+        shot_msg_ = HsCommData::HsException(HS_ERR_TYPE).errorMessage();
+        return shot_err_;
+    }
+    ToolParaFilter local;
+    const ToolParaFilter* para = paraOf(in, &local);
+    const int built = build_steps(para->run, &steps_, &err);
+    if (built != HS_OK) {
+        shot_err_ = built;
+        shot_msg_ = err;
+        return shot_err_;
+    }
+    collect_step_rois(in);
+    return HS_OK;
 }
 
-AlgToolOut HalFilter::run(const AlgToolIn& in)
+int HalFilter::alg_run(const AlgToolIn& in)
 {
-    ToolParam bag;
-    bag.run = in.run;
-    bag.judge = in.judge;
-    ToolParaFilter para;
-    para.load(bag);
-
-    // 先把参数步骤全部校验并转换，算子未知或双边标准差非正时整步失败
-    std::vector<FilterStep> steps;
-    for (size_t i = 0; i < para.run.steps.size(); ++i) {
-        const ToolParaFilter::Step& src = para.run.steps[i];
-        FilterStep st;
-        if (!filterOpFromString(src.op, &st.op)) {
-            return AlgToolOut::fail("未知滤波算子");
-        }
-        if (st.op == FilterOp::Bilateral && (src.coeff <= 0.0 || src.coeff2 <= 0.0)) {
-            return AlgToolOut::fail("双边滤波的标准差必须大于 0");
-        }
-        st.maskW = src.maskW;
-        st.maskH = src.maskH;
-        st.coeff = src.coeff;
-        st.coeff2 = src.coeff2;
-        st.scaleMax = src.scaleMax;
-        st.shape = src.shape;
-        st.roiIndex = src.roiIndex;
-        steps.push_back(st);
-    }
-
-    try {
-        HalconCpp::HImage gray;
-        int imgW = 0;
-        int imgH = 0;
-        std::string err;
-        HalconCpp::HImage* pGray = &gray;
-        if (!hsImageToGray(inputImage(in), pGray, &imgW, &imgH, &err)) {
-            return AlgToolOut::fail(err);
-        }
-        if (imgW < 1 || imgH < 1) {
-            return AlgToolOut::fail("输入图像为空");
-        }
-        const std::vector<HalconCpp::HObject> stepRois = collectStepRois(in, imgW, imgH);
-        HalconCpp::HObject work = gray;
-        // 绑定了区域的步骤只处理该区域再覆盖回原图；区域序号越界或与图无交集时跳过该步
-        for (size_t i = 0; i < steps.size(); ++i) {
-            const int ri = steps[i].roiIndex;
-            if (ri >= 0) {
-                if (ri >= static_cast<int>(stepRois.size())) {
-                    continue;
-                }
-                HalconCpp::HObject frame = fullImageRegion(imgW, imgH);
-                HalconCpp::HObject inside;
-                HalconCpp::Intersection(stepRois[static_cast<size_t>(ri)], frame, &inside);
-                if (!regionHasArea(inside)) {
-                    continue;
-                }
-                HalconCpp::HObject reduced;
-                HalconCpp::ReduceDomain(work, inside, &reduced);
-                if (!applyFilterOp(&reduced, steps[i], &err)) {
-                    return AlgToolOut::fail(err);
-                }
-                HalconCpp::OverpaintGray(work, reduced);
+    (void)in;
+    HalconCpp::HObject work = image_;
+    std::string err;
+    for (size_t i = 0; i < steps_.size(); ++i) {
+        const int ri = steps_[i].roiIndex;
+        if (ri >= 0) {
+            if (ri >= static_cast<int>(step_rois_.size())) {
                 continue;
             }
-            if (!applyFilterOp(&work, steps[i], &err)) {
-                return AlgToolOut::fail(err);
+            HalconCpp::HObject frame = fullImageRegion(img_w_, img_h_);
+            HalconCpp::HObject inside;
+            HalconCpp::Intersection(step_rois_[static_cast<size_t>(ri)], frame, &inside);
+            if (!regionHasArea(inside)) {
+                continue;
+            }
+            HalconCpp::HObject reduced;
+            HalconCpp::ReduceDomain(work, inside, &reduced);
+            if (!apply_filter_op(&reduced, steps_[i], &err)) {
+                shot_err_ = HS_ERR_OPERATOR;
+                shot_msg_ = "step " + std::to_string(static_cast<long long>(i)) + ": " + err;
+                return shot_err_;
+            }
+            HalconCpp::OverpaintGray(work, reduced);
+            continue;
+        }
+        if (!apply_filter_op(&work, steps_[i], &err)) {
+            shot_err_ = HS_ERR_OPERATOR;
+            shot_msg_ = "step " + std::to_string(static_cast<long long>(i)) + ": " + err;
+            return shot_err_;
+        }
+    }
+    result_image_ = work;
+    shot_err_ = HS_OK;
+    shot_msg_ = "图像滤波完成";
+    return HS_OK;
+}
+
+int HalFilter::judge_tol(const AlgToolIn& in)
+{
+    tol_.reset();
+    tol_.put_int(FilterKey::outWidth, img_w_);
+    tol_.put_int(FilterKey::outHeight, img_h_);
+    // 预处理只输出图像，无数值工艺公差；写入宽高供显示，judge 仍统一走 tol_
+    tol_.judge(in.judge, nullptr);
+    return HS_OK;
+}
+
+int HalFilter::alg_rst_proc(const AlgToolIn& in, AlgToolOut* out)
+{
+    if (out == nullptr) {
+        return HS_ERR_TYPE;
+    }
+    AlgToolOut result;
+    result.errCode = shot_err_;
+    result.runOk = shot_err_ == HS_OK;
+    result.ok = shot_err_ == HS_OK && tol_.ok;
+    result.message = shot_msg_;
+    if (shot_err_ == HS_OK) {
+        tol_.apply(&result);
+        std::string err;
+        HsCommData::HsImage* view = &result.image.image;
+        if (!hObjectToHsImage(result_image_, inputImage(in).frameId, view, &err)) {
+            result.ok = false;
+            result.errCode = HS_ERR_OPERATOR;
+            result.message = err;
+            *out = result;
+            return HS_ERR_OPERATOR;
+        }
+        result.image.native.algLib = AlgLibHal;
+        result.image.native.ptr = &result_image_;
+        result.values.insert(FilterKey::outWidth, result.image.image.width);
+        result.values.insert(FilterKey::outHeight, result.image.image.height);
+        result.values.insert(FilterKey::outCostMs, run_timer_.totalMs());
+        for (size_t i = 0; i < steps_.size(); ++i) {
+            const int ri = steps_[i].roiIndex;
+            if (ri < 0 || ri >= static_cast<int>(step_rois_.size())) {
+                continue;
+            }
+            NamedObject roi;
+            roi.port = FilterKey::roi;
+            roi.index = static_cast<int>(i);
+            roi.object = hObjectToRegionObject(step_rois_[static_cast<size_t>(ri)]);
+            if (!roi.object.isEmpty()) {
+                result.portObjects.push_back(roi);
+                result.objects.push_back(roi.object);
             }
         }
-        // 输出整幅结果图和尺寸，并把各步用到的区域作为叠加几何
-        AlgToolOut out = writeFullImage(in, HalconCpp::HImage(work), "图像滤波完成");
-        if (out.ok) {
-            out.values.insert(FilterKey::outWidth, out.image.image.width);
-            out.values.insert(FilterKey::outHeight, out.image.image.height);
-            for (size_t i = 0; i < steps.size(); ++i) {
-                const int ri = steps[i].roiIndex;
-                if (ri < 0 || ri >= static_cast<int>(stepRois.size())) {
-                    continue;
-                }
-                out.objects.push_back(hObjectToRegionObject(stepRois[static_cast<size_t>(ri)]));
-            }
+    }
+    *out = result;
+    return shot_err_;
+}
+
+int HalFilter::action(const std::string& id, const AlgToolIn& in, AlgToolOut* out)
+{
+    if (id != kPreviewFilter) {
+        return AlgToolBase::action(id, in, out);
+    }
+    return execute(in, out);
+}
+
+int HalFilter::execute(const AlgToolIn& in, AlgToolOut* out)
+{
+    if (out == nullptr) {
+        return HS_ERR_NULL;
+    }
+    try {
+        run_timer_.start();
+        tool_reset();
+        run_timer_.mark("tool_reset");
+        int stepRet = proc_input(in);
+        run_timer_.mark("proc_input");
+        if (stepRet == HS_OK) {
+            stepRet = alg_run(in);
+            run_timer_.mark("alg_run");
         }
-        return out;
+        if (stepRet == HS_OK) {
+            stepRet = judge_tol(in);
+            run_timer_.mark("judge_tol");
+        }
+        alg_rst_proc(in, out);
+        run_timer_.stop("alg_rst_proc");
+        write_alg_steps(out, run_timer_.sections(), run_timer_.totalMs());
+        return stepRet != HS_OK ? stepRet : shot_err_;
     } catch (const HalconCpp::HException& e) {
-        return AlgToolOut::fail(hExceptionText(e));
+        if (out) {
+            out->ok = false;
+            out->errCode = HS_ERR_OPERATOR;
+            out->message = hExceptionText(e);
+        }
+        return HS_ERR_OPERATOR;
     }
 }
 

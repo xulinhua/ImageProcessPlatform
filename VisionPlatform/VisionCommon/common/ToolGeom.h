@@ -175,6 +175,21 @@ struct DisplayCfg {
 };
 
 /**
+ * @class ParamBind
+ * @brief 工具运行参数与全局变量的绑定
+ *
+ * direction：0=订阅（全局→run），1=回写（工具输出/run→全局，成功后）
+ * path 例：global:VarName
+ */
+struct ParamBind {
+    std::string paramKey; ///< run / 输出里的键
+    std::string path;     ///< 数据路径，如 global:VarName
+    int direction;        ///< 0 订阅，1 回写
+    /** @brief 订阅方向 */
+    ParamBind() : direction(0) {}
+};
+
+/**
  * @class ToolParam
  * @brief 写入方案的工具参数：学习、运行、判断三块
  */
@@ -185,6 +200,7 @@ struct ToolParam {
     TeachRef teachPar;               ///< 示教文件引用
     std::map<std::string, std::string> statCfg; ///< 统计：enable|min|max
     std::map<std::string, DisplayCfg> displayCfg; ///< 显示配置
+    std::vector<ParamBind> paramBinds; ///< 与全局变量的订阅/回写
     std::string backendOverride;     ///< 后端覆盖。空表示跟全局
     AlgLibKind algLib;             ///< 算法库
     ObjectId deviceId;               ///< 绑定设备（采集类）

@@ -1,176 +1,143 @@
 /**
  * @file FitPlaneTool.cpp
- * @brief 拟合平面工具壳
+ * @brief RANSAC 拟合平面
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
  */
 
 #include "FitPlaneTool.h"
-#include "AlgToolBase.h"
-#include "CloudFileGrabber.h"
 #include "VisionVersion.h"
 #include <HsCommData/HsError.h>
-
-namespace Vision {
+#include <HsCommData/HsException.h>
+#include <cstdio>
+#include <vector>
 
 namespace {
-
 const char kToolVersion[] = "1.0.0.0";
-const VerNoteRaw kVerNotes[] = {
-    { "1.0.0.0", "拟合平面" },
-};
-
-}
-
-std::string FitPlaneTool::toolName() const
+const Vision::VerNoteRaw kVerNotes[] = { { "1.0.0.0", "RANSAC 拟合平面" } };
+const char kToolName[] = "measure3d.fit_plane";
+const char kDisplayName[] = "拟合平面";
+const char kDescription[] = "RANSAC 拟合平面";
+Vision::ParamMap defaultsFromFields(const std::vector<Vision::ParamField>& fields)
 {
-    return "measure3d.fit_plane";
-}
-
-ToolType FitPlaneTool::type() const
-{
-    return ToolType::Measure3D;
-}
-
-std::string FitPlaneTool::displayName() const
-{
-    return "拟合平面";
-}
-
-std::string FitPlaneTool::version() const
-{
-    return std::string(kToolVersion);
-}
-
-std::vector<VerNote> FitPlaneTool::versionNotes() const
-{
-    return verNotesFrom(kVerNotes, static_cast<int>(sizeof(kVerNotes) / sizeof(kVerNotes[0])));
-}
-
-std::string FitPlaneTool::description() const
-{
-    return "用点云拟合平面。没有上游点云时读取 ASCII PLY 或 PCD";
-}
-
-std::vector<ParamField> FitPlaneTool::fields() const
-{
-    std::vector<ParamField> f;
-    f.push_back(paramPath("file", "点云文件", std::string()));
-    f.push_back(paramDouble("distance", "距离阈值", 0.5, true, 0.0, false, 0.0));
-    return f;
-}
-
-ParamMap FitPlaneTool::defaults() const
-{
-    ParamMap m;
-    const std::vector<ParamField> f = fields();
-    for (size_t i = 0; i < f.size(); ++i) {
-        m.insert(f[i].key, f[i].def);
+    Vision::ParamMap m;
+    for (size_t i = 0; i < fields.size(); ++i) {
+        if (fields[i].type == Vision::ParamFieldType::Device) continue;
+        m.insert(fields[i].key, fields[i].def);
     }
     return m;
 }
-
-ParamMap FitPlaneTool::defaultParams() const
-{
-    return defaults();
 }
 
-std::vector<ParamField> FitPlaneTool::paramFields() const
-{
-    return fields();
-}
-
-std::vector<PortDesc> FitPlaneTool::ports() const
-{
-    std::vector<PortDesc> p = ToolBase::ports();
-    for (size_t i = 0; i < p.size(); ++i) {
-        if (p[i].dir() == PortDir::Out && p[i].data() == PortData::Cloud) {
-            p[i].slot.name = "inlier";
-        }
-    }
-    return p;
-}
-
-std::string FitPlaneTool::resolvePath(const ToolIn& in, const std::string& file, std::string* err) const
-{
-    const bool absWin = file.size() >= 2 && file[1] == ':';
-    const bool absUnix = !file.empty() && (file[0] == '/' || file[0] == '\\');
-    if (absWin || absUnix) {
-        return file;
-    }
-    if (in.solutionDir.empty()) {
-        if (err) {
-            *err = "请先保存方案";
-        }
-        return std::string();
-    }
-    std::string dir = in.solutionDir;
-    if (dir.back() != '/' && dir.back() != '\\') {
-        dir.push_back('\\');
-    }
-    return dir + file;
-}
-
-bool FitPlaneTool::loadFileCloud(const ToolIn& in, HsCommData::Cloud3* cloud, std::string* err) const
-{
-    if (!cloud) {
-        return false;
-    }
-    const std::string file = in.param.run.value("file").toString();
-    if (file.empty()) {
-        return true;
-    }
-    const std::string path = resolvePath(in, file, err);
-    if (path.empty()) {
-        return false;
-    }
-    return CloudFileGrabber::load(path, cloud, err);
-}
-
-ToolOut FitPlaneTool::execute(const ToolIn& in)
-{
-    ToolIn shot = in;
-    // 三维测量只认 PCL / Open3D；旧方案若仍是 Hal 则回落到 PCL
-    if (shot.algLib != AlgLibPcl && shot.algLib != AlgLibOpen3d) {
-        shot.algLib = AlgLibPcl;
-    }
-    if (shot.inputIo.clouds.empty()) {
-        HsCommData::Cloud3 cloud;
-        std::string err;
-        if (!loadFileCloud(shot, &cloud, &err)) {
-            ToolOut out;
-            out.ok = false;
-            out.error = true;
-            out.errCode = HS_ERR_OPERATOR;
-            out.message = err;
-            return out;
-        }
-        if (!cloud.xyz.empty()) {
-            PortCloud one;
-            one.cloud = cloud;
-            shot.inputIo.clouds.push_back(one);
-        }
-    }
-    ToolOut out = runAlgToolBase(toolName(), shot, false);
-    if (out.errCode == HS_ERR_NO_ALG) {
-        out.message = "未登记测量算法";
-    }
-    // 输入点云也放进输出缺省口，供点云窗做底云（内点仍在 inlier）
-    if (!shot.inputIo.clouds.empty() && !shot.inputIo.clouds[0].cloud.isEmpty()) {
-        PortCloud base = shot.inputIo.clouds[0];
-        base.port.clear();
-        base.index = 0;
-        out.io.clouds.insert(out.io.clouds.begin(), base);
-    }
-    return out;
-}
-
-ToolBase* FitPlaneTool::clone() const
+Vision::FitPlaneTool::FitPlaneTool() {}
+Vision::FitPlaneTool::~FitPlaneTool() {}
+Vision::ToolBase* Vision::FitPlaneTool::clone() const
 {
     FitPlaneTool* p = new FitPlaneTool();
     p->copyInstanceDataFrom(*this);
     return p;
 }
-
+std::string Vision::FitPlaneTool::tool_name() const { return kToolName; }
+Vision::ToolType Vision::FitPlaneTool::type() const { return Vision::ToolType::Measure3D; }
+std::string Vision::FitPlaneTool::display_name() const { return kDisplayName; }
+std::string Vision::FitPlaneTool::description() const { return kDescription; }
+std::string Vision::FitPlaneTool::version() const { return std::string(kToolVersion); }
+std::vector<Vision::VerNote> Vision::FitPlaneTool::version_notes() const
+{ return Vision::verNotesFrom(kVerNotes, 1); }
+Vision::ParamMap Vision::FitPlaneTool::default_params() const { return defaultsFromFields(cfg_param()); }
+std::vector<Vision::ParamField> Vision::FitPlaneTool::cfg_param() const
+{
+    std::vector<Vision::ParamField> f;
+    f.push_back(Vision::paramDouble("distance","内点距离",0.5,true,0.0,false,0.0));
+    return f;
+}
+const Vision::ToolParaBase* Vision::FitPlaneTool::tool_param() const { return &param_; }
+int Vision::FitPlaneTool::check_param(std::string* detail) const
+{
+    if (param_.loadCode() != HS_OK) {
+        if (detail) *detail = HsCommData::HsException(param_.loadCode()).errorMessage();
+        return param_.loadCode();
+    }
+    return HS_OK;
+}
+Vision::OutputSpec Vision::FitPlaneTool::cfg_output() const
+{
+    Vision::OutputSpec spec; Vision::OutputField f; f.key = "inliers"; f.title = "inliers";
+    spec.fields.push_back(f); return spec;
+}
+Vision::TolSpec Vision::FitPlaneTool::cfg_tol() const
+{
+    Vision::TolSpec spec; Vision::TolField f; f.key = "inliers"; f.title = "inliers";
+    f.defMin = 0; f.defMax = 1.0e9; spec.items.push_back(f); return spec;
+}
+Vision::DisplaySpec Vision::FitPlaneTool::cfg_display() const { return Vision::DisplaySpec(); }
+Vision::ToolCaps Vision::FitPlaneTool::cfg_roi() const { return Vision::ToolCaps(); }
+std::vector<Vision::PortDesc> Vision::FitPlaneTool::ports() const
+{
+    std::vector<PortDesc> p;
+    p.push_back(PortDesc(PortDir::In, PortData::Cloud));
+    p.push_back(PortDesc(PortDir::Out, PortData::Tuple));
+    p.push_back(PortDesc(PortDir::Out, PortData::Logic));
+    return p;
+}
+int Vision::FitPlaneTool::execute(const Vision::ToolIn& in, Vision::ToolOut* out) { return shot(in, out); }
+void Vision::FitPlaneTool::log_result(Vision::ToolOut* out) const
+{
+    if (!out) return;
+    Vision::ToolTrace trace; trace.action = "result";
+    trace.detail = out->message.empty() ? (out->ok ? "ok" : "fail") : out->message;
+    out->traces.push_back(trace);
+}
+void Vision::FitPlaneTool::fill_alg_in(const Vision::ToolIn& in, Vision::AlgToolIn* ain) const
+{
+    ain->mode = in.mode;
+    ain->clouds = in.inputIo.clouds;
+    ain->poses3 = in.inputIo.poses3;
+    ain->shapes3 = in.inputIo.shapes3;
+    ain->images = in.inputIo.images;
+    if (!in.inputIo.images.empty()) {
+        ain->imagePtr = &in.inputIo.images[0].image;
+        ain->imageNative = in.inputIo.images[0].native;
+    } else {
+        ain->imagePtr = &in.input;
+        ain->imageNative = in.inputNative;
+    }
+    ain->param = &param_;
+    ain->run = in.param.run;
+    ain->teach = in.param.learn;
+    ain->judge = in.param.judge;
+    ain->solutionDir = in.solutionDir;
+    ain->toolDataDir = in.toolDataDir;
+}
+int Vision::FitPlaneTool::shot(const Vision::ToolIn& in, Vision::ToolOut* out)
+{
+    if (!out) return HS_ERR_NULL;
+    *out = Vision::ToolOut();
+    Vision::ToolIn shotIn = in;
+    if (shotIn.algLib != Vision::AlgLibPcl && shotIn.algLib != Vision::AlgLibOpen3d) shotIn.algLib = Vision::AlgLibPcl;
+    attachAlg(shotIn.toolDataDir);
+    param_.load(shotIn.param);
+    if (param_.loadCode() != HS_OK) {
+        out->ok = false; out->errCode = param_.loadCode();
+        out->message = HsCommData::HsException(param_.loadCode()).errorMessage();
+        return out->errCode;
+    }
+    Vision::AlgToolBase* alg = attachedAlg();
+    if (!alg) { out->ok = false; out->errCode = HS_ERR_NO_ALG; out->message = "未登记点云算法"; return out->errCode; }
+    Vision::AlgToolIn ain; fill_alg_in(shotIn, &ain);
+    Vision::AlgToolOut algOut; alg->shot_init(ain, &algOut);
+    const int code = alg->run(Vision::ExecMode::Auto, ain, &algOut);
+    if (code != HS_OK && algOut.errCode == HS_OK) { algOut.errCode = code; algOut.ok = false; }
+    out->ok = algOut.ok; out->errCode = algOut.errCode; out->error = algOut.errCode != HS_OK;
+    out->message = algOut.message; out->values = algOut.values;
+    out->io.clouds = algOut.clouds; out->io.poses3 = algOut.poses3; out->io.shapes3 = algOut.shapes3;
+    out->io.tuples = algOut.tuples; out->io.images = algOut.images;
+    if (!algOut.image.image.isNull()) out->image = algOut.image.image;
+    out->traces = algOut.traces; out->syncIo(); log_result(out);
+    return out->errCode;
+}
+Vision::ToolOut Vision::FitPlaneTool::execute(const Vision::ToolIn& in)
+{
+    Vision::ToolOut out; execute(in, &out); return out;
 }

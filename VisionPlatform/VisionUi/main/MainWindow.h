@@ -156,6 +156,10 @@ private slots:
     void openAppSettings();
     /** @brief 运行主界面画面配置 */
     void openRuntimeView();
+    /** @brief 全局变量表 */
+    void openGlobalVars();
+    /** @brief 自定义 UI 设计器 */
+    void openUiDesigner();
     /** @brief 日志管控 */
     void openLogs();
     /** @brief 改当前用户口令 */
@@ -319,6 +323,8 @@ private:
     QAction* m_actPerms;             ///< 权限
     QAction* m_actSettings;          ///< 系统设置
     QAction* m_actRuntimeView;       ///< 画面配置
+    QAction* m_actGlobalVars;        ///< 全局变量
+    QAction* m_actUiDesigner;        ///< UI 设计器
     QAction* m_actLogs;              ///< 日志管控
     QAction* m_actNew;               ///< 菜单新建
     QAction* m_actSave;              ///< 菜单保存

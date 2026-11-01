@@ -65,7 +65,7 @@ private:
     /************************************************** 搭界面 **************************************************/
     /** @brief 菜单栏：文件、共享、安全、设置、查看、帮助 */
     QMenuBar* buildMenus();
-    /** @brief 左上蓝色卡片：设备 ID（可复制）与一次性验证码占位 */
+    /** @brief 左上蓝色卡片：设备 ID（可复制）与一次性验证码 */
     QFrame* buildIdCard();
     /** @brief 当前会话卡片：服务状态、反连地址、会话行与断开、重新连接按钮 */
     QFrame* buildSessions();
@@ -75,7 +75,7 @@ private:
     QWidget* buildSettingsBody();
     /** @brief 设置 · 连接：反连、直连、局域网查看、中继 */
     QWidget* buildConnectionPage(QWidget* parent);
-    /** @brief 设置 · 安全：来访确认、权限、白名单、录屏等 */
+    /** @brief 设置 · 安全：来访确认、权限、白名单、文件根、运行日志、录屏等 */
     QWidget* buildSecurityPage(QWidget* parent);
     /** @brief 设置 · 画面：抓/编并行、发送编码 */
     QWidget* buildPicturePage(QWidget* parent);

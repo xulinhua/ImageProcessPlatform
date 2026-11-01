@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -64,12 +64,12 @@
     <Import Project="..\..\..\third_party\Open3D\open3d.props" Condition="Exists('..\..\..\third_party\Open3D\open3d.props')" />
   </ImportGroup>
   <PropertyGroup>
-    <TargetName>Plugin.Alg.Open3d.Align3D.Template</TargetName>
+    <TargetName>Plugin.Alg.Open3d.Locate3D.Template</TargetName>
     <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\plugins\algos\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)VisionPluginAPI;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)VisionPluginAPI;$(SolutionDir)VisionAlgOpen3d;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>VisionAlgToolBase.lib;VisionToolBase.lib;VisionCommon.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -78,10 +78,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="PluginEntry.cpp" />
-    <ClCompile Include="Open3dTemplate.cpp" />
+    <ClCompile Include="..\..\..\VisionAlgOpen3d\Open3dTmpl.cpp" />
+    <ClCompile Include="..\..\..\VisionAlgOpen3d\Open3dCloudOps.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Open3dTemplate.h" />
+    <ClInclude Include="..\..\..\VisionAlgOpen3d\Open3dTmpl.h" />
+    <ClInclude Include="..\..\..\VisionAlgOpen3d\Open3dCloudOps.h" />
+    <ClInclude Include="ToolParaLocate3dTmpl.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\VisionAlgToolBase\VisionAlgToolBase.vcxproj">
@@ -93,3 +96,4 @@
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
 </Project>
+

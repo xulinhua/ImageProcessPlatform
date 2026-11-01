@@ -63,7 +63,15 @@ struct BlobKey {
     static constexpr const char* featArea = "area"; ///< feature 取值：面积，像素
     static constexpr const char* featCirc = "circularity"; ///< feature 取值：圆度，0~1
 
+    static constexpr const char* search = "search"; ///< 搜索区槽名
     static constexpr const char* roi = "roi"; ///< 输入区域端口名。搜索区和步骤 ROI 都从这个端口取，空端口名也算
+    static constexpr const char* count = "count"; ///< 输出：Blob 个数
+    static constexpr const char* areaSum = "areaSum"; ///< 输出：面积合计
+    static constexpr const char* regionArea = "regionArea"; ///< 公差：单区域面积
+    static constexpr const char* resultRoi = "resultRoi"; ///< 显示：结果区域
+    static constexpr const char* maxRegion = "maxRegion"; ///< 显示：最大区域
+    static constexpr const char* verdict = "verdict"; ///< 显示：判定文字
+    static constexpr const char* previewThresh = "preview.thresh"; ///< 调试：阈值预览
 };
 
 /**
@@ -73,6 +81,10 @@ struct BlobKey {
  */
 class ToolParaBlob : public ToolParaBase {
 public:
+    /** @brief 参数类型名，toolParaAs 按它识别 */
+    static const char* typeId() { return "ToolParaBlob"; }
+    /** @brief 返回 typeId() */
+    const char* typeName() const override { return typeId(); }
     /** @brief 示教参数。Blob 不需要示教 */
     struct Teach {
     };

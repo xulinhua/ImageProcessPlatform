@@ -270,13 +270,13 @@ private:
      * @note maxFps / jpegQuality / longEdge 为 0 时保留当前值
      */
     void applyControl(const ConfigMsg& cfg);
-    /** @brief 第三期订阅：主码流 / 子码流开关与画质。调用方不必持锁 */
+    /** @brief 码流订阅：主/子码流开关与编码偏好。调用方不必持锁 */
     void applySubscribe(const SubscribeMsg& msg);
-    /** @brief 第三期拥塞：拉长抓屏间隔，平稳后再收回 */
+    /** @brief 网络统计：延迟高时略降分辨率/帧率，平稳后再收回 */
     void applyNetStats(const NetStatsMsg& msg);
-    /** @brief 第四期：剪贴板、文件、聊天、电源、隐私屏、系统信息。处理了返回 true */
+    /** @brief 剪贴板 / 文件 / 聊天 / 电源 / 隐私屏 / 系统信息。处理了返回 true */
     bool takePhase4(const Frame::Packet& packet);
-    /** @brief 写线程调用：剪贴板变化、系统信息、文件块。调用方不持锁 */
+    /** @brief 写线程：推剪贴板变化、系统信息、文件块。调用方不持锁 */
     void pumpPhase4(std::vector<CommBytes>* extra);
     /** @brief 剪贴板图片的像素散列。本机和中控台共用剪贴板时，写回去不能再当成新图 */
     uint64_t hashClipImage(const QImage& image) const;

@@ -73,6 +73,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="solution\Solution.cpp" />
+    <ClCompile Include="var\VarStore.cpp" />
     <ClCompile Include="station\StationEnums.cpp" />
     <ClCompile Include="job\JobEnums.cpp" />
     <ClCompile Include="model\RecipeDraft.cpp" />
@@ -88,6 +89,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="solution\Solution.h" />
+    <ClInclude Include="var\GlobalVar.h" />
+    <ClInclude Include="var\VarStore.h" />
+    <ClInclude Include="ui\UiPage.h" />
     <ClInclude Include="device\HardwareDevice.h" />
     <ClInclude Include="solution\AppMode.h" />
     <ClInclude Include="station\StationEnums.h" />

@@ -1,6 +1,6 @@
 /**
  * @file HalGeom.h
- * @brief HalGeom头文件
+ * @brief Halcon 几何转换兼容头（转发 HalObjectConvert）
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.

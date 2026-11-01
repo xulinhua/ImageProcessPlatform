@@ -163,11 +163,13 @@ int main(int argc, char* argv[])
         return 0;
     }
     HsCtrl::registerGraphicMetaTypes();
-    Vision::LogMgr::startup();
+    // 先加载插件（Hal/OpenCV/PCL/Open3D 等会改堆或装自己的分配器），再启日志写库线程，
+    // 避免 VisionLog 后台 SQLite malloc 与插件 DllMain/静态初始化并发导致 Debug CRT 断在 sqlite3MemMalloc。
     {
         Vision::PluginHost host;
         Vision::loadVisionPlugins(&host);
     }
+    Vision::LogMgr::startup();
     Vision::registerToolEditors();
 
     Vision::Session session;

@@ -16,6 +16,8 @@
 #define WIN32_LEAN_AND_MEAN
 #include <cstdio>
 #include <map>
+#include <string>
+#include <vector>
 #include <windows.h>
 
 namespace Vision {
@@ -73,6 +75,7 @@ namespace {
 int loadDir(const std::string& dir, IPluginHost* host)
 {
     int n = 0;
+    std::vector<std::string> warns;
     const std::wstring pat = utf8ToWide(dir + "\\*.dll");
     WIN32_FIND_DATAW fd;
     HANDLE h = FindFirstFileW(pat.c_str(), &fd);
@@ -91,14 +94,14 @@ int loadDir(const std::string& dir, IPluginHost* host)
         const std::wstring full = utf8ToWide(dir + "\\" + name);
         HMODULE mod = LoadLibraryW(full.c_str());
         if (!mod) {
-            LogMgr::writeSystem(LogLevelWarn, "plugin_load", name + " LoadLibrary failed");
+            warns.push_back(name + " LoadLibrary failed");
             continue;
         }
         FnApiVersion ver = reinterpret_cast<FnApiVersion>(GetProcAddress(mod, "VisionPlugin_apiVersion"));
         FnRegister reg = reinterpret_cast<FnRegister>(GetProcAddress(mod, "VisionPlugin_register"));
         // 缺符号或版本不是 1：跳过并卸载，尚未登记任何对象
         if (!ver || !reg || ver() != 1) {
-            LogMgr::writeSystem(LogLevelWarn, "plugin_load", name + " api mismatch");
+            warns.push_back(name + " api mismatch");
             FreeLibrary(mod);
             continue;
         }
@@ -108,9 +111,11 @@ int loadDir(const std::string& dir, IPluginHost* host)
         reg(host);
         ToolRegistry::instance().setIncomingPluginStamp(std::string());
         ++n;
-        LogMgr::writeSystem(LogLevelInfo, "plugin_load", name);
     } while (FindNextFileW(h, &fd));
     FindClose(h);
+    for (size_t i = 0; i < warns.size(); ++i) {
+        LogMgr::writeSystem(LogLevelWarn, "plugin_load", warns[i]);
+    }
     return n;
 }
 
@@ -217,6 +222,7 @@ int ToolLibMgr::loadAll()
     const std::string dirs[2] = { AppPaths::pluginsToolsDir(), AppPaths::pluginsAlgosDir() };
     const char* kinds[2] = { "tool", "algo" };
     int n = 0;
+    std::vector<std::string> warns;
     for (int d = 0; d < 2; ++d) {
         const std::wstring pat = utf8ToWide(dirs[d] + "\\*.dll");
         WIN32_FIND_DATAW fd;
@@ -240,13 +246,13 @@ int ToolLibMgr::loadAll()
             const std::wstring full = utf8ToWide(dirs[d] + "\\" + name);
             HMODULE mod = LoadLibraryW(full.c_str());
             if (!mod) {
-                LogMgr::writeSystem(LogLevelWarn, "plugin_load", name + " LoadLibrary failed");
+                warns.push_back(name + " LoadLibrary failed");
                 continue;
             }
             FnApiVersion ver = reinterpret_cast<FnApiVersion>(GetProcAddress(mod, "VisionPlugin_apiVersion"));
             FnRegister reg = reinterpret_cast<FnRegister>(GetProcAddress(mod, "VisionPlugin_register"));
             if (!ver || !reg || ver() != 1) {
-                LogMgr::writeSystem(LogLevelWarn, "plugin_load", name + " api mismatch");
+                warns.push_back(name + " api mismatch");
                 FreeLibrary(mod);
                 continue;
             }
@@ -267,9 +273,16 @@ int ToolLibMgr::loadAll()
             item.stamp = stamp;
             m_impl->items[key] = item;
             ++n;
-            LogMgr::writeSystem(LogLevelInfo, "plugin_load", name);
         } while (FindNextFileW(h, &fd));
         FindClose(h);
+    }
+    // 全部 LoadLibrary/register 结束后再写日志，避免加载期弄坏堆时断在 enqueue
+    for (size_t i = 0; i < warns.size(); ++i) {
+        LogMgr::writeSystem(LogLevelWarn, "plugin_load", warns[i]);
+    }
+    if (n > 0) {
+        LogMgr::writeSystem(LogLevelInfo, "plugin_load",
+                            std::to_string(n) + " plugins registered");
     }
     return n;
 }

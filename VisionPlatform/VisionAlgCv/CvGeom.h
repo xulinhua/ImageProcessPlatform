@@ -1,6 +1,6 @@
 /**
  * @file CvGeom.h
- * @brief CvGeom头文件
+ * @brief OpenCV 几何转换兼容头（转发 CvObjectConvert）
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.

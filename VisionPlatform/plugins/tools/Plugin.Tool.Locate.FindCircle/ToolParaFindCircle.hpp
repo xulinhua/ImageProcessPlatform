@@ -20,19 +20,23 @@ namespace Vision {
  */
 class ToolParaFindCircle : public ToolParaBase {
 public:
+    /** @brief 参数类型名，toolParaAs 按它识别 */
+    static const char* typeId() { return "ToolParaFindCircle"; }
+    /** @brief 返回 typeId() */
+    const char* typeName() const override { return typeId(); }
     /** @brief 学习参数，没有则为空 */
     struct Learn {
     };
     /** @brief 运行参数 */
     struct Run {
-        int threshold;              ///< 灰度阈值 0~255；当前 Hal/Cv 算法都不读
-        int minR;                   ///< 最小半径（像素），小于它的圆丢弃
-        int maxR;                   ///< 最大半径（像素），大于它的圆丢弃
-        bool dark;                  ///< 目标是否比背景暗；当前 Hal/Cv 算法都不读
-        double sigma;               ///< Canny 边缘平滑 sigma，0.4~20
-        int low;                    ///< Canny 低阈值，0~255
-        int high;                   ///< Canny 高阈值，0~255
-        /** @brief 缺省值与 FindCircleTool 参数说明一致 */
+        int threshold;              ///< 阈值；找圆算法当前不读
+        int minR;                   ///< 最小半径，像素；拟合半径小于它的丢弃
+        int maxR;                   ///< 最大半径，像素；拟合半径大于它的丢弃
+        bool dark;                  ///< 暗目标；找圆算法当前不读
+        double sigma;               ///< 边缘平滑 sigma，小于 0.4 按 0.4
+        int low;                    ///< Canny 低阈值
+        int high;                   ///< Canny 高阈值
+        /** @brief 缺省：半径 8~400，sigma 1，阈值 20/40 */
         Run()
             : threshold(80)
             , minR(8)

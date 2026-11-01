@@ -1,6 +1,6 @@
 /**
  * @file CalibPlateTool.h
- * @brief CalibPlateTool头文件
+ * @brief 标定板。学习时导入已算好的相机模型
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -10,6 +10,7 @@
 #define VISION_CALIBPLATETOOL_H
 
 #include "ToolBase.h"
+#include "AlgToolBase.h"
 #include "ToolParaCalibPlate.hpp"
 
 namespace Vision {
@@ -17,37 +18,49 @@ namespace Vision {
 /**
  * @class CalibPlateTool
  * @brief 标定板。学习时导入已算好的相机模型
+ * @note CalibMgr 提交/落盘仍在 execute；算法板算走 attachAlg + shot
  */
 class CalibPlateTool : public ToolBase {
 public:
-    /** @brief 注册名 */
-    std::string toolName() const;
-    /** @brief 工具大类 */
-    ToolType type() const;
-    /** @brief 界面显示名 */
-    std::string displayName() const;
-    /** @brief 工具说明 */
-    std::string description() const;
-    /** @brief 工具版本 */
-    std::string version() const;
-    /** @brief 版本变更，只追加 */
-    std::vector<VerNote> versionNotes() const;
-    /** @brief 缺省参数 */
-    ParamMap defaultParams() const;
-    /** @brief 参数说明 */
-    std::vector<ParamField> paramFields() const;
-    /** @brief 画布能力 */
-    ToolCaps capabilities() const;
-    /** @brief 端口 */
-    std::vector<PortDesc> ports() const;
-    /** @brief 执行 */
-    ToolOut execute(const ToolIn& in);
-    /** @brief 克隆本实例 */
-    ToolBase* clone() const;
-    /** @brief 本工具参数对象，供参数版本适配与 load 使用 */
-    const ToolParaBase* toolParam() const;
+    CalibPlateTool();
+    ~CalibPlateTool() override;
+    ToolBase* clone() const override;
+
+    std::string tool_name() const override;
+    ToolType type() const override;
+    std::string display_name() const override;
+    std::string description() const override;
+    std::string version() const override;
+    std::vector<VerNote> version_notes() const override;
+
+    ParamMap default_params() const override;
+    std::vector<ParamField> cfg_param() const override;
+    const ToolParaBase* tool_param() const override;
+    int check_param(std::string* detail) const override;
+
+    ToolCaps cfg_roi() const override;
+    std::vector<PortDesc> cfg_port() const override;
+
+    int execute(const ToolIn& in, ToolOut* out) override;
+    int save() override;
+    void clear(const std::string& toolDataDir) override;
+
 private:
-    ToolParaCalibPlate m_param; ///< 参数快照，ToolBase::adaptParam 时从 ToolParam 载入
+    void fill_alg_in(const ToolIn& in, Vision::AlgToolIn* ain) const;
+    int shot_learn(const ToolIn& in, ToolOut* out);
+
+    ToolParaCalibPlate param_;
+
+private:
+    std::string toolName() const override { return tool_name(); }
+    std::string displayName() const override { return display_name(); }
+    std::vector<VerNote> versionNotes() const override { return version_notes(); }
+    ParamMap defaultParams() const override { return default_params(); }
+    std::vector<ParamField> paramFields() const override { return cfg_param(); }
+    ToolCaps capabilities() const override { return cfg_roi(); }
+    std::vector<PortDesc> ports() const override { return cfg_port(); }
+    const ToolParaBase* toolParam() const override { return tool_param(); }
+    ToolOut execute(const ToolIn& in) override;
 };
 
 }

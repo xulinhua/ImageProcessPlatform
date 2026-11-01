@@ -30,6 +30,8 @@
         $(SolutionDir)VisionCore\common;
         $(SolutionDir)VisionCore\comm;
         $(SolutionDir)VisionCore\device;
+        $(SolutionDir)VisionCore\var;
+        $(SolutionDir)VisionCore\ui;
         $(SolutionDir)VisionComm;
         $(SolutionDir)VisionCalib;
         $(SolutionDir)VisionAuth;

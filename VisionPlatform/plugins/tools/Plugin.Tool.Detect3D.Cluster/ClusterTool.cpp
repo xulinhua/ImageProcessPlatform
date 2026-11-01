@@ -1,52 +1,144 @@
+/**
+ * @file ClusterTool.cpp
+ * @brief 欧氏距离聚类分割
+ * @author Hoson
+ *
+ * @copyright Copyright (c) 2026 Hoson. All rights reserved.
+ */
+
 #include "ClusterTool.h"
-#include "AlgToolBase.h"
 #include "VisionVersion.h"
 #include <HsCommData/HsError.h>
+#include <HsCommData/HsException.h>
+#include <cstdio>
+#include <vector>
 
-namespace Vision {
 namespace {
-const VerNoteRaw kVerNotes[] = { { "1.0.0.0", "点云聚类" } };
-}
-std::string ClusterTool::toolName() const { return "detect3d.cluster"; }
-ToolType ClusterTool::type() const { return ToolType::Detect3D; }
-std::string ClusterTool::displayName() const { return "点云聚类"; }
-std::string ClusterTool::version() const { return "1.0.0.0"; }
-std::vector<VerNote> ClusterTool::versionNotes() const { return verNotesFrom(kVerNotes, 1); }
-std::string ClusterTool::description() const { return "欧式聚类"; }
-std::vector<ParamField> ClusterTool::paramFields() const
+const char kToolVersion[] = "1.0.0.0";
+const Vision::VerNoteRaw kVerNotes[] = { { "1.0.0.0", "欧氏距离聚类分割" } };
+const char kToolName[] = "detect3d.cluster";
+const char kDisplayName[] = "欧氏聚类";
+const char kDescription[] = "欧氏距离聚类分割";
+Vision::ParamMap defaultsFromFields(const std::vector<Vision::ParamField>& fields)
 {
-    std::vector<ParamField> f;
-    f.push_back(paramDouble("tolerance", "距离阈值", 2.0, true, 0.01, false, 0.0));
-    f.push_back(paramInt("minSize", "最小点数", 10, true, 1, true, 1000000));
-    return f;
-}
-ParamMap ClusterTool::defaultParams() const { return defaultsFrom(paramFields()); }
-std::vector<PortDesc> ClusterTool::ports() const
-{
-    std::vector<PortDesc> p;
-    p.push_back(PortDesc(PortDir::In, PortData::Cloud));
-    PortDesc c(PortDir::Out, PortData::Cloud);
-    c.slot.name = "cluster";
-    p.push_back(c);
-    p.push_back(PortDesc(PortDir::Out, PortData::Tuple));
-    return p;
-}
-ToolOut ClusterTool::execute(const ToolIn& in)
-{
-    ToolIn shot = in;
-    if (shot.algLib != AlgLibPcl && shot.algLib != AlgLibOpen3d) {
-        shot.algLib = AlgLibPcl;
+    Vision::ParamMap m;
+    for (size_t i = 0; i < fields.size(); ++i) {
+        if (fields[i].type == Vision::ParamFieldType::Device) continue;
+        m.insert(fields[i].key, fields[i].def);
     }
-    ToolOut out = runAlgToolBase(toolName(), shot, false);
-    if (out.errCode == HS_ERR_NO_ALG) {
-        out.message = "未登记检测算法";
-    }
-    return out;
+    return m;
 }
-ToolBase* ClusterTool::clone() const
+}
+
+Vision::ClusterTool::ClusterTool() {}
+Vision::ClusterTool::~ClusterTool() {}
+Vision::ToolBase* Vision::ClusterTool::clone() const
 {
     ClusterTool* p = new ClusterTool();
     p->copyInstanceDataFrom(*this);
     return p;
 }
+std::string Vision::ClusterTool::tool_name() const { return kToolName; }
+Vision::ToolType Vision::ClusterTool::type() const { return Vision::ToolType::Detect3D; }
+std::string Vision::ClusterTool::display_name() const { return kDisplayName; }
+std::string Vision::ClusterTool::description() const { return kDescription; }
+std::string Vision::ClusterTool::version() const { return std::string(kToolVersion); }
+std::vector<Vision::VerNote> Vision::ClusterTool::version_notes() const
+{ return Vision::verNotesFrom(kVerNotes, 1); }
+Vision::ParamMap Vision::ClusterTool::default_params() const { return defaultsFromFields(cfg_param()); }
+std::vector<Vision::ParamField> Vision::ClusterTool::cfg_param() const
+{
+    std::vector<Vision::ParamField> f;
+    f.push_back(Vision::paramDouble("tolerance","聚类距离",2.0,true,0.0,false,0.0));
+    f.push_back(Vision::paramInt("minSize","最小点数",50,true,1,true,1000000));
+    return f;
+}
+const Vision::ToolParaBase* Vision::ClusterTool::tool_param() const { return &param_; }
+int Vision::ClusterTool::check_param(std::string* detail) const
+{
+    if (param_.loadCode() != HS_OK) {
+        if (detail) *detail = HsCommData::HsException(param_.loadCode()).errorMessage();
+        return param_.loadCode();
+    }
+    return HS_OK;
+}
+Vision::OutputSpec Vision::ClusterTool::cfg_output() const
+{
+    Vision::OutputSpec spec; Vision::OutputField f; f.key = "count"; f.title = "count";
+    spec.fields.push_back(f); return spec;
+}
+Vision::TolSpec Vision::ClusterTool::cfg_tol() const
+{
+    Vision::TolSpec spec; Vision::TolField f; f.key = "count"; f.title = "count";
+    f.defMin = 0; f.defMax = 1.0e9; spec.items.push_back(f); return spec;
+}
+Vision::DisplaySpec Vision::ClusterTool::cfg_display() const { return Vision::DisplaySpec(); }
+Vision::ToolCaps Vision::ClusterTool::cfg_roi() const { return Vision::ToolCaps(); }
+std::vector<Vision::PortDesc> Vision::ClusterTool::ports() const
+{
+    std::vector<PortDesc> p;
+    p.push_back(PortDesc(PortDir::In, PortData::Cloud));
+    p.push_back(PortDesc(PortDir::Out, PortData::Cloud));
+    p.push_back(PortDesc(PortDir::Out, PortData::Logic));
+    return p;
+}
+int Vision::ClusterTool::execute(const Vision::ToolIn& in, Vision::ToolOut* out) { return shot(in, out); }
+void Vision::ClusterTool::log_result(Vision::ToolOut* out) const
+{
+    if (!out) return;
+    Vision::ToolTrace trace; trace.action = "result";
+    trace.detail = out->message.empty() ? (out->ok ? "ok" : "fail") : out->message;
+    out->traces.push_back(trace);
+}
+void Vision::ClusterTool::fill_alg_in(const Vision::ToolIn& in, Vision::AlgToolIn* ain) const
+{
+    ain->mode = in.mode;
+    ain->clouds = in.inputIo.clouds;
+    ain->poses3 = in.inputIo.poses3;
+    ain->shapes3 = in.inputIo.shapes3;
+    ain->images = in.inputIo.images;
+    if (!in.inputIo.images.empty()) {
+        ain->imagePtr = &in.inputIo.images[0].image;
+        ain->imageNative = in.inputIo.images[0].native;
+    } else {
+        ain->imagePtr = &in.input;
+        ain->imageNative = in.inputNative;
+    }
+    ain->param = &param_;
+    ain->run = in.param.run;
+    ain->teach = in.param.learn;
+    ain->judge = in.param.judge;
+    ain->solutionDir = in.solutionDir;
+    ain->toolDataDir = in.toolDataDir;
+}
+int Vision::ClusterTool::shot(const Vision::ToolIn& in, Vision::ToolOut* out)
+{
+    if (!out) return HS_ERR_NULL;
+    *out = Vision::ToolOut();
+    Vision::ToolIn shotIn = in;
+    if (shotIn.algLib != Vision::AlgLibPcl && shotIn.algLib != Vision::AlgLibOpen3d) shotIn.algLib = Vision::AlgLibPcl;
+    attachAlg(shotIn.toolDataDir);
+    param_.load(shotIn.param);
+    if (param_.loadCode() != HS_OK) {
+        out->ok = false; out->errCode = param_.loadCode();
+        out->message = HsCommData::HsException(param_.loadCode()).errorMessage();
+        return out->errCode;
+    }
+    Vision::AlgToolBase* alg = attachedAlg();
+    if (!alg) { out->ok = false; out->errCode = HS_ERR_NO_ALG; out->message = "未登记点云算法"; return out->errCode; }
+    Vision::AlgToolIn ain; fill_alg_in(shotIn, &ain);
+    Vision::AlgToolOut algOut; alg->shot_init(ain, &algOut);
+    const int code = alg->run(Vision::ExecMode::Auto, ain, &algOut);
+    if (code != HS_OK && algOut.errCode == HS_OK) { algOut.errCode = code; algOut.ok = false; }
+    out->ok = algOut.ok; out->errCode = algOut.errCode; out->error = algOut.errCode != HS_OK;
+    out->message = algOut.message; out->values = algOut.values;
+    out->io.clouds = algOut.clouds; out->io.poses3 = algOut.poses3; out->io.shapes3 = algOut.shapes3;
+    out->io.tuples = algOut.tuples; out->io.images = algOut.images;
+    if (!algOut.image.image.isNull()) out->image = algOut.image.image;
+    out->traces = algOut.traces; out->syncIo(); log_result(out);
+    return out->errCode;
+}
+Vision::ToolOut Vision::ClusterTool::execute(const Vision::ToolIn& in)
+{
+    Vision::ToolOut out; execute(in, &out); return out;
 }

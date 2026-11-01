@@ -1,6 +1,6 @@
 /**
  * @file FitPlaneTool.h
- * @brief 拟合平面工具壳
+ * @brief RANSAC 拟合平面
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -10,59 +10,79 @@
 #define VISION_FITPLANETOOL_H
 
 #include "ToolBase.h"
-#include <HsCommData/HsCloud.h>
-#include <string>
+#include "AlgToolBase.h"
+#include "ToolParaFitPlane.hpp"
 
 namespace Vision {
 
 /**
  * @class FitPlaneTool
- * @brief 拟合平面。点云来自上游，没有上游时读 ASCII PLY 或 PCD
+ * @brief 拟合平面：登记参数，执行交给 PCL/Open3D 算法插件
  */
 class FitPlaneTool : public ToolBase {
 public:
-    /************************************************** 身份 **************************************************/
-    /** @brief 注册名 measure3d.fit_plane */
-    std::string toolName() const;
-    /** @brief 工具大类：3D 测量 */
-    ToolType type() const;
-    /** @brief 界面显示名 */
-    std::string displayName() const;
-    /** @brief 工具版本 */
-    std::string version() const;
-    /** @brief 版本变更，只追加 */
-    std::vector<VerNote> versionNotes() const;
-    /** @brief 工具说明 */
-    std::string description() const;
-
-    /************************************************** 参数 **************************************************/
-    /** @brief 缺省参数，同 defaults() */
-    ParamMap defaultParams() const;
-    /** @brief 参数说明，同 fields() */
-    std::vector<ParamField> paramFields() const;
-    /** @brief 沿用基类端口，输出点云口改名 inlier */
-    std::vector<PortDesc> ports() const;
-
-    /************************************************** 执行 **************************************************/
-    /** @brief 没有上游点云时先读文件，再交 PCL 算法插件拟合 */
-    ToolOut execute(const ToolIn& in);
+    /** @brief 构造 */
+    FitPlaneTool();
+    /** @brief 析构 */
+    ~FitPlaneTool() override;
     /** @brief 克隆本实例（本 DLL 内 new） */
-    ToolBase* clone() const;
-
+    ToolBase* clone() const override;
+    /** @brief 注册名 */
+    std::string tool_name() const override;
+    /** @brief 工具大类 */
+    ToolType type() const override;
+    /** @brief 界面显示名 */
+    std::string display_name() const override;
+    /** @brief 工具说明 */
+    std::string description() const override;
+    /** @brief 工具版本 */
+    std::string version() const override;
+    /** @brief 版本变更，只追加 */
+    std::vector<VerNote> version_notes() const override;
+    /** @brief 缺省参数 */
+    ParamMap default_params() const override;
+    /** @brief 运行参数说明 */
+    std::vector<ParamField> cfg_param() const override;
+    /** @brief 本工具参数对象 */
+    const ToolParaBase* tool_param() const override;
+    /** @brief load 之后核对 */
+    int check_param(std::string* detail) const override;
+    /** @brief 输出项 */
+    OutputSpec cfg_output() const override;
+    /** @brief 公差项 */
+    TolSpec cfg_tol() const override;
+    /** @brief 显示项 */
+    DisplaySpec cfg_display() const override;
+    /** @brief 画布 ROI */
+    ToolCaps cfg_roi() const override;
+    /** @brief 端口说明 */
+    std::vector<PortDesc> ports() const override;
+    /** @brief 调算法插件执行 */
+    int execute(const ToolIn& in, ToolOut* out) override;
 private:
-    /************************************************** 参数 **************************************************/
-    /** @brief 参数表：file 点云文件，distance 内点距离阈值（点云单位） */
-    std::vector<ParamField> fields() const;
-    /** @brief 由参数表生成缺省值 */
-    ParamMap defaults() const;
-
-    /************************************************** 读点云 **************************************************/
-    /** @brief 相对方案目录的文件解析成绝对路径 */
-    std::string resolvePath(const ToolIn& in, const std::string& file, std::string* err) const;
-    /** @brief 读 ASCII PLY 或 PCD。文件为空时点云保持空 */
-    bool loadFileCloud(const ToolIn& in, HsCommData::Cloud3* cloud, std::string* err) const;
+    /** @brief 写运行日志 */
+    void log_result(ToolOut* out) const override;
+    /** @brief 挂上算法、装参数、跑一拍或一个动作 */
+    int shot(const ToolIn& in, ToolOut* out);
+    /** @brief 把本拍图像/点云和分区收成算法输入 */
+    void fill_alg_in(const ToolIn& in, AlgToolIn* ain) const;
+    ToolParaFitPlane param_; ///< 本工具参数对象
+    std::string toolName() const override { return tool_name(); }
+    /** @brief 转到 display_name */
+    std::string displayName() const override { return display_name(); }
+    /** @brief 转到 version_notes */
+    std::vector<VerNote> versionNotes() const override { return version_notes(); }
+    /** @brief 转到 default_params */
+    ParamMap defaultParams() const override { return default_params(); }
+    /** @brief 转到 cfg_param */
+    std::vector<ParamField> paramFields() const override { return cfg_param(); }
+    /** @brief 转到 cfg_roi */
+    ToolCaps capabilities() const override { return cfg_roi(); }
+    /** @brief 转到 tool_param */
+    const ToolParaBase* toolParam() const override { return tool_param(); }
+    /** @brief 调算法插件执行，返回 ToolOut */
+    ToolOut execute(const ToolIn& in) override;
 };
 
 }
-
 #endif

@@ -1,6 +1,6 @@
 /**
  * @file CvCommon.h
- * @brief CvCommon头文件
+ * @brief OpenCV 形态学/编排兼容头（转发 CvOps、CvAlgoHelpers）
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.

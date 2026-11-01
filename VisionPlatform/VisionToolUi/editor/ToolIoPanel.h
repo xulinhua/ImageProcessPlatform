@@ -20,6 +20,7 @@ class QComboBox;
 class QEvent;
 class QLabel;
 class QPushButton;
+class QTableWidget;
 class QVBoxLayout;
 
 namespace HsCtrl {
@@ -94,6 +95,8 @@ signals:
      * @brief 输入端口连线变更
      */
     void inputLinkChanged(int portData, const QString& fromId, const QString& fromPort);
+    /** @brief 全局变量绑定表已改写，需标脏 */
+    void paramBindsEdited();
 
 private slots:
     /** @brief 删除选中行；无选中则删末个 */
@@ -114,6 +117,12 @@ private slots:
     void onRoiEnableToggled(bool on);
     /** @brief 行内绘制按钮 */
     void onDrawRowClicked();
+    /** @brief 追加一条全局变量绑定 */
+    void onAddParamBind();
+    /** @brief 删除选中绑定行 */
+    void onDelParamBind();
+    /** @brief 绑定表单元格改写回 ToolParam */
+    void onParamBindCellChanged(int row, int column);
 
 protected:
     /** @brief 预留；列表点击由行控件处理 */
@@ -139,6 +148,10 @@ private:
     static bool slotAllowsDraw(const ToolCaps& caps);
     /** @brief 默认分区键 */
     static std::string defaultRoiSlot(const ToolCaps& caps);
+    /** @brief 按 tool.param.paramBinds 重建绑定表 */
+    void fillParamBinds();
+    /** @brief 把绑定表写回 tool.param.paramBinds */
+    void commitParamBindsFromTable();
 
     QWidget* m_linkPage;     ///< 连接页根
     QWidget* m_roiPage;      ///< ROI 页根
@@ -152,6 +165,10 @@ private:
     QLabel* m_regionRowLabel; ///< 区域源行标题
     QComboBox* m_regionCombo; ///< 区域输入来源
     QLabel* m_regionHint;    ///< 区域连线状态
+    QLabel* m_bindLabel;       ///< 全局变量绑定标题
+    QTableWidget* m_bindTable; ///< 参数键 / 路径 / 方向
+    QPushButton* m_btnBindAdd; ///< 添加绑定
+    QPushButton* m_btnBindDel; ///< 删除绑定
     QWidget* m_roiListHost;    ///< ROI 行列表宿主
     QVBoxLayout* m_roiListLay; ///< ROI 行布局
     QPushButton* m_btnAdd;     ///< 新增 ROI
@@ -160,6 +177,7 @@ private:
     QPushButton* m_btnDel;     ///< 删除选中 ROI
     bool m_fillingRoiList;     ///< 正在填表，避免递归
     bool m_fillingLinks;       ///< 正在填下拉，避免 currentIndexChanged 递归
+    bool m_fillingBinds;       ///< 正在填绑定表
     int m_selectedRoiRow;      ///< 当前选中 roiItems 下标
     ToolCfg* m_tool;           ///< 最近一次 refresh 的工具
     Solution* m_sol;           ///< 最近一次 refresh 的方案

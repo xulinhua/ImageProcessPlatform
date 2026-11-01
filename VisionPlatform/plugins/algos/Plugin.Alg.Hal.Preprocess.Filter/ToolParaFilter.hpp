@@ -56,6 +56,7 @@ struct FilterKey {
     static constexpr const char* outWidth = "filter.width"; ///< 输出值键：结果图宽，像素
     static constexpr const char* outHeight = "filter.height"; ///< 输出值键：结果图高，像素
     static constexpr const char* outCostMs = "filter.costMs"; ///< 输出值键：耗时 ms；HalFilter 当前不写
+    static constexpr const char* previewFilter = "preview.filter"; ///< 调试动作：滤波预览
 };
 
 /**
@@ -64,6 +65,10 @@ struct FilterKey {
  */
 class ToolParaFilter : public ToolParaBase {
 public:
+    /** @brief 参数类型名，toolParaAs 按它识别 */
+    static const char* typeId() { return "ToolParaFilter"; }
+    /** @brief 返回 typeId() */
+    const char* typeName() const override { return typeId(); }
     /** @brief 示教参数。滤波不需要示教 */
     struct Teach {
     };

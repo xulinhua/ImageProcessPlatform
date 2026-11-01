@@ -30,6 +30,7 @@
 #include <QPushButton>
 #include <QStackedWidget>
 #include <QMessageBox>
+#include <QRegExp>
 #include <QVBoxLayout>
 
 namespace Vision {
@@ -718,9 +719,21 @@ void CommMgrDlg::onSend()
         return;
     }
     m_io->appendPlainText(T(">> ") + m_sendEdit->text());
+    // 发送行若为 SetGlobalValue: 则写入方案全局变量
+    if (m_sol) {
+        m_sol->globalVars.applyCommLine(ss(m_sendEdit->text()));
+    }
     const CommBytes resp = CommMgr::instance().readBytes(ch->id, peer, 4096, 300, &err);
     if (!resp.empty()) {
-        m_io->appendPlainText(T("<< ") + fromBytes(resp));
+        const QString text = fromBytes(resp);
+        m_io->appendPlainText(T("<< ") + text);
+        // 回包按行尝试 SetGlobalValue:
+        if (m_sol) {
+            const QStringList lines = text.split(QRegExp(QString::fromLatin1("[\r\n]+")), QString::SkipEmptyParts);
+            for (int i = 0; i < lines.size(); ++i) {
+                m_sol->globalVars.applyCommLine(ss(lines[i]));
+            }
+        }
     }
 }
 

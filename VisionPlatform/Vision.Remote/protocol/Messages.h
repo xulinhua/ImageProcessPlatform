@@ -71,7 +71,7 @@ struct HelloMsg {
     uint8_t monitors;
     std::string system;
     std::string address;
-    std::string fingerprint;    ///< 被控端证书指纹（SHA-256 十六进制），第二期新增；旧字段后可选
+    std::string fingerprint;    ///< 被控端证书指纹（SHA-256 十六进制）；旧客户端可缺省
     uint8_t forceRecord;        ///< 1 时中控台取得操作后必须开始录屏
     HelloMsg() : share(0), visible(0), monitor(0), monitors(1), forceRecord(0) {}
 };
@@ -89,6 +89,10 @@ struct ConfigMsg {
     ConfigMsg() : share(1), monitor(0), maxFps(0), jpegQuality(0), longEdge(0), codec(0), bitrateKbps(0) {}
 };
 
+/**
+ * @brief Hello 的业务应答（TypeHelloAck），不是 TCP ACK，也不置帧头 FlagAck
+ * @note code：1 接受等；fingerprint 为控制端证书指纹
+ */
 struct HelloAckMsg {
     uint8_t code;
     std::string name;
@@ -122,14 +126,18 @@ struct AuthResultMsg {
     AuthResultMsg() : code(1), perms(0), triesLeft(0), lockSec(0) {}
 };
 
+/** @brief 心跳请求（TypeHeartbeat） */
 struct HeartbeatMsg {
-    uint64_t ms;
+    uint64_t ms;                ///< 发送方本地时钟毫秒
     HeartbeatMsg() : ms(0) {}
 };
 
+/**
+ * @brief 心跳业务应答（TypeHeartbeatAck），用于算 RTT；非 TCP ACK / FlagAck
+ */
 struct HeartbeatAckMsg {
-    uint64_t peerMs;
-    uint64_t selfMs;
+    uint64_t peerMs;            ///< 对端心跳里带来的 ms（原样回）
+    uint64_t selfMs;            ///< 本端应答时的本地时钟毫秒
     HeartbeatAckMsg() : peerMs(0), selfMs(0) {}
 };
 
@@ -146,7 +154,7 @@ struct PictureMsg {
     PictureMsg() : visible(0), operable(0), clientW(0), clientH(0), imageW(0), imageH(0), codec(1), key(0) {}
 };
 
-/** @brief 第三期：订阅主码流或子码流。stream 1=主 2=子 */
+/** @brief 订阅主码流或子码流。stream 1=主 2=子 */
 struct SubscribeMsg {
     uint8_t stream;
     uint8_t enable;
@@ -157,7 +165,7 @@ struct SubscribeMsg {
     SubscribeMsg() : stream(2), enable(1), maxFps(2), jpegQuality(60), longEdge(480), codec(0) {}
 };
 
-/** @brief 第三期：当前码流参数。codec 1=JPEG 2=H.264 3=原图 */
+/** @brief 当前码流参数。codec 1=JPEG 2=H.264 3=原图 */
 struct StreamInfoMsg {
     uint8_t stream;
     uint8_t codec;
@@ -167,14 +175,14 @@ struct StreamInfoMsg {
     StreamInfoMsg() : stream(1), codec(1), width(0), height(0), fps(0) {}
 };
 
-/** @brief 第三期：控制端每秒回传，供被控端降码率 */
+/** @brief 控制端每秒回传 RTT/丢包等，供被控端自适应 */
 struct NetStatsMsg {
     uint16_t rttMs;
     uint8_t congested;
     NetStatsMsg() : rttMs(0), congested(0) {}
 };
 
-/** @brief 第三期：光标在图像坐标中的位置，控制端本地绘制 */
+/** @brief 光标在图像坐标中的位置，控制端本地绘制 */
 struct CursorPosMsg {
     uint16_t x;
     uint16_t y;
@@ -239,9 +247,9 @@ public:
     /** @brief 拆 Hello */
     static bool unpackHello(const CommBytes& payload, HelloMsg* msg);
 
-    /** @brief 打包 Hello 应答 */
+    /** @brief 打包 Hello 业务应答（TypeHelloAck） */
     static CommBytes packHelloAck(const HelloAckMsg& msg, std::string* err);
-    /** @brief 拆 Hello 应答 */
+    /** @brief 拆 Hello 业务应答 */
     static bool unpackHelloAck(const CommBytes& payload, HelloAckMsg* msg);
 
     /** @brief 打包认证请求 */
@@ -259,9 +267,9 @@ public:
     /** @brief 拆心跳 */
     static bool unpackHeartbeat(const CommBytes& payload, HeartbeatMsg* msg);
 
-    /** @brief 打包心跳应答 */
+    /** @brief 打包心跳业务应答（TypeHeartbeatAck，供 RTT） */
     static CommBytes packHeartbeatAck(const HeartbeatAckMsg& msg, std::string* err);
-    /** @brief 拆心跳应答 */
+    /** @brief 拆心跳业务应答 */
     static bool unpackHeartbeatAck(const CommBytes& payload, HeartbeatAckMsg* msg);
 
     /** @brief 画面走视频通道。channel 为 ChVideo（主）或 ChThumb（子），负载为 JPEG */
@@ -354,9 +362,12 @@ public:
         const std::string& sha256 = std::string(), uint64_t resume = 0);
     static bool unpackFileOpen(const CommBytes& payload, uint32_t* id, uint8_t* pull, std::string* path, uint64_t* size,
         std::string* sha256 = 0, uint64_t* resume = 0);
-    /** @brief 打包文件续传确认，offset 为已收字节 */
+    /**
+     * @brief 打包文件块业务确认（TypeFileAck）：offset 为已收字节，驱动流控/续传
+     * @note 与帧头 FlagAck、TCP ACK 无关
+     */
     static CommBytes packFileAck(uint32_t id, uint64_t offset, std::string* err);
-    /** @brief 拆文件续传确认 */
+    /** @brief 拆文件块业务确认 */
     static bool unpackFileAck(const CommBytes& payload, uint32_t* id, uint64_t* offset);
     /** @brief 打包观看者列表 */
     static CommBytes packViewers(const std::string& listing, std::string* err);

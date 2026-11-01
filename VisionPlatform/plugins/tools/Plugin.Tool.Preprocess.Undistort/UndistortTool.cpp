@@ -8,6 +8,8 @@
 
 #include "UndistortTool.h"
 #include "AlgToolBase.h"
+#include <HsCommData/HsError.h>
+#include <HsCommData/HsException.h>
 #include "CalibMath.h"
 #include "CalibMgr.h"
 #include "CvImageConvert.h"
@@ -196,35 +198,34 @@ std::string Vision::UndistortTool::version() const
 }
 
 // 版本变更，只追加
-std::vector<Vision::VerNote> Vision::UndistortTool::versionNotes() const
+std::vector<Vision::VerNote> Vision::UndistortTool::version_notes() const
 {
     return Vision::verNotesFrom(kVerNotes, static_cast<int>(sizeof(kVerNotes) / sizeof(kVerNotes[0])));
 }
 
 // 注册名
-std::string Vision::UndistortTool::toolName() const { return "preprocess.undistort"; }
+std::string Vision::UndistortTool::tool_name() const { return "preprocess.undistort"; }
 // 类型为标定
 Vision::ToolType Vision::UndistortTool::type() const { return Vision::ToolType::Calib; }
 // 界面显示名
-std::string Vision::UndistortTool::displayName() const { return U(L"\u7578\u53d8\u6821\u6b63"); }
+std::string Vision::UndistortTool::display_name() const { return U(L"\u7578\u53d8\u6821\u6b63"); }
 // 工具说明
 std::string Vision::UndistortTool::description() const
 {
     return U(L"\u6309\u8fd9\u8def\u76f8\u673a\u751f\u6548\u7684\u5185\u53c2\u53bb\u7578\u53d8\u3002\u6ca1\u6709\u6a21\u578b\u5219\u539f\u56fe\u4f20\u4e0b");
 }
 // 默认参数
-Vision::ParamMap Vision::UndistortTool::defaultParams() const { return defaultsFrom(paramFields()); }
-// 参数说明
-std::vector<Vision::ParamField> Vision::UndistortTool::paramFields() const
+Vision::ParamMap Vision::UndistortTool::default_params() const { return defaultsFrom(cfg_param()); }
+std::vector<Vision::ParamField> Vision::UndistortTool::cfg_param() const
 {
     std::vector<Vision::ParamField> f;
     f.push_back(Vision::paramDevice("deviceId", "相机"));
     return f;
 }
 // 不使用搜索区
-Vision::ToolCaps Vision::UndistortTool::capabilities() const { return noRoi(); }
+Vision::ToolCaps Vision::UndistortTool::cfg_roi() const { return noRoi(); }
 // 图像输入输出
-std::vector<Vision::PortDesc> Vision::UndistortTool::ports() const
+std::vector<Vision::PortDesc> Vision::UndistortTool::cfg_port() const
 {
     std::vector<Vision::PortDesc> p;
     p.push_back(Vision::PortDesc(Vision::PortDir::In, Vision::PortData::Image));
@@ -232,20 +233,23 @@ std::vector<Vision::PortDesc> Vision::UndistortTool::ports() const
     return p;
 }
 // 按生效内参去畸变
-Vision::ToolOut Vision::UndistortTool::execute(const Vision::ToolIn& in)
+int Vision::UndistortTool::execute(const Vision::ToolIn& in, Vision::ToolOut* out)
 {
-    Vision::ToolOut out;
-    out.frameId = in.input.frameId;
-    out.source = in.input;
+    if (out == nullptr) {
+        return HS_ERR_NULL;
+    }
+    *out = Vision::ToolOut();
+    out->frameId = in.input.frameId;
+    out->source = in.input;
     if (in.input.isNull()) {
-        out.ok = false;
-        out.message = U(L"\u6ca1\u6709\u8f93\u5165\u56fe");
-        return out;
+        out->ok = false;
+        out->message = U(L"\u6ca1\u6709\u8f93\u5165\u56fe");
+        return out->errCode;
     }
     if (cameraOf(in).isNull()) {
-        out.ok = false;
-        out.message = U(L"\u8bf7\u5728\u5de5\u5177\u4e0a\u7ed1\u5b9a\u76f8\u673a");
-        return out;
+        out->ok = false;
+        out->message = U(L"\u8bf7\u5728\u5de5\u5177\u4e0a\u7ed1\u5b9a\u76f8\u673a");
+        return out->errCode;
     }
     // 记下当前图尺寸，再查这路相机生效的模型：失效报错，未标定原图透传
     if (in.input.width > 0 && in.input.height > 0) {
@@ -254,35 +258,51 @@ Vision::ToolOut Vision::UndistortTool::execute(const Vision::ToolIn& in)
     }
     const Vision::CalibRst active = Vision::CalibMgr::instance().active(cameraOf(in));
     if (active.camera.present && active.camera.status == Vision::CalibExpired) {
-        out.ok = false;
-        out.message = U(L"\u76f8\u673a\u6a21\u578b\u5df2\u5931\u6548");
-        return out;
+        out->ok = false;
+        out->message = U(L"\u76f8\u673a\u6a21\u578b\u5df2\u5931\u6548");
+        return out->errCode;
     }
     if (!active.camera.present || active.camera.status != Vision::CalibValid) {
-        out.image = in.input;
-        out.ok = true;
-        out.message = U(L"\u672a\u6821\u6b63");
-        out.syncIo();
-        return out;
+        out->image = in.input;
+        out->ok = true;
+        out->message = U(L"\u672a\u6821\u6b63");
+        out->syncIo();
+        return out->errCode;
     }
-    // 内参传给算法；有 Halcon 相机参数文件时强制走 Halcon 算法库
-    Vision::AlgToolIn ain;
-    ain.mode = in.mode;
-    ain.imagePtr = &in.input;
-    ain.imageNative = in.inputNative;
-    ain.solutionDir = in.solutionDir;
+    return shot(in, out);
+}
+
+void Vision::UndistortTool::fill_alg_in(const Vision::ToolIn& in, Vision::AlgToolIn* ain) const
+{
+    build_alg_in(in, ain);
+    ain->param = &param_;
+    const Vision::CalibRst active = Vision::CalibMgr::instance().active(cameraOf(in));
     const Vision::CamModel& m = active.camera;
-    ain.run.insert("fx", m.fx);
-    ain.run.insert("fy", m.fy);
-    ain.run.insert("cx", m.cx);
-    ain.run.insert("cy", m.cy);
-    ain.run.insert("k1", m.k1);
-    ain.run.insert("k2", m.k2);
-    ain.run.insert("k3", m.k3);
-    ain.run.insert("p1", m.p1);
-    ain.run.insert("p2", m.p2);
-    ain.run.insert("stamp", m.updatedAt);
-    ain.run.insert("halconCam", Vision::CalibMgr::instance().readHalconDat(cameraOf(in)));
+    ain->run.insert("fx", m.fx);
+    ain->run.insert("fy", m.fy);
+    ain->run.insert("cx", m.cx);
+    ain->run.insert("cy", m.cy);
+    ain->run.insert("k1", m.k1);
+    ain->run.insert("k2", m.k2);
+    ain->run.insert("k3", m.k3);
+    ain->run.insert("p1", m.p1);
+    ain->run.insert("p2", m.p2);
+    ain->run.insert("stamp", m.updatedAt);
+    ain->run.insert("halconCam", Vision::CalibMgr::instance().readHalconDat(cameraOf(in)));
+}
+
+int Vision::UndistortTool::shot(const Vision::ToolIn& in, Vision::ToolOut* out)
+{
+    attachAlg(in.toolDataDir);
+    param_.load(in.param);
+    if (param_.loadCode() != HS_OK) {
+        out->ok = false;
+        out->errCode = param_.loadCode();
+        out->message = HsCommData::HsException(param_.loadCode()).errorMessage();
+        return out->errCode;
+    }
+    Vision::AlgToolIn ain;
+    fill_alg_in(in, &ain);
     Vision::AlgLibKind prefer = in.algLib;
     if (!ain.run.value("halconCam").toString().empty()) {
         prefer = Vision::AlgLibHal;
@@ -290,15 +310,12 @@ Vision::ToolOut Vision::UndistortTool::execute(const Vision::ToolIn& in)
     std::string err;
     const Vision::AlgToolOut aout = runNamed("preprocess.undistort", prefer, ain, &err);
     if (!aout.ok || aout.image.image.isNull()) {
-        out.ok = false;
-        out.message = aout.message.empty() ? err : aout.message;
-        return out;
+        out->ok = false;
+        out->message = aout.message.empty() ? err : aout.message;
+        return out->errCode;
     }
-    out.image = aout.image.image;
-    out.ok = true;
-    out.message = aout.message;
-    out.syncIo();
-    return out;
+    apply_alg_out(in, aout, true, out);
+    return out->errCode;
 }
 // 克隆实例
 Vision::ToolBase* Vision::UndistortTool::clone() const
@@ -311,7 +328,28 @@ Vision::ToolBase* Vision::UndistortTool::clone() const
 
 
 // 返回本工具参数对象
-const Vision::ToolParaBase* Vision::UndistortTool::toolParam() const
+const Vision::ToolParaBase* Vision::UndistortTool::tool_param() const
 {
-    return &m_param;
+    return &param_;
 }
+
+int Vision::UndistortTool::check_param(std::string* detail) const
+{
+    if (param_.loadCode() != HS_OK) {
+        if (detail != nullptr) {
+            *detail = HsCommData::HsException(param_.loadCode()).errorMessage();
+        }
+        return param_.loadCode();
+    }
+    return HS_OK;
+}
+
+Vision::ToolOut Vision::UndistortTool::execute(const Vision::ToolIn& in)
+{
+    Vision::ToolOut out;
+    execute(in, &out);
+    return out;
+}
+
+Vision::UndistortTool::UndistortTool() {}
+Vision::UndistortTool::~UndistortTool() {}

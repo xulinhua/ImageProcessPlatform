@@ -43,7 +43,7 @@ void LogMgr::startup()
                     std::to_string(shots) + " shots dropped: " + reason);
     });
     ProdDb::instance().startup();
-    VerifyDb::instance().open(0);
+    VerifyDb::instance().open(nullptr);
 }
 
 // 停线程并刷完队列。生产库先停，停止时放弃的批次还能写进日志

@@ -1,6 +1,6 @@
 /**
  * @file CvUndistort.h
- * @brief CvUndistort头文件
+ * @brief 按内参和畸变系数去畸变（OpenCV）
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
@@ -10,43 +10,79 @@
 #define VISION_OPENCV_UNDISTORT_H
 
 #include "AlgToolBase.h"
+#include "ToolParaUndistort.hpp"
+#include "opencvLib.h"
+#include <string>
+#include <vector>
 
 namespace Vision {
 
 /**
  * @class CvUndistort
  * @brief 按内参和畸变系数去畸变：initUndistortRectifyMap 加 remap
- * @note 映射表按「模型 stamp + 图像尺寸」缓存在进程级表里，加锁访问，不会淘汰
+ * @note 映射表按「模型 stamp + 图像尺寸」缓存在成员里；单拍状态不可并发 execute
  */
 class CvUndistort : public AlgToolBase {
-public:
-    /** @brief 挂到 preprocess.undistort 工具壳 */
-    std::string toolName() const { return "preprocess.undistort"; }
-    /** @brief 算法库：OpenCV */
-    AlgLibKind algLib() const { return AlgLibCv; }
-    /** @brief 算法版本号 */
-    std::string version() const;
-    /** @brief 版本变更，只追加 */
-    std::vector<VerNote> versionNotes() const;
-    /** @brief 调 run 去畸变；未通过且没给错误码时记为 HS_ERR_OPERATOR */
-    int execute(const AlgToolIn& in, AlgToolOut* out) override {
-        if (!out) {
-            return HS_ERR_NULL;
-        }
-        *out = run(in);
-        if (out->ok) {
-            out->errCode = HS_OK;
-            return HS_OK;
-        }
-        if (out->errCode == HS_OK || out->errCode == 1) {
-            out->errCode = HS_ERR_OPERATOR;
-        }
-        return out->errCode;
-    }
-    /** @brief 读 in.run 的 fx/fy/cx/cy/k1/k2/p1/p2/k3/stamp，输出与输入同尺寸的校正图 */
-    AlgToolOut run(const AlgToolIn& in);
-    /** @brief 克隆一份新实例 */
-    AlgToolBase* clone() const { return new CvUndistort(); }
+public: // 骨架
+	/** @brief 构造 */
+	CvUndistort();
+	/** @brief 析构 */
+	~CvUndistort();
+
+	/** @brief 克隆本实例 */
+	AlgToolBase* clone() const override;
+
+public: // 描述、版本
+	/** @brief 注册名 */
+	std::string tool_name() const override;
+	/** @brief 算法库 */
+	AlgLibKind alg_lib() const override;
+	/** @brief 工具版本 */
+	std::string version() const override;
+	/** @brief 版本变更，只追加 */
+	std::vector<VerNote> version_notes() const override;
+
+public: // 执行、持久化
+	/** @brief 去畸变 */
+	int execute(const AlgToolIn& in, AlgToolOut* out) override;
+	/** @brief 打开时无需模型文件 */
+	void init(const std::string& toolDataDir) override;
+	/** @brief 保存时无需模型文件 */
+	void save(const std::string& toolDataDir) override;
+
+private: // 单拍流程
+	/** @brief 清空本拍输出图与错误码 */
+	int tool_reset();
+	/**
+	 * @brief 取输入图与内参畸变参数
+	 * @return 无图返回 HS_ERR_IMAGE_EMPTY，参数不是 ToolParaUndistort 返回 HS_ERR_TYPE
+	 */
+	int proc_input(const AlgToolIn& in);
+	/** @brief 建或复用映射表并 remap */
+	int alg_run(const AlgToolIn& in);
+	/** @brief 去畸变无测值，直接通过 */
+	int judge_tol(const AlgToolIn& in) override;
+	/** @brief 写出校正图 */
+	int alg_rst_proc(const AlgToolIn& in, AlgToolOut* out);
+
+	/** @brief 按 stamp 与尺寸确保映射表可用 */
+	void ensure_maps(const cv::Size& size, const cv::Mat& K, const cv::Mat& dist, const std::string& stamp);
+
+private:
+	cv::Mat src_; ///< 本拍输入图（可彩色）
+	cv::Mat dst_; ///< 本拍校正图
+	cv::Mat map1_; ///< 映射表 1
+	cv::Mat map2_; ///< 映射表 2
+	std::string map_key_; ///< 当前映射表键
+	int shot_err_; ///< 本拍错误码
+	std::string shot_msg_; ///< 本拍说明
+
+	/** @brief 转到 tool_name */
+	std::string toolName() const override { return tool_name(); }
+	/** @brief 转到 alg_lib */
+	AlgLibKind algLib() const override { return alg_lib(); }
+	/** @brief 转到 version_notes */
+	std::vector<VerNote> versionNotes() const override { return version_notes(); }
 };
 
 }

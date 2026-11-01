@@ -1,6 +1,6 @@
 /**
  * @file RemoteTcp.h
- * @brief 远程控制自己的 TCP。方法与 ICommChannel 同形，这一期不链 VisionComm
+ * @brief 远程控制专用 TCP。方法与 ICommChannel 同形，但不链接 VisionComm
  *
  * open 直接收 host 和 port，键名与 TcpChannel 的 host、port 相同。
  * 不调用 ParamMap，避免链接 VisionCommon.dll。

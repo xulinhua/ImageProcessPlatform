@@ -1,51 +1,85 @@
-/**
+﻿/**
  * @file HalEnhance.cpp
- * @brief HalEnhance实现
+ * @brief 图像增强流水（Halcon）
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
  */
 
 #include "HalEnhance.h"
-#include "TextEncoding.h"
 #include "HalImageConvert.h"
 #include "HalObjectConvert.h"
+#include "HalOps.h"
+#include <HsCommData/HsError.h>
+#include <HsCommData/HsException.h>
+
 namespace Vision {
-// 第i步参数键
-static std::string stepKey(int i, const char* suffix)
+
+namespace {
+const char kVer[] = "1.0.0.0";
+const char kName[] = "preprocess.enhance";
+const VerNoteRaw kNotes[] = {
+    { "1.0.0.0", "首版" },
+};
+}
+
+HalEnhance::EnhanceStep::EnhanceStep()
+    : op(EnhanceOp::EquHisto)
+    , maskW(7)
+    , maskH(7)
+    , coeff(1.0)
+    , coeff2(0.0)
+    , scaleMax(false)
+{
+}
+
+std::string HalEnhance::tool_name() const { return kName; }
+AlgLibKind HalEnhance::alg_lib() const { return AlgLibHal; }
+AlgToolBase* HalEnhance::clone() const { return new HalEnhance(); }
+std::string HalEnhance::version() const { return kVer; }
+std::vector<VerNote> HalEnhance::version_notes() const
+{
+    return verNotesFrom(kNotes, static_cast<int>(sizeof(kNotes) / sizeof(kNotes[0])));
+}
+
+HalEnhance::HalEnhance()
+    : img_w_(0)
+    , img_h_(0)
+    , shot_err_(0)
+{
+    HalconCpp::GenEmptyObj(&image_);
+    HalconCpp::GenEmptyObj(&roi_region_);
+    HalconCpp::GenEmptyObj(&result_image_);
+}
+
+HalEnhance::~HalEnhance()
+{
+}
+
+void HalEnhance::init(const std::string&)
+{
+}
+
+void HalEnhance::save(const std::string&)
+{
+}
+
+int HalEnhance::tool_reset()
+{
+    steps_.clear();
+    tol_.reset();
+    shot_err_ = HS_OK;
+    shot_msg_.clear();
+    HalconCpp::GenEmptyObj(&result_image_);
+    return HS_OK;
+}
+
+std::string HalEnhance::step_key(int i, const char* suffix) const
 {
     return std::string("pl_") + std::to_string(static_cast<long long>(i)) + "_" + suffix;
 }
 
-// 增强算子
-enum class EnhanceOp {
-    EquHisto = 0,
-    Emphasize,
-    Illuminate,
-    Scale,
-    Invert
-};
-
-// 增强管线一步
-struct EnhanceStep {
-    EnhanceOp op;
-    int maskW;
-    int maskH;
-    double coeff;
-    double coeff2;
-    bool scaleMax;
-    EnhanceStep()
-        : op(EnhanceOp::EquHisto)
-        , maskW(7)
-        , maskH(7)
-        , coeff(1.0)
-        , coeff2(0.0)
-        , scaleMax(false)
-    {}
-};
-
-// 整型转增强算子
-static EnhanceOp enhanceOpFromInt(int v)
+HalEnhance::EnhanceOp HalEnhance::enhance_op_from_int(int v) const
 {
     switch (v) {
     case 0: return EnhanceOp::EquHisto;
@@ -57,8 +91,7 @@ static EnhanceOp enhanceOpFromInt(int v)
     }
 }
 
-// 从参数解开增强步骤
-static std::vector<EnhanceStep> enhanceStepsFromParams(const ParamMap& p)
+std::vector<HalEnhance::EnhanceStep> HalEnhance::steps_from_params(const ParamMap& p) const
 {
     std::vector<EnhanceStep> out;
     const int n = p.value("pl_n").toInt(0);
@@ -68,20 +101,22 @@ static std::vector<EnhanceStep> enhanceStepsFromParams(const ParamMap& p)
     out.reserve(static_cast<size_t>(n));
     for (int i = 0; i < n; ++i) {
         EnhanceStep st;
-        st.op = enhanceOpFromInt(p.value(stepKey(i, "op")).toInt());
-        st.maskW = p.value(stepKey(i, "w")).toInt(st.maskW);
-        st.maskH = p.value(stepKey(i, "h")).toInt(st.maskH);
-        st.coeff = p.value(stepKey(i, "c0")).toDouble(st.coeff);
-        st.coeff2 = p.value(stepKey(i, "c1")).toDouble(st.coeff2);
-        st.scaleMax = p.value(stepKey(i, "f")).toInt(0) != 0;
+        st.op = enhance_op_from_int(p.value(step_key(i, "op")).toInt());
+        st.maskW = p.value(step_key(i, "w")).toInt(st.maskW);
+        st.maskH = p.value(step_key(i, "h")).toInt(st.maskH);
+        st.coeff = p.value(step_key(i, "c0")).toDouble(st.coeff);
+        st.coeff2 = p.value(step_key(i, "c1")).toDouble(st.coeff2);
+        st.scaleMax = p.value(step_key(i, "f")).toInt(0) != 0;
         out.push_back(st);
     }
     return out;
 }
 
-// 增强一步
-static bool applyEnhanceOp(HalconCpp::HImage* img, const EnhanceStep& st, std::string* err)
+bool HalEnhance::apply_enhance_op(HalconCpp::HImage* img, const EnhanceStep& st, std::string* err) const
 {
+    if (img == nullptr) {
+        return false;
+    }
     switch (st.op) {
     case EnhanceOp::EquHisto:
         *img = img->EquHistoImage();
@@ -116,67 +151,133 @@ static bool applyEnhanceOp(HalconCpp::HImage* img, const EnhanceStep& st, std::s
     }
 }
 
-// 增强管线
-namespace {
-const char kVer_HalEnhance[] = "1.0.0.0";
-const Vision::VerNoteRaw kNotes_HalEnhance[] = {
-    { "1.0.0.0", "首版" },
-};
-}
-
-std::string HalEnhance::version() const
+int HalEnhance::proc_input(const AlgToolIn& in)
 {
-    return kVer_HalEnhance;
-}
-
-// 版本变更，只追加
-std::vector<VerNote> HalEnhance::versionNotes() const
-{
-    return verNotesFrom(kNotes_HalEnhance, static_cast<int>(sizeof(kNotes_HalEnhance) / sizeof(kNotes_HalEnhance[0])));
-}
-AlgToolOut HalEnhance::writeFullImage(const AlgToolIn& in, const HalconCpp::HImage& work, const std::string& okMsg) const
-{
-    AlgToolOut out;
-    const HalconCpp::HImage full = work.FullDomain();
+    HalconCpp::HObject gray;
+    int w = 0;
+    int h = 0;
     std::string err;
-    HsCommData::HsImage* pImage = &out.image.image;
-    if (!hObjectToHsImage(full, inputImage(in).frameId, pImage, &err)) {
-        return AlgToolOut::fail(err);
+    HalconCpp::HObject* pGray = &gray;
+    if (!inputToGray(in.imageNative.ptr, static_cast<int>(in.imageNative.algLib), inputImage(in), pGray, &w, &h, &err)) {
+        shot_err_ = HS_ERR_IMAGE_EMPTY;
+        shot_msg_ = err;
+        return shot_err_;
     }
-    out.ok = true;
-    out.message = okMsg;
-    return out;
+    if (w < 1 || h < 1) {
+        shot_err_ = HS_ERR_IMAGE_EMPTY;
+        shot_msg_ = HsCommData::HsException(HS_ERR_IMAGE_EMPTY).errorMessage();
+        return shot_err_;
+    }
+    image_ = gray;
+    img_w_ = w;
+    img_h_ = h;
+    std::vector<HsCommData::HsObject> roiObjs;
+    for (size_t i = 0; i < in.rois.size(); ++i) {
+        const PortRoi& one = in.rois[i];
+        if (one.use == RegionUse::Normal) {
+            roiObjs.push_back(one.roi);
+        }
+    }
+    roi_region_ = toolRoisToHObject(roiObjs, img_w_, img_h_);
+    ToolParaEnhance local;
+    paraOf(in, &local);
+    steps_ = steps_from_params(in.run);
+    if (steps_.empty()) {
+        EnhanceStep one;
+        steps_.push_back(one);
+    }
+    return HS_OK;
 }
 
-AlgToolOut HalEnhance::run(const AlgToolIn& in)
+int HalEnhance::alg_run(const AlgToolIn& in)
 {
-    try {
-        HalconCpp::HImage gray;
-        HalconCpp::HImage work;
+    (void)in;
+    HalconCpp::HObject reduced;
+    HalconCpp::ReduceDomain(image_, roi_region_, &reduced);
+    HalconCpp::HImage work(reduced);
+    std::string err;
+    for (size_t i = 0; i < steps_.size(); ++i) {
+        if (!apply_enhance_op(&work, steps_[i], &err)) {
+            shot_err_ = HS_ERR_OPERATOR;
+            shot_msg_ = err;
+            return shot_err_;
+        }
+    }
+    const HalconCpp::HImage full = work.FullDomain();
+    result_image_ = full;
+    shot_err_ = HS_OK;
+    shot_msg_ = "图像增强完成";
+    return HS_OK;
+}
+
+int HalEnhance::judge_tol(const AlgToolIn& in)
+{
+    tol_.reset();
+    tol_.put_int("outWidth", img_w_);
+    tol_.put_int("outHeight", img_h_);
+    // 预处理仅输出图像，无独立测值公差域；结构保留以便挂接 judge 表
+    tol_.judge(in.judge, nullptr);
+    return HS_OK;
+}
+
+int HalEnhance::alg_rst_proc(const AlgToolIn& in, AlgToolOut* out)
+{
+    if (out == nullptr) {
+        return HS_ERR_TYPE;
+    }
+    AlgToolOut result;
+    result.errCode = shot_err_;
+    result.runOk = shot_err_ == HS_OK;
+    result.ok = shot_err_ == HS_OK && tol_.ok;
+    result.message = shot_msg_;
+    if (shot_err_ == HS_OK) {
+        tol_.apply(&result);
         std::string err;
-        HalconCpp::HImage* pGray = &gray;
-        int w = 0;
-        int h = 0;
-        if (!hsImageToGray(inputImage(in), pGray, &w, &h, &err)) {
-            return AlgToolOut::fail(err);
+        HsCommData::HsImage* view = &result.image.image;
+        if (!hObjectToHsImage(result_image_, inputImage(in).frameId, view, &err)) {
+            result.ok = false;
+            result.errCode = HS_ERR_OPERATOR;
+            result.message = err;
+            *out = result;
+            return HS_ERR_OPERATOR;
         }
-        const HalconCpp::HObject roi = toolRoisToHObject(plainRois(in.rois), w, h);
-        HalconCpp::HObject reduced;
-        HalconCpp::ReduceDomain(gray, roi, &reduced);
-        work = HalconCpp::HImage(reduced);
-        std::vector<EnhanceStep> steps = enhanceStepsFromParams(in.run);
-        if (steps.empty()) {
-            EnhanceStep one;
-            steps.push_back(one);
+        result.image.native.algLib = AlgLibHal;
+        result.image.native.ptr = &result_image_;
+    }
+    *out = result;
+    return shot_err_;
+}
+
+int HalEnhance::execute(const AlgToolIn& in, AlgToolOut* out)
+{
+    if (out == nullptr) {
+        return HS_ERR_NULL;
+    }
+    try {
+        run_timer_.start();
+        tool_reset();
+        run_timer_.mark("tool_reset");
+        int stepRet = proc_input(in);
+        run_timer_.mark("proc_input");
+        if (stepRet == HS_OK) {
+            stepRet = alg_run(in);
+            run_timer_.mark("alg_run");
         }
-        for (int i = 0; i < static_cast<int>(steps.size()); ++i) {
-            if (!applyEnhanceOp(&work, steps[static_cast<size_t>(i)], &err)) {
-                return AlgToolOut::fail(err);
-            }
+        if (stepRet == HS_OK) {
+            stepRet = judge_tol(in);
+            run_timer_.mark("judge_tol");
         }
-        return writeFullImage(in, work, "图像增强完成");
+        alg_rst_proc(in, out);
+        run_timer_.stop("alg_rst_proc");
+        write_alg_steps(out, run_timer_.sections(), run_timer_.totalMs());
+        return stepRet != HS_OK ? stepRet : shot_err_;
     } catch (const HalconCpp::HException& e) {
-        return AlgToolOut::fail(hExceptionText(e));
+        if (out) {
+            out->ok = false;
+            out->errCode = HS_ERR_OPERATOR;
+            out->message = hExceptionText(e);
+        }
+        return HS_ERR_OPERATOR;
     }
 }
 

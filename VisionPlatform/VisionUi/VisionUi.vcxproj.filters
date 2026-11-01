@@ -58,22 +58,22 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <!-- main\shell：主窗 -->
+    <!-- main\shell：主�?-->
     <ClCompile Include="main\MainWindow.cpp">
       <Filter>main\shell</Filter>
     </ClCompile>
-    <!-- main\bind：控件权限绑定 -->
+    <!-- main\bind：控件权限绑�?-->
     <ClCompile Include="main\WidgetPermBinder.cpp">
       <Filter>main\bind</Filter>
     </ClCompile>
     <ClCompile Include="main\QtConv.cpp">
       <Filter>main\bind</Filter>
     </ClCompile>
-    <!-- main\util：主窗附属工具 -->
+    <!-- main\util：主窗附属工�?-->
     <ClCompile Include="main\VisionLogRunSink.cpp">
       <Filter>main\util</Filter>
     </ClCompile>
-    <!-- workspace\pages：设计 / 运行 / 复检页 -->
+    <!-- workspace\pages：设�?/ 运行 / 复检�?-->
     <ClCompile Include="workspace\DesignWorkspace.cpp">
       <Filter>workspace\pages</Filter>
     </ClCompile>
@@ -86,7 +86,7 @@
     <ClCompile Include="workspace\StationRuntimePanel.cpp">
       <Filter>workspace\pages</Filter>
     </ClCompile>
-    <!-- workspace\canvas：流程画布 -->
+    <!-- workspace\canvas：流程画�?-->
     <ClCompile Include="workspace\JobCanvas.cpp">
       <Filter>workspace\canvas</Filter>
     </ClCompile>
@@ -100,7 +100,7 @@
     <ClCompile Include="workspace\ToolTreeIcons.cpp">
       <Filter>workspace\tools</Filter>
     </ClCompile>
-    <!-- workspace\icons：图标资源加载 -->
+    <!-- workspace\icons：图标资源加�?-->
     <ClCompile Include="workspace\IconAssets.cpp">
       <Filter>workspace\icons</Filter>
     </ClCompile>
@@ -135,7 +135,7 @@
     <ClCompile Include="dialog\JobRstRuleDlg.cpp">
       <Filter>dialog\job</Filter>
     </ClCompile>
-    <!-- dialog\auth：登录 / 用户 / 权限 -->
+    <!-- dialog\auth：登�?/ 用户 / 权限 -->
     <ClCompile Include="dialog\LoginDlg.cpp">
       <Filter>dialog\auth</Filter>
     </ClCompile>
@@ -151,7 +151,7 @@
     <ClCompile Include="dialog\PermDlg.cpp">
       <Filter>dialog\auth</Filter>
     </ClCompile>
-    <!-- dialog\system：设置 / 日志 / 关于 -->
+    <!-- dialog\system：设�?/ 日志 / 关于 -->
     <ClCompile Include="dialog\SettingsDlg.cpp">
       <Filter>dialog\system</Filter>
     </ClCompile>
@@ -164,9 +164,18 @@
     <ClCompile Include="dialog\VersionDlg.cpp">
       <Filter>dialog\system</Filter>
     </ClCompile>
-    <!-- dialog\view：运行画面配置 -->
+    <!-- dialog\view：运行画面配�?-->
     <ClCompile Include="dialog\RuntimeViewDlg.cpp">
       <Filter>dialog\view</Filter>
+    </ClCompile>
+    <ClCompile Include="dialog\GlobalVarDlg.cpp">
+      <Filter>dialog\view</Filter>
+    </ClCompile>
+    <ClCompile Include="dialog\UiDesignerDlg.cpp">
+      <Filter>dialog\view</Filter>
+    </ClCompile>
+    <ClCompile Include="workspace\UiPageHost.cpp">
+      <Filter>workspace\pages</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -265,6 +274,15 @@
     </ClInclude>
     <ClInclude Include="dialog\RuntimeViewDlg.h">
       <Filter>dialog\view</Filter>
+    </ClInclude>
+    <ClInclude Include="dialog\GlobalVarDlg.h">
+      <Filter>dialog\view</Filter>
+    </ClInclude>
+    <ClInclude Include="dialog\UiDesignerDlg.h">
+      <Filter>dialog\view</Filter>
+    </ClInclude>
+    <ClInclude Include="workspace\UiPageHost.h">
+      <Filter>workspace\pages</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

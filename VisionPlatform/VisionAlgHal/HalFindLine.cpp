@@ -1,175 +1,339 @@
-/**
+﻿/**
  * @file HalFindLine.cpp
- * @brief HalFindLine实现
+ * @brief 亚像素边缘拟合直线（Halcon）
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
  */
 
 #include "HalFindLine.h"
-#include "TextEncoding.h"
 #include "HalImageConvert.h"
 #include "HalObjectConvert.h"
+#include "HalOps.h"
 #include "ParamKeys.h"
+#include <HsCommData/HsError.h>
+#include <HsCommData/HsException.h>
 #include <algorithm>
 #include <cmath>
-#include <vector>
 
 namespace Vision {
 
-struct FittedLine {
-    double x1;      ///< 起点列
-    double y1;      ///< 起点行
-    double x2;      ///< 终点列
-    double y2;      ///< 终点行
-    double length;  ///< 长度
-};
-
-// 按长度从大到小
-static bool longerLine(const FittedLine& a, const FittedLine& b)
-{
-    return a.length > b.length;
-}
-
-// 每只 ROI 内拟合直线
 namespace {
-const char kVer_HalFindLine[] = "1.0.0.0";
-const Vision::VerNoteRaw kNotes_HalFindLine[] = {
+const char kVer[] = "1.0.0.0";
+const char kName[] = "locate.find_line";
+const VerNoteRaw kNotes[] = {
     { "1.0.0.0", "首版" },
 };
+constexpr const char kPortRoi[] = "roi";
+constexpr const char kPortLine[] = "line";
+constexpr const char kPortResultRoi[] = "resultRoi";
 }
 
-std::string HalFindLine::version() const
+std::string HalFindLine::tool_name() const { return kName; }
+AlgLibKind HalFindLine::alg_lib() const { return AlgLibHal; }
+AlgToolBase* HalFindLine::clone() const { return new HalFindLine(); }
+std::string HalFindLine::version() const { return kVer; }
+std::vector<VerNote> HalFindLine::version_notes() const
 {
-    return kVer_HalFindLine;
+    return verNotesFrom(kNotes, static_cast<int>(sizeof(kNotes) / sizeof(kNotes[0])));
 }
 
-// 版本变更，只追加
-std::vector<VerNote> HalFindLine::versionNotes() const
+HalFindLine::HalFindLine()
+    : img_w_(0)
+    , img_h_(0)
+    , shot_err_(0)
 {
-    return verNotesFrom(kNotes_HalFindLine, static_cast<int>(sizeof(kNotes_HalFindLine) / sizeof(kNotes_HalFindLine[0])));
+    HalconCpp::GenEmptyObj(&image_);
+    HalconCpp::GenEmptyObj(&search_region_);
 }
-AlgToolOut HalFindLine::run(const AlgToolIn& in)
+
+HalFindLine::~HalFindLine()
 {
-    try {
-        HalconCpp::HImage gray;
-        int w = 0;
-        int h = 0;
-        std::string err;
-        HalconCpp::HImage* pGray = &gray;
-        if (!hsImageToGray(inputImage(in), pGray, &w, &h, &err)) {
-            return AlgToolOut::fail(err);
+}
+
+bool HalFindLine::longer_line(const HsCommData::LineP& a, const HsCommData::LineP& b)
+{
+    const double adx = a.b.x - a.a.x;
+    const double ady = a.b.y - a.a.y;
+    const double bdx = b.b.x - b.a.x;
+    const double bdy = b.b.y - b.a.y;
+    return adx * adx + ady * ady > bdx * bdx + bdy * bdy;
+}
+
+void HalFindLine::take_region(const AlgToolIn& in, const char* port, HalconCpp::HObject* region)
+{
+    HalconCpp::GenEmptyObj(region);
+    const std::string name = port != nullptr ? port : "";
+    const bool search = name == kPortRoi;
+    HalconCpp::HObject normals;
+    HalconCpp::HObject masks;
+    bool anyNormal = false;
+    bool anyMask = false;
+    for (size_t i = 0; i < in.rois.size(); ++i) {
+        const PortRoi& one = in.rois[i];
+        if (one.use == RegionUse::Invalid) {
+            continue;
         }
-        const double sigma = in.run.value("sigma").toDouble(1.0);
-        const double low = in.run.value("low").toDouble(20.0);
-        const double high = in.run.value("high").toDouble(40.0);
-        const double minLen = in.run.value("minLength").toDouble(20.0);
-        const int toolCount = in.run.value("searchCount").toInt(1);
-        const std::string select = in.run.value("select").toString();
-        std::vector<HsCommData::HsObject> rois = plainRois(in.rois);
-        if (rois.empty()) {
-            HsCommData::HsObject whole;
-            HsCommData::Rect1P rc;
-            rc.r = HsCommData::Box2(0, 0, w, h);
-            whole = rc;
-            rois.push_back(whole);
+        const bool hit = one.port == name
+            || (search && (one.port.empty() || one.port == kPortRoi));
+        if (!hit) {
+            continue;
         }
-        AlgToolOut out;
-        out.image.image = inputImage(in);
-        std::vector<FittedLine> all;
-        for (int ri = 0; ri < static_cast<int>(rois.size()); ++ri) {
-            const HsCommData::HsObject& roi = rois[static_cast<size_t>(ri)];
-            const int want = toolCount > 0 ? toolCount : 1;
-            HalconCpp::HObject local;
-            HalconCpp::ReduceDomain(gray, toolRoiToHObject(roi, w, h), &local);
-            HalconCpp::HObject edges;
-            HalconCpp::EdgesSubPix(local, &edges, "canny", sigma < 0.4 ? 0.4 : sigma,
-                                   static_cast<Hlong>(low), static_cast<Hlong>(high));
-            HalconCpp::HObject segs;
-            HalconCpp::SegmentContoursXld(edges, &segs, "lines", 5.0, 4.0, 2.0);
-            HalconCpp::HTuple n;
-            HalconCpp::CountObj(segs, &n);
-            std::vector<FittedLine> found;
-            const Hlong nObj = n.Length() > 0 ? n[0].L() : 0;
-            for (Hlong i = 1; i <= nObj; ++i) {
-                HalconCpp::HObject one;
-                HalconCpp::SelectObj(segs, &one, i);
-                HalconCpp::HTuple len;
-                HalconCpp::LengthXld(one, &len);
-                if (len.Length() < 1 || len[0].D() < minLen) {
-                    continue;
-                }
-                HalconCpp::HTuple rowBegin;
-                HalconCpp::HTuple colBegin;
-                HalconCpp::HTuple rowEnd;
-                HalconCpp::HTuple colEnd;
-                HalconCpp::HTuple nr;
-                HalconCpp::HTuple nc;
-                HalconCpp::HTuple dist;
-                HalconCpp::FitLineContourXld(one, "tukey", -1, 0, 5, 2, &rowBegin, &colBegin, &rowEnd, &colEnd,
-                                             &nr, &nc, &dist);
-                FittedLine fl;
-                fl.x1 = colBegin[0].D();
-                fl.y1 = rowBegin[0].D();
-                fl.x2 = colEnd[0].D();
-                fl.y2 = rowEnd[0].D();
-                const double dx = fl.x2 - fl.x1;
-                const double dy = fl.y2 - fl.y1;
-                fl.length = std::sqrt(dx * dx + dy * dy);
-                found.push_back(fl);
-            }
-            std::sort(found.begin(), found.end(), longerLine);
-            if (select == "first" && !found.empty()) {
-                FittedLine keep = found[0];
-                found.clear();
-                found.push_back(keep);
-            } else if (select == "last" && !found.empty()) {
-                FittedLine keep = found[found.size() - 1];
-                found.clear();
-                found.push_back(keep);
-            }
-            const int take = static_cast<int>(found.size()) < want ? static_cast<int>(found.size()) : want;
-            for (int k = 0; k < take; ++k) {
-                all.push_back(found[static_cast<size_t>(k)]);
-            }
+        HalconCpp::HObject piece;
+        try {
+            piece = hsObjectToHObject(one.roi, img_w_, img_h_);
+        } catch (const HalconCpp::HException&) {
+            continue;
         }
-        if (all.empty()) {
-            out.message = "未找到直线";
-            return out;
+        if (hoIsEmpty(piece)) {
+            continue;
         }
-        out.ok = true;
-        out.values.insert("count", static_cast<int>(all.size()));
-        paramSet(&out.values, ValueKey::X, (all[0].x1 + all[0].x2) * 0.5);
-        paramSet(&out.values, ValueKey::Y, (all[0].y1 + all[0].y2) * 0.5);
-        paramSet(&out.values, ValueKey::Angle, std::atan2(all[0].y2 - all[0].y1, all[0].x2 - all[0].x1));
-        paramSet(&out.values, ValueKey::Score, 1.0);
+        HalconCpp::HObject* acc = one.use == RegionUse::Mask ? &masks : &normals;
+        bool* any = one.use == RegionUse::Mask ? &anyMask : &anyNormal;
+        if (!*any) {
+            *acc = piece;
+            *any = true;
+        } else {
+            HalconCpp::HObject joined;
+            HalconCpp::ConcatObj(*acc, piece, &joined);
+            *acc = joined;
+        }
+    }
+    if (!anyNormal) {
+        return;
+    }
+    HalconCpp::HObject merged;
+    HalconCpp::Union1(normals, &merged);
+    if (anyMask) {
+        HalconCpp::HObject cover;
+        HalconCpp::Union1(masks, &cover);
+        HalconCpp::HObject left;
+        HalconCpp::Difference(merged, cover, &left);
+        merged = left;
+    }
+    *region = merged;
+}
+
+int HalFindLine::tool_reset()
+{
+    lines_.clear();
+    tol_.reset();
+    HalconCpp::GenEmptyObj(&search_region_);
+    shot_err_ = 0;
+    shot_msg_.clear();
+    return HS_OK;
+}
+
+int HalFindLine::proc_input(const AlgToolIn& in)
+{
+    HalconCpp::HObject gray;
+    int w = 0;
+    int h = 0;
+    std::string err;
+    HalconCpp::HObject* pGray = &gray;
+    if (!inputToGray(in.imageNative.ptr, static_cast<int>(in.imageNative.algLib), inputImage(in), pGray, &w, &h, &err)) {
+        shot_err_ = HS_ERR_IMAGE_EMPTY;
+        shot_msg_ = err;
+        return shot_err_;
+    }
+    if (w < 1 || h < 1) {
+        shot_err_ = HS_ERR_IMAGE_EMPTY;
+        shot_msg_ = HsCommData::HsException(HS_ERR_IMAGE_EMPTY).errorMessage();
+        return shot_err_;
+    }
+    image_ = gray;
+    img_w_ = w;
+    img_h_ = h;
+    if (in.param != nullptr && toolParaAs<ToolParaFindLine>(in.param) == nullptr) {
+        shot_err_ = HS_ERR_TYPE;
+        shot_msg_ = HsCommData::HsException(HS_ERR_TYPE).errorMessage();
+        return shot_err_;
+    }
+    take_region(in, kPortRoi, &search_region_);
+    return HS_OK;
+}
+
+int HalFindLine::alg_run(const AlgToolIn& in)
+{
+    ToolParaFindLine local;
+    const ToolParaFindLine* para = paraOf(in, &local);
+    const ToolParaFindLine::Run& rp = para->run;
+    const double sigma = rp.sigma < 0.4 ? 0.4 : rp.sigma;
+    const int want = rp.searchCount > 0 ? rp.searchCount : 1;
+    HalconCpp::HObject reduced;
+    HalconCpp::HObject edges;
+    HalconCpp::HObject segs;
+    const HalconCpp::HObject* src = &image_;
+    if (regionHasArea(search_region_)) {
+        HalconCpp::ReduceDomain(image_, search_region_, &reduced);
+        src = &reduced;
+    }
+    HalconCpp::EdgesSubPix(*src, &edges, "canny", sigma, static_cast<Hlong>(rp.low), static_cast<Hlong>(rp.high));
+    HalconCpp::SegmentContoursXld(edges, &segs, "lines", 5.0, 4.0, 2.0);
+    HalconCpp::HTuple segCount;
+    HalconCpp::CountObj(segs, &segCount);
+    const Hlong objCount = segCount.Length() > 0 ? segCount[0].L() : 0;
+    std::vector<HsCommData::LineP> found;
+    for (Hlong i = 1; i <= objCount; ++i) {
+        HalconCpp::HObject one;
+        HalconCpp::SelectObj(segs, &one, i);
+        HalconCpp::HTuple length;
+        HalconCpp::LengthXld(one, &length);
+        if (length.Length() < 1 || length[0].D() < rp.minLength) {
+            continue;
+        }
+        HalconCpp::HTuple rowBegin;
+        HalconCpp::HTuple colBegin;
+        HalconCpp::HTuple rowEnd;
+        HalconCpp::HTuple colEnd;
+        HalconCpp::HTuple nr;
+        HalconCpp::HTuple nc;
+        HalconCpp::HTuple dist;
+        HalconCpp::FitLineContourXld(one, "tukey", -1, 0, 5, 2, &rowBegin, &colBegin, &rowEnd, &colEnd, &nr, &nc, &dist);
+        HsCommData::LineP line;
+        line.a = HsCommData::Point2d(colBegin[0].D(), rowBegin[0].D());
+        line.b = HsCommData::Point2d(colEnd[0].D(), rowEnd[0].D());
+        found.push_back(line);
+    }
+    std::sort(found.begin(), found.end(), longer_line);
+    if (rp.select == "first" && !found.empty()) {
+        const HsCommData::LineP keep = found.front();
+        found.clear();
+        found.push_back(keep);
+    } else if (rp.select == "last" && !found.empty()) {
+        const HsCommData::LineP keep = found.back();
+        found.clear();
+        found.push_back(keep);
+    }
+    const int take = static_cast<int>(found.size()) < want ? static_cast<int>(found.size()) : want;
+    lines_.clear();
+    for (int i = 0; i < take; ++i) {
+        lines_.push_back(found[static_cast<size_t>(i)]);
+    }
+    if (lines_.empty()) {
+        shot_err_ = HS_ERR_LINE_NONE;
+        shot_msg_ = HsCommData::HsException(HS_ERR_LINE_NONE).errorMessage();
+        return shot_err_;
+    }
+    shot_err_ = HS_OK;
+    shot_msg_ = "找线完成";
+    return HS_OK;
+}
+
+int HalFindLine::judge_tol(const AlgToolIn& in)
+{
+    tol_.reset();
+    if (lines_.empty()) {
+        return HS_OK;
+    }
+    const HsCommData::LineP& first = lines_.front();
+    const double firstLen = std::hypot(first.b.x - first.a.x, first.b.y - first.a.y);
+    double lengthSum = 0;
+    double lengthMax = 0;
+    for (size_t i = 0; i < lines_.size(); ++i) {
+        const HsCommData::LineP& line = lines_[i];
+        const double len = std::hypot(line.b.x - line.a.x, line.b.y - line.a.y);
+        lengthSum += len;
+        if (len > lengthMax) {
+            lengthMax = len;
+        }
+    }
+    tol_.put_int("count", static_cast<int>(lines_.size()));
+    tol_.put("x", (first.a.x + first.b.x) * 0.5);
+    tol_.put("y", (first.a.y + first.b.y) * 0.5);
+    tol_.put("angle", std::atan2(first.b.y - first.a.y, first.b.x - first.a.x));
+    tol_.put("length", firstLen);
+    tol_.put("lengthSum", lengthSum);
+    tol_.put("lengthMax", lengthMax);
+    paramSet(&tol_.values, ValueKey::X, (first.a.x + first.b.x) * 0.5);
+    paramSet(&tol_.values, ValueKey::Y, (first.a.y + first.b.y) * 0.5);
+    paramSet(&tol_.values, ValueKey::Angle, std::atan2(first.b.y - first.a.y, first.b.x - first.a.x));
+    paramSet(&tol_.values, ValueKey::Score, 1.0);
+    tol_.judge(in.judge, nullptr);
+    return HS_OK;
+}
+
+int HalFindLine::alg_rst_proc(const AlgToolIn&, AlgToolOut* out)
+{
+    if (out == nullptr) {
+        return HS_ERR_NULL;
+    }
+    AlgToolOut result;
+    result.errCode = shot_err_;
+    result.runOk = shot_err_ == HS_OK && !lines_.empty();
+    result.ok = result.runOk && tol_.ok;
+    result.message = shot_msg_;
+    if (shot_err_ == HS_OK && !lines_.empty()) {
+        tol_.apply(&result);
         HalconCpp::HObject lineMask;
         bool maskFirst = true;
-        for (int i = 0; i < static_cast<int>(all.size()); ++i) {
-            const FittedLine& fl = all[static_cast<size_t>(i)];
-            out.objects.push_back(lineObject(fl.x1, fl.y1, fl.x2, fl.y2));
+        for (size_t i = 0; i < lines_.size(); ++i) {
+            const HsCommData::LineP& line = lines_[i];
+            HsCommData::Pose2 pose;
+            pose.tx = (line.a.x + line.b.x) * 0.5;
+            pose.ty = (line.a.y + line.b.y) * 0.5;
+            pose.setAngRad(std::atan2(line.b.y - line.a.y, line.b.x - line.a.x));
+            result.poses.push_back(pose);
+            NamedObject named;
+            named.port = kPortLine;
+            named.index = static_cast<int>(i);
+            named.object = lineObject(line.a.x, line.a.y, line.b.x, line.b.y);
+            result.portObjects.push_back(named);
+            result.objects.push_back(named.object);
             HalconCpp::HObject strip;
-            HalconCpp::GenRegionLine(&strip, fl.y1, fl.x1, fl.y2, fl.x2);
-            HalconCpp::HObject dil;
-            HalconCpp::DilationCircle(strip, &dil, 8.0);
-            strip = dil;
+            HalconCpp::GenRegionLine(&strip, line.a.y, line.a.x, line.b.y, line.b.x);
+            HalconCpp::HObject thick;
+            HalconCpp::DilationCircle(strip, &thick, 8.0);
             if (maskFirst) {
-                lineMask = strip;
+                lineMask = thick;
                 maskFirst = false;
             } else {
-                HalconCpp::HObject uni;
-                HalconCpp::Union2(lineMask, strip, &uni);
-                lineMask = uni;
+                HalconCpp::HObject next;
+                HalconCpp::Union2(lineMask, thick, &next);
+                lineMask = next;
             }
         }
-        // 供下游 Blob「区域」端口使用（KindLine 只进 rois）
-        if (!maskFirst && !hoIsEmpty(lineMask)) {
-            out.objects.push_back(hObjectToRegionObject(lineMask));
+        if (!maskFirst && regionHasArea(lineMask)) {
+            NamedObject region;
+            region.port = kPortResultRoi;
+            region.object = hObjectToRegionObject(lineMask);
+            result.portObjects.push_back(region);
+            result.objects.push_back(region.object);
         }
-        out.message = "找线完成";
-        return out;
+    }
+    *out = result;
+    return shot_err_;
+}
+
+int HalFindLine::execute(const AlgToolIn& in, AlgToolOut* out)
+{
+    if (out == nullptr) {
+        return HS_ERR_NULL;
+    }
+    try {
+        run_timer_.start();
+        tool_reset();
+        run_timer_.mark("tool_reset");
+        int stepRet = proc_input(in);
+        run_timer_.mark("proc_input");
+        if (stepRet == HS_OK) {
+            stepRet = alg_run(in);
+            run_timer_.mark("alg_run");
+        }
+        if (stepRet == HS_OK) {
+            stepRet = judge_tol(in);
+            run_timer_.mark("judge_tol");
+        }
+        alg_rst_proc(in, out);
+        run_timer_.stop("alg_rst_proc");
+        write_alg_steps(out, run_timer_.sections(), run_timer_.totalMs());
+        return stepRet != HS_OK ? stepRet : shot_err_;
     } catch (const HalconCpp::HException& e) {
-        return AlgToolOut::fail(hExceptionText(e));
+        out->ok = false;
+        out->runOk = false;
+        out->errCode = HS_ERR_LINE_OPERATOR;
+        out->message = hExceptionText(e);
+        return HS_ERR_LINE_OPERATOR;
     }
 }
 

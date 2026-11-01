@@ -1,6 +1,6 @@
 /**
  * @file HalConvert.h
- * @brief HalConvert头文件
+ * @brief Halcon 图像转换兼容头（转发 HalImageConvert）
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.

@@ -33,6 +33,7 @@
 #include <QFrame>
 #include <QSizePolicy>
 #include <QSpinBox>
+#include <QTableWidget>
 #include <QToolButton>
 #include <QVBoxLayout>
 #include <QEvent>
@@ -141,12 +142,17 @@ ToolIoPanel::ToolIoPanel(QWidget* parent)
     , m_regionHint(nullptr)
     , m_roiListHost(nullptr)
     , m_roiListLay(nullptr)
+    , m_bindLabel(nullptr)
+    , m_bindTable(nullptr)
+    , m_btnBindAdd(nullptr)
+    , m_btnBindDel(nullptr)
     , m_btnAdd(nullptr)
     , m_btnRedraw(nullptr)
     , m_btnClear(nullptr)
     , m_btnDel(nullptr)
     , m_fillingRoiList(false)
     , m_fillingLinks(false)
+    , m_fillingBinds(false)
     , m_selectedRoiRow(-1)
     , m_tool(nullptr)
     , m_sol(nullptr)
@@ -190,6 +196,29 @@ ToolIoPanel::ToolIoPanel(QWidget* parent)
     addLinkField(linkLay, m_poseRowLabel, poseRow);
     m_regionRowLabel = new QLabel(T("区域"), m_linkPage);
     addLinkField(linkLay, m_regionRowLabel, regionRow);
+
+    m_bindLabel = new QLabel(T("全局变量绑定"), m_linkPage);
+    m_bindTable = new QTableWidget(0, 3, m_linkPage);
+    m_bindTable->setHorizontalHeaderLabels(QStringList() << T("参数键") << T("路径") << T("方向"));
+    m_bindTable->horizontalHeader()->setStretchLastSection(true);
+    m_bindTable->verticalHeader()->setVisible(false);
+    m_bindTable->setSelectionBehavior(QAbstractItemView::SelectRows);
+    m_bindTable->setSelectionMode(QAbstractItemView::SingleSelection);
+    m_bindTable->setMinimumHeight(88);
+    m_bindTable->setMaximumHeight(140);
+    QWidget* bindBtns = new QWidget(m_linkPage);
+    QHBoxLayout* bindBtnLay = new QHBoxLayout(bindBtns);
+    bindBtnLay->setContentsMargins(0, 0, 0, 0);
+    bindBtnLay->setSpacing(6);
+    m_btnBindAdd = new QPushButton(T("+ 绑定"), bindBtns);
+    m_btnBindDel = new QPushButton(T("删除"), bindBtns);
+    bindBtnLay->addWidget(m_btnBindAdd);
+    bindBtnLay->addWidget(m_btnBindDel);
+    bindBtnLay->addStretch(1);
+    linkLay->addWidget(m_bindLabel);
+    linkLay->addWidget(m_bindTable);
+    linkLay->addWidget(bindBtns);
+
     linkLay->setAlignment(Qt::AlignTop);
     // 输入页按内容高度，空白由外层卡片 stretch 吃掉
     m_imgCombo->setFixedHeight(28);
@@ -201,6 +230,9 @@ ToolIoPanel::ToolIoPanel(QWidget* parent)
     connect(m_imgCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(onLinkComboChanged(int)));
     connect(m_poseCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(onLinkComboChanged(int)));
     connect(m_regionCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(onLinkComboChanged(int)));
+    connect(m_btnBindAdd, SIGNAL(clicked()), this, SLOT(onAddParamBind()));
+    connect(m_btnBindDel, SIGNAL(clicked()), this, SLOT(onDelParamBind()));
+    connect(m_bindTable, SIGNAL(cellChanged(int,int)), this, SLOT(onParamBindCellChanged(int,int)));
 
     QVBoxLayout* roiLay = new QVBoxLayout(m_roiPage);
     // 与输入页保持一致的内边距
@@ -491,10 +523,17 @@ void ToolIoPanel::refresh(Solution* sol, ToolCfg* tool, Job* job, bool canEdit)
         refreshLinkRow(m_imgCombo, m_imgHint, m_imgCamText, 0, 0, job, PortData::Image, false, true);
         refreshLinkRow(m_poseCombo, m_poseHint, 0, 0, 0, job, PortData::Pose, false, false);
         refreshLinkRow(m_regionCombo, m_regionHint, 0, 0, 0, job, PortData::Region, false, false);
+        fillParamBinds();
         fillRoiList();
         m_btnAdd->setEnabled(false);
         m_btnRedraw->setEnabled(false);
         m_btnClear->setEnabled(false);
+        if (m_btnBindAdd) {
+            m_btnBindAdd->setEnabled(false);
+        }
+        if (m_btnBindDel) {
+            m_btnBindDel->setEnabled(false);
+        }
         syncLinkPageHeight(m_linkPage);
         return;
     }
@@ -563,7 +602,128 @@ void ToolIoPanel::refresh(Solution* sol, ToolCfg* tool, Job* job, bool canEdit)
         m_btnRedraw->setEnabled(roiOn && hasRoi && !usesMulti);
     }
     m_btnClear->setEnabled(roiOn && hasRoi);
+    fillParamBinds();
     syncLinkPageHeight(m_linkPage);
+}
+
+void ToolIoPanel::fillParamBinds()
+{
+    if (!m_bindTable) {
+        return;
+    }
+    m_fillingBinds = true;
+    m_bindTable->setRowCount(0);
+    if (m_tool) {
+        const std::vector<ParamBind>& binds = m_tool->param.paramBinds;
+        for (size_t i = 0; i < binds.size(); ++i) {
+            const ParamBind& b = binds[i];
+            const int row = m_bindTable->rowCount();
+            m_bindTable->insertRow(row);
+            m_bindTable->setItem(row, 0, new QTableWidgetItem(QString::fromStdString(b.paramKey)));
+            m_bindTable->setItem(row, 1, new QTableWidgetItem(QString::fromStdString(b.path)));
+            QTableWidgetItem* dirItem = new QTableWidgetItem(
+                b.direction == 1 ? T("回写") : T("订阅"));
+            dirItem->setData(Qt::UserRole, b.direction);
+            m_bindTable->setItem(row, 2, dirItem);
+        }
+    }
+    const bool on = m_canEdit && m_tool;
+    m_bindTable->setEnabled(on);
+    if (m_btnBindAdd) {
+        m_btnBindAdd->setEnabled(on);
+    }
+    if (m_btnBindDel) {
+        m_btnBindDel->setEnabled(on);
+    }
+    m_fillingBinds = false;
+}
+
+void ToolIoPanel::commitParamBindsFromTable()
+{
+    if (!m_tool || !m_bindTable) {
+        return;
+    }
+    std::vector<ParamBind> binds;
+    for (int r = 0; r < m_bindTable->rowCount(); ++r) {
+        ParamBind b;
+        QTableWidgetItem* k = m_bindTable->item(r, 0);
+        QTableWidgetItem* p = m_bindTable->item(r, 1);
+        QTableWidgetItem* d = m_bindTable->item(r, 2);
+        b.paramKey = k ? k->text().trimmed().toStdString() : std::string();
+        b.path = p ? p->text().trimmed().toStdString() : std::string();
+        if (d) {
+            const QString t = d->text().trimmed();
+            if (d->data(Qt::UserRole).isValid()) {
+                b.direction = d->data(Qt::UserRole).toInt();
+            } else {
+                b.direction = (t.contains(QString::fromUtf8("回写")) || t.compare(QLatin1String("1")) == 0) ? 1 : 0;
+            }
+        }
+        if (b.paramKey.empty() && b.path.empty()) {
+            continue;
+        }
+        if (b.path.find("global:") != 0 && !b.path.empty()) {
+            b.path = "global:" + b.path;
+        }
+        binds.push_back(b);
+    }
+    m_tool->param.paramBinds = binds;
+}
+
+void ToolIoPanel::onAddParamBind()
+{
+    if (!m_tool || !m_canEdit || !m_bindTable) {
+        return;
+    }
+    m_fillingBinds = true;
+    const int row = m_bindTable->rowCount();
+    m_bindTable->insertRow(row);
+    m_bindTable->setItem(row, 0, new QTableWidgetItem(QString()));
+    m_bindTable->setItem(row, 1, new QTableWidgetItem(QString::fromLatin1("global:")));
+    QTableWidgetItem* dirItem = new QTableWidgetItem(T("订阅"));
+    dirItem->setData(Qt::UserRole, 0);
+    m_bindTable->setItem(row, 2, dirItem);
+    m_fillingBinds = false;
+    commitParamBindsFromTable();
+    emit paramBindsEdited();
+    syncLinkPageHeight(m_linkPage);
+}
+
+void ToolIoPanel::onDelParamBind()
+{
+    if (!m_tool || !m_canEdit || !m_bindTable) {
+        return;
+    }
+    const int row = m_bindTable->currentRow();
+    if (row < 0) {
+        return;
+    }
+    m_fillingBinds = true;
+    m_bindTable->removeRow(row);
+    m_fillingBinds = false;
+    commitParamBindsFromTable();
+    emit paramBindsEdited();
+    syncLinkPageHeight(m_linkPage);
+}
+
+void ToolIoPanel::onParamBindCellChanged(int row, int column)
+{
+    if (m_fillingBinds || !m_tool || !m_canEdit) {
+        return;
+    }
+    if (column == 2) {
+        QTableWidgetItem* d = m_bindTable->item(row, 2);
+        if (d) {
+            const QString t = d->text().trimmed();
+            const int dir = (t.contains(QString::fromUtf8("回写")) || t == QLatin1String("1")) ? 1 : 0;
+            m_fillingBinds = true;
+            d->setData(Qt::UserRole, dir);
+            d->setText(dir == 1 ? T("回写") : T("订阅"));
+            m_fillingBinds = false;
+        }
+    }
+    commitParamBindsFromTable();
+    emit paramBindsEdited();
 }
 
 int ToolIoPanel::selectedRoiRow() const

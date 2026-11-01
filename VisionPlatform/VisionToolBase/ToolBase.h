@@ -25,6 +25,8 @@
 namespace Vision {
 
 class AlgToolBase;
+struct AlgToolIn;
+struct AlgToolOut;
 
 /**
  * @class ToolDesc
@@ -109,6 +111,8 @@ public:
     virtual std::vector<ParamField> paramFields() const;
     /** @brief 输入输出端口表 */
     virtual std::vector<PortDesc> ports() const;
+    /** @brief 端口表。默认转到 ports */
+    virtual std::vector<PortDesc> cfg_port() const;
     /** @brief 画布 ROI 等能力 */
     virtual ToolCaps capabilities() const;
     /** @brief 组装工具箱条目 */
@@ -123,6 +127,8 @@ public:
     virtual ParamMap default_params() const;
     /** @brief 运行参数说明。默认转到 paramFields */
     virtual std::vector<ParamField> cfg_param() const;
+    /** @brief 按当前方案生成参数说明。默认转到 cfg_param */
+    virtual std::vector<ParamField> cfg_param(const ToolParam& current) const;
     /** @brief 示教参数说明。没有示教数据的工具返回空 */
     virtual std::vector<ParamField> cfg_teach() const;
     /** @brief 本工具参数对象。默认转到 toolParam */
@@ -199,6 +205,12 @@ public:
 protected:
     /** @brief 按参数说明拼缺省参数。设备项不进 ParamMap */
     ParamMap defaultsFrom(const std::vector<ParamField>& fields) const;
+    /** @brief 把 ToolIn 收成算法输入。defaultRoiPort 非空时给未命名 ROI 填 port */
+    void build_alg_in(const ToolIn& in, AlgToolIn* ain, const std::string& defaultRoiPort = std::string()) const;
+    /** @brief 把算法输出抄到 ToolOut */
+    void apply_alg_out(const ToolIn& in, const AlgToolOut& algOut, bool passImage, ToolOut* out) const;
+    /** @brief 已 attachAlg 且 ain 填好后，调挂着的算法跑一拍或动作 */
+    int run_attached_shot(const ToolIn& in, const std::string& actionId, AlgToolIn* ain, bool passImage, ToolOut* out);
     /** @brief 收口之后写结果日志。默认空 */
     virtual void log_result(ToolOut* out) const;
     /** @brief 图元生成后再补工具自己的图形 */

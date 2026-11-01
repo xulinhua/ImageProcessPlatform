@@ -1,53 +1,143 @@
+/**
+ * @file FitCircleTool.cpp
+ * @brief RANSAC 拟合三维圆
+ * @author Hoson
+ *
+ * @copyright Copyright (c) 2026 Hoson. All rights reserved.
+ */
+
 #include "FitCircleTool.h"
-#include "AlgToolBase.h"
 #include "VisionVersion.h"
 #include <HsCommData/HsError.h>
+#include <HsCommData/HsException.h>
+#include <cstdio>
+#include <vector>
 
-namespace Vision {
 namespace {
-const VerNoteRaw kVerNotes[] = { { "1.0.0.0", "拟合圆" } };
-}
-std::string FitCircleTool::toolName() const { return "measure3d.fit_circle"; }
-ToolType FitCircleTool::type() const { return ToolType::Measure3D; }
-std::string FitCircleTool::displayName() const { return "拟合圆"; }
-std::string FitCircleTool::version() const { return "1.0.0.0"; }
-std::vector<VerNote> FitCircleTool::versionNotes() const { return verNotesFrom(kVerNotes, 1); }
-std::string FitCircleTool::description() const { return "拟合三维圆"; }
-std::vector<ParamField> FitCircleTool::paramFields() const
+const char kToolVersion[] = "1.0.0.0";
+const Vision::VerNoteRaw kVerNotes[] = { { "1.0.0.0", "RANSAC 拟合三维圆" } };
+const char kToolName[] = "measure3d.fit_circle";
+const char kDisplayName[] = "拟合圆";
+const char kDescription[] = "RANSAC 拟合三维圆";
+Vision::ParamMap defaultsFromFields(const std::vector<Vision::ParamField>& fields)
 {
-    std::vector<ParamField> f;
-    f.push_back(paramDouble("distance", "距离阈值", 0.5, true, 0.0, false, 0.0));
-    return f;
-}
-ParamMap FitCircleTool::defaultParams() const { return defaultsFrom(paramFields()); }
-std::vector<PortDesc> FitCircleTool::ports() const
-{
-    std::vector<PortDesc> p;
-    p.push_back(PortDesc(PortDir::In, PortData::Cloud));
-    p.push_back(PortDesc(PortDir::Out, PortData::Shape3));
-    PortDesc inlier(PortDir::Out, PortData::Cloud);
-    inlier.slot.name = "inlier";
-    p.push_back(inlier);
-    p.push_back(PortDesc(PortDir::Out, PortData::Tuple));
-    p.push_back(PortDesc(PortDir::Out, PortData::Logic));
-    return p;
-}
-ToolOut FitCircleTool::execute(const ToolIn& in)
-{
-    ToolIn shot = in;
-    if (shot.algLib != AlgLibPcl && shot.algLib != AlgLibOpen3d) {
-        shot.algLib = AlgLibPcl;
+    Vision::ParamMap m;
+    for (size_t i = 0; i < fields.size(); ++i) {
+        if (fields[i].type == Vision::ParamFieldType::Device) continue;
+        m.insert(fields[i].key, fields[i].def);
     }
-    ToolOut out = runAlgToolBase(toolName(), shot, false);
-    if (out.errCode == HS_ERR_NO_ALG) {
-        out.message = "未登记测量算法";
-    }
-    return out;
+    return m;
 }
-ToolBase* FitCircleTool::clone() const
+}
+
+Vision::FitCircleTool::FitCircleTool() {}
+Vision::FitCircleTool::~FitCircleTool() {}
+Vision::ToolBase* Vision::FitCircleTool::clone() const
 {
     FitCircleTool* p = new FitCircleTool();
     p->copyInstanceDataFrom(*this);
     return p;
 }
+std::string Vision::FitCircleTool::tool_name() const { return kToolName; }
+Vision::ToolType Vision::FitCircleTool::type() const { return Vision::ToolType::Measure3D; }
+std::string Vision::FitCircleTool::display_name() const { return kDisplayName; }
+std::string Vision::FitCircleTool::description() const { return kDescription; }
+std::string Vision::FitCircleTool::version() const { return std::string(kToolVersion); }
+std::vector<Vision::VerNote> Vision::FitCircleTool::version_notes() const
+{ return Vision::verNotesFrom(kVerNotes, 1); }
+Vision::ParamMap Vision::FitCircleTool::default_params() const { return defaultsFromFields(cfg_param()); }
+std::vector<Vision::ParamField> Vision::FitCircleTool::cfg_param() const
+{
+    std::vector<Vision::ParamField> f;
+    f.push_back(Vision::paramDouble("distance","内点距离",0.5,true,0.0,false,0.0));
+    return f;
+}
+const Vision::ToolParaBase* Vision::FitCircleTool::tool_param() const { return &param_; }
+int Vision::FitCircleTool::check_param(std::string* detail) const
+{
+    if (param_.loadCode() != HS_OK) {
+        if (detail) *detail = HsCommData::HsException(param_.loadCode()).errorMessage();
+        return param_.loadCode();
+    }
+    return HS_OK;
+}
+Vision::OutputSpec Vision::FitCircleTool::cfg_output() const
+{
+    Vision::OutputSpec spec; Vision::OutputField f; f.key = "inliers"; f.title = "inliers";
+    spec.fields.push_back(f); return spec;
+}
+Vision::TolSpec Vision::FitCircleTool::cfg_tol() const
+{
+    Vision::TolSpec spec; Vision::TolField f; f.key = "inliers"; f.title = "inliers";
+    f.defMin = 0; f.defMax = 1.0e9; spec.items.push_back(f); return spec;
+}
+Vision::DisplaySpec Vision::FitCircleTool::cfg_display() const { return Vision::DisplaySpec(); }
+Vision::ToolCaps Vision::FitCircleTool::cfg_roi() const { return Vision::ToolCaps(); }
+std::vector<Vision::PortDesc> Vision::FitCircleTool::ports() const
+{
+    std::vector<PortDesc> p;
+    p.push_back(PortDesc(PortDir::In, PortData::Cloud));
+    p.push_back(PortDesc(PortDir::Out, PortData::Tuple));
+    p.push_back(PortDesc(PortDir::Out, PortData::Logic));
+    return p;
+}
+int Vision::FitCircleTool::execute(const Vision::ToolIn& in, Vision::ToolOut* out) { return shot(in, out); }
+void Vision::FitCircleTool::log_result(Vision::ToolOut* out) const
+{
+    if (!out) return;
+    Vision::ToolTrace trace; trace.action = "result";
+    trace.detail = out->message.empty() ? (out->ok ? "ok" : "fail") : out->message;
+    out->traces.push_back(trace);
+}
+void Vision::FitCircleTool::fill_alg_in(const Vision::ToolIn& in, Vision::AlgToolIn* ain) const
+{
+    ain->mode = in.mode;
+    ain->clouds = in.inputIo.clouds;
+    ain->poses3 = in.inputIo.poses3;
+    ain->shapes3 = in.inputIo.shapes3;
+    ain->images = in.inputIo.images;
+    if (!in.inputIo.images.empty()) {
+        ain->imagePtr = &in.inputIo.images[0].image;
+        ain->imageNative = in.inputIo.images[0].native;
+    } else {
+        ain->imagePtr = &in.input;
+        ain->imageNative = in.inputNative;
+    }
+    ain->param = &param_;
+    ain->run = in.param.run;
+    ain->teach = in.param.learn;
+    ain->judge = in.param.judge;
+    ain->solutionDir = in.solutionDir;
+    ain->toolDataDir = in.toolDataDir;
+}
+int Vision::FitCircleTool::shot(const Vision::ToolIn& in, Vision::ToolOut* out)
+{
+    if (!out) return HS_ERR_NULL;
+    *out = Vision::ToolOut();
+    Vision::ToolIn shotIn = in;
+    if (shotIn.algLib != Vision::AlgLibPcl && shotIn.algLib != Vision::AlgLibOpen3d) shotIn.algLib = Vision::AlgLibPcl;
+    attachAlg(shotIn.toolDataDir);
+    param_.load(shotIn.param);
+    if (param_.loadCode() != HS_OK) {
+        out->ok = false; out->errCode = param_.loadCode();
+        out->message = HsCommData::HsException(param_.loadCode()).errorMessage();
+        return out->errCode;
+    }
+    Vision::AlgToolBase* alg = attachedAlg();
+    if (!alg) { out->ok = false; out->errCode = HS_ERR_NO_ALG; out->message = "未登记点云算法"; return out->errCode; }
+    Vision::AlgToolIn ain; fill_alg_in(shotIn, &ain);
+    Vision::AlgToolOut algOut; alg->shot_init(ain, &algOut);
+    const int code = alg->run(Vision::ExecMode::Auto, ain, &algOut);
+    if (code != HS_OK && algOut.errCode == HS_OK) { algOut.errCode = code; algOut.ok = false; }
+    out->ok = algOut.ok; out->errCode = algOut.errCode; out->error = algOut.errCode != HS_OK;
+    out->message = algOut.message; out->values = algOut.values;
+    out->io.clouds = algOut.clouds; out->io.poses3 = algOut.poses3; out->io.shapes3 = algOut.shapes3;
+    out->io.tuples = algOut.tuples; out->io.images = algOut.images;
+    if (!algOut.image.image.isNull()) out->image = algOut.image.image;
+    out->traces = algOut.traces; out->syncIo(); log_result(out);
+    return out->errCode;
+}
+Vision::ToolOut Vision::FitCircleTool::execute(const Vision::ToolIn& in)
+{
+    Vision::ToolOut out; execute(in, &out); return out;
 }

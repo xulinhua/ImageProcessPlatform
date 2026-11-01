@@ -65,7 +65,7 @@ public:
     /** @brief 改动态属性后重新套样式 */
     static void setProp(QWidget* widget, const char* key, const QVariant& value);
 
-    /** @brief 尚未提供的功能：灰掉并说明在哪一期提供 */
+    /** @brief 尚未提供的功能：灰掉，tooltip 说明何时提供（phase 文案） */
     static void markLater(QWidget* widget, const QString& phase);
 
     /**

@@ -9,7 +9,7 @@ if not exist "%MOC%" (
   exit /b 1
 )
 set "D=-DHSIMAGE_STATIC -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DUNICODE -D_UNICODE -DWIN32"
-set "I=-I"%SLN%include" -I"%SLN%VisionCommon" -I"%SLN%VisionCommon\common" -I"%SLN%VisionCore" -I"%SLN%VisionCore\model" -I"%SLN%VisionCore\tool" -I"%SLN%VisionCore\job" -I"%SLN%VisionCore\station" -I"%SLN%VisionCore\solution" -I"%SLN%VisionCore\common" -I"%SLN%VisionCore\comm" -I"%SLN%VisionCore\device" -I"%SLN%VisionComm" -I"%SLN%VisionAuth" -I"%SLN%VisionAuth\session" -I"%SLN%VisionAuth\user" -I"%SLN%VisionAuth\audit" -I"%SLN%VisionLang" -I"%SLN%VisionLang\language" -I"%SLN%VisionLog" -I"%SLN%VisionLog\log" -I"%SLN%VisionCfgMgr" -I"%SLN%VisionCfgMgr\\json" -I"%SLN%VisionCfgMgr\\store" -I"%SLN%VisionWidgets" -I"%SLN%VisionWidgets\theme" -I"%SLN%VisionUi" -I"%SLN%VisionUi\main" -I"%SLN%VisionUi\workspace" -I"%SLN%VisionUi\dialog" -I"%SLN%VisionToolUi" -I"%SLN%VisionToolUi\editor" -I"%SLN%VisionToolUi\debug" -I"%SLN%VisionToolUi\register""
+set "I=-I"%SLN%include" -I"%SLN%VisionCommon" -I"%SLN%VisionCommon\common" -I"%SLN%VisionCore" -I"%SLN%VisionCore\model" -I"%SLN%VisionCore\tool" -I"%SLN%VisionCore\job" -I"%SLN%VisionCore\station" -I"%SLN%VisionCore\solution" -I"%SLN%VisionCore\common" -I"%SLN%VisionCore\comm" -I"%SLN%VisionCore\device" -I"%SLN%VisionCore\var" -I"%SLN%VisionCore\ui" -I"%SLN%VisionComm" -I"%SLN%VisionAuth" -I"%SLN%VisionAuth\session" -I"%SLN%VisionAuth\user" -I"%SLN%VisionAuth\audit" -I"%SLN%VisionLang" -I"%SLN%VisionLang\language" -I"%SLN%VisionLog" -I"%SLN%VisionLog\log" -I"%SLN%VisionCfgMgr" -I"%SLN%VisionCfgMgr\\json" -I"%SLN%VisionCfgMgr\\store" -I"%SLN%VisionWidgets" -I"%SLN%VisionWidgets\theme" -I"%SLN%VisionUi" -I"%SLN%VisionUi\main" -I"%SLN%VisionUi\workspace" -I"%SLN%VisionUi\dialog" -I"%SLN%VisionToolUi" -I"%SLN%VisionToolUi\editor" -I"%SLN%VisionToolUi\debug" -I"%SLN%VisionToolUi\register""
 call "%~dp0run_moc.bat" "%SLN%VisionUi\main\MainWindow.h" "%INTDIR%moc_MainWindow.cpp" "%MOC%" %I% %D%
 if errorlevel 1 exit /b 1
 call "%~dp0run_moc.bat" "%SLN%VisionUi\workspace\DesignWorkspace.h" "%INTDIR%moc_DesignWorkspace.cpp" "%MOC%" %I% %D%
@@ -55,6 +55,12 @@ if errorlevel 1 exit /b 1
 call "%~dp0run_moc.bat" "%SLN%VisionUi\dialog\SettingsDlg.h" "%INTDIR%moc_SettingsDlg.cpp" "%MOC%" %I% %D%
 if errorlevel 1 exit /b 1
 call "%~dp0run_moc.bat" "%SLN%VisionUi\dialog\RuntimeViewDlg.h" "%INTDIR%moc_RuntimeViewDlg.cpp" "%MOC%" %I% %D%
+if errorlevel 1 exit /b 1
+call "%~dp0run_moc.bat" "%SLN%VisionUi\dialog\GlobalVarDlg.h" "%INTDIR%moc_GlobalVarDlg.cpp" "%MOC%" %I% %D%
+if errorlevel 1 exit /b 1
+call "%~dp0run_moc.bat" "%SLN%VisionUi\dialog\UiDesignerDlg.h" "%INTDIR%moc_UiDesignerDlg.cpp" "%MOC%" %I% %D%
+if errorlevel 1 exit /b 1
+call "%~dp0run_moc.bat" "%SLN%VisionUi\workspace\UiPageHost.h" "%INTDIR%moc_UiPageHost.cpp" "%MOC%" %I% %D%
 if errorlevel 1 exit /b 1
 call "%~dp0run_moc.bat" "%SLN%VisionUi\dialog\AboutDlg.h" "%INTDIR%moc_AboutDlg.cpp" "%MOC%" %I% %D%
 if errorlevel 1 exit /b 1

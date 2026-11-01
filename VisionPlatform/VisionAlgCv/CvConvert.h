@@ -1,6 +1,6 @@
 /**
  * @file CvConvert.h
- * @brief CvConvert头文件
+ * @brief OpenCV 图像转换兼容头（转发 CvImageConvert）
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.

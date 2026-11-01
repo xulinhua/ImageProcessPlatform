@@ -180,6 +180,7 @@ std::vector<CommBytes> Frame::encodeAll(uint8_t type, uint8_t channel, uint32_t 
         const uint32_t chunk = remain > kMaxPayload ? kMaxPayload : static_cast<uint32_t>(remain);
         const bool first = (off == 0);
         const bool last = (off + chunk >= total);
+        // 只填分片位；不置 FlagAck（该位预留未用，与 *Ack 报文类型无关）
         uint8_t flags = 0;
         if (!first) {
             flags |= FlagCont;
@@ -255,6 +256,7 @@ bool Frame::feedAsm(const RawFrame& raw, Packet* out, std::string* err)
 {
     const uint8_t ch = static_cast<uint8_t>(raw.channel & 7);
     Asm& slot = m_asm[ch];
+    // FlagAck 若被对端置位也忽略；装配只看 Cont / Fin
     const bool cont = (raw.flags & FlagCont) != 0;
     const bool fin = (raw.flags & FlagFin) != 0;
 

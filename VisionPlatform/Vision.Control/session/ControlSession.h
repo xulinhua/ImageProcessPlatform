@@ -268,7 +268,7 @@ private:
      * @note 调用方持锁
      */
     void adoptHello(const std::string& peerId, const HelloMsg& hello);
-    /** @brief 第四期报文。处理了返回 true。调用方持锁 */
+    /** @brief 剪贴板 / 文件 / 聊天 / 系统信息等。处理了返回 true。调用方持锁 */
     bool takePhase4(Machine* machine, const Frame::Packet& packet);
     /** @brief 系统信息里若有工站一句，拆到 station / stationNg，界面不再自己找关键字 */
     void fillStation(Tile* tile, const std::string& text);

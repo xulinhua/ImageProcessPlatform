@@ -1144,6 +1144,10 @@ ToolOut Job::runToolBody(Solution* sol, const ObjectId& toolId, const ToolCfg* r
         }
     }
     in.param = execTool.param;
+    // 订阅全局变量 → 写入本次 run 参数
+    if (sol) {
+        sol->globalVars.applySubscribeBinds(execTool.param.paramBinds, &in.param.run);
+    }
     if (m_runtime.loopIndex >= 0) {
         in.param.run.insert("loopIndex", m_runtime.loopIndex);
         in.param.run.insert("loopCount", m_runtime.loopCount);
@@ -1248,6 +1252,10 @@ ToolOut Job::runToolBody(Solution* sol, const ObjectId& toolId, const ToolCfg* r
     m_runtime.ok[toolId] = out.ok;
     m_runtime.values[toolId] = std::make_shared<ParamMap>(out.values);
     m_runtime.io[toolId] = std::make_shared<ToolIo>(out.io);
+    // 工具成功后：回写全局变量
+    if (sol && out.ok && !out.error) {
+        sol->globalVars.applyWriteBinds(execTool.param.paramBinds, in.param.run, out.values);
+    }
     // 模板学完后清掉重建标志，避免下一拍再学
     if (formal->toolName == "locate.template"
         && formal->params.value("rebuildModel").toBool(false)) {

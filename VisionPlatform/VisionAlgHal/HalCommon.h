@@ -1,6 +1,6 @@
 /**
  * @file HalCommon.h
- * @brief HalCommon头文件
+ * @brief Halcon 形态学兼容头（转发 HalOps）
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.

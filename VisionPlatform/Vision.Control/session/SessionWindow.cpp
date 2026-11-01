@@ -425,7 +425,7 @@ QWidget* SessionWindow::buildPanel()
     viewersCol->addWidget(invite);
     chatRoot->addWidget(viewers);
 
-    // 输入框与发送按钮，占位置灰
+    // 输入框与发送按钮：离线时置灰
     QWidget* compose = new QWidget(chat);
     compose->setObjectName("compose");
     compose->setStyleSheet("QWidget#compose{border-top:1px solid #F0F0F0;}");
