@@ -38,6 +38,8 @@ bld/
 # 运行时日志目录（勿用 [Ll]og/：会误伤 VisionLog/log/ 源码）
 [Ll]ogs/
 **/runtime_logs/
+# 文档校对时的临时编译日志
+VisionPlatform/_doc_polish_builds/
 
 # 编译产物
 *.obj

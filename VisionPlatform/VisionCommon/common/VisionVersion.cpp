@@ -48,7 +48,7 @@ std::vector<VersionInfo> moduleVersions()
 
     VersionInfo comm;
     comm.id = "vision.comm";
-    comm.name = "通信 VisionComm";
+    comm.name = "通信 VisionPort";
     comm.version = VISION_MODULE_COMM_VERSION;
     out.push_back(comm);
 

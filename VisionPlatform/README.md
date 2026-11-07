@@ -30,6 +30,8 @@
 | **Vision.LicenseSign** | 同名 exe | 厂家机：签发注册码（勿随客户包分发） |
 | VisionCoreTest | `VisionCoreTest.exe` | 方案 IO 自检 |
 | Vision.ObfusTool | `Vision.ObfusTool.exe` | 混淆工具 |
+| **HsIpcDebug** | `HsIpcDebug.exe` | 本机进程通讯调试：共享内存、管道、消息队列、套接字 |
+| **Vision.PortDebug** | `Vision.PortDebug.exe` | 设备通讯调试：串口、TCP、UDP、HTTP、WebSocket、Modbus |
 
 静态库（不单独出 exe）：**Vision.Remote**（VRMT 协议）、**Vision.RemoteUi**、**VisionGrabFile**、**Plugin.VisionHalCom** / **Plugin.VisionCvCom** 等。
 
@@ -44,7 +46,7 @@ VisionPlatform/
 ├── VisionPluginAPI                                      # 插件入口（apiVersion=1）
 ├── VisionCommon / VisionCfgMgr / VisionCfgCrypt          # 公共、配置、加密
 ├── VisionAuth / VisionLog / VisionLang / VisionDb / VisionFile
-├── VisionComm / VisionCalib / VisionLicense / VisionObfus / VisionRun
+├── VisionPort / VisionCalib / VisionLicense / VisionObfus / VisionRun
 ├── VisionIpc / IpcBase                                  # 本机共享内存与节点配置
 ├── VisionGrabFile                                       # 文件源采集（真相机 SDK 未接）
 ├── HsImageCtrl / HsCommData                             # 图像控件与公共图形类型

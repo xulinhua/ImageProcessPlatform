@@ -18,7 +18,7 @@
 | 调度与领域 | `VisionCore` | 工站 / 流程 / 工具模型可用；失败策略、触发、连线与执行树没有收口 |
 | 配置与持久化 | `VisionCfgMgr`、`ToolCfg`、`*.vpsol` | 能读写方案；版本不拦截，配置字段和运行语义有缺口 |
 | 插件与算法 | `plugins/`、`VisionAlgHal`、`VisionAlgCv` | 一工具一 DLL 已落地；Halcon / OpenCV 覆盖不齐，公共代码被各 DLL 各编一份 |
-| 采集、通信、标定 | `VisionGrabFile`、`VisionComm`、`VisionCalib` | 文件采集可用；相机 SDK 未接；通信和标定有类型，现场能力不完整 |
+| 采集、通信、标定 | `VisionGrabFile`、`VisionPort`、`VisionCalib` | 文件采集可用；相机 SDK 未接；通信和标定有类型，现场能力不完整 |
 | 界面与运行循环 | `VisionUi`、`VisionToolUi`、`VisionApp` | 三种工作区都在；停止循环会卡住界面线程；若干源文件过大 |
 | 权限、日志、数据 | `VisionAuth`、`VisionLog`、`VisionDb` | 登录和 SQLite 日志有实现；口令哈希偏弱，Debug 会绕过登录 |
 | 图像库 | `HsImage`、`third_party/HsImageCtrl` | 控件能用；源码和预编译库两套入口，窗口实现过大 |
@@ -163,7 +163,7 @@ Halcon 侧能看到 Blob、滤波、平滑、增强、找圆、找线、卡尺�
 
 ### P4. 标定和通信工具在，现场协议不完整
 
-工具工程里有 N 点、旋转中心、标定板、映射位姿、畸变校正，以及通信工具。`VisionComm` 有串口、TCP 和 Modbus 读写接口（线圈、离散、保持寄存器、输入寄存器的读写声明都在 `Modbus.h`）。README 写完整 Modbus 功能码和 Job 通信节点仍不完整。
+工具工程里有 N 点、旋转中心、标定板、映射位姿、畸变校正，以及通信工具。`VisionPort` 有串口、TCP 和 Modbus 读写接口（线圈、离散、保持寄存器、输入寄存器的读写声明都在 `Modbus.h`）。README 写完整 Modbus 功能码和 Job 通信节点仍不完整。
 
 影响：界面能配出标定和通信流程，不代表已经覆盖现场的功能码、从站异常和断线重连。
 

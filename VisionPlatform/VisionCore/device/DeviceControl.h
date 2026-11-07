@@ -86,7 +86,7 @@ private:
     std::string m_error; ///< 最近错误
 };
 
-/** @class PlcDeviceControl @brief PLC 控制（参数校验；通路由 VisionComm 实测） */
+/** @class PlcDeviceControl @brief PLC 控制（参数校验；通路由 VisionPort 实测） */
 class VISIONCORE_API PlcDeviceControl : public IDeviceControl {
 public:
     /** @brief 构造未打开的 PLC 控制 */

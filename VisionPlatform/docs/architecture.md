@@ -11,7 +11,7 @@ VisionPlatform.sln
 ├── Start ........ VisionApp              exe（加载 plugins → Session → MainWindow）
 ├── HMI .......... HsImageLib / VisionWidgets / VisionUi / VisionToolUi
 ├── ClassLib ..... VisionCommon / VisionCore / VisionToolBase / VisionAlgorBase /
-│                  VisionCommunication / VisionAuth / VisionLog /
+│                  VisionPortunication / VisionAuth / VisionLog /
 │                  VisionLanguage / VisionConfigMgr
 ├── ImgAlgorithm . plugins/tools / plugins/algos / VisionHalconCommon
 └── CamSDK ....... VisionGrabFile
@@ -27,7 +27,7 @@ VisionPlatform.sln
 | ClassLib | **VisionCore** | `Solution` / `Station` / `Job` / `Tool`（动态库；工具与算法插件不链接它） |
 | ClassLib | **VisionToolBase** | 工具壳基类、`ToolRegistry`、参数说明 |
 | ClassLib | **VisionAlgorBase** | 算法基类、算法登记、`runAlgorToolBase` |
-| ClassLib | **VisionCommunication** | 串口 / TCP / MODBUS 通道运行时（`CommMgr`） |
+| ClassLib | **VisionPortunication** | 串口 / TCP / MODBUS 通道运行时（`CommMgr`） |
 | ClassLib | **VisionCommon** | 版本、路径、ObjectId、参数、线程池 |
 | ClassLib | **VisionConfigMgr** | `*.vpsol` / users / settings JSON |
 | ClassLib | **VisionAuth** | Session、用户、权限、审计 |

@@ -32,7 +32,7 @@
         $(SolutionDir)VisionCore\device;
         $(SolutionDir)VisionCore\var;
         $(SolutionDir)VisionCore\ui;
-        $(SolutionDir)VisionComm;
+        $(SolutionDir)VisionPort;
         $(SolutionDir)VisionCalib;
         $(SolutionDir)VisionAuth;
         $(SolutionDir)VisionAuth\session;

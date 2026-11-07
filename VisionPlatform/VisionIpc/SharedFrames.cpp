@@ -7,14 +7,14 @@
  */
 
 #include "SharedFrames.h"
-#include "SharedRegion.h"
-#include "NamedEvent.h"
+#include "hs_ipc.h"
 
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif
 #include <windows.h>
 #include <cstring>
+#include <utility>
 
 namespace Vision {
 
@@ -70,9 +70,9 @@ struct HeadPod {
 }
 
 struct SharedFrames::Transport {
-    Ipc::SharedRegion region;
-    Ipc::NamedEvent command;
-    Ipc::NamedEvent frame;
+    HsIpc::Region region;
+    HsIpc::Notify command;
+    HsIpc::Notify frame;
 };
 
 struct SharedFrames::Head {
@@ -99,8 +99,10 @@ SharedFrames::SharedFrames()
 
 SharedFrames::~SharedFrames()
 {
-    delete m_transport;
-    m_transport = 0;
+    if (m_transport) {
+        delete m_transport;
+        m_transport = 0;
+    }
     m_view = 0;
     m_head = 0;
 }
@@ -152,18 +154,25 @@ bool SharedFrames::map(uint32_t slotBytes, std::string* err)
         return failMap(0, err, "画面槽过大");
     }
     Transport* t = new Transport();
+    std::string why;
+    int created = 0;
+    int isGlobal = 0;
     // 已有对象比本进程要的小时整块映射会失败；任何进程建的都不小于最小布局，按它再开一次读头部
-    std::string wantErr;
-    if (!t->region.open(L"Vision.Ipc", want, &wantErr)) {
-        if (!t->region.open(L"Vision.Ipc", layoutBytes(kMinSlot), err)) {
+    t->region = HsIpc::Region::open("Vision.Ipc", want, &created, &isGlobal, &why);
+    if (!t->region.opened()) {
+        t->region = HsIpc::Region::open("Vision.Ipc", layoutBytes(kMinSlot), &created, &isGlobal, &why);
+        if (!t->region.opened()) {
+            if (err) {
+                *err = why;
+            }
             return failMap(t, err, 0);
         }
-        if (t->region.created()) {
+        if (created) {
             return failMap(t, err, "共享内存在打开过程中被释放，请重试");
         }
     }
     Head* head = reinterpret_cast<Head*>(t->region.data());
-    if (t->region.created() || head->pod.magic != kMagic || head->pod.version != kVersion) {
+    if (created || head->pod.magic != kMagic || head->pod.version != kVersion) {
         // 新建或头部无效：按本次映射能容下的槽大小写头部
         if (layoutBytes(slotBytes) > t->region.size()) {
             slotBytes = kMinSlot;
@@ -180,22 +189,28 @@ bool SharedFrames::map(uint32_t slotBytes, std::string* err)
             return failMap(t, err, "共享内存头部记录的槽大小无效");
         }
         if (need > t->region.size()) {
-            t->region.close();
-            if (!t->region.open(L"Vision.Ipc", need, err)) {
+            HsIpc::Region again = HsIpc::Region::open("Vision.Ipc", need, &created, &isGlobal, &why);
+            if (!again.opened()) {
+                if (err) {
+                    *err = why;
+                }
                 return failMap(t, err, 0);
             }
+            t->region = std::move(again);
             head = reinterpret_cast<Head*>(t->region.data());
-            if (t->region.created() || head->pod.magic != kMagic || head->pod.version != kVersion
+            if (created || head->pod.magic != kMagic || head->pod.version != kVersion
                 || head->pod.slotBytes != recorded) {
                 return failMap(t, err, "共享内存在打开过程中被重建，请重试");
             }
         }
         slotBytes = recorded;
     }
-    if (!t->command.open(t->region.global(), L"Vision.Command")) {
+    t->command = HsIpc::Notify::open(isGlobal, "Vision.Command", &why);
+    if (!t->command.opened()) {
         return failMap(t, err, "打开命令事件失败");
     }
-    if (!t->frame.open(t->region.global(), L"Vision.FrameReady")) {
+    t->frame = HsIpc::Notify::open(isGlobal, "Vision.FrameReady", &why);
+    if (!t->frame.opened()) {
         return failMap(t, err, "打开新帧事件失败");
     }
     m_transport = t;
@@ -226,7 +241,7 @@ void SharedFrames::writeCommand(IpcCommand cmd, uint32_t arg)
 
 IpcCommand SharedFrames::waitCommand(int timeoutMs, uint32_t* arg, uint32_t* seq)
 {
-    if (!m_transport || !m_transport->command.wait(timeoutMs) || !m_head) {
+    if (!m_transport || m_transport->command.wait(timeoutMs) != HS_IPC_OK || !m_head) {
         return IpcCmdNone;
     }
     if (arg) {
@@ -509,7 +524,7 @@ void SharedFrames::signalFrame()
 
 bool SharedFrames::waitFrame(int timeoutMs)
 {
-    return m_transport && m_transport->frame.wait(timeoutMs);
+    return m_transport && m_transport->frame.wait(timeoutMs) == HS_IPC_OK;
 }
 
 }

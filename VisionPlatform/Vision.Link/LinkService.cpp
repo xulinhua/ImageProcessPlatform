@@ -1,6 +1,6 @@
 /**
  * @file LinkService.cpp
- * @brief 节点 TCP 循环。套接字只通过 VisionComm 打开
+ * @brief 节点 TCP 循环。套接字只通过 VisionPort 打开
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.

@@ -49,10 +49,10 @@
   <ItemDefinitionGroup>
     <ClCompile>
       <PreprocessorDefinitions>VISION_IPC_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)IpcBase;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)HsIpc\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>IpcBase.lib;VisionCommon.lib;VisionFile.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>HsIpc.lib;VisionCommon.lib;VisionFile.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -68,7 +68,7 @@
     <ClInclude Include="ServiceCtl.h" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\IpcBase\IpcBase.vcxproj"><Project>{05E04ABF-4A0F-4B69-8FF1-166F4573BB8E}</Project></ProjectReference>
+    <ProjectReference Include="..\HsIpc\HsIpc.vcxproj"><Project>{7C4E2A11-9B0D-4F63-8E2A-1D5C6B7A9012}</Project></ProjectReference>
     <ProjectReference Include="..\VisionCommon\VisionCommon.vcxproj"><Project>{B4E91A10-7C22-4F18-9A01-A0B1C2D3E402}</Project></ProjectReference>
     <ProjectReference Include="..\VisionFile\VisionFile.vcxproj"><Project>{B4E91A10-7C22-4F18-9A01-A0B1C2D3E431}</Project></ProjectReference>
   </ItemGroup>

@@ -5,7 +5,8 @@
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
  *
- * 名字是 Global\Vision.Ipc。会话 0 的服务和已登录用户的托盘映射同一块。
+ * 名字是 Global\Vision.Ipc。映射和命令、新帧两个事件由 HsIpc 创建。
+ * 会话 0 的服务和已登录用户的托盘映射同一块。
  * 画面只留最新一帧，编码直接写入槽，不在堆上再留一整份副本。
  */
 
@@ -210,7 +211,7 @@ private:
     /** @brief 头部加全部槽的总字节数；超出 32 位返回 0 */
     uint32_t layoutBytes(uint32_t slotBytes) const;
 
-    /** @brief IpcBase 的共享内存与命令、新帧两个事件，隐藏 Windows 头 */
+    /** @brief HsIpc 的共享内存与命令、新帧两个事件 */
     struct Transport;
 
     /**
@@ -223,7 +224,7 @@ private:
 
     void* m_view;       ///< 映射基址，由基础库持有
     Head* m_head;       ///< 头部
-    Transport* m_transport; ///< 共享内存和事件，IpcBase
+    Transport* m_transport; ///< 共享内存和事件，HsIpc
     uint32_t m_slotBytes; ///< 每槽字节
 };
 
