@@ -1,0 +1,22 @@
+---
+description: 逻辑放进所属类；只有无实例归属的库函数才写成自由函数
+alwaysApply: true
+---
+
+# 不要随手加自由函数
+
+工站、流程、工具、算法工具上的逻辑，写成对应类的成员。多个工具共用的放基类，只有某一个工具用的放该工具类。
+
+可以写成自由函数的，是没有实例可挂、按输入算出结果的库函数。`VisionAlgHal` 里的 `hsImageToHObject`、`hObjectToHsImage`、`inputToGray` 就是这种。
+
+不要写的：
+
+- 匿名命名空间里的文件级助手，例如把计时、拼 key、偏移换算丢在 `.cpp` 顶部
+- 给某个类的成员函数配的自由函数。能作为 `ToolBase`、`AlgToolBase`、`ToolRegistry`、`Station`、`TmplTool` 的方法，就写成方法
+
+放哪：
+
+- 所有工具都要的，放 `ToolBase`
+- 所有算法都要的，放 `AlgToolBase`
+- 工站、流程的目录和实例管理，放 `Station` / `ToolRegistry` 或对应的工站、流程类
+- 只有模板、Blob 等某一个工具用的，放该工具类
