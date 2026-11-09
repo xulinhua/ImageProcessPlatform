@@ -108,15 +108,30 @@ public:
         return out;
     }
 
-    /** @brief 0 不加，1 累加和，2 异或，3 Modbus CRC16（低字节在前） */
-    static void appendCheck(QByteArray* bytes, int kind)
+    /**
+     * @brief 0 不加，1 累加和，2 异或，3 Modbus CRC16（低字节在前）
+     * @param fromByte 从第几个字节开始，1 表示整帧起点
+     * @param tail 末尾跳过的字节数，用来留出帧尾
+     */
+    static void appendCheck(QByteArray* bytes, int kind, int fromByte = 1, int tail = 0)
     {
         if (!bytes || bytes->isEmpty() || kind <= 0) {
             return;
         }
+        int begin = fromByte < 1 ? 0 : fromByte - 1;
+        int end = bytes->size() - (tail < 0 ? 0 : tail);
+        if (begin < 0) {
+            begin = 0;
+        }
+        if (end > bytes->size()) {
+            end = bytes->size();
+        }
+        if (end < begin) {
+            return;
+        }
         if (kind == 1) {
             unsigned sum = 0;
-            for (int i = 0; i < bytes->size(); ++i) {
+            for (int i = begin; i < end; ++i) {
                 sum += (unsigned char)(*bytes)[i];
             }
             bytes->append((char)(sum & 0xFF));
@@ -124,14 +139,14 @@ public:
         }
         if (kind == 2) {
             unsigned char x = 0;
-            for (int i = 0; i < bytes->size(); ++i) {
+            for (int i = begin; i < end; ++i) {
                 x = (unsigned char)(x ^ (unsigned char)(*bytes)[i]);
             }
             bytes->append((char)x);
             return;
         }
         unsigned crc = 0xFFFF;
-        for (int i = 0; i < bytes->size(); ++i) {
+        for (int i = begin; i < end; ++i) {
             crc ^= (unsigned char)(*bytes)[i];
             for (int b = 0; b < 8; ++b) {
                 crc = (crc & 1u) ? ((crc >> 1) ^ 0xA001u) : (crc >> 1);

@@ -103,10 +103,7 @@ protected:
         }
         m_tabs->addTab(m_runHost, hasTeach ? T("参数") : T("参数"));
         if (runFields.empty()) {
-            QLabel* tip = new QLabel(T("该工具没有参数。"), m_runHost);
-            tip->setWordWrap(true);
-            m_runLay->addWidget(tip);
-            m_runHolders.push_back(tip);
+            m_runHost->setToolTip(T("该工具没有参数。"));
         } else {
             for (size_t i = 0; i < runFields.size(); ++i) {
                 addRow(runFields[i], false, m_runLay, &m_runRows, &m_runHolders);
@@ -116,11 +113,7 @@ protected:
 
         if (!outSpec.fields.empty()) {
             m_tabs->addTab(m_outHost, T("输出"));
-            QLabel* tip = new QLabel(T("本工具输出项（只读标签）："), m_outHost);
-            tip->setObjectName(QLatin1String("hint"));
-            tip->setWordWrap(true);
-            m_outLay->addWidget(tip);
-            m_outHolders.push_back(tip);
+            m_outHost->setToolTip(T("本工具输出项，只读。"));
             for (size_t i = 0; i < outSpec.fields.size(); ++i) {
                 const OutputField& f = outSpec.fields[i];
                 QString line = qs(f.title.empty() ? f.key : f.title);

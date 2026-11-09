@@ -168,6 +168,8 @@ private slots:
     void logout();
     /** @brief 关于对话框 */
     void about();
+    /** @brief 软件注册：查看本机许可并打开注册程序 */
+    void openLicense();
     /** @brief 打开版本管理对话框 */
     void openVersionManager();
     /** @brief 打开参数版本对话框 */

@@ -9,7 +9,7 @@
 #include "MainWindow.h"
 #include "CrashDump.h"
 #include "LicenseGate.h"
-#include "SoftLicense.h"
+#include "VisionLicense.h"
 #include "ConsoleHost.h"
 #include "TrayApp.h"
 #include "SharedFrames.h"
@@ -29,6 +29,8 @@
 #include <QMetaObject>
 #include <QEvent>
 #include <QIcon>
+#include <QImage>
+#include <QPixmap>
 #include <QMessageBox>
 #include <QObject>
 #include <QStringList>
@@ -36,9 +38,51 @@
 
 namespace {
 
-// 加载应用图标：优先 exe/icons/app，其次源码旁相对路径（开发未拷贝时）
+// 把 exe 里的图标画进位图。标题栏用小尺寸，任务栏用大尺寸
+QPixmap pixmapFromIcon(HICON icon, int side)
+{
+    BITMAPINFO info;
+    ZeroMemory(&info, sizeof(info));
+    info.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+    info.bmiHeader.biWidth = side;
+    info.bmiHeader.biHeight = -side;
+    info.bmiHeader.biPlanes = 1;
+    info.bmiHeader.biBitCount = 32;
+    info.bmiHeader.biCompression = BI_RGB;
+    void* bits = 0;
+    HDC screen = GetDC(0);
+    HBITMAP dib = CreateDIBSection(screen, &info, DIB_RGB_COLORS, &bits, 0, 0);
+    HDC mem = CreateCompatibleDC(screen);
+    HGDIOBJ old = SelectObject(mem, dib);
+    DrawIconEx(mem, 0, 0, icon, side, side, 0, 0, DI_NORMAL);
+    const QImage image(static_cast<const uchar*>(bits), side, side, side * 4,
+        QImage::Format_ARGB32_Premultiplied);
+    const QPixmap pix = QPixmap::fromImage(image.copy());
+    SelectObject(mem, old);
+    DeleteDC(mem);
+    DeleteObject(dib);
+    ReleaseDC(0, screen);
+    return pix;
+}
+
+// 加载应用图标：先用 exe 资源（标题栏和任务栏），再试旁边的文件
 QIcon loadAppIcon()
 {
+    QIcon embedded;
+    const int sizes[] = { 16, 24, 32, 48, 64, 256 };
+    for (int i = 0; i < 6; ++i) {
+        const int side = sizes[i];
+        HICON handle = reinterpret_cast<HICON>(LoadImageW(
+            GetModuleHandleW(0), MAKEINTRESOURCEW(1), IMAGE_ICON, side, side, LR_DEFAULTCOLOR));
+        if (!handle) {
+            continue;
+        }
+        embedded.addPixmap(pixmapFromIcon(handle, side));
+        DestroyIcon(handle);
+    }
+    if (!embedded.isNull() && !embedded.availableSizes().isEmpty()) {
+        return embedded;
+    }
     const QStringList candidates = QStringList()
         << (QApplication::applicationDirPath() + QLatin1String("/icons/app/app.png"))
         << (QApplication::applicationDirPath() + QLatin1String("/icons/app/app.ico"))
@@ -158,7 +202,7 @@ int main(int argc, char* argv[])
     }
 
     Vision::AppPaths::setExeDir(Vision::ss(QApplication::applicationDirPath()));
-    Vision::SoftLicense license;
+    Vision::License license;
     if (!Vision::promptLicense(&license, license.open())) {
         return 0;
     }

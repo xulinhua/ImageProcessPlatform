@@ -48,6 +48,7 @@
 #include "UiText.h"
 #include "UserMgrDlg.h"
 #include "AboutDlg.h"
+#include "LicenseDlg.h"
 #include "VersionDlg.h"
 #include "WidgetPermBinder.h"
 #include <HsCommData/HsImage.h>
@@ -273,7 +274,7 @@ MainWindow::MainWindow(Session* session, QWidget* parent)
     m_binder.bindAction(m_actGlobalVars, PermEditSolution);
     m_binder.bindAction(m_actUiDesigner, PermEditSolution);
     onUserChanged();
-    m_design->appendLog(T("就绪。默认文件源指向程序目录 samples；也可在设备里改文件夹。"));
+    m_design->appendLog(T("就绪。"));
     rebuildStation();
     tryLastSolution();
 }
@@ -402,6 +403,7 @@ void MainWindow::buildMenus()
     mSys->addAction(T("注销"), this, SLOT(logout()));
 
     QMenu* mHelp = menuBar()->addMenu(T("帮助"));
+    mHelp->addAction(T("软件注册…"), this, SLOT(openLicense()));
     mHelp->addAction(T("版本管理…"), this, SLOT(openVersionManager()));
     mHelp->addAction(T("关于"), this, SLOT(about()));
 
@@ -1332,6 +1334,13 @@ void MainWindow::logout()
 void MainWindow::about()
 {
     AboutDlg dlg(this);
+    dlg.exec();
+}
+
+// 软件注册页
+void MainWindow::openLicense()
+{
+    LicenseDlg dlg(this);
     dlg.exec();
 }
 

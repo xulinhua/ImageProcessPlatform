@@ -1,3 +1,3 @@
 #include <windows.h>
 
-IDI_APP ICON "..\\..\\icons\\app\\app.ico"
+1 ICON "..\\..\\icons\\app\\app.ico"

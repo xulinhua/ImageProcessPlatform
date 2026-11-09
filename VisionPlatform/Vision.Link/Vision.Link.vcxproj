@@ -61,6 +61,9 @@
     <ClInclude Include="LinkService.h" />
   </ItemGroup>
   <ItemGroup>
+    <ResourceCompile Include="app.rc" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\VisionPort\VisionPort.vcxproj"><Project>{B4E91A10-7C22-4F18-9A01-A0B1C2D3E420}</Project></ProjectReference>
     <ProjectReference Include="..\VisionIpc\VisionIpc.vcxproj"><Project>{B4E91A10-7C22-4F18-9A01-A0B1C2D3E4B0}</Project></ProjectReference>
     <ProjectReference Include="..\VisionCfgMgr\VisionCfgMgr.vcxproj"><Project>{B4E91A10-7C22-4F18-9A01-A0B1C2D3E407}</Project></ProjectReference>

@@ -3,9 +3,10 @@
  * @brief 给中控台、被控端、中继加上防火墙入站规则。需要管理员。
  */
 #Requires -RunAsAdministrator
-$root = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+$vp = Split-Path -Parent $PSScriptRoot
+$root = Join-Path (Split-Path -Parent $vp) "VisionRemote"
 if (-not (Test-Path "$root\bin\x64\Release\RemoteMaster.exe")) {
-    $root = Split-Path -Parent $PSScriptRoot
+    $root = $vp
 }
 $bin = Join-Path $root "bin\x64\Release"
 $rules = @(

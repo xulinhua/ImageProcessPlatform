@@ -81,6 +81,9 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ResourceCompile Include="app.rc" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\VisionObfus\VisionObfus.vcxproj">
       <Project>{B4E91A10-7C22-4F18-9A01-A0B1C2D3E4C4}</Project>
     </ProjectReference>

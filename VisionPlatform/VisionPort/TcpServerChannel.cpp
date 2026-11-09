@@ -62,7 +62,17 @@ bool TcpServerChannel::open(const ParamMap& params, std::string* err)
     sockaddr_in addr;
     std::memset(&addr, 0, sizeof(addr));
     addr.sin_family = AF_INET;
-    addr.sin_addr.s_addr = htonl(INADDR_ANY);
+    const std::string host = params.value("host").toString();
+    if (host.empty() || host == "0.0.0.0") {
+        addr.sin_addr.s_addr = htonl(INADDR_ANY);
+    } else {
+        unsigned long ip = 0;
+        if (!commResolveIpv4(host, &ip, err)) {
+            close();
+            return false;
+        }
+        addr.sin_addr.s_addr = ip;
+    }
     addr.sin_port = htons(static_cast<u_short>(port));
     if (bind(m_listen, reinterpret_cast<sockaddr*>(&addr), sizeof(addr)) != 0) {
         setCommErr(err, "端口绑定失败");

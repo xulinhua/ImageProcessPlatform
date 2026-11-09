@@ -20,6 +20,7 @@ namespace Vision {
 TcpClientChannel::TcpClientChannel()
     : m_sock(INVALID_SOCKET)
     , m_port(0)
+    , m_localPort(0)
     , m_timeoutMs(3000)
     , m_autoReconnect(false)
     , m_stopReconnect(false)
@@ -81,6 +82,18 @@ bool TcpClientChannel::connectOnce(std::string* err)
     if (sock == INVALID_SOCKET) {
         setCommErr(err, "创建套接字失败");
         return false;
+    }
+    if (m_localPort > 0) {
+        sockaddr_in local;
+        std::memset(&local, 0, sizeof(local));
+        local.sin_family = AF_INET;
+        local.sin_addr.s_addr = htonl(INADDR_ANY);
+        local.sin_port = htons(static_cast<u_short>(m_localPort));
+        if (bind(sock, reinterpret_cast<sockaddr*>(&local), sizeof(local)) != 0) {
+            closesocket(sock);
+            setCommErr(err, "本地端口绑定失败");
+            return false;
+        }
     }
     sockaddr_in addr;
     std::memset(&addr, 0, sizeof(addr));
@@ -144,6 +157,7 @@ bool TcpClientChannel::open(const ParamMap& params, std::string* err)
     commNetEnsure();
     m_host = params.value("host").toString();
     m_port = params.value("port").toInt(9000);
+    m_localPort = params.value("localPort").toInt(0);
     m_timeoutMs = params.value("timeoutMs").toInt(3000);
     m_autoReconnect = params.value("autoReconnect").toBool(false);
     if (m_port <= 0 || m_port > 65535) {

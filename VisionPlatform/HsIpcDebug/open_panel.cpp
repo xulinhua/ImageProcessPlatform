@@ -92,6 +92,11 @@ QString OpenPanel::channelName() const
     return m_name->text().trimmed();
 }
 
+QString OpenPanel::summary() const
+{
+    return m_transport->currentText() + QString::fromUtf8("  ") + channelName();
+}
+
 QString OpenPanel::host() const
 {
     return m_host->text().trimmed();

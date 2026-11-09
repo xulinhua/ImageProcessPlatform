@@ -101,13 +101,9 @@ LogDlg::LogDlg(Session* session, QWidget* parent)
     m_files = new QListWidget(this);
     m_btnDelete = new QPushButton(T("删除勾选的日期"), this);
     connect(m_btnDelete, SIGNAL(clicked()), this, SLOT(onDelete()));
-    m_fileHint = new QLabel(this);
-    m_fileHint->setWordWrap(true);
-    m_fileHint->setObjectName(QLatin1String("hint"));
 
     QWidget* manage = new QWidget(this);
     QVBoxLayout* mLay = new QVBoxLayout(manage);
-    mLay->addWidget(m_fileHint);
     mLay->addWidget(m_files, 1);
     mLay->addWidget(m_btnDelete, 0, Qt::AlignLeft);
 
@@ -186,9 +182,11 @@ void LogDlg::fillFiles()
     m_files->clear();
     const bool manage = canManage();
     m_btnDelete->setEnabled(manage);
-    m_fileHint->setText(manage
-                        ? T("勾选日期后删除。删除的是数据库中该日记录，不可恢复。")
-                        : T("当前角色只能查看，不能删除日志。"));
+    const QString tip = manage
+        ? T("勾选日期后删除。删除的是数据库中该日记录，不可恢复。")
+        : T("当前角色只能查看，不能删除日志。");
+    m_files->setToolTip(tip);
+    m_btnDelete->setToolTip(tip);
     const std::vector<LogFileInfo> files = LogMgr::listFiles();
     for (size_t i = 0; i < files.size(); ++i) {
         const LogFileInfo& fi = files[i];

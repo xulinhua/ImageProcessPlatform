@@ -81,15 +81,12 @@ public:
         btns->addWidget(addBtn);
         btns->addWidget(delBtn);
         btns->addStretch(1);
-        QLabel* tip = new QLabel(
-            T("字段常用：score / x / y / angle / area / count / width / r / ok。比较：>= <= > < == !="), this);
-        tip->setWordWrap(true);
-        tip->setStyleSheet(QStringLiteral("color:#666;"));
+        m_table->setToolTip(
+            T("字段常用：score / x / y / angle / area / count / width / r / ok。比较：>= <= > < == !="));
         QVBoxLayout* lay = new QVBoxLayout(this);
         lay->addWidget(m_useOk);
         lay->addWidget(m_table, 1);
         lay->addLayout(btns);
-        lay->addWidget(tip);
         connect(m_useOk, &QCheckBox::toggled, this, &JudgeEditor::onEdited);
         connect(addBtn, &QPushButton::clicked, this, &JudgeEditor::onAddTerm);
         connect(delBtn, &QPushButton::clicked, this, &JudgeEditor::onDelTerm);

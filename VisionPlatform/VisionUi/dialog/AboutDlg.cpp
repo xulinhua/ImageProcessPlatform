@@ -45,15 +45,10 @@ AboutDlg::AboutDlg(QWidget* parent)
     QLabel* product = new QLabel(QString::fromUtf8(appProductName()), this);
     product->setStyleSheet(QLatin1String("font-size: 18px; font-weight: bold; color: #1F1F1F;"));
 
-    QLabel* tagline = new QLabel(T("机器视觉通用工具平台"), this);
-    tagline->setObjectName(QLatin1String("hint"));
-    tagline->setWordWrap(true);
-
     QVBoxLayout* nameCol = new QVBoxLayout();
     nameCol->setSpacing(4);
     nameCol->addWidget(brand);
     nameCol->addWidget(product);
-    nameCol->addWidget(tagline);
 
     QHBoxLayout* hero = new QHBoxLayout();
     hero->setSpacing(16);
@@ -72,17 +67,6 @@ AboutDlg::AboutDlg(QWidget* parent)
     QLabel* build = new QLabel(T("构建时间：") + QString::fromUtf8(buildStamp().c_str()), this);
     build->setObjectName(QLatin1String("hint"));
     build->setWordWrap(true);
-
-    QLabel* runtime = new QLabel(T("运行环境：Qt ") + QString::fromLatin1(qVersion())
-                                 + T(" / VS2022 (v143) / C++17"), this);
-    runtime->setObjectName(QLatin1String("hint"));
-    runtime->setWordWrap(true);
-
-    QLabel* desc = new QLabel(
-        T("面向产线视觉检测：方案设计、多工站运行、工具调试与权限管控。"
-          "算法与采集以插件方式注册，方案以 *.vpsol 落盘。"), this);
-    desc->setWordWrap(true);
-    desc->setObjectName(QLatin1String("hint"));
 
     QPushButton* moreVer = new QPushButton(T("查看版本详情…"), this);
     moreVer->setFlat(true);
@@ -108,8 +92,6 @@ AboutDlg::AboutDlg(QWidget* parent)
     lay->addWidget(line);
     lay->addWidget(ver);
     lay->addWidget(build);
-    lay->addWidget(runtime);
-    lay->addWidget(desc);
     lay->addWidget(moreVer, 0, Qt::AlignLeft);
     lay->addStretch(1);
     lay->addWidget(copy);

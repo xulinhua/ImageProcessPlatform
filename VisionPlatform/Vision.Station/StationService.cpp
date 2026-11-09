@@ -14,7 +14,7 @@
 #include "Solution.h"
 #include "ThreadPool.h"
 #include "VisionCfgMgr.h"
-#include "SoftLicense.h"
+#include "VisionLicense.h"
 
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
@@ -66,7 +66,7 @@ bool StationService::loadContext(std::string* err)
 
 bool StationService::licenseAllowsRun()
 {
-    SoftLicense license;
+    License license;
     const LicenseReason reason = license.poll();
     if (reason == LicenseOk) {
         return true;

@@ -44,6 +44,8 @@ public:
     void drain(const std::string& peerId);
     /** @brief 没有多连接 */
     std::string waitIncoming(int timeoutMs);
+    /** @brief 关掉当前连接。通道对象还在，再次 open 才会连上 */
+    void closePeer(const std::string& peerId);
 
     /** @brief 发一条完整消息。text 为真用文本帧，否则用二进制帧 */
     bool send(const CommBytes& data, bool text, std::string* err);

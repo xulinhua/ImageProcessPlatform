@@ -45,11 +45,18 @@ public:
 
     /** @brief 本机串口名，如 COM3 */
     static std::vector<std::string> listPorts();
+    /**
+     * @brief 打开后改 DTR、RTS。流控为 RTS/CTS 时 RTS 交给硬件握手，这个调用只改 DTR
+     */
+    bool setLines(bool dtr, bool rts, std::string* err);
 
 private:
     /** @brief 把这一次读写的超时写到串口 */
     void applyTimeouts(int timeoutMs);
+    /** @brief 按已记下的参数写 DCB。流控 none 或 rtscts，DTR/RTS 为 0 或 1 */
+    bool applyState(std::string* err);
     HANDLE m_handle; ///< INVALID_HANDLE_VALUE 表示未打开
+    ParamMap m_params; ///< 最近一次打开或改线使用的参数
 };
 
 }

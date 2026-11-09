@@ -47,15 +47,10 @@ void LoginDlg::buildUi()
     setModal(true);
     resize(400, 220);
 
-    QLabel* hint = new QLabel(
-        m_neededPerm.empty()
-            ? T("请输入登录名与口令。")
-            : T("当前操作需要更高权限，请输入有权限的账户。"),
-        this);
-    hint->setWordWrap(true);
-    hint->setObjectName(QLatin1String("hint"));
-
     m_user = new QLineEdit(this);
+    m_user->setToolTip(m_neededPerm.empty()
+        ? T("请输入登录名与口令。")
+        : T("当前操作需要更高权限，请输入有权限的账户。"));
     m_pwd = new QLineEdit(this);
     m_pwd->setEchoMode(QLineEdit::Password);
     const std::string last = m_session->settings().lastLoginName;
@@ -79,7 +74,6 @@ void LoginDlg::buildUi()
     QVBoxLayout* root = new QVBoxLayout(this);
     prependFramelessTitleBar(this, root, windowTitle());
     QVBoxLayout* lay = framelessDialogContentLayout(this, root);
-    lay->addWidget(hint);
     lay->addLayout(form);
     lay->addWidget(m_err);
     lay->addWidget(box);

@@ -34,12 +34,9 @@ UserMgrDlg::UserMgrDlg(Session* session, QWidget* parent)
     setWindowTitle(T("用户管理"));
     resize(820, 480);
 
-    QLabel* hint = new QLabel(T("本地账户，与方案文件无关。管理员可添加、编辑、禁用、删除用户并重置口令。"), this);
-    hint->setWordWrap(true);
-    hint->setObjectName(QLatin1String("hint"));
-
     // 用户表，双击编辑
     m_table = new QTableWidget(this);
+    m_table->setToolTip(T("本地账户，与方案文件无关。管理员可添加、编辑、禁用、删除用户并重置口令。"));
     m_table->setColumnCount(5);
     QStringList headers;
     headers << T("登录名") << T("显示名") << T("角色") << T("启用") << T("上次登录");
@@ -82,7 +79,6 @@ UserMgrDlg::UserMgrDlg(Session* session, QWidget* parent)
     QVBoxLayout* root = new QVBoxLayout(this);
     prependFramelessTitleBar(this, root, windowTitle());
     QVBoxLayout* lay = framelessDialogContentLayout(this, root);
-    lay->addWidget(hint);
     lay->addWidget(m_table, 1);
     lay->addLayout(opLay);
 

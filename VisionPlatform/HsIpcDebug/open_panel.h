@@ -24,6 +24,8 @@ public:
 
     int transport() const;
     QString channelName() const;
+    /** @brief 状态栏用：传输名加通道名 */
+    QString summary() const;
     QString host() const;
     int port() const;
     int capacity() const;

@@ -23,17 +23,17 @@
 | **VisionApp** | `VisionPlatform.exe` | 主界面：方案、设计/运行/复检、设备与通信、插件宿主 |
 | **Vision.Station** | `Vision.Station.exe` | 本机工站服务：经 IPC 跑本机工站循环（可装 Windows 服务） |
 | **Vision.Link** | `Vision.Link.exe` | 节点链路：CommFrame 收发；**不跑工站、不存原图** |
-| **Vision.Control** | `RemoteMaster.exe` | 远程中控台 |
-| **Vision.Controlled** | `RemoteClient.exe` | 远程被控端（可 `--service`） |
-| **Vision.Relay** | `RemoteRelay.exe` | 配对 / NAT 中继（TCP 字节转发） |
-| **Vision.LicenseRequest** | 同名 exe | 客户机：申请码 / 写入许可证 |
-| **Vision.LicenseSign** | 同名 exe | 厂家机：签发注册码（勿随客户包分发） |
+| （同级解决方案 `../VisionRemote`） | `RemoteMaster.exe` | 远程中控台（工程 Vision.Control） |
+| （同级解决方案 `../VisionRemote`） | `RemoteClient.exe` | 远程被控端（工程 Vision.Controlled，可 `--service`） |
+| （同级解决方案 `../VisionRemote`） | `RemoteRelay.exe` | 配对 / NAT 中继（工程 Vision.Relay） |
+| （同级解决方案 `../VisionLicense`） | `Vision.LicenseRequest.exe` | 客户机：申请码 / 写入许可证。主程序注册时启动它 |
+| （同级解决方案 `../VisionLicense`） | `Vision.LicenseSign.exe` | 厂家机：签发注册码（勿随客户包分发） |
 | VisionCoreTest | `VisionCoreTest.exe` | 方案 IO 自检 |
 | Vision.ObfusTool | `Vision.ObfusTool.exe` | 混淆工具 |
 | **HsIpcDebug** | `HsIpcDebug.exe` | 本机进程通讯调试：共享内存、管道、消息队列、套接字 |
 | **Vision.PortDebug** | `Vision.PortDebug.exe` | 设备通讯调试：串口、TCP、UDP、HTTP、WebSocket、Modbus |
 
-静态库（不单独出 exe）：**Vision.Remote**（VRMT 协议）、**Vision.RemoteUi**、**VisionGrabFile**、**Plugin.VisionHalCom** / **Plugin.VisionCvCom** 等。
+静态库（不单独出 exe）：**VisionGrabFile**、**Plugin.VisionHalCom** / **Plugin.VisionCvCom** 等。远程协议库 **Vision.Remote**、**Vision.RemoteUi** 在同级解决方案 `../VisionRemote`。
 
 ---
 
@@ -46,17 +46,14 @@ VisionPlatform/
 ├── VisionPluginAPI                                      # 插件入口（apiVersion=1）
 ├── VisionCommon / VisionCfgMgr / VisionCfgCrypt          # 公共、配置、加密
 ├── VisionAuth / VisionLog / VisionLang / VisionDb / VisionFile
-├── VisionPort / VisionCalib / VisionLicense / VisionObfus / VisionRun
+├── VisionPort / VisionCalib / VisionObfus / VisionRun
 ├── VisionIpc / IpcBase                                  # 本机共享内存与节点配置
 ├── VisionGrabFile                                       # 文件源采集（真相机 SDK 未接）
 ├── HsImageCtrl / HsCommData                             # 图像控件与公共图形类型
 ├── plugins/tools / plugins/algos                        # Tool / Algo 插件工程
 ├── Plugin.VisionHalCom / Plugin.VisionCvCom             # Halcon / OpenCV 插件公共库
-├── Vision.Remote / Vision.RemoteUi                      # VRMT 协议与远程 UI
-├── Vision.Control / Vision.Controlled / Vision.Relay    # 中控 / 被控 / 中继
 ├── Vision.Station / Vision.Link                         # 工站服务 / 节点链路
-├── Vision.LicenseRequest / Vision.LicenseSign
-├── third_party/                                         # Halcon、OpenCV、PCL、Open3D、sqlite…
+├── third_party/                                         # Halcon、OpenCV、PCL、Open3D、sqlite、VisionLicense
 ├── samples/ icons/ lang/ docs/ tools/
 ├── bin/ obj/                                            # 输出与中间文件（vision.props）
 ├── *.props / CopyQt.bat / VisionPlatform.sln
@@ -64,7 +61,7 @@ VisionPlatform/
 
 顶层还有 `VisionKernel/`、`VisionDomain/`、`VisionTools/`、`Vision.LicenseAdmin/` 等目录，**多数未进当前 `.sln`**，不要当现役工程依赖。
 
-解决方案筛选器大致为：Start、HMI、ClassLib、Tool / Alg 插件、CamSDK、Remote、License、HsImage。插件 DLL 生成到：
+解决方案筛选器大致为：Start、HMI、ClassLib、Tool / Alg 插件、CamSDK、Remote、HsImage。许可在同级的 `VisionLicense.sln`。插件 DLL 生成到：
 
 ```text
 bin\<Platform>\<Configuration>\plugins\tools\Plugin.Tool.*.dll
@@ -192,7 +189,7 @@ exe/
 
 ## 8. 许可
 
-筛选器 **License** 下两个带界面程序。**私钥只在厂家电脑。**
+申请机和注册机在同级解决方案 `../VisionLicense`。平台只链接静态库 `third_party/VisionLicense`（一个 `VisionLicense.h`、一个 `VisionLicense.lib`），不带 DLL。**私钥只在厂家电脑。**
 
 | 程序 | 在哪跑 | 做什么 |
 |---|---|---|
@@ -200,7 +197,7 @@ exe/
 | `Vision.LicenseSign.exe` | 厂家电脑 | 解开申请码，签发注册码。**不写**客户的 `license.dat` |
 
 - 客户程序一分钟内注册最多 50 次；超限禁用「注册」，窗口内最早一次超过一分钟后恢复；重启程序计数清零。
-- 注册机启动密码当前为 `hoson123`；错则退出不可重试。旁路文件 **`sign.key`**（ECC 私钥十六进制）缺失则不能签发。客户安装包不要带注册机和 `sign.key`。
+- 注册机启动密码当前为 `hoson123`；错则退出不可重试。密钥在注册机里管理：私钥在 exe 旁的 `keys` 目录，公钥表在 `LicenseKeyTable.inc`。旁边如果还有旧的 **`sign.key`**，第一次打开会导入成 1 号钥匙。客户安装包不要带注册机和 `keys`。
 
 办理顺序：
 
@@ -232,6 +229,8 @@ Station / Link 与远程控台协议分离：节点用 CommFrame；远程用 **V
 ---
 
 ## 10. 远程控台（VRMT）
+
+远程在同级解决方案 `../VisionRemote`，不进本解决方案。
 
 | 角色 | 程序 |
 |---|---|

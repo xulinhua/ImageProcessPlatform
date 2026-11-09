@@ -8,11 +8,13 @@
 
 #include "LicenseGate.h"
 #include "MainWindow.h"
-#include "SoftLicense.h"
+#include "VisionLicense.h"
 #include <QApplication>
+#include <QFileInfo>
 #include <QHBoxLayout>
 #include <QLabel>
-#include <QPlainTextEdit>
+#include <QMessageBox>
+#include <QProcess>
 #include <QPushButton>
 #include <QTimer>
 #include <QVBoxLayout>
@@ -31,6 +33,18 @@ QString utf8(const std::string& text)
     return QString::fromUtf8(text.c_str());
 }
 
+/** @brief 打开客户机注册程序并等到它退出。文件不在时提示并返回 false */
+bool runLicenseRequest()
+{
+    const QString path = QApplication::applicationDirPath() + QLatin1String("/Vision.LicenseRequest.exe");
+    if (!QFileInfo::exists(path)) {
+        QMessageBox::warning(0, QString::fromUtf8("许可"),
+            QString::fromUtf8("找不到 Vision.LicenseRequest.exe"));
+        return false;
+    }
+    return QProcess::execute(path, QStringList()) >= 0;
+}
+
 /** @brief 挂在主窗口上：定时复查许可，失效时弹倒计时框，到点排队调用 MainWindow::stopStation */
 class LicenseWatch : public QObject {
 public:
@@ -42,7 +56,6 @@ public:
         , m_stopped(false)
         , m_dlg(0)
         , m_remain(0)
-        , m_paste(0)
         , m_status(0)
     {
         QTimer* poll = new QTimer(this);
@@ -66,7 +79,7 @@ private:
      */
     void onPoll()
     {
-        SoftLicense license;
+        License license;
         const LicenseReason reason = license.poll();
         if (reason == LicenseOk) {
             closeCountdown();
@@ -111,20 +124,16 @@ private:
         }
     }
 
-    /** @brief 弹出置顶的非模态倒计时框：原因、剩余时间、申请码、注册码输入 */
-    void showCountdown(SoftLicense& license, LicenseReason reason)
+    /** @brief 弹出置顶的非模态倒计时框：原因、剩余时间。注册交给 LicenseRequest */
+    void showCountdown(License& license, LicenseReason reason)
     {
         m_dlg = new QDialog();
         m_dlg->setWindowTitle(QString::fromUtf8("许可"));
         m_dlg->setWindowFlags(m_dlg->windowFlags() | Qt::WindowStaysOnTopHint);
-        m_dlg->resize(520, 360);
+        m_dlg->resize(420, 180);
         QLabel* why = new QLabel(utf8(license.reasonText(reason)), m_dlg);
         why->setWordWrap(true);
         m_remain = new QLabel(m_dlg);
-        QPlainTextEdit* request = new QPlainTextEdit(utf8(license.requestCode()), m_dlg);
-        request->setReadOnly(true);
-        m_paste = new QPlainTextEdit(m_dlg);
-        m_paste->setPlaceholderText(QString::fromUtf8("粘贴注册码"));
         m_status = new QLabel(m_dlg);
         m_status->setWordWrap(true);
         QPushButton* apply = new QPushButton(QString::fromUtf8("注册"), m_dlg);
@@ -132,22 +141,20 @@ private:
         QVBoxLayout* layout = new QVBoxLayout(m_dlg);
         layout->addWidget(why);
         layout->addWidget(m_remain);
-        layout->addWidget(request);
-        layout->addWidget(m_paste);
         layout->addWidget(m_status);
         layout->addWidget(apply);
         m_remain->setText(QString::fromUtf8("剩余 10:00"));
         m_dlg->show();
     }
 
-    /** @brief 验粘贴的注册码，通过则关框，失败显示原因 */
+    /** @brief 打开注册程序，退出后再复查许可证。通过则关框 */
     void applyCode()
     {
-        if (!m_paste) {
+        if (!runLicenseRequest()) {
             return;
         }
-        SoftLicense license;
-        const LicenseReason reason = license.accept(m_paste->toPlainText().toUtf8().constData());
+        License license;
+        const LicenseReason reason = license.poll();
         if (reason == LicenseOk) {
             closeCountdown();
             return;
@@ -166,7 +173,6 @@ private:
             m_dlg = 0;
         }
         m_remain = 0;
-        m_paste = 0;
         m_status = 0;
         m_stopped = false;
     }
@@ -176,57 +182,23 @@ private:
     bool m_stopped;            ///< 本轮倒计时已到点并停了工站
     QDialog* m_dlg;            ///< 倒计时框，无父对象，未弹出时为空
     QLabel* m_remain;          ///< 剩余时间标签，属于 m_dlg
-    QPlainTextEdit* m_paste;   ///< 注册码输入框，属于 m_dlg
     QLabel* m_status;          ///< 结果提示，属于 m_dlg
 };
 
 }
 
-bool promptLicense(SoftLicense* license, LicenseReason reason)
+bool promptLicense(License* license, LicenseReason reason)
 {
     if (!license) {
         return false;
     }
-    // 反复弹框直到许可有效；注册成功后再按启动流程 open 一次确认
-    while (reason != LicenseOk) {
-        QDialog dlg;
-        dlg.setWindowTitle(QString::fromUtf8("许可"));
-        dlg.resize(520, 380);
-        QLabel* why = new QLabel(utf8(license->reasonText(reason)), &dlg);
-        why->setWordWrap(true);
-        QPlainTextEdit* request = new QPlainTextEdit(utf8(license->requestCode()), &dlg);
-        request->setReadOnly(true);
-        QPlainTextEdit* paste = new QPlainTextEdit(&dlg);
-        paste->setPlaceholderText(QString::fromUtf8("粘贴注册码"));
-        QLabel* status = new QLabel(&dlg);
-        status->setWordWrap(true);
-        QPushButton* apply = new QPushButton(QString::fromUtf8("注册"), &dlg);
-        QPushButton* quit = new QPushButton(QString::fromUtf8("退出"), &dlg);
-        QObject::connect(quit, &QPushButton::clicked, &dlg, &QDialog::reject);
-        QObject::connect(apply, &QPushButton::clicked, &dlg, [&]() {
-            const LicenseReason got = license->accept(paste->toPlainText().toUtf8().constData());
-            if (got == LicenseOk) {
-                dlg.accept();
-                return;
-            }
-            status->setText(utf8(license->reasonText(got)));
-        });
-        QHBoxLayout* buttons = new QHBoxLayout();
-        buttons->addStretch(1);
-        buttons->addWidget(apply);
-        buttons->addWidget(quit);
-        QVBoxLayout* layout = new QVBoxLayout(&dlg);
-        layout->addWidget(why);
-        layout->addWidget(request);
-        layout->addWidget(paste);
-        layout->addWidget(status);
-        layout->addLayout(buttons);
-        if (dlg.exec() != QDialog::Accepted) {
-            return false;
-        }
-        reason = license->open();
+    if (reason == LicenseOk) {
+        return true;
     }
-    return true;
+    if (!runLicenseRequest()) {
+        return false;
+    }
+    return license->open() == LicenseOk;
 }
 
 void watchLicense(QApplication* app, MainWindow* window)

@@ -403,7 +403,7 @@ JobDlg::JobDlg(Session* session, Solution* solution, Job* job, const QString& jo
     m_flowCanvas->bindJob(&m_draftJob);
     m_flowCanvas->setDraftMode(true);
     m_flowCanvas->setEditable(can);
-    m_flowCanvas->setHintText(T("滚轮缩放，拖动画布平移，拖工具可移动，从输出端口拖到输入端口连线。右键与右侧树相同。"));
+    m_flowCanvas->setToolTip(T("滚轮缩放，拖动画布平移，拖工具可移动，从输出端口拖到输入端口连线。右键与右侧树相同。"));
     m_flowCanvas->setMinimumHeight(80);
     m_flowCanvas->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     if (JobCanvas* cv = m_flowCanvas->canvas()) {
@@ -504,17 +504,9 @@ JobDlg::JobDlg(Session* session, Solution* solution, Job* job, const QString& jo
     QHBoxLayout* titleRow = new QHBoxLayout();
     QLabel* rTitle = new QLabel(T("流程结构"), rightPanel);
     rTitle->setObjectName(QLatin1String("section"));
-    QLabel* rSync = new QLabel(T("与画布同步"), rightPanel);
-    rSync->setObjectName(QLatin1String("hint"));
     titleRow->addWidget(rTitle);
-    titleRow->addWidget(rSync, 1);
-    QLabel* rHint = new QLabel(T("选中 Then/Else 分支或并行支路后再添加工具。条件组只执行命中的一侧。"), rightPanel);
-    rHint->setObjectName(QLatin1String("hint"));
-    rHint->setWordWrap(true);
-    rHint->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
-    rHint->setMaximumHeight(40);
+    m_tools->setToolTip(T("选中 Then/Else 分支或并行支路后再添加工具。条件组只执行命中的一侧。与画布同步。"));
     right->addLayout(titleRow);
-    right->addWidget(rHint);
 
     m_condPanel = new QWidget(rightPanel);
     m_condSrc = new QComboBox(m_condPanel);

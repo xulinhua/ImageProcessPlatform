@@ -114,6 +114,11 @@ bool WebSocketClient::open(const ParamMap& params, std::string* err)
     return true;
 }
 
+void WebSocketClient::closePeer(const std::string&)
+{
+    close();
+}
+
 void WebSocketClient::close()
 {
     std::lock_guard<std::mutex> lock(m_mu);

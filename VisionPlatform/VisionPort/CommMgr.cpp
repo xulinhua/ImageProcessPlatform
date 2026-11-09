@@ -279,7 +279,8 @@ uint16_t nextTid(Session* session)
 
 // 读位：从站读映像，主站发总线请求
 bool CommMgr::modbusReadBits(const ObjectId& id, const std::string& peerId, int slave, ModbusTable table,
-                             int address, int count, std::vector<unsigned char>* bits, std::string* err)
+                             int address, int count, std::vector<unsigned char>* bits, std::string* err,
+                             CommBytes* sent, CommBytes* received)
 {
     if (table != ModbusCoil && table != ModbusDiscrete) {
         setCommErr(err, "该区不是位");
@@ -303,7 +304,7 @@ bool CommMgr::modbusReadBits(const ObjectId& id, const std::string& peerId, int 
     }
     const bool tcp = session->channel->transport() != TransportSerial;
     const int fc = (table == ModbusCoil) ? 0x01 : 0x02;
-    return modbusMasterReadBits(session->channel, peer, tcp, nextTid(session.get()), slave, fc, address, count, bits, err);
+    return modbusMasterReadBits(session->channel, peer, tcp, nextTid(session.get()), slave, fc, address, count, bits, err, sent, received);
 }
 
 // 读寄存器：从站读映像，主站发总线请求
@@ -338,7 +339,8 @@ bool CommMgr::modbusReadRegs(const ObjectId& id, const std::string& peerId, int 
 
 // 写位：从站写映像，主站只允许线圈
 bool CommMgr::modbusWriteBits(const ObjectId& id, const std::string& peerId, int slave, ModbusTable table,
-                              int address, const std::vector<unsigned char>& bits, std::string* err)
+                              int address, const std::vector<unsigned char>& bits, std::string* err,
+                              CommBytes* sent, CommBytes* received)
 {
     if (table != ModbusCoil && table != ModbusDiscrete) {
         setCommErr(err, "该区不是位");
@@ -365,7 +367,7 @@ bool CommMgr::modbusWriteBits(const ObjectId& id, const std::string& peerId, int
         return false;
     }
     const bool tcp = session->channel->transport() != TransportSerial;
-    return modbusMasterWriteBits(session->channel, peer, tcp, nextTid(session.get()), slave, address, bits, err);
+    return modbusMasterWriteBits(session->channel, peer, tcp, nextTid(session.get()), slave, address, bits, err, sent, received);
 }
 
 // 写寄存器：从站写映像，主站只允许保持寄存器
@@ -410,6 +412,60 @@ void CommMgr::closePeer(const ObjectId& id, const std::string& peerId)
     }
     std::lock_guard<std::mutex> lock(session->mu);
     session->channel->closePeer(peerId);
+}
+
+bool CommMgr::setSerialLines(const ObjectId& id, bool dtr, bool rts, std::string* err)
+{
+    std::shared_ptr<Session> session = takeSession(m_impl->sessions, m_impl->mu, id.toString(), err);
+    if (!session || !session->channel) {
+        return false;
+    }
+    SerialChannel* serial = dynamic_cast<SerialChannel*>(session->channel);
+    if (!serial) {
+        setCommErr(err, "当前不是串口");
+        return false;
+    }
+    std::lock_guard<std::mutex> lock(session->mu);
+    return serial->setLines(dtr, rts, err);
+}
+
+bool CommMgr::setUdpRemote(const ObjectId& id, const std::string& host, int port, std::string* err)
+{
+    std::shared_ptr<Session> session = takeSession(m_impl->sessions, m_impl->mu, id.toString(), err);
+    if (!session || !session->channel) {
+        return false;
+    }
+    UdpChannel* udp = dynamic_cast<UdpChannel*>(session->channel);
+    if (!udp) {
+        setCommErr(err, "当前不是 UDP");
+        return false;
+    }
+    std::lock_guard<std::mutex> lock(session->mu);
+    return udp->setRemote(host, port, err);
+}
+
+std::string CommMgr::udpLastSource(const ObjectId& id) const
+{
+    std::string err;
+    std::shared_ptr<Session> session = takeSession(m_impl->sessions, m_impl->mu, id.toString(), &err);
+    if (!session || !session->channel) {
+        return std::string();
+    }
+    UdpChannel* udp = dynamic_cast<UdpChannel*>(session->channel);
+    if (!udp) {
+        return std::string();
+    }
+    return udp->lastSource();
+}
+
+std::string CommMgr::waitIncoming(const ObjectId& id, int timeoutMs)
+{
+    std::string err;
+    std::shared_ptr<Session> session = takeSession(m_impl->sessions, m_impl->mu, id.toString(), &err);
+    if (!session || !session->channel) {
+        return std::string();
+    }
+    return session->channel->waitIncoming(timeoutMs);
 }
 
 bool CommMgr::httpExchange(const ObjectId& id, const std::string& method, const std::string& path,

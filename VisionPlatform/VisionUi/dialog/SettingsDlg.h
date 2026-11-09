@@ -80,10 +80,6 @@ private:
     QLineEdit* m_solsDir;        ///< 方案目录
     QLineEdit* m_lastSol;        ///< 上次方案
     QLabel* m_titleLabel;        ///< 无边框标题
-    QLabel* m_uiHint;            ///< 外观页提示
-    QLabel* m_closeHint;         ///< 关闭行为提示
-    QLabel* m_pathHint;          ///< 路径页提示
-    QLabel* m_runHint;           ///< 运行页提示
     QGroupBox* m_popupBox;       ///< 流程试跑弹窗
     QCheckBox* m_popupJobOk;     ///< OK 时弹窗
     QCheckBox* m_popupJobNg;     ///< NG 时弹窗

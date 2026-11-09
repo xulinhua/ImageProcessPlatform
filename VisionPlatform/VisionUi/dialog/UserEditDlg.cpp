@@ -58,11 +58,13 @@ UserEditDlg::UserEditDlg(Session* session, const QString& loginName, QWidget* pa
             m_enabled->setChecked(u->enabled);
         }
         m_login->setReadOnly(true);
-        m_pwd->setPlaceholderText(T("留空则不改口令"));
-        m_pwd2->setPlaceholderText(T("留空则不改口令"));
+        const QString pwdTip = T("留空则不改口令。用户可自行修改口令。");
+        m_pwd->setToolTip(pwdTip);
+        m_pwd2->setToolTip(pwdTip);
     } else {
-        m_pwd->setPlaceholderText(T("留空则无口令"));
-        m_pwd2->setPlaceholderText(T("留空则无口令"));
+        const QString pwdTip = T("留空则无口令。用户可自行修改口令。");
+        m_pwd->setToolTip(pwdTip);
+        m_pwd2->setToolTip(pwdTip);
     }
 
     // 表单、提示与保存按钮
@@ -74,10 +76,6 @@ UserEditDlg::UserEditDlg(Session* session, const QString& loginName, QWidget* pa
     form->addRow(T("确认口令"), m_pwd2);
     form->addRow(m_enabled);
 
-    QLabel* hint = new QLabel(T("口令可留空。用户可自行修改口令。"), this);
-    hint->setWordWrap(true);
-    hint->setObjectName(QLatin1String("hint"));
-
     QDialogButtonBox* box = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, this);
     box->button(QDialogButtonBox::Ok)->setText(T("保存"));
     setButtonRole(box->button(QDialogButtonBox::Ok), "primary");
@@ -88,7 +86,6 @@ UserEditDlg::UserEditDlg(Session* session, const QString& loginName, QWidget* pa
     prependFramelessTitleBar(this, root, windowTitle());
     QVBoxLayout* lay = framelessDialogContentLayout(this, root);
     lay->addLayout(form);
-    lay->addWidget(hint);
     lay->addWidget(box);
 }
 

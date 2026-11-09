@@ -42,6 +42,8 @@ bool UdpChannel::open(const ParamMap& params, std::string* err)
         setCommErr(err, "创建套接字失败");
         return false;
     }
+    BOOL broadcast = TRUE;
+    setsockopt(m_sock, SOL_SOCKET, SO_BROADCAST, reinterpret_cast<const char*>(&broadcast), sizeof(broadcast));
     sockaddr_in local;
     std::memset(&local, 0, sizeof(local));
     local.sin_family = AF_INET;
@@ -78,6 +80,34 @@ void UdpChannel::close()
     }
     m_hasRemote = false;
     m_remoteText.clear();
+    m_lastFrom.clear();
+}
+
+bool UdpChannel::setRemote(const std::string& host, int port, std::string* err)
+{
+    if (!isOpen()) {
+        setCommErr(err, "通道未打开");
+        return false;
+    }
+    if (host.empty() || port <= 0 || port > 65535) {
+        setCommErr(err, "对端地址无效");
+        return false;
+    }
+    unsigned long ip = 0;
+    if (!commResolveIpv4(host, &ip, err)) {
+        return false;
+    }
+    m_remote.sin_family = AF_INET;
+    m_remote.sin_addr.s_addr = ip;
+    m_remote.sin_port = htons(static_cast<u_short>(port));
+    m_hasRemote = true;
+    m_remoteText = commEndpointText(m_remote);
+    return true;
+}
+
+std::string UdpChannel::lastSource() const
+{
+    return m_lastFrom;
 }
 
 // 套接字是否有效
@@ -159,9 +189,7 @@ CommBytes UdpChannel::read(const std::string&, int maxBytes, int timeoutMs, std:
         return out;
     }
     out.resize(static_cast<size_t>(n));
-    m_remote = from;
-    m_hasRemote = true;
-    m_remoteText = commEndpointText(from);
+    m_lastFrom = commEndpointText(from);
     return out;
 }
 

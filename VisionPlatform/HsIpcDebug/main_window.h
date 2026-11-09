@@ -44,10 +44,15 @@ private:
     QCheckBox* m_beatOn;
     QSpinBox* m_beatMs;
     QLabel* m_idle;
+    QLabel* m_state;
+    QLabel* m_where;
     bool m_sawOpen;
 
+    void useExeIcon();
     void saveLog();
     void sendHeartbeat();
+    void note(const QString& summary);
+    void buildMenu();
 };
 
 #endif

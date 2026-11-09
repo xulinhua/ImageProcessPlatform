@@ -936,9 +936,7 @@ void ToolIoPanel::fillRoiList()
                 appendRoiRow(i, item, allowRef, allowDraw, jobConfig, preview);
             }
             if (slotCount == 0) {
-                QLabel* empty = new QLabel(T("（空，点下方「添加」写入本分区）"), m_roiListHost);
-                empty->setObjectName(QLatin1String("hint"));
-                m_roiListLay->addWidget(empty);
+                head->setToolTip(T("点下方「添加」写入本分区"));
             }
         }
         m_roiListLay->addStretch(1);

@@ -67,10 +67,6 @@ SettingsDlg::SettingsDlg(Session* session, QWidget* parent)
     : QDialog(parent)
     , m_session(session)
     , m_titleLabel(nullptr)
-    , m_uiHint(nullptr)
-    , m_closeHint(nullptr)
-    , m_pathHint(nullptr)
-    , m_runHint(nullptr)
     , m_popupBox(nullptr)
     , m_popupJobOk(nullptr)
     , m_popupJobNg(nullptr)
@@ -99,7 +95,8 @@ SettingsDlg::SettingsDlg(Session* session, QWidget* parent)
     connect(m_nav, SIGNAL(currentRowChanged(int)), this, SLOT(onCategoryChanged(int)));
 
     // —— 常规 ——
-    m_autoOp = new QCheckBox(T("开机自动登录操作员（仅 operator，直接进运行态）"), this);
+    m_autoOp = new QCheckBox(T("开机自动登录操作员"), this);
+    m_autoOp->setToolTip(T("仅 operator，直接进运行态。"));
     m_startupMode = new QComboBox(this);
     m_startupMode->addItem(QString::fromUtf8(startupAppModeTitle(StartupModeDesign).c_str()),
                            static_cast<int>(StartupModeDesign));
@@ -109,9 +106,6 @@ SettingsDlg::SettingsDlg(Session* session, QWidget* parent)
     m_closeAction->addItem(QString::fromUtf8(closeMainWindowActionTitle(CloseActionMinimizeTray).c_str()),
                            static_cast<int>(CloseActionMinimizeTray));
     m_closeAction->hide();
-    m_closeHint = new QLabel(T("关闭主窗口后回到托盘，工站服务继续运行。"), this);
-    m_closeHint->setObjectName(QLatin1String("hint"));
-    m_closeHint->setWordWrap(true);
 
     QWidget* pageGeneral = new QWidget(this);
     QVBoxLayout* gLay = new QVBoxLayout(pageGeneral);
@@ -119,17 +113,13 @@ SettingsDlg::SettingsDlg(Session* session, QWidget* parent)
     QFormLayout* gForm = new QFormLayout(m_generalBox);
     gForm->addRow(QString(), m_autoOp);
     QLabel* lab_2040619317 = new QLabel(T("启动后默认进入"), this); bindTrKey(lab_2040619317, "启动后默认进入"); gForm->addRow(lab_2040619317, m_startupMode);
-    gForm->addRow(m_closeHint);
     m_permScope = new QComboBox(pageGeneral);
+    m_permScope->setToolTip(T("只有最高权限能改。权限记在本机 data，不写进方案。整个 data 一起拷走后可以继续用。"));
     m_permScope->addItem(T("按页面或工具统一"), PermScopeUnified);
     m_permScope->addItem(T("按流程实例分开"), PermScopeInstance);
     QLabel* labScope = new QLabel(T("权限管控"), pageGeneral);
     bindTrKey(labScope, "权限管控");
     gForm->addRow(labScope, m_permScope);
-    QLabel* scopeHint = new QLabel(T("只有最高权限能改。权限记在本机 data，不写进方案。整个 data 一起拷走后可以继续用。"), pageGeneral);
-    scopeHint->setObjectName(QLatin1String("hint"));
-    scopeHint->setWordWrap(true);
-    gForm->addRow(scopeHint);
     gLay->addWidget(m_generalBox);
     gLay->addStretch();
 
@@ -144,14 +134,13 @@ SettingsDlg::SettingsDlg(Session* session, QWidget* parent)
         const QString title = QString::fromUtf8(Translate::languageNativeNameAt(i).c_str());
         m_lang->addItem(title, QString::fromLatin1(Translate::languageKeyAt(i).c_str()));
     }
-    m_uiHint = new QLabel(T("主界面立即切换。已打开的窗口关闭后重新打开，即为新语言。"), this);
-    m_uiHint->setObjectName(QLatin1String("hint"));
-    m_uiHint->setWordWrap(true);
+    const QString uiTip = T("主界面立即切换。已打开的窗口关闭后重新打开，即为新语言。");
+    m_theme->setToolTip(uiTip);
+    m_lang->setToolTip(uiTip);
     QWidget* pageUi = new QWidget(this);
     QFormLayout* uiForm = new QFormLayout(pageUi);
     QLabel* lab_440008882 = new QLabel(T("主题档"), this); bindTrKey(lab_440008882, "主题档"); uiForm->addRow(lab_440008882, m_theme);
     QLabel* lab_1576360391 = new QLabel(T("界面语言"), this); bindTrKey(lab_1576360391, "界面语言"); uiForm->addRow(lab_1576360391, m_lang);
-    uiForm->addRow(m_uiHint);
 
     // —— 路径与存储 ——
     QWidget* pagePath = new QWidget(this);
@@ -172,21 +161,24 @@ SettingsDlg::SettingsDlg(Session* session, QWidget* parent)
                                               this, SLOT(onOpenSolutionsDir())));
     m_lastSol = new QLineEdit(this);
     m_lastSol->setReadOnly(true);
+    const QString pathTip = T("权限、日志、生产、验证、标定分五个库。数据根目录由安装约定决定，本页仅查看与打开，不支持随意改路径。");
+    m_dataDir->setToolTip(pathTip);
+    m_dbAuth->setToolTip(pathTip);
+    m_dbLog->setToolTip(pathTip);
+    m_dbProd->setToolTip(pathTip);
+    m_dbVerify->setToolTip(pathTip);
+    m_dbCalib->setToolTip(pathTip);
+    m_solsDir->setToolTip(pathTip);
+    m_lastSol->setToolTip(pathTip);
     QLabel* lab_1172506318 = new QLabel(T("上次方案"), this); bindTrKey(lab_1172506318, "上次方案"); pForm->addRow(lab_1172506318, m_lastSol);
-    m_pathHint = new QLabel(T("权限、日志、生产、验证、标定分五个库。数据根目录由安装约定决定，本页仅查看与打开，不支持随意改路径。"), pagePath);
-    m_pathHint->setObjectName(QLatin1String("hint"));
-    m_pathHint->setWordWrap(true);
-    pForm->addRow(m_pathHint);
 
     // —— 运行与日志 ——
     QWidget* pageRun = new QWidget(this);
     QVBoxLayout* rLay = new QVBoxLayout(pageRun);
-    m_runHint = new QLabel(
-        T("产量清零、运行画面布局属于方案/运行态，请在运行页或「视图 → 画面配置」中修改。"
-          "流程试跑结果弹窗在此配置；默认均不弹窗。"), pageRun);
-    m_runHint->setObjectName(QLatin1String("hint"));
-    m_runHint->setWordWrap(true);
     m_popupBox = new QGroupBox(T("流程试跑弹窗"), pageRun);
+    m_popupBox->setToolTip(
+        T("产量清零、运行画面布局属于方案/运行态，请在运行页或「视图 → 画面配置」中修改。"
+          "流程试跑结果弹窗在此配置；默认均不弹窗。"));
     QVBoxLayout* popupLay = new QVBoxLayout(m_popupBox);
     m_popupJobOk = new QCheckBox(T("结果 OK 时弹窗"), m_popupBox);
     m_popupJobNg = new QCheckBox(T("结果 NG 时弹窗"), m_popupBox);
@@ -199,7 +191,6 @@ SettingsDlg::SettingsDlg(Session* session, QWidget* parent)
     connect(m_btnOpenLogsDlg, SIGNAL(clicked()), this, SLOT(onOpenLogDlg()));
     m_btnOpenLogsFolder = new QPushButton(T("打开数据目录"), pageRun);
     connect(m_btnOpenLogsFolder, SIGNAL(clicked()), this, SLOT(onOpenDataDir()));
-    rLay->addWidget(m_runHint);
     rLay->addWidget(m_popupBox);
     rLay->addWidget(m_btnOpenLogsDlg, 0, Qt::AlignLeft);
     rLay->addWidget(m_btnOpenLogsFolder, 0, Qt::AlignLeft);
@@ -399,21 +390,32 @@ void SettingsDlg::retranslateUi()
         m_nav->item(2)->setText(T("路径与存储"));
         m_nav->item(3)->setText(T("运行与日志"));
     }
-    m_autoOp->setText(T("开机自动登录操作员（仅 operator，直接进运行态）"));
+    m_autoOp->setText(T("开机自动登录操作员"));
+    m_autoOp->setToolTip(T("仅 operator，直接进运行态。"));
     if (m_generalBox) {
         m_generalBox->setTitle(T("启动与关闭"));
     }
-    if (m_closeHint) {
-        m_closeHint->setText(T("「最小化到托盘」将在后续版本提供，当前仅可选择退出程序。"));
+    const QString uiTip = T("主界面立即切换。已打开的窗口关闭后重新打开，即为新语言。");
+    if (m_theme) {
+        m_theme->setToolTip(uiTip);
     }
-    if (m_uiHint) {
-        m_uiHint->setText(T("主界面立即切换。已打开的窗口关闭后重新打开，即为新语言。"));
+    if (m_lang) {
+        m_lang->setToolTip(uiTip);
     }
-    if (m_pathHint) {
-        m_pathHint->setText(T("权限、日志、生产、验证、标定分五个库。数据根目录由安装约定决定，本页仅查看与打开，不支持随意改路径。"));
+    if (m_permScope) {
+        m_permScope->setToolTip(T("只有最高权限能改。权限记在本机 data，不写进方案。整个 data 一起拷走后可以继续用。"));
     }
-    if (m_runHint) {
-        m_runHint->setText(T("产量清零、运行画面布局属于方案/运行态，请在运行页或「视图 → 画面配置」中修改。流程试跑结果弹窗在此配置；默认均不弹窗。"));
+    const QString pathTip = T("权限、日志、生产、验证、标定分五个库。数据根目录由安装约定决定，本页仅查看与打开，不支持随意改路径。");
+    if (m_dataDir) { m_dataDir->setToolTip(pathTip); }
+    if (m_dbAuth) { m_dbAuth->setToolTip(pathTip); }
+    if (m_dbLog) { m_dbLog->setToolTip(pathTip); }
+    if (m_dbProd) { m_dbProd->setToolTip(pathTip); }
+    if (m_dbVerify) { m_dbVerify->setToolTip(pathTip); }
+    if (m_dbCalib) { m_dbCalib->setToolTip(pathTip); }
+    if (m_solsDir) { m_solsDir->setToolTip(pathTip); }
+    if (m_lastSol) { m_lastSol->setToolTip(pathTip); }
+    if (m_popupBox) {
+        m_popupBox->setToolTip(T("产量清零、运行画面布局属于方案/运行态，请在运行页或「视图 → 画面配置」中修改。流程试跑结果弹窗在此配置；默认均不弹窗。"));
     }
     if (m_popupBox) {
         m_popupBox->setTitle(T("流程试跑弹窗"));

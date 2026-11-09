@@ -34,6 +34,10 @@ public:
     bool isOpen() const;
     /** @brief 已配置对端时返回其地址 */
     std::vector<CommPeer> peers() const;
+    /** @brief 打开后改发送目标。广播地址需要套接字已允许 SO_BROADCAST */
+    bool setRemote(const std::string& host, int port, std::string* err);
+    /** @brief 最近一包的来源。还没收到则为空，不改发送目标 */
+    std::string lastSource() const;
     /** @brief 发往打开时记下的对端 */
     bool write(const std::string& peerId, const CommBytes& data, int timeoutMs, std::string* err);
     /** @brief 收一包；来源记成下一次发送目标 */
@@ -47,7 +51,8 @@ private:
     SOCKET m_sock;           ///< 绑定套接字
     sockaddr_in m_remote;    ///< 发送目标
     bool m_hasRemote;        ///< 是否已有对端
-    std::string m_remoteText; ///< 对端地址文本
+    std::string m_remoteText; ///< 发送目标文本
+    std::string m_lastFrom;   ///< 最近一包来源，不覆盖发送目标
 };
 
 }

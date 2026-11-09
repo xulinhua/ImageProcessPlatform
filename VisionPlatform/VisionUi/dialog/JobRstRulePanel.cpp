@@ -41,12 +41,8 @@ JobRstRulePanel::JobRstRulePanel(QWidget* parent)
     QLabel* title = new QLabel(T("逻辑判断矩阵"), this);
     title->setObjectName(QLatin1String("section"));
 
-    QLabel* hint = new QLabel(
-        T("每格单击循环：忽略 → 要求 OK → 要求 NG。未运行工具自动忽略。同行多项为 AND。"), this);
-    hint->setObjectName(QLatin1String("hint"));
-    hint->setWordWrap(true);
-
     m_table = new QTableWidget(this);
+    m_table->setToolTip(T("每格单击循环：忽略 → 要求 OK → 要求 NG。未运行工具自动忽略。同行多项为 AND。"));
     m_table->setSelectionBehavior(QAbstractItemView::SelectRows);
     m_table->setSelectionMode(QAbstractItemView::SingleSelection);
     m_table->horizontalHeader()->setStretchLastSection(true);
@@ -66,7 +62,6 @@ JobRstRulePanel::JobRstRulePanel(QWidget* parent)
     QVBoxLayout* lay = new QVBoxLayout(this);
     lay->setContentsMargins(0, 0, 0, 0);
     lay->addWidget(title);
-    lay->addWidget(hint);
     lay->addWidget(m_table, 1);
     lay->addLayout(btns);
 }

@@ -61,7 +61,6 @@ private:
     QDateEdit* m_to;             ///< 结束日
     QListWidget* m_files;        ///< 可删日期
     QPushButton* m_btnDelete;    ///< 删除所选
-    QLabel* m_fileHint;          ///< 管理页说明
 };
 
 }

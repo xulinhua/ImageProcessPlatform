@@ -239,7 +239,8 @@ bool parseRegs(const CommBytes& pdu, int count, std::vector<uint16_t>* regs, std
 // 主站读线圈或离散输入
 bool modbusMasterReadBits(ICommChannel* ch, const std::string& peerId, bool tcp, uint16_t tid,
                           int slave, int fc, int address, int count,
-                          std::vector<unsigned char>* bits, std::string* err)
+                          std::vector<unsigned char>* bits, std::string* err,
+                          CommBytes* sent, CommBytes* received)
 {
     if (!bits || !rangeOk(address, count, 2000, err)) {
         if (!bits) {
@@ -252,7 +253,7 @@ bool modbusMasterReadBits(ICommChannel* ch, const std::string& peerId, bool tcp,
     append16(&pdu, address);
     append16(&pdu, count);
     CommBytes resp;
-    if (!transact(ch, peerId, tcp, tid, slave, pdu, &resp, err)) {
+    if (!transact(ch, peerId, tcp, tid, slave, pdu, &resp, err, sent, received)) {
         return false;
     }
     return parseBits(resp, count, bits, err);
@@ -283,7 +284,8 @@ bool modbusMasterReadRegs(ICommChannel* ch, const std::string& peerId, bool tcp,
 
 // 主站写线圈，单个或连续多个
 bool modbusMasterWriteBits(ICommChannel* ch, const std::string& peerId, bool tcp, uint16_t tid,
-                           int slave, int address, const std::vector<unsigned char>& bits, std::string* err)
+                           int slave, int address, const std::vector<unsigned char>& bits, std::string* err,
+                           CommBytes* sent, CommBytes* received)
 {
     const int count = static_cast<int>(bits.size());
     if (!rangeOk(address, count, 1968, err)) {
@@ -312,7 +314,7 @@ bool modbusMasterWriteBits(ICommChannel* ch, const std::string& peerId, bool tcp
         }
     }
     CommBytes resp;
-    return transact(ch, peerId, tcp, tid, slave, pdu, &resp, err);
+    return transact(ch, peerId, tcp, tid, slave, pdu, &resp, err, sent, received);
 }
 
 // 主站写寄存器，单个或连续多个

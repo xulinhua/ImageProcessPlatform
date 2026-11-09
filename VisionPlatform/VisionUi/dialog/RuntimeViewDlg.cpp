@@ -168,11 +168,8 @@ RuntimePaneDlg::RuntimePaneDlg(Solution* sol, StationCfg* st, int index,
     m_showOv = new QCheckBox(T("显示叠加"), this);
     m_showOv->setChecked(m_pane.showOverlay);
 
-    QLabel* ovHint = new QLabel(T("勾选要叠到该底图上的结果图形，可多选（仅本工站工具）。"), this);
-    ovHint->setWordWrap(true);
-    ovHint->setObjectName(QLatin1String("hint"));
-
     m_ovList = new QListWidget(this);
+    m_ovList->setToolTip(T("勾选要叠到该底图上的结果图形，可多选（仅本工站工具）。"));
     m_ovList->setSelectionMode(QAbstractItemView::NoSelection);
     fillOverlayList();
 
@@ -189,7 +186,6 @@ RuntimePaneDlg::RuntimePaneDlg(Solution* sol, StationCfg* st, int index,
     QVBoxLayout* lay = framelessDialogContentLayout(this, root);
     lay->addLayout(form);
     lay->addWidget(new QLabel(T("叠加工具"), this));
-    lay->addWidget(ovHint);
     lay->addWidget(m_ovList, 1);
     lay->addWidget(box);
 }
@@ -307,11 +303,8 @@ RuntimeViewDlg::RuntimeViewDlg(Solution* sol, StationCfg* st, QWidget* parent)
     form->addRow(m_stats);
     form->addRow(m_hist);
 
-    QLabel* hint = new QLabel(
-        T("多工站布局为方案级：分页签一次看一个工站，一屏拼贴同时显示。下方窗格仅对当前编辑工站生效；底图/叠加只列本站工具。"),
-        this);
-    hint->setWordWrap(true);
-    hint->setObjectName(QLatin1String("hint"));
+    m_shellLayout->setToolTip(
+        T("多工站布局为方案级：分页签一次看一个工站，一屏拼贴同时显示。下方窗格仅对当前编辑工站生效；底图/叠加只列本站工具。"));
 
     QVBoxLayout* paneLay = new QVBoxLayout();
     paneLay->setSpacing(6);
@@ -345,7 +338,6 @@ RuntimeViewDlg::RuntimeViewDlg(Solution* sol, StationCfg* st, QWidget* parent)
     prependFramelessTitleBar(this, root, windowTitle());
     QVBoxLayout* lay = framelessDialogContentLayout(this, root);
     lay->addWidget(flags);
-    lay->addWidget(hint);
     lay->addLayout(paneLay, 1);
     lay->addWidget(box);
 

@@ -161,6 +161,9 @@
     <ClCompile Include="dialog\AboutDlg.cpp">
       <Filter>dialog\system</Filter>
     </ClCompile>
+    <ClCompile Include="dialog\LicenseDlg.cpp">
+      <Filter>dialog\system</Filter>
+    </ClCompile>
     <ClCompile Include="dialog\VersionDlg.cpp">
       <Filter>dialog\system</Filter>
     </ClCompile>
@@ -267,6 +270,9 @@
       <Filter>dialog\system</Filter>
     </ClInclude>
     <ClInclude Include="dialog\AboutDlg.h">
+      <Filter>dialog\system</Filter>
+    </ClInclude>
+    <ClInclude Include="dialog\LicenseDlg.h">
       <Filter>dialog\system</Filter>
     </ClInclude>
     <ClInclude Include="dialog\VersionDlg.h">

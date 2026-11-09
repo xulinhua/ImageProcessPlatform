@@ -32,7 +32,8 @@ enum ModbusTable {
 /** @brief 主站一次事务。tcp 为真时走 MBAP，否则 RTU。tid 由调用方递增 */
 VISION_PORT_API bool modbusMasterReadBits(ICommChannel* ch, const std::string& peerId, bool tcp, uint16_t tid,
                           int slave, int fc, int address, int count,
-                          std::vector<unsigned char>* bits, std::string* err);
+                          std::vector<unsigned char>* bits, std::string* err,
+                          CommBytes* sent = 0, CommBytes* received = 0);
 /** @brief 主站读保持寄存器或输入寄存器 */
 VISION_PORT_API bool modbusMasterReadRegs(ICommChannel* ch, const std::string& peerId, bool tcp, uint16_t tid,
                           int slave, int fc, int address, int count,
@@ -40,7 +41,8 @@ VISION_PORT_API bool modbusMasterReadRegs(ICommChannel* ch, const std::string& p
                           CommBytes* sent = 0, CommBytes* received = 0);
 /** @brief 主站写线圈；一个走功能码 5，多个走 15 */
 VISION_PORT_API bool modbusMasterWriteBits(ICommChannel* ch, const std::string& peerId, bool tcp, uint16_t tid,
-                           int slave, int address, const std::vector<unsigned char>& bits, std::string* err);
+                           int slave, int address, const std::vector<unsigned char>& bits, std::string* err,
+                           CommBytes* sent = 0, CommBytes* received = 0);
 /** @brief 主站写寄存器；一个走功能码 6，多个走 16 */
 VISION_PORT_API bool modbusMasterWriteRegs(ICommChannel* ch, const std::string& peerId, bool tcp, uint16_t tid,
                            int slave, int address, const std::vector<uint16_t>& regs, std::string* err,

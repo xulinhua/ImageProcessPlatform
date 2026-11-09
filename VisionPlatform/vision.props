@@ -50,7 +50,7 @@
         $(SolutionDir)VisionCfgMgr;
         $(SolutionDir)VisionCfgMgr\\store;
         $(SolutionDir)VisionCfgCrypt;
-        $(SolutionDir)VisionLicense;
+        $(SolutionDir)third_party\VisionLicense\include;
         $(SolutionDir)VisionObfus;
         $(SolutionDir)VisionWidgets;
         $(SolutionDir)VisionWidgets\theme;
@@ -74,7 +74,7 @@
       </AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(OutDir);$(SolutionDir)third_party\VisionLicense\lib\$(Platform)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>HsCommData.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>

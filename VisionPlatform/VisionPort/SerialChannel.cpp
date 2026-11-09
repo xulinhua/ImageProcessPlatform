@@ -85,18 +85,6 @@ bool SerialChannel::open(const ParamMap& params, std::string* err)
         setCommErr(err, "未填写串口");
         return false;
     }
-    // 数据位夹到 5~8，停止位只区分 1 和 2
-    const int baud = params.value("baud").toInt(9600);
-    int dataBits = params.value("dataBits").toInt(8);
-    if (dataBits < 5) {
-        dataBits = 5;
-    }
-    if (dataBits > 8) {
-        dataBits = 8;
-    }
-    const std::string parity = params.value("parity").toString();
-    int stopBits = params.value("stopBits").toInt(1);
-
     const std::string path = portPath(port);
     m_handle = CreateFileA(path.c_str(), GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, 0, 0);
     if (m_handle == INVALID_HANDLE_VALUE) {
@@ -106,34 +94,14 @@ bool SerialChannel::open(const ParamMap& params, std::string* err)
         return false;
     }
 
-    // 二进制模式，关闭硬件/软件流控，DTR/RTS 常开
-    DCB dcb;
-    std::memset(&dcb, 0, sizeof(dcb));
-    dcb.DCBlength = sizeof(dcb);
-    if (!GetCommState(m_handle, &dcb)) {
-        setCommErr(err, "读取串口状态失败");
-        close();
-        return false;
+    m_params = params;
+    if (!m_params.contains("dtr")) {
+        m_params.insert("dtr", 1);
     }
-    dcb.BaudRate = static_cast<DWORD>(baud > 0 ? baud : 9600);
-    dcb.ByteSize = static_cast<BYTE>(dataBits);
-    dcb.Parity = static_cast<BYTE>(parityFrom(parity));
-    dcb.StopBits = (stopBits >= 2) ? TWOSTOPBITS : ONESTOPBIT;
-    dcb.fBinary = TRUE;
-    dcb.fParity = (dcb.Parity != NOPARITY) ? TRUE : FALSE;
-    dcb.fOutxCtsFlow = FALSE;
-    dcb.fOutxDsrFlow = FALSE;
-    dcb.fDtrControl = DTR_CONTROL_ENABLE;
-    dcb.fDsrSensitivity = FALSE;
-    dcb.fTXContinueOnXoff = FALSE;
-    dcb.fOutX = FALSE;
-    dcb.fInX = FALSE;
-    dcb.fErrorChar = FALSE;
-    dcb.fNull = FALSE;
-    dcb.fRtsControl = RTS_CONTROL_ENABLE;
-    dcb.fAbortOnError = FALSE;
-    if (!SetCommState(m_handle, &dcb)) {
-        setCommErr(err, "串口参数设置失败");
+    if (!m_params.contains("rts")) {
+        m_params.insert("rts", 1);
+    }
+    if (!applyState(err)) {
         close();
         return false;
     }
@@ -141,6 +109,62 @@ bool SerialChannel::open(const ParamMap& params, std::string* err)
     PurgeComm(m_handle, PURGE_RXCLEAR | PURGE_TXCLEAR);
     applyTimeouts(1000);
     return true;
+}
+
+bool SerialChannel::applyState(std::string* err)
+{
+    if (m_handle == INVALID_HANDLE_VALUE) {
+        setCommErr(err, "串口未打开");
+        return false;
+    }
+    const int baud = m_params.value("baud").toInt(9600);
+    int dataBits = m_params.value("dataBits").toInt(8);
+    if (dataBits < 5) {
+        dataBits = 5;
+    }
+    if (dataBits > 8) {
+        dataBits = 8;
+    }
+    const int stopBits = m_params.value("stopBits").toInt(1);
+    const bool handshake = m_params.value("flow").toString() == "rtscts";
+    const bool dtr = m_params.value("dtr").toInt(1) != 0;
+    const bool rts = m_params.value("rts").toInt(1) != 0;
+    DCB dcb;
+    std::memset(&dcb, 0, sizeof(dcb));
+    dcb.DCBlength = sizeof(dcb);
+    if (!GetCommState(m_handle, &dcb)) {
+        setCommErr(err, "读取串口状态失败");
+        return false;
+    }
+    dcb.BaudRate = static_cast<DWORD>(baud > 0 ? baud : 9600);
+    dcb.ByteSize = static_cast<BYTE>(dataBits);
+    dcb.Parity = static_cast<BYTE>(parityFrom(m_params.value("parity").toString()));
+    dcb.StopBits = (stopBits >= 2) ? TWOSTOPBITS : ONESTOPBIT;
+    dcb.fBinary = TRUE;
+    dcb.fParity = (dcb.Parity != NOPARITY) ? TRUE : FALSE;
+    dcb.fOutxCtsFlow = handshake ? TRUE : FALSE;
+    dcb.fOutxDsrFlow = FALSE;
+    dcb.fDtrControl = dtr ? DTR_CONTROL_ENABLE : DTR_CONTROL_DISABLE;
+    dcb.fDsrSensitivity = FALSE;
+    dcb.fTXContinueOnXoff = FALSE;
+    dcb.fOutX = FALSE;
+    dcb.fInX = FALSE;
+    dcb.fErrorChar = FALSE;
+    dcb.fNull = FALSE;
+    dcb.fRtsControl = handshake ? RTS_CONTROL_HANDSHAKE : (rts ? RTS_CONTROL_ENABLE : RTS_CONTROL_DISABLE);
+    dcb.fAbortOnError = FALSE;
+    if (!SetCommState(m_handle, &dcb)) {
+        setCommErr(err, "串口参数设置失败");
+        return false;
+    }
+    return true;
+}
+
+bool SerialChannel::setLines(bool dtr, bool rts, std::string* err)
+{
+    m_params.insert("dtr", dtr ? 1 : 0);
+    m_params.insert("rts", rts ? 1 : 0);
+    return applyState(err);
 }
 
 // 关闭句柄

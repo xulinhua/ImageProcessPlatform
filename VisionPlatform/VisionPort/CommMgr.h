@@ -49,7 +49,8 @@ public:
 
     /** @brief 读线圈或离散输入。从站读本机映像，主站发总线请求 */
     bool modbusReadBits(const ObjectId& id, const std::string& peerId, int slave, ModbusTable table,
-                        int address, int count, std::vector<unsigned char>* bits, std::string* err);
+                        int address, int count, std::vector<unsigned char>* bits, std::string* err,
+                        CommBytes* sent = 0, CommBytes* received = 0);
     /** @brief 读保持寄存器或输入寄存器 */
     /**
      * @brief 读保持寄存器或输入寄存器
@@ -61,7 +62,8 @@ public:
                         CommBytes* sent = 0, CommBytes* received = 0);
     /** @brief 写线圈。从站写本机映像 */
     bool modbusWriteBits(const ObjectId& id, const std::string& peerId, int slave, ModbusTable table,
-                         int address, const std::vector<unsigned char>& bits, std::string* err);
+                         int address, const std::vector<unsigned char>& bits, std::string* err,
+                         CommBytes* sent = 0, CommBytes* received = 0);
     /** @brief 写寄存器。从站写本机映像 */
     /**
      * @brief 写寄存器。从站写本机映像
@@ -74,6 +76,14 @@ public:
 
     /** @brief 关掉一个对端的连接。客户端忽略 peerId，只断当前套接字 */
     void closePeer(const ObjectId& id, const std::string& peerId);
+    /** @brief 打开后改串口 DTR、RTS。非串口通道失败 */
+    bool setSerialLines(const ObjectId& id, bool dtr, bool rts, std::string* err);
+    /** @brief 打开后改 UDP 发送目标。非 UDP 通道失败 */
+    bool setUdpRemote(const ObjectId& id, const std::string& host, int port, std::string* err);
+    /** @brief 最近一包 UDP 的来源。不是 UDP 或还没收到则为空 */
+    std::string udpLastSource(const ObjectId& id) const;
+    /** @brief 等到任一端点有数据，返回端点 id。服务端以外为空 */
+    std::string waitIncoming(const ObjectId& id, int timeoutMs);
 
     /**
      * @brief 在已打开的 HTTP 通道上发一次请求

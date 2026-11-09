@@ -134,8 +134,8 @@ Solution* solution, const QString& stationId, QWidget* parent)
     lay->addLayout(form);
     lay->addWidget(new QLabel(T("本工站流程"), this));
     lay->addLayout(jb);
+    m_jobs->setToolTip(T("工站内多条流程可串行或并行；单条流程内并行请用「并行组」。"));
     lay->addWidget(m_jobs, 1);
-    lay->addWidget(new QLabel(T("工站内多条流程可串行或并行；单条流程内并行请用「并行组」。"), this));
     lay->addWidget(box);
 
     m_name->setReadOnly(!canEdit);

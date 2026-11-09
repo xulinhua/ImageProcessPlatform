@@ -134,9 +134,7 @@ void VersionDlg::fillTables()
                             + QLatin1Char('\n')
                             + T("软件版本：") + QString::fromLatin1(appVersion())
                             + QLatin1Char('\n')
-                            + T("构建时间：") + qs(buildStamp())
-                            + QLatin1Char('\n')
-                            + T("工具链：VS2022 (v143) + Qt 5.15.2 + C++17");
+                            + T("构建时间：") + qs(buildStamp());
     m_summary->setText(summary);
 
     const std::vector<VersionInfo> mods = moduleVersions();

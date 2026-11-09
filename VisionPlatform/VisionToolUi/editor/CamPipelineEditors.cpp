@@ -495,7 +495,7 @@ public:
         args->addRow(T("高"), m_h);
         args->addRow(T("系数"), m_factor);
         QVBoxLayout* lay = new QVBoxLayout(this);
-        lay->addWidget(new QLabel(T("可叠加步骤，顺序即执行顺序"), this));
+        m_list->setToolTip(T("可叠加步骤，顺序即执行顺序"));
         lay->addWidget(m_list, 1);
         QHBoxLayout* row = new QHBoxLayout();
         row->addWidget(m_op);

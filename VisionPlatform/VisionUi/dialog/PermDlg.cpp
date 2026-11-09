@@ -62,14 +62,10 @@ PermDlg::PermDlg(Session* session, Solution* solution, QWidget* parent)
     setModal(true);
     resize(860, 640);
 
-    QLabel* hint = new QLabel(
-        T("按页面或工具展开后勾选。勾选上层时，下属控件一起变。管理员的「用户管理」「系统设置」「日志」不可关闭。"
-          "流程工具按当前设置：统一管控按工具种类，实例管控按已打开方案里的流程分开。"),
-        this);
-    hint->setWordWrap(true);
-    hint->setObjectName(QLatin1String("hint"));
-
     m_tree = new QTreeWidget(this);
+    m_tree->setToolTip(
+        T("按页面或工具展开后勾选。勾选上层时，下属控件一起变。管理员的「用户管理」「系统设置」「日志」不可关闭。"
+          "流程工具按当前设置：统一管控按工具种类，实例管控按已打开方案里的流程分开。"));
     m_tree->setColumnCount(4);
     QStringList h;
     h << T("页面 / 控件") << T("操作员") << T("工程师") << T("管理员");
@@ -97,7 +93,6 @@ PermDlg::PermDlg(Session* session, Solution* solution, QWidget* parent)
     QVBoxLayout* root = new QVBoxLayout(this);
     prependFramelessTitleBar(this, root, windowTitle());
     QVBoxLayout* lay = framelessDialogContentLayout(this, root);
-    lay->addWidget(hint);
     lay->addWidget(m_tree, 1);
     lay->addLayout(bot);
 

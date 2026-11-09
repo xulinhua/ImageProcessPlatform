@@ -4,18 +4,20 @@
  * @author Hoson
  *
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
+ *
+ * 一种通讯方式一套参数。下拉切换，共用菜单、状态栏、报文和日志。
  */
 
 #ifndef HS_COMM_DEBUG_MAIN_WINDOW_H
 #define HS_COMM_DEBUG_MAIN_WINDOW_H
 
 #include <QMainWindow>
+#include <QVector>
 
 class ChannelPage;
-class QShortcut;
 class ChannelSession;
 class QPlainTextEdit;
-class QListWidget;
+class QTableWidget;
 class QCheckBox;
 class QSpinBox;
 class QComboBox;
@@ -23,11 +25,13 @@ class QLabel;
 class QLineEdit;
 class QTimer;
 class QStackedWidget;
-class QTabBar;
 class QPushButton;
-class QToolButton;
+class QWidget;
+class QFile;
+class QFrame;
+class QGridLayout;
 
-/** @brief 上为通道参数，中为接收，下为发送，右为对端 */
+/** @brief 上为通讯方式下拉和参数，中为报文和日志，下为发送，右为客户端列表 */
 class MainWindow : public QMainWindow {
 public:
     explicit MainWindow(QWidget* parent = 0);
@@ -37,63 +41,110 @@ private:
     void onOpen();
     void onClose();
     void onSend();
+    void onHttp();
     void drain();
     void showPage(int index);
+    void onKind(int index);
+    void clearSessionView();
     ChannelPage* currentPage() const;
-    QString selectedPeer() const;
-    /** @brief 按当前的 HEX、转义、回车换行、编码和校验，把一条文本收成要发出的字节 */
     bool buildPayload(const QString& text, bool hex, QByteArray* out, QString* err) const;
-    /** @brief 字节通道和 WebSocket 的发送。没打开或没选客户端时不发 */
-    void dispatchBytes(const QByteArray& bytes, bool asText, const QString& shown);
+    void dispatchBytes(const QByteArray& bytes, const QString& shown);
+    void appendMessage(const QString& text);
+    void writeLog(const QString& text);
     void noteHistory(const QString& text);
     void sendPreset(int index);
     void cyclePresets();
+    void sendFileChunk();
+    void readOnce();
+    void pollModbus();
+    void writeTable(bool oneRow, int row);
+    void fillModbusTable(int fn, int address, const QString& values);
+    void refreshCounts();
+    void refreshPeers();
     void loadDesk();
     void saveDesk();
-    void refreshCounts();
-    static const int kPresets = 6;
+    void buildMenu();
+    void saveText(QPlainTextEdit* edit, const QString& title);
+    static QFrame* makePanel(const QString& title, QWidget* body, QWidget* parent);
+    static void polish(QLabel* lab);
+    void useExeIcon();
+    void setPresetCount(int count);
 
-    QTabBar* m_tabs;
+    QComboBox* m_kind;
+    bool m_kindGuard;
     QStackedWidget* m_pages;
     QPushButton* m_open;
     QPushButton* m_close;
-    QLabel* m_status;
+    QLabel* m_chip;
     QPlainTextEdit* m_recv;
+    QLabel* m_recvTitle;
+    QPlainTextEdit* m_log;
+    QWidget* m_byteSend;
+    QWidget* m_httpSend;
+    QWidget* m_modbusBar;
+    QTableWidget* m_regs;
+    QWidget* m_peerBox;
+    QTableWidget* m_peers;
+    QComboBox* m_target;
     QPlainTextEdit* m_send;
     QCheckBox* m_hexView;
     QCheckBox* m_stamp;
+    QCheckBox* m_pause;
+    QCheckBox* m_scroll;
     QCheckBox* m_hexSend;
     QCheckBox* m_crlf;
+    QCheckBox* m_at;
     QCheckBox* m_escape;
     QComboBox* m_check;
+    QSpinBox* m_checkFrom;
+    QSpinBox* m_checkTail;
     QComboBox* m_codec;
-    QCheckBox* m_pause;
     QComboBox* m_history;
     QCheckBox* m_auto;
     QSpinBox* m_interval;
-    QLineEdit* m_presetEdit[6];
-    QCheckBox* m_presetHex[6];
+    QPushButton* m_fileSend;
+    QComboBox* m_fileGap;
+    QGridLayout* m_presetGrid;
+    QWidget* m_presetBody;
+    QSpinBox* m_presetCount;
+    QVector<QLineEdit*> m_presetName;
+    QVector<QCheckBox*> m_presetHex;
+    QVector<QLineEdit*> m_presetEdit;
+    QVector<QSpinBox*> m_presetMs;
+    QVector<QPushButton*> m_presetSend;
     QCheckBox* m_cycle;
-    QSpinBox* m_cycleMs;
     QTimer* m_cycleTimer;
     int m_cycleIndex;
-    QLabel* m_counts;
-    QWidget* m_modbusBar;
+    QComboBox* m_method;
+    QTableWidget* m_headers;
+    QPlainTextEdit* m_body;
+    QComboBox* m_httpHistory;
     QSpinBox* m_slave;
     QComboBox* m_fn;
     QSpinBox* m_address;
     QSpinBox* m_count;
-    QWidget* m_httpBar;
-    QComboBox* m_method;
-    QPlainTextEdit* m_headers;
-    QPushButton* m_disconnect;
-    QToolButton* m_rawToggle;
-    QPlainTextEdit* m_raw;
-    QListWidget* m_peers;
+    QSpinBox* m_period;
+    QComboBox* m_display;
+    QPushButton* m_poll;
+    QLabel* m_where;
+    QLabel* m_counts;
+    QPushButton* m_wsDrop;
     ChannelSession* m_session;
     QTimer* m_timer;
     QTimer* m_autoTimer;
+    QTimer* m_pollTimer;
+    QFile* m_dump;
     bool m_waitOpen;
+    bool m_wasOpen;
+    bool m_fileBusy;
+    QByteArray m_fileBytes;
+    int m_filePos;
+    qint64 m_openedAt;
+    QString m_lastUdp;
+    bool m_lastDtr;
+    bool m_lastRts;
+    int m_httpCode;
+    int m_httpMs;
 };
 
 #endif

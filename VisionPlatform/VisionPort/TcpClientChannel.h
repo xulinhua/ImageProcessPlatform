@@ -64,6 +64,7 @@ private:
     std::string m_remote;          ///< 对端地址文本
     std::string m_host;            ///< 上次 open 的主机
     int m_port;                    ///< 上次 open 的端口
+    int m_localPort;               ///< 本机端口。0 表示系统分配
     int m_timeoutMs;               ///< 连接超时
     bool m_autoReconnect;          ///< 断开后按退避重连。PLC 默认关
     std::atomic<bool> m_stopReconnect; ///< 停止重连线程
