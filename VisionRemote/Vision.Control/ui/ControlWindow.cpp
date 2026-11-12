@@ -17,6 +17,7 @@
 #include "RemoteLogWindow.h"
 #include "Messages.h"
 #include "RemoteFiles.h"
+#include "RemoteLog.h"
 #include "RemoteTheme.h"
 #include "RemoteWidgets.h"
 #include "SessionWindow.h"
@@ -28,8 +29,14 @@
 #include <QApplication>
 #include <QCloseEvent>
 #include <QComboBox>
+#include <QCoreApplication>
 #include <QDateTime>
+#include <QDir>
+#include <QFileInfo>
 #include <QDialog>
+#include <QElapsedTimer>
+#include <QLineEdit>
+#include <QThread>
 #include <QListWidget>
 #include <QTextEdit>
 #include <QHBoxLayout>
@@ -38,13 +45,21 @@
 #include <QMenu>
 #include <QMenuBar>
 #include <QMessageBox>
+#include <QProcess>
 #include <QPushButton>
 #include <QSpinBox>
 #include <QSystemTrayIcon>
 #include <QTimer>
 #include <QVBoxLayout>
 
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#include <winsock2.h>
+#include <ws2tcpip.h>
 #include <windows.h>
+
+#pragma comment(lib, "ws2_32.lib")
 
 namespace Vision {
 
@@ -57,6 +72,8 @@ ControlWindow::ControlWindow(QWidget* parent)
     , m_tray(0)
     , m_trayMenu(0)
     , m_scanRun(false)
+    , m_relayProc(0)
+    , m_relayListenPort(0)
     , m_quit(false)
     , m_wallFull(false)
     , m_pageIndex(0)
@@ -171,6 +188,7 @@ ControlWindow::ControlWindow(QWidget* parent)
     QTimer::singleShot(0, this, [this]() {
         RemoteCrash::checkpoint("ControlWindow.deferred_listen");
         RemoteCrash::run("ControlWindow.startListen", [this]() { startListen(); });
+        RemoteCrash::run("ControlWindow.syncLocalRelay", [this]() { syncLocalRelay(); });
         RemoteCrash::checkpoint("ControlWindow.after_listen");
         RemoteCrash::run("ControlWindow.startScan", [this]() { startScan(); });
         RemoteCrash::checkpoint("ControlWindow.after_scan");
@@ -190,6 +208,7 @@ ControlWindow::~ControlWindow()
         delete it->second;
     }
     stopScan();
+    stopOwnedRelay();
     m_session.stop();
     m_store.save();
 }
@@ -340,6 +359,8 @@ QWidget* ControlWindow::buildToolbar()
 
     // 建控件；轮巡间隔不在预设里时追加一项
     QPushButton* add = RemoteTheme::button(QString::fromUtf8("添加设备"), "plus", "primary", bar);
+    QPushButton* access = RemoteTheme::button(QString::fromUtf8("识别码"), "key", 0, bar);
+    access->setToolTip(QString::fromUtf8("用对方屏幕上的设备 ID 和验证码连接。走固定域名，不影响局域网反连"));
     QPushButton* refresh = RemoteTheme::button(QString::fromUtf8("刷新"), "refresh", 0, bar);
     refresh->setToolTip(QString::fromUtf8("重新扫描局域网并刷新列表"));
     m_layoutSeg = new SegmentBar(bar);
@@ -390,6 +411,7 @@ QWidget* ControlWindow::buildToolbar()
 
     // 排布：添加、刷新 | 布局、行列 | 轮巡 | 筛选 …… 翻页 | 全屏墙
     row->addWidget(add);
+    row->addWidget(access);
     row->addWidget(refresh);
     row->addWidget(new ToolSeparator(bar));
     row->addWidget(layoutLabel);
@@ -415,6 +437,7 @@ QWidget* ControlWindow::buildToolbar()
 
     // 信号连接；改轮巡间隔立即存配置，轮巡中则按新间隔重启
     QObject::connect(add, &QPushButton::clicked, [this]() { openAddDevice(); });
+    QObject::connect(access, &QPushButton::clicked, [this]() { openAccess(); });
     QObject::connect(logBtn, &QPushButton::clicked, [this]() { openRunLog(); });
     QObject::connect(refresh, &QPushButton::clicked, [this]() {
         foundNow();
@@ -485,6 +508,90 @@ QWidget* ControlWindow::buildStatus()
     row->addWidget(icon("user"));
     row->addWidget(m_userStatus);
     return bar;
+}
+
+bool ControlWindow::relayPortOpen(int port) const
+{
+    WSADATA data;
+    if (WSAStartup(MAKEWORD(2, 2), &data) != 0) {
+        return false;
+    }
+    SOCKET sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    if (sock == INVALID_SOCKET) {
+        return false;
+    }
+    u_long nonblock = 1;
+    ioctlsocket(sock, FIONBIO, &nonblock);
+    sockaddr_in addr;
+    ZeroMemory(&addr, sizeof(addr));
+    addr.sin_family = AF_INET;
+    addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+    addr.sin_port = htons(static_cast<u_short>(port));
+    ::connect(sock, reinterpret_cast<sockaddr*>(&addr), sizeof(addr));
+    fd_set write;
+    FD_ZERO(&write);
+    FD_SET(sock, &write);
+    timeval wait;
+    wait.tv_sec = 0;
+    wait.tv_usec = 200000;
+    bool open = false;
+    if (select(0, 0, &write, 0, &wait) > 0) {
+        int err = 0;
+        int len = sizeof(err);
+        getsockopt(sock, SOL_SOCKET, SO_ERROR, reinterpret_cast<char*>(&err), &len);
+        open = err == 0;
+    }
+    closesocket(sock);
+    return open;
+}
+
+void ControlWindow::stopOwnedRelay()
+{
+    if (!m_relayProc) {
+        return;
+    }
+    if (m_relayProc->state() != QProcess::NotRunning) {
+        m_relayProc->kill();
+        m_relayProc->waitForFinished(1500);
+    }
+    m_relayListenPort = 0;
+}
+
+void ControlWindow::syncLocalRelay()
+{
+    const int port = m_config.relayPort > 0 && m_config.relayPort <= 65535 ? m_config.relayPort : 19200;
+    if (!m_config.startRelay) {
+        stopOwnedRelay();
+        return;
+    }
+    if (m_relayProc && m_relayProc->state() != QProcess::NotRunning && m_relayListenPort == port) {
+        return;
+    }
+    if (relayPortOpen(port)) {
+        stopOwnedRelay();
+        RemoteLog::writef(RemoteLog::Info, "中继", "端口 %d 已有中继，不再启动", port);
+        return;
+    }
+    stopOwnedRelay();
+    const QString exe = QDir(QCoreApplication::applicationDirPath()).filePath("RemoteRelay.exe");
+    if (!QFileInfo::exists(exe)) {
+        RemoteLog::writef(RemoteLog::Warn, "中继", "找不到 RemoteRelay.exe");
+        return;
+    }
+    if (!m_relayProc) {
+        m_relayProc = new QProcess(this);
+        m_relayProc->setWorkingDirectory(QCoreApplication::applicationDirPath());
+        m_relayProc->setCreateProcessArgumentsModifier([](QProcess::CreateProcessArguments* args) {
+            args->flags |= CREATE_NO_WINDOW;
+        });
+    }
+    m_relayProc->start(exe, QStringList() << QString::number(port) << QString::number(19280));
+    if (!m_relayProc->waitForStarted(3000)) {
+        RemoteLog::writef(RemoteLog::Warn, "中继", "RemoteRelay 没有启动");
+        return;
+    }
+    m_relayListenPort = port;
+    RemoteLog::writef(RemoteLog::Info, "中继", "已随中控台启动，TCP %d，识别码 127.0.0.1:19280", port);
 }
 
 void ControlWindow::startListen()
@@ -660,7 +767,10 @@ void ControlWindow::syncStreams(const std::vector<ControlSession::Tile>& tiles)
         full.enable = wantMain ? 1 : 0;
         full.maxFps = fps;
         full.jpegQuality = static_cast<uint8_t>(RemoteConst::kJpegQuality);
-        full.longEdge = static_cast<uint16_t>(RemoteConst::kLongEdge);
+        const int edge = m_config.pictureLongEdge(m_config.defaultQuality);
+        full.longEdge = static_cast<uint16_t>(edge);
+        full.edgeLock = static_cast<uint8_t>(m_config.lockPictureEdge()
+            ? RemoteConst::kEdgeLockFixed : RemoteConst::kEdgeLockAdaptive);
         full.codec = static_cast<uint8_t>(m_config.streamCodec >= 0 && m_config.streamCodec <= 3
             ? m_config.streamCodec : 0);
         m_session.subscribe(tile.peerId, full);
@@ -741,7 +851,9 @@ void ControlWindow::trackTiles(const std::vector<ControlSession::Tile>& tiles)
         const ControlSession::Tile* best = tileOf(tiles, key);
         current[key] = best;
         if (best == &tiles[i] && tiles[i].online) {
-            if (m_store.touch(key, QString::fromUtf8(tiles[i].name.c_str()), QString::fromUtf8(tiles[i].address.c_str()),
+            const QString rawAddress = QString::fromUtf8(tiles[i].address.c_str());
+            const QString storedAddress = rawAddress.startsWith(QString::fromUtf8("access:")) ? QString() : rawAddress;
+            if (m_store.touch(key, QString::fromUtf8(tiles[i].name.c_str()), storedAddress,
                     QString::fromUtf8(tiles[i].system.c_str()))) {
                 changed = true;
                 m_audit.add("device.add", nameOf(key), QString::fromUtf8(tiles[i].deviceId.c_str()),
@@ -769,7 +881,10 @@ void ControlWindow::trackTiles(const std::vector<ControlSession::Tile>& tiles)
         if (online && !seen.online) {
             seen.since = now;
             seen.highestTried = false;
-            m_audit.add("session.start", name, id, address, QString::fromUtf8("反连 · ") + SessionWindow::shareText(tile));
+            const QString how = address.startsWith(QString::fromUtf8("access:"))
+                ? QString::fromUtf8("识别码 · ")
+                : QString::fromUtf8("反连 · ");
+            m_audit.add("session.start", name, id, address, how + SessionWindow::shareText(tile));
         } else if (!online && seen.online) {
             m_audit.add("session.end", name, id, address, QString::fromUtf8("连接断开"), (now - seen.since) / 1000);
             seen.highestTried = false;
@@ -1327,6 +1442,69 @@ SessionWindow* ControlWindow::openSession(const QString& key)
     return window;
 }
 
+void ControlWindow::openAccess()
+{
+    QDialog dialog(this);
+    dialog.setWindowFlags(dialog.windowFlags() & ~Qt::WindowContextHelpButtonHint);
+    dialog.setWindowTitle(QString::fromUtf8("识别码连接"));
+    dialog.resize(360, 180);
+    QLineEdit* id = new QLineEdit(&dialog);
+    id->setPlaceholderText(QString::fromUtf8("对方的设备 ID"));
+    QLineEdit* code = new QLineEdit(&dialog);
+    code->setPlaceholderText(QString::fromUtf8("6 位验证码"));
+    code->setMaxLength(8);
+    QPushButton* ok = RemoteTheme::button(QString::fromUtf8("连接"), 0, "primary", &dialog);
+    QPushButton* cancel = RemoteTheme::button(QString::fromUtf8("取消"), 0, 0, &dialog);
+    QVBoxLayout* root = new QVBoxLayout(&dialog);
+    root->addWidget(new QLabel(QString::fromUtf8("对方只要开着被控端，把屏幕上的设备 ID 和验证码发过来。"), &dialog));
+    root->addWidget(id);
+    root->addWidget(code);
+    QHBoxLayout* buttons = new QHBoxLayout();
+    buttons->addStretch(1);
+    buttons->addWidget(cancel);
+    buttons->addWidget(ok);
+    root->addLayout(buttons);
+    QObject::connect(cancel, &QPushButton::clicked, &dialog, &QDialog::reject);
+    QObject::connect(ok, &QPushButton::clicked, &dialog, &QDialog::accept);
+    if (dialog.exec() != QDialog::Accepted) {
+        return;
+    }
+    const QString deviceId = id->text().trimmed().remove(' ');
+    const QString accessCode = code->text().trimmed().remove(' ');
+    if (deviceId.isEmpty() || accessCode.isEmpty()) {
+        QMessageBox::information(this, windowTitle(), QString::fromUtf8("设备 ID 和验证码都要填"));
+        return;
+    }
+    std::string err;
+    const QString host = m_config.accessHost.trimmed().isEmpty()
+        ? QString::fromUtf8("remote.subapi.fun") : m_config.accessHost.trimmed();
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+    const bool opened = m_session.dialAccess(host.toStdString(), m_config.accessPort, deviceId.toStdString(),
+        accessCode.toStdString(), &err);
+    QApplication::restoreOverrideCursor();
+    if (!opened) {
+        QMessageBox::warning(this, windowTitle(),
+            QString::fromUtf8("没有连上：%1").arg(QString::fromUtf8(err.empty() ? "对方不在线" : err.c_str())));
+        return;
+    }
+    QElapsedTimer timer;
+    timer.start();
+    while (timer.elapsed() < 8000) {
+        QApplication::processEvents();
+        const std::vector<ControlSession::Tile> tiles = m_session.tiles();
+        trackTiles(tiles);
+        refreshTree(tiles);
+        for (size_t i = 0; i < tiles.size(); ++i) {
+            if (QString::fromUtf8(tiles[i].deviceId.c_str()) == deviceId && tiles[i].online && !tiles[i].peerId.empty()) {
+                openSession(deviceId);
+                return;
+            }
+        }
+        QThread::msleep(100);
+    }
+    QMessageBox::information(this, windowTitle(), QString::fromUtf8("隧道已经接上，等对方画面出现在列表里再打开。"));
+}
+
 void ControlWindow::openAddDevice()
 {
     AddDeviceDialog dialog(&m_store, &m_config, [this]() { return foundNow(); }, QString(), this);
@@ -1413,6 +1591,7 @@ void ControlWindow::openSettings(int page)
         }
         m_audit.prune(m_config.auditDays);
         m_session.setAdaptive(m_config.adaptive);
+        syncLocalRelay();
     }, this);
     dialog.setPage(page);
     dialog.exec();

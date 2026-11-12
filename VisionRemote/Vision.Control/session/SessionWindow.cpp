@@ -179,7 +179,7 @@ QWidget* SessionWindow::buildToolbar()
     m_quality->setCurrentIndex(m_config && m_config->defaultQuality >= 0 && m_config->defaultQuality <= 3
         ? m_config->defaultQuality : 1);
     m_quality->setFixedWidth(96);
-    m_quality->setToolTip(QString::fromUtf8("流畅/均衡/清晰为预设；自定义用设置里的长边、帧率、码率"));
+    m_quality->setToolTip(QString::fromUtf8("流畅/均衡/清晰为预设；自定义用设置里的帧率和码率。分辨率在设置为自适应时跟画质档走"));
     m_codec = new QComboBox(bar);
     m_codec->addItem(QString::fromUtf8("沿用"), 0);
     m_codec->addItem(QString::fromUtf8("JPEG"), 1);
@@ -657,33 +657,35 @@ void SessionWindow::fillQuality(ConfigMsg* cfg) const
     if (!cfg) {
         return;
     }
-    // 0 流畅 / 1 均衡 / 2 清晰 / 3 自定义（设置里的长边、帧率、码率）
+    // 0 流畅 / 1 均衡 / 2 清晰 / 3 自定义（设置里的帧率、码率）
+    // 长边由设置里的分辨率模式决定：自适应才跟画质档走
     const int index = m_quality ? m_quality->currentIndex() : 1;
     cfg->bitrateKbps = 0;
     if (index <= 0) {
         cfg->jpegQuality = 40;
-        cfg->longEdge = 960;
         cfg->bitrateKbps = 1500;
     } else if (index == 3 && m_config) {
         cfg->jpegQuality = 70;
-        cfg->longEdge = static_cast<uint16_t>(m_config->customLongEdge < 320 ? 320 : m_config->customLongEdge);
         cfg->bitrateKbps = static_cast<uint16_t>(m_config->customBitrateKbps < 100 ? 100 : m_config->customBitrateKbps);
     } else if (index >= 2) {
         cfg->jpegQuality = 80;
-        cfg->longEdge = 1600;
         cfg->bitrateKbps = 8000;
     } else {
         cfg->jpegQuality = static_cast<uint8_t>(RemoteConst::kJpegQuality);
-        cfg->longEdge = static_cast<uint16_t>(RemoteConst::kLongEdge);
         cfg->bitrateKbps = 4000;
     }
+    const int edge = m_config ? m_config->pictureLongEdge(index) : RemoteConst::kLongEdge;
+    cfg->longEdge = static_cast<uint16_t>(edge);
+    cfg->edgeLock = static_cast<uint8_t>(m_config && m_config->lockPictureEdge()
+        ? RemoteConst::kEdgeLockFixed : RemoteConst::kEdgeLockAdaptive);
     cfg->maxFps = static_cast<uint16_t>(m_maxFps ? m_maxFps->value() : RemoteConst::kMaxFpsDefault);
     if (m_config && m_config->bandwidthKbps > 0) {
         const int cap = m_config->bandwidthKbps / 80;
         if (cap > 0 && cfg->maxFps > static_cast<uint16_t>(cap)) {
             cfg->maxFps = static_cast<uint16_t>(cap);
         }
-        if (cfg->longEdge > 960 && m_config->bandwidthKbps < 1500) {
+        if (!m_config->lockPictureEdge() && cfg->longEdge > 960 && cfg->longEdge < RemoteConst::kNativeEdge
+            && m_config->bandwidthKbps < 1500) {
             cfg->longEdge = 960;
         }
         if (cfg->bitrateKbps == 0 || cfg->bitrateKbps > static_cast<uint16_t>(m_config->bandwidthKbps)) {

@@ -63,6 +63,7 @@ void ControlSession::armDownload(const std::string& peerId, uint32_t id, const s
     }
     machine.tile.fileBytes = total;
     machine.tile.fileNote = "正在下载";
+    machine.fileHold = false;
 }
 
 std::string ControlSession::sha256File(const std::wstring& path) const
@@ -135,7 +136,55 @@ std::string ControlSession::armUpload(const std::string& peerId, uint32_t id, co
     machine.tile.fileGot = 0;
     machine.tile.fileBytes = machine.upSize;
     machine.tile.fileNote = "正在上传";
+    machine.fileHold = false;
     return sha;
+}
+
+void ControlSession::holdTransfer(const std::string& peerId, bool hold)
+{
+    std::lock_guard<std::mutex> lock(m_mu);
+    const int index = indexOfPeer(peerId);
+    if (index < 0) {
+        return;
+    }
+    Machine& machine = m_machines[static_cast<size_t>(index)];
+    machine.fileHold = hold;
+    if (!hold && !machine.downPath.empty()) {
+        std::string err;
+        enqueue(&machine, Messages::packFileAck(machine.downId, machine.tile.fileGot, &err));
+    }
+}
+
+void ControlSession::stopTransfer(const std::string& peerId)
+{
+    std::wstring drop;
+    {
+        std::lock_guard<std::mutex> lock(m_mu);
+        const int index = indexOfPeer(peerId);
+        if (index < 0) {
+            return;
+        }
+        Machine& machine = m_machines[static_cast<size_t>(index)];
+        machine.fileHold = false;
+        std::string err;
+        if (machine.upOn) {
+            enqueue(&machine, Messages::packFileDone(machine.upId, 0, "已终止", &err));
+            machine.upOn = false;
+            machine.upFinished = true;
+            machine.tile.fileNote = "已终止";
+            machine.tile.fileSeq += 1;
+        }
+        if (!machine.downPath.empty()) {
+            enqueue(&machine, Messages::packFileDone(machine.downId, 0, "已终止", &err));
+            drop = widePath(machine.downPath);
+            machine.downPath.clear();
+            machine.tile.fileNote = "已终止";
+            machine.tile.fileSeq += 1;
+        }
+    }
+    if (!drop.empty()) {
+        DeleteFileW(drop.c_str());
+    }
 }
 
 bool ControlSession::takePhase4(Machine* machine, const Frame::Packet& packet)
@@ -307,8 +356,10 @@ bool ControlSession::takePhase4(Machine* machine, const Frame::Packet& packet)
             fclose(file);
             if (offset == machine->tile.fileGot) {
                 machine->tile.fileGot = offset + data.size();
-                std::string err;
-                enqueue(machine, Messages::packFileAck(id, machine->tile.fileGot, &err));
+                if (!machine->fileHold) {
+                    std::string err;
+                    enqueue(machine, Messages::packFileAck(id, machine->tile.fileGot, &err));
+                }
             }
             machine->tile.fileNote = "正在下载";
         }
@@ -368,6 +419,9 @@ void ControlSession::pumpUpload(const std::string& peerId)
             return;
         }
         Machine& machine = m_machines[static_cast<size_t>(index)];
+        if (machine.fileHold) {
+            return;
+        }
         on = machine.upOn;
         ready = machine.upReady;
         finished = machine.upFinished;

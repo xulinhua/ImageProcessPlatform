@@ -203,6 +203,9 @@ private:
     QLineEdit* m_relayHost;             ///< 中继地址
     QSpinBox* m_relayPort;              ///< 中继端口
     QLineEdit* m_relayKey;              ///< 中继口令
+    QCheckBox* m_accessOn;              ///< 识别码通道。没连上中控台时挂到固定域名
+    QLineEdit* m_accessHost;            ///< 识别码域名
+    QSpinBox* m_accessPort;             ///< 识别码端口
     QCheckBox* m_production;            ///< 生产保护，操作必须现场确认
     QCheckBox* m_allowHighest;          ///< 允许中控台最高权限（满权限开放）
     QCheckBox* m_logDisk;               ///< 运行日志写盘，默认关

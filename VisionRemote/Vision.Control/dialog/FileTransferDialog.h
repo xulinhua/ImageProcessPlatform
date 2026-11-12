@@ -16,6 +16,7 @@
 
 class QLabel;
 class QLineEdit;
+class QPlainTextEdit;
 class QProgressBar;
 class QPushButton;
 class QTableWidget;
@@ -112,6 +113,16 @@ private:
     QString indexed(const QString& path, int n) const;
     /** @brief 没有正在传的文件时，取出队列头开始下一次 */
     void pump();
+    /** @brief 停在当前偏移，队列保留 */
+    void pauseTransfer();
+    /** @brief 从当前偏移继续，并接着队列 */
+    void resumeTransfer();
+    /** @brief 停掉当前文件并清空队列 */
+    void terminateTransfer();
+    /** @brief 按空闲、传输中、已暂停切换三个按钮 */
+    void syncTransfer();
+    /** @brief 写一行传输日志。同样的文字不重复写 */
+    void showStatus(const QString& text);
     /** @brief 定时刷新目录和进度。传完一个就接着队列里的下一个 */
     void tick();
     /** @brief 找到当前这条连接。没有返回 false */
@@ -130,6 +141,8 @@ private:
     uint64_t m_waitSeq;             ///< 开始这次传输时的 fileSeq
     uint32_t m_nextId;              ///< 下一个传输号
     bool m_waiting;                 ///< 有一步正在进行
+    bool m_paused;                  ///< 停在当前偏移，不再取队列
+    bool m_dropWalk;                ///< 终止后丢掉还在路上的列目录结果
     bool m_waitUpload;              ///< 正在传的是上传，结束后刷新被控端
     bool m_waitList;                ///< 正在等一次列目录，这包结果不刷新右栏
     int m_conflict;                 ///< 0 每次询问，1 全部覆盖，2 全部跳过
@@ -145,8 +158,12 @@ private:
     QTableWidget* m_remote;         ///< 被控端文件表
     QPushButton* m_toRemote;        ///< 传到被控端
     QPushButton* m_toLocal;         ///< 传到本机
-    QLabel* m_status;               ///< 底部说明
+    QString m_lastStatus;           ///< 上一行日志，避免重复
+    QPlainTextEdit* m_log;          ///< 传输日志
     QProgressBar* m_progress;       ///< 当前文件进度
+    QPushButton* m_pause;           ///< 暂停
+    QPushButton* m_resume;          ///< 继续
+    QPushButton* m_stop;            ///< 终止
     QTimer* m_timer;                ///< 200 ms 刷新
 };
 

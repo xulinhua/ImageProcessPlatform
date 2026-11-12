@@ -7,6 +7,7 @@
  */
 
 #include "ControlSession.h"
+#include "AccessTunnel.h"
 #include "LinkDial.h"
 #include "RemoteCrash.h"
 #include "RemoteLog.h"
@@ -267,6 +268,15 @@ void ControlSession::adoptHello(const std::string& peerId, const HelloMsg& hello
     current.tile.system = hello.system;
     current.tile.forceRecord = hello.forceRecord;
     current.tile.operating = false;
+    std::map<std::string, std::string>::iterator pending = m_accessCodes.find(hello.deviceId);
+    if (pending != m_accessCodes.end()) {
+        current.auth.method = AuthMethodCode;
+        current.auth.token = pending->second;
+        current.auth.perms = PermDefaultRequest;
+        current.wantAuth = true;
+        current.tile.hint = "正在核对验证码…";
+        m_accessCodes.erase(pending);
+    }
     std::string err;
     HelloAckMsg ack;
     ack.code = 0;
@@ -761,6 +771,55 @@ bool ControlSession::dialDevice(const std::string& address, const std::string& d
         steps.push_back("relay");
     }
     return dial.reachOrdered(&m_tcp, address, 19102, relayHost, relayPort, token, deviceId, steps, relayOn, err);
+}
+
+bool ControlSession::dialAccess(const std::string& host, int port, const std::string& deviceId, const std::string& code, std::string* err)
+{
+    std::string id = deviceId;
+    for (size_t i = 0; i < id.size();) {
+        if (id[i] == ' ') {
+            id.erase(i, 1);
+        } else {
+            ++i;
+        }
+    }
+    if (id.empty() || code.empty()) {
+        if (err) {
+            *err = "要填设备 ID 和验证码";
+        }
+        return false;
+    }
+    const std::string useHost = host.empty() ? AccessTunnel::defaultHost() : host;
+    uintptr_t sock = 0;
+    if (!AccessTunnel::open(useHost, port > 0 ? port : 443, m_identity, &sock, err)) {
+        return false;
+    }
+    const std::string line = "OPEN " + id + " " + AccessTunnel::token() + "\n";
+    if (!AccessTunnel::writeLine(sock, line)) {
+        AccessTunnel::discard(sock);
+        if (err) {
+            *err = "识别码通道写失败";
+        }
+        return false;
+    }
+    std::string reply;
+    if (!AccessTunnel::readLine(sock, &reply, 8000) || reply.find("GO") == std::string::npos) {
+        AccessTunnel::discard(sock);
+        if (err) {
+            *err = reply.find("DENY") != std::string::npos ? "对方没挂在域名上" : "识别码配对超时";
+        }
+        return false;
+    }
+    {
+        std::lock_guard<std::mutex> lock(m_mu);
+        m_accessCodes[id] = code;
+    }
+    if (!m_tcp.adopt(sock, "access:" + id, err)) {
+        std::lock_guard<std::mutex> lock(m_mu);
+        m_accessCodes.erase(id);
+        return false;
+    }
+    return true;
 }
 
 }

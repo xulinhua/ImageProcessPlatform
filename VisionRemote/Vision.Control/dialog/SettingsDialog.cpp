@@ -251,8 +251,21 @@ QWidget* SettingsDialog::buildNetwork(bool listening)
     m_relayKey->setEchoMode(QLineEdit::Password);
     m_relayKey->setFixedWidth(200);
     addRow(relay, QString::fromUtf8("启用中继"), line(m_relayOn));
+    m_startRelay = new SwitchButton(body);
+    m_startRelay->setToolTip(QString::fromUtf8("勾选后中控台启动时拉起同目录的 RemoteRelay，不再单独开中继。局域网端口用上面的端口，识别码仍听本机 19280。关掉中控台时只结束这次拉起的中继"));
+    addRow(relay, QString::fromUtf8("随软件启动"), line(m_startRelay));
     addRow(relay, QString::fromUtf8("地址"), line(m_relayHost, new QLabel(QString::fromUtf8("端口"), body), m_relayPort));
     addRow(relay, QString::fromUtf8("注册口令"), line(m_relayKey));
+    QGridLayout* access = group(col, QString::fromUtf8("识别码"));
+    m_accessHost = new QLineEdit(body);
+    m_accessHost->setFixedWidth(200);
+    m_accessHost->setPlaceholderText("remote.subapi.fun");
+    m_accessHost->setToolTip(QString::fromUtf8("被控端没连上局域网中控台时挂在这个域名上。生产用的反连、直连、中继不变"));
+    m_accessPort = new QSpinBox(body);
+    m_accessPort->setRange(1, 65535);
+    m_accessPort->setValue(443);
+    m_accessPort->setFixedWidth(90);
+    addRow(access, QString::fromUtf8("域名"), line(m_accessHost, new QLabel(QString::fromUtf8("端口"), body), m_accessPort));
 
     QGridLayout* order = group(col, QString::fromUtf8("连接顺序"));
     m_orderList = new QListWidget(body);
@@ -359,11 +372,34 @@ QWidget* SettingsDialog::buildPicture()
     m_defaultFps->setSuffix(QString::fromUtf8(" fps"));
     m_defaultFps->setFixedWidth(100);
     m_adaptive = new SwitchButton(body);
+    m_resolutionMode = new QComboBox(body);
+    m_resolutionMode->addItem(QString::fromUtf8("自适应"));
+    m_resolutionMode->addItem(QString::fromUtf8("原画质"));
+    m_resolutionMode->addItem(QString::fromUtf8("指定分辨率"));
+    m_resolutionMode->setFixedWidth(140);
+    m_resolutionMode->setToolTip(QString::fromUtf8(
+        "自适应：按画质档决定长边，网络差时可再降。原画质：按抓屏尺寸发送，不缩小。指定分辨率：按下面的宽高取长边缩小，保持比例。"));
+    m_resolutionWidth = new QSpinBox(body);
+    m_resolutionWidth->setRange(320, 7680);
+    m_resolutionWidth->setSuffix(QString::fromUtf8(" px"));
+    m_resolutionWidth->setFixedWidth(100);
+    m_resolutionHeight = new QSpinBox(body);
+    m_resolutionHeight->setRange(240, 4320);
+    m_resolutionHeight->setSuffix(QString::fromUtf8(" px"));
+    m_resolutionHeight->setFixedWidth(100);
     addRow(picture, QString::fromUtf8("默认画质"), line(m_defaultQuality));
     m_defaultFps->setToolTip(QString::fromUtf8("新打开的会话用这个值，会话里还能再改"));
     addRow(picture, QString::fromUtf8("默认帧率上限"), line(m_defaultFps));
-    m_adaptive->setToolTip(QString::fromUtf8("只在延迟超过 800 ms 时略降分辨率，帧率不低于 10"));
+    addRow(picture, QString::fromUtf8("分辨率"), line(m_resolutionMode));
+    addRow(picture, QString::fromUtf8("指定分辨率"), line(m_resolutionWidth, new QLabel(QString::fromUtf8("×"), body), m_resolutionHeight));
+    QObject::connect(m_resolutionMode, QOverload<int>::of(&QComboBox::currentIndexChanged), [this](int index) {
+        const bool fixed = index == 2;
+        m_resolutionWidth->setEnabled(fixed);
+        m_resolutionHeight->setEnabled(fixed);
+    });
+    m_adaptive->setToolTip(QString::fromUtf8("延迟超过 800 ms 时略降画质，帧率不低于 10。只有分辨率为自适应时才会同时降长边"));
     addRow(picture, QString::fromUtf8("网络差时自动调整"), line(m_adaptive));
+    m_customEdge->setToolTip(QString::fromUtf8("只在分辨率为自适应、画质为自定义时作为长边"));
     addRow(picture, QString::fromUtf8("自定义长边"), line(m_customEdge));
     addRow(picture, QString::fromUtf8("自定义帧率"), line(m_customFps));
     addRow(picture, QString::fromUtf8("自定义码率"), line(m_customBitrate));
@@ -512,13 +548,31 @@ void SettingsDialog::load(const ControlConfig& config)
         m_streamCodec->setCurrentIndex(idx >= 0 ? idx : 0);
     }
     m_adaptive->setChecked(config.adaptive);
+    {
+        const int mode = config.resolutionMode >= 0 && config.resolutionMode <= 2 ? config.resolutionMode : 0;
+        m_resolutionMode->setCurrentIndex(mode);
+        m_resolutionWidth->setValue(config.resolutionWidth);
+        m_resolutionHeight->setValue(config.resolutionHeight);
+        const bool fixed = mode == 2;
+        m_resolutionWidth->setEnabled(fixed);
+        m_resolutionHeight->setEnabled(fixed);
+    }
     m_rows->setValue(config.rows);
     m_cols->setValue(config.cols);
     m_tour->setValue(config.tourSeconds);
     m_relayOn->setChecked(config.relayOn);
+    if (m_startRelay) {
+        m_startRelay->setChecked(config.startRelay);
+    }
     m_relayHost->setText(config.relayHost);
     m_relayPort->setValue(config.relayPort > 0 ? config.relayPort : 19200);
     m_relayKey->setText(config.relayKey);
+    if (m_accessHost) {
+        m_accessHost->setText(config.accessHost);
+    }
+    if (m_accessPort) {
+        m_accessPort->setValue(config.accessPort > 0 ? config.accessPort : 443);
+    }
     m_shotDir->setText(QDir::toNativeSeparators(config.shotDir));
     m_autoRecord->setChecked(config.autoRecord);
     m_recordDir->setText(QDir::toNativeSeparators(config.recordDir.isEmpty() ? config.shotDir : config.recordDir));
@@ -615,13 +669,25 @@ void SettingsDialog::store()
     m_config->defaultFps = m_defaultFps->value();
     m_config->streamCodec = m_streamCodec->currentData().toInt();
     m_config->adaptive = m_adaptive->isChecked();
+    m_config->resolutionMode = m_resolutionMode->currentIndex();
+    m_config->resolutionWidth = m_resolutionWidth->value();
+    m_config->resolutionHeight = m_resolutionHeight->value();
     m_config->rows = m_rows->value();
     m_config->cols = m_cols->value();
     m_config->tourSeconds = m_tour->value();
     m_config->relayOn = m_relayOn->isChecked();
+    if (m_startRelay) {
+        m_config->startRelay = m_startRelay->isChecked();
+    }
     m_config->relayHost = m_relayHost->text().trimmed();
     m_config->relayPort = m_relayPort->value();
     m_config->relayKey = m_relayKey->text();
+    if (m_accessHost) {
+        m_config->accessHost = m_accessHost->text().trimmed();
+    }
+    if (m_accessPort) {
+        m_config->accessPort = m_accessPort->value();
+    }
     m_config->shotDir = m_shotDir->text().trimmed();
     m_config->autoRecord = m_autoRecord->isChecked();
     m_config->recordDir = m_recordDir->text().trimmed();

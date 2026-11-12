@@ -12,11 +12,15 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <windows.h>
+#include <iphlpapi.h>
 
 #include <atomic>
 #include <cstring>
 #include <mutex>
 #include <thread>
+#include <vector>
+
+#pragma comment(lib, "iphlpapi.lib")
 
 namespace Vision {
 
@@ -168,85 +172,161 @@ std::vector<HelloMsg> RemoteBeacon::scan(int timeoutMs)
     if (!startup(&err)) {
         return found;
     }
-    SOCKET sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-    if (sock == INVALID_SOCKET) {
-        WSACleanup();
-        return found;
-    }
-    // 同时发到本机回环和全网广播，本机上的被控端也能被扫到
-    BOOL broadcast = TRUE;
-    setsockopt(sock, SOL_SOCKET, SO_BROADCAST, reinterpret_cast<const char*>(&broadcast), sizeof(broadcast));
-    DWORD tv = timeoutMs <= 0 ? 800 : static_cast<DWORD>(timeoutMs);
-    setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<const char*>(&tv), sizeof(tv));
     const CommBytes probe = Messages::packEmpty(Frame::TypeProbe, &err);
-    const char* targets[] = { "127.0.0.1", "255.255.255.255" };
-    for (int i = 0; i < 2; ++i) {
+    const DWORD tv = timeoutMs <= 0 ? 800 : static_cast<DWORD>(timeoutMs);
+    std::vector<SOCKET> socks;
+
+    // 每块网卡单独一套接字。Windows 上一个 UDP 套接字发出去之后会钉在那条路由上，别的网卡回包收不到。
+    auto openBound = [&](uint32_t localNet) -> SOCKET {
+        SOCKET neu = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+        if (neu == INVALID_SOCKET) {
+            return INVALID_SOCKET;
+        }
+        sockaddr_in mine;
+        std::memset(&mine, 0, sizeof(mine));
+        mine.sin_family = AF_INET;
+        mine.sin_addr.s_addr = localNet;
+        mine.sin_port = 0;
+        BOOL allow = TRUE;
+        setsockopt(neu, SOL_SOCKET, SO_BROADCAST, reinterpret_cast<const char*>(&allow), sizeof(allow));
+        BOOL reset = FALSE;
+        DWORD ignored = 0;
+        WSAIoctl(neu, 0x9800000C, &reset, sizeof(reset), nullptr, 0, &ignored, nullptr, nullptr);
+        if (bind(neu, reinterpret_cast<sockaddr*>(&mine), sizeof(mine)) != 0) {
+            closesocket(neu);
+            return INVALID_SOCKET;
+        }
+        return neu;
+    };
+    auto sendProbe = [&](SOCKET neu, uint32_t destNet) {
         sockaddr_in to;
         std::memset(&to, 0, sizeof(to));
         to.sin_family = AF_INET;
         to.sin_port = htons(static_cast<u_short>(RemoteConst::kDiscoverPort));
-        inet_pton(AF_INET, targets[i], &to.sin_addr);
-        sendto(sock, reinterpret_cast<const char*>(probe.data()), static_cast<int>(probe.size()), 0,
+        to.sin_addr.s_addr = destNet;
+        sendto(neu, reinterpret_cast<const char*>(probe.data()), static_cast<int>(probe.size()), 0,
             reinterpret_cast<sockaddr*>(&to), sizeof(to));
+    };
+
+    SOCKET loop = openBound(htonl(INADDR_LOOPBACK));
+    if (loop != INVALID_SOCKET) {
+        sendProbe(loop, htonl(INADDR_LOOPBACK));
+        socks.push_back(loop);
     }
-    // 收应答直到超时；recvfrom 超时即提前结束
+
+    ULONG bytes = 15000;
+    std::vector<unsigned char> block(bytes);
+    ULONG listed = GetAdaptersAddresses(AF_INET, GAA_FLAG_SKIP_ANYCAST | GAA_FLAG_SKIP_DNS_SERVER | GAA_FLAG_SKIP_MULTICAST,
+        nullptr, reinterpret_cast<IP_ADAPTER_ADDRESSES*>(block.data()), &bytes);
+    if (listed == ERROR_BUFFER_OVERFLOW) {
+        block.resize(bytes);
+        listed = GetAdaptersAddresses(AF_INET, GAA_FLAG_SKIP_ANYCAST | GAA_FLAG_SKIP_DNS_SERVER | GAA_FLAG_SKIP_MULTICAST,
+            nullptr, reinterpret_cast<IP_ADAPTER_ADDRESSES*>(block.data()), &bytes);
+    }
+    if (listed == NO_ERROR) {
+        for (IP_ADAPTER_ADDRESSES* adapter = reinterpret_cast<IP_ADAPTER_ADDRESSES*>(block.data()); adapter; adapter = adapter->Next) {
+            if (adapter->OperStatus != IfOperStatusUp) {
+                continue;
+            }
+            for (IP_ADAPTER_UNICAST_ADDRESS* uni = adapter->FirstUnicastAddress; uni; uni = uni->Next) {
+                if (!uni->Address.lpSockaddr || uni->Address.lpSockaddr->sa_family != AF_INET) {
+                    continue;
+                }
+                const int prefix = static_cast<int>(uni->OnLinkPrefixLength);
+                if (prefix <= 0 || prefix >= 32) {
+                    continue;
+                }
+                const uint32_t host = ntohl(reinterpret_cast<sockaddr_in*>(uni->Address.lpSockaddr)->sin_addr.s_addr);
+                if ((host >> 24) == 127) {
+                    continue;
+                }
+                const uint32_t localNet = reinterpret_cast<sockaddr_in*>(uni->Address.lpSockaddr)->sin_addr.s_addr;
+                const uint32_t mask = 0xFFFFFFFFu << (32 - prefix);
+                SOCKET neu = openBound(localNet);
+                if (neu == INVALID_SOCKET) {
+                    continue;
+                }
+                sendProbe(neu, htonl(host | ~mask));
+                sendProbe(neu, htonl(INADDR_BROADCAST));
+                socks.push_back(neu);
+            }
+        }
+    }
+
     const DWORD begin = GetTickCount();
-    while (GetTickCount() - begin < tv) {
-        char buf[2048];
-        sockaddr_in from;
-        int fromLen = sizeof(from);
-        const int n = recvfrom(sock, buf, sizeof(buf), 0, reinterpret_cast<sockaddr*>(&from), &fromLen);
-        if (n <= 0) {
+    while (!socks.empty() && GetTickCount() - begin < tv) {
+        std::vector<WSAPOLLFD> fds(socks.size());
+        for (size_t i = 0; i < socks.size(); ++i) {
+            fds[i].fd = socks[i];
+            fds[i].events = POLLIN;
+            fds[i].revents = 0;
+        }
+        const DWORD elapsed = GetTickCount() - begin;
+        const int waited = WSAPoll(fds.data(), static_cast<ULONG>(fds.size()), static_cast<int>(tv - elapsed));
+        if (waited <= 0) {
             break;
         }
-        CommBytes chunk(buf, buf + n);
-        Frame frame;
-        std::vector<Frame::Packet> packets;
-        if (!frame.push(chunk, &packets, &err)) {
-            continue;
-        }
-        for (size_t i = 0; i < packets.size(); ++i) {
-            if (packets[i].type != Frame::TypeAnnounce) {
+        for (size_t i = 0; i < fds.size(); ++i) {
+            if ((fds[i].revents & POLLIN) == 0) {
                 continue;
             }
-            HelloMsg msg;
-            if (!Messages::unpackAnnounce(packets[i].payload, &msg)) {
+            char buf[2048];
+            sockaddr_in from;
+            int fromLen = sizeof(from);
+            const int n = recvfrom(socks[i], buf, sizeof(buf), 0, reinterpret_cast<sockaddr*>(&from), &fromLen);
+            if (n <= 0) {
                 continue;
             }
-            // 地址取自应答来源。本机同时收 127.0.0.1 与广播应答时，按设备 ID（或指纹）合并成一条，优先留局域网地址
-            char ip[64];
-            inet_ntop(AF_INET, &from.sin_addr, ip, sizeof(ip));
-            msg.address = ip;
-            const bool loopback = msg.address == "127.0.0.1" || msg.address == "::1";
-            size_t hit = found.size();
-            for (size_t k = 0; k < found.size(); ++k) {
-                const bool sameId = !msg.deviceId.empty() && found[k].deviceId == msg.deviceId;
-                const bool sameFp = !msg.fingerprint.empty() && found[k].fingerprint == msg.fingerprint;
-                const bool sameAddr = found[k].address == msg.address && found[k].name == msg.name
-                    && found[k].process == msg.process && found[k].title == msg.title;
-                if (sameId || sameFp || sameAddr) {
-                    hit = k;
-                    break;
-                }
+            CommBytes chunk(buf, buf + n);
+            Frame frame;
+            std::vector<Frame::Packet> packets;
+            if (!frame.push(chunk, &packets, &err)) {
+                continue;
             }
-            if (hit < found.size()) {
-                HelloMsg& old = found[hit];
-                const bool oldLoop = old.address == "127.0.0.1" || old.address == "::1";
-                if (oldLoop && !loopback) {
-                    old.address = msg.address;
+            for (size_t p = 0; p < packets.size(); ++p) {
+                if (packets[p].type != Frame::TypeAnnounce) {
+                    continue;
                 }
-                if (old.deviceId.empty() && !msg.deviceId.empty()) {
-                    old.deviceId = msg.deviceId;
+                HelloMsg msg;
+                if (!Messages::unpackAnnounce(packets[p].payload, &msg)) {
+                    continue;
                 }
-                if (old.fingerprint.empty() && !msg.fingerprint.empty()) {
-                    old.fingerprint = msg.fingerprint;
+                char ip[64];
+                inet_ntop(AF_INET, &from.sin_addr, ip, sizeof(ip));
+                msg.address = ip;
+                const bool loopback = msg.address == "127.0.0.1" || msg.address == "::1";
+                size_t hit = found.size();
+                for (size_t k = 0; k < found.size(); ++k) {
+                    const bool sameId = !msg.deviceId.empty() && found[k].deviceId == msg.deviceId;
+                    const bool sameFp = !msg.fingerprint.empty() && found[k].fingerprint == msg.fingerprint;
+                    const bool sameAddr = found[k].address == msg.address && found[k].name == msg.name
+                        && found[k].process == msg.process && found[k].title == msg.title;
+                    if (sameId || sameFp || sameAddr) {
+                        hit = k;
+                        break;
+                    }
                 }
-            } else {
-                found.push_back(msg);
+                if (hit < found.size()) {
+                    HelloMsg& old = found[hit];
+                    const bool oldLoop = old.address == "127.0.0.1" || old.address == "::1";
+                    if (oldLoop && !loopback) {
+                        old.address = msg.address;
+                    }
+                    if (old.deviceId.empty() && !msg.deviceId.empty()) {
+                        old.deviceId = msg.deviceId;
+                    }
+                    if (old.fingerprint.empty() && !msg.fingerprint.empty()) {
+                        old.fingerprint = msg.fingerprint;
+                    }
+                } else {
+                    found.push_back(msg);
+                }
             }
         }
     }
-    closesocket(sock);
+    for (size_t i = 0; i < socks.size(); ++i) {
+        closesocket(socks[i]);
+    }
     WSACleanup();
     return found;
 }

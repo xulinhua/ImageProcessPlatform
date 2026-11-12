@@ -39,13 +39,19 @@ ControlConfig::ControlConfig()
     , auditDays(180)
     , tourSeconds(10)
     , relayOn(false)
+    , startRelay(true)
     , relayPort(19200)
+    , accessHost("remote.subapi.fun")
+    , accessPort(443)
     , rows(3)
     , cols(3)
     , defaultFps(RemoteConst::kMaxFpsDefault)
     , defaultQuality(1)
     , streamCodec(1)
     , adaptive(true)
+    , resolutionMode(0)
+    , resolutionWidth(1920)
+    , resolutionHeight(1080)
     , idleMinutes(30)
     , bandwidthKbps(0)
     , watermarkOn(false)
@@ -84,15 +90,21 @@ void ControlConfig::load()
     auditDays = obj.value("auditDays").toInt(auditDays);
     tourSeconds = obj.value("tourSeconds").toInt(tourSeconds);
     relayOn = obj.value("relayOn").toBool(relayOn);
+    startRelay = obj.value("startRelay").toBool(true);
     relayHost = obj.value("relayHost").toString(relayHost);
     relayPort = obj.value("relayPort").toInt(relayPort);
     relayKey = obj.value("relayKey").toString(relayKey);
+    accessHost = obj.value("accessHost").toString(accessHost);
+    accessPort = obj.value("accessPort").toInt(accessPort);
     rows = obj.value("rows").toInt(rows);
     cols = obj.value("cols").toInt(cols);
     defaultFps = obj.value("defaultFps").toInt(defaultFps);
     defaultQuality = obj.value("defaultQuality").toInt(defaultQuality);
     streamCodec = obj.value("streamCodec").toInt(streamCodec);
     adaptive = obj.value("adaptive").toBool(adaptive);
+    resolutionMode = obj.value("resolutionMode").toInt(resolutionMode);
+    resolutionWidth = obj.value("resolutionWidth").toInt(resolutionWidth);
+    resolutionHeight = obj.value("resolutionHeight").toInt(resolutionHeight);
     idleMinutes = obj.value("idleMinutes").toInt(idleMinutes);
     bandwidthKbps = obj.value("bandwidthKbps").toInt(bandwidthKbps);
     watermarkOn = obj.value("watermarkOn").toBool(watermarkOn);
@@ -135,6 +147,12 @@ void ControlConfig::load()
         const int at = connectOrder.indexOf("direct");
         connectOrder.insert(at >= 0 ? at : connectOrder.size(), "udp");
     }
+    if (accessHost.trimmed().isEmpty()) {
+        accessHost = "remote.subapi.fun";
+    }
+    if (accessPort < 1 || accessPort > 65535) {
+        accessPort = 443;
+    }
     if (defaultFps < RemoteConst::kMaxFpsMin) {
         defaultFps = RemoteConst::kMaxFpsMin;
     }
@@ -146,6 +164,21 @@ void ControlConfig::load()
     }
     if (streamCodec < 0 || streamCodec > 3) {
         streamCodec = 0;
+    }
+    if (resolutionMode < 0 || resolutionMode > 2) {
+        resolutionMode = 0;
+    }
+    if (resolutionWidth < 320) {
+        resolutionWidth = 320;
+    }
+    if (resolutionWidth > 7680) {
+        resolutionWidth = 7680;
+    }
+    if (resolutionHeight < 240) {
+        resolutionHeight = 240;
+    }
+    if (resolutionHeight > 4320) {
+        resolutionHeight = 4320;
     }
     if (customLongEdge < 320) {
         customLongEdge = 320;
@@ -172,15 +205,21 @@ void ControlConfig::save() const
     obj.insert("auditDays", auditDays);
     obj.insert("tourSeconds", tourSeconds);
     obj.insert("relayOn", relayOn);
+    obj.insert("startRelay", startRelay);
     obj.insert("relayHost", relayHost);
     obj.insert("relayPort", relayPort);
     obj.insert("relayKey", relayKey);
+    obj.insert("accessHost", accessHost);
+    obj.insert("accessPort", accessPort);
     obj.insert("rows", rows);
     obj.insert("cols", cols);
     obj.insert("defaultFps", defaultFps);
     obj.insert("defaultQuality", defaultQuality);
     obj.insert("streamCodec", streamCodec);
     obj.insert("adaptive", adaptive);
+    obj.insert("resolutionMode", resolutionMode);
+    obj.insert("resolutionWidth", resolutionWidth);
+    obj.insert("resolutionHeight", resolutionHeight);
     obj.insert("idleMinutes", idleMinutes);
     obj.insert("bandwidthKbps", bandwidthKbps);
     obj.insert("watermarkOn", watermarkOn);
@@ -204,6 +243,42 @@ void ControlConfig::save() const
         file.write(QJsonDocument(obj).toJson());
         file.commit();
     }
+}
+
+int ControlConfig::pictureLongEdge(int qualityIndex) const
+{
+    if (resolutionMode == 1) {
+        return RemoteConst::kNativeEdge;
+    }
+    if (resolutionMode == 2) {
+        int edge = resolutionWidth > resolutionHeight ? resolutionWidth : resolutionHeight;
+        if (edge < 320) {
+            edge = 320;
+        }
+        if (edge > 7680) {
+            edge = 7680;
+        }
+        return edge;
+    }
+    if (qualityIndex <= 0) {
+        return 960;
+    }
+    if (qualityIndex == 3) {
+        int edge = customLongEdge < 320 ? 320 : customLongEdge;
+        if (edge > 7680) {
+            edge = 7680;
+        }
+        return edge;
+    }
+    if (qualityIndex >= 2) {
+        return 1600;
+    }
+    return RemoteConst::kLongEdge;
+}
+
+bool ControlConfig::lockPictureEdge() const
+{
+    return resolutionMode == 1 || resolutionMode == 2;
 }
 
 void ControlConfig::purgeRecords() const

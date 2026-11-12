@@ -200,6 +200,11 @@ public:
     bool setDirect(bool on, int port, std::string* err);
     /** @brief 反连失败时改走中继。口令须与中继、中控台一致 */
     void setRelay(bool on, const std::string& host, int port, const std::string& token);
+    /**
+     * @brief 识别码通道。没连上生产中控台时，挂到固定域名等对方用设备 ID 来连
+     * @note 反连、直连、局域网中继优先，这条只在那些都没连上时使用
+     */
+    void setAccess(bool on, const std::string& host, int port);
     /** @brief 生产保护：操作必须现场确认。工站文件 block 为真时直接拒绝操作 */
     void setProduction(bool on);
     /**
@@ -257,6 +262,10 @@ private:
     void writeMain();
     /** @brief 抓屏线程：抓 BGRA；流水线关闭时当场编码，打开时交给编码线程 */
     void captureMain();
+    /** @brief 识别码线程：生产连接不在时，向固定域名登记并等 GO */
+    void accessMain();
+    /** @brief 取走已经配对好的识别码套接字。调用方再走原来的 TLS。须在收包线程调用 */
+    bool takeAccess();
     /** @brief 编码线程：取最新一帧 BGRA 编码并写入 m_picture */
     void encodeMain();
 
@@ -272,7 +281,13 @@ private:
     void applyControl(const ConfigMsg& cfg);
     /** @brief 码流订阅：主/子码流开关与编码偏好。调用方不必持锁 */
     void applySubscribe(const SubscribeMsg& msg);
-    /** @brief 网络统计：延迟高时略降分辨率/帧率，平稳后再收回 */
+    /**
+     * @brief 写入长边和是否锁定。调用方须持有 m_mu
+     * @param edge 0 不改；kNativeEdge 表示不缩小
+     * @param edgeLock 0 不改锁定，1 允许降长边，2 锁定
+     */
+    void takeLongEdge(int edge, int edgeLock);
+    /** @brief 网络统计：延迟高时略降分辨率/帧率，平稳后再收回。长边锁定时不改分辨率 */
     void applyNetStats(const NetStatsMsg& msg);
     /** @brief 剪贴板 / 文件 / 聊天 / 电源 / 隐私屏 / 系统信息。处理了返回 true */
     bool takePhase4(const Frame::Packet& packet);
@@ -402,6 +417,7 @@ private:
     WindowInput m_input;            ///< 键鼠注入与松开，只在收包线程用（stop 在线程退出后再松开一次）；抓屏线程只调无状态的 operable
     mutable std::mutex m_mu;        ///< 保护以下全部会话状态
     std::thread m_read;             ///< 收包线程
+    std::thread m_accessThread;     ///< 识别码登记线程
     std::thread m_write;            ///< 发包线程
     std::thread m_captureThread;    ///< 抓屏线程
     std::vector<std::thread> m_encodeThreads; ///< 编码流水线，条数由 m_pipelineWorkers 决定
@@ -434,6 +450,7 @@ private:
     int m_baseCaptureMs;            ///< 订阅下来的间隔，拥塞时在此基础上拉长
     int m_baseQuality;              ///< 订阅下来的 JPEG 质量，自适应只在此以下浮动
     int m_baseEdge;                 ///< 订阅下来的长边，自适应只在此以下浮动
+    bool m_edgeLock;                ///< 原画质或指定分辨率：不再因网络降低长边
     int m_rttBase;                  ///< 近期往返基线，毫秒
     uint64_t m_lastAdapt;           ///< 上次升降码率的时刻
     uint8_t m_sentCodec;            ///< 已通知控制端的编码
@@ -566,6 +583,11 @@ private:
     RemoteIdentity m_identity;      ///< 本机 TLS 身份
     std::vector<std::string> m_whitelist; ///< 允许的控制端 host
     std::string m_peerFingerprint;  ///< 当前控制端证书指纹
+    bool m_accessOn;                ///< 允许识别码通道
+    std::string m_accessHost;       ///< 识别码域名
+    int m_accessPort;               ///< 识别码端口，一般是 443
+    uintptr_t m_accessReady;        ///< 已收到 GO 的本机套接字，收包线程取走
+    bool m_accessGate;              ///< 这次会话来自识别码：验证码通过前不发画面
 };
 
 }

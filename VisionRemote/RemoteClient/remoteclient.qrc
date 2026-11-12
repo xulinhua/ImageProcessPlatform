@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/icon">
+        <file alias="controlled-16.png">icons/controlled-16.png</file>
+        <file alias="controlled-24.png">icons/controlled-24.png</file>
+        <file alias="controlled-32.png">icons/controlled-32.png</file>
+        <file alias="controlled-48.png">icons/controlled-48.png</file>
+        <file alias="controlled-64.png">icons/controlled-64.png</file>
+        <file alias="controlled-128.png">icons/controlled-128.png</file>
+        <file alias="controlled-256.png">icons/controlled-256.png</file>
+    </qresource>
+</RCC>

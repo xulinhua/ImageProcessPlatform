@@ -84,14 +84,20 @@ private:
     QComboBox* m_defaultQuality;    ///< 新会话画质：流畅 / 均衡 / 清晰
     QSpinBox* m_defaultFps;         ///< 新会话帧率上限
     QComboBox* m_streamCodec;       ///< 发送编码：沿用 / JPEG / H.264 / 原图
-    SwitchButton* m_adaptive;       ///< 延迟很高时自动略降分辨率
+    SwitchButton* m_adaptive;       ///< 延迟很高时自动略降画质；自适应分辨率时也降长边
+    QComboBox* m_resolutionMode;    ///< 分辨率：自适应 / 原画质 / 指定
+    QSpinBox* m_resolutionWidth;    ///< 指定分辨率的宽
+    QSpinBox* m_resolutionHeight;   ///< 指定分辨率的高
     QSpinBox* m_rows;               ///< 监控墙默认行数 1~4
     QSpinBox* m_cols;               ///< 监控墙默认列数 1~4
     QSpinBox* m_tour;               ///< 轮巡间隔 3~600 秒
     SwitchButton* m_relayOn;        ///< 启用中继
+    SwitchButton* m_startRelay;     ///< 中控台启动时拉起 RemoteRelay
     QLineEdit* m_relayHost;         ///< 中继地址
     QSpinBox* m_relayPort;          ///< 中继端口
     QLineEdit* m_relayKey;          ///< 中继口令
+    QLineEdit* m_accessHost;        ///< 识别码域名
+    QSpinBox* m_accessPort;         ///< 识别码端口
     QLineEdit* m_shotDir;           ///< 截图保存目录
     SwitchButton* m_autoRecord;     ///< 取得操作时自动录制
     QLineEdit* m_recordDir;         ///< 录屏目录

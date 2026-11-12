@@ -78,6 +78,7 @@
     <ClCompile Include="protocol\Frame.cpp" />
     <ClCompile Include="protocol\Messages.cpp" />
     <ClCompile Include="channel\RemoteTcp.cpp" />
+    <ClCompile Include="channel\AccessTunnel.cpp" />
     <ClCompile Include="channel\RemoteBeacon.cpp" />
     <ClCompile Include="security\FirewallRule.cpp" />
     <ClCompile Include="security\RemoteAuth.cpp" />
@@ -90,6 +91,7 @@
     <ClInclude Include="protocol\Frame.h" />
     <ClInclude Include="protocol\Messages.h" />
     <ClInclude Include="channel\RemoteTcp.h" />
+    <ClInclude Include="channel\AccessTunnel.h" />
     <ClInclude Include="channel\RemoteBeacon.h" />
     <ClInclude Include="security\FirewallRule.h" />
     <ClInclude Include="security\IRemoteAuth.h" />

@@ -101,6 +101,9 @@ AgentWindow::AgentWindow(QWidget* parent)
     , m_relayHost(0)
     , m_relayPort(0)
     , m_relayKey(0)
+    , m_accessOn(0)
+    , m_accessHost(0)
+    , m_accessPort(0)
     , m_production(0)
     , m_allowHighest(0)
     , m_logDisk(0)
@@ -655,7 +658,7 @@ QWidget* AgentWindow::buildConnectionPage(QWidget* parent)
     QCheckBox* reverse = new QCheckBox(QString::fromUtf8("反连中控台"), page);
     reverse->setChecked(true);
     reverse->setEnabled(false);
-    reverse->setToolTip(QString::fromUtf8("当前唯一的连接方式"));
+    reverse->setToolTip(QString::fromUtf8("生产用：优先连局域网中控台"));
     reverse->setFixedWidth(120);
     m_host = new QLineEdit(page);
     m_host->setFixedWidth(200);
@@ -713,6 +716,17 @@ QWidget* AgentWindow::buildConnectionPage(QWidget* parent)
     m_relayKey->setPlaceholderText(QString::fromUtf8("中继口令"));
     m_relayKey->setFixedWidth(200);
     col->addWidget(line(new QLabel(QString::fromUtf8("口令"), page), m_relayKey));
+    m_accessOn = new QCheckBox(QString::fromUtf8("识别码远程"), page);
+    m_accessOn->setChecked(true);
+    m_accessOn->setToolTip(QString::fromUtf8("没连上中控台时挂到固定域名，对方用设备 ID 和验证码来连。已经连上局域网时不会挂"));
+    m_accessHost = new QLineEdit(page);
+    m_accessHost->setFixedWidth(200);
+    m_accessHost->setText(QString::fromUtf8("remote.subapi.fun"));
+    m_accessPort = new QSpinBox(page);
+    m_accessPort->setRange(1, 65535);
+    m_accessPort->setValue(443);
+    m_accessPort->setFixedWidth(90);
+    col->addWidget(line(m_accessOn, m_accessHost, m_accessPort));
     col->addStretch(1);
     return page;
 }
@@ -1232,6 +1246,17 @@ void AgentWindow::loadConfig()
     if (m_relayKey) {
         m_relayKey->setText(obj.value("relayKey").toString());
     }
+    if (m_accessOn) {
+        m_accessOn->setChecked(obj.value("accessOn").toBool(true));
+    }
+    if (m_accessHost) {
+        const QString host = obj.value("accessHost").toString();
+        m_accessHost->setText(host.isEmpty() ? QString::fromUtf8("remote.subapi.fun") : host);
+    }
+    if (m_accessPort) {
+        const int accessPort = obj.value("accessPort").toInt(443);
+        m_accessPort->setValue(accessPort >= 1 && accessPort <= 65535 ? accessPort : 443);
+    }
     if (m_production) {
         m_production->setChecked(obj.value("production").toBool(false));
     }
@@ -1331,6 +1356,9 @@ void AgentWindow::saveConfig() const
     obj.insert("relayHost", m_relayHost ? m_relayHost->text().trimmed() : QString());
     obj.insert("relayPort", m_relayPort ? m_relayPort->value() : 19200);
     obj.insert("relayKey", m_relayKey ? m_relayKey->text() : QString());
+    obj.insert("accessOn", m_accessOn && m_accessOn->isChecked());
+    obj.insert("accessHost", m_accessHost ? m_accessHost->text().trimmed() : QString::fromUtf8("remote.subapi.fun"));
+    obj.insert("accessPort", m_accessPort ? m_accessPort->value() : 443);
     obj.insert("production", m_production && m_production->isChecked());
     obj.insert("allowHighest", m_allowHighest && m_allowHighest->isChecked());
     obj.insert("logDisk", m_logDisk && m_logDisk->isChecked());
@@ -1442,6 +1470,9 @@ void AgentWindow::apply()
     }
     m_session.setExtraHosts(parseExtraHosts());
     std::string err;
+    if (m_accessOn && m_accessHost && m_accessPort) {
+        m_session.setAccess(m_accessOn->isChecked(), m_accessHost->text().trimmed().toStdString(), m_accessPort->value());
+    }
     if (!m_session.start(host.toUtf8().constData(), port, m_title->text().trimmed().toStdWString(),
             m_process->process().toStdWString(), m_desktop->isChecked(), monitorValue(), &err)) {
         QMessageBox::warning(this, windowTitle(),
@@ -1469,6 +1500,9 @@ void AgentWindow::applyLink()
     if (m_relayOn && m_relayHost && m_relayPort && m_relayKey) {
         m_session.setRelay(m_relayOn->isChecked(), m_relayHost->text().trimmed().toStdString(),
             m_relayPort->value(), m_relayKey->text().toStdString());
+    }
+    if (m_accessOn && m_accessHost && m_accessPort) {
+        m_session.setAccess(m_accessOn->isChecked(), m_accessHost->text().trimmed().toStdString(), m_accessPort->value());
     }
     if (m_directOn && m_directPort) {
         std::string err;

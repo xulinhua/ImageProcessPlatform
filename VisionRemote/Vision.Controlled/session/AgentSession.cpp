@@ -7,6 +7,7 @@
  */
 
 #include "AgentSession.h"
+#include "AccessTunnel.h"
 #include "AgentService.h"
 #include "RemoteCrash.h"
 #include "RemoteLog.h"
@@ -53,6 +54,7 @@ AgentSession::AgentSession()
     , m_baseCaptureMs(RemoteConst::kCaptureMs)
     , m_baseQuality(RemoteConst::kJpegQuality)
     , m_baseEdge(RemoteConst::kLongEdge)
+    , m_edgeLock(false)
     , m_rttBase(0)
     , m_lastAdapt(0)
     , m_sentCodec(1)
@@ -115,6 +117,11 @@ AgentSession::AgentSession()
     , m_system(readSystemName())
     , m_pendingPerms(PermView)
     , m_connectTry(0)
+    , m_accessOn(true)
+    , m_accessHost(AccessTunnel::defaultHost())
+    , m_accessPort(443)
+    , m_accessReady(0)
+    , m_accessGate(false)
 {
     RemoteCrash::checkpoint("AgentSession.ctor");
     m_auth.refreshCode();
@@ -270,9 +277,9 @@ const std::string& AgentSession::systemName() const
 bool AgentSession::start(const std::string& host, int port, const std::wstring& title, const std::wstring& processName,
     bool desktop, int monitor, std::string* err)
 {
-    if (host.empty() || port <= 0 || port > 65535) {
+    if (port <= 0 || port > 65535 || (host.empty() && !m_accessOn)) {
         if (err) {
-            *err = "中控台地址或端口无效";
+            *err = host.empty() ? "中控台地址是空的，识别码通道也没开" : "中控台地址或端口无效";
         }
         RemoteCrash::alert("AgentSession.start", err ? err->c_str() : "bad host/port", true);
         return false;
@@ -332,6 +339,7 @@ bool AgentSession::start(const std::string& host, int port, const std::wstring& 
     }
     m_read = std::thread(&AgentSession::readMain, this);
     m_write = std::thread(&AgentSession::writeMain, this);
+    m_accessThread = std::thread(&AgentSession::accessMain, this);
     ok = true;
     });
     return ran && ok;
@@ -360,6 +368,9 @@ void AgentSession::stop()
         }
     }
     m_tcp.close();
+    if (m_accessThread.joinable()) {
+        m_accessThread.join();
+    }
     if (m_read.joinable()) {
         m_read.join();
     }
@@ -798,6 +809,7 @@ void AgentSession::endSession(bool remote)
     m_operated = false;
     m_releaseInput = true;
     m_pendingActive = false;
+    m_accessGate = false;
     m_connectedAt = 0;
     m_controller.clear();
     m_frame.clear();
@@ -855,10 +867,9 @@ void AgentSession::applyControl(const ConfigMsg& cfg)
         }
         if (cfg.jpegQuality > 0) {
             m_jpegQuality = cfg.jpegQuality > 100 ? 100 : cfg.jpegQuality;
+            m_baseQuality = m_jpegQuality;
         }
-        if (cfg.longEdge > 0) {
-            m_longEdge = cfg.longEdge < 320 ? 320 : cfg.longEdge;
-        }
+        takeLongEdge(cfg.longEdge, cfg.edgeLock);
         if (cfg.bitrateKbps > 0) {
             m_targetBitrateBps = static_cast<int>(cfg.bitrateKbps) * 1000;
         }
@@ -919,10 +930,7 @@ void AgentSession::applySubscribe(const SubscribeMsg& msg)
                 m_jpegQuality = msg.jpegQuality > 100 ? 100 : msg.jpegQuality;
                 m_baseQuality = m_jpegQuality;
             }
-            if (msg.longEdge > 0) {
-                m_longEdge = msg.longEdge < 320 ? 320 : msg.longEdge;
-                m_baseEdge = m_longEdge;
-            }
+            takeLongEdge(msg.longEdge, msg.edgeLock);
             if (msg.codec >= 1 && msg.codec <= 3 && m_preferCodec != static_cast<int>(msg.codec)) {
                 m_preferCodec = msg.codec;
                 m_mainLatched = false;
@@ -937,6 +945,22 @@ void AgentSession::applySubscribe(const SubscribeMsg& msg)
         m_h264.closeEncoder();
         m_h264.requestKey();
         RemoteLog::writef(RemoteLog::Info, "画面", "中控台指定编码 codec=%u", static_cast<unsigned>(msg.codec));
+    }
+}
+
+void AgentSession::takeLongEdge(int edge, int edgeLock)
+{
+    if (edge >= RemoteConst::kNativeEdge) {
+        m_longEdge = RemoteConst::kNativeEdge;
+        m_baseEdge = m_longEdge;
+    } else if (edge > 0) {
+        m_longEdge = edge < 320 ? 320 : edge;
+        m_baseEdge = m_longEdge;
+    }
+    if (edgeLock == RemoteConst::kEdgeLockAdaptive) {
+        m_edgeLock = false;
+    } else if (edgeLock == RemoteConst::kEdgeLockFixed || m_longEdge >= RemoteConst::kNativeEdge) {
+        m_edgeLock = true;
     }
 }
 
@@ -967,7 +991,7 @@ void AgentSession::stepAdapt(bool bad, uint64_t now)
     const int beforeMs = m_captureMs;
     const int fpsFloor = 100;
     if (bad) {
-        if (m_longEdge > 960) {
+        if (!m_edgeLock && m_longEdge < RemoteConst::kNativeEdge && m_longEdge > 960) {
             m_longEdge = m_longEdge * 4 / 5;
             if (m_longEdge < 960) {
                 m_longEdge = 960;
@@ -997,7 +1021,7 @@ void AgentSession::stepAdapt(bool bad, uint64_t now)
         if (m_captureMs < m_baseCaptureMs) {
             m_captureMs = m_baseCaptureMs;
         }
-    } else if (m_longEdge < m_baseEdge) {
+    } else if (!m_edgeLock && m_longEdge < m_baseEdge && m_baseEdge < RemoteConst::kNativeEdge) {
         int step = m_baseEdge / 10;
         if (step < 1) {
             step = 1;
@@ -1067,6 +1091,121 @@ void AgentSession::setRelay(bool on, const std::string& host, int port, const st
     m_relayHost = host;
     m_relayPort = port > 0 ? port : 19200;
     m_relayToken = token;
+}
+
+void AgentSession::setAccess(bool on, const std::string& host, int port)
+{
+    std::lock_guard<std::mutex> lock(m_mu);
+    m_accessOn = on && !host.empty();
+    m_accessHost = host.empty() ? AccessTunnel::defaultHost() : host;
+    m_accessPort = port > 0 ? port : 443;
+}
+
+void AgentSession::accessMain()
+{
+    while (true) {
+        bool run = false;
+        bool busy = false;
+        bool on = false;
+        std::string host;
+        int port = 443;
+        std::string id;
+        {
+            std::lock_guard<std::mutex> lock(m_mu);
+            run = m_run;
+            busy = m_tcp.isOpen() || m_suspended;
+            on = m_accessOn;
+            host = m_accessHost;
+            port = m_accessPort;
+            id = m_deviceId;
+        }
+        if (!run) {
+            std::lock_guard<std::mutex> lock(m_mu);
+            if (m_accessReady != 0) {
+                AccessTunnel::discard(m_accessReady);
+                m_accessReady = 0;
+            }
+            return;
+        }
+        if (!on || busy) {
+            Sleep(400);
+            continue;
+        }
+        uintptr_t local = 0;
+        std::string err;
+        if (!AccessTunnel::open(host, port, m_identity, &local, &err)) {
+            Sleep(2000);
+            continue;
+        }
+        for (size_t i = 0; i < id.size();) {
+            if (id[i] == ' ') {
+                id.erase(i, 1);
+            } else {
+                ++i;
+            }
+        }
+        const std::string line = std::string("REG ") + id + " " + AccessTunnel::token() + "\n";
+        if (!AccessTunnel::writeLine(local, line)) {
+            AccessTunnel::discard(local);
+            Sleep(2000);
+            continue;
+        }
+        bool got = false;
+        while (m_run) {
+            bool session = false;
+            {
+                std::lock_guard<std::mutex> lock(m_mu);
+                session = m_tcp.isOpen();
+            }
+            if (session) {
+                break;
+            }
+            std::string reply;
+            if (!AccessTunnel::readLine(local, &reply, 1000)) {
+                if (!m_run) {
+                    break;
+                }
+                continue;
+            }
+            if (reply.find("GO") != std::string::npos) {
+                got = true;
+                break;
+            }
+            if (reply.find("WAIT") == std::string::npos) {
+                break;
+            }
+        }
+        if (!got) {
+            AccessTunnel::discard(local);
+            continue;
+        }
+        std::lock_guard<std::mutex> lock(m_mu);
+        if (!m_run || m_tcp.isOpen()) {
+            AccessTunnel::discard(local);
+            continue;
+        }
+        if (m_accessReady != 0) {
+            AccessTunnel::discard(m_accessReady);
+        }
+        m_accessReady = local;
+    }
+}
+
+bool AgentSession::takeAccess()
+{
+    uintptr_t sock = 0;
+    std::string id;
+    {
+        std::lock_guard<std::mutex> lock(m_mu);
+        sock = m_accessReady;
+        m_accessReady = 0;
+        id = m_deviceId;
+    }
+    if (sock == 0) {
+        return false;
+    }
+    std::string err;
+    return m_tcp.attach(sock, "access:" + id, &err);
 }
 
 void AgentSession::setProduction(bool on)
@@ -1363,15 +1502,18 @@ bool AgentSession::encodeRaw(const CommBytes& bgra, int width, int height, int l
     if (!shot || bgra.empty() || width < 2 || height < 2) {
         return false;
     }
-    // 原图带宽大，长边默认再压一档，避免单帧爆炸
-    int edge = longEdge > 0 ? longEdge : 1280;
-    if (edge > 1600) {
-        edge = 1600;
-    }
+    const int edge = longEdge >= RemoteConst::kNativeEdge ? 0 : (longEdge > 0 ? longEdge : 1280);
+    const bool asCaptured = edge <= 0 || (width <= edge && height <= edge);
     std::vector<unsigned char> scaled;
-    int outW = 0;
-    int outH = 0;
-    if (!m_h264.scaleBgra(bgra.data(), width, height, edge, &scaled, &outW, &outH) || scaled.empty()) {
+    int outW = width;
+    int outH = height;
+    if (asCaptured) {
+        const size_t bytes = static_cast<size_t>(width) * static_cast<size_t>(height) * 4;
+        if (bgra.size() < bytes) {
+            return false;
+        }
+        scaled.assign(bgra.begin(), bgra.begin() + static_cast<std::ptrdiff_t>(bytes));
+    } else if (!m_h264.scaleBgra(bgra.data(), width, height, edge, &scaled, &outW, &outH) || scaled.empty()) {
         return false;
     }
     shot->visible = 1;
@@ -1747,8 +1889,8 @@ void AgentSession::captureMain()
             jpegQuality = m_jpegQuality;
             longEdge = m_longEdge;
             captureMs = m_captureMs;
-            subMain = m_subMain;
-            subThumb = m_subThumb;
+            subMain = m_subMain && !(m_accessGate && !m_operating);
+            subThumb = m_subThumb && !(m_accessGate && !m_operating);
             shareGen = m_shareGen;
             pipelineWorkers = m_pipelineWorkers;
         }
@@ -2028,7 +2170,10 @@ void AgentSession::readMain()
                     }
                 }
             }
-            if (takeInbound()) {
+            bool viaAccess = false;
+            if (takeAccess()) {
+                viaAccess = true;
+            } else if (takeInbound()) {
                 err.clear();
             } else {
                 // 主地址 + 额外中控台：本轮依次尝试，直到连上或全部失败再中继
@@ -2052,9 +2197,12 @@ void AgentSession::readMain()
                     }
                 }
                 if (!opened && !openViaRelay(&err)) {
-                    m_connectTry += 1;
-                    Sleep(1000);
-                    continue;
+                    if (!takeAccess()) {
+                        m_connectTry += 1;
+                        Sleep(1000);
+                        continue;
+                    }
+                    viaAccess = true;
                 }
             }
             RemoteCrash::checkpoint("AgentSession.tcp_open");
@@ -2074,6 +2222,7 @@ void AgentSession::readMain()
             }
             std::lock_guard<std::mutex> lock(m_mu);
             m_peerFingerprint = peerFp;
+            m_accessGate = viaAccess;
             // 连接建立期间可能已 stop：stop 的 close 早于连接登记，这里自己关掉
             if (!m_run) {
                 m_tcp.close();
@@ -2230,6 +2379,7 @@ void AgentSession::readMain()
                 ack.code = 2;
                 ack.perms = PermView;
                 bool reply = true;
+                bool dropAccess = false;
                 if (Messages::unpackAuthRequest(packet.payload, &auth)) {
                     std::lock_guard<std::mutex> lock(m_mu);
                     uint32_t lockSec = 0;
@@ -2294,9 +2444,15 @@ void AgentSession::readMain()
                             }
                         }
                     }
+                    if (m_accessGate && ack.code != 0 && !m_pendingActive) {
+                        dropAccess = true;
+                    }
                 }
                 if (reply) {
                     enqueue(Messages::packAuthResult(ack, &err));
+                }
+                if (dropAccess) {
+                    m_tcp.close();
                 }
             } else if (packet.type == Frame::TypeConfig) {
                 ConfigMsg cfg;

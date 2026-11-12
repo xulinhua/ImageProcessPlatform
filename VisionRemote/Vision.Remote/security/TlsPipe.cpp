@@ -83,6 +83,7 @@ struct TlsPipe::Impl {
     CtxtHandle ctx;
     bool ready;
     bool asServer;
+    std::wstring serverName;
     std::string peerFp;
     std::vector<unsigned char> leftover;    ///< 解密后尚未交给上层的明文
     std::vector<unsigned char> extra;       ///< 握手后多余密文
@@ -175,9 +176,10 @@ bool recvSome(SOCKET sock, std::vector<unsigned char>* buf, int timeoutMs, std::
 }
 
 bool TlsPipe::handshake(uintptr_t sock, bool asServer, const RemoteIdentity& identity,
-                        std::string* peerFingerprintOut, std::string* err)
+                        std::string* peerFingerprintOut, std::string* err, const wchar_t* serverName)
 {
     reset();
+    m_impl->serverName = serverName ? serverName : L"";
     if (!identity.ready() || !identity.certificate()) {
         if (err) {
             *err = "本机证书未就绪";
@@ -266,7 +268,7 @@ bool TlsPipe::handshake(uintptr_t sock, bool asServer, const RemoteIdentity& ide
             st = InitializeSecurityContextW(
                 &m_impl->cred,
                 phContext,
-                nullptr,
+                m_impl->serverName.empty() ? nullptr : const_cast<SEC_WCHAR*>(m_impl->serverName.c_str()),
                 clientFlags,
                 0,
                 0,

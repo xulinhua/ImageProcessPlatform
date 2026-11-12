@@ -26,6 +26,10 @@ public:
     static const int kOfflineMs = 3000;
     static const int kCaptureMs = 66;   ///< 默认约 15 fps（1000/15）
     static const int kLongEdge = 1280;
+    static const int kNativeEdge = 65535;   ///< 长边哨兵：不缩小，按抓屏宽高发送
+    static const int kEdgeLockKeep = 0;     ///< 不改被控端当前的长边锁定
+    static const int kEdgeLockAdaptive = 1; ///< 允许网络差时降低长边
+    static const int kEdgeLockFixed = 2;    ///< 锁定长边：原画质或指定分辨率
     static const int kJpegQuality = 60;
     static const int kMaxFpsMin = 5;
     static const int kMaxFpsMax = 500;
@@ -83,10 +87,11 @@ struct ConfigMsg {
     std::string process;
     uint16_t maxFps;        ///< 帧率上限 5–500；0 表示沿用被控端当前值/默认
     uint8_t jpegQuality;    ///< JPEG 质量 1–100；0 表示沿用
-    uint16_t longEdge;      ///< 画面长边像素上限；0 表示沿用
+    uint16_t longEdge;      ///< 画面长边像素上限；0 表示沿用；kNativeEdge 表示不缩小
     uint8_t codec;          ///< 0 沿用；1 JPEG；2 H.264；3 原图 BGRA
     uint16_t bitrateKbps;   ///< H.264 目标码率 kbps；0 表示按画质推算
-    ConfigMsg() : share(1), monitor(0), maxFps(0), jpegQuality(0), longEdge(0), codec(0), bitrateKbps(0) {}
+    uint8_t edgeLock;       ///< 0 不改；1 允许降长边；2 锁定长边
+    ConfigMsg() : share(1), monitor(0), maxFps(0), jpegQuality(0), longEdge(0), codec(0), bitrateKbps(0), edgeLock(0) {}
 };
 
 /**
@@ -162,7 +167,8 @@ struct SubscribeMsg {
     uint8_t jpegQuality;
     uint16_t longEdge;
     uint8_t codec;          ///< 0 沿用被控端；1 JPEG；2 H.264；3 原图
-    SubscribeMsg() : stream(2), enable(1), maxFps(2), jpegQuality(60), longEdge(480), codec(0) {}
+    uint8_t edgeLock;       ///< 0 不改；1 允许降长边；2 锁定长边。仅主码流使用
+    SubscribeMsg() : stream(2), enable(1), maxFps(2), jpegQuality(60), longEdge(480), codec(0), edgeLock(0) {}
 };
 
 /** @brief 当前码流参数。codec 1=JPEG 2=H.264 3=原图 */

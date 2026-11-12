@@ -31,8 +31,11 @@ public:
      * @param identity 本机证书
      * @param peerFingerprintOut 对端证书指纹（可空）
      */
+    /**
+     * @param serverName 客户端 SNI。空则不带，局域网自签沿用空
+     */
     bool handshake(uintptr_t sock, bool asServer, const RemoteIdentity& identity,
-                   std::string* peerFingerprintOut, std::string* err);
+                   std::string* peerFingerprintOut, std::string* err, const wchar_t* serverName = nullptr);
 
     /** @brief 加密后发出。timeoutMs<=0 按 3000 */
     bool write(const CommBytes& data, int timeoutMs, std::string* err);

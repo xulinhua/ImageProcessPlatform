@@ -263,6 +263,7 @@ CommBytes Messages::packSubscribe(const SubscribeMsg& msg, std::string* err)
     Frame::appendU8(&body, msg.jpegQuality);
     Frame::appendU16(&body, msg.longEdge);
     Frame::appendU8(&body, msg.codec);
+    Frame::appendU8(&body, msg.edgeLock);
     return finish(Frame::TypeSubscribe, Frame::ChControl, body, err);
 }
 
@@ -277,8 +278,14 @@ bool Messages::unpackSubscribe(const CommBytes& payload, SubscribeMsg* msg)
         return false;
     }
     msg->codec = 0;
+    msg->edgeLock = 0;
     if (off < payload.size()) {
         if (!Frame::readU8(payload, &off, &msg->codec)) {
+            return false;
+        }
+    }
+    if (off < payload.size()) {
+        if (!Frame::readU8(payload, &off, &msg->edgeLock)) {
             return false;
         }
     }
@@ -472,6 +479,7 @@ CommBytes Messages::packConfig(const ConfigMsg& msg, std::string* err)
     Frame::appendU16(&body, msg.longEdge);
     Frame::appendU8(&body, msg.codec);
     Frame::appendU16(&body, msg.bitrateKbps);
+    Frame::appendU8(&body, msg.edgeLock);
     return finish(Frame::TypeConfig, Frame::ChControl, body, err);
 }
 
@@ -489,6 +497,7 @@ bool Messages::unpackConfig(const CommBytes& payload, ConfigMsg* msg)
     msg->longEdge = 0;
     msg->codec = 0;
     msg->bitrateKbps = 0;
+    msg->edgeLock = 0;
     if (off + 1 < payload.size()) {
         if (!Frame::readU16(payload, &off, &msg->maxFps)) {
             return false;
@@ -511,6 +520,11 @@ bool Messages::unpackConfig(const CommBytes& payload, ConfigMsg* msg)
     }
     if (off + 1 < payload.size()) {
         if (!Frame::readU16(payload, &off, &msg->bitrateKbps)) {
+            return false;
+        }
+    }
+    if (off < payload.size()) {
+        if (!Frame::readU8(payload, &off, &msg->edgeLock)) {
             return false;
         }
     }

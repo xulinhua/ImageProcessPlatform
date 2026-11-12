@@ -461,7 +461,7 @@ void DeviceDialog::applyPicture()
     cfg.process = m_process->text().trimmed().toUtf8().constData();
     cfg.maxFps = static_cast<uint16_t>(RemoteConst::kMaxFpsDefault);
     cfg.jpegQuality = static_cast<uint8_t>(RemoteConst::kJpegQuality);
-    cfg.longEdge = static_cast<uint16_t>(RemoteConst::kLongEdge);
+    cfg.longEdge = 0;
     if (cfg.share != 1 && cfg.title.empty() && cfg.process.empty()) {
         m_pictureHint->setText(QString::fromUtf8("共享窗口时，窗口标题和进程名至少填一个。"));
         return;

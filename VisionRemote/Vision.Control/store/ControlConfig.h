@@ -41,6 +41,14 @@ public:
      * @param accountOn 当前登录账户的最高权限开关；无账户时传 true
      */
     bool effectiveHighestPrivilege(int deviceTriState, bool accountOn) const;
+    /**
+     * @brief 当前分辨率模式下要下发的长边
+     * @param qualityIndex 画质档：0 流畅，1 均衡，2 清晰，3 自定义。只在自适应时使用
+     * @return 像素；RemoteConst::kNativeEdge 表示按抓屏尺寸，不缩小
+     */
+    int pictureLongEdge(int qualityIndex) const;
+    /** @brief 原画质或指定分辨率时锁定长边，网络差时不再降分辨率 */
+    bool lockPictureEdge() const;
 
     QString host;       ///< 监听地址，默认 0.0.0.0
     int port;           ///< 监听端口，默认 RemoteConst::kPort
@@ -56,15 +64,21 @@ public:
     int auditDays;      ///< 审计日志保留天数，<= 0 不清理
     int tourSeconds;    ///< 监控墙轮巡间隔（秒）
     bool relayOn;       ///< 反连和直连都没有时走中继
+    bool startRelay;    ///< 中控台启动时拉起同目录的 RemoteRelay
     QString relayHost;  ///< 中继地址
     int relayPort;      ///< 中继端口，默认 19200
     QString relayKey;   ///< 中继口令，与被控端一致
+    QString accessHost; ///< 识别码域名，默认 remote.subapi.fun。局域网连接不用它
+    int accessPort;     ///< 识别码端口，默认 443
     int rows;           ///< 监控墙行数
     int cols;           ///< 监控墙列数
     int defaultFps;     ///< 新会话的帧率上限，5–500
     int defaultQuality; ///< 新会话画质：0 流畅，1 均衡，2 清晰，3 自定义
     int streamCodec;    ///< 发送编码：0 沿用被控端，1 JPEG，2 H.264，3 原图 BGRA
-    bool adaptive;      ///< 延迟很高时自动略降分辨率，不把帧率打到 1
+    bool adaptive;      ///< 延迟很高时自动略降画质；分辨率仅在自适应模式下跟着降
+    int resolutionMode; ///< 0 自适应，1 原画质，2 指定分辨率
+    int resolutionWidth;  ///< 指定分辨率的宽
+    int resolutionHeight; ///< 指定分辨率的高。发送时取宽高里的长边，保持画面比例
     int idleMinutes;    ///< 无本地操作多少分钟后断开，0 关闭
     int bandwidthKbps;  ///< 下行带宽上限 kbps，0 不限
     bool watermarkOn;   ///< 会话画面叠加水印

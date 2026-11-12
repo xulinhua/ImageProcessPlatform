@@ -32,6 +32,7 @@ class QComboBox;
 class QLabel;
 class QMenu;
 class QMenuBar;
+class QProcess;
 class QPushButton;
 class QSpinBox;
 class QSystemTrayIcon;
@@ -119,6 +120,12 @@ private:
     /************************************************** 网络 **************************************************/
     /** @brief 按配置开始监听，结果显示在状态栏，失败弹框 */
     void startListen();
+    /** @brief 设置开启时拉起同目录 RemoteRelay；已有中继或本次已拉起且端口没变则不动 */
+    void syncLocalRelay();
+    /** @brief 结束本次由中控台拉起的中继。外面自己开的不动 */
+    void stopOwnedRelay();
+    /** @brief 本机该 TCP 端口是否已有进程在听 */
+    bool relayPortOpen(int port) const;
     /** @brief 配置开启发现时起后台线程，每轮扫 700 ms、歇约 5 秒 */
     void startScan();
     /** @brief 停后台发现线程；发现已关闭时清空结果 */
@@ -169,6 +176,8 @@ private:
     void sendNotice();
     /** @brief 添加设备对话框，确认后把选中项写入设备库并记审计 */
     void openAddDevice();
+    /** @brief 用设备 ID 和验证码连固定域名，不经过局域网 */
+    void openAccess();
     /** @brief 设备属性对话框 */
     void openProperties(const QString& key);
     /** @brief 设置对话框，应用时按需重启监听和发现、刷新布局、清理审计 */
@@ -258,6 +267,8 @@ private:
     std::vector<HelloMsg> m_found;      ///< 最近一次发现结果
     QString m_foundSig;                 ///< 上次推给设备树的发现结果签名，变化才刷新
 
+    QProcess* m_relayProc;      ///< 本次拉起的 RemoteRelay，没有则为空
+    int m_relayListenPort;      ///< 本次拉起时用的局域网端口
     bool m_quit;            ///< 正在退出，closeEvent 不再缩托盘
     bool m_wallFull;        ///< 全屏墙状态
     int m_pageIndex;        ///< 监控墙当前页，从 0 起

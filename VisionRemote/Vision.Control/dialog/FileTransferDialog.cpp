@@ -19,8 +19,10 @@
 #include <QHBoxLayout>
 #include <QHeaderView>
 #include <QLabel>
+#include <QGroupBox>
 #include <QLineEdit>
 #include <QMessageBox>
+#include <QPlainTextEdit>
 #include <QProgressBar>
 #include <QPushButton>
 #include <QTableWidget>
@@ -44,6 +46,8 @@ FileTransferDialog::FileTransferDialog(ControlSession* session, AuditLog* audit,
     , m_waitSeq(0)
     , m_nextId(static_cast<uint32_t>(QDateTime::currentMSecsSinceEpoch() & 0x7fffffff))
     , m_waiting(false)
+    , m_paused(false)
+    , m_dropWalk(false)
     , m_waitUpload(false)
     , m_waitList(false)
     , m_conflict(0)
@@ -54,13 +58,16 @@ FileTransferDialog::FileTransferDialog(ControlSession* session, AuditLog* audit,
     , m_remote(0)
     , m_toRemote(0)
     , m_toLocal(0)
-    , m_status(0)
+    , m_log(0)
     , m_progress(0)
+    , m_pause(0)
+    , m_resume(0)
+    , m_stop(0)
     , m_timer(new QTimer(this))
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     setWindowTitle(QString::fromUtf8("文件传输"));
-    resize(980, 560);
+    resize(980, 680);
     build();
     reloadLocal();
     requestRemote();
@@ -140,23 +147,39 @@ void FileTransferDialog::build()
     panes->addLayout(mid);
     panes->addLayout(right, 1);
 
-    m_status = new QLabel(this);
-    m_status->setWordWrap(true);
-    m_progress = new QProgressBar(this);
+    QGroupBox* transfer = new QGroupBox(QString::fromUtf8("传输"), this);
+    QVBoxLayout* transferCol = new QVBoxLayout(transfer);
+    transferCol->setSpacing(8);
+    m_progress = new QProgressBar(transfer);
     m_progress->setRange(0, 1000);
     m_progress->setValue(0);
     m_progress->setTextVisible(false);
     m_progress->setFixedHeight(6);
-    QPushButton* close = new QPushButton(QString::fromUtf8("关闭"), this);
-    QHBoxLayout* foot = new QHBoxLayout();
-    foot->addWidget(m_status, 1);
-    foot->addWidget(close);
+    m_log = new QPlainTextEdit(transfer);
+    m_log->setReadOnly(true);
+    m_log->setPlaceholderText(QString::fromUtf8("还没有传输"));
+    m_log->setFixedHeight(72);
+    m_pause = new QPushButton(QString::fromUtf8("暂停"), transfer);
+    m_resume = new QPushButton(QString::fromUtf8("继续"), transfer);
+    m_stop = new QPushButton(QString::fromUtf8("终止"), transfer);
+    QPushButton* close = new QPushButton(QString::fromUtf8("关闭"), transfer);
+    m_pause->setEnabled(false);
+    m_resume->setEnabled(false);
+    m_stop->setEnabled(false);
+    QHBoxLayout* acts = new QHBoxLayout();
+    acts->addStretch(1);
+    acts->addWidget(m_pause);
+    acts->addWidget(m_resume);
+    acts->addWidget(m_stop);
+    acts->addWidget(close);
+    transferCol->addWidget(m_progress);
+    transferCol->addWidget(m_log);
+    transferCol->addLayout(acts);
 
     QVBoxLayout* root = new QVBoxLayout(this);
     root->setContentsMargins(14, 14, 14, 14);
     root->addLayout(panes, 1);
-    root->addWidget(m_progress);
-    root->addLayout(foot);
+    root->addWidget(transfer);
 
     QObject::connect(localUp, &QPushButton::clicked, [this]() { goUp(true); });
     QObject::connect(remoteUp, &QPushButton::clicked, [this]() { goUp(false); });
@@ -178,6 +201,9 @@ void FileTransferDialog::build()
     QObject::connect(m_remote, &QTableWidget::itemSelectionChanged, [this]() { syncButtons(); });
     QObject::connect(m_toRemote, &QPushButton::clicked, [this]() { uploadSelected(); });
     QObject::connect(m_toLocal, &QPushButton::clicked, [this]() { downloadSelected(); });
+    QObject::connect(m_pause, &QPushButton::clicked, [this]() { pauseTransfer(); });
+    QObject::connect(m_resume, &QPushButton::clicked, [this]() { resumeTransfer(); });
+    QObject::connect(m_stop, &QPushButton::clicked, [this]() { terminateTransfer(); });
     QObject::connect(close, &QPushButton::clicked, this, &QDialog::reject);
 }
 
@@ -262,7 +288,7 @@ void FileTransferDialog::reloadLocal()
     }
     QDir dir(m_localDir);
     if (!dir.exists()) {
-        m_status->setText(QString::fromUtf8("本机路径不存在"));
+        showStatus(QString::fromUtf8("本机路径不存在"));
         syncButtons();
         return;
     }
@@ -321,7 +347,7 @@ void FileTransferDialog::fillRemote(const QString& listing)
             continue;
         }
         if (parts.at(0) == "E") {
-            m_status->setText(parts.at(2));
+            showStatus(parts.at(2));
             continue;
         }
         if (parts.at(0) != "D" && parts.at(0) != "F" && parts.at(0) != "R") {
@@ -406,7 +432,7 @@ void FileTransferDialog::commitPath(bool localSide)
     text.replace('/', '\\');
     if (localSide) {
         if (!text.isEmpty() && !QFileInfo(text).isDir()) {
-            m_status->setText(QString::fromUtf8("本机路径不存在"));
+            showStatus(QString::fromUtf8("本机路径不存在"));
             m_localPath->setText(m_localDir);
             return;
         }
@@ -632,7 +658,7 @@ void FileTransferDialog::enqueueDownloadFile(const QString& remote, const QStrin
 void FileTransferDialog::uploadSelected()
 {
     if (m_remoteDir.isEmpty()) {
-        m_status->setText(QString::fromUtf8("先进入被控端的一个文件夹"));
+        showStatus(QString::fromUtf8("先进入被控端的一个文件夹"));
         return;
     }
     m_conflict = 0;
@@ -653,7 +679,7 @@ void FileTransferDialog::uploadSelected()
         }
     }
     if (m_queue.size() == before && !m_waiting) {
-        m_status->setText(QString::fromUtf8("没有要传的文件"));
+        showStatus(QString::fromUtf8("没有要传的文件"));
         return;
     }
     pump();
@@ -662,7 +688,7 @@ void FileTransferDialog::uploadSelected()
 void FileTransferDialog::downloadSelected()
 {
     if (m_localDir.isEmpty()) {
-        m_status->setText(QString::fromUtf8("先进入本机的一个文件夹"));
+        showStatus(QString::fromUtf8("先进入本机的一个文件夹"));
         return;
     }
     m_conflict = 0;
@@ -684,7 +710,7 @@ void FileTransferDialog::downloadSelected()
         }
     }
     if (m_queue.size() == before && !m_waiting) {
-        m_status->setText(QString::fromUtf8("没有要传的文件"));
+        showStatus(QString::fromUtf8("没有要传的文件"));
         return;
     }
     pump();
@@ -692,6 +718,12 @@ void FileTransferDialog::downloadSelected()
 
 void FileTransferDialog::takeWalk(const QString& listing)
 {
+    if (m_dropWalk) {
+        m_dropWalk = false;
+        m_waitList = false;
+        m_waiting = false;
+        return;
+    }
     m_waitList = false;
     m_waiting = false;
     const QStringList lines = listing.split('\n', Qt::SkipEmptyParts);
@@ -701,7 +733,7 @@ void FileTransferDialog::takeWalk(const QString& listing)
             continue;
         }
         if (parts.at(0) == "E") {
-            m_status->setText(parts.at(2));
+            showStatus(parts.at(2));
             continue;
         }
         const QString name = parts.at(2);
@@ -741,12 +773,14 @@ bool FileTransferDialog::copyTile(ControlSession::Tile* out) const
 
 void FileTransferDialog::pump()
 {
-    if (m_waiting || m_queue.isEmpty()) {
+    if (m_paused || m_waiting || m_queue.isEmpty()) {
+        syncTransfer();
         return;
     }
     ControlSession::Tile tile;
     if (!copyTile(&tile) || !tile.online || tile.peerId.empty()) {
-        m_status->setText(QString::fromUtf8("被控端不在线"));
+        showStatus(QString::fromUtf8("被控端不在线"));
+        syncTransfer();
         return;
     }
     const Job job = m_queue.takeFirst();
@@ -762,7 +796,8 @@ void FileTransferDialog::pump()
         m_waitList = true;
         m_waiting = true;
         m_session->post(m_peerId, Messages::packListDir(job.remote.toUtf8().constData(), &err));
-        m_status->setText(QString::fromUtf8("正在读取 %1%2").arg(folderName(job.remote), tail));
+        showStatus(QString::fromUtf8("正在读取 %1%2").arg(folderName(job.remote), tail));
+        syncTransfer();
         return;
     }
     m_waitSeq = tile.fileSeq;
@@ -771,21 +806,24 @@ void FileTransferDialog::pump()
         m_waiting = true;
         m_waitUpload = true;
         m_session->post(m_peerId, Messages::packMkDir(id, job.remote.toUtf8().constData(), &err));
-        m_status->setText(QString::fromUtf8("正在建目录 %1%2").arg(folderName(job.remote), tail));
+        showStatus(QString::fromUtf8("正在建目录 %1%2").arg(folderName(job.remote), tail));
+        syncTransfer();
         return;
     }
     if (job.kind == KindUpload) {
         const std::string sha = m_session->armUpload(m_peerId, id, job.local.toUtf8().constData(), job.remote.toUtf8().constData());
         if (sha.empty()) {
-            m_status->setText(QString::fromUtf8("打不开本地文件"));
+            showStatus(QString::fromUtf8("打不开本地文件"));
             pump();
+            syncTransfer();
             return;
         }
         m_waiting = true;
         m_waitUpload = true;
         m_session->post(m_peerId, Messages::packFileOpen(id, 0, job.remote.toUtf8().constData(), job.bytes, &err, sha, 0));
         m_audit->add("file.upload", m_name, m_deviceId, job.remote, job.local);
-        m_status->setText(QString::fromUtf8("正在上传 %1%2").arg(QFileInfo(job.local).fileName(), tail));
+        showStatus(QString::fromUtf8("正在上传 %1%2").arg(QFileInfo(job.local).fileName(), tail));
+        syncTransfer();
         return;
     }
     m_waiting = true;
@@ -793,7 +831,61 @@ void FileTransferDialog::pump()
     m_session->armDownload(m_peerId, id, job.local.toUtf8().constData(), job.bytes);
     m_session->post(m_peerId, Messages::packFileOpen(id, 1, job.remote.toUtf8().constData(), 0, &err, std::string(), job.resume));
     m_audit->add("file.download", m_name, m_deviceId, job.remote, job.local);
-    m_status->setText(QString::fromUtf8("正在下载 %1%2").arg(QFileInfo(job.remote).fileName(), tail));
+    showStatus(QString::fromUtf8("正在下载 %1%2").arg(QFileInfo(job.remote).fileName(), tail));
+    syncTransfer();
+}
+
+void FileTransferDialog::pauseTransfer()
+{
+    if (m_paused || (!m_waiting && m_queue.isEmpty())) {
+        return;
+    }
+    m_paused = true;
+    m_session->holdTransfer(m_peerId, true);
+    showStatus(QString::fromUtf8("已暂停"));
+    syncTransfer();
+}
+
+void FileTransferDialog::resumeTransfer()
+{
+    if (!m_paused) {
+        return;
+    }
+    m_paused = false;
+    m_session->holdTransfer(m_peerId, false);
+    showStatus(QString::fromUtf8("继续"));
+    syncTransfer();
+    pump();
+}
+
+void FileTransferDialog::terminateTransfer()
+{
+    m_dropWalk = m_waitList;
+    m_paused = false;
+    m_queue.clear();
+    m_session->stopTransfer(m_peerId);
+    m_waiting = false;
+    m_waitList = false;
+    m_progress->setValue(0);
+    showStatus(QString::fromUtf8("已终止"));
+    syncTransfer();
+}
+
+void FileTransferDialog::syncTransfer()
+{
+    const bool busy = m_waiting || !m_queue.isEmpty();
+    m_pause->setEnabled(busy && !m_paused);
+    m_resume->setEnabled(m_paused);
+    m_stop->setEnabled(busy || m_paused);
+}
+
+void FileTransferDialog::showStatus(const QString& text)
+{
+    if (!m_log || text.isEmpty() || text == m_lastStatus) {
+        return;
+    }
+    m_lastStatus = text;
+    m_log->appendPlainText(QDateTime::currentDateTime().toString("HH:mm") + QString::fromUtf8("  ") + text);
 }
 
 void FileTransferDialog::tick()
@@ -821,16 +913,13 @@ void FileTransferDialog::tick()
             m_progress->setValue(value > 1000 ? 1000 : value);
         }
         const QString note = QString::fromUtf8(tile.fileNote.c_str());
-        if (tile.fileBytes > 0 && (note.contains(QString::fromUtf8("正在")) || note.contains(QString::fromUtf8("等待")))) {
-            m_status->setText(note + QString("  %1 / %2").arg(sizeText(tile.fileGot), sizeText(tile.fileBytes))
-                + (m_queue.isEmpty() ? QString() : QString::fromUtf8("，还有 %1 个").arg(m_queue.size())));
-        }
         if (tile.fileSeq != m_waitSeq) {
             m_waiting = false;
-            m_status->setText(note);
+            showStatus(note);
             m_progress->setValue(note == QString::fromUtf8("完成") ? 1000 : m_progress->value());
             pump();
             finishBatchView();
+            syncTransfer();
         }
         return;
     }

@@ -13,6 +13,7 @@
 #include "Messages.h"
 #include "RemoteIdentity.h"
 #include "RemoteTcp.h"
+#include <map>
 #include <memory>
 #include <mutex>
 #include <string>
@@ -165,6 +166,11 @@ public:
     bool dialDevice(const std::string& address, const std::string& deviceId,
         const std::string& relayHost, int relayPort, const std::string& token, bool relayOn,
         const std::vector<std::string>& order, std::string* err);
+    /**
+     * @brief 用设备 ID 和验证码连固定域名。局域网反连、直连、中继不走这里
+     * @param code 被控端屏幕上的 6 位验证码，连上后自动申请操作
+     */
+    bool dialAccess(const std::string& host, int port, const std::string& deviceId, const std::string& code, std::string* err);
     /** @brief 所有设备状态的拷贝，含最新 JPEG */
     std::vector<Tile> tiles() const;
 
@@ -187,6 +193,16 @@ public:
     /** @brief 准备把本机文件上传到被控端 */
     /** @return 本地文件的 SHA-256，打不开则为空 */
     std::string armUpload(const std::string& peerId, uint32_t id, const std::string& localPath, const std::string& remotePath);
+    /**
+     * @brief 暂停或继续当前这一次文件传输
+     * @note 暂停不再发出后续块，已传的偏移保留。继续时若正在下载，补发一次确认让对端接着发
+     */
+    void holdTransfer(const std::string& peerId, bool hold);
+    /**
+     * @brief 终止当前这一次文件传输
+     * @note 通知对端失败并丢掉未完成的本地文件，队列由对话框自己清空
+     */
+    void stopTransfer(const std::string& peerId);
     /** @brief 转发一条键鼠输入，只有持有操作权时才发 */
     void sendInput(const std::string& peerId, const InputMsg& msg);
     /** @brief 发送 Ctrl+Alt+Del 等特殊键 */
@@ -213,6 +229,7 @@ private:
         std::string downPath;       ///< 正在接收的本地路径
         uint32_t downId;            ///< 正在接收的传输号
         bool upOn;                  ///< 正在向被控端上传
+        bool fileHold;              ///< 暂停当前上传或下载，偏移保留
         std::string upLocal;        ///< 上传的本地路径
         std::string upRemote;       ///< 上传的远端路径
         uint32_t upId;              ///< 上传传输号
@@ -235,6 +252,7 @@ private:
             , wantSub(false)
             , downId(0)
             , upOn(false)
+            , fileHold(false)
             , upId(0)
             , upOff(0)
             , upAcked(0)
@@ -288,6 +306,7 @@ private:
     RemoteTcpServer m_tcp;              ///< 监听反连的 TCP 服务端
     RemoteIdentity m_identity;          ///< 本机 TLS 身份
     mutable std::mutex m_mu;            ///< 保护 m_run、m_listening、m_selfName、m_machines
+    std::map<std::string, std::string> m_accessCodes; ///< 识别码连上后待提交的验证码，键是设备 ID
     std::thread m_read;                 ///< 读线程
     std::thread m_write;                ///< 写线程
     bool m_run;                         ///< 线程运行标志，stop() 置 false
