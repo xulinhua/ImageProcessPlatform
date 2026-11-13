@@ -745,6 +745,7 @@ void AgentSession::answerAuth(uint64_t seq, bool allow, uint32_t perms)
         if (allow && !m_operating) {
             ack.code = 0;
             ack.perms = (perms | PermView) & m_allow;
+            m_accessGate = false;
             m_operating = (ack.perms & PermOperate) != 0;
             if (m_operating) {
                 m_operated = true;
@@ -2444,6 +2445,7 @@ void AgentSession::readMain()
                                 ack.code = 0;
                                 ack.perms = m_pendingPerms;
                                 m_grantFp.clear();
+                                m_accessGate = false;
                                 m_operating = (ack.perms & PermOperate) != 0;
                                 if (m_operating) {
                                     m_operated = true;
