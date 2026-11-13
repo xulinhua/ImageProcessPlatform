@@ -1206,7 +1206,12 @@ bool AgentSession::takeAccess()
         return false;
     }
     std::string err;
-    return m_tcp.attach(sock, "access:" + id, &err);
+    if (!m_tcp.attach(sock, "access:" + id, &err)) {
+        return false;
+    }
+    // 局域网连接保留 1MB 发送缓冲。识别码这条慢，缓冲一大，旧画面会把心跳堵在后面
+    m_tcp.limitSendBuffer(64 * 1024);
+    return true;
 }
 
 void AgentSession::setProduction(bool on)
@@ -2608,12 +2613,20 @@ void AgentSession::writeMain()
                 continue;
             }
         }
-        // 每 kHeartbeatMs 一次心跳；画面有新帧才发，不重发旧帧；最后发队列里的答复类报文
+        // 心跳和已排队的答复先发出。画面写入会堵住这条线程，不能让它们排在画面后面
         if (now >= nextBeat) {
             HeartbeatMsg beat;
             beat.ms = now;
             m_tcp.write("", Messages::packHeartbeat(beat, &err), 1000, &err);
             nextBeat = now + RemoteConst::kHeartbeatMs;
+        }
+        for (size_t i = 0; i < batch.size(); ++i) {
+            m_tcp.write("", batch[i], 1000, &err);
+        }
+        batch.clear();
+        if (cursorDirty) {
+            m_tcp.write("", Messages::packCursorPos(cursor, &err), 1000, &err);
+            cursorDirty = false;
         }
         bool sentPicture = false;
         if (seq != sent) {
@@ -2642,7 +2655,8 @@ void AgentSession::writeMain()
             const CommBytes packet = Messages::packPicture(picture, Frame::ChVideo, &err);
             const uint64_t packMs = RemoteLog::tickMs() - t0;
             const uint64_t t1 = RemoteLog::tickMs();
-            const bool ok = m_tcp.write("", packet, 1000, &err);
+            // 只发当前这一帧；更新的帧留在 m_picture，这次写完再取。超时放宽，慢链路上一帧 JPEG 发不完 1 秒
+            const bool ok = m_tcp.write("", packet, 15000, &err);
             const uint64_t writeMs = RemoteLog::tickMs() - t1;
             if (ok) {
                 m_sendWindowBytes += packet.size();
@@ -2666,21 +2680,15 @@ void AgentSession::writeMain()
                 ok ? "ok" : err.c_str());
             sentPicture = true;
         }
-        if (thumbSeq != thumbSent && !thumb.jpeg.empty()) {
-            m_tcp.write("", Messages::packPicture(thumb, Frame::ChThumb, &err), 1000, &err);
+        if (!sentPicture && thumbSeq != thumbSent && !thumb.jpeg.empty()) {
+            m_tcp.write("", Messages::packPicture(thumb, Frame::ChThumb, &err), 15000, &err);
             std::lock_guard<std::mutex> lock(m_mu);
             m_thumbSent = thumbSeq;
-        }
-        if (cursorDirty) {
-            m_tcp.write("", Messages::packCursorPos(cursor, &err), 1000, &err);
         }
         std::vector<CommBytes> phase4;
         pumpPhase4(&phase4);
         for (size_t n = 0; n < phase4.size(); ++n) {
             m_tcp.write("", phase4[n], 1000, &err);
-        }
-        for (size_t i = 0; i < batch.size(); ++i) {
-            m_tcp.write("", batch[i], 1000, &err);
         }
         // 还有待发画面就立刻再转；空转才睡，避免人为把帧率卡死
         bool pending = false;

@@ -248,7 +248,13 @@ void pump(const std::shared_ptr<Pipe>& pipe)
     while (!pipe->stop) {
         bool worked = false;
         char buf[16384];
-        const int n = recv(pipe->local, buf, sizeof(buf), 0);
+        // 云端还没发出去的密文超过 64KB 就先不读本机。发送缓冲里只留大约一帧，心跳不会排在一串旧画面后面
+        int n = -1;
+        if (outCipher.size() >= 64 * 1024) {
+            WSASetLastError(WSAEWOULDBLOCK);
+        } else {
+            n = recv(pipe->local, buf, sizeof(buf), 0);
+        }
         if (n > 0) {
             const std::vector<unsigned char> frame = clientFrame(2, reinterpret_cast<unsigned char*>(buf), n);
             std::string err;
@@ -581,6 +587,9 @@ bool AccessTunnel::open(const std::string& host, int port, const RemoteIdentity&
     BOOL nodelay = TRUE;
     setsockopt(client, IPPROTO_TCP, TCP_NODELAY, reinterpret_cast<const char*>(&nodelay), sizeof(nodelay));
     setsockopt(accepted, IPPROTO_TCP, TCP_NODELAY, reinterpret_cast<const char*>(&nodelay), sizeof(nodelay));
+    int pairBuf = 64 * 1024;
+    setsockopt(accepted, SOL_SOCKET, SO_RCVBUF, reinterpret_cast<const char*>(&pairBuf), sizeof(pairBuf));
+    setsockopt(accepted, SOL_SOCKET, SO_SNDBUF, reinterpret_cast<const char*>(&pairBuf), sizeof(pairBuf));
     pipe->local = accepted;
     std::thread(pump, pipe).detach();
     *localSock = static_cast<uintptr_t>(client);

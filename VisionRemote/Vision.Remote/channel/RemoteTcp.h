@@ -72,6 +72,8 @@ public:
      * @return 失败时关闭连接并返回 false
      */
     bool write(const std::string& peerId, const CommBytes& data, int timeoutMs, std::string* err);
+    /** @brief 把发送缓冲收小。识别码隧道用，避免画面在内核里堆出几十秒延迟 */
+    void limitSendBuffer(int bytes);
     /**
      * @brief 收一次，最多 maxBytes 字节。peerId 忽略
      * @param timeoutMs 接收超时，<=0 按 200

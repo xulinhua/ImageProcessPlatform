@@ -350,6 +350,18 @@ std::vector<CommPeer> RemoteTcpClient::peers() const
     return out;
 }
 
+void RemoteTcpClient::limitSendBuffer(int bytes)
+{
+    if (bytes < 8192) {
+        bytes = 8192;
+    }
+    std::lock_guard<std::mutex> lock(m_impl->mu);
+    if (m_impl->sock == INVALID_SOCKET) {
+        return;
+    }
+    setsockopt(m_impl->sock, SOL_SOCKET, SO_SNDBUF, reinterpret_cast<const char*>(&bytes), sizeof(bytes));
+}
+
 bool RemoteTcpClient::write(const std::string& peerId, const CommBytes& data, int timeoutMs, std::string* err)
 {
     (void)peerId;
