@@ -41,6 +41,8 @@ public:
     static bool readLine(uintptr_t sock, std::string* line, int waitMs);
     /** @brief 关掉本机套接字。0 忽略 */
     static void discard(uintptr_t sock);
+    /** @brief 套接字还能读。对端已关返回 false，暂时没数据返回 true */
+    static bool alive(uintptr_t sock);
 };
 
 }

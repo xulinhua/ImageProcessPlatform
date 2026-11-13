@@ -502,6 +502,130 @@ private:
         return writeAll(sock, frame);
     }
 
+    struct WsWrite {
+        SOCKET sock;
+        std::mutex mu;
+        WsWrite() : sock(INVALID_SOCKET) {}
+    };
+
+    static bool sendFrameTo(WsWrite* dst, int opcode, const std::string& body)
+    {
+        if (!dst) {
+            return false;
+        }
+        std::lock_guard<std::mutex> lock(dst->mu);
+        return writeFrame(dst->sock, opcode, body);
+    }
+
+    /**
+     * @brief 从一侧读 WebSocket，读到一块就写到另一侧
+     * @note 整帧攒齐再转发时，一张大画面会让对端超过 3 秒收不到字节，中控台会当成掉线
+     */
+    static void streamSide(WsConn* from, WsWrite* to, WsWrite* self, std::atomic<bool>* stop, std::atomic<unsigned long long>* bytes)
+    {
+        while (stop && !stop->load()) {
+            while (from->buf.size() < 2) {
+                char tmp[4096];
+                const int n = recv(from->sock, tmp, sizeof(tmp), 0);
+                if (n <= 0) {
+                    stop->store(true);
+                    return;
+                }
+                from->buf.append(tmp, tmp + n);
+            }
+            const unsigned char b1 = static_cast<unsigned char>(from->buf[1]);
+            const bool masked = (b1 & 0x80) != 0;
+            unsigned long long len = b1 & 0x7f;
+            size_t head = 2;
+            if (len == 126) {
+                head = 4;
+            } else if (len == 127) {
+                head = 10;
+            }
+            if (masked) {
+                head += 4;
+            }
+            while (from->buf.size() < head) {
+                char tmp[4096];
+                const int n = recv(from->sock, tmp, sizeof(tmp), 0);
+                if (n <= 0) {
+                    stop->store(true);
+                    return;
+                }
+                from->buf.append(tmp, tmp + n);
+            }
+            if ((b1 & 0x7f) == 126) {
+                len = (static_cast<unsigned long long>(static_cast<unsigned char>(from->buf[2])) << 8)
+                    | static_cast<unsigned char>(from->buf[3]);
+            } else if ((b1 & 0x7f) == 127) {
+                len = 0;
+                for (int i = 0; i < 8; ++i) {
+                    len = (len << 8) | static_cast<unsigned char>(from->buf[2 + i]);
+                }
+            }
+            if (len > 8 * 1024 * 1024) {
+                stop->store(true);
+                return;
+            }
+            unsigned char mask[4] = {};
+            if (masked) {
+                std::memcpy(mask, from->buf.data() + head - 4, 4);
+            }
+            const int opcode = static_cast<unsigned char>(from->buf[0]) & 0x0f;
+            from->buf.erase(0, head);
+            const bool forward = opcode == 0x1 || opcode == 0x2 || opcode == 0x0;
+            std::string control;
+            unsigned long long done = 0;
+            unsigned long long left = len;
+            while (left > 0) {
+                if (from->buf.empty()) {
+                    char tmp[16384];
+                    const int n = recv(from->sock, tmp, sizeof(tmp), 0);
+                    if (n <= 0) {
+                        stop->store(true);
+                        return;
+                    }
+                    from->buf.append(tmp, tmp + n);
+                }
+                size_t take = from->buf.size();
+                if (take > left) {
+                    take = static_cast<size_t>(left);
+                }
+                if (take > 16384) {
+                    take = 16384;
+                }
+                std::string piece = from->buf.substr(0, take);
+                from->buf.erase(0, take);
+                if (masked) {
+                    for (size_t i = 0; i < piece.size(); ++i) {
+                        piece[i] = static_cast<char>(static_cast<unsigned char>(piece[i]) ^ mask[(done + i) % 4]);
+                    }
+                }
+                done += piece.size();
+                left -= piece.size();
+                if (forward) {
+                    if (!piece.empty() && !sendFrameTo(to, 2, piece)) {
+                        stop->store(true);
+                        return;
+                    }
+                    if (bytes) {
+                        bytes->fetch_add(piece.size());
+                    }
+                } else {
+                    control.append(piece);
+                }
+            }
+            if (opcode == 0x8) {
+                stop->store(true);
+                return;
+            }
+            if (opcode == 0x9 && !sendFrameTo(self, 0xA, control)) {
+                stop->store(true);
+                return;
+            }
+        }
+    }
+
     static void spliceWs(SOCKET left, SOCKET right, const std::string& id, const std::string& leftBuf, const std::string& leftPre)
     {
         WsConn a;
@@ -509,54 +633,33 @@ private:
         a.sock = left;
         a.buf = leftBuf;
         b.sock = right;
-        if (!leftPre.empty() && !writeFrame(right, 2, leftPre)) {
+        WsWrite leftWrite;
+        WsWrite rightWrite;
+        leftWrite.sock = left;
+        rightWrite.sock = right;
+        if (!leftPre.empty() && !sendFrameTo(&rightWrite, 2, leftPre)) {
             closesocket(left);
             closesocket(right);
             return;
         }
         const uint64_t began = nowMs();
-        unsigned long long bytes = 0;
-        while (true) {
-            fd_set set;
-            FD_ZERO(&set);
-            FD_SET(a.sock, &set);
-            FD_SET(b.sock, &set);
-            timeval wait;
-            wait.tv_sec = 1;
-            wait.tv_usec = 0;
-            if (select(0, &set, 0, 0, &wait) < 0) {
-                break;
-            }
-            WsConn* from = 0;
-            SOCKET to = INVALID_SOCKET;
-            if (FD_ISSET(a.sock, &set)) {
-                from = &a;
-                to = b.sock;
-            } else if (FD_ISSET(b.sock, &set)) {
-                from = &b;
-                to = a.sock;
-            } else {
-                continue;
-            }
-            std::string payload;
-            int opcode = 0;
-            if (!readFrame(from, &payload, &opcode)) {
-                break;
-            }
-            if (opcode == 0x9 || opcode == 0xA) {
-                continue;
-            }
-            if (!payload.empty() && !writeFrame(to, 2, payload)) {
-                break;
-            }
-            bytes += payload.size();
+        std::atomic<bool> stop(false);
+        std::atomic<unsigned long long> bytes(0);
+        std::thread other(&RelayHub::streamSide, &b, &leftWrite, &rightWrite, &stop, &bytes);
+        streamSide(&a, &rightWrite, &leftWrite, &stop, &bytes);
+        stop.store(true);
+        shutdown(left, SD_BOTH);
+        shutdown(right, SD_BOTH);
+        if (other.joinable()) {
+            other.join();
         }
         closesocket(left);
         closesocket(right);
+        const unsigned long long forwarded = bytes.load();
         FILE* file = 0;
         if (fopen_s(&file, "relay-audit.jsonl", "ab") == 0 && file) {
             fprintf(file, "{\"event\":\"relay.access\",\"id\":\"%s\",\"ms\":%llu,\"bytes\":%llu}\n",
-                id.c_str(), static_cast<unsigned long long>(nowMs() - began), bytes);
+                id.c_str(), static_cast<unsigned long long>(nowMs() - began), forwarded);
             fclose(file);
         }
     }

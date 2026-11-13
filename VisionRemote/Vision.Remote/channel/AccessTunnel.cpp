@@ -505,4 +505,25 @@ void AccessTunnel::discard(uintptr_t sock)
     }
 }
 
+bool AccessTunnel::alive(uintptr_t sock)
+{
+    if (sock == 0) {
+        return false;
+    }
+    u_long nb = 1;
+    ioctlsocket(static_cast<SOCKET>(sock), FIONBIO, &nb);
+    char ch = 0;
+    const int n = recv(static_cast<SOCKET>(sock), &ch, 1, MSG_PEEK);
+    const int wsa = WSAGetLastError();
+    nb = 0;
+    ioctlsocket(static_cast<SOCKET>(sock), FIONBIO, &nb);
+    if (n == 0) {
+        return false;
+    }
+    if (n < 0 && wsa != WSAEWOULDBLOCK && wsa != WSAETIMEDOUT) {
+        return false;
+    }
+    return true;
+}
+
 }

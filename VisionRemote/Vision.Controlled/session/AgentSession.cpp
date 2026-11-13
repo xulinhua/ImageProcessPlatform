@@ -1162,7 +1162,7 @@ void AgentSession::accessMain()
             }
             std::string reply;
             if (!AccessTunnel::readLine(local, &reply, 1000)) {
-                if (!m_run) {
+                if (!m_run || !AccessTunnel::alive(local)) {
                     break;
                 }
                 continue;
@@ -1177,6 +1177,7 @@ void AgentSession::accessMain()
         }
         if (!got) {
             AccessTunnel::discard(local);
+            Sleep(1000);
             continue;
         }
         std::lock_guard<std::mutex> lock(m_mu);
