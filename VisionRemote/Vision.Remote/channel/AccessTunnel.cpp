@@ -200,52 +200,185 @@ bool takeFrame(Pipe* pipe, int* opcode, std::vector<unsigned char>* payload, std
     return false;
 }
 
+std::vector<unsigned char> clientFrame(int opcode, const unsigned char* data, int len)
+{
+    unsigned char mask[4];
+    if (BCryptGenRandom(0, mask, 4, BCRYPT_USE_SYSTEM_PREFERRED_RNG) != 0) {
+        mask[0] = 1;
+        mask[1] = 2;
+        mask[2] = 3;
+        mask[3] = 4;
+    }
+    std::vector<unsigned char> frame;
+    frame.push_back(static_cast<unsigned char>(0x80 | opcode));
+    if (len < 126) {
+        frame.push_back(static_cast<unsigned char>(0x80 | len));
+    } else if (len <= 65535) {
+        frame.push_back(static_cast<unsigned char>(0x80 | 126));
+        frame.push_back(static_cast<unsigned char>((len >> 8) & 0xff));
+        frame.push_back(static_cast<unsigned char>(len & 0xff));
+    } else {
+        frame.push_back(static_cast<unsigned char>(0x80 | 127));
+        for (int i = 7; i >= 0; --i) {
+            frame.push_back(static_cast<unsigned char>((static_cast<unsigned long long>(len) >> (i * 8)) & 0xff));
+        }
+    }
+    frame.insert(frame.end(), mask, mask + 4);
+    for (int i = 0; i < len; ++i) {
+        frame.push_back(data[i] ^ mask[i % 4]);
+    }
+    return frame;
+}
+
+bool wouldBlock()
+{
+    const int wsa = WSAGetLastError();
+    return wsa == WSAEWOULDBLOCK || wsa == WSAETIMEDOUT;
+}
+
 void pump(const std::shared_ptr<Pipe>& pipe)
 {
+    u_long nb = 1;
+    ioctlsocket(pipe->cloud, FIONBIO, &nb);
+    ioctlsocket(pipe->local, FIONBIO, &nb);
+    std::vector<unsigned char> outCipher;
+    std::string toLocal;
+    std::string wsIn;
     int idle = 0;
     while (!pipe->stop) {
-        int tv = 20;
-        setsockopt(pipe->local, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<const char*>(&tv), sizeof(tv));
+        bool worked = false;
         char buf[16384];
         const int n = recv(pipe->local, buf, sizeof(buf), 0);
         if (n > 0) {
+            const std::vector<unsigned char> frame = clientFrame(2, reinterpret_cast<unsigned char*>(buf), n);
             std::string err;
-            sendFrame(pipe.get(), 2, reinterpret_cast<unsigned char*>(buf), n, &err);
-            if (!err.empty()) {
+            if (!pipe->tls.seal(frame.data(), frame.size(), &outCipher, &err)) {
                 break;
             }
-            idle = 0;
+            worked = true;
         } else if (n == 0) {
             break;
-        } else {
-            const int wsa = WSAGetLastError();
-            if (wsa != WSAETIMEDOUT && wsa != WSAEWOULDBLOCK) {
-                break;
-            }
+        } else if (!wouldBlock()) {
+            break;
         }
-        std::string err;
-        int opcode = 0;
-        std::vector<unsigned char> payload;
-        if (!takeFrame(pipe.get(), &opcode, &payload, &err)) {
+        while (!outCipher.empty()) {
+            const int sent = send(pipe->cloud, reinterpret_cast<const char*>(outCipher.data()), static_cast<int>(outCipher.size()), 0);
+            if (sent > 0) {
+                outCipher.erase(outCipher.begin(), outCipher.begin() + sent);
+                worked = true;
+                continue;
+            }
+            if (sent == 0 || !wouldBlock()) {
+                pipe->stop = true;
+            }
+            break;
+        }
+        if (pipe->stop) {
+            break;
+        }
+        const int got = recv(pipe->cloud, buf, sizeof(buf), 0);
+        if (got > 0) {
+            std::string err;
+            const CommBytes plain = pipe->tls.unseal(reinterpret_cast<unsigned char*>(buf), static_cast<size_t>(got), &err);
             if (!err.empty()) {
                 break;
             }
-        } else if (opcode == 0x8) {
+            wsIn.append(reinterpret_cast<const char*>(plain.data()), plain.size());
+            worked = true;
+        } else if (got == 0) {
             break;
-        } else if (opcode == 0x9) {
-            sendFrame(pipe.get(), 0xA, payload.empty() ? 0 : payload.data(), static_cast<int>(payload.size()), &err);
-        } else if (opcode == 0x1 || opcode == 0x2 || opcode == 0x0) {
-            if (!payload.empty() && !sendAll(pipe->local, reinterpret_cast<const char*>(payload.data()), static_cast<int>(payload.size()))) {
+        } else if (!wouldBlock()) {
+            break;
+        }
+        while (wsIn.size() >= 2) {
+            const unsigned char b1 = static_cast<unsigned char>(wsIn[1]);
+            const bool masked = (b1 & 0x80) != 0;
+            unsigned long long len = b1 & 0x7f;
+            size_t head = 2;
+            if (len == 126) {
+                head = 4;
+            } else if (len == 127) {
+                head = 10;
+            }
+            if (masked) {
+                head += 4;
+            }
+            if (wsIn.size() < head) {
                 break;
             }
+            if ((b1 & 0x7f) == 126) {
+                len = (static_cast<unsigned long long>(static_cast<unsigned char>(wsIn[2])) << 8)
+                    | static_cast<unsigned char>(wsIn[3]);
+            } else if ((b1 & 0x7f) == 127) {
+                len = 0;
+                for (int i = 0; i < 8; ++i) {
+                    len = (len << 8) | static_cast<unsigned char>(wsIn[2 + i]);
+                }
+            }
+            if (len > 8 * 1024 * 1024 || wsIn.size() < head + static_cast<size_t>(len)) {
+                if (len > 8 * 1024 * 1024) {
+                    pipe->stop = true;
+                }
+                break;
+            }
+            std::string body = wsIn.substr(head, static_cast<size_t>(len));
+            if (masked) {
+                const unsigned char* key = reinterpret_cast<const unsigned char*>(wsIn.data() + head - 4);
+                for (size_t i = 0; i < body.size(); ++i) {
+                    body[i] = static_cast<char>(static_cast<unsigned char>(body[i]) ^ key[i % 4]);
+                }
+            }
+            const int opcode = static_cast<unsigned char>(wsIn[0]) & 0x0f;
+            wsIn.erase(0, head + static_cast<size_t>(len));
+            if (opcode == 0x8) {
+                pipe->stop = true;
+                break;
+            }
+            if (opcode == 0x9) {
+                const std::vector<unsigned char> pong = clientFrame(0xA,
+                    reinterpret_cast<const unsigned char*>(body.data()), static_cast<int>(body.size()));
+                std::string err;
+                if (!pipe->tls.seal(pong.data(), pong.size(), &outCipher, &err)) {
+                    pipe->stop = true;
+                    break;
+                }
+                continue;
+            }
+            if (opcode == 0x1 || opcode == 0x2 || opcode == 0x0) {
+                toLocal.append(body);
+            }
+        }
+        while (!toLocal.empty()) {
+            const int sent = send(pipe->local, toLocal.data(), static_cast<int>(toLocal.size()), 0);
+            if (sent > 0) {
+                toLocal.erase(0, static_cast<size_t>(sent));
+                worked = true;
+                continue;
+            }
+            if (sent == 0 || !wouldBlock()) {
+                pipe->stop = true;
+            }
+            break;
+        }
+        if (pipe->stop) {
+            break;
+        }
+        if (worked) {
             idle = 0;
+            continue;
         }
         idle += 1;
         if (idle > 400) {
-            unsigned char ping = 0;
-            sendFrame(pipe.get(), 0x9, &ping, 0, &err);
+            const unsigned char ping = 0;
+            const std::vector<unsigned char> frame = clientFrame(0x9, &ping, 0);
+            std::string err;
+            if (!pipe->tls.seal(frame.data(), frame.size(), &outCipher, &err)) {
+                break;
+            }
             idle = 0;
+            continue;
         }
+        Sleep(5);
     }
     pipe->stop = true;
     if (pipe->local != INVALID_SOCKET) {

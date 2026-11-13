@@ -12,6 +12,7 @@
 #include "CommPeer.h"
 #include "RemoteIdentity.h"
 #include <string>
+#include <vector>
 
 namespace Vision {
 
@@ -39,8 +40,12 @@ public:
 
     /** @brief 加密后发出。timeoutMs<=0 按 3000 */
     bool write(const CommBytes& data, int timeoutMs, std::string* err);
+    /** @brief 只加密，不碰套接字。密文追加到 out */
+    bool seal(const unsigned char* data, size_t len, std::vector<unsigned char>* out, std::string* err);
     /** @brief 解密一次。超时返回空且保持连接 */
     CommBytes read(int maxBytes, int timeoutMs, std::string* err);
+    /** @brief 把已经读到的密文解成明文。半截记录留着，下次再喂 */
+    CommBytes unseal(const unsigned char* data, size_t len, std::string* err);
 
     /** @brief 握手已完成 */
     bool ready() const;

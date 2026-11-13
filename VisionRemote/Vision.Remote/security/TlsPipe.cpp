@@ -516,4 +516,111 @@ CommBytes TlsPipe::read(int maxBytes, int timeoutMs, std::string* err)
     return out;
 }
 
+bool TlsPipe::seal(const unsigned char* data, size_t len, std::vector<unsigned char>* out, std::string* err)
+{
+    if (!out) {
+        return false;
+    }
+    if (!m_impl->ready) {
+        if (err) {
+            *err = "TLS 未就绪";
+        }
+        return false;
+    }
+    size_t off = 0;
+    while (off < len) {
+        const size_t chunk = (std::min)(len - off, static_cast<size_t>(m_impl->sizes.cbMaximumMessage));
+        std::vector<unsigned char> buf(m_impl->sizes.cbHeader + chunk + m_impl->sizes.cbTrailer);
+        if (chunk > 0 && data) {
+            memcpy(buf.data() + m_impl->sizes.cbHeader, data + off, chunk);
+        }
+        SecBuffer buffers[4];
+        buffers[0].pvBuffer = buf.data();
+        buffers[0].cbBuffer = m_impl->sizes.cbHeader;
+        buffers[0].BufferType = SECBUFFER_STREAM_HEADER;
+        buffers[1].pvBuffer = buf.data() + m_impl->sizes.cbHeader;
+        buffers[1].cbBuffer = static_cast<ULONG>(chunk);
+        buffers[1].BufferType = SECBUFFER_DATA;
+        buffers[2].pvBuffer = buf.data() + m_impl->sizes.cbHeader + chunk;
+        buffers[2].cbBuffer = m_impl->sizes.cbTrailer;
+        buffers[2].BufferType = SECBUFFER_STREAM_TRAILER;
+        buffers[3].pvBuffer = nullptr;
+        buffers[3].cbBuffer = 0;
+        buffers[3].BufferType = SECBUFFER_EMPTY;
+        SecBufferDesc desc;
+        desc.ulVersion = SECBUFFER_VERSION;
+        desc.cBuffers = 4;
+        desc.pBuffers = buffers;
+        if (EncryptMessage(&m_impl->ctx, 0, &desc, 0) != SEC_E_OK) {
+            if (err) {
+                *err = "EncryptMessage 失败";
+            }
+            return false;
+        }
+        const unsigned char* cipher = static_cast<const unsigned char*>(buf.data());
+        const size_t total = static_cast<size_t>(buffers[0].cbBuffer + buffers[1].cbBuffer + buffers[2].cbBuffer);
+        out->insert(out->end(), cipher, cipher + total);
+        off += chunk;
+    }
+    return true;
+}
+
+CommBytes TlsPipe::unseal(const unsigned char* data, size_t len, std::string* err)
+{
+    CommBytes out;
+    if (!m_impl->ready) {
+        if (err) {
+            *err = "TLS 未就绪";
+        }
+        return out;
+    }
+    if (!m_impl->leftover.empty()) {
+        out.swap(m_impl->leftover);
+    }
+    if (data && len > 0) {
+        m_impl->extra.insert(m_impl->extra.end(), data, data + len);
+    }
+    while (!m_impl->extra.empty()) {
+        SecBuffer buffers[4];
+        buffers[0].pvBuffer = m_impl->extra.data();
+        buffers[0].cbBuffer = static_cast<ULONG>(m_impl->extra.size());
+        buffers[0].BufferType = SECBUFFER_DATA;
+        buffers[1].BufferType = SECBUFFER_EMPTY;
+        buffers[2].BufferType = SECBUFFER_EMPTY;
+        buffers[3].BufferType = SECBUFFER_EMPTY;
+        SecBufferDesc desc;
+        desc.ulVersion = SECBUFFER_VERSION;
+        desc.cBuffers = 4;
+        desc.pBuffers = buffers;
+        const SECURITY_STATUS st = DecryptMessage(&m_impl->ctx, &desc, 0, nullptr);
+        if (st == SEC_E_INCOMPLETE_MESSAGE) {
+            return out;
+        }
+        if (st == SEC_I_CONTEXT_EXPIRED) {
+            if (err) {
+                *err = "TLS 已关闭";
+            }
+            return out;
+        }
+        if (st != SEC_E_OK && st != SEC_I_RENEGOTIATE) {
+            if (err) {
+                *err = "DecryptMessage 失败";
+            }
+            return out;
+        }
+        std::vector<unsigned char> rest;
+        for (int i = 0; i < 4; ++i) {
+            if (buffers[i].BufferType == SECBUFFER_DATA && buffers[i].pvBuffer && buffers[i].cbBuffer > 0) {
+                const unsigned char* p = static_cast<const unsigned char*>(buffers[i].pvBuffer);
+                out.insert(out.end(), p, p + buffers[i].cbBuffer);
+            } else if (buffers[i].BufferType == SECBUFFER_EXTRA && buffers[i].pvBuffer && buffers[i].cbBuffer > 0) {
+                const unsigned char* p = static_cast<const unsigned char*>(buffers[i].pvBuffer);
+                rest.assign(p, p + buffers[i].cbBuffer);
+            }
+        }
+        m_impl->extra.swap(rest);
+    }
+    return out;
+}
+
 }
