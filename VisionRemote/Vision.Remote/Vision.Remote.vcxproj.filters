@@ -42,6 +42,9 @@
     <ClCompile Include="codec\H264Codec.cpp">
       <Filter>codec</Filter>
     </ClCompile>
+    <ClCompile Include="codec\DeskDelta.cpp">
+      <Filter>codec</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="protocol\Frame.h">
@@ -72,6 +75,9 @@
       <Filter>security</Filter>
     </ClInclude>
     <ClInclude Include="codec\H264Codec.h">
+      <Filter>codec</Filter>
+    </ClInclude>
+    <ClInclude Include="codec\DeskDelta.h">
       <Filter>codec</Filter>
     </ClInclude>
   </ItemGroup>

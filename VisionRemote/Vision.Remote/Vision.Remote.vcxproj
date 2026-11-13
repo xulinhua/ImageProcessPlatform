@@ -86,6 +86,7 @@
     <ClCompile Include="security\RemotePaths.cpp" />
     <ClCompile Include="security\TlsPipe.cpp" />
     <ClCompile Include="codec\H264Codec.cpp" />
+    <ClCompile Include="codec\DeskDelta.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="protocol\Frame.h" />
@@ -100,6 +101,7 @@
     <ClInclude Include="security\RemotePaths.h" />
     <ClInclude Include="security\TlsPipe.h" />
     <ClInclude Include="codec\H264Codec.h" />
+    <ClInclude Include="codec\DeskDelta.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
 </Project>

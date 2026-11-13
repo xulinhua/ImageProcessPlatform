@@ -11,6 +11,7 @@
 
 #include "AgentAudit.h"
 #include "DirectListen.h"
+#include "DeskDelta.h"
 #include "H264Codec.h"
 #include "Messages.h"
 #include "RemoteAuth.h"
@@ -413,6 +414,7 @@ private:
     WindowCapture m_capture;        ///< 抓屏与 JPEG 编码，只在抓屏线程用
     DxgiCapture m_dxgi;             ///< 桌面 DXGI；失败时改走 m_capture
     H264Codec m_h264;               ///< 主码流硬编，失败再 OpenH264，再不行 JPEG
+    DeskDelta m_desk;               ///< 差分发送的上一帧。JPEG / H.264 / 原图不用它
     AgentAudit m_audit;             ///< 被控端本地审计
     WindowInput m_input;            ///< 键鼠注入与松开，只在收包线程用（stop 在线程退出后再松开一次）；抓屏线程只调无状态的 operable
     mutable std::mutex m_mu;        ///< 保护以下全部会话状态

@@ -956,6 +956,7 @@ QWidget* AgentWindow::buildPicturePage(QWidget* parent)
     m_preferCodec->addItem(QString::fromUtf8("JPEG"), 1);
     m_preferCodec->addItem(QString::fromUtf8("H.264"), 2);
     m_preferCodec->addItem(QString::fromUtf8("原图 BGRA"), 3);
+    m_preferCodec->addItem(QString::fromUtf8("差分"), 4);
     m_preferCodec->setFixedWidth(180);
     m_preferCodec->setToolTip(QString::fromUtf8("本机默认发送方式。中控台会话里指定编码时会覆盖"));
     col->addWidget(line(codecLabel, m_preferCodec));
@@ -1302,7 +1303,7 @@ void AgentWindow::loadConfig()
     }
     if (m_preferCodec) {
         const int codec = obj.value("preferCodec").toInt(0);
-        const int idx = m_preferCodec->findData(codec >= 0 && codec <= 3 ? codec : 0);
+        const int idx = m_preferCodec->findData(codec >= 0 && codec <= 4 ? codec : 0);
         m_preferCodec->blockSignals(true);
         m_preferCodec->setCurrentIndex(idx >= 0 ? idx : 0);
         m_preferCodec->blockSignals(false);

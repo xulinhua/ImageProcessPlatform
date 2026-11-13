@@ -416,7 +416,7 @@ int AgentSession::pipelineWorkers() const
 
 void AgentSession::setPreferCodec(int codec)
 {
-    if (codec < 0 || codec > 3) {
+    if (codec < 0 || codec > 4) {
         codec = 0;
     }
     bool changed = false;
@@ -427,6 +427,7 @@ void AgentSession::setPreferCodec(int codec)
         }
         m_preferCodec = codec;
         m_mainLatched = false;
+        m_desk.reset();
         m_shareGen += 1;
         changed = true;
     }
@@ -875,7 +876,7 @@ void AgentSession::applyControl(const ConfigMsg& cfg)
             m_targetBitrateBps = static_cast<int>(cfg.bitrateKbps) * 1000;
         }
         bool codecChanged = false;
-        if (cfg.codec >= 1 && cfg.codec <= 3 && m_preferCodec != static_cast<int>(cfg.codec)) {
+        if (cfg.codec >= 1 && cfg.codec <= 4 && m_preferCodec != static_cast<int>(cfg.codec)) {
             m_preferCodec = cfg.codec;
             m_mainLatched = false;
             codecChanged = true;
@@ -900,7 +901,7 @@ void AgentSession::applyControl(const ConfigMsg& cfg)
             m_status = "中控台已设置";
         }
     }
-    if (cfg.codec >= 1 && cfg.codec <= 3) {
+    if (cfg.codec >= 1 && cfg.codec <= 4) {
         m_h264.closeEncoder();
         m_h264.requestKey();
     }
@@ -932,7 +933,7 @@ void AgentSession::applySubscribe(const SubscribeMsg& msg)
                 m_baseQuality = m_jpegQuality;
             }
             takeLongEdge(msg.longEdge, msg.edgeLock);
-            if (msg.codec >= 1 && msg.codec <= 3 && m_preferCodec != static_cast<int>(msg.codec)) {
+            if (msg.codec >= 1 && msg.codec <= 4 && m_preferCodec != static_cast<int>(msg.codec)) {
                 m_preferCodec = msg.codec;
                 m_mainLatched = false;
                 m_shareGen += 1;
@@ -1549,6 +1550,27 @@ bool AgentSession::encodeByPrefer(const CommBytes& bgra, int width, int height, 
     {
         std::lock_guard<std::mutex> lock(m_mu);
         prefer = m_preferCodec;
+    }
+    if (prefer != 4) {
+        m_desk.reset();
+    }
+    if (prefer == 4) {
+        bool key = false;
+        if (!m_desk.encode(bgra.data(), width, height, quality, &shot->jpeg, &key) || shot->jpeg.empty()) {
+            return false;
+        }
+        shot->codec = 4;
+        shot->key = key ? 1 : 0;
+        shot->visible = 1;
+        shot->operable = 1;
+        shot->imageW = static_cast<uint32_t>(width);
+        shot->imageH = static_cast<uint32_t>(height);
+        shot->clientW = static_cast<uint32_t>(width);
+        shot->clientH = static_cast<uint32_t>(height);
+        if (pathName) {
+            *pathName = key ? "差分关键" : "差分";
+        }
+        return true;
     }
     if (prefer == 3) {
         if (!encodeRaw(bgra, width, height, longEdge, shot)) {

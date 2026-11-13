@@ -162,7 +162,7 @@ void ControlConfig::load()
     if (defaultQuality < 0 || defaultQuality > 3) {
         defaultQuality = 1;
     }
-    if (streamCodec < 0 || streamCodec > 3) {
+    if (streamCodec < 0 || streamCodec > 4) {
         streamCodec = 0;
     }
     if (resolutionMode < 0 || resolutionMode > 2) {

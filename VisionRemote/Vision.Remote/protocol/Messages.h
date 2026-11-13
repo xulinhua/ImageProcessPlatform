@@ -88,7 +88,7 @@ struct ConfigMsg {
     uint16_t maxFps;        ///< 帧率上限 5–500；0 表示沿用被控端当前值/默认
     uint8_t jpegQuality;    ///< JPEG 质量 1–100；0 表示沿用
     uint16_t longEdge;      ///< 画面长边像素上限；0 表示沿用；kNativeEdge 表示不缩小
-    uint8_t codec;          ///< 0 沿用；1 JPEG；2 H.264；3 原图 BGRA
+    uint8_t codec;          ///< 0 沿用；1 JPEG；2 H.264；3 原图 BGRA；4 差分
     uint16_t bitrateKbps;   ///< H.264 目标码率 kbps；0 表示按画质推算
     uint8_t edgeLock;       ///< 0 不改；1 允许降长边；2 锁定长边
     ConfigMsg() : share(1), monitor(0), maxFps(0), jpegQuality(0), longEdge(0), codec(0), bitrateKbps(0), edgeLock(0) {}
@@ -153,7 +153,7 @@ struct PictureMsg {
     uint32_t clientH;
     uint32_t imageW;
     uint32_t imageH;
-    uint8_t codec;          ///< 1 JPEG，2 H.264 Annex-B，3 原图 BGRA。负载仍放在 jpeg
+    uint8_t codec;          ///< 1 JPEG，2 H.264 Annex-B，3 原图 BGRA，4 差分。负载仍放在 jpeg
     uint8_t key;            ///< 1 关键帧
     CommBytes jpeg;
     PictureMsg() : visible(0), operable(0), clientW(0), clientH(0), imageW(0), imageH(0), codec(1), key(0) {}
@@ -166,7 +166,7 @@ struct SubscribeMsg {
     uint16_t maxFps;        ///< 帧率上限 5–500；0 沿用
     uint8_t jpegQuality;
     uint16_t longEdge;
-    uint8_t codec;          ///< 0 沿用被控端；1 JPEG；2 H.264；3 原图
+    uint8_t codec;          ///< 0 沿用被控端；1 JPEG；2 H.264；3 原图；4 差分
     uint8_t edgeLock;       ///< 0 不改；1 允许降长边；2 锁定长边。仅主码流使用
     SubscribeMsg() : stream(2), enable(1), maxFps(2), jpegQuality(60), longEdge(480), codec(0), edgeLock(0) {}
 };

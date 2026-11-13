@@ -771,7 +771,7 @@ void ControlWindow::syncStreams(const std::vector<ControlSession::Tile>& tiles)
         full.longEdge = static_cast<uint16_t>(edge);
         full.edgeLock = static_cast<uint8_t>(m_config.lockPictureEdge()
             ? RemoteConst::kEdgeLockFixed : RemoteConst::kEdgeLockAdaptive);
-        full.codec = static_cast<uint8_t>(m_config.streamCodec >= 0 && m_config.streamCodec <= 3
+        full.codec = static_cast<uint8_t>(m_config.streamCodec >= 0 && m_config.streamCodec <= 4
             ? m_config.streamCodec : 0);
         m_session.subscribe(tile.peerId, full);
         m_stream[tile.peerId] = want;
@@ -1020,7 +1020,7 @@ void ControlWindow::refreshWall(const std::vector<ControlSession::Tile>& tiles)
         if (havePixels) {
             wallSeq = tile->pixelsSeq;
             wallCodec = 3;
-        } else if (tile && !tile->jpeg.empty() && tile->codec != 2) {
+        } else if (tile && !tile->jpeg.empty() && tile->codec != 2 && tile->codec != 4) {
             wallJpeg = &tile->jpeg;
             wallSeq = tile->pictureSeq;
             wallCodec = tile->codec == 0 ? 1 : tile->codec;

@@ -74,7 +74,7 @@ public:
     int cols;           ///< 监控墙列数
     int defaultFps;     ///< 新会话的帧率上限，5–500
     int defaultQuality; ///< 新会话画质：0 流畅，1 均衡，2 清晰，3 自定义
-    int streamCodec;    ///< 发送编码：0 沿用被控端，1 JPEG，2 H.264，3 原图 BGRA
+    int streamCodec;    ///< 发送编码：0 沿用被控端，1 JPEG，2 H.264，3 原图 BGRA，4 差分
     bool adaptive;      ///< 延迟很高时自动略降画质；分辨率仅在自适应模式下跟着降
     int resolutionMode; ///< 0 自适应，1 原画质，2 指定分辨率
     int resolutionWidth;  ///< 指定分辨率的宽

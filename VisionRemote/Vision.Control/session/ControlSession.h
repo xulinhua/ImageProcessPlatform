@@ -9,6 +9,7 @@
 #ifndef VISION_CONTROL_SESSION_H
 #define VISION_CONTROL_SESSION_H
 
+#include "DeskDelta.h"
 #include "H264Codec.h"
 #include "Messages.h"
 #include "RemoteIdentity.h"
@@ -242,6 +243,7 @@ private:
         bool upFinished;            ///< 已发完并收到完成
         /** @brief 主码流 H.264 解码器；vector 重分配时用 unique_ptr 避免浅拷贝 */
         std::unique_ptr<H264Codec> videoDec;
+        std::unique_ptr<DeskDelta> desk; ///< 差分参考帧。切回 JPEG / H.264 / 原图时丢掉
         uint8_t videoDecCodec;      ///< 解码器当前对应的 codec，切换时重建
         /** @brief 无待发数据 */
         Machine()

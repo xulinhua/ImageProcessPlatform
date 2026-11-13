@@ -521,6 +521,7 @@ void ControlSession::readMain()
                                 machine.videoDec->closeDecoder();
                             }
                             machine.videoDecCodec = 0;
+                            machine.desk.reset();
                             machine.tile.pixels.reset();
                             machine.tile.pixelsW = 0;
                             machine.tile.pixelsH = 0;
@@ -532,7 +533,8 @@ void ControlSession::readMain()
                     }
                     CommBytes* slot = packet.channel == Frame::ChThumb ? &machine.tile.thumb : &machine.tile.jpeg;
                     const size_t cap = picCodec == 3 ? 12u * 1024u * 1024u
-                        : (picCodec == 2 ? 2u * 1024u * 1024u : 512u * 1024u);
+                        : (picCodec == 4 ? 1024u * 1024u
+                        : (picCodec == 2 ? 2u * 1024u * 1024u : 512u * 1024u));
                     if (picture.jpeg.size() <= cap) {
                         slot->swap(picture.jpeg);
                     } else {
@@ -566,6 +568,21 @@ void ControlSession::readMain()
                                     machine.videoDec->lastError(), slot->size());
                             }
                             // 解不出时保留解码器等下一包（SPS/IDR）；不要 closeDecoder
+                        } else if (picCodec == 4 && !slot->empty()) {
+                            if (!machine.desk) {
+                                machine.desk.reset(new DeskDelta());
+                            }
+                            CommBytes frame;
+                            int w = 0;
+                            int h = 0;
+                            if (machine.desk->apply(*slot, &frame, &w, &h) && w > 0 && h > 0 && !frame.empty()) {
+                                std::shared_ptr<CommBytes> hold(new CommBytes());
+                                hold->swap(frame);
+                                machine.tile.pixels = hold;
+                                machine.tile.pixelsW = static_cast<uint32_t>(w);
+                                machine.tile.pixelsH = static_cast<uint32_t>(h);
+                                machine.tile.pixelsSeq += 1;
+                            }
                         } else if (picCodec == 3 && !slot->empty()
                             && picture.imageW > 0 && picture.imageH > 0
                             && slot->size() >= static_cast<size_t>(picture.imageW) * static_cast<size_t>(picture.imageH) * 4u) {

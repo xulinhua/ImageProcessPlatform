@@ -409,6 +409,7 @@ QWidget* SettingsDialog::buildPicture()
     m_streamCodec->addItem(QString::fromUtf8("JPEG"), 1);
     m_streamCodec->addItem(QString::fromUtf8("H.264"), 2);
     m_streamCodec->addItem(QString::fromUtf8("原图 BGRA"), 3);
+    m_streamCodec->addItem(QString::fromUtf8("差分"), 4);
     m_streamCodec->setFixedWidth(140);
     m_streamCodec->setToolTip(QString::fromUtf8("新会话默认发送方式。会话工具条可随时改，方便对比带宽与画质"));
     m_streamCodec->setToolTip(QString::fromUtf8("原图带宽很大；H.264 需 openh264.dll 或系统编码器。新会话默认发送方式，会话工具条可随时改。"));

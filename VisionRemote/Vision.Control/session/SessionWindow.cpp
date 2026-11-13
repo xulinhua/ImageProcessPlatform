@@ -185,13 +185,14 @@ QWidget* SessionWindow::buildToolbar()
     m_codec->addItem(QString::fromUtf8("JPEG"), 1);
     m_codec->addItem(QString::fromUtf8("H.264"), 2);
     m_codec->addItem(QString::fromUtf8("原图"), 3);
+    m_codec->addItem(QString::fromUtf8("差分"), 4);
     {
         const int want = m_config ? m_config->streamCodec : 0;
         const int idx = m_codec->findData(want);
         m_codec->setCurrentIndex(idx >= 0 ? idx : 0);
     }
     m_codec->setFixedWidth(88);
-    m_codec->setToolTip(QString::fromUtf8("发送方式：JPEG / H.264 / 原图 BGRA，方便对比带宽与画质"));
+    m_codec->setToolTip(QString::fromUtf8("发送方式：JPEG / H.264 / 原图 / 差分。差分只传变化，大块移动用搬移"));
     m_maxFps = new QSpinBox(bar);
     m_maxFps->setRange(RemoteConst::kMaxFpsMin, RemoteConst::kMaxFpsMax);
     m_maxFps->setValue(m_config && m_config->defaultFps >= RemoteConst::kMaxFpsMin
@@ -1168,8 +1169,9 @@ void SessionWindow::syncControls()
     m_stDot->setTone(m_online ? "green" : "gray");
     m_stState->setText(m_online ? QString::fromUtf8("<b style='color:#262626'>已连接</b>") : QString::fromUtf8("<b>已断开</b>"));
     if (m_online && m_tile.imageW > 0) {
-        const QString codec = m_tile.codec == 3 ? QString::fromUtf8("原图")
-            : (m_tile.codec == 2 ? QString::fromUtf8("H.264") : QString::fromUtf8("JPEG"));
+        const QString codec = m_tile.codec == 4 ? QString::fromUtf8("差分")
+            : (m_tile.codec == 3 ? QString::fromUtf8("原图")
+            : (m_tile.codec == 2 ? QString::fromUtf8("H.264") : QString::fromUtf8("JPEG")));
         m_stImage->setText(QString::fromUtf8("<b style='color:#262626'>%1×%2</b> · %3 · <b style='color:#262626'>%4 fps</b>")
                                .arg(m_tile.imageW).arg(m_tile.imageH).arg(codec).arg(m_fps, 0, 'f', 0));
     } else {
@@ -1192,8 +1194,9 @@ void SessionWindow::syncControls()
     m_infoShare->setText(m_online ? shareText(m_tile) : QString("-"));
     m_infoImage->setText(m_online && m_tile.imageW > 0
         ? QString("%1×%2 · %3").arg(m_tile.imageW).arg(m_tile.imageH).arg(
-            m_tile.codec == 3 ? QString::fromUtf8("原图")
-                : (m_tile.codec == 2 ? QString::fromUtf8("H.264") : QString::fromUtf8("JPEG")))
+            m_tile.codec == 4 ? QString::fromUtf8("差分")
+                : (m_tile.codec == 3 ? QString::fromUtf8("原图")
+                : (m_tile.codec == 2 ? QString::fromUtf8("H.264") : QString::fromUtf8("JPEG"))))
         : QString("-"));
     m_infoFps->setText(m_online ? QString("%1 fps").arg(m_fps, 0, 'f', 1) : QString("-"));
     m_infoRate->setText(m_online ? rateText(m_kbps) : QString("-"));
