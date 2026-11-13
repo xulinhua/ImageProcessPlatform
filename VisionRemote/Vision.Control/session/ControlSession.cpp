@@ -452,6 +452,8 @@ void ControlSession::readMain()
                 }
                 continue;
             }
+            // 识别码通道上一张画面要几秒才收齐。有字节进来就说明还连着，不能等整帧
+            machine.lastRx = nowMs();
             std::vector<Frame::Packet> packets;
             if (!machine.frame.push(chunk, &packets, &err)) {
                 m_tcp.closePeer(peer);

@@ -1495,8 +1495,11 @@ void ControlWindow::openAccess()
         trackTiles(tiles);
         refreshTree(tiles);
         for (size_t i = 0; i < tiles.size(); ++i) {
-            if (QString::fromUtf8(tiles[i].deviceId.c_str()) == deviceId && tiles[i].online && !tiles[i].peerId.empty()) {
-                openSession(deviceId);
+            QString shown = QString::fromUtf8(tiles[i].deviceId.c_str());
+            QString folded = shown;
+            folded.remove(' ');
+            if (folded == deviceId && tiles[i].online && !tiles[i].peerId.empty()) {
+                openSession(shown);
                 return;
             }
         }

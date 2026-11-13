@@ -2259,7 +2259,7 @@ void AgentSession::readMain()
             m_status = m_suspended ? "已断开" : "未连接";
             continue;
         }
-        // 没收到数据：超过 kOfflineMs 没有心跳类报文就判断线
+        // 没收到数据：超过 kOfflineMs 没有字节就判断线。有字节就刷新，不等整帧
         if (chunk.empty()) {
             std::lock_guard<std::mutex> lock(m_mu);
             if (m_lastRx != 0 && nowMs() - m_lastRx > static_cast<uint64_t>(RemoteConst::kOfflineMs)) {
@@ -2268,6 +2268,10 @@ void AgentSession::readMain()
                 m_status = "未连接";
             }
             continue;
+        }
+        {
+            std::lock_guard<std::mutex> lock(m_mu);
+            m_lastRx = nowMs();
         }
         // 拆帧；帧头非法说明流已错位，只能断开
         std::vector<Frame::Packet> packets;
