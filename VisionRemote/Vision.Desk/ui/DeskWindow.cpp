@@ -62,7 +62,6 @@ DeskWindow::DeskWindow(QWidget* parent)
     , m_agentOn(false)
     , m_lanRule(false)
     , m_timer(0)
-    , m_openAgent(0)
     , m_connect(0)
     , m_peerId(0)
     , m_peerCode(0)
@@ -128,7 +127,7 @@ DeskWindow::DeskWindow(QWidget* parent)
     localCol->setSpacing(12);
     QLabel* localTitle = new QLabel(QString::fromUtf8("本机"), localCard);
     localTitle->setStyleSheet("font-size:16px;font-weight:600;color:#262626;");
-    QLabel* localNote = new QLabel(QString::fromUtf8("开启后把设备代码和下面的验证码发给对方。"), localCard);
+    QLabel* localNote = new QLabel(QString::fromUtf8("把设备代码和验证码发给对方，对方就能连这台电脑。"), localCard);
     localNote->setWordWrap(true);
     localNote->setStyleSheet("color:#8C8C8C;font-size:12px;");
     QLabel* idKey = new QLabel(QString::fromUtf8("设备代码"), localCard);
@@ -145,12 +144,6 @@ DeskWindow::DeskWindow(QWidget* parent)
     idRow->addWidget(m_localId);
     idRow->addWidget(copy, 0, Qt::AlignVCenter);
     idRow->addStretch(1);
-    QFrame* line = new QFrame(localCard);
-    line->setFixedHeight(1);
-    line->setStyleSheet("background:#F0F0F0;border:none;");
-    m_openAgent = RemoteTheme::button(QString::fromUtf8("开启本机被控"), "app", "primary", localCard);
-    m_openAgent->setMinimumHeight(40);
-    QObject::connect(m_openAgent, &QPushButton::clicked, [this]() { toggleAgent(); });
     QLabel* codeKey = new QLabel(QString::fromUtf8("一次性验证码"), localCard);
     codeKey->setStyleSheet("color:#8C8C8C;font-size:12px;");
     m_code = new QLabel(QString::fromUtf8("未开启"), localCard);
@@ -162,9 +155,7 @@ DeskWindow::DeskWindow(QWidget* parent)
     localCol->addLayout(idRow);
     localCol->addWidget(codeKey);
     localCol->addWidget(m_code);
-    localCol->addWidget(line);
     localCol->addStretch(1);
-    localCol->addWidget(m_openAgent);
 
     QFrame* remoteCard = qobject_cast<QFrame*>(makeCard());
     QVBoxLayout* remoteCol = new QVBoxLayout(remoteCard);
@@ -172,7 +163,7 @@ DeskWindow::DeskWindow(QWidget* parent)
     remoteCol->setSpacing(10);
     QLabel* remoteTitle = new QLabel(QString::fromUtf8("控制远端"), remoteCard);
     remoteTitle->setStyleSheet("font-size:16px;font-weight:600;color:#262626;");
-    QLabel* remoteNote = new QLabel(QString::fromUtf8("对方开着本机被控。同一局域网填设备代码就能连，外网还要填验证码。"), remoteCard);
+    QLabel* remoteNote = new QLabel(QString::fromUtf8("同一局域网填设备代码就能连，外网还要填对方的验证码。"), remoteCard);
     remoteNote->setWordWrap(true);
     remoteNote->setStyleSheet("color:#8C8C8C;font-size:12px;");
     m_peerId = new QLineEdit(remoteCard);
@@ -217,8 +208,8 @@ DeskWindow::DeskWindow(QWidget* parent)
     m_timer = new QTimer(this);
     QObject::connect(m_timer, &QTimer::timeout, [this]() { refreshTitles(); });
     m_timer->start(1000);
-    refreshTitles();
     refreshRecent();
+    startLocal();
 }
 
 DeskWindow::~DeskWindow()
@@ -321,12 +312,9 @@ void DeskWindow::copyLocalId()
     m_hint->setText(QString::fromUtf8("设备代码已复制。"));
 }
 
-void DeskWindow::toggleAgent()
+void DeskWindow::startLocal()
 {
-    if (m_agentOn && m_agent) {
-        m_agent->stop();
-        m_agentOn = false;
-        refreshTitles();
+    if (m_agentOn) {
         return;
     }
     if (!m_agent) {
@@ -338,15 +326,18 @@ void DeskWindow::toggleAgent()
     std::string err;
     if (!m_agent->start("", RemotePorts::direct(), std::wstring(), std::wstring(), true, 0, &err)) {
         QMessageBox::warning(this, windowTitle(), QString::fromUtf8(err.c_str()));
+        refreshTitles();
         return;
     }
     if (!m_agent->setDirect(true, RemotePorts::direct(), &err)) {
         QMessageBox::warning(this, windowTitle(), QString::fromUtf8(err.c_str()));
         m_agent->stop();
+        refreshTitles();
         return;
     }
     m_agentOn = true;
     refreshTitles();
+    m_hint->setText(QString::fromUtf8("本机已在线。把左边的代码发给对方，或在右边连接别人。"));
     openLan();
 }
 
@@ -480,7 +471,7 @@ void DeskWindow::connectPeer()
 void DeskWindow::refreshTitles()
 {
     const bool controlOn = m_control && m_control->listening();
-    m_agentChip->setText(m_agentOn ? QString::fromUtf8("● 本机被控已开启") : QString::fromUtf8("● 本机被控未开启"));
+    m_agentChip->setText(m_agentOn ? QString::fromUtf8("● 本机在线") : QString::fromUtf8("● 本机未就绪"));
     m_agentChip->setStyleSheet(m_agentOn
         ? "color:#52C41A;font-size:12px;background:transparent;"
         : "color:#8C8C8C;font-size:12px;background:transparent;");
@@ -488,7 +479,6 @@ void DeskWindow::refreshTitles()
     m_controlChip->setStyleSheet(controlOn
         ? "color:#52C41A;font-size:12px;background:transparent;"
         : "color:#8C8C8C;font-size:12px;background:transparent;");
-    m_openAgent->setText(m_agentOn ? QString::fromUtf8("停止本机被控") : QString::fromUtf8("开启本机被控"));
     if (m_agentOn && m_agent) {
         QString code = QString::fromUtf8(m_agent->currentCode().c_str());
         if (code.size() == 6) {
@@ -496,14 +486,10 @@ void DeskWindow::refreshTitles()
         }
         m_code->setText(code);
     } else if (m_code) {
-        m_code->setText(QString::fromUtf8("未开启"));
+        m_code->setText(QString::fromUtf8("——"));
     }
-    if (m_agentOn) {
-        m_hint->setText(QString::fromUtf8("本机被控已开。同一局域网填设备代码即可，外网把验证码也发给对方。"));
-    } else if (controlOn) {
+    if (m_view) {
         m_hint->setText(QString::fromUtf8("正在连接远端，画面在远程自己的窗口里。"));
-    } else {
-        m_hint->setText(QString::fromUtf8("这一套和原来的中控台、被控端不是同一个程序。"));
     }
 }
 

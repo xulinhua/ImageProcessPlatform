@@ -29,7 +29,7 @@ class RelayHub;
 
 /**
  * @class DeskWindow
- * @brief 启动页。左边开本机被控，右边按设备号连接，画面在远程自己的窗口里
+ * @brief 启动页。打开就能被连，右边按设备号去连别人
  */
 class DeskWindow : public QWidget {
 public:
@@ -44,7 +44,8 @@ protected:
 
 private:
     QWidget* makeCard();
-    void toggleAgent();
+    /** @brief 打开后本机就可以被连接，不用再手动开启 */
+    void startLocal();
     void connectPeer();
     void copyLocalId();
     /** @brief 读本程序自己的图标，和控制端、被控端分开 */
@@ -68,7 +69,6 @@ private:
     bool m_agentOn;
     bool m_lanRule;
     QTimer* m_timer;
-    QPushButton* m_openAgent;
     QPushButton* m_connect;
     QLineEdit* m_peerId;
     QLineEdit* m_peerCode;
