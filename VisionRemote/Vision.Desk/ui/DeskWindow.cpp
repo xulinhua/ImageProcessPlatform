@@ -10,13 +10,16 @@
 #include "AgentSession.h"
 #include "ControlSession.h"
 #include "DeskView.h"
+#include "FirewallRule.h"
 #include "Messages.h"
+#include "RelayHub.h"
 #include "RemoteBeacon.h"
 #include "RemoteFiles.h"
 #include "RemotePorts.h"
 #include "RemoteTheme.h"
 
 #include <QApplication>
+#include <QCoreApplication>
 #include <QClipboard>
 #include <QCloseEvent>
 #include <QFile>
@@ -31,8 +34,14 @@
 #include <QPushButton>
 #include <QSaveFile>
 #include <QShowEvent>
+#include <QThread>
 #include <QTimer>
 #include <QVBoxLayout>
+
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#include <windows.h>
 
 namespace Vision {
 
@@ -48,8 +57,10 @@ DeskWindow::DeskWindow(QWidget* parent)
     : QWidget(parent)
     , m_agent(0)
     , m_control(0)
+    , m_relay(0)
     , m_view(0)
     , m_agentOn(false)
+    , m_lanRule(false)
     , m_timer(0)
     , m_openAgent(0)
     , m_connect(0)
@@ -72,11 +83,21 @@ DeskWindow::DeskWindow(QWidget* parent)
     root->setContentsMargins(28, 22, 28, 16);
     root->setSpacing(16);
 
+    const QIcon icon = loadIcon();
+    if (!icon.isNull()) {
+        setWindowIcon(icon);
+        QApplication::setWindowIcon(icon);
+    }
     QLabel* logo = new QLabel(this);
     logo->setFixedSize(40, 40);
     logo->setAlignment(Qt::AlignCenter);
-    logo->setPixmap(RemoteTheme::pixmap("monitor", QColor("#FFFFFF"), 22, devicePixelRatioF()));
-    logo->setStyleSheet("background:#1677FF;border-radius:8px;");
+    if (icon.isNull()) {
+        logo->setPixmap(RemoteTheme::pixmap("monitor", QColor("#FFFFFF"), 22, devicePixelRatioF()));
+        logo->setStyleSheet("background:#1677FF;border-radius:8px;");
+    } else {
+        logo->setPixmap(icon.pixmap(QSize(40, 40)));
+        logo->setStyleSheet("background:transparent;");
+    }
     QLabel* title = new QLabel(QString::fromUtf8("远程"), this);
     title->setStyleSheet("font-size:22px;font-weight:600;color:#262626;background:transparent;");
     QLabel* sub = new QLabel(QString::fromUtf8("本机代码给对方，对方代码填在右边。画面按原分辨率差分。"), this);
@@ -151,7 +172,7 @@ DeskWindow::DeskWindow(QWidget* parent)
     remoteCol->setSpacing(10);
     QLabel* remoteTitle = new QLabel(QString::fromUtf8("控制远端"), remoteCard);
     remoteTitle->setStyleSheet("font-size:16px;font-weight:600;color:#262626;");
-    QLabel* remoteNote = new QLabel(QString::fromUtf8("对方在这套软件里开着本机被控，把设备代码和验证码填在这里。"), remoteCard);
+    QLabel* remoteNote = new QLabel(QString::fromUtf8("对方开着本机被控。同一局域网填设备代码就能连，外网还要填验证码。"), remoteCard);
     remoteNote->setWordWrap(true);
     remoteNote->setStyleSheet("color:#8C8C8C;font-size:12px;");
     m_peerId = new QLineEdit(remoteCard);
@@ -210,6 +231,10 @@ DeskWindow::~DeskWindow()
         m_control->stop();
         delete m_control;
     }
+    if (m_relay) {
+        m_relay->stop();
+        delete m_relay;
+    }
 }
 
 QWidget* DeskWindow::makeCard()
@@ -224,6 +249,7 @@ void DeskWindow::showEvent(QShowEvent* event)
 {
     QWidget::showEvent(event);
     refreshRecent();
+    ensureTunnel();
 }
 
 void DeskWindow::closeEvent(QCloseEvent* event)
@@ -242,7 +268,51 @@ void DeskWindow::collectPorts(std::vector<int>* tcp, std::vector<int>* udp)
     }
     tcp->push_back(RemotePorts::listen());
     tcp->push_back(RemotePorts::direct());
+    tcp->push_back(19280);
     udp->push_back(RemotePorts::discover());
+}
+
+QIcon DeskWindow::loadIcon()
+{
+    QIcon icon;
+    const int sizes[] = { 16, 24, 32, 48, 64, 128, 256 };
+    for (int i = 0; i < 7; ++i) {
+        const int side = sizes[i];
+        HICON handle = reinterpret_cast<HICON>(LoadImageW(GetModuleHandleW(0), MAKEINTRESOURCEW(1), IMAGE_ICON, side, side, LR_DEFAULTCOLOR));
+        if (!handle) {
+            continue;
+        }
+        BITMAPINFO info;
+        ZeroMemory(&info, sizeof(info));
+        info.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+        info.bmiHeader.biWidth = side;
+        info.bmiHeader.biHeight = -side;
+        info.bmiHeader.biPlanes = 1;
+        info.bmiHeader.biBitCount = 32;
+        info.bmiHeader.biCompression = BI_RGB;
+        void* bits = 0;
+        HDC screen = GetDC(0);
+        HBITMAP dib = CreateDIBSection(screen, &info, DIB_RGB_COLORS, &bits, 0, 0);
+        if (!dib || !bits) {
+            if (dib) {
+                DeleteObject(dib);
+            }
+            ReleaseDC(0, screen);
+            DestroyIcon(handle);
+            continue;
+        }
+        HDC mem = CreateCompatibleDC(screen);
+        HGDIOBJ old = SelectObject(mem, dib);
+        DrawIconEx(mem, 0, 0, handle, side, side, 0, 0, DI_NORMAL);
+        const QImage image(static_cast<const uchar*>(bits), side, side, side * 4, QImage::Format_ARGB32_Premultiplied);
+        icon.addPixmap(QPixmap::fromImage(image.copy()));
+        SelectObject(mem, old);
+        DeleteDC(mem);
+        DeleteObject(dib);
+        ReleaseDC(0, screen);
+        DestroyIcon(handle);
+    }
+    return icon;
 }
 
 void DeskWindow::copyLocalId()
@@ -263,6 +333,8 @@ void DeskWindow::toggleAgent()
         m_agent = new AgentSession();
     }
     m_agent->setPreferCodec(4);
+    m_agent->setAccess(true, "remote.subapi.fun", 443);
+    ensureTunnel();
     std::string err;
     if (!m_agent->start("", RemotePorts::direct(), std::wstring(), std::wstring(), true, 0, &err)) {
         QMessageBox::warning(this, windowTitle(), QString::fromUtf8(err.c_str()));
@@ -275,6 +347,7 @@ void DeskWindow::toggleAgent()
     }
     m_agentOn = true;
     refreshTitles();
+    openLan();
 }
 
 void DeskWindow::ensureControl()
@@ -289,6 +362,57 @@ void DeskWindow::ensureControl()
     if (!m_control->start("0.0.0.0", RemotePorts::listen(), &err)) {
         QMessageBox::warning(this, windowTitle(), QString::fromUtf8(err.c_str()));
     }
+}
+
+void DeskWindow::ensureTunnel()
+{
+    if (!m_relay) {
+        m_relay = new RelayHub();
+    }
+    if (m_relay->wsPort() > 0) {
+        return;
+    }
+    if (!m_relay->startWs(19280)) {
+        QMessageBox::warning(this, windowTitle(), QString::fromUtf8("识别码入口没有听上，外网会连不上。同一局域网仍可以连。"));
+    }
+}
+
+void DeskWindow::openLan()
+{
+    if (m_lanRule) {
+        return;
+    }
+    m_lanRule = true;
+    FirewallRule rule;
+    const std::wstring exe = QCoreApplication::applicationFilePath().toStdWString();
+    std::string err;
+    const bool tcp = rule.allowTcp(L"RemoteDesk Direct", exe, RemotePorts::direct(), &err);
+    const bool udp = rule.allowUdp(L"RemoteDesk Discover", exe, RemotePorts::discover(), &err);
+    if ((!tcp || !udp) && m_hint) {
+        m_hint->setText(QString::fromUtf8("局域网入站没有放开。用管理员打开一次后，同一局域网才能连进来。外网不受影响。"));
+    }
+}
+
+bool DeskWindow::openWan(const QString& deviceId, const QString& code, std::string* err)
+{
+    ensureTunnel();
+    for (int attempt = 0; attempt < 5; ++attempt) {
+        std::string once;
+        if (m_control->dialAccess("remote.subapi.fun", 443, deviceId.toStdString(), code.toStdString(), &once)) {
+            return true;
+        }
+        if (err) {
+            *err = once;
+        }
+        const bool retry = once.find("没挂") != std::string::npos
+            || once.find("超时") != std::string::npos
+            || once.find("配对") != std::string::npos;
+        if (!retry || attempt + 1 >= 5) {
+            break;
+        }
+        QThread::msleep(800);
+    }
+    return false;
 }
 
 void DeskWindow::openView(const QString& deviceId, const QString& code)
@@ -317,12 +441,13 @@ void DeskWindow::connectPeer()
     if (!m_control || !m_control->listening()) {
         return;
     }
-    const std::vector<HelloMsg> found = RemoteBeacon::scan(800);
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+    const std::vector<HelloMsg> found = RemoteBeacon::scan(1200);
     std::string address;
     for (size_t i = 0; i < found.size(); ++i) {
         QString id = QString::fromUtf8(found[i].deviceId.c_str());
         id.remove(' ');
-        if (id == deviceId && !found[i].address.empty()) {
+        if (id == deviceId && !found[i].address.empty() && found[i].address != "127.0.0.1") {
             address = found[i].address;
             break;
         }
@@ -334,13 +459,12 @@ void DeskWindow::connectPeer()
         order.push_back("direct");
         opened = m_control->dialDevice(address, deviceId.toStdString(), "", 0, "", false, order, &err);
     }
-    const QString accessHost = QString::fromUtf8(RemotePorts::accessHost()).trimmed();
-    if (!opened && !accessHost.isEmpty() && !code.isEmpty()) {
-        opened = m_control->dialAccess(accessHost.toStdString(), 443, deviceId.toStdString(), code.toStdString(), &err);
+    if (!opened && !code.isEmpty()) {
+        opened = openWan(deviceId, code, &err);
     }
-    if (!opened && address.empty()) {
-        QMessageBox::warning(this, windowTitle(),
-            QString::fromUtf8("局域网里没有这台设备。对方要先在这套软件里开启本机被控。"));
+    QApplication::restoreOverrideCursor();
+    if (!opened && code.isEmpty()) {
+        QMessageBox::information(this, windowTitle(), QString::fromUtf8("局域网没有这台设备。外网连接还要填验证码。"));
         return;
     }
     if (!opened) {
@@ -375,7 +499,7 @@ void DeskWindow::refreshTitles()
         m_code->setText(QString::fromUtf8("未开启"));
     }
     if (m_agentOn) {
-        m_hint->setText(QString::fromUtf8("本机被控已开。把设备代码和验证码发给同样开着这套软件的对方。"));
+        m_hint->setText(QString::fromUtf8("本机被控已开。同一局域网填设备代码即可，外网把验证码也发给对方。"));
     } else if (controlOn) {
         m_hint->setText(QString::fromUtf8("正在连接远端，画面在远程自己的窗口里。"));
     } else {

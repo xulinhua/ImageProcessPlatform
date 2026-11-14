@@ -19,7 +19,17 @@ namespace Vision {
 
 bool FirewallRule::allowTcp(const std::wstring& name, const std::wstring& exe, int port, std::string* err) const
 {
-    if (name.empty() || exe.empty() || port < 1 || port > 65535) {
+    return allow(name, exe, L"TCP", port, err);
+}
+
+bool FirewallRule::allowUdp(const std::wstring& name, const std::wstring& exe, int port, std::string* err) const
+{
+    return allow(name, exe, L"UDP", port, err);
+}
+
+bool FirewallRule::allow(const std::wstring& name, const std::wstring& exe, const wchar_t* protocol, int port, std::string* err) const
+{
+    if (name.empty() || exe.empty() || !protocol || port < 1 || port > 65535) {
         if (err) {
             *err = "防火墙参数无效";
         }
@@ -27,7 +37,7 @@ bool FirewallRule::allowTcp(const std::wstring& name, const std::wstring& exe, i
     }
     std::wstring del = L"netsh advfirewall firewall delete rule name=\"" + name + L"\"";
     std::wstring add = L"netsh advfirewall firewall add rule name=\"" + name
-        + L"\" dir=in action=allow program=\"" + exe + L"\" protocol=TCP localport="
+        + L"\" dir=in action=allow program=\"" + exe + L"\" protocol=" + protocol + L" localport="
         + std::to_wstring(port) + L" profile=any";
     STARTUPINFOW delInfo;
     PROCESS_INFORMATION delProc;

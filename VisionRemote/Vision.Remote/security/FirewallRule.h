@@ -24,6 +24,15 @@ public:
      * @param name 规则名，重复添加会先删同名规则
      */
     bool allowTcp(const std::wstring& name, const std::wstring& exe, int port, std::string* err) const;
+
+    /**
+     * @brief 允许 exe 在 port 上入站 UDP
+     * @param name 规则名，重复添加会先删同名规则
+     */
+    bool allowUdp(const std::wstring& name, const std::wstring& exe, int port, std::string* err) const;
+
+private:
+    bool allow(const std::wstring& name, const std::wstring& exe, const wchar_t* protocol, int port, std::string* err) const;
 };
 
 }
