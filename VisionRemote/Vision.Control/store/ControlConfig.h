@@ -55,6 +55,8 @@ public:
     bool trayOnClose;   ///< 关闭主窗时缩到托盘而不是退出
     bool startHidden;   ///< 启动时不显示主窗，只留托盘
     bool autoStart;     ///< 开机自启（HKCU Run 项）
+    bool cleanOnStart;  ///< 启动时结束同名进程并放开相关端口
+    bool cleanNotify;   ///< 清理之后弹窗说明做了什么
     bool discovery;     ///< 是否开启局域网发现
     bool fitDefault;    ///< 会话窗口默认按窗口缩放画面
     QString shotDir;    ///< 截图保存目录，默认 exe旁\\exe名\\image
@@ -64,7 +66,7 @@ public:
     int auditDays;      ///< 审计日志保留天数，<= 0 不清理
     int tourSeconds;    ///< 监控墙轮巡间隔（秒）
     bool relayOn;       ///< 反连和直连都没有时走中继
-    bool startRelay;    ///< 中控台启动时拉起同目录的 RemoteRelay
+    bool startRelay;    ///< 中控台自己听中继端口，不再另开程序
     QString relayHost;  ///< 中继地址
     int relayPort;      ///< 中继端口，默认 19200
     QString relayKey;   ///< 中继口令，与被控端一致

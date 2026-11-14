@@ -24,7 +24,16 @@
     <ClCompile Include="channel\RemoteTcp.cpp">
       <Filter>channel</Filter>
     </ClCompile>
+    <ClCompile Include="channel\RelayHub.cpp">
+      <Filter>channel</Filter>
+    </ClCompile>
+    <ClCompile Include="channel\StartupSweep.cpp">
+      <Filter>channel</Filter>
+    </ClCompile>
     <ClCompile Include="channel\RemoteBeacon.cpp">
+      <Filter>channel</Filter>
+    </ClCompile>
+    <ClCompile Include="channel\RemotePorts.cpp">
       <Filter>channel</Filter>
     </ClCompile>
     <ClCompile Include="security\FirewallRule.cpp">
@@ -56,7 +65,16 @@
     <ClInclude Include="channel\RemoteTcp.h">
       <Filter>channel</Filter>
     </ClInclude>
+    <ClInclude Include="channel\RelayHub.h">
+      <Filter>channel</Filter>
+    </ClInclude>
+    <ClInclude Include="channel\StartupSweep.h">
+      <Filter>channel</Filter>
+    </ClInclude>
     <ClInclude Include="channel\RemoteBeacon.h">
+      <Filter>channel</Filter>
+    </ClInclude>
+    <ClInclude Include="channel\RemotePorts.h">
       <Filter>channel</Filter>
     </ClInclude>
     <ClInclude Include="security\FirewallRule.h">

@@ -41,7 +41,7 @@ public:
 
 private:
     /************************************************** 页面 **************************************************/
-    /** @brief 常规：开机自启、启动隐藏、关闭到托盘、控制端显示名 */
+    /** @brief 常规：开机自启、启动清理、启动隐藏、关闭到托盘、控制端显示名 */
     QWidget* buildGeneral();
     /** @brief 网络：监听、发现、中继、连接顺序、带宽、UDP 发现直连 */
     QWidget* buildNetwork(bool listening);
@@ -77,6 +77,8 @@ private:
     SwitchButton* m_tray;           ///< 关闭时最小化到托盘
     SwitchButton* m_hidden;         ///< 启动时隐藏到托盘
     SwitchButton* m_autoStart;      ///< 开机自动启动
+    SwitchButton* m_cleanOnStart;   ///< 启动时清理同名进程和相关端口
+    SwitchButton* m_cleanNotify;    ///< 清理后弹窗提示
     QLineEdit* m_host;              ///< 监听地址
     QSpinBox* m_port;               ///< 监听端口 1~65535
     SwitchButton* m_discovery;      ///< 局域网发现

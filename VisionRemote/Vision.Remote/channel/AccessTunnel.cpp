@@ -11,6 +11,7 @@
 #endif
 #include "AccessTunnel.h"
 #include "RemoteIdentity.h"
+#include "RemotePorts.h"
 #include "TlsPipe.h"
 
 #include <winsock2.h>
@@ -460,7 +461,7 @@ const char* AccessTunnel::token()
 
 const char* AccessTunnel::defaultHost()
 {
-    return "remote.subapi.fun";
+    return RemotePorts::accessHost();
 }
 
 bool AccessTunnel::open(const std::string& host, int port, const RemoteIdentity& identity,

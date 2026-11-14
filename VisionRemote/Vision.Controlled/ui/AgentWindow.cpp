@@ -17,6 +17,7 @@
 #include "RemoteFiles.h"
 #include "RemoteLog.h"
 #include "RemoteLogWindow.h"
+#include "RemotePorts.h"
 #include "RemoteTheme.h"
 #include "RemoteWidgets.h"
 
@@ -101,6 +102,8 @@ AgentWindow::AgentWindow(QWidget* parent)
     , m_relayHost(0)
     , m_relayPort(0)
     , m_relayKey(0)
+    , m_cleanOnStart(0)
+    , m_cleanNotify(0)
     , m_accessOn(0)
     , m_accessHost(0)
     , m_accessPort(0)
@@ -671,7 +674,7 @@ QWidget* AgentWindow::buildConnectionPage(QWidget* parent)
     extraLabel->setProperty("role", "small");
     col->addWidget(extraLabel);
     m_extraHosts = new QPlainTextEdit(page);
-    m_extraHosts->setPlaceholderText(QString::fromUtf8("192.168.1.11:19100\n10.0.0.5:19100"));
+    m_extraHosts->setPlaceholderText(QString::fromUtf8("192.168.1.11:%1\n10.0.0.5:%1").arg(RemotePorts::listen()));
     m_extraHosts->setMaximumHeight(72);
     m_extraHosts->setToolTip(QString::fromUtf8("主地址做完整会话；额外地址并行反连观看（邀请观看同款），最多 3 台"));
     col->addWidget(m_extraHosts);
@@ -682,7 +685,7 @@ QWidget* AgentWindow::buildConnectionPage(QWidget* parent)
     QLabel* directPortLabel = new QLabel(QString::fromUtf8("端口"), page);
     m_directPort = new QSpinBox(page);
     m_directPort->setRange(1, 65535);
-    m_directPort->setValue(19102);
+    m_directPort->setValue(RemotePorts::direct());
     m_directPort->setFixedWidth(90);
     col->addWidget(line(m_directOn, directPortLabel, m_directPort));
 
@@ -692,7 +695,7 @@ QWidget* AgentWindow::buildConnectionPage(QWidget* parent)
     QLabel* httpPortLabel = new QLabel(QString::fromUtf8("端口"), page);
     m_httpPort = new QSpinBox(page);
     m_httpPort->setRange(1, 65535);
-    m_httpPort->setValue(19180);
+    m_httpPort->setValue(RemotePorts::preview());
     m_httpPort->setFixedWidth(90);
     col->addWidget(line(m_httpOn, httpPortLabel, m_httpPort));
     m_httpUrl = new QLabel(QString::fromUtf8("关闭"), page);
@@ -708,7 +711,7 @@ QWidget* AgentWindow::buildConnectionPage(QWidget* parent)
     m_relayHost->setPlaceholderText("relay.company.local");
     m_relayPort = new QSpinBox(page);
     m_relayPort->setRange(1, 65535);
-    m_relayPort->setValue(19200);
+    m_relayPort->setValue(RemotePorts::relay());
     m_relayPort->setFixedWidth(90);
     col->addWidget(line(m_relayOn, m_relayHost, m_relayPort));
     m_relayKey = new QLineEdit(page);
@@ -717,16 +720,24 @@ QWidget* AgentWindow::buildConnectionPage(QWidget* parent)
     m_relayKey->setFixedWidth(200);
     col->addWidget(line(new QLabel(QString::fromUtf8("口令"), page), m_relayKey));
     m_accessOn = new QCheckBox(QString::fromUtf8("识别码远程"), page);
-    m_accessOn->setChecked(true);
+    m_accessOn->setChecked(RemotePorts::accessOnByDefault());
     m_accessOn->setToolTip(QString::fromUtf8("没连上中控台时挂到固定域名，对方用设备 ID 和验证码来连。已经连上局域网时不会挂"));
     m_accessHost = new QLineEdit(page);
     m_accessHost->setFixedWidth(200);
-    m_accessHost->setText(QString::fromUtf8("remote.subapi.fun"));
+    m_accessHost->setText(QString::fromUtf8(RemotePorts::accessHost()));
     m_accessPort = new QSpinBox(page);
     m_accessPort->setRange(1, 65535);
     m_accessPort->setValue(443);
     m_accessPort->setFixedWidth(90);
     col->addWidget(line(m_accessOn, m_accessHost, m_accessPort));
+    m_cleanOnStart = new QCheckBox(QString::fromUtf8("启动时清理"), page);
+    m_cleanOnStart->setChecked(true);
+    m_cleanOnStart->setToolTip(QString::fromUtf8("启动时结束其他同名界面进程，并放开它们留下的直连、局域网查看和发现端口。不结束 Windows 服务和会话代理"));
+    m_cleanNotify = new QCheckBox(QString::fromUtf8("清理后提示"), page);
+    m_cleanNotify->setChecked(true);
+    m_cleanNotify->setToolTip(QString::fromUtf8("上面的清理真做了事情时再弹窗。没有残留就不提示"));
+    col->addWidget(line(m_cleanOnStart, m_cleanNotify));
+    QObject::connect(m_cleanOnStart, &QCheckBox::toggled, m_cleanNotify, &QWidget::setEnabled);
     col->addStretch(1);
     return page;
 }
@@ -1158,7 +1169,7 @@ void AgentWindow::loadConfig()
 {
     // 先填默认值，文件不存在或缺项时就用它们
     m_host->setText("127.0.0.1");
-    m_port->setValue(RemoteConst::kPort);
+    m_port->setValue(RemotePorts::listen());
     m_desktop->setChecked(true);
     QFile file(RemoteFiles::exeFile("controlled.json"));
     if (!file.open(QIODevice::ReadOnly)) {
@@ -1166,7 +1177,7 @@ void AgentWindow::loadConfig()
     }
     const QJsonObject obj = QJsonDocument::fromJson(file.readAll()).object();
     m_host->setText(obj.value("host").toString(m_host->text()));
-    m_port->setValue(obj.value("port").toInt(RemoteConst::kPort));
+    m_port->setValue(obj.value("port").toInt(RemotePorts::listen()));
     m_title->setText(obj.value("title").toString());
     m_process->setProcess(obj.value("process").toString());
     const int monitor = obj.value("monitor").toInt(0);
@@ -1225,15 +1236,15 @@ void AgentWindow::loadConfig()
         m_httpOn->setChecked(obj.value("httpView").toBool(false));
     }
     if (m_httpPort) {
-        const int httpPort = obj.value("httpPort").toInt(19180);
-        m_httpPort->setValue(httpPort >= 1 && httpPort <= 65535 ? httpPort : 19180);
+        const int httpPort = obj.value("httpPort").toInt(RemotePorts::preview());
+        m_httpPort->setValue(httpPort >= 1 && httpPort <= 65535 ? httpPort : RemotePorts::preview());
     }
     if (m_directOn) {
         m_directOn->setChecked(obj.value("direct").toBool(false));
     }
     if (m_directPort) {
-        const int directPort = obj.value("directPort").toInt(19102);
-        m_directPort->setValue(directPort >= 1 && directPort <= 65535 ? directPort : 19102);
+        const int directPort = obj.value("directPort").toInt(RemotePorts::direct());
+        m_directPort->setValue(directPort >= 1 && directPort <= 65535 ? directPort : RemotePorts::direct());
     }
     if (m_relayOn) {
         m_relayOn->setChecked(obj.value("relayOn").toBool(false));
@@ -1242,17 +1253,24 @@ void AgentWindow::loadConfig()
         m_relayHost->setText(obj.value("relayHost").toString());
     }
     if (m_relayPort) {
-        m_relayPort->setValue(obj.value("relayPort").toInt(19200));
+        m_relayPort->setValue(obj.value("relayPort").toInt(RemotePorts::relay()));
     }
     if (m_relayKey) {
         m_relayKey->setText(obj.value("relayKey").toString());
     }
+    if (m_cleanOnStart) {
+        m_cleanOnStart->setChecked(obj.value("cleanOnStart").toBool(true));
+    }
+    if (m_cleanNotify) {
+        m_cleanNotify->setChecked(obj.value("cleanNotify").toBool(true));
+        m_cleanNotify->setEnabled(!m_cleanOnStart || m_cleanOnStart->isChecked());
+    }
     if (m_accessOn) {
-        m_accessOn->setChecked(obj.value("accessOn").toBool(true));
+        m_accessOn->setChecked(obj.value("accessOn").toBool(RemotePorts::accessOnByDefault()));
     }
     if (m_accessHost) {
         const QString host = obj.value("accessHost").toString();
-        m_accessHost->setText(host.isEmpty() ? QString::fromUtf8("remote.subapi.fun") : host);
+        m_accessHost->setText(host.isEmpty() ? QString::fromUtf8(RemotePorts::accessHost()) : host);
     }
     if (m_accessPort) {
         const int accessPort = obj.value("accessPort").toInt(443);
@@ -1352,13 +1370,15 @@ void AgentWindow::saveConfig() const
     obj.insert("fileRoots", m_fileRoots ? m_fileRoots->text().trimmed() : QString());
     obj.insert("httpView", m_httpOn && m_httpOn->isChecked());
     obj.insert("direct", m_directOn && m_directOn->isChecked());
-    obj.insert("directPort", m_directPort ? m_directPort->value() : 19102);
+    obj.insert("directPort", m_directPort ? m_directPort->value() : RemotePorts::direct());
     obj.insert("relayOn", m_relayOn && m_relayOn->isChecked());
     obj.insert("relayHost", m_relayHost ? m_relayHost->text().trimmed() : QString());
-    obj.insert("relayPort", m_relayPort ? m_relayPort->value() : 19200);
+    obj.insert("relayPort", m_relayPort ? m_relayPort->value() : RemotePorts::relay());
     obj.insert("relayKey", m_relayKey ? m_relayKey->text() : QString());
+    obj.insert("cleanOnStart", !m_cleanOnStart || m_cleanOnStart->isChecked());
+    obj.insert("cleanNotify", !m_cleanNotify || m_cleanNotify->isChecked());
     obj.insert("accessOn", m_accessOn && m_accessOn->isChecked());
-    obj.insert("accessHost", m_accessHost ? m_accessHost->text().trimmed() : QString::fromUtf8("remote.subapi.fun"));
+    obj.insert("accessHost", m_accessHost ? m_accessHost->text().trimmed() : QString::fromUtf8(RemotePorts::accessHost()));
     obj.insert("accessPort", m_accessPort ? m_accessPort->value() : 443);
     obj.insert("production", m_production && m_production->isChecked());
     obj.insert("allowHighest", m_allowHighest && m_allowHighest->isChecked());
@@ -1366,7 +1386,7 @@ void AgentWindow::saveConfig() const
     obj.insert("logPictureDisk", m_logPictureDisk && m_logPictureDisk->isChecked());
     obj.insert("logRotateMinutes", m_logRotate ? m_logRotate->currentData().toInt() : 60);
     obj.insert("logKeepDays", m_logKeepDays ? m_logKeepDays->value() : 7);
-    obj.insert("httpPort", m_httpPort ? m_httpPort->value() : 19180);
+    obj.insert("httpPort", m_httpPort ? m_httpPort->value() : RemotePorts::preview());
     obj.insert("passwordHash", m_passwordHash);
     obj.insert("whitelist", m_whitelist ? m_whitelist->text().trimmed() : QString());
     obj.insert("pipelineWorkers", m_pipelineWorkers ? m_pipelineWorkers->value() : 0);
@@ -1588,7 +1608,7 @@ std::vector<std::pair<std::string, int> > AgentWindow::parseExtraHosts() const
         if (line.isEmpty()) {
             continue;
         }
-        int port = RemoteConst::kPort;
+        int port = RemotePorts::listen();
         const int colon = line.lastIndexOf(':');
         if (colon > 0) {
             bool ok = false;

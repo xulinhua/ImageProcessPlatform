@@ -10,6 +10,7 @@
 #include "ControlConfig.h"
 #include "Messages.h"
 #include "RemoteFiles.h"
+#include "RemotePorts.h"
 #include "RemoteTheme.h"
 #include "RemoteWidgets.h"
 
@@ -179,6 +180,13 @@ QWidget* SettingsDialog::buildGeneral()
     m_hidden = new SwitchButton(body);
     m_tray = new SwitchButton(body);
     addRow(start, QString::fromUtf8("开机自动启动"), line(m_autoStart));
+    m_cleanOnStart = new SwitchButton(body);
+    m_cleanOnStart->setToolTip(QString::fromUtf8("启动时结束其他同名进程，并放开它们留下的监听端口。不结束 Windows 服务和会话代理"));
+    m_cleanNotify = new SwitchButton(body);
+    m_cleanNotify->setToolTip(QString::fromUtf8("上面的清理真做了事情时再弹窗。没有残留就不提示"));
+    addRow(start, QString::fromUtf8("启动时清理"), line(m_cleanOnStart));
+    addRow(start, QString::fromUtf8("清理后提示"), line(m_cleanNotify));
+    QObject::connect(m_cleanOnStart, &SwitchButton::toggled, m_cleanNotify, &QWidget::setEnabled);
     addRow(start, QString::fromUtf8("启动时隐藏到托盘"), line(m_hidden));
     addRow(start, QString::fromUtf8("关闭时最小化到托盘"), line(m_tray));
     QGridLayout* who = group(col, QString::fromUtf8("身份"));
@@ -245,21 +253,22 @@ QWidget* SettingsDialog::buildNetwork(bool listening)
     m_relayHost->setPlaceholderText("relay.company.local");
     m_relayPort = new QSpinBox(body);
     m_relayPort->setRange(1, 65535);
-    m_relayPort->setValue(19200);
+    m_relayPort->setValue(RemotePorts::relay());
     m_relayPort->setFixedWidth(90);
     m_relayKey = new QLineEdit(body);
     m_relayKey->setEchoMode(QLineEdit::Password);
     m_relayKey->setFixedWidth(200);
     addRow(relay, QString::fromUtf8("启用中继"), line(m_relayOn));
     m_startRelay = new SwitchButton(body);
-    m_startRelay->setToolTip(QString::fromUtf8("勾选后中控台启动时拉起同目录的 RemoteRelay，不再单独开中继。局域网端口用上面的端口，识别码仍听本机 19280。关掉中控台时只结束这次拉起的中继"));
-    addRow(relay, QString::fromUtf8("随软件启动"), line(m_startRelay));
+    m_startRelay->setToolTip(QString::fromUtf8("打开后中控台自己听局域网端口和 127.0.0.1:%1，不用再单独开中继。关掉开关或退出中控台就停").arg(RemotePorts::relayWs()));
+    addRow(relay, QString::fromUtf8("本机中继"), line(m_startRelay));
     addRow(relay, QString::fromUtf8("地址"), line(m_relayHost, new QLabel(QString::fromUtf8("端口"), body), m_relayPort));
     addRow(relay, QString::fromUtf8("注册口令"), line(m_relayKey));
     QGridLayout* access = group(col, QString::fromUtf8("识别码"));
     m_accessHost = new QLineEdit(body);
     m_accessHost->setFixedWidth(200);
-    m_accessHost->setPlaceholderText("remote.subapi.fun");
+    m_accessHost->setPlaceholderText(QString::fromUtf8(RemotePorts::accessHost()).isEmpty()
+        ? QString::fromUtf8("自己的识别码域名") : QString::fromUtf8(RemotePorts::accessHost()));
     m_accessHost->setToolTip(QString::fromUtf8("被控端没连上局域网中控台时挂在这个域名上。生产用的反连、直连、中继不变"));
     m_accessPort = new QSpinBox(body);
     m_accessPort->setRange(1, 65535);
@@ -308,7 +317,7 @@ QWidget* SettingsDialog::buildNetwork(bool listening)
     m_bandwidth->setSpecialValueText(QString::fromUtf8("不限"));
     m_bandwidth->setFixedWidth(120);
     QLabel* udp = new QLabel(QString::fromUtf8("UDP 端口"), body);
-    QLineEdit* udpPort = new QLineEdit(QString::number(RemoteConst::kDiscoverPort), body);
+    QLineEdit* udpPort = new QLineEdit(QString::number(RemotePorts::discover()), body);
     udpPort->setReadOnly(true);
     udpPort->setFixedWidth(90);
     udpPort->setToolTip(QString::fromUtf8("发现端口固定，与被控端一致"));
@@ -536,6 +545,13 @@ QWidget* SettingsDialog::buildLog(const QString& auditDir)
 void SettingsDialog::load(const ControlConfig& config)
 {
     m_autoStart->setChecked(config.autoStart);
+    if (m_cleanOnStart) {
+        m_cleanOnStart->setChecked(config.cleanOnStart);
+    }
+    if (m_cleanNotify) {
+        m_cleanNotify->setChecked(config.cleanNotify);
+        m_cleanNotify->setEnabled(config.cleanOnStart);
+    }
     m_hidden->setChecked(config.startHidden);
     m_tray->setChecked(config.trayOnClose);
     m_host->setText(config.host);
@@ -566,7 +582,7 @@ void SettingsDialog::load(const ControlConfig& config)
         m_startRelay->setChecked(config.startRelay);
     }
     m_relayHost->setText(config.relayHost);
-    m_relayPort->setValue(config.relayPort > 0 ? config.relayPort : 19200);
+    m_relayPort->setValue(config.relayPort > 0 ? config.relayPort : RemotePorts::relay());
     m_relayKey->setText(config.relayKey);
     if (m_accessHost) {
         m_accessHost->setText(config.accessHost);
@@ -660,6 +676,12 @@ void SettingsDialog::store()
     const QString host = m_host->text().trimmed().isEmpty() ? QString("0.0.0.0") : m_host->text().trimmed();
     const bool moved = host != m_config->host || m_port->value() != m_config->port;
     m_config->autoStart = m_autoStart->isChecked();
+    if (m_cleanOnStart) {
+        m_config->cleanOnStart = m_cleanOnStart->isChecked();
+    }
+    if (m_cleanNotify) {
+        m_config->cleanNotify = m_cleanNotify->isChecked();
+    }
     m_config->startHidden = m_hidden->isChecked();
     m_config->trayOnClose = m_tray->isChecked();
     m_config->host = host;

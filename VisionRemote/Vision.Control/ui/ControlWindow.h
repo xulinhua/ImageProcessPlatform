@@ -32,7 +32,6 @@ class QComboBox;
 class QLabel;
 class QMenu;
 class QMenuBar;
-class QProcess;
 class QPushButton;
 class QSpinBox;
 class QSystemTrayIcon;
@@ -45,6 +44,7 @@ class SegmentBar;
 class SessionWindow;
 class StatusDot;
 class WallView;
+class RelayHub;
 
 /**
  * @class ControlWindow
@@ -60,6 +60,10 @@ public:
 
     /** @brief 配置要求启动时只留托盘 */
     bool startHidden() const;
+    /** @brief 用设备 ID 和验证码走识别码连接，对方上线后打开画面 */
+    void connectByCode(const QString& deviceId, const QString& accessCode);
+    /** @brief 打开设备库里已有的那台。库里没有返回 false */
+    bool openKnown(const QString& key);
 
 protected:
     /** @brief 允许缩到托盘时隐藏窗口，否则（或从菜单退出时）退出程序 */
@@ -120,12 +124,10 @@ private:
     /************************************************** 网络 **************************************************/
     /** @brief 按配置开始监听，结果显示在状态栏，失败弹框 */
     void startListen();
-    /** @brief 设置开启时拉起同目录 RemoteRelay；已有中继或本次已拉起且端口没变则不动 */
+    /** @brief 设置打开时在本进程里听中继端口；关掉或端口变了就停掉再听 */
     void syncLocalRelay();
-    /** @brief 结束本次由中控台拉起的中继。外面自己开的不动 */
+    /** @brief 停掉本进程里的中继 */
     void stopOwnedRelay();
-    /** @brief 本机该 TCP 端口是否已有进程在听 */
-    bool relayPortOpen(int port) const;
     /** @brief 配置开启发现时起后台线程，每轮扫 700 ms、歇约 5 秒 */
     void startScan();
     /** @brief 停后台发现线程；发现已关闭时清空结果 */
@@ -267,8 +269,7 @@ private:
     std::vector<HelloMsg> m_found;      ///< 最近一次发现结果
     QString m_foundSig;                 ///< 上次推给设备树的发现结果签名，变化才刷新
 
-    QProcess* m_relayProc;      ///< 本次拉起的 RemoteRelay，没有则为空
-    int m_relayListenPort;      ///< 本次拉起时用的局域网端口
+    RelayHub* m_relay;          ///< 本进程里的中继，设置打开时听局域网端口和识别码端口
     bool m_quit;            ///< 正在退出，closeEvent 不再缩托盘
     bool m_wallFull;        ///< 全屏墙状态
     int m_pageIndex;        ///< 监控墙当前页，从 0 起

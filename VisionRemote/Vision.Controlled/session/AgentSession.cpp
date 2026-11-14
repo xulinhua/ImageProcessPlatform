@@ -8,6 +8,7 @@
 
 #include "AgentSession.h"
 #include "AccessTunnel.h"
+#include "RemotePorts.h"
 #include "AgentService.h"
 #include "RemoteCrash.h"
 #include "RemoteLog.h"
@@ -73,7 +74,7 @@ AgentSession::AgentSession()
     , m_httpSeq(0)
     , m_inbound(0)
     , m_relayOn(false)
-    , m_relayPort(19200)
+    , m_relayPort(RemotePorts::relay())
     , m_production(false)
     , m_allowHighest(false)
     , m_stationBlock(false)
@@ -153,6 +154,11 @@ std::string AgentSession::machineName() const
     }
     const std::string out = toUtf8(std::wstring(name, count));
     return out.empty() ? std::string("pc") : out;
+}
+
+std::string AgentSession::localDeviceId()
+{
+    return readDeviceId();
 }
 
 std::string AgentSession::readDeviceId()
@@ -277,11 +283,11 @@ const std::string& AgentSession::systemName() const
 bool AgentSession::start(const std::string& host, int port, const std::wstring& title, const std::wstring& processName,
     bool desktop, int monitor, std::string* err)
 {
-    if (port <= 0 || port > 65535 || (host.empty() && !m_accessOn)) {
+    if (port <= 0 || port > 65535) {
         if (err) {
-            *err = host.empty() ? "中控台地址是空的，识别码通道也没开" : "中控台地址或端口无效";
+            *err = "端口无效";
         }
-        RemoteCrash::alert("AgentSession.start", err ? err->c_str() : "bad host/port", true);
+        RemoteCrash::alert("AgentSession.start", err ? err->c_str() : "bad port", true);
         return false;
     }
     bool ok = false;
@@ -1083,7 +1089,7 @@ bool AgentSession::setDirect(bool on, int port, std::string* err)
         m_direct.stop();
         return true;
     }
-    return m_direct.start(this, port > 0 ? port : 19102, err);
+    return m_direct.start(this, port > 0 ? port : RemotePorts::direct(), err);
 }
 
 void AgentSession::setRelay(bool on, const std::string& host, int port, const std::string& token)
@@ -1091,7 +1097,7 @@ void AgentSession::setRelay(bool on, const std::string& host, int port, const st
     std::lock_guard<std::mutex> lock(m_mu);
     m_relayOn = on && !host.empty();
     m_relayHost = host;
-    m_relayPort = port > 0 ? port : 19200;
+    m_relayPort = port > 0 ? port : RemotePorts::relay();
     m_relayToken = token;
 }
 
@@ -1154,12 +1160,12 @@ void AgentSession::accessMain()
         }
         bool got = false;
         while (m_run) {
-            bool session = false;
+            bool established = false;
             {
                 std::lock_guard<std::mutex> lock(m_mu);
-                session = m_tcp.isOpen();
+                established = m_connectedAt != 0;
             }
-            if (session) {
+            if (established) {
                 break;
             }
             std::string reply;
@@ -1258,7 +1264,7 @@ bool AgentSession::openViaRelay(std::string* err)
 {
     bool on = false;
     std::string host;
-    int port = 19200;
+    int port = RemotePorts::relay();
     std::string token;
     std::string id;
     {
@@ -2217,22 +2223,44 @@ void AgentSession::readMain()
                     }
                 }
                 bool opened = false;
+                bool accessOn = false;
+                {
+                    std::lock_guard<std::mutex> lock(m_mu);
+                    accessOn = m_accessOn;
+                }
                 for (size_t i = 0; i < targets.size(); ++i) {
+                    if (takeAccess()) {
+                        viaAccess = true;
+                        opened = true;
+                        break;
+                    }
                     const size_t pick = (m_connectTry + i) % targets.size();
-                    if (m_tcp.open(targets[pick].first, targets[pick].second, 1500, &err)) {
+                    const int waitMs = accessOn ? 400 : 1500;
+                    if (m_tcp.open(targets[pick].first, targets[pick].second, waitMs, &err)) {
                         opened = true;
                         m_connectTry = (pick + 1) % targets.size();
                         break;
                     }
                 }
-                if (!opened && !openViaRelay(&err)) {
+                if (!viaAccess && takeAccess()) {
+                    viaAccess = true;
+                    opened = true;
+                }
+                if (!opened && !accessOn && !openViaRelay(&err)) {
                     if (!takeAccess()) {
                         m_connectTry += 1;
                         Sleep(1000);
                         continue;
                     }
                     viaAccess = true;
+                } else if (!opened && accessOn) {
+                    m_connectTry += 1;
+                    Sleep(300);
+                    continue;
                 }
+            }
+            if (!viaAccess && takeAccess()) {
+                viaAccess = true;
             }
             RemoteCrash::checkpoint("AgentSession.tcp_open");
             std::string peerFp;

@@ -18,6 +18,8 @@
 #include "Messages.h"
 #include "RemoteFiles.h"
 #include "RemoteLog.h"
+#include "RelayHub.h"
+#include "RemotePorts.h"
 #include "RemoteTheme.h"
 #include "RemoteWidgets.h"
 #include "SessionWindow.h"
@@ -29,10 +31,7 @@
 #include <QApplication>
 #include <QCloseEvent>
 #include <QComboBox>
-#include <QCoreApplication>
 #include <QDateTime>
-#include <QDir>
-#include <QFileInfo>
 #include <QDialog>
 #include <QElapsedTimer>
 #include <QLineEdit>
@@ -45,7 +44,6 @@
 #include <QMenu>
 #include <QMenuBar>
 #include <QMessageBox>
-#include <QProcess>
 #include <QPushButton>
 #include <QSpinBox>
 #include <QSystemTrayIcon>
@@ -55,11 +53,7 @@
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif
-#include <winsock2.h>
-#include <ws2tcpip.h>
 #include <windows.h>
-
-#pragma comment(lib, "ws2_32.lib")
 
 namespace Vision {
 
@@ -72,8 +66,7 @@ ControlWindow::ControlWindow(QWidget* parent)
     , m_tray(0)
     , m_trayMenu(0)
     , m_scanRun(false)
-    , m_relayProc(0)
-    , m_relayListenPort(0)
+    , m_relay(new RelayHub())
     , m_quit(false)
     , m_wallFull(false)
     , m_pageIndex(0)
@@ -209,6 +202,8 @@ ControlWindow::~ControlWindow()
     }
     stopScan();
     stopOwnedRelay();
+    delete m_relay;
+    m_relay = 0;
     m_session.stop();
     m_store.save();
 }
@@ -484,7 +479,7 @@ QWidget* ControlWindow::buildStatus()
     m_listen = new QLabel(bar);
     m_online = new QLabel(bar);
     m_relayStatus = new QLabel(bar);
-    m_relayStatus->setToolTip(QString::fromUtf8("在设置里填写中继地址和口令。反连和直连都没有时才走中继"));
+    m_relayStatus->setToolTip(QString::fromUtf8("本机中继在设置里打开。另外填的地址是连别人的中继，反连和直连都没有时才走"));
     m_rate = new QLabel(bar);
     const QString who = m_auth.user().empty()
         ? RemoteFiles::userName()
@@ -510,88 +505,33 @@ QWidget* ControlWindow::buildStatus()
     return bar;
 }
 
-bool ControlWindow::relayPortOpen(int port) const
-{
-    WSADATA data;
-    if (WSAStartup(MAKEWORD(2, 2), &data) != 0) {
-        return false;
-    }
-    SOCKET sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-    if (sock == INVALID_SOCKET) {
-        return false;
-    }
-    u_long nonblock = 1;
-    ioctlsocket(sock, FIONBIO, &nonblock);
-    sockaddr_in addr;
-    ZeroMemory(&addr, sizeof(addr));
-    addr.sin_family = AF_INET;
-    addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
-    addr.sin_port = htons(static_cast<u_short>(port));
-    ::connect(sock, reinterpret_cast<sockaddr*>(&addr), sizeof(addr));
-    fd_set write;
-    FD_ZERO(&write);
-    FD_SET(sock, &write);
-    timeval wait;
-    wait.tv_sec = 0;
-    wait.tv_usec = 200000;
-    bool open = false;
-    if (select(0, 0, &write, 0, &wait) > 0) {
-        int err = 0;
-        int len = sizeof(err);
-        getsockopt(sock, SOL_SOCKET, SO_ERROR, reinterpret_cast<char*>(&err), &len);
-        open = err == 0;
-    }
-    closesocket(sock);
-    return open;
-}
-
 void ControlWindow::stopOwnedRelay()
 {
-    if (!m_relayProc) {
-        return;
+    if (m_relay) {
+        m_relay->stop();
     }
-    if (m_relayProc->state() != QProcess::NotRunning) {
-        m_relayProc->kill();
-        m_relayProc->waitForFinished(1500);
-    }
-    m_relayListenPort = 0;
 }
 
 void ControlWindow::syncLocalRelay()
 {
-    const int port = m_config.relayPort > 0 && m_config.relayPort <= 65535 ? m_config.relayPort : 19200;
+    const int port = m_config.relayPort > 0 && m_config.relayPort <= 65535 ? m_config.relayPort : RemotePorts::relay();
+    const int wsPort = RemotePorts::relayWs();
     if (!m_config.startRelay) {
         stopOwnedRelay();
         return;
     }
-    if (m_relayProc && m_relayProc->state() != QProcess::NotRunning && m_relayListenPort == port) {
-        return;
-    }
-    if (relayPortOpen(port)) {
-        stopOwnedRelay();
-        RemoteLog::writef(RemoteLog::Info, "中继", "端口 %d 已有中继，不再启动", port);
+    if (m_relay && m_relay->listening() && m_relay->port() == port && m_relay->wsPort() == wsPort) {
         return;
     }
     stopOwnedRelay();
-    const QString exe = QDir(QCoreApplication::applicationDirPath()).filePath("RemoteRelay.exe");
-    if (!QFileInfo::exists(exe)) {
-        RemoteLog::writef(RemoteLog::Warn, "中继", "找不到 RemoteRelay.exe");
+    if (!m_relay || !m_relay->start(port)) {
+        RemoteLog::writef(RemoteLog::Warn, "中继", "局域网端口 %d 没有听上。若单独开着中继程序，先关掉它", port);
         return;
     }
-    if (!m_relayProc) {
-        m_relayProc = new QProcess(this);
-        m_relayProc->setWorkingDirectory(QCoreApplication::applicationDirPath());
-        m_relayProc->setCreateProcessArgumentsModifier([](QProcess::CreateProcessArguments* args) {
-            args->flags |= CREATE_NO_WINDOW;
-        });
+    if (!m_relay->startWs(wsPort)) {
+        RemoteLog::writef(RemoteLog::Warn, "中继", "识别码端口 %d 没有听上，局域网中继仍可用", wsPort);
     }
-    m_relayProc->start(exe, QStringList() << QString::number(port) << QString::number(19280));
-    if (!m_relayProc->waitForStarted(3000)) {
-        RemoteLog::writef(RemoteLog::Warn, "中继", "RemoteRelay 没有启动");
-        return;
-    }
-    m_relayListenPort = port;
-    RemoteLog::writef(RemoteLog::Info, "中继", "已随中控台启动，TCP %d，识别码 127.0.0.1:19280", port);
+    RemoteLog::writef(RemoteLog::Info, "中继", "已在中控台内监听，TCP %d，识别码 127.0.0.1:%d", port, wsPort);
 }
 
 void ControlWindow::startListen()
@@ -1166,9 +1106,16 @@ void ControlWindow::refreshStatus(const std::vector<ControlSession::Tile>& tiles
     const int total = static_cast<int>(devices.size());
     m_online->setText(QString::fromUtf8("在线 <b style='color:#595959'>%1 / %2</b>").arg(online).arg(total));
     if (m_relayStatus) {
-        m_relayStatus->setText(m_config.relayOn
-            ? QString::fromUtf8("中继 <b style='color:#722ED1'>%1</b>").arg(m_config.relayHost.toHtmlEscaped())
-            : QString::fromUtf8("中继 <b>未启用</b>"));
+        QString text = QString::fromUtf8("中继 <b>未启用</b>");
+        if (m_relay && m_relay->listening()) {
+            text = QString::fromUtf8("本机中继 <b style='color:#389E0D'>%1</b>").arg(m_relay->port());
+            if (m_config.relayOn && !m_config.relayHost.isEmpty()) {
+                text += QString::fromUtf8(" · <b style='color:#722ED1'>%1</b>").arg(m_config.relayHost.toHtmlEscaped());
+            }
+        } else if (m_config.relayOn) {
+            text = QString::fromUtf8("中继 <b style='color:#722ED1'>%1</b>").arg(m_config.relayHost.toHtmlEscaped());
+        }
+        m_relayStatus->setText(text);
     }
     m_rate->setText(QString::fromUtf8("下行 <b style='color:#595959'>%1</b>").arg(SessionWindow::rateText(kbps)));
     if (m_tray) {
@@ -1469,15 +1416,24 @@ void ControlWindow::openAccess()
     if (dialog.exec() != QDialog::Accepted) {
         return;
     }
-    const QString deviceId = id->text().trimmed().remove(' ');
-    const QString accessCode = code->text().trimmed().remove(' ');
+    connectByCode(id->text(), code->text());
+}
+
+void ControlWindow::connectByCode(const QString& deviceIdText, const QString& accessCodeText)
+{
+    const QString deviceId = QString(deviceIdText).trimmed().remove(' ');
+    const QString accessCode = QString(accessCodeText).trimmed().remove(' ');
     if (deviceId.isEmpty() || accessCode.isEmpty()) {
         QMessageBox::information(this, windowTitle(), QString::fromUtf8("设备 ID 和验证码都要填"));
         return;
     }
     std::string err;
     const QString host = m_config.accessHost.trimmed().isEmpty()
-        ? QString::fromUtf8("remote.subapi.fun") : m_config.accessHost.trimmed();
+        ? QString::fromUtf8(RemotePorts::accessHost()) : m_config.accessHost.trimmed();
+    if (host.isEmpty()) {
+        QMessageBox::information(this, windowTitle(), QString::fromUtf8("还没有填写识别码域名。局域网里不用它。"));
+        return;
+    }
     QApplication::setOverrideCursor(Qt::WaitCursor);
     const bool opened = m_session.dialAccess(host.toStdString(), m_config.accessPort, deviceId.toStdString(),
         accessCode.toStdString(), &err);
@@ -1506,6 +1462,19 @@ void ControlWindow::openAccess()
         QThread::msleep(100);
     }
     QMessageBox::information(this, windowTitle(), QString::fromUtf8("隧道已经接上，等对方画面出现在列表里再打开。"));
+}
+
+bool ControlWindow::openKnown(const QString& key)
+{
+    if (!m_store.find(key)) {
+        return false;
+    }
+    if (isMinimized()) {
+        showNormal();
+    }
+    show();
+    raise();
+    return openSession(key) != 0;
 }
 
 void ControlWindow::openAddDevice()

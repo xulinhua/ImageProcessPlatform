@@ -9,6 +9,7 @@
 #include "ControlConfig.h"
 #include "Messages.h"
 #include "RemoteFiles.h"
+#include "RemotePorts.h"
 #include "RemoteLog.h"
 
 #include <QCoreApplication>
@@ -26,10 +27,12 @@ namespace Vision {
 
 ControlConfig::ControlConfig()
     : host("0.0.0.0")
-    , port(RemoteConst::kPort)
+    , port(RemotePorts::listen())
     , trayOnClose(true)
     , startHidden(false)
     , autoStart(false)
+    , cleanOnStart(true)
+    , cleanNotify(true)
     , discovery(true)
     , fitDefault(true)
     , shotDir(RemoteFiles::imageDir())
@@ -40,8 +43,8 @@ ControlConfig::ControlConfig()
     , tourSeconds(10)
     , relayOn(false)
     , startRelay(true)
-    , relayPort(19200)
-    , accessHost("remote.subapi.fun")
+    , relayPort(RemotePorts::relay())
+    , accessHost(QString::fromUtf8(RemotePorts::accessHost()))
     , accessPort(443)
     , rows(3)
     , cols(3)
@@ -81,6 +84,8 @@ void ControlConfig::load()
     trayOnClose = obj.value("trayOnClose").toBool(trayOnClose);
     startHidden = obj.value("startHidden").toBool(startHidden);
     autoStart = obj.value("autoStart").toBool(autoStart);
+    cleanOnStart = obj.value("cleanOnStart").toBool(true);
+    cleanNotify = obj.value("cleanNotify").toBool(true);
     discovery = obj.value("discovery").toBool(discovery);
     fitDefault = obj.value("fitDefault").toBool(fitDefault);
     shotDir = obj.value("shotDir").toString(shotDir);
@@ -148,7 +153,7 @@ void ControlConfig::load()
         connectOrder.insert(at >= 0 ? at : connectOrder.size(), "udp");
     }
     if (accessHost.trimmed().isEmpty()) {
-        accessHost = "remote.subapi.fun";
+        accessHost = QString::fromUtf8(RemotePorts::accessHost());
     }
     if (accessPort < 1 || accessPort > 65535) {
         accessPort = 443;
@@ -196,6 +201,8 @@ void ControlConfig::save() const
     obj.insert("trayOnClose", trayOnClose);
     obj.insert("startHidden", startHidden);
     obj.insert("autoStart", autoStart);
+    obj.insert("cleanOnStart", cleanOnStart);
+    obj.insert("cleanNotify", cleanNotify);
     obj.insert("discovery", discovery);
     obj.insert("fitDefault", fitDefault);
     obj.insert("shotDir", shotDir);

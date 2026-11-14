@@ -35,6 +35,7 @@ public:
 private:
     struct Impl;
     Impl* m_impl;               ///< WinRT 捕获会话。失败过的窗口不再重试
+    bool m_comInited;           ///< 本对象自己调用了 CoInitializeEx，析构时配对释放
 };
 
 }

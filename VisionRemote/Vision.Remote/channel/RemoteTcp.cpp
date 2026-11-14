@@ -534,6 +534,8 @@ bool RemoteTcpServer::open(const std::string& host, int port, std::string* err)
         fail(err, "创建套接字失败");
         return false;
     }
+    // 默认可继承。中控台拉起中继时若把监听句柄带过去，中控台退出后 19100 仍挂在中继上，新窗口收不到反连。
+    SetHandleInformation(reinterpret_cast<HANDLE>(listenSock), HANDLE_FLAG_INHERIT, 0);
     BOOL reuse = TRUE;
     setsockopt(listenSock, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<const char*>(&reuse), sizeof(reuse));
     sockaddr_in addr;
@@ -704,6 +706,7 @@ void RemoteTcpServer::threadMain()
             int fromLen = sizeof(from);
             SOCKET neu = accept(listenSock, reinterpret_cast<sockaddr*>(&from), &fromLen);
             if (neu != INVALID_SOCKET) {
+                SetHandleInformation(reinterpret_cast<HANDLE>(neu), HANDLE_FLAG_INHERIT, 0);
                 char ip[64];
                 inet_ntop(AF_INET, &from.sin_addr, ip, sizeof(ip));
                 char text[80];

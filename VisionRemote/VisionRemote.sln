@@ -12,6 +12,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Vision.Controlled", "Vision
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Vision.Relay", "Vision.Relay\Vision.Relay.vcxproj", "{B4E91A10-7C22-4F18-9A01-A0B1C2D3E4CC}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Vision.Desk", "Vision.Desk\Vision.Desk.vcxproj", "{B4E91A10-7C22-4F18-9A01-A0B1C2D3E4CD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -58,6 +60,12 @@ Global
 		{B4E91A10-7C22-4F18-9A01-A0B1C2D3E4CC}.Release|Win32.ActiveCfg = Release|x64
 		{B4E91A10-7C22-4F18-9A01-A0B1C2D3E4CC}.Release|x64.ActiveCfg = Release|x64
 		{B4E91A10-7C22-4F18-9A01-A0B1C2D3E4CC}.Release|x64.Build.0 = Release|x64
+		{B4E91A10-7C22-4F18-9A01-A0B1C2D3E4CD}.Debug|Win32.ActiveCfg = Debug|x64
+		{B4E91A10-7C22-4F18-9A01-A0B1C2D3E4CD}.Debug|x64.ActiveCfg = Debug|x64
+		{B4E91A10-7C22-4F18-9A01-A0B1C2D3E4CD}.Debug|x64.Build.0 = Debug|x64
+		{B4E91A10-7C22-4F18-9A01-A0B1C2D3E4CD}.Release|Win32.ActiveCfg = Release|x64
+		{B4E91A10-7C22-4F18-9A01-A0B1C2D3E4CD}.Release|x64.ActiveCfg = Release|x64
+		{B4E91A10-7C22-4F18-9A01-A0B1C2D3E4CD}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

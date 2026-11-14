@@ -203,6 +203,8 @@ private:
     QLineEdit* m_relayHost;             ///< 中继地址
     QSpinBox* m_relayPort;              ///< 中继端口
     QLineEdit* m_relayKey;              ///< 中继口令
+    QCheckBox* m_cleanOnStart;          ///< 启动时结束同名进程并放开相关端口
+    QCheckBox* m_cleanNotify;           ///< 清理之后弹窗说明
     QCheckBox* m_accessOn;              ///< 识别码通道。没连上中控台时挂到固定域名
     QLineEdit* m_accessHost;            ///< 识别码域名
     QSpinBox* m_accessPort;             ///< 识别码端口

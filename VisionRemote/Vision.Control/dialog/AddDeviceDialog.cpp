@@ -8,6 +8,7 @@
 
 #include "AddDeviceDialog.h"
 #include "ControlConfig.h"
+#include "RemotePorts.h"
 #include "DeviceStore.h"
 #include "RemoteTheme.h"
 #include "RemoteWidgets.h"
@@ -218,7 +219,7 @@ QWidget* AddDeviceDialog::buildAddress()
     QLabel* ipLabel = new QLabel(QString::fromUtf8("IP 地址"), body);
     ipLabel->setProperty("role", "key");
     QLabel* note = new QLabel(QString::fromUtf8(
-        "按共享整个桌面登记。被控端需要把中控台地址设成本机、端口 %1，连上后自动出画面。").arg(RemoteConst::kPort), body);
+        "按共享整个桌面登记。被控端需要把中控台地址设成本机、端口 %1，连上后自动出画面。").arg(RemotePorts::listen()), body);
     note->setProperty("role", "small");
     note->setWordWrap(true);
     grid->addWidget(nameLabel, 0, 0, Qt::AlignRight | Qt::AlignVCenter);
@@ -265,7 +266,7 @@ QString AddDeviceDialog::keyOf(const HelloMsg& hello)
 void AddDeviceDialog::rescan()
 {
     QApplication::setOverrideCursor(Qt::WaitCursor);
-    m_hint->setText(QString::fromUtf8("正在通过 UDP %1 广播扫描…").arg(RemoteConst::kDiscoverPort));
+    m_hint->setText(QString::fromUtf8("正在通过 UDP %1 广播扫描…").arg(RemotePorts::discover()));
     m_hint->repaint();
     m_found = m_scanner ? m_scanner() : std::vector<HelloMsg>();
     QApplication::restoreOverrideCursor();
@@ -277,7 +278,7 @@ void AddDeviceDialog::rescan()
     }
     m_hint->setText(m_found.empty()
         ? QString::fromUtf8("没有发现被控端。确认被控端已启动，且与本机在同一网段")
-        : QString::fromUtf8("通过 UDP %1 广播发现 %2 台被控端，%3 台已在列表中").arg(RemoteConst::kDiscoverPort).arg(m_found.size()).arg(added));
+        : QString::fromUtf8("通过 UDP %1 广播发现 %2 台被控端，%3 台已在列表中").arg(RemotePorts::discover()).arg(m_found.size()).arg(added));
     fill();
 }
 

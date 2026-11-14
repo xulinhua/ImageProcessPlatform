@@ -7,6 +7,7 @@
  */
 
 #include "AgentSession.h"
+#include "RemotePorts.h"
 
 #include <QBuffer>
 #include <QImage>
@@ -600,7 +601,7 @@ bool AgentSession::takePhase4(const Frame::Packet& packet)
         std::string host;
         uint16_t port = 0;
         if (Messages::unpackInvite(packet.payload, &host, &port)) {
-            inviteViewer(host, port == 0 ? RemoteConst::kPort : port);
+            inviteViewer(host, port == 0 ? RemotePorts::listen() : port);
         }
         return true;
     }

@@ -18,6 +18,7 @@
 
 #include <d3d11.h>
 #include <dxgi.h>
+#include <objbase.h>
 
 #include <cstring>
 #include <mutex>
@@ -225,28 +226,41 @@ struct WgcCapture::Impl {
 };
 
 WgcCapture::WgcCapture()
-    : m_impl(new Impl())
+    : m_impl(0)
+    , m_comInited(false)
 {
+    // Qt 主线程已经按 STA 初始化 COM。再按多线程初始化会抛 RPC_E_CHANGED_MODE，被控窗口直接起不来
+    const HRESULT hr = CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
+    if (hr == S_OK || hr == S_FALSE) {
+        m_comInited = true;
+    }
     try {
-        winrt::init_apartment(winrt::apartment_type::multi_threaded);
+        m_impl = new Impl();
     } catch (...) {
+        m_impl = 0;
     }
 }
 
 WgcCapture::~WgcCapture()
 {
     delete m_impl;
+    if (m_comInited) {
+        CoUninitialize();
+    }
 }
 
 void WgcCapture::reset()
 {
+    if (!m_impl) {
+        return;
+    }
     m_impl->stop();
     m_impl->failedHwnd = 0;
 }
 
 bool WgcCapture::grab(HWND hwnd, CommBytes* bgra, int* width, int* height)
 {
-    if (!hwnd || !bgra || !IsWindow(hwnd)) {
+    if (!m_impl || !hwnd || !bgra || !IsWindow(hwnd)) {
         return false;
     }
     if (m_impl->failedHwnd == hwnd) {

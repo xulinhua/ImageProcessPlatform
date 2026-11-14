@@ -7,6 +7,7 @@
  */
 
 #include "RemoteBeacon.h"
+#include "RemotePorts.h"
 #include "Frame.h"
 
 #include <winsock2.h>
@@ -78,7 +79,7 @@ bool RemoteBeacon::listen(std::string* err)
     std::memset(&addr, 0, sizeof(addr));
     addr.sin_family = AF_INET;
     addr.sin_addr.s_addr = htonl(INADDR_ANY);
-    addr.sin_port = htons(static_cast<u_short>(RemoteConst::kDiscoverPort));
+    addr.sin_port = htons(static_cast<u_short>(RemotePorts::discover()));
     if (bind(sock, reinterpret_cast<sockaddr*>(&addr), sizeof(addr)) != 0) {
         closesocket(sock);
         WSACleanup();
@@ -202,7 +203,7 @@ std::vector<HelloMsg> RemoteBeacon::scan(int timeoutMs)
         sockaddr_in to;
         std::memset(&to, 0, sizeof(to));
         to.sin_family = AF_INET;
-        to.sin_port = htons(static_cast<u_short>(RemoteConst::kDiscoverPort));
+        to.sin_port = htons(static_cast<u_short>(RemotePorts::discover()));
         to.sin_addr.s_addr = destNet;
         sendto(neu, reinterpret_cast<const char*>(probe.data()), static_cast<int>(probe.size()), 0,
             reinterpret_cast<sockaddr*>(&to), sizeof(to));

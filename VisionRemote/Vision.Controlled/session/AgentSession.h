@@ -252,6 +252,8 @@ public:
     /************************************************** 本机 **************************************************/
     /** @brief 9 位数字设备 ID，形如“123 456 789” */
     const std::string& deviceId() const;
+    /** @brief 本机 9 位设备号，形如“123 456 789”，不启动被控会话也能取 */
+    static std::string localDeviceId();
     /** @brief 系统版本，形如“Windows 11 23H2” */
     const std::string& systemName() const;
 

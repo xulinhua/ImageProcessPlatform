@@ -6,11 +6,16 @@
  * @copyright Copyright (c) 2026 Hoson. All rights reserved.
  */
 
+#include "ControlConfig.h"
 #include "ControlWindow.h"
+#include "Messages.h"
 #include "RemoteCrash.h"
 #include "RemoteLog.h"
 #include "RemotePaths.h"
+#include "RemotePorts.h"
 #include "RemoteTheme.h"
+#include "StartupSweep.h"
+#include <vector>
 #include <QApplication>
 #include <QMessageBox>
 #include <windows.h>
@@ -90,6 +95,28 @@ int main(int argc, char* argv[])
         app.setQuitOnLastWindowClosed(false);
         Vision::RemoteTheme::apply(&app);
         Vision::RemoteCrash::checkpoint("main.theme");
+
+        Vision::ControlConfig cfg;
+        cfg.load();
+        if (cfg.cleanOnStart) {
+            std::vector<int> tcp;
+            tcp.push_back(cfg.port > 0 ? cfg.port : Vision::RemotePorts::listen());
+            if (cfg.startRelay) {
+                tcp.push_back(cfg.relayPort > 0 ? cfg.relayPort : Vision::RemotePorts::relay());
+                tcp.push_back(Vision::RemotePorts::relayWs());
+            }
+            std::vector<int> udp;
+            udp.push_back(Vision::RemotePorts::discover());
+            const Vision::StartupSweep::Report swept = Vision::StartupSweep::run(
+                Vision::StartupSweep::RolePlain, tcp, udp);
+            if (swept.any()) {
+                Vision::RemoteLog::writef(Vision::RemoteLog::Info, "启动", "%s", swept.text.c_str());
+                if (cfg.cleanNotify) {
+                    QMessageBox::information(0, QString::fromUtf8("中控台"),
+                        QString::fromUtf8(swept.text.c_str()));
+                }
+            }
+        }
 
         bool already = false;
         HANDLE held = takeControlMutex(&already);

@@ -52,6 +52,8 @@ private:
         int x, int y, int w, int h, int* ox, int* oy) const;
     bool solidBlock(const unsigned char* cur, int imgW, int x, int y, int w, int h, uint32_t* color) const;
     bool writeKeyframe(const unsigned char* bgra, int width, int height, int quality, CommBytes* payload);
+    /** @brief 差分补丁和关键帧用的画质。不低于 78，避免为了省字节把画面压糊 */
+    int sharpQuality(int quality) const;
     static void putU8(CommBytes* out, uint8_t v);
     static void putU16(CommBytes* out, uint16_t v);
     static void putI16(CommBytes* out, int v);

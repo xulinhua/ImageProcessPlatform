@@ -341,16 +341,29 @@ bool DeskDelta::solidBlock(const unsigned char* cur, int imgW, int x, int y, int
     return true;
 }
 
+int DeskDelta::sharpQuality(int quality) const
+{
+    int q = quality > 0 ? quality : 82;
+    if (q < 78) {
+        q = 78;
+    }
+    if (q > 90) {
+        q = 90;
+    }
+    return q;
+}
+
 bool DeskDelta::writeKeyframe(const unsigned char* bgra, int width, int height, int quality, CommBytes* payload)
 {
     CommBytes jpeg;
-    int q = quality > 0 ? quality : 50;
-    if (q > 55) {
-        q = 55;
+    const int q = sharpQuality(quality);
+    if (!encodeJpeg(bgra, width, height, q, &jpeg)) {
+        return false;
     }
-    if (!encodeJpeg(bgra, width, height, q, &jpeg) || jpeg.size() > 900 * 1024) {
-        if (!encodeJpeg(bgra, width, height, 30, &jpeg)) {
-            return false;
+    if (jpeg.size() > 1600 * 1024 && q > 78) {
+        CommBytes smaller;
+        if (encodeJpeg(bgra, width, height, 78, &smaller) && !smaller.empty() && smaller.size() < jpeg.size()) {
+            jpeg.swap(smaller);
         }
     }
     payload->clear();
@@ -516,7 +529,7 @@ bool DeskDelta::encode(const unsigned char* bgra, int width, int height, int qua
         }
         left += 1;
     }
-    if (left > (count * 65) / 100 && bestVotes < 4) {
+    if (left > (count * 85) / 100 && bestVotes < 4) {
         if (key) {
             *key = true;
         }
@@ -610,7 +623,7 @@ bool DeskDelta::encode(const unsigned char* bgra, int width, int height, int qua
             patchPixels += regions[i].w * regions[i].h;
         }
     }
-    if (patchPixels > (width * height * 45) / 100 || regions.size() > 180) {
+    if (patchPixels > (width * height * 72) / 100 || regions.size() > 480) {
         if (key) {
             *key = true;
         }
@@ -650,11 +663,7 @@ bool DeskDelta::encode(const unsigned char* bgra, int width, int height, int qua
                     static_cast<size_t>(region.w) * 4u);
             }
             CommBytes jpeg;
-            int q = quality > 0 ? quality : 55;
-            if (q > 60) {
-                q = 60;
-            }
-            if (!encodeJpeg(packed.data(), region.w, region.h, q, &jpeg)) {
+            if (!encodeJpeg(packed.data(), region.w, region.h, sharpQuality(quality), &jpeg)) {
                 if (key) {
                     *key = true;
                 }

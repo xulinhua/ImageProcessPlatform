@@ -12,6 +12,7 @@
 #include "AuditLog.h"
 #include "ControlConfig.h"
 #include "RemoteFiles.h"
+#include "RemotePorts.h"
 
 #include <QApplication>
 #include <QBuffer>
@@ -62,7 +63,7 @@ void SessionWindow::inviteViewer()
     }
     std::string err;
     m_session->post(m_tile.peerId, Messages::packInvite(host->text().trimmed().toUtf8().constData(),
-        static_cast<uint16_t>(RemoteConst::kPort), &err));
+        static_cast<uint16_t>(RemotePorts::listen()), &err));
     addEvent(QString::fromUtf8("邀请 %1 观看").arg(host->text().trimmed()));
 }
 

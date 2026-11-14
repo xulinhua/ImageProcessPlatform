@@ -22,7 +22,7 @@ public:
     /** @brief 读或生成设备号和证书，并做成 TLS 1.2 客户端上下文 */
     bool loadOrCreate(std::string* err);
 
-    /** @brief 16 位十六进制设备号，首次启动生成后不变 */
+    /** @brief 9 位数字设备号，形如“123 456 789”，由本机 machine-id 算出，和 Windows 被控端同一格式 */
     const std::string& deviceId() const;
     /** @brief 证书 DER 的 SHA-256，64 个小写十六进制字符 */
     const std::string& fingerprint() const;
@@ -33,6 +33,12 @@ private:
     bool createCert(const std::string& dir, std::string* err);
     bool loadCert(const std::string& certPath, const std::string& keyPath, std::string* err);
     bool makeContext(std::string* err);
+    /** @brief /etc/machine-id，没有则用主机名 */
+    std::string machineMaterial() const;
+    /** @brief 和 Windows 一样：FNV-1a 后对 10^9 取余，再排成三位一组 */
+    std::string formatDeviceId(const std::string& material) const;
+    /** @brief 已是“123 456 789”这种 9 位数字 */
+    bool nineDigitId(const std::string& id) const;
 
     std::string m_deviceId;
     std::string m_fingerprint;

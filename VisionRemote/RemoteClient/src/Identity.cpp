@@ -11,9 +11,11 @@
 #include <openssl/sha.h>
 #include <openssl/x509v3.h>
 
+#include <cstdint>
 #include <cstdio>
 #include <fstream>
 #include <sys/stat.h>
+#include <unistd.h>
 #include <vector>
 
 namespace Vision {
@@ -87,6 +89,54 @@ const std::string& Identity::deviceId() const
     return m_deviceId;
 }
 
+std::string Identity::machineMaterial() const
+{
+    std::string id = readText("/etc/machine-id");
+    if (id.size() < 8) {
+        id = readText("/var/lib/dbus/machine-id");
+    }
+    if (id.size() < 8) {
+        char name[256];
+        if (gethostname(name, sizeof(name)) == 0 && name[0]) {
+            id = name;
+        }
+    }
+    if (id.empty()) {
+        id = "remote-client";
+    }
+    return id;
+}
+
+std::string Identity::formatDeviceId(const std::string& material) const
+{
+    uint64_t hash = 1469598103934665603ULL;
+    for (size_t i = 0; i < material.size(); ++i) {
+        hash ^= static_cast<unsigned char>(material[i]);
+        hash *= 1099511628211ULL;
+    }
+    const unsigned int n = static_cast<unsigned int>(hash % 1000000000ULL);
+    char text[16];
+    std::snprintf(text, sizeof(text), "%03u %03u %03u", n / 1000000U, (n / 1000U) % 1000U, n % 1000U);
+    return text;
+}
+
+bool Identity::nineDigitId(const std::string& id) const
+{
+    if (id.size() != 11) {
+        return false;
+    }
+    for (size_t i = 0; i < id.size(); ++i) {
+        if (i == 3 || i == 7) {
+            if (id[i] != ' ') {
+                return false;
+            }
+        } else if (id[i] < '0' || id[i] > '9') {
+            return false;
+        }
+    }
+    return true;
+}
+
 const std::string& Identity::fingerprint() const
 {
     return m_fingerprint;
@@ -110,16 +160,10 @@ bool Identity::loadOrCreate(std::string* err)
     mkdir((std::string(home) + "/.config").c_str(), 0700);
     mkdir(dir.c_str(), 0700);
 
+    const std::string next = formatDeviceId(machineMaterial());
     m_deviceId = readText(dir + "/device-id");
-    if (m_deviceId.size() < 8) {
-        unsigned char raw[8];
-        if (RAND_bytes(raw, sizeof(raw)) != 1) {
-            if (err) {
-                *err = "生成设备号失败";
-            }
-            return false;
-        }
-        m_deviceId = hexOf(raw, sizeof(raw));
+    if (m_deviceId != next || !nineDigitId(m_deviceId)) {
+        m_deviceId = next;
         if (!writeText(dir + "/device-id", m_deviceId + "\n")) {
             if (err) {
                 *err = "写设备号失败";

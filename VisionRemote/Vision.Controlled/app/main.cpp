@@ -8,14 +8,22 @@
 
 #include "AgentService.h"
 #include "AgentWindow.h"
+#include "Messages.h"
 #include "RemoteCrash.h"
+#include "RemoteFiles.h"
 #include "RemoteLog.h"
 #include "RemotePaths.h"
+#include "RemotePorts.h"
 #include "RemoteTheme.h"
+#include "StartupSweep.h"
 #include <QApplication>
+#include <QFile>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QMessageBox>
 #include <windows.h>
 #include <string>
+#include <vector>
 
 namespace {
 
@@ -101,6 +109,37 @@ int main(int argc, char* argv[])
         Vision::RemoteCrash::checkpoint("main.theme");
 
         const bool agentMode = hasArg(argc, argv, "--agent");
+        bool clean = true;
+        bool notify = true;
+        int directPort = Vision::RemotePorts::direct();
+        int httpPort = Vision::RemotePorts::preview();
+        QFile file(Vision::RemoteFiles::exeFile("controlled.json"));
+        if (file.open(QIODevice::ReadOnly)) {
+            const QJsonObject obj = QJsonDocument::fromJson(file.readAll()).object();
+            clean = obj.value("cleanOnStart").toBool(true);
+            notify = obj.value("cleanNotify").toBool(true);
+            const int direct = obj.value("directPort").toInt(Vision::RemotePorts::direct());
+            const int http = obj.value("httpPort").toInt(Vision::RemotePorts::preview());
+            directPort = direct >= 1 && direct <= 65535 ? direct : Vision::RemotePorts::direct();
+            httpPort = http >= 1 && http <= 65535 ? http : Vision::RemotePorts::preview();
+        }
+        if (clean) {
+            std::vector<int> tcp;
+            tcp.push_back(directPort);
+            tcp.push_back(httpPort);
+            std::vector<int> udp;
+            udp.push_back(Vision::RemotePorts::discover());
+            const Vision::StartupSweep::Report swept = Vision::StartupSweep::run(
+                agentMode ? Vision::StartupSweep::RoleAgent : Vision::StartupSweep::RolePlain, tcp, udp);
+            if (swept.any()) {
+                Vision::RemoteLog::writef(Vision::RemoteLog::Info, "启动", "%s", swept.text.c_str());
+                if (notify) {
+                    QMessageBox::information(0, QString::fromUtf8("被控端"),
+                        QString::fromUtf8(swept.text.c_str()));
+                }
+            }
+        }
+
         SetLastError(ERROR_SUCCESS);
         HANDLE held = CreateMutexW(nullptr, TRUE, agentMode ? L"Local\\RemoteClient.Agent" : L"Local\\RemoteClient");
         if (!agentMode && held && GetLastError() == ERROR_ALREADY_EXISTS) {

@@ -9,6 +9,7 @@
 #include "ControlSession.h"
 #include "AccessTunnel.h"
 #include "LinkDial.h"
+#include "RemotePorts.h"
 #include "RemoteCrash.h"
 #include "RemoteLog.h"
 
@@ -789,7 +790,7 @@ bool ControlSession::dialDevice(const std::string& address, const std::string& d
         steps.push_back("direct");
         steps.push_back("relay");
     }
-    return dial.reachOrdered(&m_tcp, address, 19102, relayHost, relayPort, token, deviceId, steps, relayOn, err);
+    return dial.reachOrdered(&m_tcp, address, RemotePorts::direct(), relayHost, relayPort, token, deviceId, steps, relayOn, err);
 }
 
 bool ControlSession::dialAccess(const std::string& host, int port, const std::string& deviceId, const std::string& code, std::string* err)

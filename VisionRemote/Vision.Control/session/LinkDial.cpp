@@ -15,6 +15,7 @@
 
 #include "LinkDial.h"
 #include "RemoteBeacon.h"
+#include "RemotePorts.h"
 #include "RemoteTcp.h"
 
 #include <algorithm>
@@ -136,7 +137,7 @@ bool LinkDial::tryRelay(RemoteTcpServer* server, const std::string& relayHost, i
     if (!server || relayHost.empty() || deviceId.empty()) {
         return false;
     }
-    const uintptr_t sock = openTcp(relayHost, relayPort > 0 ? relayPort : 19200, 3000, err);
+    const uintptr_t sock = openTcp(relayHost, relayPort > 0 ? relayPort : RemotePorts::relay(), 3000, err);
     if (sock == 0) {
         return false;
     }
@@ -210,7 +211,7 @@ bool LinkDial::tryUdpPunch(RemoteTcpServer* server, const std::string& deviceId,
     }
     std::string want = deviceId;
     want.erase(std::remove(want.begin(), want.end(), ' '), want.end());
-    const int port = directPort > 0 ? directPort : 19102;
+    const int port = directPort > 0 ? directPort : RemotePorts::direct();
     // 多扫一轮：先短超时再稍长，合并应答里同 ID 的地址（环回优先换成局域网）
     std::vector<std::string> addrs;
     for (int pass = 0; pass < 2; ++pass) {
